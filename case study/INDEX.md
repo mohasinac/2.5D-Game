@@ -1,5 +1,5 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1488 cases** across 14 files + 1 master reference.
+Total: **1515 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -27,7 +27,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1491 | 523 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 | 550 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -97,7 +97,17 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1483–1485 | 3 | Guilty Upper — Guilty Blade dragon-claw uppercut KE transfer (Lui Shirosagi · Guilty Luínor Karma Metal Destroy-2) | CS13 |
 | 1486–1488 | 3 | Guilty Smash — Karma Disc downward-force gyroscopic launch + aerial dive impact (Lui Shirosagi · Guilty Luínor Karma Metal Destroy-2) | CS13 |
 | 1489–1491 | 3 | Great Rock — gyroscopic immovable-stance spin-preservation defense (Joseph · Vanishing Moot) | CS13 |
-| **1525** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| 1492–1494 | 3 | Gravity Control — orbital counter-rotation waterspout stamina-drain (Max Tate · Draciel G) | CS13 |
+| 1495–1497 | 3 | Gravity Brave — Gravity FW left-spin blade-edge pressure-pulse scatter arrows (Julian Konzern · Gravity Destroyer AD145WD) | CS13 |
+| 1500–1524 | 25 | CS9 overflow blocks: Aquario 105F, Berserker Byakko 125S, Shelter Regulus 5Star Tower, Hyperion Burn Cho Xceed'+X, Greatest Raphael Over High Xtend+' | CS9 |
+| 1525–1527 | 3 | Grand Maelstrom — RS pivot-anchor T125 vortex whirlpool AoE 10s drain (Sophie · Grand Cetus T125RS) | CS13 |
+| 1528–1530 | 3 | Grand Victoire — whirlpool-exit aerial dive water-crash ring-out (Sophie · Grand Cetus T125RS) | CS13 |
+| 1531–1533 | 3 | Grand Fleet — WD145 wing platform aerial crash ring-out (Wales · Grand Cetus WD145RS) | CS13 |
+| 1534–1536 | 3 | Grand Deucalion — dual-Cetus cooperative tsunami joint special (Sophie + Wales) | CS13 |
+| 1537–1539 | 3 | Glory Crown (Greatest Lord) — Greatest Armor clasp I-reduction spin-boost + halo deflection (Rashad · Glory Regnar Over High Xtend+') | CS13 |
+| 1540–1542 | 3 | Glory Slam (Greatest Slam) — Greatest Armor high-spin catch + seismic-toss slam (Rashad · Glory Regnar Over High Xtend+') | CS13 |
+| 1543–1545 | 3 | Grand Jeté — GB145BS bowl-ramp aerial leap + top-mount link QTE ring-out (Teru Saotome · Earth Virgo GB145BS) | CS13 |
+| **1546+** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
@@ -1072,13 +1082,13 @@ All former conflicts have been resolved. The notes below document what was fixed
 ---
 
 
-## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1491
+## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545
 
 > Franchise special moves, gimmick foundations, and derived combos (CS13)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
-| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1491 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
 
 ---
 

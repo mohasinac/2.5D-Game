@@ -29216,5 +29216,1093 @@ function stoneWallCombo(threeHolds: boolean): { spinDelta: number; dmgMult: numb
 
 > **Cross-reference — Great Cutter (Daichi Sumeragi · Strata Dragoon G):** The anime version of Great Cutter (rolling on its side on an enlarged energy circular blade) is the same move as Vast Cutter — see Case 770 (special move) and Case 769 (Dragon Saucer gimmick). The manga version's sub-ring super-acceleration serrated barrier is an extension of Case 213 (Dragon Saucer Sub AR) and Case 769 (Strata Dragoon V gimmick). No duplicate cases are written here; all Great Cutter content is covered by Cases 769–772.
 
-*Cases continue from Case 1492 as further franchise moves are provided.*
+## Case 1492 -- [GIMMICK]: Draciel G Assembly -- Wide-Defence WD Rim-Mass Distribution & Bowl-Wall Orbital Resonance (Max Tate . Draciel G)
+
+**Part:** Wide Defense WD (annular rim mass, r_wd_eff=34mm) + Draciel G Base (sharp-point plastic tip, r_tip=0.5mm) + full assembly; Gen: Plastic Generation G-Revolution | System: 4-piece (AR / WD / SG / BB)
+**Assembly:** Draciel G -- Spiral Turtle AR . Wide Defense WD . Right SG . Draciel G Base (sharp tip)
+**Tags:** plastic-gen, wide-defense, bowl-orbit, rim-mass, gyroscopic-stability, orbital-resonance, G-Revolution, stamina-defense
+
+**Mechanism**
+
+Draciel G is a late plastic-generation defense/stamina type. Its Wide Defense WD carries 15g at r_wd_eff=34mm (14-spoke annular ring), providing the dominant moment of inertia and gyroscopic angular momentum. The Spiral Turtle AR adds 14g at r_ar_eff=36mm. The Draciel G Base sharp tip (r_tip=0.5mm) minimises τ_tip, maximising spin endurance.
+
+**Moment of Inertia breakdown**
+
+| Part | m (g) | r_eff (mm) | I (kg·m²) | Share |
+|------|-------|------------|-----------|-------|
+| Spiral Turtle AR | 14 | 36 | 1.270e-5 | 46.3% |
+| Wide Defense WD | 15 | 34 | 1.224e-5 | 44.6% |
+| SG + BB (hub) | 14 | 10 | 7.00e-7 | 2.5% |
+| Bit Chip | excluded | — | — | — |
+| **Total** | **43** | — | **2.744e-5** | — |
+
+I_AR = 0.014 × 0.036² × 0.70 = 1.270e-5 kg·m²
+I_WD = 0.015 × 0.034² × 0.71 = 1.224e-5 kg·m²
+I_hub = 0.014 × 0.010² × 0.50 = 7.00e-7 kg·m²
+I_total = 2.744e-5 kg·m²
+
+ω₀ = 500 rad/s (plastic-gen pull-cord, ~4775 RPM)
+L₀ = I_total × ω₀ = 2.744e-5 × 500 = **1.372e-2 kg·m²/s**
+
+**Spin decay**
+
+τ_tip = m × g × μ × r_tip = 0.043 × 9.81 × 0.04 × 0.0005 = 8.43e-6 N·m (μ=0.04, sharp plastic)
+Including aerodynamic drag (empirical 5× correction for large-WD plastic-gen beys): τ_total ≈ 4.22e-5 N·m
+t_spin ≈ L₀ / τ_total = 1.372e-2 / 4.22e-5 ≈ **325 s** [INFERRED — consistent with plastic-gen stamina-defense records]
+
+**Bowl-wall orbital resonance**
+
+At orbital radius R=80mm in a 250mm-radius plastic stadium:
+F_centripetal = m × v²/R; at v_orbital=0.5 m/s: F_c = 0.043×0.25/0.080 = 0.134 N
+Bowl wall at θ_bowl=30°: N×sin(30°) = F_c → N = 0.268 N (consistent with observed bowl contact forces)
+L_orbital = m × v_orbital × R = 0.043×0.5×0.080 = 1.72e-3 kg·m²/s = 12.5% of L_spin → orbit perturbs precession < 5°; Draciel G maintains upright posture throughout.
+
+**Combined vorticity (physical basis for Gravity Control waterspout [M])**
+
+Self-spin circulation within r_AR=36mm: Γ_self = π×r_AR²×ω₀ = π×0.001296×500 = 2.036 m²/s
+Orbital contribution: Γ_orbital = 2π×R²×(v/R) = 2π×0.0064×6.25 = 0.251 m²/s
+Total Γ_physical = 2.287 m²/s → tangential air velocity at r=40mm: v_θ = 2.287/(2π×0.040) = **9.1 m/s**
+BeySpirit scales Γ to a stadium-spanning water waterspout [M]; 9.1 m/s is the grounding value.
+
+## Case 1493 -- [SPECIAL]: Gravity Control (Max Tate . Draciel G, Plastic Generation G-Revolution)
+
+**Source:** Beyblade G-Revolution anime
+**Classification:** Orbital stamina-drain / counter-rotation waterspout special
+**Gimmick base:** Wide Defense WD orbital resonance (Case 1492)
+**Compatible beys:** Any defense/stamina type with high-I WD and sharp/ball tip; Draciel G is canonical.
+
+### Move Description
+
+Phase 1 — Charge: Draciel orbits the arena outer boundary (R=250mm), building orbital KE and BeySpirit energy. Phase 2 — Orbit Lock: Draciel tightens orbit to R_close=40mm around the opponent; BeySpirit amplifies the combined self-spin + orbital vortex into a visible water waterspout column (blue cylinder) surrounding the trapped opponent. Phase 3 — Counter-Drain: Draciel reverses orbit direction to oppose the opponent's spin, maximising relative surface velocity at each pass; the counter-rotation drains opponent spin via friction coupling and waterspout hydrodynamic drag.
+
+**Counter-rotation v_rel advantage**
+
+Draciel rim speed: v_D = ω_D×r_AR_D = 500×0.036 = 18.0 m/s; orbital: v_orbital = 0.5 m/s
+Opponent rim speed: v_opp = 400×0.038 = 15.2 m/s
+Counter-orbit v_rel = 18.0+0.5+15.2 = **33.7 m/s**; same-orbit v_rel = |18.0−0.5−15.2| = 2.3 m/s
+Ratio: **14.7× higher** relative velocity → 14.7× stronger friction-coupled spin drain per orbital pass.
+
+**Physical vs [M] values**
+
+| Quantity | Physical | [M] BeySpirit |
+|----------|----------|---------------|
+| Air vortex v_θ at r=40mm | 9.1 m/s | stadium-filling water waterspout |
+| Spin drain rate | ~3 rad/s per pass | 35 rad/s (continuous) |
+| Waterspout height | ~5mm airflow zone | full stadium column |
+
+### Move Parameters
+
+```typescript
+function gravityControl(
+  counterOrbit: boolean,      // Draciel orbiting opposite to opponent spin direction
+  waterspoutActive: boolean,  // Phase 2 orbit-lock established
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; forceState: string } {
+  if (!waterspoutActive) {
+    return { spinDelta: +8, dmgMult: 1.0, lockMs: 0, powerCost: 80, forceState: 'must_keep_distance' };
+  }
+  if (counterOrbit && qteHit) {
+    return { spinDelta: -35, dmgMult: 0.70, lockMs: 150, powerCost: 80, forceState: 'must_keep_distance' };
+    // dmgMult < 1.0 = incoming damage reduction on Draciel; spinDelta = opponent drain [M]
+  }
+  if (waterspoutActive && qteHit) {
+    return { spinDelta: -20, dmgMult: 0.80, lockMs: 80, powerCost: 80, forceState: 'must_keep_distance' };
+  }
+  return { spinDelta: -10, dmgMult: 0.90, lockMs: 0, powerCost: 80, forceState: 'must_keep_distance' };
+}
+```
+
+| Param | Miss | Hit (same-dir) | Hit (counter-orbit) |
+|-------|------|----------------|---------------------|
+| spinDelta (opp) | −10 | −20 | −35 [M] |
+| dmgMult (on Draciel) | 0.90× | 0.80× | 0.70× |
+| lockMs | 0 | 80 | 150 |
+
+Force state: `must_keep_distance` — retreating reduces drain but the arena boundary limits escape; correct counterplay is aggressive burst-through to interrupt the orbit.
+
+## Case 1494 -- COMBO: Tidal Counter (↓J↑) [mD·J·mU] — Derived from Case 1493 Gravity Control
+
+**Sequence:** moveDown → jump → moveUp  (↓ J ↑)
+**Cost:** 0 (free — positioning snap; no power expenditure)
+**Type restriction:** defense or stamina
+**Parent gimmick:** Wide Defense WD bowl-orbit resonance (Case 1492)
+
+**Thesis:** ↓ repositions Draciel to the deepest bowl point (orbital anchor position), J fires a velocity burst on the orbital path (gyroscopic momentum surge), and ↑ redirects the surge to skim the opponent's AR at maximum rim velocity, exploiting the counter-orbit v_rel advantage (14.7×, Case 1493). The double repositioning ensures Draciel is in the bowl-center zone before the skim, presenting the Spiral Turtle AR's curved face for a cos(φ) deflection-type glancing contact (Case 644) while extracting spin drain from the orbital pass.
+
+```typescript
+function tidalCounter(
+  bowlPosition: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (bowlPosition && qteHit) return { spinDelta: +8, dmgMult: 1.10, lockMs: 80, powerCost: 0 };
+  if (qteHit)                  return { spinDelta: +4, dmgMult: 1.05, lockMs: 40, powerCost: 0 };
+  return                              { spinDelta:  0, dmgMult: 1.00, lockMs:  0, powerCost: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.10× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | spinDelta +8 = partial self-recovery (not full) ✓ | no AoE ✓ | no invulnerability ✓ | cost 0 ✓
+
+## Case 1495 -- [GIMMICK]: Gravity Wheel Left-Spin Blade-Edge Pressure-Pulse Cascade — Counter-Mode Directed Compression Projectiles (Julian Konzern . Gravity Destroyer AD145WD) [EXTENDS Cases 723 & 1261]
+
+**Part:** Gravity Fusion Wheel in Counter Mode (left-spin) — asymmetric 8-arm blade, die-cast zinc, r_FW=41mm; EXTENDS Case 723 (mode-change mechanism) and Case 1261 (Counter Mode ambient vortex field). This case analyses DISCRETE DIRECTED PROJECTILE PULSES: focused pressure packets propagating outward along the heading vector, distinct from the ambient radial drain field of Case 1261.
+**Assembly:** Gravity Destroyer AD145WD (Case 1261 baseline: m=41.5g, I=3.895e-5, ω₀=630 rad/s) [M]
+**Tags:** gravity-fw, left-spin, counter-mode, pressure-pulse, projectile, blade-compression, MFB, extends-1261, extends-723
+
+**Distinction from Case 1261**
+
+Case 1261 = ambient FIELD (radial drain on any bey within radius). Case 1495 = discrete PROJECTILE (directed kinetic bolt along heading). Both derive from Gravity FW left-spin; the field is always-on while the projectile is fired discretely.
+
+**Blade geometry in left-spin**
+
+Right-spin: convex face leads → clean tangential wake (slipstream).
+Left-spin counter mode: concave face leads → compresses air into a wedge ahead of each arm, releasing a discrete pressure packet as the blade tip passes.
+
+V_pocket ≈ 0.025 × 0.006 × 0.012 = 1.80e-6 m³ per blade per pass
+ΔP = ½ × ρ × v_blade² = ½ × 1.225 × (630×0.041)² = ½ × 1.225 × 667.1 = **408.6 Pa**
+F_pulse = ΔP × A_blade_face = 408.6 × (0.025×0.012) = **0.123 N** per blade pass
+f_pulse = 8 × 630/(2π) = **801 Hz** at ω₀ = 630 rad/s
+
+Physical range: pulses dissipate within ~30mm; BeySpirit concentrates each into a coherent gravity bolt [M].
+
+**Left-spin multi-arrow scatter (beat-frequency interference)**
+
+8-blade pulse pattern vs AD145 3-wing structure (T125-type, Case 684): Lcm(8,3)=24.
+Every 24 pulses = 3 full revolutions → all blade pulses align with all 3 wing positions simultaneously.
+At ~100 rev/s: 100/3 ≈ 33 such alignments per second.
+At each alignment: primary bolt + 2 wing-reflected sub-bolts → 3 simultaneous arrows in left-spin mode.
+Physical basis: asymmetric blade + 3-wing geometry creates interference → scatter pattern; BeySpirit amplifies to multi-arrow bolt [M].
+
+| Mode | Blade orientation | Pulse type | Arrow count |
+|------|-------------------|------------|-------------|
+| Right-spin (normal) | convex leading | single directional | 1 bolt |
+| Left-spin (counter) | concave leading | interference cascade | 3 scatter bolts |
+
+## Case 1496 -- [SPECIAL]: Gravity Brave (Julian Konzern . Gravity Destroyer AD145WD, MFB Metal Masters)
+
+**Source:** Metal Fight Beyblade Metal Masters anime
+**Classification:** Directed projectile / gravity-blast special; scatter mode in left-spin
+**Gimmick base:** Gravity FW left-spin blade-edge pressure-pulse (Case 1495) + Counter Mode vortex platform (Case 1261)
+**Compatible beys:** Any Gravity-wheel bey; left-spin counter mode required for 3-arrow scatter bonus.
+
+### Move Description
+
+Julian channels BeySpirit into Destroyer at peak spin. BitBeast Destroyer materialises, nocks a bow of compressed gravity, and fires. Right-spin (normal mode): single concentrated bolt — dense gravity-compressed projectile, maximum per-hit impact, long gravity-crush lockMs. Left-spin (counter mode): bolt splits into three simultaneous arrows mid-flight (AD145 wing scatter interference, Case 1495) — each arrow is individually weaker but the spread is harder to evade and combined drain exceeds the single-bolt in total spinDelta.
+
+**Gravity-crush lock mechanism**
+
+Each bolt carries a localised gravitational anomaly [M] that locally increases effective g at the impact point for lockMs, compressing the opponent downward and dramatically increasing tip friction → spin decay rate during the lock window is doubled.
+
+```typescript
+function gravityBrave(
+  leftSpinMode: boolean,
+  highSpin: boolean,
+  qteAimed: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (highSpin && qteAimed) {
+    return {
+      spinDelta: leftSpinMode ? -45 : -40,
+      dmgMult:   leftSpinMode ? 1.35 : 1.50,
+      lockMs:    leftSpinMode ? 100  : 200,
+      powerCost: 85,
+    };
+  }
+  if (qteAimed) {
+    return { spinDelta: leftSpinMode ? -28 : -25, dmgMult: leftSpinMode ? 1.20 : 1.30,
+             lockMs: leftSpinMode ? 60 : 120, powerCost: 85 };
+  }
+  return { spinDelta: -15, dmgMult: 1.10, lockMs: 0, powerCost: 85 };
+}
+```
+
+| Mode | QTE miss | QTE hit (low ω) | QTE hit (high ω) |
+|------|----------|-----------------|------------------|
+| Right-spin single bolt | Δω=−15, ×1.10, 0ms | Δω=−25, ×1.30, 120ms | Δω=−40, ×1.50, 200ms |
+| Left-spin 3-arrow scatter | Δω=−15, ×1.10, 0ms | Δω=−28, ×1.20, 60ms | Δω=−45, ×1.35, 100ms |
+
+Force state: `must_stay_still` — bolt travels along Destroyer's heading; opponent must dodge off the flight path or brace. In scatter mode (left-spin), covering 3 angular sectors limits evasion to a narrow window.
+
+## Case 1497 -- COMBO: Gravity Volley (↑↑J) [mU·mU·J] — Derived from Case 1496 Gravity Brave
+
+**Sequence:** moveUp → moveUp → jump  (↑ ↑ J)
+**Cost:** 15
+**Type restriction:** universal (any Gravity-wheel bey)
+**Parent gimmick:** Gravity FW left-spin pressure-pulse cascade (Case 1495)
+
+**Thesis:** Double ↑ drives Destroyer toward the opponent (two tightening upper-bowl approach steps), then J fires a partial blade-edge compression burst — a single pulse group rather than the full BitBeast-materialised storm. The two repositionings align the heading, maximising hit probability without full BeySpirit charge. Left-spin mode applies the same 3-scatter at combo-ceiling values.
+
+```typescript
+function gravityVolley(
+  leftSpinMode: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return { spinDelta: leftSpinMode ? -18 : -15,
+             dmgMult:   leftSpinMode ? 1.20 : 1.25,
+             lockMs:    leftSpinMode ? 60   : 100,
+             powerCost: 15 };
+  }
+  return { spinDelta: -8, dmgMult: 1.08, lockMs: 0, powerCost: 15 };
+}
+```
+
+**Ceiling check:** dmgMult 1.25× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | no full spin recovery ✓ | no AoE ✓ | cost 15 ✓
+
+*Cases 1498–1499 are CS13 buffer slots (unassigned). Cases 1500–1524 are CS9 overflow blocks (Aquario 105F through Greatest Raphael Over High Xtend+' — see INDEX.md). CS13 resumes at Case 1525.*
+
+## Case 1525 -- [GIMMICK]: Grand Cetus T125RS -- Rubber Sharp Pivot-Anchor & T125 Triple-Wing Air Pump (Sophie . Grand Cetus T125RS, MFB Metal Masters)
+
+**Part:** RS tip (Rubber Sharp — rubber material, r_tip=0.5mm sharp geometry, μ_rubber=0.38) + T125 spin track (Triple Wing 125, 3 horizontal wings at h=12.5mm; aerodynamics reference Case 684 T125JB — not duplicated); first case for Grand Cetus T125RS assembly.
+**Assembly:** Grand Cetus T125RS (Sophie) — Crystal Wheel Grand . Fusion Wheel Cetus . T125 . RS tip
+**Gen / System:** Metal Fight Beyblade (MFB) Metal Masters | 4-piece system
+**Tags:** MFB, grand-cetus, RS-tip, rubber-sharp, T125, triple-wing, stamina, pivot-anchor, Sophie
+
+**Assembly Weights (estimated [M])**
+
+| Part | m (g) | r_eff (mm) | I (kg·m²) | Share |
+|------|-------|------------|-----------|-------|
+| Crystal Wheel Grand | 2 | 18 | 1.17e-7 | 0.4% |
+| Fusion Wheel Cetus | 27 | 39 | 2.875e-5 | 98.7% |
+| T125 track | 2.5 | 12 | 2.88e-7 | 1.0% |
+| RS tip | 1 | 2 | ~0 | — |
+| **Total** | **32.5** | — | **2.904e-5** | — |
+
+I_FW = 0.027 × 0.039² × 0.70 = 2.875e-5 kg·m²; I_T125 = 0.0025 × 0.012² × 0.80 = 2.88e-7 kg·m²
+I_total = 2.904e-5 kg·m²; ω₀ = 628 rad/s (MFB); L₀ = 2.904e-5 × 628 = **1.824e-2 kg·m²/s**
+
+**RS tip analysis**
+
+τ_RS = m×g×μ_rubber×r_tip = 0.0325×9.81×0.38×0.0005 = 6.07e-5 N·m
+Hertz deformation (rubber, E≈1MPa): r_eff_rubber ≈ r_tip×(P_yield/P_contact)^(1/3) = 0.5mm×1.35 = 0.675mm
+τ_RS_actual = 0.0325×9.81×0.38×0.000675 = **8.19e-5 N·m** (15.2× sharper than plastic Sharp tip)
+
+T125 aerodynamic drag (reference Case 684):
+τ_T125 ≈ 3×(½×1.225×1.1×1.5e-5×v_tip²)×r_wing; v_tip=628×0.020=12.56 m/s → τ_T125=**9.59e-5 N·m**
+τ_total = 8.19e-5 + 9.59e-5 = 1.778e-4 N·m
+t_spin = L₀/τ_total = 1.824e-2/1.778e-4 = **102.6 s** [CALCULATED — consistent with MFB stamina-type]
+
+**Pivot-anchor vs drift transition**
+
+High ω (>450 rad/s): gyroscopic stiffness >> τ_RS → rubber grip anchors Cetus to launch point.
+Low ω (<300 rad/s): gyroscopic stiffness drops → rubber tip grip begins controlled outward drift.
+ω_anchor = τ_RS/(I×Ω_prec) = 8.19e-5/(2.904e-5×2) = 1.41 rad/s → anchor holds throughout all battle spin levels; drift only begins at near-stopped spin.
+Pivot-anchor enables Grand Maelstrom Phase 1 (Cetus fixed at centre while vortex builds).
+
+## Case 1526 -- [SPECIAL]: Grand Maelstrom (Sophie . Grand Cetus T125RS, MFB Metal Masters)
+
+**Source:** Beyblade Metal Masters anime; first used vs Gingka, Yu, Masamune simultaneously (Festival of Warriors)
+**Classification:** AoE persistent stamina-drain / whirlpool trap field; multi-target (3 opponents confirmed canon)
+**Duration:** 10 s (canon-explicit)
+**Gimmick base:** RS pivot-anchor + T125 wing air pump (Case 1525)
+**Role in move chain:** Always precedes Grand Victoire; leaves `water_field_primed` for Grand Victoire ×1.8 amplification; Grand Maelstrom + Grand Fleet = Grand Deucalion precondition.
+
+### Move Description
+
+Sophie anchors Grand Cetus at the stadium centre via RS pivot-anchor (Case 1525 high-ω phase). T125 triple wings force radial airflow that BeySpirit amplifies into a stadium-filling water whirlpool — a giant clockwise vortex depression. Opponents experience: continuous centripetal pull toward Cetus; increased spin decay from hydrodynamic drag; reduced translational speed (water medium slows movement). Whirlpool persists 10 seconds (even as Cetus slows, rotational momentum sustains it). Residual water state primes Grand Victoire after expiry.
+
+**Rankine vortex model [M]**
+
+Core radius r_c = r_FW = 39mm; ω_vort = ω_Cetus (at launch: 628 rad/s)
+Γ = π×r_c²×ω_vort = π×0.001521×628 = **3.002 m²/s** (BeySpirit water scale [M])
+v_θ at r=100mm: 3.002/(2π×0.100) = 4.78 m/s; centripetal pull on 45g opp: F_cp = 0.045×22.85/0.100 = 10.28 N [M]
+Physical air flow from T125 wings: Q = 3×1.5e-5×12.56 = 5.65e-4 m³/s [real]; BeySpirit scales to water [M]
+
+```typescript
+function grandMaelstrom(
+  highSpin: boolean,
+  qteHit: boolean,
+  opponentCount: number
+): {
+  spinDeltaPerSecond: number;
+  durationMs: number;
+  speedMultOnOpponents: number;
+  selfRecoveryPerSecond: number;
+  powerCost: number;
+  forceState: string;
+  primes: string;
+} {
+  if (highSpin && qteHit) {
+    return { spinDeltaPerSecond: -18, durationMs: 10000, speedMultOnOpponents: 0.55,
+             selfRecoveryPerSecond: +8, powerCost: 90, forceState: 'must_attack',
+             primes: 'grand_victoire' };
+  }
+  if (qteHit) {
+    return { spinDeltaPerSecond: -12, durationMs: 7000, speedMultOnOpponents: 0.70,
+             selfRecoveryPerSecond: +5, powerCost: 90, forceState: 'must_attack',
+             primes: 'grand_victoire' };
+  }
+  return { spinDeltaPerSecond: -6, durationMs: 4000, speedMultOnOpponents: 0.85,
+           selfRecoveryPerSecond: +2, powerCost: 90, forceState: 'must_attack',
+           primes: 'grand_victoire' };
+}
+// Multi-target: spinDeltaPerSecond applied to ALL opponentCount beyblades simultaneously.
+// Physical note: total drain at full power over 10s = 180 rad/s per opponent [M].
+// Grand Deucalion chain: water_field_primed = true after this move fires.
+```
+
+| Param | QTE miss | QTE hit (low ω) | QTE hit (high ω) |
+|-------|----------|-----------------|------------------|
+| Drain /s (per opp) | −6 | −12 | −18 [M] |
+| Duration | 4000ms | 7000ms | 10000ms (canon) |
+| Speed mult | ×0.85 | ×0.70 | ×0.55 |
+| Self-recovery /s | +2 | +5 | +8 |
+| Primes Grand Victoire | partial | ×1.4 | ×1.8 |
+
+Force state: `must_attack` — passive drain forces engagement; but attacking Cetus at the vortex centre means moving into the centripetal pull zone. Correct counterplay: high-aggression rapid burst to break Cetus's anchor before the 10s run completes (exactly what Gingka attempts in canon).
+
+## Case 1527 -- COMBO: Tidal Surge (↓J←) [mD·J·mL] — Derived from Case 1526 Grand Maelstrom
+
+**Sequence:** moveDown → jump → moveLeft  (↓ J ←)
+**Cost:** 15
+**Type restriction:** stamina (water-orbital)
+**Parent gimmick:** RS pivot-anchor + T125 triple-wing air pump (Case 1525)
+
+**Thesis:** ↓ pulls Cetus to the bowl lowest point (vortex eye), J fires the orbital surge (whirlpool back-impulse as the vortex briefly collapses inward), ← directs the surge as a lateral water-ram strike at the opponent AR. A single water-accelerated ram hit that drains spin through hydrodynamic friction. In active Grand Maelstrom water field: bonus ×1.15 (water medium amplifies contact).
+
+```typescript
+function tidalSurge(
+  inWhirlpoolZone: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const bonus = inWhirlpoolZone ? 1.15 : 1.0;
+  if (qteHit) {
+    return { spinDelta: Math.round(-12 * bonus), dmgMult: +(1.20 * bonus).toFixed(2),
+             lockMs: 80, powerCost: 15 };
+    // base: Δω=−12, ×1.20 | water-boosted: Δω=−14, ×1.38
+  }
+  return { spinDelta: -6, dmgMult: 1.05, lockMs: 0, powerCost: 15 };
+}
+```
+
+**Ceiling check:** dmgMult 1.38× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | no full recovery ✓ | no AoE ✓ | cost 15 ✓
+
+## Case 1528 -- [GIMMICK]: Grand Cetus T125RS Aerial-Launch Whirlpool-Exit — Vortex Angular-Momentum-to-Vertical-Impulse Conversion (Sophie . Grand Cetus T125RS) [EXTENDS Case 1526]
+
+**Part:** Grand Cetus T125RS assembly (Case 1525 baseline); this case analyses the AERIAL LAUNCH mechanism that enables Grand Victoire: conversion of whirlpool rotational energy to a vertical translational impulse as Cetus "bursts" out of the vortex eye column. EXTENDS Case 1526 (Grand Maelstrom — the whirlpool is the launch platform).
+**Tags:** vortex-exit, vertical-launch, angular-momentum-conversion, Grand-Victoire-basis, MFB, extends-Case-1526
+
+**Mechanism**
+
+When the Grand Maelstrom whirlpool is established (Case 1526), the Rankine vortex has angular momentum L_vort = I_vort × ω_vort stored in the rotating water column. BeySpirit redirects a fraction of L_vort into a vertical linear impulse on Cetus at the vortex axis (the "eye" of the whirlpool), launching it straight upward.
+
+Physical vortex angular momentum (water column, BeySpirit [M]):
+I_vort_col = ½ × m_water × r_stadium² [M — stadium-scale water mass]
+At r_stadium=250mm, BeySpirit water mass equivalent ~50kg [M]: I_vort_col ~ ½×50×0.0625 = 1.5625 kg·m²
+L_vort_col = I_vort_col × ω_Cetus = 1.5625 × 628 = **981 kg·m²/s** [M]
+
+Vertical impulse conversion fraction η = 0.001 (BeySpirit efficiency from rotational to translational):
+J_vert = η × L_vort_col = 0.001 × 981 = **0.981 N·s** [M]
+v_launch = J_vert / m_Cetus = 0.981 / 0.0325 = **30.2 m/s** → aerial height h = v²/(2g) = 912²/(19.62) → h = 46m [far beyond physical; purely BeySpirit [M]]
+
+Physical grounding: the real mechanism that initiates the jump is the T125 wing aerodynamic pump creating a downward air jet at the Cetus footprint; the reaction (Newton 3) pushes Cetus upward. At ω=628 rad/s with 3 wings:
+F_uplift = 3 × F_drag_wing × sin(wing_angle) ≈ 3 × 1.59e-3 × sin(15°) = 1.24e-3 N per wing (negligible physically → all aerial height is [M]).
+Anime portrayal: Cetus rises from the vortex column as the whirlpool collapses around it, the water column providing the BeySpirit launch ramp.
+
+**Aerial descent impact**
+
+On descent after BeySpirit launch, KE = ½×m×v_descent² + ½×I×ω² (spin maintained during flight by gyroscopic preservation)
+At physical h=0.5m: v_descent = √(2×9.81×0.5) = 3.13 m/s → KE_trans = ½×0.0325×9.79 = 0.159 J
+KE_spin = ½×2.904e-5×628² = ½×2.904e-5×394384 = 5.727 J
+Total KE at impact = 5.886 J; spin KE dominates (97.3%) → impact is primarily a spin-transfer event.
+Impulse J_impact = m×v_descent = 0.0325×3.13 = 0.102 N·s [physical]; BeySpirit amplifies [M].
+
+## Case 1529 -- [SPECIAL]: Grand Victoire (Sophie . Grand Cetus T125RS, MFB Metal Masters)
+
+**Source:** Metal Fight Beyblade: Metal Masters anime; first used vs Gingka, Yu, Masamune at Festival of Warriors; always follows Grand Maelstrom
+**Classification:** Aerial dive / water-crash ring-out special; relies on Grand Maelstrom primed state for full power
+**Gimmick base:** Whirlpool vortex aerial-launch mechanism (Case 1528) + Grand Maelstrom water field (Case 1526)
+**Compatible beys:** Grand Cetus T125RS (Sophie); also combinable with Grand Fleet (Wales) → Grand Deucalion
+
+### Move Description
+
+After Grand Maelstrom has run its 10-second drain phase (or mid-phase if opponent is weakened), BeySpirit directs the whirlpool's rotational energy into the vortex axis, launching Cetus vertically from the eye of the whirlpool. BitBeast Cetus materialises, rises to full height, then crashes down on the opponent with water-amplified force, sending the opponent flying into a stadium-out. The water splashed on impact is the "water for Grand Deucalion" — it creates a residual water projectile that Wales can combine with Grand Fleet.
+
+Key canon note: Sophie first used this move together with Grand Maelstrom vs three opponents simultaneously; the combined water crash defeated Gingka and Masamune while Yu barely avoided it.
+
+```typescript
+function grandVictoire(
+  waterFieldPrimed: boolean,   // grand_victoire primed state from Case 1526
+  highSpin: boolean,           // Cetus ω > 400 rad/s (still has significant KE)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number } {
+  const waterMult = waterFieldPrimed ? 1.80 : 1.0;  // Case 1526 primes ×1.8
+  let spinDelta = 0;
+  let dmgMult   = 1.0;
+  let ringOutF  = 0;
+
+  if (highSpin && qteHit) {
+    spinDelta = -55;
+    dmgMult   = 1.50 * waterMult;  // 1.50× base; 2.70× water-primed [M]
+    ringOutF  = 0.85;              // 85% ring-out probability vs typical opponent
+    lockMs    = 200;
+  } else if (qteHit) {
+    spinDelta = -35;
+    dmgMult   = 1.30 * waterMult;
+    ringOutF  = 0.55;
+    lockMs    = 120;
+  } else {
+    spinDelta = -15;
+    dmgMult   = 1.10;
+    ringOutF  = 0.20;
+    lockMs    = 0;
+  }
+  return { spinDelta, dmgMult, lockMs: lockMs ?? 0, powerCost: 85, ringOutForce: ringOutF };
+  // Note: dmgMult > 1.5× when water-primed is a special-move value (not subject to 1.5× combo ceiling).
+  // ringOutForce: probability weight added to ring-out check on impact.
+}
+```
+
+| Param | QTE miss | QTE hit | QTE hit + water primed |
+|-------|----------|---------|------------------------|
+| spinDelta | −15 | −35 | −35 (water already drained) |
+| dmgMult | ×1.10 | ×1.30 | ×2.34 [M] |
+| Ring-out % | 20% | 55% | 85% |
+| lockMs | 0 | 120 | 120 |
+
+Force state: `must_stay_still` — opponent must choose between standing to absorb the crash or moving into the whirlpool centripetal pull zone. Optimal play: dodge at the exact moment Cetus begins descent (300ms window).
+
+## Case 1530 -- COMBO: Cetus Rise (↑↑K) [mU·mU·K] — Derived from Case 1529 Grand Victoire
+
+**Sequence:** moveUp → moveUp → defense  (↑ ↑ K)
+**Cost:** 15
+**Type restriction:** stamina or defense
+**Parent gimmick:** Vortex aerial-launch / whirlpool exit (Case 1528)
+
+**Thesis:** Double ↑ drives Cetus toward the upper bowl and toward the opponent (two tightening approach steps), K activates the defense-stance that deflects any incoming attack during the ascent arc. The combo represents the ground-level expression of the Grand Victoire launch: the bey surges upward (↑ ×2) and uses the approach momentum to deflect (K). No aerial dive at combo level — the full aerial dive requires BeySpirit (Case 1529). The defense during ascent absorbs the incoming impulse via the Cetus FW curved profile (Case 644-style cos(φ) partition) while dealing a glancing upward strike.
+
+```typescript
+function cetusRise(
+  waterFieldActive: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const bonus = waterFieldActive ? 1.10 : 1.0;
+  if (qteHit) {
+    return { spinDelta: Math.round(-10 * bonus), dmgMult: +(1.15 * bonus).toFixed(2),
+             lockMs: 60, powerCost: 15 };
+  }
+  return { spinDelta: -5, dmgMult: 1.05, lockMs: 0, powerCost: 15 };
+}
+```
+
+**Ceiling check:** dmgMult 1.265× ≤ 1.5 ✓ | lockMs 60 ≤ 300 ✓ | cost 15 ✓ | no AoE ✓
+
+## Case 1531 -- [GIMMICK]: Grand Cetus WD145RS -- Wing Defense 145 Track Platform & Protective Wing Barrier (Wales . Grand Cetus WD145RS, MFB Metal Masters)
+
+**Part:** WD145 spin track (Wing Defense 145 — 3 large horizontal wing fins, h=14.5mm, wider than T125; RS tip same as Sophie's Case 1525 — referenced, not re-analysed); first dedicated case for Wales's Grand Cetus WD145RS assembly.
+**Assembly:** Grand Cetus WD145RS (Wales) — Crystal Wheel Grand . Fusion Wheel Cetus . WD145 . RS tip
+**Gen / System:** MFB Metal Masters | 4-piece system
+**Tags:** MFB, grand-cetus, WD145, wing-defense-145, Wales, defense-track, aerial-crash, Grand-Fleet-basis
+
+**WD145 vs T125 comparison**
+
+WD145 features 3 larger wing fins (A_wing ≈ 8.0e-5 m² per fin, vs T125's 1.5e-5 m²) at height h=14.5mm (vs T125's 12.5mm). The wings are wider both radially (~15mm protrusion vs ~10mm) and axially (~8mm height vs ~3mm), providing a substantially larger protective platform.
+
+**Assembly**
+
+| Part | m (g) | r_eff (mm) | I (kg·m²) |
+|------|-------|------------|-----------|
+| Crystal Wheel Grand | 2 | 18 | 1.17e-7 |
+| Fusion Wheel Cetus | 27 | 39 | 2.875e-5 |
+| WD145 track | 4.0 | 20 | 3.20e-7 |
+| RS tip | 1 | 2 | ~0 |
+| **Total** | **34.0** | — | **2.909e-5** |
+
+I_WD145_track = 0.004 × 0.020² × 0.50 = 8.00e-7 kg·m² (wing mass distributed at r~20mm vs r~12mm for T125 → slightly higher I_track)
+I_total ≈ 2.875e-5 + 3.20e-7 = **2.909e-5 kg·m²** (similar to Sophie's 2.904e-5)
+L₀ = 2.909e-5 × 628 = **1.827e-2 kg·m²/s**
+
+**WD145 aerodynamic drag (spin time penalty)**
+
+Wing tip radius: r_WD145_wing_tip = 12+15 = 27mm; v_tip = 628×0.027 = 16.96 m/s
+F_drag per wing = ½×1.225×1.1×8.0e-5×16.96² = ½×1.225×1.1×8.0e-5×287.6 = 1.547e-2 N
+τ_WD145 = 3 × 1.547e-2 × 0.027 = **1.253e-3 N·m** (vs τ_T125 = 9.59e-5 N·m — 13× more drag)
+
+τ_RS = 8.19e-5 N·m (same as Sophie, ref Case 1525)
+τ_total = 8.19e-5 + 1.253e-3 = 1.335e-3 N·m
+t_spin = L₀/τ_total = 1.827e-2/1.335e-3 = **13.7 s** [CALCULATED]
+
+Wales's Grand Cetus has 7.5× less spin time than Sophie's T125RS version (13.7s vs 102.6s). WD145 is a defense/platform track, not a stamina track. This means Wales must act fast — he enters the water generated by Sophie's Grand Maelstrom and executes Grand Fleet aggressively before his spin runs down.
+
+**WD145 wing defense function**
+
+Wings at h=14.5mm intercept any incoming attack with contact height ≤ 14.5mm above the tip contact point. Wing impact: incoming attack strikes the wing broadside → normal force redirected perpendicular to the wing face (upward-outward deflection). Deflection effectiveness for a horizontal attacker at height 10mm:
+  Contact angle from vertical: φ_wing = atan(2.0/15.0) = 7.6° (wing is nearly horizontal)
+  Effective transmitted impulse: J_eff = J_contact × cos(90°-7.6°) = J_contact × sin(7.6°) = 0.132 × J_contact
+  → Wing platform deflects 86.8% of sub-14.5mm attacks — highly effective barrier.
+
+## Case 1532 -- [SPECIAL]: Grand Fleet (Wales . Grand Cetus WD145RS, MFB Metal Masters)
+
+**Source:** Metal Fight Beyblade: Metal Masters anime; first used vs Gingka, Yu, Masamune at Festival of Warriors
+**Classification:** Aerial dive / crash ring-out special; usually follows Grand Maelstrom; combines with Grand Victoire → Grand Deucalion
+**Gimmick base:** WD145 wing platform + RS tip anchor (Case 1531)
+**Compatible beys:** Grand Cetus WD145RS (Wales); combines with Grand Victoire (Sophie) for Grand Deucalion.
+
+### Move Description
+
+Wales's Grand Cetus WD145RS uses the water already in play from Grand Maelstrom (Sophie's Case 1526) as a launch medium. Grand Fleet mirrors Grand Victoire but is Wales's version: Cetus rises from the whirlpool crash-first (WD145 wing platform leading edge forward) and dives down on the opponent, sending them into a stadium-out with WD145-amplified wing impact force. The WD145 wing platform during the dive creates a "fleet" — a flat planar crash surface wider than the bey's own AR, expanding the effective collision zone.
+
+Key difference from Grand Victoire: Wales's WD145RS has far shorter spin time (13.7s, Case 1531) vs Sophie's 102.6s; Wales fires Grand Fleet aggressively at the peak of his spin, sacrificing stamina for maximum rotational KE transfer. Sophie sustains the whirlpool while Wales delivers the decisive strike. Together they create Grand Deucalion.
+
+```typescript
+function grandFleet(
+  waterFieldPrimed: boolean,   // Grand Maelstrom water field active (Case 1526)
+  highSpin: boolean,           // Wales ω > 400 rad/s
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number } {
+  const waterMult = waterFieldPrimed ? 1.80 : 1.0;
+  if (highSpin && qteHit) {
+    return { spinDelta: -50, dmgMult: 1.45 * waterMult, lockMs: 180, powerCost: 85,
+             ringOutForce: 0.80 };
+  }
+  if (qteHit) {
+    return { spinDelta: -30, dmgMult: 1.25 * waterMult, lockMs: 100, powerCost: 85,
+             ringOutForce: 0.50 };
+  }
+  return { spinDelta: -12, dmgMult: 1.10, lockMs: 0, powerCost: 85, ringOutForce: 0.15 };
+  // Similar parameters to Grand Victoire (Case 1529); WD145 wing platform gives slightly lower
+  // base dmgMult (1.45 vs 1.50) but larger effective collision radius from wing platform width.
+}
+```
+
+Force state: `must_stay_still` — identical logic to Grand Victoire; the aerial dive from the whirlpool column is a straight-line trajectory that must be dodged or braced.
+
+## Case 1533 -- COMBO: Fleet Wave (↓↑↑) [mD·mU·mU] — Derived from Case 1532 Grand Fleet
+
+**Sequence:** moveDown → moveUp → moveUp  (↓ ↑ ↑)
+**Cost:** 15
+**Type restriction:** defense (WD145 wing platform beys)
+**Parent gimmick:** WD145 wing platform + RS tip (Case 1531)
+
+**Thesis:** ↓ positions Wales's Cetus at bowl base (lowest bowl point, maximum potential energy for the subsequent surge), then ↑ ↑ fires two rapid upper-bowl surges — the double-up mimics the two-stage approach of Grand Fleet (rise from whirlpool + crest before dive). At combo level, there is no aerial launch (that requires BeySpirit) but the double-surge WD145 leading-edge impact delivers a wing-platform broadside strike: the WD145 wings (86.8% sub-14.5mm deflection, Case 1531) both absorb any incoming counter-hit during the surge AND deliver the wing-broadside contact simultaneously.
+
+```typescript
+function fleetWave(
+  inWaterField: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const bonus = inWaterField ? 1.12 : 1.0;
+  if (qteHit) {
+    return { spinDelta: Math.round(-14 * bonus), dmgMult: +(1.22 * bonus).toFixed(2),
+             lockMs: 70, powerCost: 15 };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 15 };
+}
+```
+
+**Ceiling check:** dmgMult 1.366× ≤ 1.5 ✓ | lockMs 70 ≤ 300 ✓ | cost 15 ✓ | no AoE ✓
+
+## Case 1534 -- [GIMMICK]: Dual-Cetus Cooperative Angular Momentum Superposition — Grand Deucalion Physics (Sophie + Wales, Grand Cetus T125RS + Grand Cetus WD145RS, MFB Metal Masters)
+
+**Part:** COOPERATIVE GIMMICK — two independent Grand Cetus assemblies (Sophie's T125RS + Wales's WD145RS) acting simultaneously; analyses the additive angular momentum superposition, dual-vortex amplification, and tsunami formation when both beys fire their respective specials in sequence. References Cases 1525-1527 (Sophie's T125RS) and Cases 1531-1533 (Wales's WD145RS).
+**Tags:** cooperative, dual-cetus, tsunami, angular-momentum-superposition, tag-battle, Grand-Deucalion-basis
+
+**Dual-bey angular momentum**
+
+L_Sophie = I_T125RS × ω_Sophie = 2.904e-5 × 628 = 1.824e-2 kg·m²/s (sustained high: 102.6s endurance)
+L_Wales   = I_WD145RS × ω_Wales = 2.909e-5 × 628 = 1.827e-2 kg·m²/s (high at launch, drops fast: 13.7s)
+L_total_combined = L_Sophie + L_Wales = **3.651e-2 kg·m²/s** (first moment of Grand Deucalion)
+
+Combined vortex circulation (BeySpirit superposition [M]):
+Γ_combined = Γ_Sophie + Γ_Wales = 3.002 + 3.002 = **6.004 m²/s** (additive for co-rotating vortices)
+Tangential velocity at r=150mm: v_θ = 6.004/(2π×0.150) = **6.37 m/s** (extends reach to stadium boundary)
+
+**Tsunami formation physics [M]**
+
+When both Cetus beasts rise from the combined vortex and crash simultaneously:
+Combined crash impulse: J_total = J_Sophie + J_Wales (both descend at the same time)
+At physical h=0.5m each: J_Sophie = 0.0325×3.13 = 0.102 N·s; J_Wales = 0.0340×3.13 = 0.106 N·s
+J_combined_physical = 0.208 N·s
+BeySpirit tsunami amplification: the water column (mass ~50kg [M]) is propelled outward at v_wave:
+v_wave = J_combined / m_water = [enormous] → tsunami wave spans full stadium and extends beyond boundary [M]
+Physical ground: the combined L_total = 3.651e-2 kg·m²/s is converted by BeySpirit to the wave front.
+
+**Weak point (canon-confirmed):** Grand Deucalion can be interrupted mid-execution. Canon confirms:
+1. Ray Striker's Lightning Sword Flash cuts a path through the wave (high-velocity linear slash)
+2. Earth Eagle's Shining Tornado Buster overcomes the tidal wave by matching it with a rising tornado
+3. Ryuga's interruption defeats Wales before the wave fully forms
+The move can be countered by any move that creates a vertical-axis rotational force equal to or exceeding Γ_combined [M].
+
+## Case 1535 -- [SPECIAL]: Grand Deucalion (Sophie . Grand Cetus T125RS + Wales . Grand Cetus WD145RS, MFB Metal Masters)
+
+**Source:** Metal Fight Beyblade: Metal Masters anime; first used vs Gingka, Yu, Masamune at Festival of Warriors (Episode 16); used 5× total in the series.
+**Classification:** JOINT SPECIAL — requires both Sophie's Grand Cetus T125RS and Wales's Grand Cetus WD145RS active simultaneously; AoE tsunami with ring-out wave; multi-target.
+**Gimmick base:** Dual-Cetus angular momentum superposition (Case 1534)
+**Prerequisites:** Grand Maelstrom primed (`water_field_primed = true`, Case 1526) + Grand Fleet initiated (Wales)
+
+### Move Description
+
+Grand Deucalion is executed in three steps: (1) Sophie maintains Grand Maelstrom for its full duration, leaving the arena water-filled. (2) Wales fires Grand Fleet — Cetus WD145RS rises from the water. (3) Both Sophie and Wales channel BeySpirit simultaneously: Grand Victoire launches Sophie's Cetus while Grand Fleet launches Wales's Cetus from the same vortex column. Both Cetus beasts leap high into the air and crash down simultaneously, creating a giant tsunami wave that sweeps the opponent(s) across the full stadium surface and out. The dual-impact generates a wave that extends beyond the stadium boundary, engulfing opponents who were already ring-out adjacent from the Grand Maelstrom drain phase.
+
+```typescript
+function grandDeucalion(
+  waterFieldPrimed: boolean,   // Sophie's Grand Maelstrom primed state (Case 1526)
+  grandFleetActive: boolean,   // Wales's Grand Fleet fired this turn
+  bothHighSpin: boolean,       // Both Sophie ω > 400 and Wales ω > 400
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number;
+     ringOutForce: number; multiTarget: boolean; tsunamiRadius: number } {
+  if (!waterFieldPrimed || !grandFleetActive) {
+    // Partial execution (only one Cetus) — degraded to single Grand Victoire or Fleet
+    return { spinDelta: -35, dmgMult: 1.40, lockMs: 150, powerCost: 80,
+             ringOutForce: 0.60, multiTarget: false, tsunamiRadius: 0 };
+  }
+  if (bothHighSpin && qteHit) {
+    return { spinDelta: -80, dmgMult: 2.80, lockMs: 300, powerCost: 0,
+             // powerCost: 0 — Grand Deucalion is the JOINT culmination; each bey already spent their power
+             ringOutForce: 0.95, multiTarget: true, tsunamiRadius: 250 };  // full stadium (px)
+    // dmgMult 2.80× is [M] joint-special; not subject to solo combo ceiling.
+    // tsunamiRadius 250px = stadium boundary → everyone inside is hit.
+  }
+  if (qteHit) {
+    return { spinDelta: -60, dmgMult: 2.20, lockMs: 200, powerCost: 0,
+             ringOutForce: 0.80, multiTarget: true, tsunamiRadius: 200 };
+  }
+  return { spinDelta: -40, dmgMult: 1.80, lockMs: 120, powerCost: 0,
+           ringOutForce: 0.65, multiTarget: true, tsunamiRadius: 150 };
+}
+// Physical note: combined L = 3.651e-2 kg·m²/s (Case 1534); tsunami wave is BeySpirit [M].
+// Canon weak points: linear slash cuts path (Ray Striker), matched tornado (Earth Eagle), pre-emption (Ryuga).
+```
+
+Force state: `must_stay_still` (no escape from stadium-width wave without ring-out exposure) combined with `must_attack` (the only counter is to launch an equal or greater opposing BeySpirit force before wave lands).
+
+## Case 1536 -- COMBO: Grand Wave (↓↓↑) [mD·mD·mU] — Derived from Case 1535 Grand Deucalion
+
+**Sequence:** moveDown → moveDown → moveUp  (↓ ↓ ↑)
+**Cost:** 25 (joint concept; solo player pays higher cost for the cooperative simulation)
+**Type restriction:** stamina (any water/ocean-type bey)
+**Parent gimmick:** Dual-Cetus angular momentum superposition (Case 1534)
+
+**Thesis:** Grand Wave is the solo-player combo approximation of Grand Deucalion: ↓↓ sinks the bey deep to the bowl's lowest orbit (gathering maximum bowl-wall centripetal energy from two consecutive repositions), then ↑ fires a full upswing surge that mimics one Cetus of the dual-crash. At combo level this is a single bey, so the tsunami radius is zero (no arena-wide water wave); instead the double bowl-descent ensures maximum orbital velocity for the single-bey upswing strike. When executed inside an active Grand Maelstrom field, the ×1.12 water bonus applies. A second player executing this same combo simultaneously in tag-battle mode triggers the full Grand Deucalion cooperative effect (handled by game engine as two simultaneous Grand Wave inputs).
+
+```typescript
+function grandWave(
+  inWaterField: boolean,
+  coopPartnerFiring: boolean,  // tag-battle: partner also executing Grand Wave this turn
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const waterB = inWaterField ? 1.12 : 1.0;
+  const coopB  = coopPartnerFiring ? 1.30 : 1.0;  // cooperation multiplier
+  if (qteHit) {
+    return {
+      spinDelta: Math.round(-18 * waterB * coopB),
+      dmgMult:   +(1.30 * waterB * coopB).toFixed(2),
+      lockMs:    coopPartnerFiring ? 200 : 100,
+      powerCost: 25,
+    };
+    // Max: spinDelta = round(-18×1.12×1.30)= round(-26.2)= -26; dmgMult = 1.30×1.12×1.30 = 1.897
+    // 1.897× > 1.5× ceiling only in coop mode — coop raises the ceiling to 2.0× (joint special territory)
+  }
+  return { spinDelta: -9, dmgMult: 1.10, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check (solo):** dmgMult 1.456× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | cost 25 ✓
+**Ceiling check (coop):** dmgMult 1.897× — cooperative joint attack; exceeds solo 1.5× ceiling as intended for joint specials; coop mode is special-move-class, not bound by solo combo ceiling.
+
+## Case 1537 -- [GIMMICK]: Glory Regnar Greatest Armor -- Low-Spin Clasp Mode & Halo Formation (Rashad Goodman . Glory Regnar Over High Xtend+', Beyblade Burst DB)
+
+**Part:** Glory Regnar Energy Layer "Greatest Armor" — two hinged armor plates on the DB Energy Layer that BeySpirit activates at low spin: plates move upward and clasp together, forming a ring (crown/halo) above the bey's equator; the clasp reduces I, causing a spin boost (figure-skater retraction effect). Physical analysis of the arm-retraction ΔI → Δω spin recovery mechanism. Gen: Beyblade Burst Dynamite Battle (DB) | System: DB 4-piece
+**Assembly:** Glory Regnar Over High Xtend+' (Rashad Goodman) — DB Energy Layer Glory Regnar (w/ Greatest Armor) . Forge Disc Over . Tip High Xtend+'
+**Tags:** DB-era, greatest-armor, mode-change, I-reduction, spin-boost, halo-formation, defense-clasp, burst-db, Glory-Crown-basis
+
+**Assembly Weights (estimated [M])**
+
+| Part | m (g) | r_eff (mm) | I (kg·m²) | Notes |
+|------|-------|------------|-----------|-------|
+| Blade Ring (Glory) | 13 | 38 | 1.352e-5 | DB outer ring |
+| DB Core (body) | 5 | 15 | 6.75e-7 | hub/core |
+| Greatest Armor plates (×2, EXTENDED) | 5 | 40 | 8.00e-6 | centrifugal extension position |
+| Forge Disc Over | 16 | 33 | 1.307e-5 | Over disc |
+| High Xtend+' tip | 2 | 5 | 1.0e-7 | negligible |
+| **Total (arms extended)** | **41** | — | **3.527e-5** | — |
+
+I_blade = 0.013 × 0.038² × 0.72 = 1.352e-5 kg·m²
+I_armor_ext = 2 × 0.0025 × 0.040² = 8.00e-6 kg·m²  (arms fully extended, r=40mm)
+I_Over = 0.016 × 0.033² × 0.75 = 1.307e-5 kg·m²
+I_total_extended = **3.527e-5 kg·m²**
+
+ω₀ = 628 rad/s (DB era launch); L₀ = 3.527e-5 × 628 = **2.215e-2 kg·m²/s**
+
+**Greatest Armor clasp (arm retraction) — spin-boost calculation**
+
+BeySpirit activates at ω_activation ≈ 200 rad/s (low-spin Defense Mode threshold). Arms move upward and clasp at r_clasped ≈ 12mm (halo radius above bey centre).
+I_armor_clasped = 2 × 0.0025 × 0.012² = 7.20e-7 kg·m²
+ΔI = I_armor_ext − I_armor_clasped = 8.00e-6 − 7.20e-7 = **7.28e-6 kg·m²**
+I_total_clasped = 3.527e-5 − 7.28e-6 = **2.799e-5 kg·m²**
+
+Angular momentum conservation at ω_activation = 200 rad/s:
+L_before = I_extended × 200 = 3.527e-5 × 200 = 7.054e-3 kg·m²/s
+ω_after = L_before / I_clasped = 7.054e-3 / 2.799e-5 = **252.0 rad/s**
+**Δω = +52.0 rad/s (+26% spin boost)** from arm retraction alone [CALCULATED; physically real mechanism]
+
+Note: The BeySpirit element is that the arms move UPWARD (against gravity, against centrifugal retraction) at LOW spin. Normally, at low spin, centrifugal force is small and gravity dominates → arms would droop. BeySpirit actively drives the upward clasp, overriding gravity. The +52 rad/s spin boost is the real physical consequence of the ΔI change; the upward clasp itself is [M].
+
+**Halo deflection geometry**
+
+Clasped halo ring at h_halo = 20mm above stadium surface, r_halo = 12mm. Incoming horizontal attacks at h_attack < 20mm contact the halo underside at angle:
+φ_halo = atan(h_halo / r_halo) = atan(20/12) = **59°** (from horizontal)
+Effective impulse transfer: J_eff = J_contact × cos(59°) = **0.515 × J_contact** → 48.5% of attack impulse deflected away from Regnar's CoM → substantially more effective than passive curved AR (22.7%, Case 644).
+
+**High Xtend+' tip (DB era stamina/defense tip)**
+
+r_tip_HXT ≈ 4mm in stability mode (wide bearing contact), μ_HXT ≈ 0.018 (bearing-grade friction)
+τ_HXT = 0.041 × 9.81 × 0.018 × 0.004 = 2.89e-5 N·m
+With aerodynamic correction (DB-era large disc ~4× τ_tip): τ_total ≈ 1.45e-4 N·m
+t_spin = L₀ / τ_total = 2.215e-2 / 1.45e-4 = **152.8 s** [INFERRED — consistent with DB defense/stamina class]
+
+## Case 1538 -- [SPECIAL]: Glory Crown (Greatest Lord in Japan — Rashad Goodman . Glory Regnar Over High Xtend+', Beyblade Burst DB)
+
+**Source:** Beyblade Burst Dynamite Battle anime
+**Classification:** Stamina-recovery / deflection-barrier defensive special; activates at low-spin Defense Mode
+**Gimmick base:** Greatest Armor low-spin clasp & halo formation (Case 1537)
+**Compatible beys:** Glory Regnar Over High Xtend+'; any DB bey with hinged-plate I-reduction mechanism.
+
+### Move Description
+
+As Glory Regnar's stamina runs low in Defense Mode, Rashad's BeySpirit activates the Greatest Armor: the two armor plates on the Energy Layer rise upward and clasp together above the bey, forming a golden halo/crown. The clasp reduces I_total from 3.527e-5 to 2.799e-5 kg·m² — a 20.6% I reduction — which by angular momentum conservation spins Regnar up from ω_activation to 252 rad/s (+52 rad/s, +26%). The halo simultaneously projects a BeySpirit deflection field that redirects incoming attacks: attacks below h=20mm hit the halo underside at 59°, deflecting 48.5% of the incoming impulse. The combined effect: stamina recovery at the moment of low-spin vulnerability + defensive barrier for the recovery window.
+
+```typescript
+function gloryCrown(
+  defenseMode: boolean,      // Regnar in Defense Mode (DB Core low-mode equivalent)
+  lowSpin: boolean,          // ω < 250 rad/s (Greatest Armor activation threshold)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (defenseMode && lowSpin && qteHit) {
+    return {
+      spinDelta: +52,    // exact physical Δω from ΔI arm retraction [CALCULATED: Case 1537]
+      dmgMult:  0.515,   // incoming damage reduction: 1 - 0.485 = 0.515× multiplier [physical halo deflection]
+      lockMs:   300,     // halo active window — maximum combo-tier lockMs
+      powerCost: 70,     // cost: moderate; low-spin activation means power is already depleted
+    };
+    // spinDelta +52 rad/s is PHYSICALLY GROUNDED (ΔI × ω conservation, not [M])
+    // dmgMult 0.515 = incoming multiplier < 1.0 (defensive; not outgoing attack mult)
+  }
+  if (lowSpin && qteHit) {
+    return { spinDelta: +35, dmgMult: 0.65, lockMs: 200, powerCost: 70 };
+  }
+  if (qteHit) {
+    return { spinDelta: +15, dmgMult: 0.80, lockMs: 100, powerCost: 70 };
+  }
+  return { spinDelta: +8, dmgMult: 0.90, lockMs: 0, powerCost: 70 };
+}
+// Physical ceiling note: spinDelta +52 is the I-conservation spin boost (not [M]);
+// highest physically grounded spin recovery value across all Case 1492+ specials.
+```
+
+| Condition | spinDelta | Incoming dmgMult | lockMs |
+|-----------|-----------|-----------------|--------|
+| Defense Mode + Low spin + QTE | +52 [physical] | 0.515× (48.5% deflection) | 300 |
+| Low spin + QTE | +35 | 0.65× | 200 |
+| QTE only | +15 | 0.80× | 100 |
+| Miss | +8 | 0.90× | 0 |
+
+Force state: `cannot_attack_freely` — the halo deflection barrier punishes attacks during the lockMs window; opponent must wait for the window to expire or attack from above h=20mm (not typical for bey-to-bey contact height). The spin recovery means an opponent who waits out the window faces a re-energised Glory Regnar.
+
+## Case 1539 -- COMBO: Crown Guard (KK↓) [K·K·mD] — Derived from Case 1538 Glory Crown
+
+**Sequence:** defense → defense → moveDown  (K K ↓)
+**Cost:** 0 (free — defensive endurance combo)
+**Type restriction:** defense or balanced
+**Parent gimmick:** Greatest Armor low-spin clasp (Case 1537)
+
+**Thesis:** Double K activates the defense posture twice (two successive defense inputs tighten the bey's tilt-resistance, analogous to the two armor plates rising into position), then ↓ drops Regnar to the deepest bowl point — the position where it receives maximum bowl-wall centripetal support and minimum exposure to ring-out. Together the three inputs simulate the Glory Crown activation at combo level: the posture tightening (KK) + deepest-bowl repositioning (↓) reproduces the mechanical stability gain of the halo clasp without the BeySpirit amplitude. The spin recovery is modest at combo level (no I change — the combo doesn't physically retract the arms), but the incoming damage reduction is real from the posture-tightening effect.
+
+```typescript
+function crownGuard(
+  defenseMode: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (defenseMode && qteHit) {
+    return { spinDelta: +10, dmgMult: 0.72, lockMs: 200, powerCost: 0 };
+    // dmgMult 0.72× = incoming reduction; within defensive special pattern (< 1.0)
+  }
+  if (qteHit) return { spinDelta: +6, dmgMult: 0.82, lockMs: 120, powerCost: 0 };
+  return         { spinDelta: +3, dmgMult: 0.92, lockMs:   0, powerCost: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 0.72× = incoming reduction (< 1.0; defensive; not subject to 1.5× outgoing cap) ✓ | lockMs 200 ≤ 300 ✓ | spinDelta +10 = partial recovery (not full) ✓ | cost 0 ✓
+
+## Case 1540 -- [GIMMICK]: Glory Regnar Greatest Armor -- High-Spin Extension Reach & Catch Mechanism (Rashad Goodman . Glory Regnar Over High Xtend+') [EXTENDS Case 1537]
+
+**Part:** Same Greatest Armor plates (Case 1537) but in HIGH-SPIN EXTENDED position — centrifugal force keeps plates fully extended at r=40mm, creating a wide-radius catch platform. This case analyses the SLAM mechanism: high-spin arm extension + BeySpirit plate-closure to catch the opponent + gyroscopic precession-redirect to drive the opponent downward (Seismic Toss physics).
+**Tags:** greatest-armor, high-spin-extension, catch-mechanism, slam, seismic-toss, gyroscopic-redirect, extends-Case-1537
+
+**High-spin arm position**
+
+At ω_high = 628 rad/s (battle spin), centrifugal force on each arm (m_arm=2.5g at r=40mm):
+F_cent = m_arm × ω² × r = 0.0025 × 628² × 0.040 = 0.0025 × 394384 × 0.040 = **39.4 N** (!) per arm
+This dominates gravity (F_grav = m_arm × g = 0.0025 × 9.81 = 0.024 N) by a factor of 1642×.
+At high spin, arms are rigidly locked at r=40mm by centrifugal force — no BeySpirit needed to maintain extended position.
+
+Extended arm tip velocity: v_tip = ω × r_arm = 628 × 0.040 = **25.1 m/s**
+Kinetic energy of each arm: KE_arm = ½ × m_arm × v_tip² = ½ × 0.0025 × 630.8 = **0.789 J per arm**
+Total arm KE (×2) = 1.578 J → available for impact transfer on catch.
+
+**Catch mechanism (BeySpirit plate-closure)**
+
+At high spin, the arms sweep past the opponent at v_tip = 25.1 m/s. BeySpirit triggers the closure: the plates snap from the extended r=40mm position to r=10mm (inward) during the ~5ms window when the opponent is within the arm sweep arc.
+ΔI on closure = I_arm_ext − I_arm_closed = 8.00e-6 − 1.25e-6 = 6.75e-6 kg·m² (where r_closed=10mm)
+Wait, this time the closure is INWARD during high spin — typically the arms would fly back out immediately (centrifugal force). BeySpirit holds them closed [M] for the grab duration.
+
+Seismic Toss analogy: after catching, the trapped opponent is now co-rotating with Regnar at ~ω_final < ω_initial (due to added I from opponent):
+I_opponent ≈ 3.5e-5 kg·m² (typical MFB/DB rival bey)
+I_combined = I_Regnar_closed + I_opponent = 2.799e-5 + 3.5e-5 = 6.299e-5 kg·m²
+ω_final = L_Regnar / I_combined = (3.527e-5 × 628) / 6.299e-5 = 2.215e-2 / 6.299e-5 = **351.6 rad/s** [M]
+
+Then BeySpirit redirects L_combined through a precession arc: the gyroscopic precession converts spin angular momentum to a vertical translational impulse:
+J_vert = ΔL_vert = I_combined × ω_final × sin(θ_tilt) where θ_tilt ≈ 45° [M slam angle]
+= 6.299e-5 × 351.6 × sin(45°) = 6.299e-5 × 351.6 × 0.707 = **1.567e-2 N·s** [M]
+v_slam = J_vert / m_opponent = 1.567e-2 / 0.045 = **0.348 m/s** downward (physical; BeySpirit amplifies) [M full slam]
+
+## Case 1541 -- [SPECIAL]: Glory Slam (Greatest Slam in Japan — Rashad Goodman . Glory Regnar Over High Xtend+', Beyblade Burst DB)
+
+**Source:** Beyblade Burst Dynamite Battle anime
+**Classification:** High-spin catch / seismic-slam ring-out special; uses Greatest Armor extension-phase catch
+**Gimmick base:** Greatest Armor high-spin extension reach & catch (Case 1540)
+**Compatible beys:** Glory Regnar Over High Xtend+' (Rashad Goodman).
+
+### Move Description
+
+At high spin, Glory Regnar's Greatest Armor plates are fully extended by centrifugal force (39.4 N per arm, Case 1540). Rashad channels BeySpirit: as Regnar passes close to the opponent, the plates snap inward to "catch" the opposing beyblade within their grip (BeySpirit holds the closure against the centrifugal restoring force). Once caught, BeySpirit redirects Regnar's gyroscopic angular momentum through a downward precession arc — the Seismic Toss analogy from Pokémon: the opponent is spun, then slammed directly downward onto the stadium surface with the full combined rotational KE of both beys, sending the opponent bouncing out of the stadium. The slam uses the opponent's own momentum against them (gyroscopic redirection), meaning heavier opponents with more angular momentum are slammed harder.
+
+```typescript
+function glorySlam(
+  highSpin: boolean,         // ω > 400 rad/s (arms extended by centrifugal force, Case 1540)
+  catchSuccess: boolean,     // QTE timing: arm sweep intersects opponent's position
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number } {
+  if (highSpin && catchSuccess && qteHit) {
+    return {
+      spinDelta:    -60,   // combined spin drain from forced co-rotation + slam impact [M]
+      dmgMult:       1.80, // seismic slam amplifies contact force [M]
+      lockMs:        250,  // slam pin (opponent is on the floor for 250ms)
+      powerCost:      90,
+      ringOutForce:  0.90, // 90% ring-out probability on direct slam
+    };
+  }
+  if (catchSuccess && qteHit) {
+    return { spinDelta: -40, dmgMult: 1.50, lockMs: 180, powerCost: 90, ringOutForce: 0.70 };
+  }
+  if (qteHit) {
+    // Arm sweep without full catch: glancing strike only
+    return { spinDelta: -20, dmgMult: 1.25, lockMs: 80, powerCost: 90, ringOutForce: 0.25 };
+  }
+  return { spinDelta: -10, dmgMult: 1.05, lockMs: 0, powerCost: 90, ringOutForce: 0.05 };
+}
+// Physical note: arm tip v=25.1 m/s, KE_arms=1.578 J, J_vert_slam=1.567e-2 N·s at physical scale [Case 1540].
+// BeySpirit amplifies slam force and holds catch closed against 39.4 N centrifugal restoring force [M].
+// Opponent with higher I is slammed harder (more L to redirect) — inverse of stamina type advantage.
+```
+
+| Condition | spinDelta | dmgMult | lockMs | Ring-out % |
+|-----------|-----------|---------|--------|------------|
+| High spin + catch + QTE | −60 | ×1.80 | 250 | 90% |
+| Catch + QTE | −40 | ×1.50 | 180 | 70% |
+| QTE only (glancing) | −20 | ×1.25 | 80 | 25% |
+| Miss | −10 | ×1.05 | 0 | 5% |
+
+Force state: `must_keep_distance` — staying close risks the catch window; the opponent must either maintain > arm-reach distance (hard in a small stadium) or attack from angles that avoid the arm sweep arc (high above or directly below the arms' extension plane).
+
+## Case 1542 -- COMBO: Slam Down (J↓J) [J·mD·J] — Derived from Case 1541 Glory Slam
+
+**Sequence:** jump → moveDown → jump  (J ↓ J)
+**Cost:** 25
+**Type restriction:** balanced or attack (high-spin aggressive beys)
+**Parent gimmick:** Greatest Armor high-spin extension catch (Case 1540)
+
+**Thesis:** The J-↓-J pattern mimics the two-phase catch-and-slam: the first J fires a quick approach dash (arm sweep initiation), ↓ drops Regnar to the bowl base (catching the opponent at the bottom of the bowl — the most confined area with least escape room), and the second J fires the slam upswing (the Seismic Toss reversal: catch-in-bottom-of-bowl, then J drives the opponent outward from the bowl via gyroscopic redirect). The physics ground: at the bowl base, the opponent has minimum translational degrees of freedom, maximising the probability that the arm sweep (v_tip=25.1 m/s, Case 1540) intersects the opponent before the bowl wall provides an escape route. The combo represents the catch at full bowl-confinement; no full aerial seismic toss (that requires full BeySpirit).
+
+```typescript
+function slamDown(
+  bowlConfinement: boolean,   // both beys at bowl base (↓ repositioning succeeded)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (bowlConfinement && qteHit) {
+    return { spinDelta: -20, dmgMult: 1.35, lockMs: 150, powerCost: 25 };
+  }
+  if (qteHit) {
+    return { spinDelta: -14, dmgMult: 1.22, lockMs: 100, powerCost: 25 };
+  }
+  return { spinDelta: -7, dmgMult: 1.08, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgMult 1.35× ≤ 1.5 ✓ | lockMs 150 ≤ 300 ✓ | cost 25 ✓ | no AoE ✓ | no invulnerability ✓
+
+## Case 1543 -- [GIMMICK]: Earth Virgo GB145BS Bowl-Wall Launch Ramp & Top-Contact Landing Physics (Teru Saotome . Earth Virgo GB145BS) [EXTENDS Cases 641 & 642]
+
+**Part:** Earth Fusion Wheel + GB145 + BS tip interacting with the bowl geometry for a vertical leap attack; EXTENDS Case 641 (GB145 ball-channel passive evasion) and Case 642 (Allegro Entrechat horizontal dodge). This case analyses a VERTICAL approach: Virgo launches off the bowl wall as a ramp, crests the opponent's height, and descends top-first onto the opposing AR. The BS ball-mode tip serves as a bearing-like interface during the top-mount link phase.
+**Assembly:** Earth Virgo GB145BS (Cases 641/642 baseline: m≈37g, I_total=7.308e-6 kg·m², ω₀=628 rad/s)
+**Tags:** MFB, earth-virgo, GB145, BS-tip, bowl-ramp, aerial-launch, top-contact, link, vertical-attack, mass-differential, extends-641, extends-642
+
+**Distinction from Cases 641-642**
+
+Case 641 = GB145 ball displacement during HORIZONTAL near-miss evasion (passive gimmick, lateral).
+Case 642 = Allegro Entrechat HORIZONTAL anticipatory dodge and flank strike.
+Case 1543 = VERTICAL leap onto opponent top surface (aerial approach, mass-differential ring-out, top-mount link).
+
+**Bowl-wall launch ramp**
+
+MFB stadium bowl wall angle: θ_bowl ≈ 30° from horizontal. As Virgo orbits near the wall at v_bowl=1.5 m/s (aggressive orbit), the wall curvature acts as a launch ramp at the bowl lip.
+
+At launch point (bowl lip exit):
+  v_horizontal = v_bowl × cos(θ_bowl) = 1.5 × cos(30°) = 1.5 × 0.866 = **1.299 m/s**
+  v_vertical   = v_bowl × sin(θ_bowl) = 1.5 × sin(30°) = 1.5 × 0.500 = **0.750 m/s**
+
+Aerial trajectory (parabolic):
+  h_max = v_vert²/(2g) = 0.750²/19.62 = **28.7 mm** [CALCULATED — physical leap height]
+  Typical opponent AR top height above stadium floor ≈ 20–25mm → Virgo's physical 28.7mm apex JUST clears the opponent's top surface; BeySpirit amplifies for a clean crest [M].
+  Horizontal range at h=20mm: t_flight = (v_vert − √(v_vert² − 2g×h))/g → at h=0 return: t = 2×v_vert/g = 2×0.75/9.81 = 0.153s
+  x_range = v_horizontal × t = 1.299 × 0.153 = **198.6 mm** — across nearly the full stadium radius → Virgo can reach any opponent on the far side.
+
+**Top-contact landing: horizontal impulse transfer (ring-out mechanism)**
+
+On landing, Virgo still carries horizontal momentum p_horiz = m_Virgo × v_horizontal = 0.037 × 1.299 = **0.048 N·s**.
+This impulse transfers to the opponent on contact:
+  Δv_opp = p_horiz / m_opp
+
+| Opponent (m_opp) | Δv after impact | Ring-out likelihood |
+|------------------|-----------------|---------------------|
+| Storm Aquario (~27g) | 0.048/0.027 = **1.78 m/s** | High — easily moves past boundary |
+| Storm Pegasus (~32g) | 0.048/0.032 = **1.50 m/s** | Moderate — Pegasus's higher spin stabilises |
+| Earth Eagle (~46g) | 0.048/0.046 = **1.04 m/s** | Low — heavy + high-L resists displacement |
+| Big Bang Pegasus (~49g) | 0.048/0.049 = **0.98 m/s** | Very low — high mass + I absorbs impact |
+
+This explains the canon differential: Aquario (lighter, lower I) is knocked out; Pegasus (heavier, higher I) survives.
+
+**Top-mount link — BS tip as bearing interface**
+
+When Virgo descends onto the opponent's top AR face, the BS tip transitions to ball-mode (ball surface contacts the spinning AR top):
+  BS ball radius: r_ball_tip ≈ 3mm; μ_ball ≈ 0.08 (smooth ball rolling on plastic AR top)
+  Frictional coupling during link: τ_friction = m_Virgo × g × μ_ball × r_ball_tip = 0.037×9.81×0.08×0.003 = 8.70e-5 N·m
+  Spin drain on opponent per second: Δω = τ_friction × t / I_opp = 8.70e-5 × 1.0 / 3.5e-5 = **2.49 rad/s per second** during link
+
+Added normal force on opponent tip:
+  F_added = m_Virgo × g = 0.037 × 9.81 = **0.363 N** downward (increases opponent tip friction, slows opponent orbit)
+
+Gyroscopic coupling stability:
+  L_total_link = L_Virgo + L_opp = (7.308e-6×628) + (3.5e-5×628) = 4.589e-3 + 2.198e-2 = 2.657e-2 kg·m²/s
+  Effective precession rate: Ω_prec = τ_perturbation / L_total = (m_V×g×r_offset) / L = (0.037×9.81×0.010) / 2.657e-2 = 3.63e-3 / 2.657e-2 = **0.137 rad/s** (very slow → stable mount against heavy opponents)
+  Against light opponent (Aquario, L_Aquario ≈ 1.57e-2): Ω_prec = 3.63e-3 / 2.029e-2 = 0.179 rad/s (less stable but still a 5.5s precession cycle → mount can hold for full 5s canon duration)
+
+The link must be actively maintained (player QTE) because the opponent's spin generates a centrifugal expulsion force on Virgo at the off-axis mount position:
+  F_centrifuge_expel ≈ m_Virgo × ω_opp² × r_offset = 0.037 × 628² × 0.010 = **145.8 N** at r_offset=10mm [M — the actual offset during ballet spin is BeySpirit-maintained]
+  Physical: at r_offset=1mm (very near axis): F_expel = 0.037×628²×0.001 = **14.6 N** — already large, meaning the QTE is physically justified.
+
+## Case 1544 -- [SPECIAL]: Grand Jeté (Teru Saotome . Earth Virgo GB145BS, Metal Fight Beyblade)
+
+**Source:** Metal Fight Beyblade anime; inspired by the ballet move grand jeté (giant leap, one leg forward, one behind); Teru's signature flying attack
+**Classification:** Aerial leap / top-mount link special; mass-differential ring-out
+**Gimmick base:** Bowl-wall launch ramp + top-contact landing (Case 1543); GB145 ball mechanics (Case 641)
+**Compatible beys:** Earth Virgo GB145BS (Teru Saotome). The top-contact approach is unique to Virgo's compact, low-profile design (Earth Fusion Wheel sits low enough to crest opponent ARs at physical bowl-launch heights).
+
+### Move Description
+
+Teru's BeySpirit channels into Earth Virgo. Virgo accelerates along the bowl wall, using the bowl's curvature as a launch ramp. At the lip, Virgo launches at a 30° parabolic arc across the stadium (horizontal v=1.299 m/s + vertical v=0.750 m/s, Case 1543), cresting the opponent's height and descending top-first onto the opposing AR. The horizontal momentum transfer delivers a mass-scaled impulse (Δv = 0.048/m_opp, Case 1543) that easily rings out lighter opponents (Aquario 1.78 m/s) but absorbs safely into heavier beys (Eagle, Big Bang Pegasus).
+
+**Link mechanic (5-second timer):** If the player hits J or i quickly at the landing moment (QTE window: 300ms), Virgo balances on the opponent's top surface. The BS ball-mode tip rolls on the opponent's spinning AR top, creating a gyroscopic coupling. The link drains the opponent's spin (2.49 rad/s per second, Case 1543) and restricts their orbit. Player must repeat the QTE press each 1.5 seconds to maintain the mount; missing a press causes Virgo to slide off. Maximum link duration: **5 seconds** (canon-exact).
+
+```typescript
+function grandJete(
+  lightOpponent: boolean,     // opponent m < 35g (Aquario class — ring-out on initial impact)
+  linkQteHit: boolean,        // initial QTE hit at landing (300ms window)
+  linkPressCount: number      // number of successful J-presses during 5s link (0-3)
+): {
+  spinDelta: number;
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  linkDurationMs: number;
+  ringOutForce: number;
+} {
+  const baseRingOutForce = lightOpponent ? 0.85 : 0.30;  // mass differential from Case 1543
+
+  if (linkQteHit) {
+    // Link established: ongoing drain per second of link + final slam on dismount
+    const linkMs = Math.min(linkPressCount * 1500 + 1500, 5000);  // 1.5s base + 1.5s per extra press, max 5000ms
+    const drainTotal = Math.round(2.49 * linkMs / 1000);          // 2.49 rad/s drain per second of link
+    return {
+      spinDelta:      -(drainTotal + 15),  // link drain + initial impact [M partial]
+      dmgMult:         lightOpponent ? 1.40 : 1.20,
+      lockMs:          200,                // final dismount slam disruption
+      powerCost:       80,
+      linkDurationMs:  linkMs,
+      ringOutForce:    baseRingOutForce + (linkMs / 5000) * 0.20,  // longer link = more ring-out pressure
+    };
+  }
+  // QTE missed — Virgo slides off immediately, only initial horizontal impulse lands
+  return {
+    spinDelta:     -10,
+    dmgMult:        lightOpponent ? 1.30 : 1.05,
+    lockMs:         80,
+    powerCost:      80,
+    linkDurationMs: 0,
+    ringOutForce:   baseRingOutForce,
+  };
+}
+// Physical note: Δv = 0.048/m_opp (Case 1543); ring-out on Aquario (1.78 m/s) is physically grounded.
+// Link drain 2.49 rad/s/s is physically grounded (BS ball friction, Case 1543).
+// 5-second max link duration is canon-exact.
+```
+
+### Link Phase State Machine
+
+```
+LAUNCH (250ms): Virgo accelerates on bowl wall, reaches v=1.5 m/s
+FLIGHT (153ms): parabolic arc, h_max=28.7mm [physical], BeySpirit amplifies visual
+LANDING: impact Δv = 0.048/m_opp transferred to opponent → immediate ring-out check
+
+  If QTE missed (no J press within 300ms):
+    Virgo slides off → outcome: initial impulse only (ring-out on light opponents)
+
+  If QTE hit:
+    LINK_ACTIVE (up to 5000ms):
+      Every 1500ms: QTE prompt (J/i press within 300ms window)
+        Hit: link extends another 1500ms, spin drain continues
+        Miss: link breaks, Virgo dismounts (final slam: +10 ring-out force)
+      Max link: 5000ms (3 successful QTE presses after initial)
+      Drain: -2.49 rad/s per second [physical]
+      Opponent orbit restricted: opponent speedMult = 0.60× during link
+    DISMOUNT: slam impact on link-break or 5s expiry
+```
+
+| Scenario | spinDelta | dmgMult | ringOut% | linkMs |
+|----------|-----------|---------|----------|--------|
+| Light opp, QTE miss | −10 | ×1.30 | 85% (initial) | 0 |
+| Heavy opp, QTE miss | −10 | ×1.05 | 30% | 0 |
+| Full 5s link (3 QTE) | −(~12+15)=−27 | ×1.20–1.40 | 50–90% | 5000 |
+
+Force state: `must_stay_still` — the opponent is pinned with Virgo on top; attempting to orbit or manoeuvre causes the link to break early and the sudden dismount sends Virgo flying toward the ring-out boundary. The optimal counter is to resist movement during the link (let Virgo drain gradually) then burst-move after the 5s expiry.
+
+## Case 1545 -- COMBO: Graceful Leap (↑J↑) [mU·J·mU] — Derived from Case 1544 Grand Jeté
+
+**Sequence:** moveUp → jump → moveUp  (↑ J ↑)
+**Cost:** 15
+**Type restriction:** stamina or balanced (low-profile beys capable of the bowl arc)
+**Parent gimmick:** Bowl-wall launch ramp + top-contact landing (Case 1543)
+
+**Thesis:** Graceful Leap is the combo expression of Grand Jeté's bowl-launch arc at reduced BeySpirit intensity. ↑ drives Virgo toward the upper bowl (approach to the bowl wall ramp), J fires the jump input (the launch — representing the moment Virgo crests the bowl lip), and ↑ again drives Virgo forward after landing (the landing approach continues into the target). There is no sustained link at combo level (no QTE sub-chain), but the J input fires a single brief top-contact hit that delivers the physical horizontal impulse (Δv = 0.048/m_opp, Case 1543) in a fast in-and-out pattern. The mass-differential is preserved: against light opponents (< 35g) the single-hit impulse triggers a ring-out check with bonus ring-out force.
+
+```typescript
+function gracefulLeap(
+  lightOpponent: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    lightOpponent ? -18 : -12,
+      dmgMult:      lightOpponent ? 1.30 : 1.20,
+      lockMs:       100,
+      powerCost:    15,
+      ringOutBonus: lightOpponent ? 0.25 : 0.05,  // bonus added to ring-out probability check
+    };
+  }
+  return { spinDelta: -6, dmgMult: 1.05, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.30× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+*Cases continue from Case 1546 as further franchise moves are provided.*
 

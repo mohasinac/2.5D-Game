@@ -404,19 +404,39 @@ async function run() {
   await doLaunch(page, 5500);
   await ss(page, "tryout-F-launched");
 
-  // Play 40 s — screenshot every 10 s to show beyblade spinning
-  console.log("  ⚔️   Playing 40 s (tryout — no AI)…");
+  // Play 40 s — screenshot every 10 s; fire J at t=10s and t=20s when SP refills
+  console.log("  ⚔️   Playing 40 s (tryout — no AI, SP refills every 10 s)…");
   const startFMs = Date.now();
   let turnF = 0;
+  let spFiredAt10 = false;
+  let spFiredAt20 = false;
   while (Date.now() - startFMs < 40_000) {
-    const k = KEYS[turnF % KEYS.length];
-    await pressKey(page, k, k === "KeyJ" || k === "KeyK" || k === "KeyL" ? 80 : 300);
-    await sleep(60);
-    turnF++;
     const elapsed = Date.now() - startFMs;
-    if (Math.floor(elapsed / 10_000) > Math.floor((elapsed - 260) / 10_000)) {
-      await ss(page, `tryout-F-playing-${Math.floor(elapsed / 1000)}s`);
-      console.log(`    🕐  t=${Math.floor(elapsed/1000)}s`);
+
+    // Fire special move at ~10 s (first SP refill) and ~20 s (second refill)
+    if (elapsed >= 10_000 && !spFiredAt10) {
+      spFiredAt10 = true;
+      console.log("    ⚡  t=10s: Firing special move (J key)…");
+      await pressKey(page, "KeyJ", 100);
+      await sleep(200);
+      await ss(page, "tryout-F-special-10s");
+    } else if (elapsed >= 20_000 && !spFiredAt20) {
+      spFiredAt20 = true;
+      console.log("    ⚡  t=20s: Firing special move (J key)…");
+      await pressKey(page, "KeyJ", 100);
+      await sleep(200);
+      await ss(page, "tryout-F-special-20s");
+    } else {
+      const k = KEYS[turnF % KEYS.length];
+      await pressKey(page, k, 300);
+      await sleep(60);
+      turnF++;
+    }
+
+    const elapsedNow = Date.now() - startFMs;
+    if (Math.floor(elapsedNow / 10_000) > Math.floor((elapsedNow - 360) / 10_000)) {
+      await ss(page, `tryout-F-playing-${Math.floor(elapsedNow / 1000)}s`);
+      console.log(`    🕐  t=${Math.floor(elapsedNow/1000)}s`);
     }
   }
   await ss(page, "tryout-F-end");

@@ -140,12 +140,9 @@ function StringLauncherUI({
 }) {
   const isPerfectZone = launchPower >= 95;
   const pct = Math.min(100, (launchPower / 150) * 100);
-
-  // Beyblade slides left along the string as power charges (0% = far right, 100% = far left)
-  // string spans 70% of screen; bey starts at 90% left, slides to 15% left
+  // Beyblade slides left along the string as power charges
   const beyLeftPct = 90 - (pct / 100) * 75;
 
-  // Power bar color: grey → yellow → green → orange → red
   const barColor =
     launchPower > 130 ? "#ff2222" :
     launchPower > 100 ? "#ff6b35" :
@@ -157,8 +154,8 @@ function StringLauncherUI({
   const timerColor = launchTimer <= 2 ? "#ff4444" : launchTimer <= 3 ? "#ffcc44" : "#4488ff";
 
   return (
-    <div className="relative w-full flex flex-col items-center gap-0">
-      {/* ── Perfect-zone screen flash ── */}
+    <div className="relative w-full flex flex-col items-center gap-3">
+      {/* Perfect-zone screen flash */}
       {isPerfectZone && !isSpectating && (
         <div
           className={`absolute inset-0 pointer-events-none z-[10] rounded-[20px] border-4 border-[#44ff88] ${perfectFlash ? "opacity-100" : "opacity-50"} [transition:opacity_100ms]`}
@@ -166,137 +163,124 @@ function StringLauncherUI({
         />
       )}
 
-      {/* ── Countdown timer (top centre) ── */}
-      <div className="w-full text-center mb-4">
+      {/* Timer row */}
+      <div className="w-full flex items-center gap-3">
         <div
-          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-[clamp(2rem,6vw,4rem)] text-[color:var(--tc)] [text-shadow:0_0_20px_var(--tc88)]"
+          className="font-black font-mono shrink-0 text-[clamp(1.8rem,5vw,3rem)] text-[color:var(--tc)] [text-shadow:0_0_16px_var(--tc88)]"
           style={{ "--tc": timerColor, "--tc88": `${timerColor}88` } as React.CSSProperties}
         >
           {Math.ceil(Math.max(0, launchTimer))}s
         </div>
-        <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
+        <div className="flex-1 h-[6px] rounded-[3px] overflow-hidden bg-white/10">
           <div
-            className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
+            className="h-full rounded-[3px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
             style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / LAUNCH_DURATION_S) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>
 
-      {/* ── String rail + sliding beyblade ── */}
-      <div className="relative w-full flex items-center justify-center my-3 h-20">
-        {/* String rail — spans 70% of container width */}
+      {/* String rail + sliding beyblade */}
+      <div className="relative w-full flex items-center justify-center h-16">
         <div
-          className="absolute h-[4px] bg-gradient-to-r from-white/30 via-white/60 to-white/30 rounded-full"
-          style={{ left: "15%", right: "15%" }}
+          className="absolute h-[3px] bg-gradient-to-r from-white/20 via-white/50 to-white/20 rounded-full"
+          style={{ left: "10%", right: "10%" }}
           aria-hidden
         />
-
-        {/* Beyblade icon on the string */}
         <div
-          className={`absolute flex items-center justify-center w-14 h-14 rounded-full border-2 select-none [transition:left_80ms_linear] ${isPerfectZone ? "border-[#44ff88] shadow-[0_0_20px_#44ff88]" : "border-white/60 shadow-[0_0_10px_rgba(255,255,255,0.3)]"} bg-[rgba(255,255,255,0.08)]`}
-          style={{ left: `${beyLeftPct}%`, transform: "translate(-50%, -50%)", top: "50%" }}
+          className={`absolute flex items-center justify-center w-12 h-12 rounded-full border-2 select-none [transition:left_80ms_linear] ${isPerfectZone ? "border-[#44ff88] shadow-[0_0_16px_#44ff88]" : "border-white/50"} bg-[rgba(255,255,255,0.06)]`}
+          style={{ left: `${beyLeftPct}%`, transform: "translate(-50%,-50%)", top: "50%" }}
           aria-hidden
         >
-          <span
-            className={`text-2xl ${chargingStarted ? "[animation:spin_0.3s_linear_infinite]" : "[animation:spin_1s_linear_infinite]"}`}
-            role="img"
-            aria-label="beyblade"
-          >
-            ⚙
-          </span>
+          <span className={`text-xl ${chargingStarted ? "[animation:spin_0.25s_linear_infinite]" : "[animation:spin_1s_linear_infinite]"}`} role="img" aria-label="beyblade">⚙</span>
         </div>
       </div>
 
-      {/* ── Power bar (right side, vertical) ── */}
-      <div className="w-full flex items-end gap-4 mt-2">
-        {/* Vertical power bar */}
-        <div className="flex flex-col items-center gap-1 shrink-0">
-          <span className="text-[10px] text-theme-faint uppercase tracking-wider">Power</span>
-          <div
-            className="relative w-8 rounded-[6px] overflow-hidden bg-white/10 h-[120px]"
-          >
-            {/* 100% marker */}
-            <div
-              className="absolute left-0 right-0 h-[2px] bg-white/40 z-[1]"
-              style={{ bottom: `${(100 / 150) * 100}%` }}
-            />
-            {/* Fill — grows from bottom */}
-            <div
-              className="absolute bottom-0 left-0 right-0 rounded-[6px] [transition:height_80ms_linear,background_200ms] h-[--lph] bg-[--lpbg] shadow-[--lpshadow]"
-              style={{
-                "--lph": `${pct}%`,
-                "--lpbg": `linear-gradient(0deg, ${barColor}, ${barColor}99)`,
-                "--lpshadow": isPerfectZone ? `0 0 12px ${barColor}` : "none",
-              } as React.CSSProperties}
-            />
-            {/* Perfect zone highlight band */}
-            <div
-              className="absolute left-0 right-0 opacity-30 bg-[#44ff88] bottom-[--lbbot] h-[--lbh]"
-              style={{
-                "--lbbot": `${(95 / 150) * 100}%`,
-                "--lbh": `${(5 / 150) * 100}%`,
-              } as React.CSSProperties}
-            />
-          </div>
-          <span
-            className="text-[11px] font-mono font-bold text-[color:var(--bc)]"
-            style={{ "--bc": barColor } as React.CSSProperties}
-          >
+      {/* Horizontal power bar */}
+      <div className="w-full">
+        <div className="flex justify-between text-[11px] mb-1">
+          <span className="text-theme-faint uppercase tracking-wider">Power</span>
+          <span className="font-mono font-bold text-[color:var(--bc)]" style={{ "--bc": barColor } as React.CSSProperties}>
             {launchPower.toFixed(0)}%
           </span>
         </div>
-
-        {/* Tilt + Position + instructions */}
-        <div className="flex flex-col gap-3 flex-1 min-w-0">
-          {/* Tilt gauge */}
-          <div className={`w-full transition-opacity duration-200 ${chargingStarted ? "opacity-45" : "opacity-100"}`}>
-            <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
-              <span>← Tilt (A/D)</span>
-              <span className="text-theme-text font-bold">{launchTilt > 0 ? "+" : ""}{launchTilt.toFixed(0)}°</span>
-            </div>
-            <div className="relative h-3 rounded-[6px] overflow-hidden bg-bg3">
-              <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#334155] -translate-x-1/2" />
-              <div
-                className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms,background_200ms] ${Math.abs(launchTilt) > 30 ? "bg-[#ff4444]" : "bg-[#4488ff]"}`}
-                style={{ left: `calc(50% + ${(launchTilt / 45) * 42}% - 4px)` }}
-              />
-            </div>
-          </div>
-
-          {/* Position gauge */}
-          <div className={`w-full transition-opacity duration-200 ${chargingStarted ? "opacity-45" : "opacity-100"}`}>
-            <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
-              <span>Position (W/S)</span>
-              <span className="text-theme-text font-bold">
-                {launchPosition < 0.33 ? "Forward" : launchPosition > 0.66 ? "Backward" : "Center"}
-              </span>
-            </div>
-            <div className="relative h-3 rounded-[6px] overflow-hidden bg-bg3">
-              <div
-                className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms,background_200ms] ${launchPosition > 0.66 ? "bg-[#ff8844]" : launchPosition < 0.33 ? "bg-[#44aaff]" : "bg-[#44ff88]"}`}
-                style={{ left: `calc(${launchPosition * 100}% - 4px)` }}
-              />
-            </div>
-          </div>
-
-          {/* Status instruction */}
-          {isSpectating ? (
-            <div className="text-theme-muted text-[13px] text-center">Watching launch phase...</div>
-          ) : chargingStarted ? (
-            <div
-              className={`text-[14px] font-black text-center tracking-[0.1em] ${isPerfectZone ? "text-[#44ff88] [animation:pulse_0.4s_ease-in-out_infinite]" : "text-[#ff6b35]"}`}
-            >
-              {isPerfectZone ? "✦ PERFECT ZONE — RELEASE!" : "CHARGING — RELEASE SPACE TO LAUNCH!"}
-            </div>
-          ) : (
-            <div className="text-theme-muted text-[12px] text-center leading-[1.5]">
-              <div className="text-theme-text font-semibold mb-1">Set your launch</div>
-              <span className="text-[#4488ff]">A / D</span> tilt &nbsp;·&nbsp;
-              <span className="text-[#44ff88]">W / S</span> position<br />
-              <span className="text-[#ffcc44]">Hold SPACE</span> to charge &amp; lock · Release to launch
-            </div>
-          )}
+        <div className="relative h-[14px] rounded-[7px] overflow-hidden bg-white/10">
+          {/* Perfect zone band */}
+          <div
+            className="absolute top-0 bottom-0 opacity-25 bg-[#44ff88]"
+            style={{ left: `${(95 / 150) * 100}%`, right: `${100 - (100 / 150) * 100}%` }}
+            aria-hidden
+          />
+          {/* 100% marker */}
+          <div
+            className="absolute top-0 bottom-0 w-[2px] bg-white/50 z-[1]"
+            style={{ left: `${(100 / 150) * 100}%` }}
+            aria-hidden
+          />
+          {/* Fill */}
+          <div
+            className="absolute top-0 left-0 bottom-0 rounded-[7px] [transition:width_80ms_linear,background_200ms]"
+            style={{
+              width: `${pct}%`,
+              background: `linear-gradient(90deg, ${barColor}88, ${barColor})`,
+              boxShadow: isPerfectZone ? `0 0 10px ${barColor}` : "none",
+            }}
+          />
         </div>
+        <div className="flex justify-between text-[9px] text-theme-faint mt-0.5 px-0.5">
+          <span>0</span>
+          <span className="text-[#44ff88]">PERFECT</span>
+          <span>MAX</span>
+        </div>
+      </div>
+
+      {/* Tilt + Position side by side */}
+      <div className={`grid grid-cols-2 gap-3 w-full [transition:opacity_200ms] ${chargingStarted ? "opacity-40" : "opacity-100"}`}>
+        <div>
+          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
+            <span>Tilt <span className="text-[#4488ff]">A/D</span></span>
+            <span className="text-theme-text font-mono font-bold">{launchTilt > 0 ? "+" : ""}{launchTilt.toFixed(0)}°</span>
+          </div>
+          <div className="relative h-[10px] rounded-[5px] overflow-hidden bg-bg3">
+            <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-white/10 -translate-x-1/2" />
+            <div
+              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms] ${Math.abs(launchTilt) > 30 ? "bg-[#ff4444]" : "bg-[#4488ff]"}`}
+              style={{ left: `calc(50% + ${(launchTilt / 45) * 42}% - 4px)` }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
+            <span>Pos <span className="text-[#44ff88]">W/S</span></span>
+            <span className="text-theme-text font-mono font-bold">
+              {launchPosition < 0.33 ? "Fwd" : launchPosition > 0.66 ? "Back" : "Ctr"}
+            </span>
+          </div>
+          <div className="relative h-[10px] rounded-[5px] overflow-hidden bg-bg3">
+            <div
+              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms] ${launchPosition > 0.66 ? "bg-[#ff8844]" : launchPosition < 0.33 ? "bg-[#44aaff]" : "bg-[#44ff88]"}`}
+              style={{ left: `calc(${launchPosition * 100}% - 4px)` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Instruction */}
+      <div className="w-full text-center">
+        {isSpectating ? (
+          <span className="text-theme-muted text-[13px]">Watching launch phase...</span>
+        ) : chargingStarted ? (
+          <div className={`text-[15px] font-black tracking-[0.08em] ${isPerfectZone ? "text-[#44ff88] [animation:pulse_0.4s_ease-in-out_infinite]" : "text-[#ff6b35]"}`}>
+            {isPerfectZone ? "✦ PERFECT — RELEASE SPACE!" : "CHARGING... RELEASE SPACE TO LAUNCH"}
+          </div>
+        ) : (
+          <div className="text-[13px] leading-[1.6]">
+            <span className="font-black text-theme-text block mb-0.5">HOLD SPACE to charge · Release to launch</span>
+            <span className="text-theme-muted text-[11px]">
+              Set tilt with <span className="text-[#4488ff]">A / D</span> and position with <span className="text-[#44ff88]">W / S</span> first
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -573,6 +557,7 @@ export function LaunchPhase({
 
   return (
     <div
+      data-testid="launch-phase-overlay"
       className="absolute inset-0 z-[55] flex flex-col items-center justify-center pointer-events-none select-none"
     >
       {/* World background */}

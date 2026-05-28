@@ -83,7 +83,7 @@ export function TryoutGamePage() {
   const rafRef = useRef<number>(0);
 
   // HUD state — updated at lower frequency
-  const [hud, setHud] = useState({ spin: 2192, maxSpin: 2192, health: 1600, timer: 0, loaded: false });
+  const [hud, setHud] = useState({ spin: 2192, maxSpin: 2192, health: 1600, power: 0, timer: 0, loaded: false });
 
   // Local launch phase state
   type Phase = "countdown" | "launching" | "playing";
@@ -214,6 +214,9 @@ export function TryoutGamePage() {
 
   const bitBeastCinematic = useBitBeastCinematic(settings.beybladeId ?? null);
   const launchRevealShownRef = useRef(false);
+  const bitBeastShowRef = useRef(bitBeastCinematic.show);
+  useEffect(() => { bitBeastShowRef.current = bitBeastCinematic.show; });
+  const spRefillTimerRef = useRef(0);
 
   useEffect(() => {
     if (phase === "launching" && !launchRevealShownRef.current) {
@@ -224,8 +227,14 @@ export function TryoutGamePage() {
 
   // ─── Keyboard listeners ─────────────────────────────────────────────────────
   useEffect(() => {
-    const down = (e: KeyboardEvent) => keysRef.current.add(e.code);
-    const up   = (e: KeyboardEvent) => keysRef.current.delete(e.code);
+    const down = (e: KeyboardEvent) => {
+      keysRef.current.add(e.code);
+      if (e.code === "KeyJ" && phaseRef.current === "playing" && bey.current.power >= 100) {
+        bey.current.power -= 100;
+        bitBeastShowRef.current(bey.current.specialMove ?? "Special Move", 1800);
+      }
+    };
+    const up = (e: KeyboardEvent) => keysRef.current.delete(e.code);
     window.addEventListener("keydown", down);
     window.addEventListener("keyup",   up);
     return () => {
@@ -402,7 +411,15 @@ export function TryoutGamePage() {
 
         const stability = b.spin / b.maxSpin;
         const decayRate = BASE_SPIN_DECAY * (1 + (1 - stability) * 2);
-        b.spin = Math.max(0, b.spin - decayRate * dt);
+        // Spin floor: never spins out in tryout — stays at 5% maxSpin
+        b.spin = Math.max(b.maxSpin * 0.05, b.spin - decayRate * dt);
+
+        // SP auto-refill every 10 seconds
+        spRefillTimerRef.current += dt;
+        if (spRefillTimerRef.current >= 10) {
+          spRefillTimerRef.current = 0;
+          b.power = 150;
+        }
 
         const angDir = b.spinDirection === "left" ? -1 : 1;
         b.rotation += angDir * (b.spin / b.maxSpin) * 6 * dt;
@@ -415,6 +432,7 @@ export function TryoutGamePage() {
             spin: b.spin,
             maxSpin: b.maxSpin,
             health: b.health,
+            power: b.power,
             timer: timerRef.current,
           }));
         }
@@ -461,10 +479,12 @@ export function TryoutGamePage() {
     b.velocityX = 0; b.velocityY = 0;
     b.spin = b.maxSpin;
     b.health = b.maxHealth;
+    b.power = 0;
     b.rotation = 0;
     timerRef.current = 0;
+    spRefillTimerRef.current = 0;
     lastTsRef.current = null;
-    setHud((h) => ({ ...h, spin: b.maxSpin, health: b.maxHealth, timer: 0 }));
+    setHud((h) => ({ ...h, spin: b.maxSpin, health: b.maxHealth, power: 0, timer: 0 }));
     keysRef.current.clear();
     launchRef.current = { tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 };
     setLocalLaunch({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
@@ -479,7 +499,7 @@ export function TryoutGamePage() {
   const stability = spinPct;
   const stabilityColor = stability > 0.6 ? "text-theme-green" : stability > 0.3 ? "text-theme-yellow" : "text-theme-red";
   const stabilityLabel = stability > 0.6 ? "Stable" : stability > 0.3 ? "Wobbling" : "Critical!";
-  const spinOut = hud.spin <= 0;
+  const powerPct = hud.power / 150;
 
   return (
     <div className="min-w-[320px] max-w-[1920px] w-full mx-auto relative h-screen bg-black overflow-hidden">
@@ -551,35 +571,28 @@ export function TryoutGamePage() {
             </div>
           </div>
 
+          {/* SP bar */}
+          <div className="mb-[6px]">
+            <div className="flex justify-between text-[11px] mb-1">
+              <span className="text-theme-yellow">SP</span>
+              <span className="text-theme-text font-mono">{Math.round(hud.power)}/150</span>
+            </div>
+            <div className="w-full h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
+              <div
+                className="h-full rounded-[3px] transition-[width] duration-200"
+                style={{ width: `${powerPct * 100}%`, background: hud.power >= 100 ? "#eab308" : "#a16207" }}
+              />
+            </div>
+            {hud.power >= 100 && (
+              <div className="text-[10px] text-theme-yellow text-center mt-1 font-mono animate-pulse">READY — PRESS J</div>
+            )}
+          </div>
+
           <div className={`text-[11px] text-center font-mono ${stabilityColor}`}>{stabilityLabel}</div>
         </div>
       </div>
 
       <BitBeastCinematic imageUrl={bitBeastCinematic.imageUrl} moveName={bitBeastCinematic.moveName} visible={bitBeastCinematic.visible} />
-
-      {/* Spin-out overlay */}
-      {spinOut && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-          <div className="text-center">
-            <div className="text-[60px] mb-4">🌀</div>
-            <h2 className="text-[28px] font-black text-theme-text mb-2">Spin Out!</h2>
-            <p className="text-theme-muted mb-6">
-              Survived {Math.floor(hud.timer)}s
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={reset}
-                className="py-3 px-6 bg-theme-blue text-white rounded-[10px] font-bold text-[14px] cursor-pointer border-none"
-              >
-                Try Again
-              </button>
-              <Link to="/game" className="py-3 px-6 bg-bg3 text-theme-text rounded-[10px] font-bold text-[14px] no-underline">
-                Menu
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
