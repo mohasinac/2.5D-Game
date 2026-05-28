@@ -32633,3 +32633,260 @@ TT Atomic weak spring: τ_floor reduced slightly → slightly more burst-vulnera
 
 **Defense role characterisation**
 Tornado Wyvern 4Glaive Atomic is a defense/stamina hybrid: Disc 4's OWD + Glaive's LAD + Atomic ball's near-zero tip friction combine for high Stamina and Spin Equalization potential. Tornado Wyvern's free ring compensates for its short teeth against solid contacts. Primary failure mode: attacker who consistently contacts blade gaps bypasses ring protection → burst in 1–2 hits. Against stamina types (no aggressive contact), this combination performs at top competitive tier due to extremely low spin loss per second at low ω.
+
+---
+
+## CASE 1604 — Energy Ring: Aquario [MFB System]
+
+**Part overview**
+Aquario Energy Ring (3.3 g confirmed) is one of the heaviest stock MFB Energy Rings, making it a preferred choice for Defense and Stamina combos in both the Hybrid Wheel and 4D systems. The design features a 4-fold wave pattern — four water-splashing arcs arranged symmetrically around the circumference — which produces a nearly smooth outer perimeter with slight undulation.
+
+Motif: Aquarius (eleventh zodiac sign, water-carrier vase). "AQRO" text embossed on Takara Tomy release.
+
+**Dimensions and mass**
+- Mass: 3.3 g (confirmed; among heaviest MFB ERs)
+- Outer radius: r_o ≈ 38 mm (to wave peak)
+- Inner radius: r_i ≈ 27 mm (seated against Fusion Wheel hub)
+- Height: ≈ 4 mm (standard ER thickness)
+
+**Moment of inertia**
+Treated as an annular disc (4-fold symmetry → rotationally balanced):
+I_Aquario = ½ × m × (r_o² + r_i²)
+= ½ × 0.0033 × (0.038² + 0.027²)
+= ½ × 0.0033 × (1.444×10⁻³ + 7.29×10⁻⁴)
+= ½ × 0.0033 × 2.173×10⁻³
+= **3.585×10⁻⁶ kg·m²**
+
+**Contact profile**
+Wave peaks project ~1 mm beyond the mean circumference at r ≈ 38 mm. Contact angle at wave peak α ≈ 15–20° (shallow, nearly tangential). Recoil coefficient ε_Aquario ≈ 0.12 — lower than an angular ER (e.g. Cancer at α ≈ 45°, ε ≈ 0.35). The smooth wave profile makes Aquario compatible with all Fusion Wheel types; it does not add significant recoil that would destabilise stamina wheels.
+
+**Role in system**
+High mass contributes meaningfully to total assembly I. A 3.3 g ER at r_o = 38 mm adds 3.585×10⁻⁶ kg·m² vs a 2.5 g ER adding ~2.72×10⁻⁶ — a 32% I advantage at the ER layer. Recommended pairing: high-OWD Fusion Wheels (Earth, Virgo, Scythe) where the ER's outer mass supplements the wheel's already-extended distribution.
+
+---
+
+## CASE 1605 — Light Wheel: Wind [MFB Light Wheel System]
+
+**Part overview**
+Wind Light Wheel (15 g) is the plastic equivalent of the Storm Fusion Wheel. The three-wing geometry is nearly identical to Storm with minor cosmetic differences, but Wind uses ABS plastic rather than zinc die-cast metal, reducing mass by ~15 g (50% of Storm's ~30 g). "Three floating feathers drive home an attack" is the official description. Like all Light Wheels, Wind is prone to breakage in battle and is regarded as a collector item only.
+
+**Geometry**
+- Three swept wing-blades, radially symmetric at 120° intervals
+- Hub bore: r_hub ≈ 15 mm
+- Wing tip radius: r_tip ≈ 48 mm
+- Wing radial span: L_wing = 33 mm (r_hub to r_tip)
+- Wing cross-section at root: ~3 mm thick × 18 mm wide
+
+**Moment of inertia**
+Modelled as hub (2 g solid disc) + 3 uniform wings (13 g total, 4.333 g each), each a uniform rod from d = 15 mm to d+L = 48 mm:
+
+I_one_wing = m_wing × [(r_tip³ − r_hub³) / (3 × L_wing)]
+= 0.004333 × [(0.048³ − 0.015³) / (3 × 0.033)]
+= 0.004333 × [(1.10592×10⁻⁴ − 3.375×10⁻⁶) / 0.099]
+= 0.004333 × 1.08299×10⁻³
+= 4.693×10⁻⁶ kg·m²
+
+I_wings = 3 × 4.693×10⁻⁶ = 1.408×10⁻⁵ kg·m²
+
+I_hub = ½ × 0.002 × 0.012² = 1.44×10⁻⁷ kg·m²
+
+**I_Wind = 1.422×10⁻⁵ kg·m²**
+
+Compare: Storm FW (metal, ~30 g, same geometry) → I_Storm ≈ 2.8×10⁻⁵ kg·m². Wind is ~50.8% of Storm's rotational inertia — directly proportional to mass, confirming similar geometric distribution.
+
+**Structural failure analysis**
+Wing root bending stress during a typical MFB collision (F_impact ≈ 100 N at tip, moment arm L ≈ 35 mm):
+Bending moment M = 100 × 0.035 = 3.5 N·m
+Wing root section modulus Z = b × h² / 6 = 0.018 × 0.003² / 6 = 2.7×10⁻⁸ m³
+σ_impact = M / Z = 3.5 / 2.7×10⁻⁸ = **1.296×10⁸ Pa = 129.6 MPa**
+
+ABS yield strength σ_y ≈ 50 MPa → safety factor SF = 50 / 129.6 = **0.39 < 1**
+Storm (zinc die-cast, σ_y ≈ 200 MPa) → SF = 200 / 129.6 = **1.54** (safe)
+
+Wing root fracture is mechanically inevitable under typical battle loads. Wind should not be used in competitive or casual battle; structural integrity fails after 5–10 moderate impacts.
+
+**Performance vs Storm FW**
+At equal ω₀ = 650 rad/s: L_Wind = 9.243×10⁻³ N·m·s vs L_Storm ≈ 1.82×10⁻² N·m·s. Wind delivers ~50.8% of the angular momentum payload of Storm on an Attack-type combo — and without the structural integrity to survive repeated contact, that lower momentum is never consistently delivered.
+
+---
+
+## CASE 1606 — Spin Track: 100 [MFB System]
+
+**Part overview**
+Spin Track 100 (1.0 g) is the third-lowest track in the MFB system (after 85 and 90). Height of 10.0 mm places the Fusion Wheel and Energy Ring at a low enough position to contact opposing beys' Fusion Wheels without inducing consistent floor scraping.
+
+**Dimensions and mass**
+- Mass: 1.0 g (confirmed)
+- Height: 10.0 mm
+- Main tube: r_o ≈ 13 mm, r_i ≈ 6 mm (bore for tip shaft)
+- Base flange: r_flange ≈ 15 mm, t ≈ 1 mm
+
+**Moment of inertia**
+Main tube (0.7 g):
+I_tube = ½ × 0.0007 × (0.013² + 0.006²) = ½ × 0.0007 × 2.05×10⁻⁴ = 7.175×10⁻⁸ kg·m²
+
+Base flange (0.3 g):
+I_flange = ½ × 0.0003 × (0.015² + 0.013²) = ½ × 0.0003 × 3.94×10⁻⁴ = 5.91×10⁻⁸ kg·m²
+
+**I_100 = 1.309×10⁻⁷ kg·m²**
+
+**Height and floor clearance**
+Track 85 (8.5 mm): highest floor-scrape risk at full wobble — tip and track contact floor simultaneously at tilt angles > ~12°.
+Track 100 (10.0 mm): +1.5 mm clears the floor at equivalent wobble angles — no floor scraping under normal battle conditions.
+Trade-off: 1.5 mm higher CoM vs 85. For Wind Aquario specifically (Light Wheel already low-mass), CoM height change is ~1 mm upward — negligible effect on stability.
+
+**Competitive context**
+At equal geometry, 85 and 90 are preferred for pure attack because lower height allows the Fusion Wheel to contact opponents at a lower, more aggressive plane. Track 100 is preferred where floor scraping would cause unacceptable tip destabilisation (e.g. with wide flat tips that lose control on floor contact). For Wind Aquario, 100 is appropriate — the HF mode tip would be severely disrupted by floor contact on the 85 or 90.
+
+---
+
+## CASE 1607 — Performance Tip: HF/S — Hole Flat / Spike [MFB System]
+
+**Part overview**
+HF/S (0.9 g) is a dual-mode Performance Tip with a between-battle mode-change gimmick: pull the lower section downward, rotate 90°, re-engage to switch between Hole Flat (HF) and Spike (S) modes. At the time of its release (BB-37 Random Booster Light Vol. 2), it was the tallest Performance Tip in the Metal era. The only other mode-change MFB-era PT is Delta Drive (released later). Both modes exhibit stability issues attributable to the abnormal height.
+
+**Shared geometry**
+- Mass: 0.9 g (all modes)
+- Total tip height h_tip ≈ 16 mm (vs 10–12 mm for standard MFB tips)
+- Upper shaft: r ≈ 5 mm, h ≈ 9 mm
+- Mode-change housing: pull-latch; wear over time → loose mode retention
+- I_tip ≈ ½ × 0.0009 × 0.005² = **1.125×10⁻⁸ kg·m²** (negligible either mode)
+
+**Hole Flat (HF) mode geometry**
+Contact surface: annular flat ring
+- r_inner = 2 mm (central hole)
+- r_outer = 6 mm (wider than regular HF at ~4 mm)
+- Effective contact radius (uniform pressure over annulus):
+  r_eff = (2/3) × (r_o³ − r_i³) / (r_o² − r_i²)
+  = (2/3) × (2.16×10⁻⁷ − 8×10⁻⁹) / (3.6×10⁻⁵ − 4×10⁻⁶)
+  = (2/3) × 2.08×10⁻⁷ / 3.2×10⁻⁵ = **4.33 mm**
+
+μ_slide_ABS ≈ 0.35 (ABS on metal stadium)
+τ_HF (at F_N = 0.2080 N for 21.2 g assembly) = 0.35 × 0.2080 × 4.33×10⁻³ = **3.154×10⁻⁴ N·m**
+
+Movement: erratic, wall-bouncing attack pattern. Central hole slightly reduces friction vs full Wide Flat, giving marginally more predictable paths than WF while retaining aggression.
+
+**Spike (S) mode geometry**
+Contact: conical point tip
+- r_contact ≈ 0.5–0.8 mm at working tilt; r_S_eff = 0.65 mm
+- μ_slide_cone ≈ 0.30 (near-point contact, mixed sliding/rolling)
+- τ_S (at F_N = 0.2080 N) = 0.30 × 0.2080 × 6.5×10⁻⁴ = **4.056×10⁻⁵ N·m**
+
+This is 7.8× less friction than HF mode. Very low spin decay from tip contact → theoretical Stamina/Balance behaviour.
+
+**Height instability — both modes**
+Taller tip raises the bey's effective CoM. For Wind Aquario 100HF/S, h_tip = 16 mm (vs normal 10–12 mm) elevates CoM by ~4–6 mm compared to a standard tip. Effect on precession:
+
+Precession rate: Ω = (m × g × h_CoM) / (I_total × ω)
+
+At ω = 300 rad/s (near wobble threshold):
+Ω_HF/S ≈ (0.0212 × 9.81 × 0.016) / (1.796×10⁻⁵ × 300) = 3.323×10⁻³ / 5.388×10⁻³ = 0.617 rad/s
+
+Higher Ω → faster growing tilt oscillation → wobble threshold effectively raised from 260 rad/s to ~310–320 rad/s for both modes.
+
+**Mode-change mechanism degradation**
+The pull-latch mechanism relies on plastic detents that wear with each mode change. After 15–25 mode switches, detent depth decreases, causing:
+1. Unintended mode disengagement under battle vibration
+2. Partial engagement → intermediate geometry (neither flat nor spike contact)
+3. Tip rattle → erratic movement in both modes
+
+This limits HF/S's practical longevity as a functional mode-change tip.
+
+---
+
+## CASE 1608 — Assembly: Wind Aquario 100HF [MFB Attack Mode]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Face Bolt | Aquario | 1.0 g |
+| Energy Ring | Aquario | 3.3 g |
+| Light Wheel | Wind | 15.0 g |
+| Spin Track | 100 | 1.0 g |
+| Performance Tip | HF/S (Hole Flat mode) | 0.9 g |
+| **Total** | | **21.2 g** |
+
+**Aggregate moment of inertia**
+I_total = I_FB + I_Aquario + I_Wind + I_100 + I_tip
+= 1.25×10⁻⁸ + 3.585×10⁻⁶ + 1.422×10⁻⁵ + 1.309×10⁻⁷ + 1.125×10⁻⁸
+= **1.796×10⁻⁵ kg·m²**
+
+**Launch and combat parameters (MFB era, ω₀ = 650 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 650 | 3.794 | 11.67 |
+| Battle (60%) | 390 | 1.366 | 7.004 |
+| Wobble onset (40%) | 260 | 0.607 | 4.670 |
+
+**Comparison to competitive MFB attackers (e.g. Blaze Pegasus 100SF at ~42 g, I ≈ 3.6×10⁻⁵):**
+L_Wind_Aquario = 11.67 mN·m·s vs L_competitive ≈ 23–26 mN·m·s → **44.9% of competitive angular momentum at launch**
+
+**Spin decay — HF mode**
+F_N = 0.0212 × 9.81 = 0.2080 N
+τ_HF = 3.154×10⁻⁴ N·m (from CASE 1607)
+dω/dt_HF = −τ_HF / I = −3.154×10⁻⁴ / 1.796×10⁻⁵ = **−17.56 rad/s²**
+
+Time to wobble onset: (650 − 260) / 17.56 = **22.2 s**
+Time to battle ω: (650 − 390) / 17.56 = 14.8 s (bey is already at battle spin in ~15 s)
+
+Very rapid decay — HF mode Wind Aquario spins down before it can execute sustained attack sequences.
+
+**Effective attack force**
+On collision with an opponent at ω_battle = 390 rad/s:
+ΔL_delivered ≈ I × Δω_collision ∝ I_total → proportional to 1.796×10⁻⁵ / 3.6×10⁻⁵ (vs heavy attacker) = **49.9% of competitive impact force**
+
+Combined with Wind LW fracture risk (SF = 0.39, wings fail in 5–10 battles), Wind Aquario in HF mode cannot reliably deliver its already-reduced impact: the wheel degrades toward structural failure before the bey achieves competitive performance.
+
+**MFB era — no burst system**
+Aquario ER snap-locks onto Wind LW via clips. No ratchet, no burst meter. Energy Ring clip elasticity is the sole retention force; Wind LW plastic clip seats may weaken from impact even before wing fracture.
+
+**Assessment**
+Wind Aquario 100HF is outclassed in every performance dimension by metal-wheel contemporaries. The Light Wheel system was released as a lower-cost entry point and is not intended for competitive use. Competitive viability: NOT VIABLE. Collector and display value: HIGH (BB-37 Random Booster prize rarity; Hikaru Hasama's signature bey).
+
+---
+
+## CASE 1609 — Assembly: Wind Aquario 100S [MFB Balance / Spike Mode]
+
+**Full assembly**
+Identical to CASE 1608 except HF/S tip is in Spike mode. Total mass = 21.2 g, I_total = 1.796×10⁻⁵ kg·m² (tip I is negligible; mode does not affect assembly I).
+
+**Spin decay — Spike mode**
+F_N = 0.2080 N
+τ_S = 4.056×10⁻⁵ N·m (from CASE 1607)
+dω/dt_S = −τ_S / I = −4.056×10⁻⁵ / 1.796×10⁻⁵ = **−2.258 rad/s²**
+
+Theoretical spinout time (650 → 260 rad/s, wobble threshold): Δω / |dω/dt| = 390 / 2.258 = **172.7 s (~2.88 min)**
+
+Height instability correction: tall tip (h = 16 mm) raises effective wobble threshold to ω ≈ 315 rad/s (from CASE 1607 analysis). Adjusted spinout time to that threshold:
+(650 − 315) / 2.258 = 335 / 2.258 = **148.4 s (~2.47 min)**
+
+**Launch and combat parameters (MFB era, ω₀ = 650 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 650 | 3.794 | 11.67 |
+| Battle (60%) | 390 | 1.366 | 7.004 |
+| Wobble onset (adjusted, tall tip) | 315 | 0.892 | 5.657 |
+
+**Spin equalization analysis**
+When a higher-spin opponent contacts Wind Aquario 100S, impulse J is exchanged at the contact point (ER/LW interface). Angular momentum transfer:
+
+Δω_self = +J / I_self = +J / 1.796×10⁻⁵
+Δω_opponent = −J / I_opponent (e.g. 3.6×10⁻⁵ for heavy attacker)
+
+Ratio: Δω_self / |Δω_opponent| = I_opponent / I_self = 3.6×10⁻⁵ / 1.796×10⁻⁵ = **2.00×**
+
+Wind Aquario gains spin 2× faster per contact than the opponent loses it — theoretically excellent spin equalization.
+However, the Wind LW (ABS plastic, SF_structural = 0.39) deforms and partially absorbs the contact impulse rather than transmitting it cleanly. Plastic LW contact surfaces at r ≈ 38–48 mm compress under impact force (E_ABS ≈ 2.5 GPa vs E_zinc ≈ 96 GPa), reducing effective J transfer by an estimated 30–50%.
+
+Practical equalization efficiency: ~50–70% of theoretical → equalization occurs but more slowly than a metal-wheel stamina type (e.g. Earth Aquario, which has full metal contact transmission).
+
+**Assessment**
+Wind Aquario 100S demonstrates that the HF/S tip, when used in Spike mode, provides genuinely low spin decay — the friction torque (4.056×10⁻⁵ N·m) is competitive with dedicated stamina tips. The assembly's critical failure points are:
+1. Wind LW cannot survive sustained contact from metal wheels → structural failure before stamina can be demonstrated
+2. Tall HF/S height raises effective wobble threshold to 315 rad/s → spinout ~25 s earlier than a short tip would allow
+3. Low total mass (21.2 g vs ~42 g for competitive stamina beys) → easily knocked off course, disrupting the centred spin motion Spike mode requires
+
+Compared to 100HF mode: Spike mode is strictly better for longevity (7.8× lower τ) but the underlying assembly limitations apply equally to both modes. The design intent (adaptable Attack/Balance hybrid) is not achievable with a plastic Light Wheel chassis.

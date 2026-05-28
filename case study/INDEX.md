@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1573 cases** across 14 files + 1 master reference.
+Total: **1579 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1604** — All new cases must start here. Update this block before writing any new case.
+> **1610** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,7 +23,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 | 305 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 | 311 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
@@ -101,6 +101,7 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1495–1497 | 3 | Gravity Brave — Gravity FW left-spin blade-edge pressure-pulse scatter arrows (Julian Konzern · Gravity Destroyer AD145WD) | CS13 |
 | 1500–1524 | 25 | CS9 overflow blocks: Aquario 105F, Berserker Byakko 125S, Shelter Regulus 5Star Tower, Hyperion Burn Cho Xceed'+X, Greatest Raphael Over High Xtend+' | CS9 |
 | 1546–1573 | 28 | CS9 part+assembly physics: Omega Dragonis 85XF (MFB 4D), Clay Aries ED145B (LW), Holy Horusood Upper Claw (Burst), Vise Leopard 12Lift Destroy (Cho-Z), Tornado Wyvern 4Glaive Atomic (God) | CS9 |
+| 1604–1609 | 6 | CS9 part+assembly physics: Wind Aquario 100HF/S (MFB Light Wheel System) | CS9 |
 | 1525–1527 | 3 | Grand Maelstrom — RS pivot-anchor T125 vortex whirlpool AoE 10s drain (Sophie · Grand Cetus T125RS) | CS13 |
 | 1528–1530 | 3 | Grand Victoire — whirlpool-exit aerial dive water-crash ring-out (Sophie · Grand Cetus T125RS) | CS13 |
 | 1531–1533 | 3 | Grand Fleet — WD145 wing platform aerial crash ring-out (Wales · Grand Cetus WD145RS) | CS13 |
@@ -117,8 +118,7 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1592–1594 | 3 | Hammer Bolt — XF rubber triboelectric charge + turquoise-lightning strike (Ryuto · Omega Dragonis 85XF) | CS13 |
 | 1595–1597 | 3 | Horn Throw Destruction — ED145 free-spin bearing + B-tip low-strike uppercut + spin-track follow-up (Hyoma · Clay Aries ED145B) | CS13 |
 | 1598–1600 | 3 | Horusood Field — Claw driver Rankine vortex forced-air ejection ring-out (Hoji Konda · Hyper Horusood Upper-Claw) | CS13 |
-| 1601–1603 | 3 | Howling Bite — fang-capture orbital hammer-throw cyclone toss 3-target chain (Laban Vanot · Vice Leopard 12Lift Destroy) | CS13 |
-| **1604+** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| 1601–1603 | 3 | Howling Bite — fang-capture orbital hammer-throw cyclone toss 3-target chain (Laban Vanot · Vice Leopard 12Lift Destroy) | CS13 |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
