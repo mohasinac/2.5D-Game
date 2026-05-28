@@ -32890,3 +32890,456 @@ Wind Aquario 100S demonstrates that the HF/S tip, when used in Spike mode, provi
 3. Low total mass (21.2 g vs ~42 g for competitive stamina beys) → easily knocked off course, disrupting the centred spin motion Spike mode requires
 
 Compared to 100HF mode: Spike mode is strictly better for longevity (7.8× lower τ) but the underlying assembly limitations apply equally to both modes. The design intent (adaptable Attack/Balance hybrid) is not achievable with a plastic Light Wheel chassis.
+
+---
+
+## CASE 1634 — Energy Ring: Gil [MFB System]
+
+**Part overview**
+Gil Energy Ring (2.8 g) is a purplish-blue asymmetric ER representing the full skeleton of a Plesiosaur. The motif shows Carina (ship's keel) constellation as a Plesiosaur with four limb-clusters on one semicircle and the head/neck on the opposite side. Blue bone-spot details accentuate the skeletal pattern. Four raised spine protrusions (two per side) project beyond the mean circumference. The design is un-even by construction: "feet" on one arc, "head" on the other.
+
+**Dimensions and mass**
+- Mass: 2.8 g (confirmed)
+- Outer radius (spine tips): r_o ≈ 37 mm
+- Inner radius (FW hub seat): r_i ≈ 26 mm
+- Height ≈ 5 mm (slightly taller than smooth ERs due to raised spines)
+
+**Moment of inertia**
+Annular approximation (asymmetry treated as imbalance separately):
+I_Gil = ½ × m × (r_o² + r_i²)
+= ½ × 0.0028 × (0.037² + 0.026²)
+= ½ × 0.0028 × (1.369×10⁻³ + 6.76×10⁻⁴)
+= ½ × 0.0028 × 2.045×10⁻³
+= **2.863×10⁻⁶ kg·m²**
+
+**Static imbalance — asymmetric skeleton motif**
+"Feet" arc has approximately Δm ≈ 0.20 g excess relative to "head" arc, located at r_imbalance ≈ 32 mm:
+Static imbalance: U = 0.0002 × 0.032 = **6.4×10⁻⁶ kg·m (6.4 g·mm)**
+
+Centrifugal forcing at battle ω = 390 rad/s:
+F_imbalance = U × ω² = 6.4×10⁻⁶ × 390² = **0.974 N** (periodic at 62.1 Hz)
+
+This is ~26% of the full assembly weight force. Gil introduces measurable trajectory variation each revolution. Compare to symmetric Aquario (4-fold wave): F_imbalance ≈ 0. The imbalance creates a slight path "wobble" that makes approach angle to the opponent less predictable — partially advantageous for avoiding consistent recoil deflection patterns.
+
+**Contact profile**
+Spine protrusions: α_contact ≈ 50–60° (raised sharp leading edges)
+Recoil coefficient ε_Gil ≈ 0.30–0.35 (jagged, angular profile)
+
+Underside spike contact: Gil's raised spine tips extend below the Fusion Wheel's lower lip in some configurations. On low-track builds opposing tall-track beys, Gil spines can strike the underside of the opponent's Fusion Wheel — imparting an upward lateral force component that destabilizes Defense Type wobble more effectively than a flat ER profile.
+
+**Comparison to Libra ER**
+Libra (~3.0 g, symmetric, smooth scales): ε_Libra ≈ 0.10–0.15 (low recoil, high balance)
+Gil (2.8 g, asymmetric, jagged spines): ε_Gil ≈ 0.30–0.35 (3× higher recoil per event)
+Gil sacrifices symmetric stability for attack-oriented contact geometry. Libra is superior for Defense/Stamina applications; Gil is a passive contributor to Ray Gil's Smash Attack profile via its high ε and imbalance-induced path variation.
+
+---
+
+## CASE 1635 — Fusion Wheel: Ray [MFB System]
+
+**Part overview**
+Ray Fusion Wheel (29.4 g confirmed) uses a three-winged design visually identical to the Storm Fusion Wheel with one key difference: each of the three wings features two square-like surface indents (shallow decorative grooves, ~1.5 mm deep). Ray has "considerable Smash Attack attributes at high spin velocities" and manageable recoil. It is outclassed by Lightning, Vulcan, and Blitz in the MFB attack tier. Sticker adhesion is maintained in battle, confirming the groove surfaces are smooth and shallow rather than structural notches.
+
+**Dimensions and mass**
+- Mass: 29.4 g (confirmed)
+- Hub bore: r_hub ≈ 15 mm
+- Wing tip radius: r_tip ≈ 47 mm
+- Wing radial span: L_wing = 32 mm
+- Square indent depth: ~1.5 mm (cosmetic grooves, minimal mass removal)
+
+**Moment of inertia**
+Hub (5% = 1.47 g): I_hub = ½ × 0.00147 × 0.012² = 1.058×10⁻⁷ kg·m²
+Wings (95% = 27.93 g, 9.31 g each), uniform rod from d = 15 mm to 47 mm:
+
+I_one_wing = m × [(r_tip³ − r_hub³) / (3 × L_wing)]
+= 0.00931 × [(0.047³ − 0.015³) / (3 × 0.032)]
+= 0.00931 × [(1.03823×10⁻⁴ − 3.375×10⁻⁶) / 0.096]
+= 0.00931 × 1.04633×10⁻³
+= **9.742×10⁻⁶ kg·m² per wing**
+
+I_wings = 3 × 9.742×10⁻⁶ = 2.923×10⁻⁵ kg·m²
+
+**I_Ray = 2.934×10⁻⁵ kg·m²**
+
+Compare to Storm FW (~30 g, same wing geometry): I_Storm ≈ 2.84×10⁻⁵. Ray's slight mass deficiency (29.4 vs 30 g) places it at 3.4% less I than Storm — functionally equivalent geometry.
+
+**Square indent Smash Attack contact analysis**
+Each indent has two step-edges (rising and falling wall of the groove) that function as Smash contact points when the wheel engages an opponent. Per revolution:
+- 3 wings × 2 indents per wing × 2 step-edges per indent... but in practice each indent presents ONE dominant impact face (the leading edge of the outer step wall) per revolution.
+- Effective: **6 Smash contact events per revolution**
+
+Contact angle at step-edge: α ≈ 45–60°; ε_Ray ≈ 0.25–0.30
+At ω_battle = 390 rad/s:
+f_contact = 6 × (390/2π) = **372 Hz** — "rapid consecutive attacks" (連続攻撃) confirmed by official card
+
+**Recoil and self-stabilization**
+ε ≈ 0.28 → 28% of contact energy returned to Ray, causing bey to deflect inward/radially after impact. Without damping:
+Δω_recoil = ε × Δω_impact / (1 + I_opponent/I_self)
+
+For same-mass opponent (I ≈ 3.2×10⁻⁵):
+Δω_recoil ≈ 0.28 × Δω_impact × 0.5 = 14% spin loss from recoil per contact event
+
+Recoil suppression methods:
+1. Metal Face Bolt (+4 g): raises I_total by ~13% → reduces Δω_impact by 13%
+2. Rubber tip (RSF/RF): τ_rubber ≫ τ_ABS → tip friction resists lateral deflection after recoil, keeping bey anchored in contact zone
+
+**Performance tier in MFB Attack rankings**
+Ray r_tip = 47 mm vs Lightning ~50 mm vs Blitz ~52 mm.
+Angular impulse per contact event scales with r_tip × I × ω. At equal ω:
+ΔL_Ray / ΔL_Lightning ≈ (r_Ray × I_Ray) / (r_Lightning × I_Lightning) = (47 × 2.93) / (50 × ~3.5) ≈ 137.7 / 175 = **0.79** — Ray delivers ~79% of Lightning's angular momentum per contact hit. This quantifies the "outclassed but decent" characterisation.
+
+---
+
+## CASE 1636 — Performance Tip: RSF — Rubber Semi-Flat [MFB System]
+
+**Part overview**
+Rubber Semi-Flat (RSF, 0.8 g) is a rubber-compound flat tip with a smaller contact radius than the standard Semi-Flat (SF). The photos show a flat rubber disc face with a scalloped outer edge (small ridges at the contact perimeter that stabilise the contact patch during lateral motion). RSF provides "firm, defensive grip on the stadium floor" while allowing "small aggressive movement with a proper launch." Drawbacks: poor Stamina and weakness against opposite-spin beyblades.
+
+**Geometry**
+- Contact face: flat rubber disc, r_RSF ≈ 3.75 mm
+- Scalloped perimeter ridges: depth ~0.8 mm (maintain contact patch alignment)
+- Height ≈ 12 mm (standard for MFB tips)
+- I_RSF ≈ ½ × 0.0008 × 0.00375² = **5.6×10⁻⁹ kg·m²** (negligible)
+- Material: natural rubber, E_rubber ≈ 0.07 GPa (vs ABS E ≈ 2.5 GPa)
+
+**Rubber friction mechanics**
+μ_rubber_kinetic ≈ 0.90 (rubber on metal stadium floor, clean dry surface)
+μ_ABS_kinetic ≈ 0.35 (ABS on metal, for comparison)
+
+For assembly mass 35.0 g: F_N = 0.035 × 9.81 = 0.3434 N
+
+τ_RSF = μ_rubber × F_N × r_RSF = 0.90 × 0.3434 × 3.75×10⁻³ = **1.160×10⁻³ N·m = 1.160 mN·m**
+
+Compare to ABS SF at same nominal radius:
+τ_SF_ABS = 0.35 × 0.3434 × 4.5×10⁻³ = 5.41×10⁻⁴ N·m
+RSF friction is **2.14×** ABS SF — dominant spin decay source in any RSF assembly.
+
+Rubber deformation compliance note: E_rubber → real contact area self-increases by ~15–20% under load, raising effective μ slightly above nominal value. Conservative nominal μ = 0.90 used throughout.
+
+**Movement pattern**
+Semi-flat face, r_RSF < r_SF: movement arc is smaller and more predictable than full SF or WF. RSF follows a controlled spiraling inward attack path when launched at low angle, gripping rather than sliding on the bowl surface. WF (r ≈ 7 mm) creates chaotic wall-riding; RSF (r ≈ 3.75 mm) creates a tight controlled orbit — "small aggressive movement with proper launch."
+
+**Opposite-spin vulnerability — quantified**
+At opposite-spin contact, the relative surface velocity reverses the kinetic friction direction. Rubber's high μ means the friction force now DECELERATES rather than propels:
+τ_opposing_tip_contact = μ_rubber × F_contact × r_RSF = 0.90 × 0.3434 × 3.75×10⁻³ = 1.160×10⁻³ N·m
+
+Total deceleration torque during opposite-spin engagement:
+τ_total = τ_floor_RSF + τ_opposite_contact = 1.160×10⁻³ + 1.160×10⁻³ = 2.320×10⁻³ N·m
+dω/dt_opposing = −2.320×10⁻³ / I_Ray_Gil = −2.320×10⁻³ / 3.235×10⁻⁵ = **−71.7 rad/s²**
+
+Time from battle ω (390) to wobble (260) under opposite-spin contact: (390−260)/71.7 = **1.8 s** — compared to normal floor friction alone: 10.9 s. RSF's vulnerability is severe: opposite-spin contact eliminates attack window almost entirely.
+
+**RSF vs RF (Rubber Flat) comparison**
+RF: r_RF ≈ 5–6 mm (wider, more aggressive movement, less predictable path)
+RSF: r_RSF ≈ 3.75 mm (narrower, controlled movement, better balance than RF)
+RSF provides: τ_RSF = 1.160 mN·m vs τ_RF ≈ 1.93 mN·m (at same μ, larger r_RF)
+RSF has ~60% of RF's friction torque → ~40% longer spinout time vs RF — "better balance than Rubber Spike" statement generalises to RF as well.
+
+---
+
+## CASE 1637 — Assembly: Ray Gil 100RSF [MFB Attack]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Face Bolt | Gil | 1.0 g |
+| Energy Ring | Gil | 2.8 g |
+| Fusion Wheel | Ray | 29.4 g |
+| Spin Track | 100 (see CASE 1606) | 1.0 g |
+| Performance Tip | RSF | 0.8 g |
+| **Total** | | **35.0 g** |
+
+**Aggregate moment of inertia**
+I_total = I_FB + I_Gil + I_Ray + I_100 + I_RSF
+= 1.25×10⁻⁸ + 2.863×10⁻⁶ + 2.934×10⁻⁵ + 1.309×10⁻⁷ + 5.6×10⁻⁹
+= **3.235×10⁻⁵ kg·m²**
+
+**Launch and combat parameters (MFB era, ω₀ = 650 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 650 | 6.834 | 21.03 |
+| Battle (60%) | 390 | 2.460 | 12.62 |
+| Wobble onset (40%) | 260 | 1.093 | 8.411 |
+
+**Spin decay — RSF mode**
+F_N = 0.035 × 9.81 = 0.3434 N
+τ_RSF = 1.160×10⁻³ N·m (CASE 1612)
+dω/dt = −τ_RSF / I = −1.160×10⁻³ / 3.235×10⁻⁵ = **−35.9 rad/s²**
+
+Time to wobble onset: (650 − 260) / 35.9 = **10.9 s**
+Time from launch to battle ω: (650 − 390) / 35.9 = **7.2 s**
+
+Attack window: ~3.7 s of battle-speed operation before crossing into wobble territory. RSF is strictly a first-strike weapon: Ray Gil must engage the opponent within ~10 s of launch or its Smash Attack potential is lost.
+
+**Smash Attack output**
+At ω_battle = 390 rad/s, Ray FW Smash contact frequency: f = 372 Hz (CASE 1611)
+Impact radius: r_impact ≈ 43 mm (midpoint of square-indent step-edge zone)
+
+Angular impulse per revolution (sustained contact):
+ΔL_per_rev = τ_impact × (2π/ω) × 6 contacts
+
+At peak (launch ω = 650 rad/s): contact frequency = 620 Hz — maximum smash density during opening engagement
+
+**Gil ER imbalance contribution to attack**
+F_imbalance = 0.974 N at 62.1 Hz (CASE 1610). This periodic force shifts the bey's approach trajectory slightly each revolution, making the attack angle to the opponent less predictable. Combined with RSF's controlled movement path, the result is: predictable general approach direction but varying contact geometry per hit — harder for an opponent to exploit consistent recoil angles.
+
+**Competitive assessment**
+L_launch = 21.03 mN·m·s. Competitive MFB tier-1 attackers (Lightning, Vulcan) reach ~26–29 mN·m·s. Ray Gil operates at ~75–80% of top-tier momentum capacity.
+
+Mitigation: RSF suppresses recoil oscillation after Ray FW contacts, keeping Ray Gil in the attack zone longer per engagement compared to Ray + ABS flat tip. This partially compensates for the angular momentum deficit vs higher-tier FWs.
+
+Argo Garcia's combat strategy (anime): sustained spiral pressure via RSF controlled approach, using the 372 Hz Smash contact frequency to deliver cumulative damage rather than single high-impact hits. Physically consistent: RSF path control + Ray high-frequency step contacts = sustained medium-force bombardment strategy.
+
+**Limits**
+1. RSF: 10.9 s to wobble → very short attack window
+2. Gil ER asymmetry: ~1 N imbalance force reduces effective precision of attack approach
+3. Opposite-spin matchup: spinout in ~1.8 s of sustained contact → near-instant loss
+
+---
+
+## CASE 1638 — Energy Ring: Leone I [MFB System]
+
+**Part overview**
+Leone I Energy Ring (3.0 g) is a round, teal Energy Ring with a six-segment alternating design: three smooth armor-plate segments alternate with three rougher segments featuring small ridges with gaps between them. Camouflage stickers are applied to the smooth segments. The motif depicts "Leo", fifth astrological sign in the Zodiac — a proud lion shown on the white hexagonal Face Bolt. Leone I is one of the heaviest standard ERs at 3.0 g and has seen use in both early MFB Defense combos and, later, WBO Limited Format Defense builds.
+
+**Dimensions and mass**
+- Mass: 3.0 g (confirmed)
+- Outer radius: r_o ≈ 38 mm (smooth armor plates extend to ring's outer edge)
+- Inner radius: r_i ≈ 26 mm (seated over FW hub)
+- Height ≈ 4.5 mm (slightly raised design due to alternating ridge/smooth profile)
+- Six-fold symmetry → no static imbalance
+
+**Moment of inertia**
+I_Leone_I = ½ × m × (r_o² + r_i²)
+= ½ × 0.003 × (0.038² + 0.026²)
+= ½ × 0.003 × (1.444×10⁻³ + 6.76×10⁻⁴)
+= ½ × 0.003 × 2.12×10⁻³
+= **3.180×10⁻⁶ kg·m²**
+
+**Contact profile — alternating design**
+Smooth armor segments: α_contact ≈ 12–18° (gently curved, very low recoil), ε_smooth ≈ 0.08
+Rough ridge segments: α_contact ≈ 30–40° (step-edges between ridges), ε_rough ≈ 0.22
+Effective weighted average (3 smooth + 3 rough at equal arc length):
+ε_Leone_I ≈ (0.08 + 0.22) / 2 = **0.15** (low to moderate recoil, dominated by smooth plates at higher impact probability)
+
+**Defense synergy — smooth graduation**
+Leone I's round outer profile, combined with FWs that have a similarly large outer diameter, creates an uninterrupted graduation between FW edge and ER outer surface. When paired with Bakushin FW (round, 30 g), no step-discontinuity exists between FW and ER at impact height → attacker's wheel glides across the transition rather than catching.
+
+"Uninterrupted graduation" condition: r_ER_outer ≈ r_FW_outer → Leone I (38 mm) paired with FWs whose tips extend to ~38 mm (Bakushin, Duo). If FW extends beyond ER (e.g., Storm: r ≈ 48 mm), ER adds no graduation benefit; attacker hits FW directly.
+
+**MFB Limited Format Defense utility**
+On low-track Defense (e.g., BD145 or 145 with defensive tip):
+Leone I's raised design (4.5 mm height) sits at the upper contact zone. The raised outer profile actually becomes advantageous here: it fills the vertical gap between FW and the upper air, reducing the "hook point" available for attacker's lower-tier wheels (85/90 track attackers striking upward).
+
+"Enhances Defensive capabilities more than heavier ERs such as Aquario" in this context because Aquario (3.3 g, smooth wave) and Leone I (3.0 g, smooth armor plates) provide similar low-ε contact profiles, but Leone I's slightly raised ridge pattern at the outer circumference deflects upward-angled attacks more effectively than Aquario's flat wave profile.
+
+**Synchrome System note**
+In Synchrome combos (ZeroG era), Leone I's raised design becomes disadvantageous: Synchrome wheels extend to ~50 mm outer radius, and Leone I's raised profile creates a step discontinuity at r ≈ 38 mm — attackers can catch this lip. "Lower profile alternatives such as Cygnus and Gasher" are preferred in this context.
+
+---
+
+## CASE 1639 — Fusion Wheel: Rock [MFB System]
+
+**Part overview**
+Rock Fusion Wheel (31.0 g confirmed) features six large rounded protrusions with small shallow gaps between each. The wheel overhangs the Spin Track slightly — the outer rim extends below the FW-Track junction, creating a partial lower shield. The internal structure (visible from underside) shows six spokes with large cutouts, concentrating mass in the outer lobes and spoke rails. Rock is "outclassed" for Attack (rounded profile, insufficient Smash Attack), but it functions in Defense/Stamina applications where its high mass and low recoil are valuable.
+
+**Dimensions and mass**
+- Mass: 31.0 g (confirmed)
+- Outer lobe radius: r_lobe ≈ 44 mm
+- Hub bore: r_hub ≈ 14 mm
+- 6 spokes with large cutouts between them (mass removed from mid-radius zone)
+- Small shallow inter-lobe gaps: α_gap ≈ 25–35° (rounded transition, not sharp)
+
+**Moment of inertia**
+Three-zone model (from underside spoke photo):
+Hub + spoke roots (10% = 3.1 g, r: 0→14 mm, solid disc): I_hub = ½ × 0.0031 × 0.014² = 3.038×10⁻⁷ kg·m²
+6 spokes (25% = 7.75 g, mean r ≈ 28 mm, modeled as point masses): I_spokes = 0.00775 × 0.028² = 6.076×10⁻⁶ kg·m²
+Outer lobes + rim (65% = 20.15 g, annular zone r: 33→44 mm):
+I_lobes = ½ × 0.02015 × (0.044² + 0.033²)
+= ½ × 0.02015 × (1.936×10⁻³ + 1.089×10⁻³)
+= ½ × 0.02015 × 3.025×10⁻³
+= **3.050×10⁻⁵ kg·m²**
+
+**I_Rock = 3.038×10⁻⁷ + 6.076×10⁻⁶ + 3.050×10⁻⁵ = 3.688×10⁻⁵ kg·m²**
+
+Sanity check: Earth FW (~30 g, similar lobe-dominant circular design) I_Earth ≈ 3.0–3.5×10⁻⁵. Rock at 31 g with 65% mass concentrated at r = 33–44 mm aligns with this range.
+
+**Contact profile — six rounded lobes**
+Lobe outer surface: smooth, rounded arc → α ≈ 20–30°, ε_Rock ≈ 0.15–0.20 (low recoil)
+Inter-lobe gaps: transition angle α ≈ 25–35°, ε_gap ≈ 0.18
+
+6 contact events per revolution (lobe leading edges), but shallow contact angles mean low Smash Attack force per event. For Attack: lobe impacts deliver tangential force ∝ ε × ΔL → low ε makes Rock a poor attacker.
+
+For Defense: low ε means the bey absorbs impact and redirects the attacker's energy along the curved lobe surface → attacker deflects tangentially rather than imparting a clean KO force.
+
+**Overhang contribution to Defense**
+Rock overhangs the Spin Track at the lower rim. This means an attacker striking low (at Track height) first contacts Rock's outer rim extension rather than the Track or tip. The overhang presents a rounded metal surface to low attacks → ε_overhang ≈ 0.15 → attacker rebounds with 85% of its own inertial energy intact but deflects off Rock's curved surface rather than generating a linear KO force.
+
+**Stamina compatibility**
+I_Rock = 3.658×10⁻⁵ is high for 31 g (mass concentrated at outer lobes r ≈ 44 mm). For Stamina combos:
+L_Rock(650) = 3.658×10⁻⁵ × 650 = 23.78 mN·m·s (FW contribution only)
+High I + low recoil → good Stamina/Defense combination.
+
+"Weight unable to compete" vs newer FWs (Basalt, Hell, Duo): Basalt ≈ 43 g, Hell ≈ 38 g. Rock at 31 g is lighter → lower L_launch. For Attack, lower L means less hit power. But for Defense, lower L means easier recoil absorption without over-spinning. The medium weight places Rock as a mid-tier but versatile Defense option.
+
+---
+
+## CASE 1640 — Spin Track: 145 [MFB System]
+
+**Part overview**
+Spin Track 145 (estimated 1.5 g) was the tallest MFB Spin Track available until Flame Byxis 230WD. At h = 14.5 mm, 145 is 4.5 mm taller than Track 100 (CASE 1606) and 6.0 mm taller than Track 85. The additional height serves two competitive purposes: (1) Stamina — taller height allows for wider wobble arc before spinout, (2) Smash-from-above — in Attack combos, the raised FW can strike down onto lower-tracked opponents. Gimmick-equipped 145 variants (BD145, AD145, WD145) have outclassed the plain version.
+
+**Dimensions and mass (estimated)**
+- Mass: ~1.5 g (plain 145, not stated in text; standard measurement)
+- Height: 14.5 mm
+- Main tube: r_o ≈ 14 mm, r_i ≈ 7 mm
+- Base flange: r_flange ≈ 16 mm, t ≈ 1 mm
+
+**Moment of inertia**
+Main tube (1.0 g): I_tube = ½ × 0.001 × (0.014² + 0.007²) = ½ × 0.001 × 2.45×10⁻⁴ = 1.225×10⁻⁷ kg·m²
+Base flange (0.5 g): I_flange = ½ × 0.0005 × (0.016² + 0.014²) = ½ × 0.0005 × 4.52×10⁻⁴ = 1.130×10⁻⁷ kg·m²
+
+**I_145 = 2.355×10⁻⁷ kg·m²**
+
+**Height effect on stamina wobble**
+A precessing beyblade sweeps a wider arc as it approaches spinout (θ increasing). For a taller tip-to-CoM stack:
+CoM height above floor: h_CoM_145 ≈ 19–21 mm (includes FW at mid-height)
+vs h_CoM_100 ≈ 14–16 mm
+
+Precession rate: Ω = (m × g × h_CoM) / (I × ω)
+At ω = 260 rad/s (wobble threshold) and I = 3.54×10⁻⁵, m = 37.2 g, h_CoM = 0.020 m:
+Ω = (0.0372 × 9.81 × 0.020) / (3.54×10⁻⁵ × 260) = 7.303×10⁻³ / 9.204×10⁻³ = **0.793 rad/s**
+
+Wobble period at spinout: T_wobble = 2π/0.793 = 7.92 s per precession cycle.
+The tall stack (h_CoM ≈ 20 mm) produces a faster precession rate but a wider physical wobble arc. The bey covers more arena area before spinout — useful for evading attackers but increases KO risk near walls.
+
+**Smash-from-above context**
+Track 145 places the FW at ~14.5 mm above the arena floor. An opposing bey on Track 100 has its FW at ~10 mm — Track 145 bey's FW is 4.5 mm above the opponent's. The upper FW can contact the opponent's ER at a downward angle α_down ≈ 20–30°, imparting a downward force component on the opponent in addition to lateral Smash.
+
+For Defense Type (Rock FW): the 145 height combined with Rock's overhang means the overhang projects downward far enough to contact opponent's Spin Track tops — an additional contact zone for deflection.
+
+**Gimmick track comparison**
+BD145 (Boost Disk 145): ~4 g, adds a sloped disc that deflects low attacks upward → better KO resistance + self-stabilizing effect
+AD145 (Armor Defense 145): armour plates protect from lateral attacks
+WD145 (Wide Defense 145): wide disc lowers effective CoM + downforce
+
+Plain 145 at 1.5 g lacks all of these. "Does not offer enough balance" — but for budget/starter formats, 145 provides the correct height without gimmick complexity.
+
+---
+
+## CASE 1641 — Performance Tip: WB — Wide Ball [MFB System]
+
+**Part overview**
+Wide Ball (WB, estimated 0.7 g) is a Ball tip with a larger hemispherical contact radius — "simply Ball with a larger surface." The wider hemisphere outclasses regular Ball in Defense (stronger center-seeking restoring moment, greater contact area for stability), but the greater surface area also increases movement, making WB more vulnerable to KO than Ball. It is included with Rock Leone 145WB as the starter Defense-type configuration.
+
+**Geometry**
+- Contact: hemisphere
+- R_WB ≈ 3.5 mm (vs R_Ball ≈ 2.5 mm from CASE 1557)
+- I_WB ≈ ½ × 0.0007 × 0.0035² = **4.3×10⁻⁹ kg·m²** (negligible)
+- Height ≈ 10 mm (standard MFB tip height; no stability issues unlike tall HF/S)
+
+**Contact mechanics — tilt-angle dependence**
+At tilt angle θ from vertical:
+r_contact(θ) = R_WB × sin(θ)
+
+θ = 0° (perfect vertical): r_contact = 0 (point contact) → τ_friction → 0 → theoretically infinite spin life
+θ = 5°: r_contact = 3.5 × sin(5°) = 3.5 × 0.08716 = 0.305 mm
+θ = 10°: r_contact = 3.5 × sin(10°) = 3.5 × 0.17365 = 0.608 mm
+θ = 20°: r_contact = 3.5 × sin(20°) = 3.5 × 0.34202 = 1.197 mm
+
+For 37.2 g assembly, F_N = 0.3649 N:
+τ_WB(5°) = 0.35 × 0.3649 × 3.05×10⁻⁴ = 3.89×10⁻⁵ N·m
+τ_WB(10°) = 0.35 × 0.3649 × 6.08×10⁻⁴ = 7.76×10⁻⁵ N·m
+τ_WB(20°) = 0.35 × 0.3649 × 1.197×10⁻³ = 1.527×10⁻⁴ N·m
+
+At low θ (upright spin), friction is essentially zero → spin loss dominated by air drag. As ω drops and θ grows, friction accelerates spinout non-linearly.
+
+**Center-seeking restoring moment**
+When displaced laterally from center (e.g., after a hit), the ball contact geometry provides a restoring moment:
+M_restore = F_N × R_WB × sin(φ) where φ = lateral tilt from bowl floor normal
+
+Larger R_WB → larger M_restore → WB self-corrects back toward center faster than Ball (R_B = 2.5 mm):
+M_restore_WB / M_restore_B = R_WB / R_B = 3.5/2.5 = **1.40×** stronger restoring force
+
+"Wide Ball outclasses Ball in terms of defense" — confirmed: 40% stronger center-seeking force, which means the bey returns to the center of the arena faster after a hit, reducing time spent near the wall.
+
+**Movement increase and KO vulnerability**
+Greater R_WB → greater r_contact(θ) at any tilt angle → greater τ_friction → greater movement force.
+At θ = 10°: τ_WB = 7.76×10⁻⁵ N·m vs τ_B = 0.35 × 0.3649 × 4.34×10⁻⁴ = 5.54×10⁻⁵ N·m
+WB moves 1.40× more than Ball at same tilt angle — confirmed by R_WB/R_Ball ratio.
+
+After being struck by an attacker (θ suddenly increases to 20–30°): WB's higher movement force drives the bey outward toward walls faster than Ball would. "Greater surface area creates more movement — disadvantageous against Attack Type" — quantified: 1.40× higher lateral drift rate vs Ball, increasing KO probability by proportionally reducing time in the safe center zone.
+
+**WB vs Ball summary**
+| Property | Ball (R=2.5 mm) | Wide Ball (R=3.5 mm) |
+|---|---|---|
+| M_restore | baseline | 1.40× stronger |
+| τ_friction(10°) | 5.54×10⁻⁵ N·m | 7.76×10⁻⁵ N·m |
+| Movement | lower | 1.40× higher |
+| KO resistance | better | worse (1.40× more drift) |
+| Defense (center recovery) | good | better |
+
+---
+
+## CASE 1642 — Assembly: Rock Leone 145WB [MFB Defense / Stamina]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Face Bolt | Leone | 1.0 g |
+| Energy Ring | Leone I | 3.0 g |
+| Fusion Wheel | Rock | 31.0 g |
+| Spin Track | 145 (see CASE 1640) | ~1.5 g |
+| Performance Tip | Wide Ball | ~0.7 g |
+| **Total** | | **~37.2 g** |
+
+**Aggregate moment of inertia**
+I_total = I_FB + I_Leone_I + I_Rock + I_145 + I_WB
+= 1.25×10⁻⁸ + 3.180×10⁻⁶ + 3.688×10⁻⁵ + 2.355×10⁻⁷ + 4.3×10⁻⁹
+= **4.031×10⁻⁵ kg·m²**
+
+**Launch and combat parameters (MFB era, ω₀ = 650 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 650 | 8.515 | 26.20 |
+| Battle (60%) | 390 | 3.068 | 15.72 |
+| Wobble onset (40%) | 260 | 1.362 | 10.48 |
+
+**Spin decay — WB tip, tilt-dependent**
+At low tilt (θ ≈ 5°, nominal upright spin):
+dω/dt(5°) = −τ_WB(5°) / I = −3.89×10⁻⁵ / 4.031×10⁻⁵ = **−0.972 rad/s²**
+Theoretical spinout time (650→260 at constant 5°): 390/0.972 = **401 s ≈ 6.7 min**
+
+At moderate tilt (θ = 10°):
+dω/dt(10°) = −7.76×10⁻⁵ / 4.031×10⁻⁵ = **−1.940 rad/s²**
+Spinout time: 390/1.940 = **201 s ≈ 3.4 min**
+
+Note: θ = 5° is achievable only early in battle (high ω, good gyroscopic stability). As ω drops toward 260 rad/s, θ grows automatically → actual spinout is faster than the 5° theoretical. Realistic spinout: ~120–180 s depending on launch quality and arena conditions. Ball-type WB remains near-vertical much longer than flat or rubber tips at equivalent ω.
+
+**Defense performance — Rock FW contribution**
+Rock ε_Rock ≈ 0.17 → per hit, attacker loses 83% of attack energy to deflection rather than KO force. For a strong MFB attacker at ω = 390 rad/s:
+ΔL_attacker ≈ 20 mN·m·s of impact
+ΔL_transferred_to_KO = ΔL_attacker × (1−ε) × impact_fraction ≈ 20 × 0.83 × geometry ≈ 5–8 mN·m·s
+Rock Leone absorbs most attacker energy into rock's curved lobe surfaces → attacker often bounces back more than it pushes Rock Leone outward.
+
+Track 145 overhang effect: Rock's lower rim overhangs Track 145's outer wall, so low-angle attackers contact Rock's metal rim first (ε_Rock ≈ 0.17) rather than the plastic track (which would fracture or wedge).
+
+**Wide Ball KO risk analysis**
+WB: R = 3.5 mm → 1.40× more movement per impact than Ball
+After a strong attack hit (Δθ ≈ 20°):
+r_contact(20°) = 3.5 × sin(20°) = 1.197 mm
+τ_WB(20°) = 0.35 × 0.3649 × 1.197×10⁻³ = 1.527×10⁻⁴ N·m
+dω/dt_post_hit = −1.527×10⁻⁴ / 4.031×10⁻⁵ = −3.818 rad/s²
+
+If impact takes Δt = 0.05 s, the bey loses Δω = 3.818 × 0.05 = 0.19 rad/s during the recovery wobble. Small — but the lateral drift from 1.40× WB movement is more significant than spin loss. Rock Leone needs space to drift outward and back; in a narrow stadium with aggressive attacker, WB's movement can push it toward the wall within 2–3 large hits.
+
+**Historical context and competitive tier**
+Rock Leone 145WB is the starter beyblade for the Metal Masters era (BB-30 booster). It was designed as an introduction to Defense Type and is functional at the starter/casual level. In competitive MFB:
+- Rock is outmassed by Basalt (43 g), Hell (38 g), Phantom (28 g with extreme OWD) for high-I Defense builds
+- 145 plain is outclassed by BD145, WD145 for Defense height
+- WB causes more movement than desired for serious Defense play
+
+Competitive verdict: outclassed in open MFB. Functional in WBO Limited Format on specific low-track builds (Leone I synergy with Bakushin FW). Excellent learning/starter combo — Rock's low recoil profile teaches defensive physics intuitively, and WB's center-seeking tip demonstrates gyroscopic self-correction.

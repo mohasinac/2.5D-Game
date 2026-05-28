@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1579 cases** across 14 files + 1 master reference.
+Total: **1612 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1610** — All new cases must start here. Update this block before writing any new case.
+> **1643** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,11 +23,11 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 | 311 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 | 320 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 | 580 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 · 1610–1633 | 604 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -102,6 +102,8 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1500–1524 | 25 | CS9 overflow blocks: Aquario 105F, Berserker Byakko 125S, Shelter Regulus 5Star Tower, Hyperion Burn Cho Xceed'+X, Greatest Raphael Over High Xtend+' | CS9 |
 | 1546–1573 | 28 | CS9 part+assembly physics: Omega Dragonis 85XF (MFB 4D), Clay Aries ED145B (LW), Holy Horusood Upper Claw (Burst), Vise Leopard 12Lift Destroy (Cho-Z), Tornado Wyvern 4Glaive Atomic (God) | CS9 |
 | 1604–1609 | 6 | CS9 part+assembly physics: Wind Aquario 100HF/S (MFB Light Wheel System) | CS9 |
+| 1634–1637 | 4 | CS9 part+assembly physics: Ray Gil 100RSF (MFB Attack — Ray FW, Gil ER, RSF tip) | CS9 |
+| 1638–1642 | 5 | CS9 part+assembly physics: Rock Leone 145WB (MFB Defense — Rock FW, Leone I ER, Track 145, WB tip) | CS9 |
 | 1525–1527 | 3 | Grand Maelstrom — RS pivot-anchor T125 vortex whirlpool AoE 10s drain (Sophie · Grand Cetus T125RS) | CS13 |
 | 1528–1530 | 3 | Grand Victoire — whirlpool-exit aerial dive water-crash ring-out (Sophie · Grand Cetus T125RS) | CS13 |
 | 1531–1533 | 3 | Grand Fleet — WD145 wing platform aerial crash ring-out (Wales · Grand Cetus WD145RS) | CS13 |
@@ -115,13 +117,24 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1583–1585 | 3 | Heaven’s Supreme Destruction Palm — WA130 forced-convection thermal fireball JOINT special (Chi-yun Li + Dashan Wang · Thermal Lacerta / Rock Zurafa) | CS13 |
 | 1586–1588 | 3 | Heavy Viper Wall — Draciel V/V2 hydrodynamic impeller wave F_hydro=37.9–47.3N drown + ring-out (Max Tate · Draciel V / Draciel V2) | CS13 |
 | 1589–1591 | 3 | Hunt Launch — Hunter tip rubber floor-grinding a=7.86 m/s² + Doomscizor eccentric wobble 114.6 Hz (Daigo Kurogami · Krusher Doomscizor 2Vortex Hunter) | CS13 |
-| 1592–1594 | 3 | Hammer Bolt — XF rubber triboelectric charge + turquoise-lightning strike (Ryuto · Omega Dragonis 85XF) | CS13 |
+| 1592–1594 | 3 | Hammer Bolt — XF ABS-plastic flat-face triboelectric charge + turquoise-lightning strike (Ryuto · Omega Dragonis 85XF) | CS13 |
 | 1595–1597 | 3 | Horn Throw Destruction — ED145 free-spin bearing + B-tip low-strike uppercut + spin-track follow-up (Hyoma · Clay Aries ED145B) | CS13 |
 | 1598–1600 | 3 | Horusood Field — Claw driver Rankine vortex forced-air ejection ring-out (Hoji Konda · Hyper Horusood Upper-Claw) | CS13 |
-| 1601–1603 | 3 | Howling Bite — fang-capture orbital hammer-throw cyclone toss 3-target chain (Laban Vanot · Vice Leopard 12Lift Destroy) | CS13 |
+| 1601–1603 | 3 | Howling Bite — fang-capture orbital hammer-throw cyclone toss 3-target chain (Laban Vanot · Vice Leopard 12Lift Destroy) | CS13 |
+| 1610–1612 | 3 | Hurricane Counter — Reach Frame spike dual-angle counter-deflection reactive impulse (Ranjiro · Crash Roktavor 11Reach Wedge) | CS13 |
+| 1613–1615 | 3 | Hyper Shield Crash — wall-climb gravity-dive stadium-rim crash (Wakiya · Wild Wyvron Vertical-Orbit / Tempest Wyvron 4Glaive Atomic) | CS13 |
+| 1616–1618 | 3 | Victory Tornado — Dragoon V wing AR multi-vortex physically above ring-out threshold (Tyson · Dragoon V) | CS13 |
+| 1619–1621 | 3 | Hyper Victory Tornado — EXTENDS 1616; Dragoon V2 r_AR=25 mm boosted vortex (Tyson · Dragoon V2) | CS13 |
+| 1622–1624 | 3 | Grand Lightning — Jade Jupiter macro-vortex + Jupiter Beast lightning outspin (Dynamis · Jade Jupiter S130RB) | CS13 |
+| 1625–1627 | 3 | Icicle Edge — DF145 counter-deflection sword slam (Ice-Twin · Evil Gemios DF145FS) | CS13 |
+| 1628–1630 | 3 | Ignition Force — EXTENDS CS9 498–500; Ignition’ spring-clutch progressive acceleration (Dante · Command Dragon Ignition’) | CS13 |
+| 1631–1633 | 3 | Iron Wall Fist — EXTENDS CS9 1313–1318; Scythe macro-vortex ring-wall physically above ring-out threshold (Aguma · Scythe Kronos T125EDS) | CS13 |
+
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
+
+- **CS9/CS13 case-number collision (resolved)**: CS13 cases 1604–1627 (Hurricane Counter through Iron Wall Fist) were appended before CS9 Wind Aquario cases 1604–1609 were written, creating a 6-case overlap. CS13 block renumbered +6 to 1610–1633; CS9 block 1604–1609 retained as original.
 
 - **CS2 duplicates (resolved)**: Cases 106–118 appeared 2–3 times each. Second/third occurrences renumbered to 1025–1040 and 1088.
 - **CS3 overlap (resolved)**: Cases 116–155 conflicted with CS2. Renumbered to 911–950.
