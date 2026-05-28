@@ -5,25 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { SoundManager } from "@/game/audio/SoundManager";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
-// Play pages: active game sessions where GBC/GBA controls are needed.
-// Setup, lobby, list, and menu pages are excluded — controls would cover their interactive UI.
-function isGamePlayRoute(pathname: string): boolean {
-  const p = pathname;
-  return (
-    p.includes("/tryout/play")                                       ||  // /game/*/tryout/play
-    /\/(2d|2\.5d)\/tryout$/.test(p)                                  ||  // /game/2d/tryout (goes to TryoutGamePage)
-    p.includes("/ai-battle/play")                                    ||  // /game/*/ai-battle/play
-    (/\/battle\//.test(p) && !p.includes("/battle/lobby"))           ||  // /game/*/battle/:roomId (not lobby)
-    (/\/team-battle\//.test(p) && !p.includes("/team-battle/lobby")) ||  // /game/*/team-battle/:roomId (not lobby)
-    p.includes("/tournament/battle/")                                ||  // /game/*/tournament/battle/:tid/:mid
-    /^\/rpg\//.test(p)                                                   // /rpg/* game routes
-  );
-}
 
 function AuthChip() {
   const { currentUser, signOutUser } = useAuth();
@@ -56,7 +41,7 @@ function AuthChip() {
 
 export function RootLayout() {
   const location = useLocation();
-  const hideAuth = isGamePlayRoute(location.pathname);
+  const hideAuth = location.pathname.startsWith("/game/room");
 
   // Unlock Web Audio on the first user interaction anywhere in the app.
   // Browsers suspend AudioContext until a gesture fires; this lifts the block.
@@ -69,8 +54,6 @@ export function RootLayout() {
       window.removeEventListener("keydown",     unlock, { capture: true });
     };
   }, []);
-
-  const showControls = isGamePlayRoute(location.pathname);
 
   return (
     <GameProvider>
@@ -87,7 +70,6 @@ export function RootLayout() {
           </div>
         )}
         <Outlet />
-        {showControls && <TouchControlsGBLayout />}
       </div>
     </GameProvider>
   );

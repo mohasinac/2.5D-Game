@@ -40,6 +40,7 @@ interface GameSettings {
   maxSpectatorsAI: number;
   // Renderer
   defaultRendererMode: "2d" | "2.5d";
+  enable25D: boolean;
 }
 
 const DEFAULTS: GameSettings = {
@@ -54,6 +55,7 @@ const DEFAULTS: GameSettings = {
   maxActiveRooms: 20,
   maxSpectatorsBattle: 8, maxSpectatorsTournament: 8, maxSpectatorsAI: 8,
   defaultRendererMode: "2.5d",
+  enable25D: true,
 };
 
 const inputCls = "w-full bg-bg1 border border-border rounded-md px-3 py-2 text-sm text-text placeholder:text-faint focus:outline-none focus:border-blue";
@@ -174,6 +176,13 @@ export function SettingsPage() {
               ))}
             </div>
           </div>
+          <ToggleRow
+            label="Enable 2.5D Rendering"
+            desc="Tilt-perspective projection and R-button controls. When off, all rooms render flat 2D top-down."
+            on={settings.enable25D}
+            onChange={() => set("enable25D", !settings.enable25D)}
+            last
+          />
         </Section>
 
         {/* Game modes */}

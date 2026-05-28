@@ -39,6 +39,7 @@ export interface LoadingProgressProps {
   currentStep: LoadingStep;
   stepProgress?: number;
   error?: string;
+  onRetry?: () => void;
 }
 
 // ── Spinning beyblade canvas animation ──────────────────────────────────────
@@ -133,7 +134,7 @@ function BeybladeSpinner({ color, spinning }: { color: string; spinning: boolean
   );
 }
 
-export function LoadingProgress({ currentStep, stepProgress = 0, error }: LoadingProgressProps) {
+export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry }: LoadingProgressProps) {
   const idx = Math.max(0, STEP_ORDER.indexOf(currentStep));
   const totalSteps = STEP_ORDER.length;
   const completed = idx + Math.min(1, Math.max(0, stepProgress));
@@ -210,6 +211,14 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
         <div className="mt-5 px-4 py-[10px] bg-red-10 border border-[rgba(239,68,68,0.35)] rounded-lg text-theme-red text-[12px] max-w-[360px] text-center leading-[1.5]">
           {error}
         </div>
+      )}
+      {error && onRetry && (
+        <button
+          onClick={onRetry}
+          className="mt-3 px-6 py-2 bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.4)] text-theme-red rounded-lg text-[12px] font-bold uppercase tracking-wider hover:bg-[rgba(239,68,68,0.25)] transition-colors cursor-pointer"
+        >
+          Retry
+        </button>
       )}
     </div>
   );

@@ -34006,4 +34006,873 @@ function darkStrike(
 
 **Ceiling check:** dmgMult 1.49 ≤ 1.5 ✓ | lockMs 200 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
 
-*Cases continue from Case 1682 as further franchise moves are provided.*
+## Case 1682 — [GIMMICK] Variares Dual-Drive Left-Spin Blade Slash
+
+**Bey:** Variares D:D
+**Blader:** King
+**Label:** GIMMICK — Variares 4D Metal Wheel blade-protrusion rake geometry + D:D flat-end left-spin orbital contact (King of Thunder Sword mechanism)
+
+**New analysis:**
+
+Variares D:D assembly (Face Bolt excluded per convention): Energy Ring Variares m_ER = 2.7 g; Metal Wheel Variares 4D m_MW = 38.0 g; D:D Performance Tip m_DD = 7.8 g; m_total = 48.5 g. The 4D Metal Wheel Variares carries four sword-profile blade protrusions in 2-fold symmetry, outer radius r_blade = 38 mm.
+
+Moment of inertia (annular distribution):
+- Outer blade mass m_outer ≈ 20.0 g at r = 37 mm: I_outer = 0.0200 × 0.037² = 2.738 × 10⁻⁵ kg·m²
+- Inner wheel mass m_inner ≈ 18.5 g at r = 20 mm: I_inner = 0.0185 × 0.020² = 7.400 × 10⁻⁶ kg·m²
+- D:D tip m_DD = 7.8 g at r = 5 mm: I_DD = 0.0078 × 0.005² = 1.950 × 10⁻⁷ kg·m²
+- I_total = 3.498 × 10⁻⁵ kg·m²
+
+ω₀ = 630 rad/s (standard MFB 4D launch); L₀ = 3.498 × 10⁻⁵ × 630 = 2.204 × 10⁻² kg·m²/s
+
+D:D tip dual-drive mechanism ("Duo Drive"): two operable ends — attack end (semi-flat, r_att = 6 mm, μ = 0.22, aggressive movement) and defense end (ball-bearing type, r_def = 3 mm, μ = 0.08, stable drift). King of Thunder Sword exclusively activates in left-spin + attack-end configuration. In CCW orbital motion, the Variares blade protrusions present their sharpened leading edges to the opponent at a rake angle φ_blade = 42° relative to the opponent's surface tangent.
+
+Blade contact analysis (left-spin attack geometry):
+v_blade = ω₀ × r_blade = 630 × 0.038 = 23.94 m/s
+Effective slash component: v_slash = v_blade × sin(42°) = 23.94 × 0.669 = 16.02 m/s
+
+Impact impulse vs Earth Eagle 145WD (m_EE = 46.0 g, defeated in anime):
+m_reduced = (0.0485 × 0.046) / (0.0485 + 0.046) = 2.231 × 10⁻³ / 9.450 × 10⁻² = 2.361 × 10⁻² kg
+e_MW = 0.38 (metal wheel vs metal wheel)
+J_slash = (1 + 0.38) × 2.361 × 10⁻² × 16.02 = 1.38 × 2.361 × 10⁻² × 16.02 = 0.522 N·s
+
+Δv_EE = J_slash / m_EE = 0.522 / 0.046 = 11.35 m/s > v_ring-out = 8 m/s → physical ring-out achievable ✓
+
+Left-spin exclusivity: in right-spin (CW), the same blade protrusions present their blunt trailing face, reducing effective rake angle to φ_RS ≈ 12° → v_slash_RS = 23.94 × sin(12°) = 4.98 m/s → J_RS = 0.162 N·s → Δv_EE = 3.53 m/s (insufficient for ring-out). Left-spin exclusivity is mechanically enforced by the blade geometry, not arbitrary.
+
+---
+
+## Case 1683 — [SPECIAL] King of Thunder Sword
+
+**Bey:** Variares D:D
+**Blader:** King
+**Label:** SPECIAL — Mars BeySpirit red-lightning amplification of Variares left-spin blade slash
+
+**New analysis:**
+
+Physical grounding: J_slash_physical = 0.522 N·s (Case 1682). At full BeySpirit (Mars element, red lightning), all rotational KE is routed through the slash vector simultaneously rather than the ~38% efficiency of standard contact.
+
+KE_rotational = ½ × I × ω₀² = ½ × 3.498 × 10⁻⁵ × 630² = 6.942 J
+
+[M] Mars BeySpirit: full KE channeled through blade rake → [M] 2.5×
+J_[M] = 2.5 × 0.522 = 1.305 N·s
+Δv_EE_[M] = 1.305 / 0.046 = 28.37 m/s [M] (3.5× ring-out threshold — conclusive defeat of Earth Eagle 145WD)
+
+Left-spin activation required: the Mars BeySpirit channels through the φ = 42° rake geometry established in left-spin orbital mechanics. Right-spin orbital direction does not align with the BeySpirit energy channel and cannot activate the move.
+
+**Anime override note:** BeySpirit energy (Mars element) overrides the D:D contact-efficiency limit and the structural yield of the opponent's parts. Physical calculations give a lower bound; [M] values above represent BeySpirit-driven amplification that transcends all mechanical constraints. Combos derived from this move (Case 1684) do NOT receive this override.
+
+**Compatible beys:** Any beyblade carrying Variares 4D Metal Wheel + D:D Performance Tip in attack-end orientation operated in left-spin; primarily Variares D:D as used by King.
+
+```typescript
+function kingOfThunderSword(
+  beySpirit: number,          // 0.0–1.0 Mars BeySpirit charge
+  leftSpinActive: boolean,    // must be true; right-spin returns zero-effect
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; powerCost: number; ringOutBoost: number } {
+  if (!leftSpinActive) return { spinDelta: 0, dmgMult: 1.0, powerCost: 0, ringOutBoost: 0 };
+  const rakeBonus = beySpirit > 0.8 ? 1.85 : 1.0;   // Mars lightning activates above 80% charge
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(60 * (1 + beySpirit * 1.5)),
+      dmgMult:      1.0 + beySpirit * 2.5 * rakeBonus,   // [M] up to ~5.6× at full BS
+      powerCost:    100,
+      ringOutBoost: beySpirit * 0.45,                     // outward force component
+    };
+  }
+  return { spinDelta: -12, dmgMult: 1.1, powerCost: 100, ringOutBoost: 0 };
+}
+```
+
+---
+
+## Case 1684 — [COMBO] Thunder Blade
+
+**Bey:** Variares D:D
+**Blader:** King
+**Label:** COMBO — left-orbital approach + blade-rake strike + jump exit (Thunder Blade)
+
+**Sequence:** moveLeft → attack → jump (← K J)
+**Cost:** 25
+**Type restriction:** attack (attack-type beys maintain CCW orbital speed across the ← and J inputs; a defense-type brakes too hard on ← to reach the contact speed where φ = 42° rake geometry is advantageous; stamina-type wide tips skip the aligned approach angle)
+**Parent gimmick:** Variares 4D blade rake + D:D flat-end slash (Case 1682)
+
+**Thesis:** ← builds CCW orbital momentum aligning Variares in left-spin approach path — the same geometry that makes King of Thunder Sword exclusive to left-spin. K fires when the blade protrusion leading edge reaches the rake-optimal contact window (φ ≈ 42°), delivering the concentrated slash impulse. J breaks contact immediately post-strike, preventing the blade from wedging on the opponent's surface and losing angular momentum through sustained friction. Without J, post-K frictional contact would reduce the spinDelta return; J exits cleanly, preserving Variares spin.
+
+```typescript
+function thunderBlade(
+  orbitalAligned: boolean,   // ← achieved CCW approach alignment
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta:   orbitalAligned ? -38 : -22,
+      dmgMult:     orbitalAligned ? 1.44 : 1.28,
+      lockMs:      orbitalAligned ? 190 : 95,
+      powerCost:   25,
+    };
+  }
+  return { spinDelta: -8, dmgMult: 1.05, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgMult 1.44 ≤ 1.5 ✓ | lockMs 190 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1685 — [GIMMICK] CS Tip Single-Point Pressure Concentration
+
+**Bey:** Ray Striker D125CS
+**Blader:** Masamune Kadoya
+**Label:** GIMMICK — CS ("Coat Sharp") tip r_tip = 0.15 mm Hertzian pressure concentration + rubber-coating restitution enhancement (Lightning Sword Flash mechanism)
+
+**New analysis:**
+
+Ray Striker D125CS assembly (Face Bolt excluded): Energy Ring Striker m_ER = 2.7 g; Metal Wheel Ray m_MW = 27.5 g; Spin Track D125 m_D125 = 1.3 g; Performance Tip CS m_CS = 0.7 g; m_total = 32.2 g.
+
+Moment of inertia:
+- Outer blade mass m_outer ≈ 15.0 g at r = 33 mm: I_outer = 0.0150 × 0.033² = 1.634 × 10⁻⁵ kg·m²
+- Inner mass m_inner ≈ 17.2 g at r = 18 mm: I_inner = 0.0172 × 0.018² = 5.572 × 10⁻⁶ kg·m²
+- I_total = 2.191 × 10⁻⁵ kg·m²
+
+ω₀ = 660 rad/s (lighter bey, fast MFB launch); L₀ = 2.191 × 10⁻⁵ × 660 = 1.446 × 10⁻² kg·m²/s
+
+CS tip ("Coat Sharp"): sharp ABS plastic tip with resin-rubber outer coating, r_tip = 0.15 mm contact radius.
+A_CS = π × r_tip² = π × (1.5 × 10⁻⁴)² = 7.069 × 10⁻⁸ m²
+
+Pressure concentration ratio (CS vs Wide Flat, r_WF = 8 mm):
+A_WF = π × (8 × 10⁻³)² = 2.011 × 10⁻⁴ m²
+Ratio = A_WF / A_CS = 2.011 × 10⁻⁴ / 7.069 × 10⁻⁸ = 2844
+
+At equal normal force F_n = 1.5 N:
+P_CS = 1.5 / 7.069 × 10⁻⁸ = 21.2 MPa (approaching ABS yield σ_y ≈ 40 MPa — significant surface deformation)
+P_WF = 1.5 / 2.011 × 10⁻⁴ = 7.46 kPa (negligible)
+
+Rubber coating restitution:
+Pure Sharp tip (ABS): e_S ≈ 0.40
+CS rubber-coated: e_CS ≈ 0.55 (coating increases energy return while maintaining point geometry)
+
+CS tip approach precision benefit: The sharp tip provides a highly stable, upright precession axis. Ray Striker can approach the opponent in a near-perpendicular straight line rather than an oblique orbital arc — this is the physical basis of "focusing all energy at one point."
+
+Impact impulse vs 42 g opponent (perpendicular approach):
+v_approach = ω₀ × r_blade = 660 × 0.033 = 21.78 m/s
+m_reduced = (0.0322 × 0.042) / (0.0322 + 0.042) = 1.352 × 10⁻³ / 7.420 × 10⁻² = 1.822 × 10⁻² kg
+J_CS = (1 + 0.55) × 1.822 × 10⁻² × 21.78 = 1.55 × 1.822 × 10⁻² × 21.78 = 0.616 N·s
+
+Δv_opponent = 0.616 / 0.042 = 14.67 m/s > v_ring-out = 8 m/s → physical ring-out ✓
+
+Striker horn structural note: Energy Ring Striker has a unicorn-horn protrusion at r_horn = 28 mm, cross-section A_horn = π × (3 mm)² = 2.827 × 10⁻⁵ m², ABS yield σ_y = 40 MPa → F_yield = 1131 N.
+Normal impact: F_n = J / t_contact = 0.616 / 0.001 = 616 N < F_yield ✓ (horn intact normally)
+At [M] amplification: F_[M] can exceed F_yield → horn fracture (Case 1686).
+
+---
+
+## Case 1686 — [SPECIAL] Lightning Sword Flash
+
+**Bey:** Ray Striker D125CS
+**Blader:** Masamune Kadoya
+**Label:** SPECIAL — Striker Beast energy convergence: all rotational KE channeled to single-point CS contact
+
+**New analysis:**
+
+Physical grounding: J_CS = 0.616 N·s (Case 1685), ring-out achieved physically without BeySpirit. BeySpirit amplification ("focuses all its energy at one point as lightning") routes additional KE through the same single-contact pathway.
+
+[M] BeySpirit: full KE → single point convergence → [M] 6×
+KE = ½ × 2.191 × 10⁻⁵ × 660² = 4.776 J
+J_[M] = 6 × 0.616 = 3.696 N·s
+Δv_[M] = 3.696 / 0.042 = 88.0 m/s [M] (overwhelming, instant ring-out or burst)
+
+Training enhancement: in later Metal Masters episodes, Masamune's training further improves BeySpirit convergence efficiency. The [M] factor scales with training level (range ≈ 1.0×–6× as Masamune progresses through the series).
+
+Striker horn failure at [M]:
+F_[M] = 3.696 / 0.001 = 3696 N >> F_yield = 1131 N → horn fracture.
+The fracture dissipates energy = (F_[M] − F_yield) × t_contact = (3696 − 1131) × 10⁻³ = 2.565 J transferred via structural fracture pathway. The "broken horn" outcome corresponds to maximum BeySpirit deployment during training arcs.
+
+**Anime override note:** BeySpirit (Striker Beast convergence) overrides the CS tip floor-friction limit, the Metal Wheel structural maximum, and the opponent's contact-restitution envelope. Physical analysis provides the lower bound; [M] values are BeySpirit amplifications observed in the anime. Combos (Case 1687) operate within physics ceiling only.
+
+**Compatible beys:** Any beyblade with CS or equivalent sharp-coated tip, primarily Ray Striker D125CS (Masamune Kadoya).
+
+```typescript
+function lightningSwordFlash(
+  beySpirit: number,       // 0.0–1.0 Striker Beast convergence charge
+  trainingLevel: number,   // 1–5 Masamune's training progression
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; powerCost: number; hornBreak: boolean } {
+  const convergence = beySpirit * (0.8 + trainingLevel * 0.24);   // max 2.0 at lvl5 full BS
+  const hornBreak   = convergence > 1.4;                           // fracture threshold
+  if (qteHit) {
+    return {
+      spinDelta: -Math.round(55 * (1 + convergence)),
+      dmgMult:   1.0 + convergence * 3.0,         // [M] up to 7× at max
+      powerCost: 100,
+      hornBreak,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.08, powerCost: 100, hornBreak: false };
+}
+```
+
+---
+
+## Case 1687 — [COMBO] Striker Point
+
+**Bey:** Ray Striker D125CS
+**Blader:** Masamune Kadoya
+**Label:** COMBO — vertical lift + orbital approach + perpendicular CS-point strike (Striker Point)
+
+**Sequence:** jump → moveRight → attack (J → K)
+**Cost:** 25
+**Type restriction:** universal (precision approach benefits all bey types; the J lift step maximises perpendicular contact geometry regardless of bey type)
+**Parent gimmick:** CS tip straight-line perpendicular approach focus (Case 1685)
+
+**Thesis:** J pre-positions Ray Striker at the upper arc of its orbital bowl path, reducing the approach angle from ~20° oblique to near-perpendicular relative to the opponent's equatorial plane — the CS precision-approach benefit requires < 10° approach angle for full impulse transfer. → builds rightward orbital approach speed to match the perpendicular contact window's timing. K fires when Striker's CS-aligned approach axis is perpendicular to the target, delivering maximum impulse concentration. The combo replicates "one point focus" geometry within physics limits — no BeySpirit required, all gain comes from approach geometry optimisation alone.
+
+```typescript
+function strikerPoint(
+  perpendicularApproach: boolean,   // J + → achieved <10° approach angle
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta:   perpendicularApproach ? -34 : -18,
+      dmgMult:     perpendicularApproach ? 1.42 : 1.24,
+      lockMs:      perpendicularApproach ? 170 : 80,
+      powerCost:   25,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.04, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgMult 1.42 ≤ 1.5 ✓ | lockMs 170 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1688 — [GIMMICK] Rock Leone WB Centrifugal Vortex Barrier
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Rock Metal Wheel impeller vortex + WB radial-stability sustained barrier (Lion Gale Force Wall mechanism)
+**EXTENDS** Cases 1643 (Rankine vortex model), 1649–1660 (Fang Leone vortex upgrade family)
+
+**New analysis:**
+
+Rock Leone 145WB assembly and Rankine vortex parameters carry forward from Case 1643: m_total = 37.2 g, I = 4.031 × 10⁻⁵ kg·m², ω₀ = 630 rad/s, r_core = r_Rock = 0.038 m, Γ_base = 0.831 m²/s.
+
+Lion Gale Force Wall vs Lion 100 Fang Fury (Case 1643) — mechanistic distinction:
+L100FF deploys the vortex offensively as the bey moves at speed. LGFW deploys it as an omnidirectional STATIONARY BARRIER — Rock Leone spins in place with the WB tip maintaining a stable centre-biased roll orbit, generating a sustained cylindrical vortex field that deflects and ejects opponents from any approach direction.
+
+WB rolling sustaining the vortex:
+τ_WB = μ_roll × m×g × r_WB = 0.012 × 0.0372 × 9.81 × 0.008 = 3.502 × 10⁻⁵ N·m
+This is the lowest possible spin-decay torque among Rock Leone's compatible tips, sustaining the vortex-generating spin state for longer than any flat or sharp tip alternative.
+
+Radial induced velocity at opponent position r = 0.090 m (near arena edge):
+v_θ_physical(0.090) = Γ / (2π r) = 0.831 / (2π × 0.090) = 0.831 / 0.5655 = 1.469 m/s
+
+Aerodynamic barrier force on opponent bey (A_proj = π × 0.038² = 4.536 × 10⁻³ m²):
+F_barrier = ½ × 1.225 × 1.469² × 4.536 × 10⁻³ = 5.99 × 10⁻³ N
+
+F_barrier = 5.99 mN — deflects slow approach (< 0.16 m/s), cannot eject a real opponent physically. BeySpirit amplification is required for ejection.
+
+[M] ring-out threshold: v_θ_[M](r_edge) ≥ 8 m/s → Γ_[M] ≥ 2π × 0.090 × 8 = 4.524 m²/s → [M] = 4.524 / 0.831 = [M] 5.44×
+
+True Lion Gale Force Wall (per Madoka: "158% more powerful" → 2.58× total power):
+Γ_True = 2.58 × 0.831 = 2.145 m²/s → v_θ_True(0.090) = 3.793 m/s
+[M] remaining for ring-out from True baseline: 8.0 / 3.793 = [M] 2.11× (BeySpirit still required but far less than base LGFW)
+
+---
+
+## Case 1689 — [SPECIAL] Lion Gale Force Wall
+
+**Bey:** Rock Leone 145WB (Metal Fusion / Metal Masters) → Fang Leone 130W2D (Metal Fury)
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — Rock / Fang Leone BeySpirit vortex: omnidirectional barrier-to-ejector transition; first special move in the anime
+
+**New analysis:**
+
+Physical grounding: Γ_physical = 0.831 m²/s, F_barrier = 5.99 mN (Case 1688).
+
+Base LGFW (Metal Fusion debut): [M] 2.30× → v_θ_[M](0.090) = 2.30 × 1.469 = 3.379 m/s [M]. Barrier strong enough to stall most opponents; ring-out only against the lightest beys. Kyoya lost to Gingka in the debut use — consistent with base LGFW falling short of guaranteed ring-out against heavier beys.
+
+True Lion Gale Force Wall (Metal Masters, [M] = 5.44 × (1/2.58) = effectively [M] 2.11× above the True baseline):
+Γ_[M]_True = 5.44 × 0.831 = 4.521 m²/s → v_θ_[M](0.090) = 7.996 m/s ≈ 8 m/s — at the ring-out threshold for any standard opponent.
+
+Metal Fury / Fang Leone 130W2D ("exceeded even True LGFW"):
+EXTENDS Cases 1649–1660 (Fang Leone vortex family). Fang Metal Wheel r_Fang = 0.040 m > r_Rock = 0.038 m; heavier outer ring. Γ_Fang_base > Γ_Rock_base → reaches ring-out at lower [M] multiplier than Rock Leone True version. Qualitatively: the Metal Fury LGFW via Fang Leone is the most powerful iteration, with ring-out achievable at [M] ≈ 2.0×.
+
+**Anime override note:** BeySpirit (Rock Leone green tornado / Fang Leone green-lightning aura) transforms the aerodynamic soft barrier into a physical contact forcefield that can eject solid objects. [M] values override the stadium's open aerodynamic boundary, aerodynamic coupling limits, and atmospheric dissipation. Combos (Case 1690) do NOT receive this override.
+
+**Compatible beys:** Any beyblade with Rock or Fang Leone Metal Wheel (r_outer ≥ 38 mm, ≥ 4 blade protrusions) on WB or equivalent wide-contact tip enabling stable centre-spin vortex generation.
+
+```typescript
+function lionGaleForceWall(
+  beySpirit: number,      // 0.0–1.0
+  trueVersion: boolean,   // Metal Masters True LGFW
+  fangLeone: boolean,     // Metal Fury Fang Leone version
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; ringOutForce: number; powerCost: number } {
+  const baseCirc  = fangLeone ? 1.18 : 1.0;                      // Fang Leone Γ bonus
+  const trueBonus = trueVersion ? 2.58 : 1.0;                    // True LGFW 2.58× [M]
+  const amp       = beySpirit * trueBonus * baseCirc;
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(30 * (1 + amp * 0.6)),
+      dmgMult:      1.0 + amp * 1.8,                             // [M] up to ~6× at true+fang+full BS
+      ringOutForce: amp * 0.55,                                   // outward ejection force component
+      powerCost:    100,
+    };
+  }
+  return { spinDelta: -8, dmgMult: 1.05, ringOutForce: 0, powerCost: 100 };
+}
+```
+
+---
+
+## Case 1690 — [COMBO] Gale Wall Hold
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** COMBO — sustained centre-spin barrier + approach-redirect (Gale Wall Hold)
+
+**Sequence:** defense → moveUp → defense (K ↑ K)
+**Cost:** 0
+**Type restriction:** universal (the barrier function reduces incoming damage regardless of bey type; any bey on a wide-contact rolling tip benefits)
+**Parent gimmick:** Rock Leone WB centrifugal vortex barrier (Case 1688)
+
+**Thesis:** K activates the defensive vortex posture — Rock Leone enters centre-spin, WB tip in stable roll contact, generating the aerodynamic barrier (F_barrier = 5.99 mN). ↑ repositions the bey toward the upper bowl wall, placing the vortex core to intercept the most probable inbound attack vector. K restores full defensive barrier posture around the ↑-adjusted position. No [M] ejection — the vortex provides genuine damage reduction by redirecting opponent approach momentum tangentially before contact. The ↑ between the two K inputs distinguishes this from guard-tap (KKK) by adding active repositioning.
+
+```typescript
+function galeWallHold(
+  vortexSustained: boolean,   // both K inputs maintained centre-spin
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; damageReduction: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta:       vortexSustained ? +4 : 0,       // slight spin gain from WB rolling efficiency
+      dmgMult:         1.05,
+      damageReduction: vortexSustained ? 0.22 : 0.08,  // 22% incoming damage reduction
+      lockMs:          0,
+      powerCost:       0,
+    };
+  }
+  return { spinDelta: 0, dmgMult: 1.0, damageReduction: 0.04, lockMs: 0, powerCost: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.05 ≤ 1.5 ✓ | lockMs 0 ≤ 300 ✓ | cost 0 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓ (damageReduction 22% is meaningful mitigation, not immunity)
+
+---
+
+## Case 1691 — [GIMMICK] Rock Leone Precessional Orbit + Kármán Vortex Shedding
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Rock Leone WB precessional CCW orbit + Kármán vortex street: mobile traveling tornado (Lion Wild Wind Fang Dance mechanism)
+**EXTENDS** Cases 1643 (Rankine vortex), 1688 (LGFW stationary vortex)
+
+**New analysis:**
+
+Rock Leone 145WB assembly carries forward from Cases 1643 and 1688. The key distinction from LGFW (stationary vortex) is ORBITAL MOTION of the vortex core, which creates a "dancing" traveling twister.
+
+WB precessional orbit dynamics at 50% spin (ω = 315 rad/s):
+WB contact patch offset from spin axis x_WB ≈ 1.5 mm generates a precession torque:
+τ_precess = m × g × x_WB × cos(θ_tilt) = 0.0372 × 9.81 × 0.0015 × cos(5°) = 5.445 × 10⁻⁴ N·m
+Passive orbital frequency: Ω_orbit = τ_precess / L₀ = 5.445 × 10⁻⁴ / (4.031 × 10⁻⁵ × 315) = 5.445 × 10⁻⁴ / 1.270 × 10⁻² = 4.287 × 10⁻² rad/s (T_orbit = 146 s, very slow passive precession)
+
+Active attack-phase orbit (lateral input applied): r_orbit = 0.050 m, Ω_orbit = 3.0 rad/s → v_orbital = 0.150 m/s
+
+Kármán vortex shedding behind the orbiting bey:
+St = 0.2 (bluff body); d_wake = 2 × r_Rock = 0.076 m
+f_Kármán = St × v_orbital / d_wake = 0.2 × 0.150 / 0.076 = 0.3947 Hz
+λ_Kármán = v_orbital / f_K = 0.150 / 0.3947 = 0.380 m (vortex street wavelength exceeds arena diameter → single dominant shed vortex per orbit)
+
+Compound circulation:
+Γ_compound = Γ_base + Γ_shed
+Γ_base = 0.831 m²/s
+Γ_shed = π × r_orbit² × Ω_orbit = π × 0.050² × 3.0 = 2.356 × 10⁻² m²/s
+Γ_compound = 0.831 + 0.024 = 0.855 m²/s (marginally above LGFW physically)
+
+Physical advantage of LWWFD over LGFW: NOT additional strength (Γ barely increases) but REACH — the mobile vortex sweeps a circular path of radius r_orbit, intercepting opponents at any arena position rather than requiring them to approach a fixed centre.
+
+Effective coverage: over multiple orbit cycles the active vortex zone visits the entire arena floor. Against an opponent near the arena wall, LWWFD can target them directly; LGFW cannot without the opponent moving toward centre.
+
+[M] height: physical vortex column h_physical ≈ r_core = 0.038 m. BeySpirit [M] extends h to city-scale altitude (visible from town in Kyoya vs Gingka battle).
+
+---
+
+## Case 1692 — [SPECIAL] Lion Wild Wind Fang Dance
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — Rock Leone BeySpirit orbital chase vortex: arena-sweeping mobile dancing tornado
+
+**New analysis:**
+
+Physical grounding: Γ_compound = 0.855 m²/s (Case 1691). [M] ≥ 5.28× required for ring-out.
+
+[M] orbital expansion: BeySpirit drives r_orbit from 0.050 m to r_arena = 0.225 m, and Ω_orbit to 12 rad/s → v_orbital_[M] = 0.225 × 12 = 2.70 m/s.
+Updated Kármán shedding: f_K_[M] = 0.2 × 2.70 / 0.076 = 7.105 Hz (dense shedding; vortex train fills arena).
+
+"Dancing" character: BeySpirit modulates Ω_orbit non-uniformly — periodically accelerating and decelerating, creating the irregular weaving path visible in the anime. T_orbit_[M] = 2π / 12 = 0.524 s → any opponent reachable within one orbit.
+
+Vertical column [M]: h_[M] >> arena height, visible citywide. Tornadoes tall enough to be seen "from outside the town" during the Kyoya vs Gingka decisive battle.
+
+**Anime override note:** BeySpirit drives orbital radius, orbital angular frequency, and vortex core height far beyond any physical gyroscopic or aerodynamic limit. The "dance" pattern is BeySpirit-modulated motion. Combos (Case 1693) operate within physics ceiling only.
+
+**Compatible beys:** Rock Leone 145WB (Kyoya); any bey with Rock Metal Wheel on WB or equivalent wide-ball tip capable of precessional orbital motion.
+
+```typescript
+function lionWildWindFangDance(
+  beySpirit: number,      // 0.0–1.0
+  orbitRadius: number,    // normalised 0.0–1.0 (0=centre, 1=arena edge)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; areaFactor: number; powerCost: number } {
+  const orbitAmp = beySpirit * orbitRadius;
+  const dancing  = orbitAmp > 0.6;   // non-uniform "dance" orbit activated at high BS + radius
+  if (qteHit) {
+    return {
+      spinDelta:  -Math.round(28 * (1 + orbitAmp * 0.8)),
+      dmgMult:    1.0 + orbitAmp * 2.0 + (dancing ? 0.4 : 0),  // [M] up to ~3.8×
+      areaFactor: orbitRadius * beySpirit,                        // fraction of arena covered
+      powerCost:  100,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.04, areaFactor: 0, powerCost: 100 };
+}
+```
+
+---
+
+## Case 1693 — [COMBO] Wind Fang Sweep
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** COMBO — upper-arc approach + contact strike + lower-arc follow-through sweep (Wind Fang Sweep)
+
+**Sequence:** moveUp → attack → moveDown (↑ K ↓)
+**Cost:** 15
+**Type restriction:** universal
+**Parent gimmick:** Rock Leone precessional orbit sweeping vortex (Case 1691)
+
+**Thesis:** ↑ drives Rock Leone into the upper arc of its orbital path — the start of the precessional orbital sweep, where approach angle relative to a centralised opponent is highest. K fires at the upper tangent point where the orbital arc has maximum approach speed relative to the opponent. ↓ continues through the lower arc, replicating the LWWFD "dance" trajectory as Rock Leone transitions through the descending arc. The ↑K↓ sequence traces the functional equivalent of LWWFD's orbital pass in one forward sweep: approach (↑), strike at apex (K), follow-through (↓). No BeySpirit — damage comes from momentum transfer at K plus the post-K ↓ angular sweep.
+
+```typescript
+function windFangSweep(
+  arcCompleted: boolean,   // ↑ achieved full upper-arc approach
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta:   arcCompleted ? -30 : -16,
+      dmgMult:     arcCompleted ? 1.38 : 1.22,
+      lockMs:      arcCompleted ? 160 : 75,
+      powerCost:   15,
+    };
+  }
+  return { spinDelta: -6, dmgMult: 1.03, lockMs: 0, powerCost: 15 };
+}
+```
+
+**Ceiling check:** dmgMult 1.38 ≤ 1.5 ✓ | lockMs 160 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1694 — [GIMMICK] Spiral Tip Speed-Phase Transition + LS-RS Additive Burst Contact
+
+**Bey:** Lost Lúinor Nine Spiral
+**Blader:** Lui Shirosagi
+**Label:** GIMMICK — Spiral tip two-phase friction (high-speed ridge contact → full-cone contact) + LS-RS additive relative velocity enabling axial burst (Lost Spiral mechanism)
+
+**New analysis:**
+
+Lost Lúinor Nine Spiral assembly (Face Bolt excluded): Lost Lúinor layer m_LL = 15.3 g; Nine Forge Disc m_Nine = 20.4 g; Spiral Performance Tip m_Spiral = 6.2 g; m_total = 41.9 g; I_total = 1.850 × 10⁻⁵ kg·m² (from registry).
+
+ω₀ = 720 rad/s (Burst Standard launch); L₀ = 1.850 × 10⁻⁵ × 720 = 1.332 × 10⁻² kg·m²/s
+
+Spiral tip two-phase friction model:
+The Spiral Performance Tip is a conical ABS tip with a spiral ridge groove. At high spin, the spiral ridge contacts the stadium at discrete points (high-speed phase); as spin decays, progressively the full cone face contacts the floor (low-speed phase).
+
+High-speed phase (ω > ω_trans = 200 rad/s): spiral ridge discrete contact
+r_eff_high = 1.0 mm; μ_high = 0.10
+τ_high = 0.10 × 0.0419 × 9.81 × 0.001 = 4.110 × 10⁻⁵ N·m
+α_high = τ_high / I = 4.110 × 10⁻⁵ / 1.850 × 10⁻⁵ = 2.222 rad/s²
+t_high_phase = (720 − 200) / 2.222 = 234.0 s
+
+Low-speed phase (ω < 200 rad/s): full cone contact
+r_cone = 2.0 mm; μ_cone = 0.12
+τ_low = 0.12 × 0.0419 × 9.81 × 0.002 = 9.864 × 10⁻⁵ N·m
+t_low_phase = (I × 200) / τ_low = 3.700 × 10⁻³ / 9.864 × 10⁻⁵ = 37.5 s
+
+t_total = 234.0 + 37.5 = 271.5 s (strong stamina characteristics)
+
+LS-RS additive contact velocity:
+Nine disc r_Nine = 40 mm; both beys at ω₀ = 720 rad/s.
+LS Lost Lúinor tip: v_LL = 720 × 0.040 = 28.8 m/s in −x direction
+RS opponent tip: v_RS = 720 × 0.040 = 28.8 m/s in +x direction
+v_rel_LS-RS = 28.8 + 28.8 = 57.6 m/s (additive for LS vs RS head-on — most destructive possible contact)
+
+Nine disc: 9 tab positions at 40° spacing → dense burst tab arrangement, maximises burst probability per contact event.
+
+Burst torque delivered (head-on LS-RS vs 50 g opponent):
+m_reduced = (0.0419 × 0.050) / (0.0419 + 0.050) = 2.095 × 10⁻³ / 9.190 × 10⁻² = 2.279 × 10⁻² kg
+e_LL = 0.45 (ABS Burst layer)
+J_head-on = (1 + 0.45) × 2.279 × 10⁻² × 57.6 = 1.45 × 2.279 × 10⁻² × 57.6 = 1.904 N·s
+
+τ_burst_delivered = J × r_Nine = 1.904 × 0.040 = 0.07616 N·m
+Standard Burst lock threshold τ_burst_lock ≈ 2.5 × 10⁻³ N·m
+Ratio: 0.07616 / 0.0025 = 30.5× burst threshold → near-certain burst ✓
+Ring-out: Δv_opponent = 1.904 / 0.050 = 38.1 m/s >> 8 m/s ✓ (both burst AND ring-out physically achievable)
+
+---
+
+## Case 1695 — [SPECIAL] Lost Spiral
+
+**Bey:** Lost Lúinor Nine Spiral
+**Blader:** Lui Shirosagi
+**Label:** SPECIAL — darkside BeySpirit axial momentum surge: Spiral tip speed-phase pre-charge + LS-RS head-on burst/ring-out
+
+**New analysis:**
+
+Physical grounding: J_head-on = 1.904 N·s, τ_burst = 30.5× threshold (Case 1694). Both burst and ring-out achievable physically without BeySpirit — the move's power comes first from mechanics.
+
+"Lúinor speeds up with its Spiral Performance Tip": the pre-rush phase. Lost Lúinor maintains high-speed phase (ω >> ω_trans) through BeySpirit spin boost before the rush, ensuring the bey collides at maximum ω rather than a spin-decayed state. Even without BeySpirit, timing the rush during the high-speed phase ensures the full 720 rad/s contact velocity.
+
+[M] darkside BeySpirit amplification (Lui's dark aura):
+J_[M] = 3 × J_physical = 3 × 1.904 = 5.712 N·s
+τ_burst_[M] = 3 × 0.07616 = 0.2285 N·m = 91.4× standard burst threshold → instant burst of any Burst system bey
+Δv_[M] = 5.712 / 0.050 = 114.2 m/s [M]
+
+"Deals massive damage, thus either bursting the opposing bey or knocking it out" — physical analysis already covers both outcomes without [M]; the [M] factor makes the result OVERWHELMING regardless of opponent defensive stats.
+
+**Anime override note:** BeySpirit (darkside/dark aura of Lui) pushes ω_[M] beyond the physical launch ceiling and amplifies the LS-RS relative contact velocity. Physical analysis provides a lower bound (mechanically sufficient for burst and ring-out even without BeySpirit); [M] values above are the BeySpirit amplifications. Combos (Case 1696) operate within physics ceiling only.
+
+**Compatible beys:** Any Burst-format left-spin beyblade with Nine Forge Disc and Spiral tip; primarily Lost Lúinor Nine Spiral (Lui Shirosagi).
+
+```typescript
+function lostSpiral(
+  beySpirit: number,         // 0.0–1.0 darkside BeySpirit
+  leftSpinActive: boolean,   // LS vs RS target required for additive burst bonus
+  speedPhaseActive: boolean, // Spiral tip still in high-speed phase (ω > 200 rad/s)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; burstBonus: number; powerCost: number } {
+  const lsBonus    = leftSpinActive ? 2.0 : 0.5;     // LS-RS additive velocity multiplier
+  const phaseBonus = speedPhaseActive ? 1.3 : 0.8;   // speed phase preserves full ω at contact
+  const dark       = beySpirit * lsBonus * phaseBonus;
+  if (qteHit) {
+    return {
+      spinDelta:   -Math.round(80 * (1 + dark * 0.5)),
+      dmgMult:     1.0 + dark * 2.8,                  // [M] up to ~6.6× at full dark + LS + phase
+      burstBonus:  dark * 0.75,                        // burst probability modifier (0→1 range)
+      powerCost:   100,
+    };
+  }
+  return { spinDelta: -15, dmgMult: 1.12, burstBonus: 0.1, powerCost: 100 };
+}
+```
+
+---
+
+## Case 1696 — [COMBO] Death Spiral Rush
+
+**Bey:** Lost Lúinor Nine Spiral
+**Blader:** Lui Shirosagi
+**Label:** COMBO — double straight-approach charge + head-on impact (Death Spiral Rush)
+
+**Sequence:** moveUp → moveUp → attack (↑ ↑ K)
+**Cost:** 25
+**Type restriction:** universal
+**Parent gimmick:** Spiral tip speed-phase + LS-RS head-on contact (Case 1694)
+
+**Thesis:** ↑↑ builds maximum linear approach velocity along a straight-line trajectory — the double-↑ replicates the "speeding up" phase of Lost Spiral, where Lost Lúinor accelerates across the full arena diameter before impact. The straight-line approach (vs orbital arc approaches used by other combos) maximises the head-on collision component, fully exploiting the LS-RS additive contact velocity (v_rel = 57.6 m/s for same-speed opposite-spin beys). K fires at the end of the straight-line run, delivering the head-on impulse at peak approach speed. No BeySpirit — impulse magnitude and burst probability come from the mechanical LS-RS additive velocity alone.
+
+```typescript
+function deathSpiralRush(
+  straightApproach: boolean,   // ↑↑ maintained linear path (no deflection)
+  leftSpinBonus: boolean,      // LS bey vs RS opponent
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; burstBonus: number; powerCost: number } {
+  if (qteHit) {
+    const base = straightApproach ? 1.40 : 1.20;
+    const dmg  = Math.min(1.5, base + (leftSpinBonus ? 0.08 : 0));
+    return {
+      spinDelta:   straightApproach ? -42 : -22,
+      dmgMult:     dmg,                                          // max 1.48 ≤ 1.5 ✓
+      lockMs:      straightApproach ? 180 : 85,
+      burstBonus:  straightApproach && leftSpinBonus ? 0.35 : 0.10,
+      powerCost:   25,
+    };
+  }
+  return { spinDelta: -9, dmgMult: 1.06, lockMs: 0, burstBonus: 0.05, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgMult max = min(1.5, 1.40 + 0.08) = 1.48 ≤ 1.5 ✓ | lockMs 180 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1697 — [GIMMICK] Air Knight Wing Aerodynamic Lift + Eternal Tip Zero-Floor Aerial Spin Preservation
+
+**Bey:** Air Knight 12Expand Eternal
+**Blader:** Kit Lopez
+**Label:** GIMMICK — Air Knight Energy Layer swept-wing geometry generates borderline liftoff lift; Eternal tip free-spin bearing eliminates floor friction during aerial phase (Knight Flyer mechanism)
+
+**New analysis:**
+
+Air Knight 12Expand Eternal assembly (Face Bolt excluded): Energy Layer Air Knight m_AK = 15.0 g; Forge Disc 12 m_12 = 16.1 g; Disc Frame Expand m_Exp = 3.5 g; Performance Tip Eternal m_Et = 7.0 g; m_total = 41.6 g.
+
+Moment of inertia:
+- Outer wing mass (Air Knight tips + Expand frame) m_outer ≈ 12.0 g at r = 40 mm: I_outer = 0.0120 × 0.040² = 1.920 × 10⁻⁵ kg·m²
+- Mid mass (layer body + Disc 12) m_mid ≈ 22.0 g at r = 22 mm: I_mid = 0.0220 × 0.022² = 1.064 × 10⁻⁵ kg·m²
+- Tip m_Et = 7.0 g at r = 5 mm: I_Et = 0.0070 × 0.005² = 1.750 × 10⁻⁷ kg·m²
+- I_total = 3.002 × 10⁻⁵ kg·m²
+
+ω₀ = 720 rad/s (Burst Sparking launch); L₀ = 3.002 × 10⁻⁵ × 720 = 2.161 × 10⁻² kg·m²/s
+
+Wing lift generation:
+Air Knight Energy Layer has 4 large swept-back wing-profile blade protrusions designed to generate aerodynamic lift when spinning. Expand disc frame increases effective wing area. The wings act as rotating airfoils.
+
+Wing parameters:
+n_wings = 4; l_wing = 18 mm (span, r_inner = 22 mm to r_outer = 40 mm); c_wing = 16 mm (chord including Expand frame extension)
+A_wing_total = 4 × 0.018 × 0.016 = 11.52 × 10⁻⁴ m² = 11.52 cm²
+
+v_blade at midspan r_mid = 31 mm: v = 720 × 0.031 = 22.32 m/s
+C_L = 1.2 (thin cambered wing at ~10° AoA from the disc tilt angle)
+
+F_lift = ½ × ρ_air × C_L × A_wing × v_blade² = ½ × 1.225 × 1.2 × 11.52 × 10⁻⁴ × 22.32²
+= ½ × 1.225 × 1.2 × 11.52 × 10⁻⁴ × 498.2 = ½ × 1.225 × 1.2 × 0.5739 = ½ × 0.8437 = 0.4219 N
+
+Weight: W = m × g = 0.0416 × 9.81 = 0.408 N
+
+Net upward force at ω₀: F_lift − W = 0.422 − 0.408 = +0.014 N (positive, but only 3.4% of weight — borderline)
+
+Liftoff threshold: F_lift = W when ω = ω_liftoff:
+F_lift = ½ × 1.225 × 1.2 × 11.52 × 10⁻⁴ × (ω × 0.031)² = 0.408
+0.408 = 8.487 × 10⁻⁴ × ω² × 9.610 × 10⁻⁴
+ω²_liftoff = 0.408 / (8.487 × 10⁻⁴ × 9.610 × 10⁻⁴) = 0.408 / 8.156 × 10⁻⁷ = 5.003 × 10⁵
+ω_liftoff = 707 rad/s (98% of ω₀)
+
+The passive lift is insufficient at any spin below 707 rad/s. Therefore "uses an opponent's attack to jump up" is mechanically exact: the opponent's attack provides the additional vertical impulse needed to push Air Knight above the stadium floor, where it then sustains itself aerodynamically only if ω ≥ 707 rad/s (near-launch speed window). If spin has decayed: [M] BeySpirit supplements lift; the jump-off impulse triggers the aerial phase.
+
+Vertical impulse from opponent attack needed to initiate liftoff at, say, ω = 600 rad/s:
+F_lift(600) = ½ × 1.225 × 1.2 × 11.52e-4 × (600 × 0.031)² = 0.294 N (< W)
+ΔF_needed = 0.408 − 0.294 = 0.114 N sustained → J_vertical ≥ 0.114 × t_launch needed to reach aerial height.
+A typical collision impulse J_vertical_component ≈ 0.3 × J_total provides this comfortably.
+
+Eternal tip aerial spin preservation:
+On floor: τ_floor = μ_bearing × m × g × r_Et = 0.002 × 0.0416 × 9.81 × 0.005 = 4.083 × 10⁻⁶ N·m (extremely low — bearing free-spins)
+In air (aerial phase, no floor contact): τ_floor = 0; only aerodynamic drag applies.
+τ_air ≈ ½ × ρ_air × C_D × A_plan × ω × r_mean² × r_mean ≈ negligible compared to floor friction.
+t_aerial >> t_floor: Air Knight loses virtually no spin while airborne.
+
+Opponent floor decay during Air Knight's aerial phase:
+Standard opponent tip (WF, r=8mm, μ=0.22): τ_opp = 0.22 × m_opp × g × 0.008 ≈ 1.3 × 10⁻³ N·m
+At L₀_opp ≈ 1.5 × 10⁻² kg·m²/s: decay rate α_opp = 1.3e-3 / I_opp ≈ 55 rad/s²
+During t_aerial = 1.8 s: Δω_opp = 55 × 1.8 = 99 rad/s → opponent loses 14% spin while Air Knight loses ~0%.
+This asymmetric stamina drain is the core mechanic of Knight Flyer.
+
+---
+
+## Case 1698 — [SPECIAL] Knight Flyer
+
+**Bey:** Air Knight 12Expand Eternal (and Whirl Knight Tapered-Q Jaggy-Q+Bounce-2)
+**Blader:** Kit Lopez
+**Label:** SPECIAL — BeySpirit-sustained aerial phase: opponent-attack launch + aerial stamina trap + mid-air climb
+
+**New analysis:**
+
+Physical grounding: F_lift(ω₀) = 0.422 N ≈ W = 0.408 N at ω₀ (Case 1697). Opponent attack impulse provides vertical J_vertical to initiate liftoff. Eternal tip preserves spin during aerial phase.
+
+BeySpirit supplements lift for full aerial duration:
+[M] F_lift_BS = beySpirit × (W + F_extra) where F_extra maintains altitude as ω decays.
+At 50% spin without BeySpirit: F_lift(360 rad/s) = 0.422 × (360/720)² = 0.106 N < W — would fall.
+With BeySpirit: F_lift_BS compensates the deficit, enabling extended aerial time far beyond the physical window.
+
+"Decrease falling speed to make opponent waste stamina" — the primary mechanic:
+While airborne, Air Knight's stamina decays at τ_air ≈ 0 vs opponent's τ_floor. Each second of aerial phase: Air Knight retains ~100% spin; opponent loses α_opp ≈ 55 rad/s (14% of ω₀). In a sustained aerial phase of 3 s, opponent loses 42% spin while Air Knight loses < 2% → massive stamina advantage.
+
+"Can also be used when both knocked out": If both beys are launched outside the stadium, Air Knight activates Knight Flyer to reduce descent rate. Opponent lands on the ground first (no lift supplement) → Air Knight re-enters the stadium and wins by OUT.
+
+"Can even climb up in mid-air" [M]: With full BeySpirit, the wing geometry + precessional dynamics convert some rotational KE to active vertical thrust rather than passive lift. F_climb_[M] > W + F_drag → Air Knight can rise vertically while maintaining spin. Physically impossible; entirely [M] BeySpirit domain.
+
+Whirl Knight Tapered-Q Jaggy-Q+Bounce-2: The Bounce-2 driver has a spring-loaded contact element that literally generates vertical impulse on contact with the stadium floor or opponent, further enhancing the jump-off mechanism and enabling more aggressive aerial re-entries. Jaggy-Q adds aggressive contact spikes that deepen the launch impulse when struck.
+
+**Anime override note:** BeySpirit amplifies wing lift beyond physical aerodynamic limits and enables the mid-air climb. The stamina drain mechanic (opponent decays while Air Knight floats) is physically grounded in Eternal tip's zero-floor-friction aerial phase — this part requires no BeySpirit override. Combos (Case 1699) operate within physics ceiling only.
+
+**Compatible beys:** Air Knight or Whirl Knight Energy Layer on any large-wing-profile setup with a free-spin or low-friction tip (Eternal, Bearing, or Bounce driver series); primarily Air Knight 12Expand Eternal (Kit Lopez).
+
+```typescript
+function knightFlyer(
+  beySpirit: number,          // 0.0–1.0
+  launchedByAttack: boolean,  // opponent's attack provided the vertical impulse
+  bounceDriver: boolean,      // Bounce-2 driver active (Whirl Knight config)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; aerialMs: number; opponentSpinDrain: number; powerCost: number } {
+  const liftBonus = bounceDriver ? 1.3 : 1.0;
+  const launch    = launchedByAttack || beySpirit > 0.5;
+  if (qteHit && launch) {
+    return {
+      spinDelta:         Math.round(beySpirit * 8),         // slight spin gain from aerial no-friction
+      dmgMult:           1.0 + beySpirit * 0.4,             // minor contact damage on re-entry
+      aerialMs:          Math.round(1800 * beySpirit * liftBonus),  // [M] up to 2.3s aerial at full BS
+      opponentSpinDrain: beySpirit * 0.18 * liftBonus,      // fraction of opponent spin lost while aerial
+      powerCost:         100,
+    };
+  }
+  if (qteHit) {
+    return { spinDelta: -2, dmgMult: 1.0, aerialMs: 400, opponentSpinDrain: 0.04, powerCost: 100 };
+  }
+  return { spinDelta: -5, dmgMult: 1.0, aerialMs: 0, opponentSpinDrain: 0.01, powerCost: 100 };
+}
+```
+
+---
+
+## Case 1699 — [COMBO] Knight Glide
+
+**Bey:** Air Knight 12Expand Eternal
+**Blader:** Kit Lopez
+**Label:** COMBO — double-jump liftoff + upward sustain glide (Knight Glide)
+
+**Sequence:** jump → jump → moveUp (J J ↑)
+**Cost:** 15
+**Type restriction:** universal
+**Parent gimmick:** Air Knight wing lift + Eternal aerial spin preservation (Case 1697)
+
+**Thesis:** J achieves initial liftoff (single jump triggers the vertical impulse equivalent to the opponent-attack launch mechanism — internally applied). J a second time locks Air Knight in the maximum aerial height reachable within physics (simulating the brief window where ω ≥ ω_liftoff = 707 rad/s enables real passive lift). ↑ sustains the upward-bias momentum, extending the aerial phase as long as the combo window persists. The combo does not deal direct damage — it denies the opponent contact and causes asymmetric stamina drain (Air Knight on Eternal tip in air: τ ≈ 0; opponent on floor: τ ≈ 1.3 × 10⁻³ N·m). No BeySpirit override required for the stamina-drain mechanic: it derives entirely from the Eternal tip's zero-floor-friction property during the aerial phase, which is physically achievable for the J J ↑ window.
+
+```typescript
+function knightGlide(
+  liftedOff: boolean,   // JJ achieved aerial phase (ω near ω_liftoff)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; aerialMs: number; opponentSpinDrain: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta:         liftedOff ? +3 : -2,
+      dmgMult:           1.0,
+      aerialMs:          liftedOff ? 1800 : 600,
+      opponentSpinDrain: liftedOff ? 0.12 : 0.04,
+      powerCost:         15,
+    };
+  }
+  return { spinDelta: -3, dmgMult: 1.0, aerialMs: 0, opponentSpinDrain: 0.02, powerCost: 15 };
+}
+```
+
+**Ceiling check:** dmgMult 1.0 ≤ 1.5 ✓ | no direct lockMs (aerial phase, not contact lock) ✓ | cost 15 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓ | opponentSpinDrain 12% is genuine mechanic not immunity
+
+---
+
+## Case 1700 — [GIMMICK] Bull Metal Wheel Horn-Protrusion Impact + H145 CoM Elevation Orbital Aggressiveness
+
+**Bey:** Dark Bull H145SD
+**Blader:** Benkei Hanawa
+**Label:** GIMMICK — Bull Metal Wheel curved-horn protrusion mass-distributed impulse + H145 tall-track centre-of-mass elevation increasing orbital aggression (Maximum Stampede mechanism)
+
+**New analysis:**
+
+Dark Bull H145SD assembly (Face Bolt excluded): Energy Ring Bull m_ER = 3.2 g; Metal Wheel Bull m_Bull = 32.0 g; Spin Track H145 m_H145 = 1.8 g; Performance Tip SD m_SD = 0.7 g; m_total = 37.7 g.
+
+Metal Wheel Bull geometry: Bull has two large curved "horn" protrusions in 2-fold symmetry — massive curved arms that sweep from the inner wheel to outer radius r_horn = 36 mm. These constitute the primary contact surface. Horn mass concentration: m_horns ≈ 22.0 g at r = 36 mm.
+
+Moment of inertia:
+- Horn mass m_horns = 22.0 g at r = 36 mm: I_horns = 0.0220 × 0.036² = 2.851 × 10⁻⁵ kg·m²
+- Inner wheel mass m_inner = 13.0 g at r = 20 mm: I_inner = 0.0130 × 0.020² = 5.200 × 10⁻⁶ kg·m²
+- Track + tip mass = 2.5 g at r = 5 mm: I_tip = 0.0025 × 0.005² = 6.250 × 10⁻⁸ kg·m²
+- I_total = 3.377 × 10⁻⁵ kg·m²
+
+ω₀ = 630 rad/s (standard MFB launch); L₀ = 3.377 × 10⁻⁵ × 630 = 2.127 × 10⁻² kg·m²/s
+KE₀ = ½ × 3.377 × 10⁻⁵ × 630² = 6.699 J
+
+H145 track: height h = 14.5 mm (145 units = 14.5 mm). This raises the bey's centre of mass by h_extra = (14.5 − 7.0) = 7.5 mm above the floor reference compared to a standard 70-height track. The taller stance does two things:
+1. Increases precession rate: Ω_precess = τ_precess / L₀; with taller h_CoM, τ_precess = m × g × (h_CoM/2) × sin(θ) is effectively larger → faster precession orbit → more aggressive circular approach path
+2. Enables equatorial contact: the horn protrusions at their tall-stance height intercept the opponent's Metal Wheel at the equatorial plane rather than below-equatorial, delivering full radial impulse
+
+SD Performance Tip (Semi-Flat with moderate contact): r_SD ≈ 5 mm, μ_SD ≈ 0.18. Provides enough orbital speed to maintain aggressive approach, more friction than D (Defense) tip to sustain contact during the horn strike.
+
+Horn impact force analysis vs Rock Leone 145WB (m_RL = 37.2 g, Case 1643):
+v_horn = ω₀ × r_horn = 630 × 0.036 = 22.68 m/s
+m_reduced = (0.0377 × 0.0372) / (0.0377 + 0.0372) = 1.403 × 10⁻³ / 7.490 × 10⁻² = 1.873 × 10⁻² kg
+e_Bull = 0.42 (metal horn vs metal wheel, slightly higher than flat contact due to curved horn concentrating force)
+J_Bull = (1 + 0.42) × 1.873 × 10⁻² × 22.68 = 1.42 × 1.873 × 10⁻² × 22.68 = 0.603 N·s
+
+Δv_Leone = 0.603 / 0.0372 = 16.21 m/s > v_ring-out = 8 m/s → physical ring-out of Rock Leone achievable ✓ (consistent with anime: used against Rock Leone 145WB in "The Deck is Stacked!")
+
+---
+
+## Case 1701 — [SPECIAL] Maximum Stampede
+
+**Bey:** Dark Bull H145SD
+**Blader:** Benkei Hanawa
+**Label:** SPECIAL — fire/golden BeySpirit Bull Beast armor: full-charge orbital horn strike at maximum power
+
+**New analysis:**
+
+Physical grounding: J_Bull = 0.603 N·s, Δv_Leone = 16.21 m/s (ring-out ✓, Case 1700).
+
+"Covers itself in flames and golden armor": Bull Beast (fire element) manifests as a BeySpirit energy field that:
+1. Physically: increases effective e (coefficient of restitution) by coating the horn in a rigid energy shell — e_[M] → 0.80 (approaching perfectly elastic from the hard-metal 0.42)
+2. Thermally/kinetically: adds stored BeySpirit kinetic energy to the contact impulse
+
+[M] fire armor amplification:
+J_[M] = (1 + e_[M]) / (1 + e_phys) × J_phys × beySpirit_multiplier = (1.80 / 1.42) × 0.603 × 3.0 = 1.268 × 0.603 × 3.0 = 2.293 N·s
+Δv_[M] = 2.293 / 0.0372 = 61.6 m/s [M] (overwhelming single blow)
+
+"Used only once" — Maximum Stampede depletes Benkei's entire available BeySpirit reserve in one activation. The golden armor is a maximum-output BeySpirit manifestation that cannot be sustained or repeated in the same battle. Despite this, Benkei lost to Kyoya — consistent with Rock Leone's own BeySpirit defence (LGFW) absorbing / redirecting even a 61.6 m/s [M] blow.
+
+**Anime override note:** Bull Beast BeySpirit overrides the Metal Wheel structural elastic limit (e cannot physically exceed ~0.5 for ABS/metal contacts), horn geometry friction limits, and floor contact constraints. The "golden armor" is a BeySpirit energy shell with no physical analogue. Physical analysis (J = 0.603 N·s, ring-out achievable) shows the move has genuine mechanical grounding; [M] values are the BeySpirit amplification. Combos (Case 1702) do NOT receive this override.
+
+**Compatible beys:** Any beyblade with Bull Metal Wheel (horn protrusion r ≥ 34 mm) on H145 or comparable tall track + moderate-friction tip; primarily Dark Bull H145SD (Benkei Hanawa).
+
+```typescript
+function maximumStampede(
+  beySpirit: number,       // 0.0–1.0 Bull BeySpirit charge
+  flameArmor: boolean,     // golden armor activated (beySpirit ≥ 0.85)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; powerCost: number; ringOutBoost: number } {
+  const armorMult = flameArmor ? 2.8 : 1.0;   // [M] fire-armor impact amplification
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(55 * (1 + beySpirit * armorMult * 0.6)),
+      dmgMult:      1.0 + beySpirit * armorMult * 1.8,   // [M] up to ~6× at full BS + armor
+      powerCost:    100,
+      ringOutBoost: beySpirit * armorMult * 0.5,          // horn radial ejection component
+    };
+  }
+  return { spinDelta: -14, dmgMult: 1.1, powerCost: 100, ringOutBoost: 0 };
+}
+```
+
+---
+
+## Case 1702 — [COMBO] Bull Charge
+
+**Bey:** Dark Bull H145SD
+**Blader:** Benkei Hanawa
+**Label:** COMBO — lowered approach arc + lateral charge + horn strike (Bull Charge)
+
+**Sequence:** moveDown → moveRight → attack (↓ → K)
+**Cost:** 25
+**Type restriction:** attack (attack-type tips maintain the lateral orbital speed needed for the ↓ approach arc to align the horn at equatorial height; defense-type brakes on ↓ approach; stamina-type skips the equatorial contact angle)
+**Parent gimmick:** Bull Metal Wheel horn geometry + H145 equatorial contact (Case 1700)
+
+**Thesis:** ↓ drives Bull onto a descending arc, lowering the bey to the approach angle where H145's taller stance brings the horn protrusions to the exact equatorial-plane contact height of most opponent Metal Wheels (h_equatorial ≈ 7–10 mm). → builds rightward lateral orbital momentum — the "charge" direction — accelerating Bull toward the opponent along a straight-line approach. K fires when Bull's horn leading edge reaches the equatorial contact window, delivering the radial horn impulse. The ↓ → K sequence physically simulates a bull lowering its head (↓ descent) before charging forward (→) and striking (K). No BeySpirit — damage entirely from orbital momentum and horn concentration geometry.
+
+```typescript
+function bullCharge(
+  equatorialAligned: boolean,  // ↓ + → achieved horn-to-equatorial contact angle
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta:   equatorialAligned ? -40 : -20,
+      dmgMult:     equatorialAligned ? 1.47 : 1.26,
+      lockMs:      equatorialAligned ? 185 : 90,
+      powerCost:   25,
+    };
+  }
+  return { spinDelta: -9, dmgMult: 1.06, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgMult 1.47 ≤ 1.5 ✓ | lockMs 185 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+*Cases continue from Case 1703 as further franchise moves are provided.*

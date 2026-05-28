@@ -33,6 +33,7 @@ import { BitBeastCinematic } from '../components/game/BitBeastCinematic';
 import { QTEOverlay } from '../components/game/QTEOverlay';
 import { CollisionQTEOverlay } from '../components/game/CollisionQTEOverlay';
 import type { QTEPromptData } from '../game/hooks/useColyseus';
+import { LAUNCH_DURATION_S } from '../shared/constants/gameConstants';
 
 // ─── Default game state (before anything loads) ───────────────────────────────
 const DEFAULT_GAME_STATE: ServerGameState = {
@@ -74,12 +75,14 @@ export function GameRoomPage() {
   const [qtePrompt, setQTEPrompt] = useState<QTEPromptData | null>(null);
   const [collisionQTEActive, setCollisionQTEActive] = useState(false);
   const [collisionQTEPowerLocal, setCollisionQTEPowerLocal] = useState(0);
+  const [collisionQTEMultiplier, setCollisionQTEMultiplier] = useState(1);
+  const [collisionCanFireSpecial, setCollisionCanFireSpecial] = useState(false);
+  const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
+  const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
 
   const bitBeastCinematic = useBitBeastCinematic(config?.beybladeId ?? null);
   const { byId: comboMap } = useCombos();
   const { resolve: resolveSpecialMove } = useSpecialMoves();
-  const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
-  const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
 
   // ─── Server room (Colyseus) ───────────────────────────────────────────────
   const colyseusOptions = useMemo(() => ({
@@ -93,75 +96,86 @@ export function GameRoomPage() {
   }), [config, settings]);
 
   const roomName = config && !local
-    ? COLYSEUS_ROOM_NAME[config.roomType as keyof typeof COLYSEUS_ROOM_NAME] ?? 'battle_room'
+    ? (COLYSEUS_ROOM_NAME[config.roomType as keyof typeof COLYSEUS_ROOM_NAME] ?? 'battle_room')
     : 'battle_room';
 
-  const colyseus = useColyseus(
-    local ? null : {
-      roomName,
-      options: colyseusOptions,
-      roomId: config?.pvpRoomId,
-      onQTEPrompt: (d) => setQTEPrompt(d),
-      onQTESuccess: () => setQTEPrompt(null),
-      onQTEExpired: () => setQTEPrompt(null),
+  // Always call useColyseus (hooks must be unconditional); for local rooms autoConnect=false
+  const colyseus = useColyseus({
+    roomName,
+    options: local ? {} : colyseusOptions,
+    autoConnect: !local,
+    roomId: config?.pvpRoomId,
+    onQTEPrompt: (d) => setQTEPrompt(d),
+    onQTESuccess: () => setQTEPrompt(null),
+    onQTEExpired: () => setQTEPrompt(null),
+    onCollisionQTEStart: (_d) => {
+      setCollisionQTEActive(true);
+      setCollisionQTEPowerLocal(0);
+      setCollisionQTEMultiplier(1);
     },
-  );
+    onCollisionQTESpecialPrompt: (d) => {
+      setCollisionCanFireSpecial(true);
+      setCollisionQTEMultiplier(d.qteMultiplier);
+    },
+    onCollisionQTEResult: () => {
+      setCollisionQTEActive(false);
+      setCollisionCanFireSpecial(false);
+    },
+  });
 
   // ─── Resolve active game state ────────────────────────────────────────────
   const gameState: ServerGameState = local
     ? (simSnap?.gameState ?? DEFAULT_GAME_STATE)
-    : (colyseus?.gameState ?? DEFAULT_GAME_STATE);
+    : (colyseus.gameState ?? DEFAULT_GAME_STATE);
 
   const beyblades = local
     ? (simSnap?.beyblades ?? new Map())
-    : (colyseus?.beyblades ?? new Map());
+    : (colyseus.beyblades ?? new Map());
 
   const myBeyblade = local
     ? (simSnap ? beyblades.get(simSnap.myBeyId) : undefined)
-    : colyseus?.myBeyblade;
+    : (colyseus.myBeyblade ?? undefined);
 
   const loadingStep = local
     ? (simSnap?.status === 'idle' || simSnap?.status === 'loading' ? 'connecting-ws' : 'warmup-ready')
-    : (colyseus?.loadingStep ?? 'connecting-ws');
+    : colyseus.loadingStep;
 
   const loadingError = local
-    ? (simSnap?.loadingError ?? null)
-    : (colyseus?.loadingError ?? null);
+    ? (simSnap?.loadingError ?? undefined)
+    : colyseus.loadingError;
 
   const showLoading = loadingStep !== 'warmup-ready' && gameState.status === 'waiting';
 
   // ─── Renderer ─────────────────────────────────────────────────────────────
   const rendererMode = config?.is25D ? '2.5d' : '2d';
-  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset, visualEventQueue } = usePixiRenderer(containerRef, rendererMode as '2d' | '2.5d');
+  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset } = usePixiRenderer(containerRef, rendererMode as '2d' | '2.5d');
 
   useEffect(() => {
     if (myBeyblade?.id) setControlledBeyblade(myBeyblade.id);
   }, [myBeyblade?.id, setControlledBeyblade]);
 
   // ─── Input ────────────────────────────────────────────────────────────────
-  const sendInput = useCallback((input: Parameters<typeof useGameInput>[0] extends (...args: infer A) => unknown ? never : never) => {}, []);
+  const localSendInput = useCallback((input: import('../game/hooks/useGameInput').FullGameInput) => {
+    simRef.current?.applyInput(input);
+  }, []);
 
-  const sendInputFn = local
-    ? useCallback((input: import('../game/hooks/useGameInput').FullGameInput) => {
-        simRef.current?.applyInput(input);
-      }, [])
-    : (colyseus?.sendInput ?? (() => {}));
+  const sendInputFn = local ? localSendInput : colyseus.sendInput;
 
   useGameInput(sendInputFn, gameState.status === 'in-progress');
 
   // ─── Launch input (server rooms) ──────────────────────────────────────────
   const launcherType = config?.launcherType ?? 'string';
-  const { launchInput } = useLaunchInput(
-    !local && gameState.status === 'launching' ? colyseus?.room ?? null : null,
+  const launchState = useLaunchInput(
+    !local ? (colyseus.room ?? null) : null,
+    gameState.status,
     launcherType,
-    gameState.status === 'launching',
   );
 
   // ─── RAF render loop ──────────────────────────────────────────────────────
   useEffect(() => {
     let rafId: number;
     const loop = () => {
-      render(gameState, beyblades, local ? undefined : (visualEventQueue?.dequeue?.() ?? undefined));
+      render(gameState, beyblades, local ? undefined : colyseus.visualEventQueue);
       rafId = requestAnimationFrame(loop);
     };
     rafId = requestAnimationFrame(loop);
@@ -179,7 +193,14 @@ export function GameRoomPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ─── Victory / KO detection ───────────────────────────────────────────────
+  // ─── Sync collision QTE power from server ─────────────────────────────────
+  useEffect(() => {
+    if (!local && collisionQTEActive) {
+      setCollisionQTEPowerLocal(colyseus.collisionQTEPower);
+    }
+  }, [local, collisionQTEActive, colyseus.collisionQTEPower]);
+
+  // ─── Victory detection ────────────────────────────────────────────────────
   useEffect(() => {
     if (gameState.status === 'finished' || gameState.status === 'series-finished') {
       if (gameState.winner) setVictoryVisible(true);
@@ -187,16 +208,34 @@ export function GameRoomPage() {
   }, [gameState.status, gameState.winner]);
 
   const handleExit = useCallback(() => {
-    if (!local) colyseus?.room?.leave();
+    if (!local) colyseus.room?.leave();
     simRef.current?.stop();
     navigate(config?.roomType === 'tournament' ? '/game/2d/tournament' : '/game/battle');
-  }, [local, colyseus, navigate, config]);
+  }, [local, colyseus.room, navigate, config]);
 
   if (!config) return null;
 
   const spinPct = myBeyblade ? Math.round((myBeyblade.spin / myBeyblade.maxSpin) * 100) : 0;
-  const stability = myBeyblade ? getBeybladeStability(myBeyblade) : 'stable';
   const typeColor = myBeyblade ? (TYPE_COLORS[myBeyblade.type] ?? '#888') : '#888';
+
+  // Winner info for victory overlay
+  const winnerBey = beyblades.get(gameState.winner ?? '') ?? [...beyblades.values()].find(b => b.userId === gameState.winner);
+  const winnerName = winnerBey?.username ?? gameState.winner ?? '';
+  const winnerType = winnerBey?.type ?? 'balanced';
+
+  // SpecialMove data for HUD
+  const specialMoveData = myBeyblade
+    ? (() => {
+        const move = resolveSpecialMove((myBeyblade as unknown as Record<string, string>)['specialMoveId'] ?? myBeyblade.specialMove ?? '');
+        if (!move) return null;
+        return {
+          id: move.id,
+          name: move.name,
+          iconEmoji: move.iconEmoji,
+          visual: { screenFlashColor: move.visual?.screenFlashColor },
+        };
+      })()
+    : null;
 
   return (
     <GameShell show25DRotate={config.is25D}>
@@ -212,16 +251,16 @@ export function GameRoomPage() {
         {/* Loading */}
         {showLoading && (
           <LoadingProgress
-            step={loadingStep as Parameters<typeof LoadingProgress>[0]['step']}
-            error={loadingError ?? undefined}
-            onRetry={() => {
-              if (local && config) {
+            currentStep={loadingStep as import('../components/LoadingProgress').LoadingStep}
+            error={loadingError}
+            onRetry={local ? () => {
+              if (config) {
                 simRef.current?.stop();
                 const sim = new LocalGameSimulation(config, snap => setSimSnap(snap));
                 simRef.current = sim;
                 sim.start();
               }
-            }}
+            } : undefined}
           />
         )}
 
@@ -230,17 +269,22 @@ export function GameRoomPage() {
           <Countdown
             status={gameState.status}
             timer={gameState.timer}
-            launchTimer={gameState.launchTimer ?? 5}
           />
         )}
 
         {/* Launch phase */}
         {gameState.status === 'launching' && !local && (
           <LaunchPhase
-            gameState={gameState}
+            launchTimer={gameState.launchTimer ?? LAUNCH_DURATION_S}
+            launchTilt={launchState.tilt}
+            launchPosition={launchState.position}
+            launchPower={launchState.power}
+            chargingStarted={launchState.chargingStarted}
+            launched={launchState.launched}
+            failed={myBeyblade ? !!(myBeyblade as unknown as Record<string, boolean>)['launchFailed'] : false}
+            myBeyId={myBeyblade?.id}
             beyblades={beyblades}
-            myBeybladeId={myBeyblade?.id ?? ''}
-            launchInput={launchInput}
+            arena={gameState.arena}
             launcherType={launcherType}
           />
         )}
@@ -249,56 +293,64 @@ export function GameRoomPage() {
         <KOOverlay
           visible={koVisible.visible}
           type={koVisible.type}
-          onDone={() => setKoVisible(v => ({ ...v, visible: false }))}
+          onComplete={() => setKoVisible(v => ({ ...v, visible: false }))}
         />
 
         {/* Burst */}
         <BurstOverlay
           visible={burstVisible}
-          onDone={() => setBurstVisible(false)}
+          onComplete={() => setBurstVisible(false)}
         />
 
         {/* Victory */}
-        {victoryVisible && (
-          <VictoryOverlay
-            winner={gameState.winner}
-            beyblades={beyblades}
-            onDismiss={() => { setVictoryVisible(false); handleExit(); }}
-          />
-        )}
+        <VictoryOverlay
+          visible={victoryVisible}
+          winnerName={winnerName}
+          winnerType={winnerType}
+          onDismiss={() => { setVictoryVisible(false); handleExit(); }}
+        />
 
         {/* BitBeast cinematic */}
         <BitBeastCinematic
-          beybladeId={config.beybladeId}
-          text={bitBeastCinematic.text}
+          imageUrl={bitBeastCinematic.imageUrl}
+          moveName={bitBeastCinematic.moveName}
           visible={bitBeastCinematic.visible}
-          duration={bitBeastCinematic.duration}
-          onDone={bitBeastCinematic.onDone}
         />
 
         {/* Launch cinematic */}
         <LaunchCinematic
-          launchInput={launchInput}
-          status={gameState.status}
+          active={gameState.status === 'launching'}
+          power={myBeyblade ? (myBeyblade as unknown as Record<string, number>)['launchPower'] ?? launchState.power : launchState.power}
         />
 
-        {/* QTE */}
+        {/* QTE — transform wrapper constrains `position:fixed` children to this viewport */}
         {qtePrompt && !local && (
-          <QTEOverlay
-            prompt={qtePrompt}
-            onSuccess={() => { colyseus?.sendQTEInput?.(true); setQTEPrompt(null); }}
-            onExpire={() => { colyseus?.sendQTEInput?.(false); setQTEPrompt(null); }}
-          />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, transform: 'translateZ(0)' }}>
+            <QTEOverlay
+              prompt={qtePrompt}
+              onKeyPress={(key) => colyseus.sendQTEInput(key)}
+              onDismiss={() => setQTEPrompt(null)}
+            />
+          </div>
         )}
 
-        {/* Collision QTE */}
+        {/* Collision QTE — same transform wrapper */}
         {collisionQTEActive && !local && (
-          <CollisionQTEOverlay
-            power={collisionQTEPowerLocal}
-            canFireSpecial={false}
-            onMash={() => colyseus?.sendCollisionQTEMash?.()}
-            onFireSpecial={() => colyseus?.sendCollisionQTEFireSpecial?.()}
-          />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, transform: 'translateZ(0)' }}>
+            <CollisionQTEOverlay
+              active={collisionQTEActive}
+              power={collisionQTEPowerLocal}
+              canFireSpecial={collisionCanFireSpecial}
+              qteMultiplier={collisionQTEMultiplier}
+              currentSP={myBeyblade?.power ?? 0}
+              onMash={colyseus.sendCollisionQTEMash}
+              onFireSpecial={() => {
+                colyseus.sendCollisionQTEFireSpecial();
+                setCollisionCanFireSpecial(false);
+                setCollisionQTEActive(false);
+              }}
+            />
+          </div>
         )}
 
         {/* HUD — spin/health bars */}
@@ -327,7 +379,7 @@ export function GameRoomPage() {
             <CameraControls
               onZoomIn={cameraZoomIn}
               onZoomOut={cameraZoomOut}
-              onReset={cameraZoomReset}
+              onZoomReset={cameraZoomReset}
             />
 
             {/* Exit */}
@@ -346,20 +398,22 @@ export function GameRoomPage() {
         )}
 
         {/* Special Move HUD */}
-        {myBeyblade && gameState.status === 'in-progress' && (
+        {myBeyblade && specialMoveData && gameState.status === 'in-progress' && (
           <SpecialMoveHUD
-            beyblade={myBeyblade}
-            specialMove={resolveSpecialMove(myBeyblade.specialMove ?? '')}
-            onLastFired={setLastSpecialMove}
+            myBeyblade={myBeyblade}
+            specialMoveData={specialMoveData}
+            lastSpecialMoveFired={lastSpecialMove}
           />
         )}
 
         {/* Combo HUD */}
-        {myBeyblade && gameState.status === 'in-progress' && (
+        {gameState.status === 'in-progress' && (
           <ComboHUD
-            beyblade={myBeyblade}
-            comboMap={comboMap}
             lastCombo={lastCombo}
+            attachedComboIds={myBeyblade?.comboIds}
+            cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
+            power={myBeyblade?.power}
+            comboMap={comboMap}
           />
         )}
 

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "./layouts/RootLayout";
 import { AdminLayout } from "./layouts/AdminLayout";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -7,15 +7,14 @@ import { AdminRoute } from "./components/auth/AdminRoute";
 // Pages
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
-import { HomePage } from "./pages/HomePage";
+import { GameModeLandingPage } from "./pages/GameModeLandingPage";
+import { GameModeSelectPage } from "./pages/GameModeSelectPage";
+import { StoryModeCardsPage } from "./pages/StoryModeCardsPage";
+import { BattleModeCardsPage } from "./pages/BattleModeCardsPage";
+import { GameRoomPage } from "./pages/GameRoomPage";
 import { RendererDemoPage } from "./pages/RendererDemoPage";
-import { GameSelectPage } from "./pages/GameSelectPage";
-import { TryoutSetupPage } from "./pages/TryoutSetupPage";
-import { TryoutGamePage } from "./pages/TryoutGamePage";
 import { BattleLobbyPage } from "./pages/BattleLobbyPage";
 import { BattleGamePage } from "./pages/BattleGamePage";
-import { AIBattleSetupPage } from "./pages/AIBattleSetupPage";
-import { AIBattleGamePage } from "./pages/AIBattleGamePage";
 import { TournamentListPage } from "./pages/TournamentListPage";
 import { TournamentLobbyPage } from "./pages/TournamentLobbyPage";
 import { TournamentBattleGamePage } from "./pages/TournamentBattleGamePage";
@@ -200,42 +199,46 @@ export const router = createBrowserRouter([
     path: "/",
     element: <RootLayout />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <GameModeLandingPage /> },
       { path: "demo", element: <RendererDemoPage /> },
-      { path: "game", element: <ProtectedRoute><GameSelectPage /></ProtectedRoute> },
 
-      // ── Classic 2D pipeline ──
-      { path: "game/2d/tryout/setup", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
-      { path: "game/2d/tryout/play", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
-      { path: "game/2d/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
+      // ── New unified game flow ──
+      { path: "game", element: <ProtectedRoute><GameModeSelectPage /></ProtectedRoute> },
+      { path: "game/battle", element: <ProtectedRoute><BattleModeCardsPage /></ProtectedRoute> },
+      { path: "game/story", element: <ProtectedRoute><StoryModeCardsPage /></ProtectedRoute> },
+      { path: "game/room", element: <ProtectedRoute><GameRoomPage /></ProtectedRoute> },
+      { path: "settings", element: <ProtectedRoute><Navigate to="/game/settings" replace /></ProtectedRoute> },
+
+      // ── PvP & tournament Colyseus rooms (server-authoritative) ──
       { path: "game/2d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/2d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
-      { path: "game/2d/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
-      { path: "game/2d/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
       { path: "game/2d/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/2d/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/2d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
-
-      // ── 2.5D parts pipeline ──
-      { path: "game/2.5d/tryout/setup", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
-      { path: "game/2.5d/tryout/play", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
-      { path: "game/2.5d/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/2.5d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/2.5d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
-      { path: "game/2.5d/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
-      { path: "game/2.5d/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
       { path: "game/2.5d/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/2.5d/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/2.5d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
 
-      // ── Legacy routes (default to classic 2D pipeline via modeFromPath fallback) ──
-      { path: "game/tryout/setup", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
-      { path: "game/tryout/play", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
-      { path: "game/tryout", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
+      // ── Legacy redirects ──
+      { path: "game/2d/tryout", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2d/tryout/setup", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2d/tryout/play", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2d/ai-battle", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2d/ai-battle/play", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2.5d/tryout", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2.5d/tryout/setup", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2.5d/tryout/play", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2.5d/ai-battle", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/2.5d/ai-battle/play", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/tryout", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/tryout/setup", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/tryout/play", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/ai-battle", element: <Navigate to="/game/battle" replace /> },
+      { path: "game/ai-battle/play", element: <Navigate to="/game/battle" replace /> },
       { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
-      { path: "game/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
-      { path: "game/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
       { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
@@ -243,7 +246,6 @@ export const router = createBrowserRouter([
       { path: "game/my-beys", element: <ProtectedRoute><MyBeysPage /></ProtectedRoute> },
       { path: "game/settings", element: <ProtectedRoute><PlayerSettingsPage /></ProtectedRoute> },
       { path: "game/tutorial", element: <ProtectedRoute><TutorialPage /></ProtectedRoute> },
-      { path: "game/story", element: <ProtectedRoute><StorySelectPage /></ProtectedRoute> },
       { path: "game/story/episode/:episodeId/intro", element: <ProtectedRoute><EpisodeIntroPage /></ProtectedRoute> },
       { path: "game/story/episode/:episodeId/outro", element: <ProtectedRoute><EpisodeOutroPage /></ProtectedRoute> },
       { path: "game/replay/:matchId", element: <ProtectedRoute><ReplayViewerPage /></ProtectedRoute> },

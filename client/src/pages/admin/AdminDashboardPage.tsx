@@ -4,6 +4,7 @@ import { collection, getDocs, query, orderBy, limit, where } from "firebase/fire
 import { db, COLLECTIONS } from "@/lib/firebase";
 interface DashboardStats { beyblades: number; arenas: number; matches: number; players: number; }
 interface TournamentStats { active: number; upcoming: number; }
+interface AdminLogEntry { id: string; timestamp: any; userId?: string; step?: string; errorType?: string; message?: string; roomType?: string; }
 
 const statCards = [
   { label:"Beyblades", icon:"🌀", href:"/admin/beyblades", bgClass:"bg-blue-10", borderClass:"border-blue-30" },
@@ -33,22 +34,25 @@ export function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({ beyblades:0, arenas:0, matches:0, players:0 });
   const [tournamentStats, setTournamentStats] = useState<TournamentStats>({ active:0, upcoming:0 });
   const [recentMatches, setRecentMatches] = useState<any[]>([]);
+  const [recentErrors, setRecentErrors] = useState<AdminLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [beybladeSnap, arenaSnap, matchSnap, playerSnap, activeSnap, upcomingSnap] = await Promise.all([
+        const [beybladeSnap, arenaSnap, matchSnap, playerSnap, activeSnap, upcomingSnap, errorSnap] = await Promise.all([
           getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS)),
           getDocs(collection(db, COLLECTIONS.ARENAS)),
           getDocs(query(collection(db, COLLECTIONS.MATCHES), orderBy("createdAt","desc"), limit(5))),
           getDocs(collection(db, COLLECTIONS.PLAYER_STATS)),
           getDocs(query(collection(db, COLLECTIONS.TOURNAMENTS), where("status","==","in-progress"))),
           getDocs(query(collection(db, COLLECTIONS.TOURNAMENTS), where("status","==","registration"))),
+          getDocs(query(collection(db, "admin_logs"), orderBy("timestamp","desc"), limit(20))).catch(() => null),
         ]);
         setStats({ beyblades:beybladeSnap.size, arenas:arenaSnap.size, matches:matchSnap.size, players:playerSnap.size });
         setTournamentStats({ active:activeSnap.size, upcoming:upcomingSnap.size });
         setRecentMatches(matchSnap.docs.map(d => ({ id:d.id, ...d.data() })));
+        if (errorSnap) setRecentErrors(errorSnap.docs.map(d => ({ id: d.id, ...d.data() } as AdminLogEntry)));
       } catch (err) { console.error("Dashboard fetch error:", err); }
       finally { setLoading(false); }
     })();
@@ -146,6 +150,41 @@ export function AdminDashboardPage() {
               ))
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Recent Errors */}
+      <div className="mt-5">
+        <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Recent Client Errors</div>
+        <div className="bg-bg2 border border-border rounded-xl overflow-hidden">
+          {loading ? (
+            <div className="p-6 text-center"><div className="spin w-6 h-6 border-2 border-blue border-t-transparent rounded-full mx-auto" /></div>
+          ) : recentErrors.length === 0 ? (
+            <div className="p-6 text-center text-faint text-[13px]">No errors logged</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[12px]">
+                <thead><tr className="border-b border-border text-muted text-left">
+                  <th className="px-4 py-2 font-medium">Time</th>
+                  <th className="px-4 py-2 font-medium">Type</th>
+                  <th className="px-4 py-2 font-medium">Step</th>
+                  <th className="px-4 py-2 font-medium">Room</th>
+                  <th className="px-4 py-2 font-medium">Message</th>
+                </tr></thead>
+                <tbody>
+                  {recentErrors.map((entry, i) => (
+                    <tr key={entry.id} className={i < recentErrors.length - 1 ? "border-b border-border-c" : ""}>
+                      <td className="px-4 py-2 text-faint font-mono whitespace-nowrap">{entry.timestamp?.toDate?.()?.toLocaleString() ?? "—"}</td>
+                      <td className="px-4 py-2"><span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${entry.errorType === "server" ? "bg-red-10 text-theme-red" : entry.errorType === "firebase" ? "bg-yellow-10 text-yellow" : "bg-blue-10 text-blue"}`}>{entry.errorType ?? "unknown"}</span></td>
+                      <td className="px-4 py-2 text-faint font-mono">{entry.step ?? "—"}</td>
+                      <td className="px-4 py-2 text-faint">{entry.roomType ?? "—"}</td>
+                      <td className="px-4 py-2 text-text max-w-[300px] truncate">{entry.message ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>

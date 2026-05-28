@@ -4,7 +4,7 @@
 
 import { doc, getDoc } from 'firebase/firestore';
 import { db, COLLECTIONS } from '../../lib/firebase';
-import type { ServerBeyblade, ServerGameState } from '../../types/game';
+import type { ServerArenaState, ServerBeyblade, ServerGameState } from '../../types/game';
 import type { GameRoomConfig } from '../../types/gameRoom';
 import type { FullGameInput } from '../hooks/useGameInput';
 import { AIController, type BeybladeSnapshot } from '../ai/AIController';
@@ -20,19 +20,19 @@ const DEFAULT_ARENA_W = 1080;
 const DEFAULT_ARENA_H = 1080;
 
 // ─── Default arena config ─────────────────────────────────────────────────────
-function defaultArena(id = 'default') {
+function defaultArena(id = 'default'): ServerArenaState {
   return {
     id, name: 'Standard Arena',
     width: DEFAULT_ARENA_W, height: DEFAULT_ARENA_H,
-    shape: 'circle' as const,
+    shape: 'circle',
     theme: 'default',
     rotation: 0,
     autoRotate: false, rotationSpeed: 0,
-    rotationDirection: 'clockwise' as const,
+    rotationDirection: 'clockwise',
     wallEnabled: true, wallAngle: 0,
-    worldBgType: 'none' as const,
+    worldBgType: 'none',
     worldBgColor: '', worldBgImageUrl: '',
-    worldBgOpacity: 1.0, worldBgFit: 'cover' as const, worldBgBlurPx: 0,
+    worldBgOpacity: 1.0, worldBgFit: 'cover', worldBgBlurPx: 0,
   };
 }
 
@@ -86,8 +86,9 @@ export class LocalGameSimulation {
 
   private beyblades = new Map<string, ServerBeyblade>();
   private aiControllers = new Map<string, AIController>();
-  private arena = defaultArena();
+  private arena: ServerArenaState = defaultArena();
   private arenaRadius = DEFAULT_ARENA_W * 0.45;
+  private winner = '';
 
   private myBeyId = 'player';
   private status: SimStatus = 'idle';
@@ -392,8 +393,8 @@ export class LocalGameSimulation {
         bey.velocityY -= ny * Math.abs(bey.velocityX * nx + bey.velocityY * ny) * 1.3;
       }
 
-      // Knock out when spin reaches zero
-      if (bey.spin <= 0 && !bey.isAI && this.config.roomType !== 'tryout') {
+      // Knock out when spin reaches zero (applies to all beys, including AI)
+      if (bey.spin <= 0 && this.config.roomType !== 'tryout') {
         bey.isActive = false;
         bey.spin = 0;
       }
@@ -424,11 +425,12 @@ export class LocalGameSimulation {
       }
     }
 
-    // Check win condition (pvai only)
-    if (this.config.roomType === 'pvai') {
+    // Check win condition (pvai / story-battle)
+    if (this.config.roomType === 'pvai' || this.config.roomType === 'story-battle') {
       const actives = Array.from(this.beyblades.values()).filter(b => b.isActive);
       if (actives.length <= 1) {
         this.status = 'finished';
+        this.winner = actives.length === 1 ? actives[0].id : '';
         this.emitSnapshot();
         return;
       }
@@ -449,7 +451,7 @@ export class LocalGameSimulation {
       mode: this.config.roomType === 'tryout' ? 'tryout' : 'ai-battle',
       timer: this.elapsed,
       startTime: 0,
-      winner: '',
+      winner: this.winner,
       matchId: 'local',
       arena: this.arena as ReturnType<typeof defaultArena>,
       beyblades: this.beyblades,
