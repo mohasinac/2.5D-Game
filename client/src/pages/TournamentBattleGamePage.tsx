@@ -242,7 +242,7 @@ export function TournamentBattleGamePage() {
   ) {
     gameEverActiveRef.current = true;
   }
-  const showLoading = !gameEverActiveRef.current && (
+  const showLoading = loadingStep !== "warmup-ready" && !gameEverActiveRef.current && (
     !gameState || (
       gameState.status !== "in-progress" &&
       gameState.status !== "warmup" &&

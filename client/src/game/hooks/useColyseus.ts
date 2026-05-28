@@ -426,6 +426,11 @@ export function useColyseus({
         setLoadingStep(s => s === "loading-arena-assets" ? "loading-beyblade-assets" : s);
         step4TimerRef.current = null;
       }, 3000);
+      // Fallback timers — advance through remaining steps even if the server never
+      // sends warmup (e.g. slow Firestore onJoin, server restart between sessions).
+      // Each timer only advances if the step hasn't already been skipped by a real event.
+      setTimeout(() => setLoadingStep(s => s === "loading-beyblade-assets" ? "loading-audio-assets" : s), 8000);
+      setTimeout(() => setLoadingStep(s => s === "loading-audio-assets"    ? "warmup-ready"        : s), 14000);
 
       // Detect spectator mode — spectators have no beyblade entry keyed to their sessionId
       const spectate = Boolean((options as any).spectate);

@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1374 cases** across 14 files + 1 master reference.
+Total: **1392 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1399** — All new cases must start here. Update this block before writing any new case.
+> **1417** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -27,7 +27,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1398 | 430 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1416 | 448 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -65,7 +65,13 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1390–1392 | 3 | Fighting Snake Flash — Aquario F-tip sinusoidal slither attack + sonic wave AR (Mei-Mei · Aquario 105F) | CS13 |
 | 1393–1395 | 3 | Omega Blast — Prime Apocalypse sword-point concentrated impact (Arthur Peregrine · Prime Apocalypse 0Dagger UR’) | CS13 |
 | 1396–1398 | 3 | Final Blast — spring-lock sword two-stage KE release (Arthur Peregrine · Prime Apocalypse 0Dagger UR’) | CS13 |
-| **1399+** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| 1399–1401 | 3 | Saber Strike — Xcalius sword blade lock-and-thrust (Xander Shakadera · Xcalius Force Xtreme / Xeno Xcalius Magnum Impact) | CS13 |
+| 1402–1404 | 3 | Flame Saber — Dranzer aerial spiral descent S-tip stomp + fire mantle (Kai Hiwatari · Dranzer F/V/Flame) | CS13 |
+| 1405–1407 | 3 | Flame Gigs Turbo — Dranzer GT dual-stage EG concentric orbit blue-fire twin trail (Kai Hiwatari · Dranzer GT) | CS13 |
+| 1408–1410 | 3 | Flame Claw — C145 passive-fin fire tornado tangential strike (Kenta · Sagittario C145S) | CS13 |
+| 1411–1413 | 3 | Fire Execution — Dark Gargoyle wing-vortex fire tornado ring-out (Miguel · Dark Gargoyle) | CS13 |
+| 1414–1416 | 3 | Fire Arrow — Dranzer S fire-coated direct charge explosive impact (Kai Hiwatari · Dranzer S) | CS13 |
+| **1417+** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
@@ -1040,13 +1046,13 @@ All former conflicts have been resolved. The notes below document what was fixed
 ---
 
 
-## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1398
+## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1416
 
 > Franchise special moves, gimmick foundations, and derived combos (CS13)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
-| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1398 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1416 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
 
 ---
 

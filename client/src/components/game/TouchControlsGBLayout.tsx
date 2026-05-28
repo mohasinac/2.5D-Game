@@ -1,236 +1,59 @@
-// TouchControlsGBLayout — individually draggable, orientation-aware touch controls.
+// TouchControlsGBLayout — Game Boy Color (portrait) / Game Boy Advance (landscape) shell.
 //
-// Seven controls (D-pad, JUMP, ATK, DEF, DODGE, CHARGE, SPECIAL) are fixed-position
-// panels that can be dragged anywhere on-screen; positions persist in localStorage.
+// Portrait  → GBC layout: screen centred, controls below (D-pad left, B/A right, SELECT/START centre)
+// Landscape → GBA layout: screen centred, D-pad left gutter, B/A right gutter, L/R shoulder tabs
 //
-// – Portrait (phone):   controls default to the bottom strip below the square canvas.
-// – Landscape (desktop/ultrawide): D-pad+CHARGE in left gutter, actions in right gutter,
-//   both just outside the canvas edges (not at the viewport edge).
-// – Edit mode: ⠿ drag-handle + ⌂ snap-back float above each control.  Play mode is clean.
-// – ToggleBar (fixed bottom-centre): Hide / ✏ Edit / ✓ Done / ⌨ Keys.
+// Button mapping:
+//   D-pad  → moveLeft/Right/Up/Down
+//   A      → ATK (attack)
+//   B      → DEF (defense)
+//   L tab  → CHARGE (hold)
+//   R tab  → SPECIAL (tap)
+//   SELECT → JUMP
+//   START  → DODGE
+//
+// The exit button lives near the SELECT/START row — same position on both orientations.
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { touchInputState } from "@/game/hooks/useGameInput";
 import { KeyBindingsPanel } from "@/components/game/KeyBindingsPanel";
 
-// ─── Persistence ──────────────────────────────────────────────────────────────
-
-interface Pos { x: number; y: number }
-
-function loadPos(key: string): Pos | null {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) as Pos : null; }
-  catch { return null; }
-}
-function savePos(key: string, pos: Pos) {
-  try { localStorage.setItem(key, JSON.stringify(pos)); } catch { /* ignore */ }
-}
-function clearPos(key: string) {
-  try { localStorage.removeItem(key); } catch { /* ignore */ }
-}
-
-// ─── Responsive sizing ────────────────────────────────────────────────────────
-// CSS uses: clamp(min, Nvmin, max). JS mirrors those values for layout calc.
-
-function vminPx(): number { return Math.min(window.innerWidth, window.innerHeight) / 100; }
-function dpSize():  number { return Math.max(100, Math.min(120, 26 * vminPx())); }
-function btnSize(): number { return Math.max(48,  Math.min(64,  13 * vminPx())); }
-function barW():    number { return Math.max(72,  Math.min(96,  19 * vminPx())); }
-function barH():    number { return Math.max(36,  Math.min(44,   9 * vminPx())); }
-
 // ─── Canvas geometry (mirrors CSS min(100vw,100vh) centred square) ────────────
 
-function getCanvas() {
+interface CanvInfo { cl: number; ct: number; cr: number; cb: number; vw: number; vh: number; size: number }
+
+function getCanvas(): CanvInfo {
   const vw = window.innerWidth, vh = window.innerHeight;
   const size = Math.min(vw, vh);
   const cl = (vw - size) / 2;
   const ct = (vh - size) / 2;
-  return { cl, ct, cr: cl + size, cb: ct + size, vw, vh };
+  return { cl, ct, cr: cl + size, cb: ct + size, vw, vh, size };
 }
 
-// ─── Orientation helper ───────────────────────────────────────────────────────
-
-/** Returns 'ls' when landscape (width > height + 50px threshold), else 'pt'. */
 function currentOrient(): 'pt' | 'ls' {
   return window.innerWidth > window.innerHeight + 50 ? 'ls' : 'pt';
 }
 
-// ─── Default position — canvas-relative, orientation-aware ───────────────────
-//
-// Portrait (phone): controls in the horizontal strip below the canvas.
-// Landscape:        D-pad + CHARGE just outside canvas left edge;
-//                   action buttons + SPECIAL just outside canvas right edge.
-//   This keeps controls next to the canvas on any screen width — including
-//   ultrawide monitors where the gutters are 1000 px wide.
+// ─── Sizing helpers ────────────────────────────────────────────────────────────
 
-function computeDefaultPos(key: string): Pos {
-  const { cl, cr, cb, vw, vh } = getCanvas();
-  const portrait = vh > vw + 50;
-  const pad = 12;
-  const dp = dpSize(), btn = btnSize(), bW = barW(), bH = barH();
+function vmin(): number { return Math.min(window.innerWidth, window.innerHeight) / 100; }
+function dpSize():  number { return Math.max(88,  Math.min(112, Math.round(23 * vmin()))); }
+function aSize():   number { return Math.max(56,  Math.min(72,  Math.round(15 * vmin()))); }
+function bSize():   number { return Math.max(44,  Math.min(58,  Math.round(12 * vmin()))); }
+function selH():    number { return Math.max(22,  Math.min(28,  Math.round(6  * vmin()))); }
+function selW():    number { return Math.max(46,  Math.min(56,  Math.round(12 * vmin()))); }
+function shH():     number { return Math.max(26,  Math.min(34,  Math.round(7  * vmin()))); }
 
-  if (portrait) {
-    // Row 1 (bars): CHARGE left, SPECIAL right — just below canvas
-    const r1y = cb + pad;
-    // Row 2 (squares): DPAD left; JUMP + DEF right; ATK + DODGE below them
-    const r2y = r1y + bH + 8;
-    switch (key) {
-      case "charge":  return { x: pad,                        y: r1y };
-      case "special": return { x: vw - pad - bW,              y: r1y };
-      case "dpad":    return { x: pad,                        y: r2y };
-      case "jump":    return { x: vw - pad - btn,             y: r2y };
-      case "def":     return { x: vw - pad - btn * 2 - 6,    y: r2y };
-      case "atk":     return { x: vw - pad - btn,             y: r2y + btn + 6 };
-      case "dodge":   return { x: vw - pad - btn * 2 - 6,    y: r2y + btn + 6 };
-    }
-  } else {
-    const midY = vh / 2;
-    // On narrow-gutter landscape phones the left gutter may overlap the notch area.
-    // Push controls 44 px inward when the gutter is < 160 px (typical of landscape phones,
-    // e.g. iPhone SE 375 px wide → cl ≈ 2 px). Desktop/tablet (cl ≥ 160) is unchanged.
-    const notchBuf = cl < 160 ? 44 : 0;
-    // Left gutter — flush to canvas left edge (with notch buffer)
-    const lx = Math.max(pad + notchBuf, cl - dp - pad);
-    // Right gutter — flush to canvas right edge (with notch buffer)
-    const rx = cr + pad + notchBuf;
-    switch (key) {
-      case "dpad":    return { x: lx,                     y: midY - dp / 2 };
-      case "charge":  return { x: lx + (dp - bW) / 2,    y: midY + dp / 2 + 8 };
-      case "jump":    return { x: rx,                     y: midY - btn * 1.5 - 6 };
-      case "special": return { x: rx + btn + 6,           y: midY - btn * 1.5 - 6 };
-      case "def":     return { x: rx,                     y: midY - btn / 2 };
-      case "atk":     return { x: rx + btn + 6,           y: midY - btn / 2 };
-      case "dodge":   return { x: rx,                     y: midY + btn / 2 + 6 };
-    }
-  }
-  return { x: pad, y: vh / 2 };
-}
+// ─── Theme ────────────────────────────────────────────────────────────────────
 
-// ─── FloatingControl ─────────────────────────────────────────────────────────
-// Fixed-position wrapper. The drag toolbar floats ABOVE the control element via
-// `absolute bottom-full` so pos.x/pos.y always refers to the CONTENT position,
-// regardless of whether editMode is active.
-
-function FloatingControl({
-  storageKey,
-  label,
-  editMode,
-  children,
-}: {
-  storageKey: string;
-  label: string;
-  editMode: boolean;
-  children: React.ReactNode;
-}) {
-  const elRef   = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ sp: Pos; se: Pos } | null>(null);
-  const ctrlKey = storageKey.replace("tc2-", "");
-
-  // ── Orientation-specific keys ────────────────────────────────────────────────
-  // Each orientation gets its own localStorage key (e.g. "tc2-dpad-pt" / "tc2-dpad-ls").
-  // Old unoriented keys are ignored; fresh defaults are computed per orientation on first use.
-  const orientRef = useRef<'pt' | 'ls'>(currentOrient());
-  const [orient, setOrient] = useState<'pt' | 'ls'>(currentOrient);
-  const activeKey = `${storageKey}-${orient}`;
-
-  const [pos, setPos] = useState<Pos>(() => {
-    const o = currentOrient();
-    return loadPos(`${storageKey}-${o}`) ?? { x: 0, y: 0 };
-  });
-  const [ready, setReady] = useState(() =>
-    loadPos(`${storageKey}-${currentOrient()}`) !== null
-  );
-
-  // First mount: compute anchor-based default if no stored position.
-  useEffect(() => {
-    if (!ready) { setPos(computeDefaultPos(ctrlKey)); setReady(true); }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Resize / orientation-change handler.
-  // Uses orientRef so the closure is never stale, while setOrient triggers a re-render
-  // so activeKey updates and subsequent saves/clears use the correct key.
-  useEffect(() => {
-    const handleResize = () => {
-      const newOrient = currentOrient();
-      if (newOrient !== orientRef.current) {
-        // Orientation flipped — switch to new orientation's key and restore position.
-        orientRef.current = newOrient;
-        setOrient(newOrient);
-        const stored = loadPos(`${storageKey}-${newOrient}`);
-        if (stored) {
-          setPos(stored);
-        } else {
-          // rAF: give the browser one frame to settle viewport dims after rotation.
-          requestAnimationFrame(() => setPos(computeDefaultPos(ctrlKey)));
-        }
-      } else {
-        // Same orientation — clamp current position to the (possibly resized) viewport.
-        const el = elRef.current;
-        if (!el) return;
-        const { vw, vh } = getCanvas();
-        setPos(p => ({
-          x: Math.max(0, Math.min(p.x, vw - el.offsetWidth)),
-          y: Math.max(0, Math.min(p.y, vh - el.offsetHeight)),
-        }));
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps — intentional: uses orientRef
-
-  const onDragDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    const r = elRef.current?.getBoundingClientRect();
-    dragRef.current = {
-      sp: { x: e.clientX, y: e.clientY },
-      se: r ? { x: r.left, y: r.top } : { x: pos.x, y: pos.y },
-    };
-  };
-  const onDragMove = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (!dragRef.current) return;
-    const np = {
-      x: dragRef.current.se.x + (e.clientX - dragRef.current.sp.x),
-      y: dragRef.current.se.y + (e.clientY - dragRef.current.sp.y),
-    };
-    setPos(np);
-    savePos(activeKey, np);  // save to orientation-specific key
-  };
-  const onDragUp = () => { dragRef.current = null; };
-
-  const snapBack = () => {
-    const p = computeDefaultPos(ctrlKey);
-    setPos(p);
-    clearPos(activeKey);  // clear orientation-specific key
-  };
-
-  return (
-    <div ref={elRef} className="fixed z-[60] select-none touch-none" style={{ left: pos.x, top: pos.y }}>
-      {/* Edit-mode toolbar — floats ABOVE the control so content position is unchanged */}
-      {editMode && (
-        <div className="absolute bottom-full left-0 mb-[3px] flex items-center gap-1 whitespace-nowrap pointer-events-auto">
-          <span className="text-[8px] text-white/25 font-mono leading-none">{label}</span>
-          <button
-            className="w-5 h-5 rounded-full bg-[rgba(8,16,36,0.95)] border border-white/15 text-white/50 hover:text-white text-[11px] flex items-center justify-center cursor-pointer active:scale-90"
-            title="Snap back to default"
-            onClick={snapBack}
-          >⌂</button>
-          <button
-            className="w-5 h-5 rounded-full bg-[rgba(8,16,36,0.95)] border border-white/15 text-white/50 hover:text-white text-[11px] flex items-center justify-center cursor-grab active:cursor-grabbing"
-            title="Drag to reposition"
-            onPointerDown={onDragDown}
-            onPointerMove={onDragMove}
-            onPointerUp={onDragUp}
-            onPointerCancel={onDragUp}
-          >⠿</button>
-        </div>
-      )}
-      {children}
-    </div>
-  );
-}
+const BODY   = '#14142a';   // device body
+const BEZEL  = '#07070e';   // screen bezel
+const BEZEL_W = 12;         // bezel thickness px
 
 // ─── D-pad ────────────────────────────────────────────────────────────────────
 
-const DPAD_DEAD_FRAC = 0.15; // fraction of element size that counts as dead zone
+const DPAD_DEAD = 0.18;
 
 interface DirState { up: boolean; down: boolean; left: boolean; right: boolean }
 const NO_DIRS: DirState = { up: false, down: false, left: false, right: false };
@@ -243,12 +66,8 @@ function clearDpad() {
   touchInputState.moveLeft = touchInputState.moveRight = false;
 }
 
-const armBase = "flex items-center justify-center select-none touch-none text-sm";
-const armOff  = "bg-[rgba(16,28,60,0.88)] border-2 border-white/10 text-white/30 transition-colors duration-75";
-const armOn   = "bg-[rgba(55,115,255,0.93)] border-2 border-white/50 text-white/95 transition-colors duration-75";
-
-function CrossDpad() {
-  const rootRef  = useRef<HTMLDivElement>(null);
+function CrossDpad({ size }: { size: number }) {
+  const rootRef   = useRef<HTMLDivElement>(null);
   const originRef = useRef<{ cx: number; cy: number; id: number } | null>(null);
   const [dirs, setDirs] = useState<DirState>(NO_DIRS);
 
@@ -258,16 +77,14 @@ function CrossDpad() {
   };
   const dead = () => {
     const r = rootRef.current?.getBoundingClientRect();
-    return r ? r.width * DPAD_DEAD_FRAC : 16;
+    return r ? r.width * DPAD_DEAD : 16;
   };
-
   const apply = useCallback((dx: number, dy: number) => {
     const d = dirsFrom(dx, dy, dead());
     touchInputState.moveUp = d.up; touchInputState.moveDown = d.down;
     touchInputState.moveLeft = d.left; touchInputState.moveRight = d.right;
     setDirs(d);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const release = useCallback(() => {
     originRef.current = null; clearDpad(); setDirs(NO_DIRS);
   }, []);
@@ -307,50 +124,51 @@ function CrossDpad() {
     window.addEventListener("mouseup",   up);
   };
 
+  const arm   = (on: boolean) => `${on ? 'bg-[#3a5aff] border-white/30' : 'bg-[#1c1c38] border-white/8'} border flex items-center justify-center transition-colors duration-75 select-none touch-none`;
+  const third  = Math.round(size / 3);
+  const center_ = Math.round(size * 1.4 / 3);
+
   return (
     <div
       ref={rootRef}
-      style={{ width: "clamp(100px,26vmin,120px)", height: "clamp(100px,26vmin,120px)" }}
-      className="inline-grid grid-cols-[1fr_1.4fr_1fr] grid-rows-[1fr_1.4fr_1fr] gap-[2px] select-none touch-none"
+      style={{ width: size, height: size, display: 'grid', gridTemplateColumns: `${third}px ${center_}px ${third}px`, gridTemplateRows: `${third}px ${center_}px ${third}px`, gap: 2 }}
       onTouchStart={onTouchStart} onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd} onTouchCancel={onTouchEnd}
       onMouseDown={onMouseDown}
+      className="select-none touch-none"
     >
-      <div className="bg-transparent" />
-      <div className={`${armBase} rounded-t-xl ${dirs.up ? armOn : armOff}`}>▲</div>
-      <div className="bg-transparent" />
-      <div className={`${armBase} rounded-l-xl ${dirs.left ? armOn : armOff}`}>◀</div>
-      <div className="bg-[rgba(6,12,28,0.9)] border border-white/8 rounded-sm" />
-      <div className={`${armBase} rounded-r-xl ${dirs.right ? armOn : armOff}`}>▶</div>
-      <div className="bg-transparent" />
-      <div className={`${armBase} rounded-b-xl ${dirs.down ? armOn : armOff}`}>▼</div>
-      <div className="bg-transparent" />
+      <div />
+      <div className={`${arm(dirs.up)} rounded-t-lg`} />
+      <div />
+      <div className={`${arm(dirs.left)} rounded-l-lg`} />
+      <div className="bg-[#10103a] border border-white/6 rounded-sm" />
+      <div className={`${arm(dirs.right)} rounded-r-lg`} />
+      <div />
+      <div className={`${arm(dirs.down)} rounded-b-lg`} />
+      <div />
     </div>
   );
 }
 
-// ─── Single action button ─────────────────────────────────────────────────────
+// ─── Action button (A / B) ────────────────────────────────────────────────────
 
 type TouchField = keyof typeof touchInputState;
 
-function ActionBtn({
-  field,
-  label,
-  colorClass,
+function GBBtn({
+  field, label, size, bg, border,
   onTapOverride,
 }: {
-  field: TouchField;
-  label: string;
-  colorClass: string;
+  field?: TouchField; label: string; size: number;
+  bg: string; border: string;
   onTapOverride?: () => void;
 }) {
   const press = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
     if (onTapOverride) { onTapOverride(); return; }
-    (touchInputState[field] as boolean) = true;
+    if (field) (touchInputState[field] as boolean) = true;
   };
   const rel = () => {
-    if (!onTapOverride) (touchInputState[field] as boolean) = false;
+    if (!onTapOverride && field) (touchInputState[field] as boolean) = false;
   };
   const mouseDown = (e: React.MouseEvent) => {
     press(e);
@@ -361,21 +179,20 @@ function ActionBtn({
   };
   return (
     <div
-      style={{ width: "clamp(48px,13vmin,64px)", height: "clamp(48px,13vmin,64px)" }}
-      className={`flex items-center justify-center rounded-full border-2 border-white/25 text-white font-bold text-[10px] tracking-[0.05em] select-none touch-none cursor-pointer active:brightness-125 active:scale-95 transition-transform duration-75 ${colorClass}`}
+      style={{ width: size, height: size, borderRadius: '50%', background: bg, border: `2px solid ${border}`, boxShadow: `0 3px 0 ${border}` }}
+      className="flex items-center justify-center font-black text-white select-none touch-none cursor-pointer active:scale-90 active:translate-y-[2px] active:shadow-none transition-transform duration-75"
       onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
-    >{label}</div>
+    >
+      <span style={{ fontSize: Math.max(10, Math.round(size * 0.22)), letterSpacing: '0.04em' }}>{label}</span>
+    </div>
   );
 }
 
-// ─── CHARGE button (hold) ─────────────────────────────────────────────────────
+// ─── Charge button (hold) ─────────────────────────────────────────────────────
 
-function ChargeBtn() {
-  const press = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    touchInputState.chargeHeld = true;
-  };
-  const rel = () => { touchInputState.chargeHeld = false; };
+function ChargeBtn({ size }: { size: number }) {
+  const press = (e: React.TouchEvent | React.MouseEvent) => { e.preventDefault(); touchInputState.chargeHeld = true; };
+  const rel   = () => { touchInputState.chargeHeld = false; };
   const mouseDown = (e: React.MouseEvent) => {
     press(e);
     const up = () => { rel(); window.removeEventListener("mouseup", up); };
@@ -383,132 +200,327 @@ function ChargeBtn() {
   };
   return (
     <div
-      style={{ width: "clamp(72px,19vmin,96px)", height: "clamp(36px,9vmin,44px)" }}
-      className="rounded-xl bg-[rgba(75,55,6,0.90)] border border-amber-500/30 flex items-center justify-center text-amber-300 font-bold text-[10px] tracking-widest select-none touch-none cursor-pointer active:bg-[rgba(130,100,15,0.95)] transition-colors"
+      style={{ width: size, height: size, borderRadius: '50%', boxShadow: '0 3px 0 #7a5500' }}
+      className="flex items-center justify-center font-black text-amber-200 text-[9px] tracking-widest select-none touch-none cursor-pointer active:scale-90 transition-transform duration-75 bg-[#3d2c00] border-2 border-amber-500/60"
       onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
-    >CHARGE</div>
+    >
+      <span style={{ fontSize: Math.max(8, Math.round(size * 0.18)) }}>CHG</span>
+    </div>
   );
 }
 
-// ─── SPECIAL button (tap) ─────────────────────────────────────────────────────
+// ─── Special button (tap) ─────────────────────────────────────────────────────
 
-function SpecialBtn() {
+function SpecialBtn({ size }: { size: number }) {
   const fire = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
     touchInputState.specialTap = true;
     requestAnimationFrame(() => { touchInputState.specialTap = false; });
   };
-  const mouseDown = (e: React.MouseEvent) => fire(e);
   return (
     <div
-      style={{ width: "clamp(72px,19vmin,96px)", height: "clamp(36px,9vmin,44px)" }}
-      className="rounded-xl bg-[rgba(18,56,118,0.90)] border border-blue-400/30 flex items-center justify-center text-blue-300 font-bold text-[10px] tracking-widest select-none touch-none cursor-pointer active:bg-[rgba(28,88,170,0.95)] transition-colors"
-      onTouchStart={fire} onTouchEnd={() => {}} onTouchCancel={() => {}} onMouseDown={mouseDown}
-    >SPECIAL</div>
+      style={{ width: size, height: size, borderRadius: '50%', boxShadow: '0 3px 0 #1a4090' }}
+      className="flex items-center justify-center font-black text-blue-200 text-[9px] tracking-widest select-none touch-none cursor-pointer active:scale-90 transition-transform duration-75 bg-[#0c2060] border-2 border-blue-400/60"
+      onTouchStart={fire} onTouchEnd={() => {}} onTouchCancel={() => {}} onMouseDown={fire}
+    >
+      <span style={{ fontSize: Math.max(8, Math.round(size * 0.16)) }}>SPC</span>
+    </div>
   );
 }
 
-// ─── ToggleBar ────────────────────────────────────────────────────────────────
+// ─── Small pill button (SELECT / START / EXIT) ────────────────────────────────
 
-const TB_BTN = "h-7 px-3 rounded-full bg-[rgba(8,16,38,0.92)] border border-white/15 text-white/55 text-[10px] font-bold select-none cursor-pointer hover:bg-[rgba(25,45,95,0.95)] hover:text-white/85 active:scale-95 transition-all duration-100";
-
-function ToggleBar({ hidden, editMode, onToggle, onEdit, onKeys }: {
-  hidden: boolean; editMode: boolean;
-  onToggle: () => void; onEdit: () => void; onKeys: () => void;
+function PillBtn({ label, field, onTap, w, h, accent = false }: {
+  label: string; field?: TouchField; onTap?: () => void; w: number; h: number; accent?: boolean;
 }) {
+  const press = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    if (onTap) { onTap(); return; }
+    if (field) (touchInputState[field] as boolean) = true;
+  };
+  const rel = () => { if (field) (touchInputState[field] as boolean) = false; };
+  const mouseDown = (e: React.MouseEvent) => {
+    press(e);
+    if (field) {
+      const up = () => { rel(); window.removeEventListener("mouseup", up); };
+      window.addEventListener("mouseup", up);
+    }
+  };
   return (
     <div
-      className="fixed left-1/2 -translate-x-1/2 z-[70] flex items-center gap-1.5 pointer-events-auto"
-      style={{ bottom: 'max(16px, env(safe-area-inset-bottom, 0px))' }}
+      style={{ width: w, height: h, borderRadius: h / 2 }}
+      className={`flex items-center justify-center font-bold select-none touch-none cursor-pointer active:scale-95 transition-transform duration-75 ${accent ? 'bg-[#c0392b] border border-red-400/50 text-red-100' : 'bg-[#1c1c3e] border border-white/15 text-white/55'}`}
+      onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
     >
-      {hidden ? (
-        <button onClick={onToggle} className={TB_BTN}>🕹 Controls</button>
-      ) : editMode ? (
-        <>
-          <button onClick={onEdit}   className={`${TB_BTN} border-blue-500/35 text-blue-300/80`}>✓ Done</button>
-          <button onClick={onKeys}   className={TB_BTN}>⌨ Keys</button>
-          <button onClick={onToggle} className={TB_BTN}>Hide</button>
-        </>
-      ) : (
-        <>
-          <button onClick={onEdit}   className={TB_BTN}>✏ Edit</button>
-          <button onClick={onKeys}   className={TB_BTN}>⌨ Keys</button>
-          <button onClick={onToggle} className={TB_BTN}>Hide</button>
-        </>
-      )}
+      <span style={{ fontSize: Math.max(7, Math.round(h * 0.45)), letterSpacing: '0.08em' }}>{label}</span>
     </div>
+  );
+}
+
+// ─── Shoulder tab button ──────────────────────────────────────────────────────
+
+function ShoulderTab({
+  side, label, hold, onTap, w, h,
+}: {
+  side: 'l' | 'r'; label: string; hold?: boolean;
+  onTap?: () => void; w: number; h: number;
+}) {
+  const press = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    if (hold) touchInputState.chargeHeld = true;
+    else if (onTap) onTap();
+  };
+  const rel = () => { if (hold) touchInputState.chargeHeld = false; };
+  const mouseDown = (e: React.MouseEvent) => {
+    press(e);
+    if (hold) {
+      const up = () => { rel(); window.removeEventListener("mouseup", up); };
+      window.addEventListener("mouseup", up);
+    }
+  };
+  return (
+    <div
+      style={{ width: w, height: h, borderRadius: side === 'l' ? '10px 10px 0 10px' : '10px 10px 10px 0', background: '#1f1f40', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 2px 0 rgba(0,0,0,0.4)' }}
+      className="flex items-center justify-center font-bold text-white/50 select-none touch-none cursor-pointer active:brightness-125 transition-all duration-75"
+      onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
+    >
+      <span style={{ fontSize: Math.max(8, Math.round(h * 0.4)), letterSpacing: '0.1em' }}>{label}</span>
+    </div>
+  );
+}
+
+// ─── GBC Portrait frame ───────────────────────────────────────────────────────
+
+function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void; onKeys: () => void }) {
+  const { cl, ct, cr, cb, vw, vh, size } = canv;
+  const dp   = dpSize();
+  const btnA = aSize();
+  const btnB = bSize();
+  const sW   = selW();
+  const sH   = selH();
+  const shh  = shH();
+  const shw  = Math.min(Math.round(vw * 0.22), 88);
+  const nav  = useNavigate();
+
+  // ── Controls go into bottom strip (cb → vh)
+  // Position WITHIN that strip (all y coords relative to cb):
+  const stripH  = vh - cb;
+  const ctrlTop = Math.round(stripH * 0.1);
+  const rowMid  = Math.round(stripH * 0.18);
+  const rowBot  = Math.round(stripH * 0.65);
+
+  // D-pad: left side, vertically centred in upper half
+  const dpLeft = Math.round(Math.max(10, cl + 10));
+  const dpTop  = cb + ctrlTop;
+
+  // B button: right area, above A
+  const aRight = Math.round(Math.max(14, (vw - cr) + 14));
+  const aTop   = cb + ctrlTop + Math.round((dp - btnA) / 2) + 6;
+  const bRight = aRight + btnA + 10;
+  const bTop   = cb + ctrlTop + Math.round((dp - btnB) / 2);
+
+  // SELECT/START/EXIT row (near bottom of strip)
+  const pillRowY = cb + rowBot;
+  const pillCx   = vw / 2;
+
+  return (
+    <>
+      {/* TOP BODY (above canvas) */}
+      <div
+        style={{ position: 'fixed', left: 0, top: 0, right: 0, height: Math.max(0, ct), background: BODY, borderRadius: '18px 18px 0 0', zIndex: 52, pointerEvents: 'none' }}
+      >
+        <div style={{ position: 'absolute', left: 14, top: 10, width: 8, height: 8, borderRadius: '50%', background: '#ff3333', boxShadow: '0 0 7px #ff3333' }} />
+        <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,0.2)', fontWeight: 800, whiteSpace: 'nowrap' }}>BEYBLADE X</div>
+      </div>
+
+      {/* SCREEN BEZEL */}
+      <div
+        style={{ position: 'fixed', left: cl - BEZEL_W, top: ct - BEZEL_W, width: size + BEZEL_W * 2, height: size + BEZEL_W * 2, background: BEZEL, borderRadius: 10, zIndex: 51, pointerEvents: 'none' }}
+      />
+
+      {/* L SHOULDER (CHARGE) */}
+      <div style={{ position: 'fixed', left: 0, top: ct - shh, zIndex: 60, pointerEvents: 'auto' }}>
+        <ShoulderTab side="l" label="L·CHG" hold w={shw} h={shh} />
+      </div>
+
+      {/* R SHOULDER (SPECIAL) */}
+      <div style={{ position: 'fixed', right: 0, top: ct - shh, zIndex: 60, pointerEvents: 'auto' }}>
+        <ShoulderTab side="r" label="R·SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} />
+      </div>
+
+      {/* BOTTOM BODY (below canvas) */}
+      <div
+        style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: BODY, borderRadius: '0 0 36px 36px', zIndex: 52, pointerEvents: 'none' }}
+      />
+
+      {/* D-PAD */}
+      <div style={{ position: 'fixed', left: dpLeft, top: dpTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <CrossDpad size={dp} />
+      </div>
+
+      {/* B BUTTON (DEF) — upper-left of A */}
+      <div style={{ position: 'fixed', right: bRight, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <GBBtn field="defense" label="B" size={btnB} bg="#0d3380" border="#2255bb" />
+      </div>
+
+      {/* A BUTTON (ATK) — right */}
+      <div style={{ position: 'fixed', right: aRight, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <GBBtn field="attack" label="A" size={btnA} bg="#881122" border="#cc2233" />
+      </div>
+
+      {/* JUMP + DODGE + EXIT row (near bottom of strip) */}
+      <div style={{ position: 'fixed', top: pillRowY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
+        <PillBtn label="SEL" field="jump"  w={sW} h={sH} />
+        <PillBtn label="STA" field="dodge" w={sW} h={sH} />
+      </div>
+
+      {/* Toggle bar */}
+      <div style={{ position: 'fixed', bottom: 'max(6px, env(safe-area-inset-bottom,0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 70, display: 'flex', gap: 6 }}>
+        <button onClick={onHide} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Hide</button>
+        <button onClick={onKeys} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Keys</button>
+      </div>
+    </>
+  );
+}
+
+// ─── GBA Landscape frame ──────────────────────────────────────────────────────
+
+function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void; onKeys: () => void }) {
+  const { cl, ct, cr, cb, vw, vh, size } = canv;
+  const dp   = dpSize();
+  const btnA = aSize();
+  const btnB = bSize();
+  const sW   = selW();
+  const sH   = selH();
+  const shh  = shH();
+  const nav  = useNavigate();
+
+  // GBA: canvas fills full height (ct≈0, cb≈vh)
+  // Left gutter: 0→cl  Right gutter: cr→vw
+  const leftGutterW  = cl;
+  const rightGutterW = vw - cr;
+
+  // Shoulder tabs span entire gutter width at top
+  const lShW = Math.min(leftGutterW,  Math.round(leftGutterW  * 0.88));
+  const rShW = Math.min(rightGutterW, Math.round(rightGutterW * 0.88));
+
+  // D-pad: centred vertically in left gutter, flush right (near canvas edge)
+  const dpLeft  = Math.max(4, cl - dp - 16);
+  const dpTop   = (vh - dp) / 2;
+
+  // A button: near canvas right edge, vertically centred
+  const aLeft = cr + 16;
+  const aTop  = (vh - btnA) / 2 + 8;
+  // B button: upper-left of A
+  const bLeft = aLeft + btnA * 0.05;
+  const bTop  = aTop - btnB * 0.8;
+
+  // SELECT/START/EXIT: below canvas centre (or within gutter if no bottom space)
+  const pillY = (vh - sH) / 2 + Math.round(size * 0.35);
+  const pillCx = vw / 2;
+
+  return (
+    <>
+      {/* LEFT BODY */}
+      <div style={{ position: 'fixed', left: 0, top: 0, width: leftGutterW, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+
+      {/* RIGHT BODY */}
+      <div style={{ position: 'fixed', top: 0, right: 0, width: rightGutterW, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+
+      {/* TOP BODY (narrow strip above canvas if any) */}
+      {ct > 0 && (
+        <div style={{ position: 'fixed', left: 0, top: 0, right: 0, height: ct, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+      )}
+      {/* BOTTOM BODY (narrow strip below canvas if any) */}
+      {cb < vh && (
+        <div style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+      )}
+
+      {/* SCREEN BEZEL */}
+      <div style={{ position: 'fixed', left: cl - BEZEL_W, top: ct - BEZEL_W, width: size + BEZEL_W * 2, height: size + BEZEL_W * 2, background: BEZEL, borderRadius: 10, zIndex: 51, pointerEvents: 'none' }} />
+
+      {/* L SHOULDER (CHARGE) — top of left gutter */}
+      <div style={{ position: 'fixed', left: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
+        <ShoulderTab side="l" label="L  CHG" hold w={lShW} h={shh} />
+      </div>
+
+      {/* R SHOULDER (SPECIAL) — top of right gutter */}
+      <div style={{ position: 'fixed', right: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
+        <ShoulderTab side="r" label="SPC  R" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={rShW} h={shh} />
+      </div>
+
+      {/* D-PAD (left gutter) */}
+      <div style={{ position: 'fixed', left: dpLeft, top: dpTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <CrossDpad size={dp} />
+      </div>
+
+      {/* B BUTTON (DEF — upper-left of A) */}
+      <div style={{ position: 'fixed', left: bLeft, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <GBBtn field="defense" label="B" size={btnB} bg="#0d3380" border="#2255bb" />
+      </div>
+
+      {/* A BUTTON (ATK) */}
+      <div style={{ position: 'fixed', left: aLeft, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <GBBtn field="attack" label="A" size={btnA} bg="#881122" border="#cc2233" />
+      </div>
+
+      {/* JUMP + DODGE + EXIT (centre-bottom area) */}
+      <div style={{ position: 'fixed', top: pillY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
+        <PillBtn label="SEL" field="jump"  w={sW} h={sH} />
+        <PillBtn label="STA" field="dodge" w={sW} h={sH} />
+      </div>
+
+      {/* Power LED */}
+      <div style={{ position: 'fixed', left: cl + 8, top: ct + 8, width: 7, height: 7, borderRadius: '50%', background: '#ff3333', boxShadow: '0 0 6px #ff3333', zIndex: 60 }} />
+
+      {/* Toggle bar */}
+      <div style={{ position: 'fixed', bottom: 'max(6px, env(safe-area-inset-bottom,0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 70, display: 'flex', gap: 6 }}>
+        <button onClick={onHide} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Hide</button>
+        <button onClick={onKeys} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Keys</button>
+      </div>
+    </>
   );
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 
-interface Props {
-  /** @deprecated — overlay-only mode; children are not wrapped */
-  children?: React.ReactNode;
-}
-
-export function TouchControlsGBLayout({ children }: Props) {
-  void children;
-
+export function TouchControlsGBLayout() {
   const [hidden,   setHidden]   = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [keysOpen, setKeysOpen] = useState(false);
+  const [canv,     setCanv]     = useState<CanvInfo>(getCanvas);
+  const [orient,   setOrient]   = useState<'pt' | 'ls'>(currentOrient);
 
-  const toggleHidden = useCallback(() => setHidden(h => !h), []);
-  const toggleEdit   = useCallback(() => setEditMode(e => !e), []);
-  const openKeys     = useCallback(() => setKeysOpen(true),  []);
-  const closeKeys    = useCallback(() => setKeysOpen(false), []);
+  useEffect(() => {
+    const handler = () => {
+      setCanv(getCanvas());
+      setOrient(currentOrient());
+    };
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
-  return (
-    <>
-      {keysOpen && <KeyBindingsPanel onClose={closeKeys} />}
+  const onHide = useCallback(() => setHidden(true),  []);
+  const onKeys = useCallback(() => setKeysOpen(true), []);
 
-      <ToggleBar
-        hidden={hidden}
-        editMode={editMode}
-        onToggle={toggleHidden}
-        onEdit={toggleEdit}
-        onKeys={openKeys}
-      />
+  if (keysOpen) {
+    return <KeyBindingsPanel onClose={() => setKeysOpen(false)} />;
+  }
 
-      {!hidden && (
-        <>
-          {/* D-pad — move */}
-          <FloatingControl storageKey="tc2-dpad" label="D-PAD" editMode={editMode}>
-            <CrossDpad />
-          </FloatingControl>
+  if (hidden) {
+    return (
+      <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom,0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 70 }}>
+        <button
+          onClick={() => setHidden(false)}
+          className="h-7 px-3 rounded-full bg-[rgba(8,16,38,0.92)] border border-white/15 text-white/55 text-[10px] font-bold"
+        >
+          🕹 Controls
+        </button>
+      </div>
+    );
+  }
 
-          {/* CHARGE — hold to charge spin/power */}
-          <FloatingControl storageKey="tc2-charge" label="CHARGE" editMode={editMode}>
-            <ChargeBtn />
-          </FloatingControl>
-
-          {/* SPECIAL — tap to fire special move */}
-          <FloatingControl storageKey="tc2-special" label="SPECIAL" editMode={editMode}>
-            <SpecialBtn />
-          </FloatingControl>
-
-          {/* JUMP */}
-          <FloatingControl storageKey="tc2-jump" label="JUMP" editMode={editMode}>
-            <ActionBtn field="jump"    label="JUMP"  colorClass="bg-[rgba(75,45,200,0.90)]" />
-          </FloatingControl>
-
-          {/* ATK */}
-          <FloatingControl storageKey="tc2-atk" label="ATK" editMode={editMode}>
-            <ActionBtn field="attack"  label="ATK"   colorClass="bg-[rgba(195,40,40,0.90)]" />
-          </FloatingControl>
-
-          {/* DEF */}
-          <FloatingControl storageKey="tc2-def" label="DEF" editMode={editMode}>
-            <ActionBtn field="defense" label="DEF"   colorClass="bg-[rgba(28,78,210,0.90)]" />
-          </FloatingControl>
-
-          {/* DODGE */}
-          <FloatingControl storageKey="tc2-dodge" label="DODGE" editMode={editMode}>
-            <ActionBtn field="dodge"   label="DODGE" colorClass="bg-[rgba(22,140,80,0.90)]" />
-          </FloatingControl>
-        </>
-      )}
-    </>
-  );
+  const props = { canv, onHide, onKeys };
+  return orient === 'pt' ? <GBCFrame {...props} /> : <GBAFrame {...props} />;
 }

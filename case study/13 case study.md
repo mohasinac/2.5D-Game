@@ -25029,4 +25029,959 @@ function breakBlasterCombo(
 // breakBlasterCombo(false, -)    => {spin:-10, dmg:1.20x, lock: 30ms, cost:35}  miss
 ```
 
-*Cases continue from Case 1399 as further franchise moves are provided.*
+---
+
+## Case 1399 -- [GIMMICK]: Saber Strike -- Xcalius Sword Blade Lock-and-Thrust (Xander Shakadera . Xcalius Force Xtreme / Xeno Xcalius Magnum Impact)
+
+**Part:** Xcalius Layer (single sword-protrusion attack layer) + Force disc
+**Assembly (primary):** Xcalius Force Xtreme -- Xcalius Layer . Force disc . Xtreme driver
+**Assembly (upgrade):** Xeno Xcalius Magnum Impact -- Xeno Xcalius Layer . disc . Impact driver
+**Gen / System:** Beyblade Burst (God Layer era) | Burst-God
+**Tags:** sword-blade, lock-and-thrust, concentrated-contact, upper-smash, burst-attack
+
+**Mechanism**
+
+The Xcalius Layer carries a single elongated sword protrusion extending from r_root ~7mm to r_sword ~19mm [M] along the blade axis, presenting a leading-edge contact width of ~9mm [M]. Unlike AR blades with continuous contact arcs, the Xcalius sword is a single asymmetric protrusion: all contact energy routes through one blade face. The Xeno Xcalius Layer replicates the same sword geometry with slightly added mass.
+
+**Xcalius Force Xtreme assembly:**
+```
+Xcalius Layer:   m_layer ~22.0 g [M],  r_sword = 19 mm,  blade_width = 9 mm
+Force disc:      m_disc  ~16.0 g [M],  r_disc = 21 mm  [M]
+Xtreme driver:   m_driver ~5.5 g [M],  r_tip = 6 mm (rubber flat, mobile)
+Total (XFX):     ~43.5 g [M]
+
+I_layer = (0.022/2)(0.008^2 + 0.019^2) = 0.011 x (6.40e-5 + 3.61e-4) = 4.68 x 10^-6 kg m^2
+I_disc  = (0.016/2)(0.010^2 + 0.021^2) = 0.008 x (1.00e-4 + 4.41e-4) = 4.33 x 10^-6 kg m^2
+I_driver: negligible [M]
+I_total (XFX) ~9.0 x 10^-6 kg m^2  [M]
+
+Xeno Xcalius assembly: m_layer ~23.0 g [M] (same sword r), total ~44.5 g [M]
+I_total (Xeno) ~9.7 x 10^-6 kg m^2  [M]
+```
+
+**Lock-and-thrust contact sequence:**
+```
+Phase 1 -- Initial sword smash:
+  At omega = 600 rad/s [M]:
+  v_sword = 600 x 0.019 = 11.4 m/s
+  KE = (1/2) x 9.0e-6 x 600^2 = 1.62 J
+  Normal contact duration t_normal ~5 ms [M]
+  F_smash = 2 x KE / (v_sword x t_normal) = 2 x 1.62 / (11.4 x 0.005) = 56.8 N [M]
+
+Phase 2 -- Sword lock (hook catches opponent layer ridge):
+  Hook retention: sword leading edge snags on opponent layer contact point
+  Extended contact: t_lock ~15 ms [M]  (3x normal)
+  Lock force (sustained sliding): F_lock = mu_slide x F_smash ~0.35 x 56.8 = 19.9 N [M]
+  Additional lock impulse: J_add = F_lock x (t_lock - t_normal) = 19.9 x 0.010 = 0.199 N s [M]
+  Total impulse:    J_total = F_smash x t_normal + J_add = 56.8 x 0.005 + 0.199 = 0.483 N s [M]
+  Standard smash:   J_std   = F_smash x t_normal = 0.284 N s
+  Lock multiplier:  0.483 / 0.284 ~1.70x more impulse delivered [M]
+
+Phase 3 -- Thrust (blade slides along opponent surface after lock):
+  Shear force: F_thrust = mu_k x F_smash = 0.35 x 56.8 = 19.9 N  [M]
+  Thrust displacement ~2 mm [M]: delta_KE_opp = 19.9 x 0.002 = 0.040 J transferred to opponent [M]
+```
+
+**Sword contact pressure:**
+```
+Lock-phase contact area: A_lock ~16 mm^2  [M]  (full blade face engagement during hook retention)
+P_lock = F_smash / A_lock = 56.8 / (16 x 10^-6) = 3.55 MPa [M]  (below PC yield -- no structural damage)
+With BeySpirit x3: P_BS = 10.7 MPa  (still below yield, but lock-and-thrust "serious damage" via sustained force)
+```
+
+**Xtreme driver spin decay:**
+```
+X' tip: mu_X ~0.50 [M] (rubber flat, mobile), r_X = 6 mm [M]
+dw/dt = -(0.50 x 0.006 x 9.81 x 0.0435) / (9.0e-6) ~-142 rad/s^2  [M]
+High decay rate -- Xtreme trades stamina for aggressive translational mobility
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Xcalius Layer | 22.0 g | 7--19 mm (sword tip) |
+| Force disc | 16.0 g | 10--21 mm |
+| Xtreme driver | 5.5 g | 6 mm |
+| **Total (XFX)** | **~43.5 g** | **19 mm** |
+| I_total | -- | ~9.0 x 10^-6 kg m^2 |
+
+---
+
+## Case 1400 -- [SPECIAL]: Saber Strike (Xander Shakadera . Xcalius Force Xtreme / Xeno Xcalius Magnum Impact)
+
+**Special Move:** Saber Strike (Japanese: The One Impact)
+**User:** Xander Shakadera
+**Series:** Beyblade Burst
+**Compatible beys:** Any bey whose attack layer carries a single asymmetric sword-shaped protrusion extending to r >= 17mm [M] with a leading-edge hook geometry capable of catching opponent layer contact points (protrusion height >= 3mm [M], contact width <= 12mm [M]); distributed-blade layers with continuous contact arcs spread the lock impulse across too many contact points to achieve hook capture; rubber or mobile flat tips (RF, WB) waste spin in translation before the sword lock can form.
+
+**Mechanic**
+
+Xander channels BeySpirit through Xcalius, overriding the mechanical contact-duration limit. BeySpirit instantly maximises lock-grip from first contact:
+
+**Physical lock (unaided):**
+```
+Phases:          smash (5 ms) + lock (15 ms) + thrust (~2 mm slide)
+Total impulse:   J_total ~0.483 N s [M]
+Lock multiplier: ~1.70x vs standard smash impulse [M]
+```
+
+**BeySpirit lock (Xcalius / Xeno Xcalius):**
+```
+BeySpirit override: no slip phase -- full F_lock active from first contact instant
+  => Phase 1 and Phase 2 merge; extended contact t_BS = 20 ms [M]
+  => J_BS = F_smash x t_BS = 56.8 x 0.020 = 1.136 N s [M]  (4.0x standard smash)
+
+Thrust phase (BeySpirit): all residual spin channelled into directed thrust
+  F_thrust_BS = 3 x 19.9 = 59.7 N [M],  delta_x = 4 mm [M]
+  delta_KE_thrust = 59.7 x 0.004 = 0.239 J delivered to opponent [M]
+
+Total energy delivered: 1.62 + 0.239 = 1.859 J  [M]
+```
+
+**QTE**
+- Input: Tap **J** once (lock -- snap the sword onto the opponent layer), then hold **J** (thrust -- drive through for the full 300 ms)
+- Window: 80 ms tap + 300 ms hold
+- Power cost: 88
+
+**Move Parameters**
+```typescript
+function saberStrike(
+  thrustMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 88;
+  const r = Math.min(thrustMs / 300, 1.0);
+  if (!qteHit) return { spinDelta: -12, dmgMult: 1.22, lockMs: 30, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -38 : Math.round(-14 - 22 * r),
+    dmgMult:   perfect ?  1.48 : 1.24 + 0.22 * r,
+    lockMs:    perfect ?  150  : Math.round(40 + 100 * r),
+    powerCost: cost,
+  };
+}
+// saberStrike(300, true)  => {spin:-38, dmg:1.48x, lock:150ms}  full thrust perfect
+// saberStrike(150, true)  => {spin:-25, dmg:1.35x, lock: 90ms}  partial thrust
+// saberStrike(300, false) => {spin:-12, dmg:1.22x, lock: 30ms}  QTE miss
+```
+
+> NOTE: BeySpirit overrides the mechanical lock-slip phase -- physically the sword traverses ~2--3 ms of slip before the hook engages, applying only ~65% of F_smash during slip; BeySpirit achieves instant full-grip from first contact; the "serious damage" lock-down that immobilises the opponent completely during the thrust phase and the visible energy-blade aura extending beyond the physical sword geometry are the anime physics overrides.
+
+---
+
+## Case 1401 -- COMBO: Sword Slash (derived from Saber Strike lock-and-thrust)
+
+**Sequence:** ↑ J ↓ (moveUp -> attack -> moveDown)
+**Interpretation:** ↑ (raise sword -- Xcalius climbs the bowl wall, gaining elevation for a downward sword angle) -> J (lock strike -- sword hooks opponent from above, gravitational component added to the lock force) -> ↓ (drive through -- follow the blade downward through the opponent layer, completing the thrust phase as Xcalius descends)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.44x | <= 1.5x | OK |
+| lockMs | 95 ms | <= 300 ms | OK |
+| spinDelta | -26 | <= 50 abs | OK |
+
+```typescript
+function swordSlashCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!jHit) return { spinDelta: -10, dmgMult: 1.20, lockMs: 25, powerCost: cost };
+  return { spinDelta: -26, dmgMult: 1.44, lockMs: 95, powerCost: cost };
+}
+// swordSlashCombo(true)  => {spin:-26, dmg:1.44x, lock:95ms, cost:25}
+// swordSlashCombo(false) => {spin:-10, dmg:1.20x, lock:25ms, cost:25}
+```
+
+---
+
+## Case 1402 -- [GIMMICK]: Flame Saber -- Dranzer Aerial Spiral Descent Sharp-Tip Stomp (Kai Hiwatari . Dranzer F / Dranzer V / Dranzer Flame)
+
+**Part:** Dranzer F AR (Flame Saber Attack Ring -- wing-blade fire design) + Right Engine Gear (S tip deployment)
+**Assembly:** Dranzer F -- Dranzer F AR . Eight Balance WD . Right EG . Flame Base
+**Gen / System:** Gen1-Plastic | EGS (Engine Gear System, G-Revolution era)
+**Tags:** fire-element, aerial-launch, spiral-descent, sharp-tip-stomp, EG-propulsion, upper-smash
+
+**Mechanism**
+
+Dranzer F is propelled vertically by the Engine Gear, leaving ground contact. Aerial, only aerodynamic drag decelerates spin. The wing-blade AR generates forced precession that produces a corkscrew descent path; the deployed S tip concentrates the combined spin + gravitational KE at a single point on landing.
+
+**Dranzer F assembly:**
+```
+Dranzer F AR:        m_AR   ~4.5 g [M],  r_outer = 22 mm,  r_inner = 12 mm
+Eight Balance WD:    m_WD   ~14.0 g [M], r = 19 mm
+Right Engine Gear:   m_EG   ~8.5 g [M],  r = 13 mm
+Flame Base:          m_base ~10.5 g [M], r = 10 mm
+Total:               ~37.5 g [M]
+
+I_AR   = (0.0045/2)(0.012^2 + 0.022^2) = 0.00225 x (1.44e-4 + 4.84e-4) = 1.41 x 10^-6 kg m^2
+I_WD   = (0.014/2)(0.012^2 + 0.019^2)  = 0.007 x (1.44e-4 + 3.61e-4)   = 3.54 x 10^-6 kg m^2
+I_EG   = (0.0085/2)(0.005^2 + 0.013^2) = 0.00425 x (2.50e-5 + 1.69e-4) = 0.82 x 10^-6 kg m^2
+I_base = (0.0105/2)(0.004^2 + 0.010^2) = 0.00525 x (1.60e-5 + 1.00e-4) = 0.61 x 10^-6 kg m^2
+I_total ~6.38 x 10^-6 ~6.4 x 10^-6 kg m^2  [M]
+```
+
+**Aerial precession (spiral descent path):**
+```
+Dranzer F launched vertically at omega_launch ~720 rad/s [M] (EG boost from gig phase).
+Gyroscopic precession under weight offset d_cm ~15 mm [M]:
+
+Omega_prec = (m x g x d_cm) / (I_total x omega_spin)
+           = (0.0375 x 9.81 x 0.015) / (6.4e-6 x 700)
+           = 5.52e-3 / 4.48e-3 = 1.23 rad/s [M]
+
+Precession circle period: T = 2pi / Omega_prec ~5.1 s
+Fall time from h = 0.5 m [M]: t_fall = sqrt(2h/g) = sqrt(1.0/9.81) ~0.32 s
+Arc traversed during descent: theta = Omega_prec x t_fall = 1.23 x 0.32 ~0.39 rad (22 deg) [M]
+Landing offset from launch axis: ~80 mm [M]  -- directed at opponent by Blader Spirit aim
+```
+
+**Sharp-tip aerial impact:**
+```
+S tip r_tip = 1.0 mm [M];  A_S = pi x (0.001)^2 = 3.14 x 10^-6 m^2
+v_fall at h=0.5 m: v = sqrt(2 x 9.81 x 0.5) = 3.13 m/s [M]
+omega_spin at landing ~600 rad/s [M]  (aerodynamic drag during 0.32 s: delta_omega ~-22 rad/s -- negligible)
+
+KE_total = (1/2) x I x omega^2 + (1/2) x m x v_fall^2
+         = (1/2) x 6.4e-6 x 360000 + (1/2) x 0.0375 x 9.797
+         = 1.152 + 0.184 = 1.336 J  [M]
+
+Contact force (t_contact ~3 ms [M], tip+spin combined):
+  F = 2 x KE / ((omega x r_tip + v_fall) x t_contact)
+    = 2 x 1.336 / ((600 x 0.001 + 3.13) x 0.003)
+    = 2.672 / (3.73 x 0.003) = 238.8 N  [M]
+
+Contact pressure: P = F / A_S = 238.8 / (3.14e-6) = 76.0 MPa  [M]
+  Polycarbonate yield ~60 MPa [M] -- physical aerial stomp EXCEEDS yield --> opponent AR surface deformation
+  (BeySpirit thermal amplification raises this further; physical impact alone causes structural damage)
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Dranzer F AR | 4.5 g | 12--22 mm |
+| Eight Balance WD | 14.0 g | 12--19 mm |
+| Right Engine Gear | 8.5 g | 5--13 mm |
+| Flame Base (S tip) | 10.5 g | 4--10 mm |
+| **Total** | **~37.5 g** | **22 mm** |
+| I_total | -- | ~6.4 x 10^-6 kg m^2 |
+
+---
+
+## Case 1403 -- [SPECIAL]: Flame Saber (Kai Hiwatari . Dranzer F / Dranzer V / Dranzer Flame)
+
+**Special Move:** Flame Saber (Japanese: Zanen Ken / Slashing Flame Sword)
+**User:** Kai Hiwatari
+**Series:** Beyblade (G-Revolution era; also with earlier Dranzer variants)
+**Compatible beys:** Any bey with a fire-element AR whose tip deploys to Sharp (r_tip <= 1.5mm [M]) in attack mode and whose AR wing geometry generates precession-driven spiral descent (wing chord >= 8mm [M], r_outer >= 18mm [M]); the vertical launch requires an EG or equivalent propulsion achieving omega >= 650 rad/s [M] at launch; flat, rubber, or ball tips cannot produce the concentrated top-contact pressure for the explosive impact; non-fire-element ARs without wing geometry cannot sustain the fire mantle coating during descent.
+
+**Mechanic**
+
+Kai channels BeySpirit through Dranzer, igniting the fire element in the AR. BeySpirit overrides the EG tip-mode lag and forces instant Sharp deployment at the apex:
+
+**Physical aerial stomp (unaided):**
+```
+Contact pressure at S tip: ~76.0 MPa [M]  -- already exceeds PC yield without BeySpirit
+Structural damage to opponent AR: surface deformation (denting at contact zone)
+```
+
+**BeySpirit fire descent:**
+```
+Fire mantle surface temperature (BeySpirit): ~1800 K [M]  (physical air-friction heating: ~400 K)
+Pre-softening of opponent AR: PC softens at ~420 K [M]
+  => contact area spreads: A_contact ~8 x 10^-6 m^2 [M]  (thermally softened zone expands)
+  => extended contact from softened surface: t_BS ~5 ms [M]  (vs 3 ms physical)
+BeySpirit force amplification x2 [M]:
+  F_BS = 2 x 238.8 = 477.6 N,  P_BS = 477.6 / (8e-6) = 59.7 MPa [M]  (area increased, pressure similar)
+  Net impulse: J_BS = 477.6 x 0.005 = 2.39 N s [M]  >> physical J = 238.8 x 0.003 = 0.716 N s
+```
+
+**QTE**
+- Input: Hold **↑** (vertical charge -- EG builds launch speed, fire AR heats up), release to launch; tap **J** at aerial apex (ignite fire mantle for the descent)
+- Window: 350 ms ↑ hold + 200 ms J tap at apex
+- Power cost: 82
+
+**Move Parameters**
+```typescript
+function flameSaber(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 82;
+  const r = Math.min(chargeMs / 350, 1.0);
+  if (!qteHit) return { spinDelta: -14, dmgMult: 1.20, lockMs: 30, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -35 : Math.round(-14 - 19 * r),
+    dmgMult:   perfect ?  1.44 : 1.22 + 0.20 * r,
+    lockMs:    perfect ?  130  : Math.round(40 + 80 * r),
+    powerCost: cost,
+  };
+}
+// flameSaber(350, true)  => {spin:-35, dmg:1.44x, lock:130ms}  full charge perfect
+// flameSaber(175, true)  => {spin:-23, dmg:1.32x, lock: 80ms}  partial charge
+// flameSaber(350, false) => {spin:-14, dmg:1.20x, lock: 30ms}  QTE miss
+```
+
+> NOTE: BeySpirit overrides three physical limits: (1) EG Sharp-mode lag -- physically the tip-switch requires ~80 ms of mechanical engagement before Sharp deploys; BeySpirit forces instant deployment at apex; (2) fire mantle temperature -- physical AR air-friction heating reaches only ~400 K vs BeySpirit 1800 K; (3) spiral-descent precision -- gyroscopic precession scatters the landing zone over ~330 mm radius; BeySpirit directs the precession into a single targeted stomp column; the physical S-tip contact pressure (~76 MPa) already exceeds polycarbonate yield without BeySpirit -- the visible fire-meteor explosion and full-stadium shockwave at impact are the anime physics overrides.
+
+---
+
+## Case 1404 -- COMBO: Fire Dive (derived from Flame Saber aerial-descent posture)
+
+**Sequence:** J ↑ J (attack -> moveUp -> attack)
+**Interpretation:** J (ground-level AR swipe -- Dranzer whips its fire AR across the opponent at bowl-floor level, first contact) -> ↑ (ascent burst -- EG propels Dranzer skyward while the fire AR still trails from the first hit) -> J (dive stomp -- Dranzer descends onto the opponent's now-exposed top surface, Sharp tip concentrated impact from above while opponent is still recovering)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.42x | <= 1.5x | OK |
+| lockMs | 88 ms | <= 300 ms | OK |
+| spinDelta | -24 | <= 50 abs | OK |
+
+```typescript
+function fireDiveCombo(
+  secondJHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!secondJHit) return { spinDelta: -8, dmgMult: 1.20, lockMs: 22, powerCost: cost };
+  return { spinDelta: -24, dmgMult: 1.42, lockMs: 88, powerCost: cost };
+}
+// fireDiveCombo(true)  => {spin:-24, dmg:1.42x, lock:88ms, cost:25}
+// fireDiveCombo(false) => {spin: -8, dmg:1.20x, lock:22ms, cost:25}
+```
+
+---
+
+## Case 1405 -- [GIMMICK]: Flame Gigs Turbo -- Dranzer GT Dual-Stage EG Concentric Orbit Attack (Kai Hiwatari . Dranzer GT)
+
+**Part:** Dranzer GT AR (wing-blade fire design) + Engine Gear GT (dual-stage gear release)
+**Assembly:** Dranzer GT -- Dranzer GT AR . WD . Engine Gear GT . GT Base
+**Gen / System:** Gen1-Plastic | EGS (Engine Gear System, G-Revolution era)
+**Tags:** fire-element, dual-orbit, EG-turbo, twin-trail, gig-phase, concentric-ring
+
+**Mechanism**
+
+The Engine Gear GT uses a 2-stage internal gear release: two gear teeth at 180 deg separation trigger two propulsion bursts per EG cycle. Standard Dranzer G EG delivers one burst per trigger. The dual burst creates two distinct translational orbit deflections per revolution, producing concentric inner and outer orbit rings.
+
+**Dranzer GT assembly:**
+```
+Dranzer GT AR:   m_AR   ~4.8 g [M],  r_outer = 22 mm
+WD:              m_WD   ~13.5 g [M], r = 19 mm
+Engine Gear GT:  m_EG   ~9.0 g [M],  r = 13 mm  (slightly heavier than std EG, dual-stage gear)
+GT Base:         m_base ~11.0 g [M], r = 10 mm
+Total:           ~38.3 g [M];   I_total ~7.5 x 10^-6 kg m^2  [M]
+```
+
+**Dual-stage gig burst timing:**
+```
+EG GT tooth spacing: 180 deg apart (two teeth)
+Burst interval at omega = 600 rad/s [M]:
+  delta_t = pi / omega = pi / 600 ~5.2 ms between bursts [M]
+  (two bursts per revolution, compared to single burst for standard EG)
+
+First burst  (0 deg tooth): deflects Dranzer inward  --> inner orbit r_in  ~60 mm [M]
+Second burst (180 deg tooth): deflects Dranzer outward --> outer orbit r_out ~180 mm [M]
+```
+
+**Concentric orbit mechanics:**
+```
+Bowl orbital velocity (slope alpha ~20 deg [M]):
+  omega_orbit = sqrt(g x tan(alpha) / r)
+  Inner orbit: sqrt(9.81 x tan(20 deg) / 0.060) = sqrt(59.5) ~7.7 rad/s [M]
+  Outer orbit: sqrt(9.81 x tan(20 deg) / 0.180) = sqrt(19.8) ~4.5 rad/s [M]
+
+Orbital speed:
+  v_in  = omega_orbit_in  x r_in  = 7.7 x 0.060 = 0.46 m/s [M]
+  v_out = omega_orbit_out x r_out = 4.5 x 0.180 = 0.81 m/s [M]
+
+Dranzer GT AR contact speed at opponent (AR spin + orbital):
+  v_contact = omega_spin x r_AR + v_orbit
+  Inner pass: 600 x 0.022 + 0.46 = 13.7 m/s [M]
+  Outer pass: 600 x 0.022 + 0.81 = 14.0 m/s [M]
+  Both passes deliver comparable AR impact speed to opponent within one revolution
+```
+
+**Dual-trail energy (both orbits):**
+```
+Orbital translational KE:
+  KE_in  = (1/2) x 0.0383 x 0.46^2 = 4.1 x 10^-3 J [M]
+  KE_out = (1/2) x 0.0383 x 0.81^2 = 1.3 x 10^-2 J [M]
+Total translational KE in dual orbit: ~17 mJ  [M]  (small vs spin KE, but enables double AR contact)
+
+Both fire trails visibly distinct: standard EG Blazing Gigs produces 1 orange trail;
+EG GT Flame Gigs Turbo produces 2 blue-fire trails (BeySpirit temperature elevation)
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Dranzer GT AR | 4.8 g | 22 mm |
+| WD | 13.5 g | 19 mm |
+| Engine Gear GT | 9.0 g | 13 mm |
+| GT Base | 11.0 g | 10 mm |
+| **Total** | **~38.3 g** | **22 mm** |
+| I_total | -- | ~7.5 x 10^-6 kg m^2 |
+
+---
+
+## Case 1406 -- [SPECIAL]: Flame Gigs Turbo (Kai Hiwatari . Dranzer GT)
+
+**Special Move:** Flame Gigs Turbo
+**User:** Kai Hiwatari
+**Series:** Beyblade (G-Revolution)
+**Compatible beys:** Any bey with an Engine Gear or equivalent dual-stage gig mechanism (any EG base with >= 2 propulsion burst events per trigger cycle at omega_motor >= 150 rad/s [M]) and a fire-element AR (any fire/blue-fire wing AR with r_outer >= 18mm [M]); single-stage EG (standard Blazing Gigs) produces only one fire trail and one orbit; non-EG bases lacking the gig burst mechanism cannot form either orbit ring; rubber or WB tips dissipate orbital translational energy before the fire trail forms a closed ring.
+
+**Mechanic**
+
+Kai channels BeySpirit through Dranzer GT, simultaneously activating both EG GT gear stages and igniting both fire trails blue:
+
+**Physical dual gig (unaided):**
+```
+Inner orbit: first EG burst -> inner orbit fire trail (orange, ~1800 K) [M]
+Outer orbit: second EG burst -> outer orbit fire trail (orange, ~1800 K) [M]
+Two AR passes per revolution, both delivering ~14 m/s contact speed [M]
+```
+
+**BeySpirit dual blue flame:**
+```
+BeySpirit elevates both trail temperatures: T_BS ~2200 K [M] (visible blue vs orange)
+Blue flame pre-softens opponent AR on inner-trail pass -> PC softens at ~420 K [M]
+  => outer-trail pass hits pre-weakened surface: increased penetration depth [M]
+
+Combined impact force per pass:
+  F = 2 x (1/2) x I_total x omega^2 / (v_contact x t_contact)
+    = 2 x 0.5 x 7.5e-6 x 360000 / (14.0 x 0.005) = 2.70 / 0.070 = 38.6 N [M]
+  BeySpirit x1.5 thermal amplification: F_BS = 57.9 N per pass [M]
+Two passes: J_total = 2 x 57.9 x 0.005 = 0.579 N s  [M]
+```
+
+**QTE**
+- Input: Hold **J** + **K** simultaneously (dual trail ignition -- both EG GT stages primed together), hold until both fire trails materialise as blue columns
+- Window: 350 ms simultaneous hold
+- Power cost: 88
+
+**Move Parameters**
+```typescript
+function flameGigsTurbo(
+  dualHeld: boolean, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 88;
+  if (!dualHeld) {
+    // single EG stage -- one orange trail, no dual-orbit
+    return { spinDelta: -15, dmgMult: 1.22, lockMs: 40, powerCost: cost };
+  }
+  if (!qteHit) return { spinDelta: -18, dmgMult: 1.28, lockMs: 50, powerCost: cost };
+  return { spinDelta: -38, dmgMult: 1.46, lockMs: 140, powerCost: cost };
+}
+// flameGigsTurbo(true,  true)  => {spin:-38, dmg:1.46x, lock:140ms}  dual hold perfect
+// flameGigsTurbo(true,  false) => {spin:-18, dmg:1.28x, lock: 50ms}  dual hold miss
+// flameGigsTurbo(false, -)     => {spin:-15, dmg:1.22x, lock: 40ms}  single trail only
+```
+
+> NOTE: BeySpirit overrides the physical orbital exclusion -- a single bey cannot occupy two orbital radii simultaneously; BeySpirit splits Dranzer GT's fire trail into two concentric ring paths active at the same time; the dual EG GT gear stages are a real mechanical feature (two burst events per trigger), but the simultaneous dual-orbit coverage and the blue flame temperature elevation (2200 K vs physical ~1800 K) are the anime physics overrides.
+
+---
+
+## Case 1407 -- COMBO: Twin Flame (derived from Flame Gigs Turbo dual-orbit EG strike)
+
+**Sequence:** J K J (attack -> defense -> attack)
+**Interpretation:** J (inner orbit fire strike -- Dranzer GT ignites the inner gig-orbit trail, close-range fire AR contact at r_in ~60 mm) -> K (EG GT gear reload -- hold formation as the dual-stage turbo gear resets, fire trail transitioning from inner to outer orbit) -> J (outer orbit fire strike -- Dranzer GT sweeps the outer bowl ring at r_out ~180 mm, second blue fire AR pass while opponent is still recovering from the inner strike)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.42x | <= 1.5x | OK |
+| lockMs | 82 ms | <= 300 ms | OK |
+| spinDelta | -22 | <= 50 abs | OK |
+
+```typescript
+function twinFlameCombo(
+  secondJHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!secondJHit) return { spinDelta: -8, dmgMult: 1.18, lockMs: 22, powerCost: cost };
+  return { spinDelta: -22, dmgMult: 1.42, lockMs: 82, powerCost: cost };
+}
+// twinFlameCombo(true)  => {spin:-22, dmg:1.42x, lock:82ms, cost:25}
+// twinFlameCombo(false) => {spin: -8, dmg:1.18x, lock:22ms, cost:25}
+```
+
+---
+
+## Case 1408 -- [GIMMICK]: Flame Claw -- Sagittario C145 Passive-Fin Fire Tornado Tangential Strike (Kenta . Sagittario C145S)
+
+**Part:** C145 Spin Track (Claw 145 -- 3 passive-rotation fin blades) + S Performance Tip
+**Assembly:** Sagittario C145S -- Sagittario wheel . C145 track . S tip
+**Gen / System:** Metal Fusion (MFB) | HWS
+**Tags:** fire-element, fin-vortex, passive-rotation, tangential-strike, stamina, C145
+
+**Mechanism**
+
+The C145 track carries three passive fin blades mounted on a bearing race at r_fin ~15mm [M]. The fins are not motor-driven -- they spin freely, driven solely by aerodynamic drag from the rotating bey body. At operating omega the fins are fully extended centrifugally.
+
+**Sagittario C145S assembly:**
+```
+Sagittario wheel:  m_wheel ~19.0 g [M],  r_outer = 18 mm,  r_inner = 11 mm
+C145 track body:   m_body  ~3.5 g  [M],  r = 10 mm
+C145 fins (x3):    m_fin   ~1.0 g  [M] each,  r_fin = 15 mm
+S tip:             m_tip   ~4.0 g  [M],  r_tip = 1 mm
+Total:             ~29.5 g  [M]
+
+I_wheel = (0.019/2)(0.011^2 + 0.018^2) = 0.0095 x (1.21e-4 + 3.24e-4) = 4.23 x 10^-6 kg m^2
+I_track = (0.0065/2)(0.004^2 + 0.015^2) = 0.00325 x (1.6e-5 + 2.25e-4) = 0.78 x 10^-6 kg m^2
+I_tip:  negligible [M]
+I_total ~5.0 x 10^-6 kg m^2  [M]
+```
+
+**Fin passive-rotation mechanics:**
+```
+Fin drag-driven: relative air speed at fin surface drives fin via friction (bearing race)
+  Slip ratio: omega_fin / omega_bey ~0.54 at steady state [M]  (bearing friction limits co-rotation)
+  At omega_bey = 550 rad/s [M]:
+    omega_fin = 0.54 x 550 = 297 rad/s [M]
+    v_fin_tip = 297 x 0.015 = 4.46 m/s [M]
+  Fin blade-passing frequency: f = (3 x 297) / (2pi) ~141.8 Hz [M]  (audible 'whir')
+
+Centrifugal extension (ensures fins always deployed at operating speed):
+  F_centrifugal = m_fin x omega_fin^2 x r_fin
+                = 0.001 x 297^2 x 0.015 = 1.32 N [M] per fin
+  Any spring-return force << 1.32 N -- fins locked at maximum extension at omega >= 200 rad/s [M]
+```
+
+**Tangential approach and vortex contact:**
+```
+Flame Claw uses a spiral approach path: Sagittario orbits around opponent at decreasing r,
+striking tangentially (contact angle ~25 deg off tangent [M]).
+
+Wheel smash contact (tangential component):
+  v_contact = omega_spin x r_wheel = 550 x 0.018 = 9.9 m/s
+  KE = 0.5 x 5.0e-6 x 550^2 = 0.756 J
+  F_smash = 2 x KE / (v_contact x t_contact) = 2 x 0.756 / (9.9 x 0.005) = 30.5 N [M]
+  Tangential component: F_tan = F_smash x sin(25 deg) = 30.5 x 0.423 = 12.9 N [M]
+  (tangential strike delivers torque to opponent rather than pure radial push)
+
+C145 fin vortex secondary force on opponent (BeySpirit baseline):
+  Dynamic pressure from fin-driven air column at r_fin: q = (1/2) x rho x v_fin^2
+    = 0.5 x 1.2 x 4.46^2 = 11.9 Pa [M]
+  Sustained vortex area presented to opponent: A_vortex ~pi x (0.015)^2 = 7.07 x 10^-4 m^2 [M]
+  F_vortex = q x A_vortex = 11.9 x 7.07e-4 = 8.4 x 10^-3 N [M]  (small -- amplified by BeySpirit)
+```
+
+**S tip spin decay:**
+```
+S tip: mu_S ~0.06 [M],  r_S = 1 mm [M]
+dw/dt = -(0.06 x 0.001 x 9.81 x 0.0295) / (5.0e-6) ~-3.47 rad/s^2  [M]
+Low decay -- Sagittario can sustain the spiral approach orbit without significant spin loss
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Sagittario wheel | 19.0 g | 11--18 mm |
+| C145 track body | 3.5 g | 10 mm |
+| C145 fins (x3) | 3.0 g total | 15 mm |
+| S tip | 4.0 g | 1 mm |
+| **Total** | **~29.5 g** | **18 mm (wheel) / 15 mm (fins)** |
+| I_total | -- | ~5.0 x 10^-6 kg m^2 |
+
+---
+
+## Case 1409 -- [SPECIAL]: Flame Claw (Kenta . Sagittario C145S)
+
+**Special Move:** Flame Claw
+**User:** Kenta
+**Series:** Beyblade: Metal Fusion
+**Compatible beys:** Any bey with a spin track carrying >= 3 passive-rotation fins at r >= 12mm [M] (C145-equivalent: fin-bearing track with centrifugal extension) and a fire or heat element; the fin vortex requires fins that can free-rotate on a bearing race (fixed non-rotating protrusions on a track cannot drive the air column); a stamina or low-friction tip (S, DS, or r_tip <= 2mm [M]) is required to sustain the spiral orbit approach; wide flat tips (F, WF) generate too much linear drag to complete the tightening spiral approach.
+
+**Mechanic**
+
+Kenta channels BeySpirit (fire element, discovered on Gingka's advice) through Sagittario, forcing the C145 fins to co-rotate at bey omega (overriding the bearing slip ratio):
+
+**Physical fin vortex (unaided):**
+```
+Fin omega at 54% slip: omega_fin ~297 rad/s [M]
+Vortex secondary force on opponent: ~8.4 mN [M]  (negligible -- no BeySpirit fire)
+```
+
+**BeySpirit fire tornado:**
+```
+BeySpirit forces fin omega = bey omega: omega_fin_BS = 550 rad/s [M]  (zero slip)
+  v_fin_BS = 550 x 0.015 = 8.25 m/s [M]  (1.85x physical fin speed)
+  Fin blade-passing freq: f_BS = (3 x 550) / (2pi) ~262.6 Hz [M]
+
+BeySpirit pyrokinesis: air between fins heated to ~900 K [M]  (fire tornado visible above C145 fins)
+Thermal upwelling: buoyant hot air column rises through fin vortex -- fire tornado column visible [M]
+
+BeySpirit fin vortex force on opponent:
+  q_BS = 0.5 x 1.2 x 8.25^2 = 40.8 Pa [M]
+  F_vortex_BS = 40.8 x 7.07e-4 = 0.0288 N [M]  (still small, sustained over contact period)
+  Combined with wheel tangential smash: F_total = 12.9 + (0.0288 x BeySpirit_x4) = 12.9 + 0.115 N [M]
+  Net effect: sustained spin drain rather than impact damage -- tornado continuously disrupts opponent
+```
+
+**QTE**
+- Input: Hold **J** (C145 fins spin up -- fire tornado builds), release when fire column is visible (Sagittario's heat element flares)
+- Window: 300 ms hold
+- Power cost: 75
+
+**Move Parameters**
+```typescript
+function flameClaw(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 75;
+  const r = Math.min(chargeMs / 300, 1.0);
+  if (!qteHit) return { spinDelta: -5, dmgMult: 1.10, lockMs: 30, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -22 : Math.round(-8 - 12 * r),
+    dmgMult:   perfect ?  1.34 : 1.14 + 0.18 * r,
+    lockMs:    perfect ?  90   : Math.round(30 + 50 * r),
+    powerCost: cost,
+  };
+}
+// flameClaw(300, true)  => {spin:-22, dmg:1.34x, lock:90ms}  full charge perfect
+// flameClaw(150, true)  => {spin:-14, dmg:1.23x, lock:55ms}  partial charge
+// flameClaw(300, false) => {spin: -5, dmg:1.10x, lock:30ms}  QTE miss
+```
+
+> NOTE: BeySpirit overrides the C145 fin co-rotation slip -- physically fins reach only ~54% of bey omega due to bearing friction; BeySpirit forces fins to match bey omega exactly (zero-slip co-rotation), 1.85x the physical fin tip speed, maximising the vortex circulation Gamma; the fire column height (physical C145 fin turbulence extends ~30mm; BeySpirit creates a visible fire tornado column above the track) and the instantaneous stamina-drain effect (physical thermal disruption of the opposing bey's spin boundary layer is gradual over tens of seconds; BeySpirit achieves acute spin shock in ~90ms) are the anime physics overrides.
+
+---
+
+## Case 1410 -- COMBO: Claw Spiral (derived from Flame Claw C145 fin-vortex approach)
+
+**Sequence:** ↑ J ← (moveUp -> attack -> moveLeft)
+**Interpretation:** ↑ (rise into outer orbit -- Sagittario climbs the bowl edge, C145 fins spinning at height, fire tornado rising from below) -> J (tangential claw swipe -- Sagittario cuts in from above, C145 fin vortex sweeping across opponent at wheel height) -> ← (spiral exit left -- Sagittario curves away left on the tightening vortex path, leaving the fire column spinning over the opponent)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.30x | <= 1.5x | OK |
+| lockMs | 60 ms | <= 300 ms | OK |
+| spinDelta | -14 | <= 50 abs | OK |
+
+```typescript
+function clawSpiralCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!jHit) return { spinDelta: -5, dmgMult: 1.12, lockMs: 18, powerCost: cost };
+  return { spinDelta: -14, dmgMult: 1.30, lockMs: 60, powerCost: cost };
+}
+// clawSpiralCombo(true)  => {spin:-14, dmg:1.30x, lock:60ms, cost:25}
+// clawSpiralCombo(false) => {spin: -5, dmg:1.12x, lock:18ms, cost:25}
+```
+
+---
+
+## Case 1411 -- [GIMMICK]: Fire Execution -- Dark Gargoyle Wing-Vortex Fire Tornado Ring-Out (Miguel . Dark Gargoyle)
+
+**Part:** Dark Gargoyle AR (wide gargoyle-wing Attack Ring) + standard BB
+**Assembly:** Dark Gargoyle -- Dark Gargoyle AR . Heavy WD . Right SG . Gargoyle Base
+**Gen / System:** Gen1-Plastic | SGS (Spin Gear System, G-Revolution era)
+**Tags:** fire-element, wing-vortex, toroidal-ring, ring-out, wide-AR, circulation
+
+**Mechanism**
+
+The Dark Gargoyle AR has four swept gargoyle-wing protrusions at r_wing ~24mm [M] with blade chord c_wing ~12mm [M]. Analogous to Case 1349 (Fuerza Valiente -- Torch Pegasus), the swept wing geometry generates a bound vortex circulation Gamma; but the gargoyle-wing angle and dark-fire element create a wider, more slowly propagating toroidal ring at a larger r_ring.
+
+**Dark Gargoyle assembly:**
+```
+Dark Gargoyle AR:  m_AR   ~5.0 g [M],  r_wing = 24 mm,  c_wing = 12 mm,  n_wings = 4
+Heavy WD:          m_WD   ~14.5 g [M], r = 21 mm
+Right SG + frame:  m_SG   ~3.5 g [M],  r = 10 mm
+Gargoyle Base:     m_base ~10.0 g [M], r = 10 mm
+Total:             ~33.0 g [M]
+
+I_AR   = (0.005/2)(0.015^2 + 0.024^2)  = 0.0025 x (2.25e-4 + 5.76e-4) = 2.00 x 10^-6 kg m^2
+I_WD   = (0.0145/2)(0.012^2 + 0.021^2) = 0.00725 x (1.44e-4 + 4.41e-4) = 4.24 x 10^-6 kg m^2
+I_SG   = (0.0035/2)(0.006^2 + 0.012^2) = 0.00175 x (3.6e-5  + 1.44e-4) = 0.32 x 10^-6 kg m^2
+I_base = (0.010/2)(0.004^2 + 0.010^2)  = 0.005 x (1.6e-5   + 1.0e-4)  = 0.58 x 10^-6 kg m^2
+I_total ~7.14 x 10^-6 ~7.1 x 10^-6 kg m^2  [M]
+```
+
+**Gargoyle-wing vortex formation:**
+```
+Wing bound circulation at omega = 600 rad/s [M]:
+  v_wing = 600 x 0.024 = 14.4 m/s
+  Gamma = (1/2) x c_wing x CL x v_wing = 0.5 x 0.012 x 1.0 x 14.4 = 0.0864 m^2/s [M]
+
+Toroidal vortex ring (Gargoyle variant): r_ring ~24 mm [M], core radius a ~7 mm [M]
+Ring self-propagation velocity:
+  v_ring = (Gamma / (4 x pi x r_ring)) x (ln(8 x r_ring / a) - 1/4)
+         = (0.0864 / (4 x pi x 0.024)) x (ln(8 x 0.024 / 0.007) - 0.25)
+         = 0.287 x (ln(27.4) - 0.25)
+         = 0.287 x (3.31 - 0.25) = 0.287 x 3.06 ~0.88 m/s [M]
+
+Ring expands while propagating: radius grows ~10% per meter travel [M]
+  At opponent distance 0.15 m: r_ring_contact ~26 mm [M]  (covers opponent AR outer surface)
+```
+
+**Physical AR smash (contact phase):**
+```
+v_AR = 600 x 0.024 = 14.4 m/s
+F_smash = 2 x KE / (v_AR x t) = 2 x 0.5 x 7.1e-6 x 360000 / (14.4 x 0.005)
+        = 2.556 / 0.072 = 35.5 N [M]
+Contact area: A_AR ~15 mm^2 [M]  (wide wing face)
+P = 35.5 / (15 x 10^-6) = 2.37 MPa [M]  (below PC yield -- no structural damage unaided)
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Dark Gargoyle AR | 5.0 g | 15--24 mm |
+| Heavy WD | 14.5 g | 12--21 mm |
+| Right SG + frame | 3.5 g | 6--10 mm |
+| Gargoyle Base | 10.0 g | 4--10 mm |
+| **Total** | **~33.0 g** | **24 mm** |
+| I_total | -- | ~7.1 x 10^-6 kg m^2 |
+
+---
+
+## Case 1412 -- [SPECIAL]: Fire Execution (Miguel . Dark Gargoyle)
+
+**Special Move:** Fire Execution
+**User:** Miguel
+**Series:** Beyblade (G-Revolution)
+**Compatible beys:** Any bey with a wide-wing AR at r >= 22mm [M] and a fire element (any fire- or dark-fire-element AR with swept-blade wing geometry capable of generating vortex circulation); passive-blade tracks supplement the vortex range but are not required; non-wing ARs with small protrusions cannot generate the Gamma required for a stadium-spanning fire tornado; the ring-out effect requires the toroidal ring to propagate > 150mm to reach the opponent, so r_ring >= 20mm [M] and v_ring >= 0.5 m/s [M] are the minimum conditions.
+
+**Mechanic**
+
+Miguel channels BeySpirit through Dark Gargoyle. The gargoyle demon beast manifests briefly (BeySpirit wing materialisation), elevating the AR wing circulation and sustaining the fire tornado across the entire stadium:
+
+**Physical toroidal ring (unaided):**
+```
+Gamma_phys = 0.0864 m^2/s [M];   v_ring = 0.88 m/s [M]
+Outward push on opponent (ring pressure): F_out_phys ~0.07 N [M]  (small, sustained)
+```
+
+**BeySpirit fire tornado (gargoyle demon):**
+```
+Gargoyle beast elevates wing temperature: AR surface ~1200 K [M]  (dark-fire element, BeySpirit)
+  Thermal updraft boosts Gamma: Gamma_BS ~0.30 m^2/s [M]  (x3.5 from heat expansion)
+  v_ring_BS ~2.9 m/s [M]
+
+BeySpirit outward push: F_out_BS = rho x Gamma_BS x v_ring_BS x L_contact
+  L_contact ~40 mm [M]: F_out = 1.2 x 0.30 x 2.9 x 0.040 = 0.418 N [M]  (sustained over 300ms)
+  J_ring_out = 0.418 x 0.30 = 0.125 N s [M]  >> ring-out threshold (~0.090 N s for m_opp ~45g) [M]
+  (explains why the ring-out effect works even on heavier opponents -- sustained push exceeds threshold)
+```
+
+**QTE**
+- Input: Hold **J** (gargoyle spirit builds -- Miguel's wings materialise, tornado orbits accumulate), then tap **K** at peak (release inferno toward opponent)
+- Window: 500 ms hold + 150 ms K release
+- Power cost: 90
+
+**Move Parameters**
+```typescript
+function fireExecution(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 90;
+  const r = Math.min(chargeMs / 500, 1.0);
+  if (!qteHit) return { spinDelta: -10, dmgMult: 1.15, lockMs: 35, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -32 : Math.round(-10 - 20 * r),
+    dmgMult:   perfect ?  1.45 : 1.20 + 0.23 * r,
+    lockMs:    perfect ?  120  : Math.round(40 + 70 * r),
+    powerCost: cost,
+  };
+}
+// fireExecution(500, true)  => {spin:-32, dmg:1.45x, lock:120ms}  3-rotation full charge perfect
+// fireExecution(250, true)  => {spin:-20, dmg:1.38x, lock: 75ms}  partial charge
+// fireExecution(500, false) => {spin:-10, dmg:1.15x, lock: 35ms}  QTE miss
+```
+
+> NOTE: BeySpirit overrides the vortex ring propagation distance -- physical fire tornado dissipates ~3x AR radius (~72mm) before ring coherence breaks; BeySpirit sustains the gargoyle wing vortex at full intensity across the entire stadium; the gargoyle demon wing materialisation (Miguel's visible purple gargoyle wings and the dark spirit manifestation) and the sustained ring-out push force (physical Gamma creates only ~70 mN; BeySpirit sustains 418 mN over 300ms) are the anime physics overrides.
+
+---
+
+## Case 1413 -- COMBO: Gargoyle Spin (derived from Fire Execution wing-vortex posture)
+
+**Sequence:** ← J → (moveLeft -> attack -> moveRight)
+**Interpretation:** ← (spiral in from left -- approach on gargoyle wing angle, vortex ring building from the left arc) -> J (fire tornado ignite -- rotational wing-strike releases the vortex ring toward opponent) -> → (exit right -- complete the orbit, opponent pushed radially outward by the ring exit vortex as Dark Gargoyle sweeps right)
+**Type:** attack  **Cost:** 35
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.40x | <= 1.5x | OK |
+| lockMs | 90 ms | <= 300 ms | OK |
+| spinDelta | -22 | <= 50 abs | OK |
+
+```typescript
+function gargoyleSpinCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 35;
+  if (!jHit) return { spinDelta: -10, dmgMult: 1.18, lockMs: 30, powerCost: cost };
+  return { spinDelta: -22, dmgMult: 1.40, lockMs: 90, powerCost: cost };
+}
+// gargoyleSpinCombo(true)  => {spin:-22, dmg:1.40x, lock:90ms, cost:35}
+// gargoyleSpinCombo(false) => {spin:-10, dmg:1.18x, lock:30ms, cost:35}
+```
+
+---
+
+## Case 1414 -- [GIMMICK]: Fire Arrow -- Dranzer S Fire-Coated Direct Charge Explosive Impact (Kai Hiwatari . Dranzer S)
+
+**Part:** Dranzer S AR (original wing-blade design) + S tip
+**Assembly:** Dranzer S -- Dranzer S AR . Eight Balance WD . Right SG . S Base
+**Gen / System:** Gen1-Plastic | SGS (Spin Gear System, original series / V-Force era)
+**Tags:** fire-element, direct-charge, fire-coating, explosive-impact, S-tip, smash
+
+**Mechanism**
+
+Dranzer S carries the original Dranzer Attack Ring (swept-blade wing design, fire phoenix motif). The S tip provides maximum spin retention for a sustained high-speed charge. The fire element in the AR creates a pre-heating zone at the contact interface.
+
+**Dranzer S assembly:**
+```
+Dranzer S AR:       m_AR   ~4.2 g [M],  r_outer = 21 mm,  r_inner = 12 mm
+Eight Balance WD:   m_WD   ~12.5 g [M], r = 18 mm
+Right SG + frame:   m_SG   ~3.0 g [M],  r = 9 mm
+S Base:             m_base ~9.0 g  [M],  r = 8 mm
+Total:              ~28.7 g  [M]
+
+I_AR   = (0.0042/2)(0.012^2 + 0.021^2) = 0.0021 x (1.44e-4 + 4.41e-4) = 1.23 x 10^-6 kg m^2
+I_WD   = (0.0125/2)(0.010^2 + 0.018^2) = 0.00625 x (1.00e-4 + 3.24e-4) = 2.65 x 10^-6 kg m^2
+I_SG   = (0.003/2)(0.005^2 + 0.009^2)  = 0.0015 x (2.5e-5 + 8.1e-5)   = 0.16 x 10^-6 kg m^2
+I_base = (0.009/2)(0.003^2 + 0.008^2)  = 0.0045 x (9.0e-6 + 6.4e-5)   = 0.33 x 10^-6 kg m^2
+I_total ~4.37 x 10^-6 ~4.4 x 10^-6 kg m^2  [M]
+```
+
+**Fire-coated AR direct charge:**
+```
+At omega = 600 rad/s [M]:
+  v_AR = 600 x 0.021 = 12.6 m/s
+  KE = (1/2) x 4.4e-6 x 360000 = 0.792 J
+
+Contact force (t_contact ~4 ms [M]):
+  F = 2 x KE / (v_AR x t_contact) = 2 x 0.792 / (12.6 x 0.004) = 1.584 / 0.0504 = 31.4 N [M]
+
+Contact area: A_AR ~14 mm^2 [M]  (wing face, not a claw -- broader contact than sharp tip)
+Contact pressure: P = 31.4 / (14 x 10^-6) = 2.24 MPa [M]  (below PC yield -- no structural damage)
+```
+
+**Fire coating pre-heating effect:**
+```
+Fire element heats AR surface during approach (friction + BeySpirit):
+  Physical friction heating: T_AR ~400 K at v_AR = 12.6 m/s  (air friction only)
+  PC softening onset: ~420 K -- physical heating approaches but does not reach softening temperature
+
+Pre-heating increases effective contact area by reducing target AR hardness at contact zone:
+  Even at 380 K (just below softening) -- PC modulus drops ~15% [M]
+  => A_effective = 14 x 1.15 = 16.1 mm^2 [M]  (15% area spread from partial softening)
+  => P_modified = 31.4 / (16.1e-6) = 1.95 MPa [M]
+```
+
+**S tip spin retention:**
+```
+S tip: mu_S ~0.06 [M],  r_S = 1 mm [M]
+dw/dt = -(0.06 x 0.001 x 9.81 x 0.0287) / (4.4e-6) = -(1.69e-5) / (4.4e-6) = -3.84 rad/s^2  [M]
+Low decay -- Dranzer S retains near-launch omega through the fire-charge approach
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Dranzer S AR | 4.2 g | 12--21 mm |
+| Eight Balance WD | 12.5 g | 10--18 mm |
+| Right SG + frame | 3.0 g | 5--9 mm |
+| S Base | 9.0 g | 3--8 mm |
+| **Total** | **~28.7 g** | **21 mm** |
+| I_total | -- | ~4.4 x 10^-6 kg m^2 |
+
+---
+
+## Case 1415 -- [SPECIAL]: Fire Arrow (Kai Hiwatari . Dranzer S)
+
+**Special Move:** Fire Arrow
+**User:** Kai Hiwatari
+**Series:** Beyblade (original series)
+**Compatible beys:** Any bey with a fire-element AR and a Sharp (r_tip <= 1.5mm [M]) or equivalent tip that preserves maximum spin through the charge approach; the "fire arrow" trajectory requires the AR to be streamlined (swept-wing geometry, no lateral protrusions wider than r_AR [M]) so that the fire mantle can be maintained as a coherent coating during the charge; wide flat tips (F, WF) or rubber tips cause too much lateral drift, destroying the arrow-like trajectory; non-fire-element ARs cannot form the fire mantle coating.
+
+**Mechanic**
+
+Kai channels BeySpirit through Dranzer S (fire phoenix beast), coating the AR in a complete fire mantle and driving a direct charge at the opponent. BeySpirit raises the fire coating above PC softening temperature and creates the explosive detonation at impact:
+
+**Physical fire-coated charge (unaided):**
+```
+Contact force: F_phys = 31.4 N [M]
+Contact pressure: ~2.24 MPa [M]  (below PC yield -- no structural damage)
+Pre-heating raises contact area slightly: P_modified ~1.95 MPa [M]
+```
+
+**BeySpirit fire arrow:**
+```
+BeySpirit fire mantle: T_BS ~1800 K [M]  (fire phoenix; physical: ~400 K)
+  Target AR pre-softened to >420K before contact -- PC in contact zone has dropped to rubber-like:
+    E_softened ~0.05 x E_room (modulus at 500K) [M]
+  F_BS = 3 x F_phys = 3 x 31.4 = 94.2 N [M]  (BeySpirit x3 for fire phoenix)
+  Effective P_BS = 94.2 / (14e-6) = 6.7 MPa [M]  (still below nominal yield, but PC now softened >> detonation)
+
+Explosion at impact: BeySpirit ignites the compressed fire mantle at the contact interface
+  -- fire plasma expansion delivers additional impulse: J_explosion ~0.05 N s [M]
+  => Total impulse: J_total = F_BS x t_contact + J_explosion = 94.2 x 0.004 + 0.05 = 0.427 N s [M]
+```
+
+**QTE**
+- Input: Hold **J** (fire mantle charge -- Dranzer coats itself in fire), release to charge at opponent
+- Window: 300 ms hold
+- Power cost: 75
+
+**Move Parameters**
+```typescript
+function fireArrow(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 75;
+  const r = Math.min(chargeMs / 300, 1.0);
+  if (!qteHit) return { spinDelta: -10, dmgMult: 1.18, lockMs: 25, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -30 : Math.round(-12 - 16 * r),
+    dmgMult:   perfect ?  1.42 : 1.22 + 0.18 * r,
+    lockMs:    perfect ?  110  : Math.round(30 + 70 * r),
+    powerCost: cost,
+  };
+}
+// fireArrow(300, true)  => {spin:-30, dmg:1.42x, lock:110ms}  full charge perfect
+// fireArrow(150, true)  => {spin:-20, dmg:1.31x, lock: 65ms}  partial charge
+// fireArrow(300, false) => {spin:-10, dmg:1.18x, lock: 25ms}  QTE miss
+```
+
+> NOTE: BeySpirit overrides the fire mantle temperature -- physical AR air-friction heating reaches only ~400 K, approaching but not exceeding PC softening; BeySpirit raises this to ~1800 K, fully softening the target AR contact zone before impact; the explosive fireball detonation at the contact interface (physical contact creates localised deformation at 2.24 MPa, not a plasma burst) and the stadium-scale fire explosion visible in the anime are the BeySpirit physics overrides; the Dranzer phoenix beast materialisation that generates the fire mantle coating is the anime BeySpirit override.
+
+---
+
+## Case 1416 -- COMBO: Arrow Flash (derived from Fire Arrow fire-charge trajectory)
+
+**Sequence:** → J K (moveRight -> attack -> defense)
+**Interpretation:** → (arrow charge approach -- Dranzer S accelerates rightward, building fire-coat momentum at full charge speed) -> J (fire arrow smash -- fire-coated AR strikes opponent at peak velocity, maximum fire-coating contact) -> K (recoil guard -- Dranzer holds position as the fire explosion backwash from the detonating contact zone hits back against the attacker)
+**Type:** attack  **Cost:** 15
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.34x | <= 1.5x | OK |
+| lockMs | 60 ms | <= 300 ms | OK |
+| spinDelta | -16 | <= 50 abs | OK |
+
+```typescript
+function arrowFlashCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 15;
+  if (!jHit) return { spinDelta: -7, dmgMult: 1.16, lockMs: 15, powerCost: cost };
+  return { spinDelta: -16, dmgMult: 1.34, lockMs: 60, powerCost: cost };
+}
+// arrowFlashCombo(true)  => {spin:-16, dmg:1.34x, lock:60ms, cost:15}
+// arrowFlashCombo(false) => {spin: -7, dmg:1.16x, lock:15ms, cost:15}
+```
+
+*Cases continue from Case 1417 as further franchise moves are provided.*
