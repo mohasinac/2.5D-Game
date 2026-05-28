@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1651 cases** across 14 files + 1 master reference.
+Total: **1660 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1682** — All new cases must start here. Update this block before writing any new case.
+> **1691** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,11 +23,11 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 | 320 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 · 1682–1685 · 1686–1690 | 329 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 · 1610–1633 · 1643–1681 | 643 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 · 1610–1633 · 1643–1702 | 664 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -104,6 +104,8 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1604–1609 | 6 | CS9 part+assembly physics: Wind Aquario 100HF/S (MFB Light Wheel System) | CS9 |
 | 1634–1637 | 4 | CS9 part+assembly physics: Ray Gil 100RSF (MFB Attack — Ray FW, Gil ER, RSF tip) | CS9 |
 | 1638–1642 | 5 | CS9 part+assembly physics: Rock Leone 145WB (MFB Defense — Rock FW, Leone I ER, Track 145, WB tip) | CS9 |
+| 1682–1685 | 4 | CS9 part+assembly physics: Air Knight 12Expand Eternal (Burst Cho-Z Stamina — Air Knight layer, Expand frame, Eternal tip) | CS9 |
+| 1686–1690 | 5 | CS9 part+assembly physics: Maximum Garuda 8Flow Flugel (Burst God Stamina/Defense — MG layer, Disc 8, Flow frame, Flugel tip) | CS9 |
 | 1525–1527 | 3 | Grand Maelstrom — RS pivot-anchor T125 vortex whirlpool AoE 10s drain (Sophie · Grand Cetus T125RS) | CS13 |
 | 1528–1530 | 3 | Grand Victoire — whirlpool-exit aerial dive water-crash ring-out (Sophie · Grand Cetus T125RS) | CS13 |
 | 1531–1533 | 3 | Grand Fleet — WD145 wing platform aerial crash ring-out (Wales · Grand Cetus WD145RS) | CS13 |
@@ -142,6 +144,13 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1673–1675 | 3 | Ishtar Impact — RDF rubber traction speed-build + Quetzalcoatl Beast counter-endurance (Tithi · Death Quetzalcoatl 125RDF) | CS13 |
 | 1676–1678 | 3 | Keel Strangler — Ray Energy Ring rib barrage 197 Hz + RSF rubber spin-leech (Argo Garcia · Ray Gil 100RSF) | CS13 |
 | 1679–1681 | 3 | King of Darkness — Zeus AR 4-protrusion barrage J=0.609 N·s + Brooklyn BeySpirit darkness field [M] (Brooklyn · Zeus) | CS13 |
+| 1682–1684 | 3 | King of Thunder Sword — D:D dual-drive LS rake φ=42° J=0.522 N·s; Mars BeySpirit [M] 2.5× (King · Variares D:D) | CS13 |
+| 1685–1687 | 3 | Lightning Sword Flash — CS tip P=21.2 MPa 2844× pressure ratio; horn fracture F_yield=1131 N [M] (Masamune · Ray Striker D125CS) | CS13 |
+| 1688–1690 | 3 | Lion Gale Force Wall — Rock Leone WB vortex barrier Γ=0.831 m²/s; True [M] 2.58×; Fang Leone upgrade (Kyoya · Rock/Fang Leone) | CS13 |
+| 1691–1693 | 3 | Lion Wild Wind Fang Dance — precessional orbit Γ_cmpd=0.855 m²/s Kármán f=0.39 Hz mobile sweep (Kyoya · Rock Leone 145WB) | CS13 |
+| 1694–1696 | 3 | Lost Spiral — Spiral tip t=271.5 s; LS-RS v_rel=57.6 m/s; τ_burst=30.5× threshold (Lui · Lost Lúinor Nine Spiral) | CS13 |
+| 1697–1699 | 3 | Knight Flyer — Air Knight wing F_lift=0.422 N vs W=0.408 N; Eternal aerial τ≈0; stamina trap (Kit · Air Knight 12Expand Eternal) | CS13 |
+| 1700–1702 | 3 | Maximum Stampede — Bull horn J=0.603 N·s; H145 h=14.5 mm CoM orbital aggression; fire/golden BeySpirit [M] (Benkei · Dark Bull H145SD) | CS13 |
 
 ### Numbering Notes (Historical)
 

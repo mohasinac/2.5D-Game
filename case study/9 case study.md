@@ -33343,3 +33343,452 @@ Rock Leone 145WB is the starter beyblade for the Metal Masters era (BB-30 booste
 - WB causes more movement than desired for serious Defense play
 
 Competitive verdict: outclassed in open MFB. Functional in WBO Limited Format on specific low-track builds (Leone I synergy with Bakushin FW). Excellent learning/starter combo — Rock's low recoil profile teaches defensive physics intuitively, and WB's center-seeking tip demonstrates gyroscopic self-correction.
+---
+
+## CASE 1682 — Energy Layer: Air Knight [Burst Cho-Z System]
+
+**Part overview**
+Air Knight is a Stamina Type Cho-Z Layer at 20.7 g. The layer is the widest in the Cho-Z series; five aerodynamic propeller blades span from the central hub to the perimeter, connecting to a smooth, nearly circular outer rim. As a Cho-Z System layer it features a metal inner-circumference lining for increased weight and durability. The round smooth perimeter creates near-zero recoil and maximum Life-After-Death. One shallow tooth gives low burst resistance, but the smooth perimeter generates so little contact torque that burst opportunities are rare.
+
+**Official description**
+"A right-spin Stamina Type Cho-Z Layer with five aerodynamic blades that create an upper force while increasing the centrifugal force as the widest Layer in the Cho-Z series."
+In theory the Upper Force lifts the Beyblade off the stadium and reduces tip-floor friction. In practice the blades create aerodynamic drag that worsens Stamina at high launch spin, an issue that scales with omega-squared.
+
+**Dimensions and mass**
+- Total mass: 20.7 g = 0.0207 kg
+- Outer radius (smooth perimeter): r_o = 25 mm (widest Cho-Z layer)
+- Inner bore: r_i = 4 mm
+- Cho-Z metal inner lining: m_m = 3.0 g, r_i=5 mm, r_o=11 mm
+- ABS body (hub + 5 blade spans + perimeter ring): m_b = 17.7 g, r_i=8 mm, r_o=25 mm
+- Burst teeth: 1 shallow tooth, n_eff = 1; smooth perimeter suppresses contact torque -> effective burst resistance higher than tooth count implies
+
+**Moment of inertia**
+Metal inner lining (Cho-Z System):
+  I_m = (1/2)(0.0030)((5e-3)^2 + (11e-3)^2)
+       = (1/2)(0.0030)(2.50e-5 + 1.21e-4)
+       = (1/2)(0.0030)(1.46e-4)
+       = 2.190e-7 kg*m^2
+
+ABS body (hollow hub, blade spans, solid outer perimeter ring):
+  I_b = (1/2)(0.0177)((8e-3)^2 + (25e-3)^2)
+       = (1/2)(0.0177)(6.40e-5 + 6.25e-4)
+       = (1/2)(0.0177)(6.89e-4)
+       = 6.097e-6 kg*m^2
+
+**I_AK = 2.190e-7 + 6.097e-6 = 6.316e-6 kg*m^2**
+
+**Aerodynamic drag — 5 propeller blades**
+Blade geometry: chord c = 5 mm, span s = 5 mm -> A_blade = 2.5e-5 m^2 each; 5 blades: A_blades = 1.25e-4 m^2
+Blade midpoint radius: r_mid = 18 mm
+Air density: rho = 1.225 kg/m^3; drag coefficient: C_D = 0.6 (low-Re bluff body estimate)
+
+At omega_0 = 700 rad/s: v_mid = 700 * 0.018 = 12.6 m/s
+  F_drag = (1/2)(1.225)(0.6)(1.25e-4)(158.76) = 7.306e-3 N
+  tau_drag_AK = 7.306e-3 * 0.018 = 1.315e-4 N*m
+
+tau_drag scales as omega^2:
+  omega=420 rad/s: tau_drag_AK = (420/700)^2 * 1.315e-4 = 0.36 * 1.315e-4 = 4.734e-5 N*m
+  omega=280 rad/s: tau_drag_AK = (280/700)^2 * 1.315e-4 = 0.16 * 1.315e-4 = 2.104e-5 N*m
+
+**Upper Force crossover analysis**
+At Re = rho*v*c/mu = 1.225*12.6*0.005/(1.8e-5) = 4300 (laminar-transitional), symmetric propeller profiles at small chord generate predominantly pressure drag, not lift. Net aerodynamic result: pure drag, no usable vertical lift component.
+
+The drag penalty is self-correcting: at wobble onset omega=280 rad/s, tau_drag_AK = 2.104e-5 N*m -- comparable to tip friction -- and drops further with spin. The gimmick is most harmful exactly when launch power is highest and least harmful when gyroscopic stability matters most.
+
+**Burst resistance assessment**
+1 shallow tooth: tau_burst_base = 5.0 mN*m
+Round smooth perimeter -> F_contact per strike very low -> tau_burst_actual >> 5 mN*m in practice.
+
+**Compatible beys:** Any Burst Cho-Z System assembly.
+
+---
+
+## CASE 1683 — Disc Frame: Expand [Burst God Layer System Frame]
+
+**Part overview**
+Expand is a round, wide Disc Frame at 3.4 g. It features four smooth aerodynamic blades separated by six gaps. The blades are oriented to provide Upper Force in right-spin and Down Force in left-spin; the small blade size makes any generated force negligible (official testing confirmed). The round smooth perimeter provides Life-After-Death and Stamina comparable to Cross, Glaive, and Proof.
+
+**Dimensions and mass**
+- Mass: 3.4 g = 0.0034 kg
+- r_i = 14 mm (clips to Forge Disc outer notch), r_o = 21 mm (wide round profile)
+
+**Moment of inertia**
+I_Expand = (1/2)(0.0034)((14e-3)^2 + (21e-3)^2)
+          = (1/2)(0.0034)(1.96e-4 + 4.41e-4)
+          = (1/2)(0.0034)(6.37e-4)
+          = **1.083e-6 kg*m^2**
+
+**Upper Force — blade aerodynamic drag**
+Blade geometry: c = 3 mm, s = 3 mm -> A_blade = 9e-6 m^2 each; 4 blades -> A_total = 3.6e-5 m^2
+r_mid = 17 mm; C_D = 0.6
+
+At omega = 700 rad/s: v = 700 * 0.017 = 11.9 m/s
+  F_drag_Exp = (1/2)(1.225)(0.6)(3.6e-5)(141.6) = 1.862e-3 N
+  tau_drag_Exp = 1.862e-3 * 0.017 = 3.165e-5 N*m
+
+  omega=420: tau = 0.36 * 3.165e-5 = 1.139e-5 N*m
+  omega=280: tau = 0.16 * 3.165e-5 = 5.064e-6 N*m
+
+Expand blade drag is ~24% of Air Knight blade drag at any omega. Air Knight dominates the assembly aerodynamic budget.
+
+**LAD performance**
+Round smooth perimeter at r_o = 21 mm -> LAD torque sustaining precession orbit proportional to r_o^2.
+Expand r_o = 21 mm vs Cross r_o ~20 mm -> equivalent LAD tier.
+Official classification: Expand = Cross / Glaive / Proof tier (confirmed).
+
+**Comparison to Flow (God Layer Frame)**
+Flow (2.4 g, triangular, rough perimeter) provides inferior LAD due to broken perimeter geometry. Expand's uninterrupted round rim maintains continuous contact arc during precession, sustaining orbital stability at lower omega than Flow allows.
+
+**Compatible beys:** Any God Layer System Core Disc with Frame slots (even-numbered discs).
+
+---
+
+## CASE 1684 — Performance Tip: Eternal [Burst Cho-Z System]
+
+**Part overview**
+Eternal (5.93 g) combines a sharp inner tip with a wide free-spinning POM (PolyOxyMethylene) dish. During upright spin the sharp tip contacts with minimal friction. During precession the wide POM dish contacts the stadium floor; free on a bearing, the dish decouples from the bey's rotation and generates negligible spin-axis deceleration torque -- giving Eternal the best precession time of any Burst tip. The description is "a combination of Revolve and Bearing." Eternal is shorter than pre-Cho-Z drivers, slightly reducing Disc-to-Layer clearance.
+
+**Dimensions and mass**
+- Total mass: 5.93 g = 0.00593 kg
+- Sharp inner tip: r_tip = 0.5 mm (hard rigid point, fixed to driver body)
+- Free-spinning POM dish: r_inner = 2 mm, r_outer = 10 mm (wider than Atomic's ring ~7 mm)
+- Height: standard, marginally shorter than pre-Cho-Z drivers
+
+**Moment of inertia**
+POM dish (free-spinning):
+  m_dish = 2.50 g, r_i=2 mm, r_o=10 mm
+  I_dish = (1/2)(0.0025)((2e-3)^2 + (10e-3)^2)
+          = (1/2)(0.0025)(4.0e-6 + 1.0e-4)
+          = (1/2)(0.0025)(1.04e-4)
+          = 1.300e-7 kg*m^2
+
+ABS tip body + stem:
+  m_body = 3.43 g, r_i=1 mm, r_o=6 mm
+  I_body = (1/2)(0.00343)((1e-3)^2 + (6e-3)^2)
+          = (1/2)(0.00343)(1.0e-6 + 3.6e-5)
+          = (1/2)(0.00343)(3.7e-5)
+          = 6.346e-8 kg*m^2
+
+**I_Eternal = 1.300e-7 + 6.346e-8 = 1.935e-7 kg*m^2**
+
+**Contact mode 1: Upright (sharp tip)**
+r_tip = 0.5 mm; mu = 0.17 (hard rigid tip on smooth stadium)
+tau_tip = mu * N * r_tip = 0.17 * N * 5e-4 m
+
+Comparison to Revolve (POM cone, r_cone=4 mm, mu_POM=0.18):
+  tau_Eternal / tau_Revolve = r_tip_E / r_tip_R = 0.5 / 4.0 = 0.125
+  -> Eternal upright friction is 87.5% lower than Revolve in the upright phase.
+
+**Contact mode 2: Precession (free-spinning POM dish)**
+When the bey tilts and the dish contacts the stadium:
+- Bearing allows dish to spin independently of bey
+- Friction from stadium decelerates dish toward omega_dish = 0 (floor-stationary frame)
+- In steady precession: dish at near-zero relative velocity to floor -> effectively static contact
+- Friction vector acts tangentially to the precessional orbit, orthogonal to the spin axis
+- Result: dish friction contributes zero spin-axis deceleration torque
+
+This is the key physics: the free-spinning dish converts tip-floor friction from spin-opposing (as with any fixed tip) to orbit-sustaining only. Spin decay during precession is reduced to: residual sharp-tip contact (partial, tilt-dependent) + aerodynamic drag (both small at omega < 280 rad/s).
+
+**Eternal vs Atomic comparison**
+Atomic: ball bearing center (mu_bearing ~0.02, r ~0.5 mm) + free-spinning ring (r_ring ~7 mm)
+Eternal: sharp rigid tip (mu=0.17, r_tip=0.5 mm) + free-spinning POM dish (r_dish=10 mm)
+
+Upright spin decay per unit normal force:
+  Atomic: tau/N = 0.02 * 5e-4 = 1.0e-5 N*m/N (near-zero from ball bearing)
+  Eternal: tau/N = 0.17 * 5e-4 = 8.5e-5 N*m/N (8.5x higher than Atomic)
+  -> Atomic wins on pure upright stamina.
+
+Precession time advantage of Eternal:
+  r_dish_Eternal = 10 mm vs r_ring_Atomic = 7 mm (+43% larger)
+  Wider dish sustains precession orbit at lower residual omega before floor-scrape becomes fatal.
+  Both tips free-spin during precession -> friction advantage equal.
+  Net: Eternal outclasses Atomic in Life-After-Death / precession duration.
+  Atomic marginally superior for straight upright stamina and is currently meta-dominant overall.
+
+**POM material properties**
+  mu_kinetic (POM on ABS stadium) ~0.15-0.20 (self-lubricating; lower than ABS 0.35, much lower than rubber 0.90)
+  sigma_y ~70 MPa (rigid, maintains dish geometry under impact)
+  High dimensional stability: consistent dish profile over extended use
+
+**Height clearance**
+Shorter than pre-Cho-Z drivers by ~1 mm. theta_scrape = arctan(h_clear / r_Disc) decreases, increasing risk of Disc contacting opponent Layer at shallow tilt angles. Minimal impact in standard Stamina matchups; relevant against aggressive Attack combos.
+
+**Compatible beys:** Any Burst Cho-Z System or God Layer System assembly.
+
+---
+
+## CASE 1685 — Assembly: Air Knight 12Expand Eternal [Burst Cho-Z Stamina]
+
+**Assembly summary**
+| Part | Mass | I (kg*m^2) | I fraction |
+|------|------|-----------|------------|
+| Energy Layer -- Air Knight | 20.7 g | 6.316e-6 | 42.2% |
+| Forge Disc -- 12 | 16.1 g | 7.350e-6 | 49.1% |
+| Disc Frame -- Expand | 3.4 g | 1.083e-6 | 7.2% |
+| Performance Tip -- Eternal | 5.93 g | 1.935e-7 | 1.3% |
+| **Total** | **46.13 g** | **1.494e-5 kg*m^2** | 100% |
+
+Forge Disc 12 analysis: see CASE 1565. Burst Cho-Z era: omega_0 = 700 rad/s; battle omega = 420 rad/s (60%); wobble onset omega = 280 rad/s (40%).
+
+**m_total = 20.7 + 16.1 + 3.4 + 5.93 = 46.13 g = 0.04613 kg**
+**I_total = 6.316e-6 + 7.350e-6 + 1.083e-6 + 1.935e-7 = 1.494e-5 kg*m^2**
+**L_launch = I_total * omega_0 = 1.494e-5 * 700 = 1.046e-2 kg*m^2/s = 10.46 mN*m*s**
+
+**Disc dominance**
+Forge Disc 12 holds 49.1% of I_total despite being the lightest available disc. Outer protrusions at r_mean=30 mm (CASE 1565) concentrate mass peripherally, achieving near-flywheel inertia efficiency. Air Knight (42.2%) is the second contributor. Expand (7.2%) and Eternal (1.3%) are minor.
+
+**Spin decay analysis**
+
+Three decay components:
+
+(A) Eternal sharp-tip friction (omega-independent):
+  N = 0.04613 * 9.81 = 0.4525 N
+  tau_tip = 0.17 * 0.4525 * 5.0e-4 = 3.846e-5 N*m
+  domega/dt_tip = -3.846e-5 / 1.494e-5 = -2.574 rad/s^2
+  t_spinout tip-only = 700 / 2.574 = 272 s (theoretical maximum, no aero drag)
+
+(B) Air Knight blade drag (proportional to omega^2):
+  tau_AK(omega) = 1.315e-4 * (omega/700)^2
+  omega=700: 1.315e-4 N*m; omega=420: 4.734e-5; omega=280: 2.104e-5
+
+(C) Expand blade drag (proportional to omega^2):
+  tau_Exp(omega) = 3.165e-5 * (omega/700)^2
+  omega=700: 3.165e-5 N*m; omega=420: 1.139e-5; omega=280: 5.064e-6
+
+**Combined torque and deceleration:**
+  omega=700: tau = 3.846e-5 + 1.315e-4 + 3.165e-5 = 2.016e-4 N*m; domega/dt = -13.49 rad/s^2
+  omega=420: tau = 3.846e-5 + 4.734e-5 + 1.139e-5 = 9.719e-5 N*m; domega/dt = -6.506 rad/s^2
+  omega=280: tau = 3.846e-5 + 2.104e-5 + 5.064e-6 = 6.457e-5 N*m; domega/dt = -4.322 rad/s^2
+
+**Time from launch to wobble onset (omega: 700 -> 280):**
+avg domega/dt = (13.49 + 4.322) / 2 = 8.906 rad/s^2
+t_launch_to_wobble = 420 / 8.906 = **47.2 s**
+
+**Battle phase duration (omega: 420 -> 280):**
+avg domega/dt = (6.506 + 4.322) / 2 = 5.414 rad/s^2
+t_battle = 140 / 5.414 = **25.9 s**
+
+**Aerodynamic drag audit:**
+  omega=700: aero / tau_total = (1.315e-4 + 3.165e-5) / 2.016e-4 = 1.632e-4 / 2.016e-4 = **80.9%**
+  omega=280: aero / tau_total = (2.104e-5 + 5.064e-6) / 6.457e-5 = 2.610e-5 / 6.457e-5 = **40.4%**
+
+Upper Force crossover omega (aero = tip friction):
+  1.632e-4 * (omega_c/700)^2 = 3.846e-5
+  (omega_c/700)^2 = 0.2357; omega_c = 700 * sqrt(0.2357) = **340 rad/s**
+Below 340 rad/s, tip friction exceeds aerodynamic drag.
+
+**Precession phase (omega < 280 rad/s)**
+Eternal free-spinning dish decouples spin-axis deceleration:
+  Remaining decay: ~50% residual tip friction + aero drag (greatly reduced at low omega)
+  tau_prec(280) = 0.5 * 3.846e-5 + 2.610e-5 = 4.533e-5 N*m
+  domega/dt_prec = -4.533e-5 / 1.494e-5 = **-3.034 rad/s^2**
+  t_precession = 280 / 3.034 = **92.3 s** (theoretical)
+
+Total theoretical spin time: 47.2 + 92.3 = **~139.5 s**
+
+**Thesis**
+Air Knight 12Expand Eternal is a Burst Cho-Z Stamina assembly built around two conflicting aerodynamic gimmicks (5 Air Knight blades + 4 Expand blades) that collectively contribute 80.9% of the deceleration torque at launch. The design paradox is partially resolved by three factors: (1) Forge Disc 12's outer protrusions at r=30 mm contribute I=7.350e-6 kg*m^2 (49.1% of I_total), providing an angular momentum reservoir of L_launch=10.46 mN*m*s that sustains battle spin longer than any same-mass inward-weighted disc; (2) the drag penalty is velocity-squared dependent and shrinks to 40.4% of torque by wobble onset, so the gimmick is least harmful during the precession phase where Eternal's advantage is greatest; (3) Eternal's free-spinning POM dish at r_dish=10 mm eliminates spin-axis deceleration during the ~92 s precession phase, extending usable spin well past what fixed-tip assemblies achieve. Optimal launch: moderate omega_0 ~550-600 rad/s reduces initial drag to ~60% of the hard-launch value while retaining adequate angular momentum for the Eternal precession window.
+---
+
+## CASE 1686 — Energy Layer: Maximum Garuda [Burst God Layer System]
+
+**Part overview**
+Maximum Garuda is a Stamina Type God Layer at 9.8 g. Five aerodynamic blades connect the central hub to a smooth round perimeter, described as creating Upper Force in right-spin. The nearly circular smooth perimeter contains one shallow tooth (akin to Hasbro-layer slopes), making burst resistance functionally high: the frictionless round edge produces almost zero recoil, denying opponents burst leverage. Maximum Garuda was the largest Layer in Burst history at God Layer release; its perimeter also maximises Life-After-Death and resistance to Spin-Equalisation combinations. It out-spins Alter Chronos, confirming competitive Stamina despite blade drag.
+
+**Official description**
+"A right-spin Stamina Type God Layer with five aerodynamic blades that create an upper force while increasing the centrifugal force as the largest Layer in Burst history."
+Upper Force is theoretical only at competitive Re numbers; blades create aerodynamic drag in practice.
+
+**Dimensions and mass**
+- Mass: 9.8 g = 0.0098 kg
+- Outer radius (smooth circular perimeter): r_o = 24 mm (largest God Layer at release)
+- Inner bore: r_i = 4 mm; Burst teeth: 1 shallow tooth
+- No metal inclusions (pure ABS, unlike Cho-Z Air Knight)
+
+**Moment of inertia**
+  Hub zone: m_hub = 2.0 g, r_i=4 mm, r_o=10 mm
+  I_hub = (1/2)(0.0020)((4e-3)^2 + (10e-3)^2) = (1/2)(0.0020)(1.6e-5 + 1.0e-4) = 1.160e-7 kg*m^2
+
+  Blade spans + outer perimeter ring: m_outer = 7.8 g, r_i=10 mm, r_o=24 mm
+  I_outer = (1/2)(0.0078)((10e-3)^2 + (24e-3)^2) = (1/2)(0.0078)(1.0e-4 + 5.76e-4) = 2.636e-6 kg*m^2
+
+**I_MG = 1.160e-7 + 2.636e-6 = 2.752e-6 kg*m^2**
+
+**Aerodynamic drag (5 propeller blades)**
+Blade geometry: c = 5 mm, s = 4 mm -> A_blade = 2.0e-5 m^2; 5 blades: A_blades = 1.0e-4 m^2
+r_mid = 16 mm; C_D = 0.6; rho = 1.225 kg/m^3
+
+At omega = 700 rad/s: v = 700 * 0.016 = 11.2 m/s
+  F_drag = (1/2)(1.225)(0.6)(1.0e-4)(125.44) = 4.600e-3 N
+  tau_drag_MG = 4.600e-3 * 0.016 = 7.360e-5 N*m
+
+  omega=420: tau = 0.36 * 7.360e-5 = 2.650e-5 N*m
+  omega=280: tau = 0.16 * 7.360e-5 = 1.178e-5 N*m
+
+MG drag vs Air Knight (CASE 1682): tau_drag_MG_700 = 7.360e-5 vs tau_drag_AK_700 = 1.315e-4.
+MG blade drag is 56.0% of Air Knight's at any omega (smaller blade area + smaller r_mid).
+
+**Compatible beys:** Any Burst God Layer System assembly.
+
+---
+
+## CASE 1687 — Forge Disc: 8 [Burst God Layer System]
+
+**Part overview**
+Forge Disc 8 at 22 g is one of the heaviest Core Discs in the God Layer System, heavier than Heavy, Gravity, 2, 4, and 6. Symmetrical and elliptical (even-numbered, Frame-compatible). Four protrusions per side shaped as "8" figures; the lower loops of each 8 feature gaps (akin to Knuckle) that remove central mass and push weight outward, maximising Outward Weight Distribution (OWD) for Stamina Flywheel Effect. The high total mass improves KO resistance and attack potential; the OWD severely reduces Burst Resistance.
+
+**Dimensions and mass**
+- Mass: 22 g = 0.0220 kg
+- Major axis r_o ~ 31 mm (protrusion tips), minor axis r_o ~ 22 mm; inner bore r_i = 4 mm
+- Four figure-8 protrusions per side; gaps in lower loops redistribute mass outward
+
+**Moment of inertia**
+  Hub (35% = 7.70 g, r_i=4 mm, r_o=14 mm):
+  I_hub = (1/2)(0.0077)((4e-3)^2 + (14e-3)^2) = (1/2)(0.0077)(1.6e-5 + 1.96e-4) = 8.239e-7 kg*m^2
+
+  Mid body (35% = 7.70 g, r: 14-23 mm):
+  I_mid = (1/2)(0.0077)((14e-3)^2 + (23e-3)^2) = (1/2)(0.0077)(1.96e-4 + 5.29e-4) = 2.789e-6 kg*m^2
+
+  Outer protrusions (30% = 6.60 g, r_mean = 28 mm):
+  I_outer = 0.0066 * (28e-3)^2 = 5.181e-6 kg*m^2
+
+**I_8 = 8.239e-7 + 2.789e-6 + 5.181e-6 = 8.793e-6 kg*m^2**
+
+**OWD vs Disc 12 (CASE 1565)**
+Disc 12: I = 7.350e-6 kg*m^2, m = 16.1 g -> I/m = 4.566e-4 m^2
+Disc 8:  I = 8.793e-6 kg*m^2, m = 22.0 g -> I/m = 3.997e-4 m^2
+
+Disc 8 has 19.6% more absolute I but 12.5% worse mass-inertia efficiency. Gap cutouts partially offset the OWD intent. Absolute angular momentum advantage at omega_0=700: L_8 = 8.793e-6*700 = 6.155e-3 kg*m^2/s vs L_12 = 5.145e-3 (+19.6%).
+
+**Burst resistance penalty**
+OWD concentrates angular momentum at large radius. Per burst click, the higher-I assembly transfers proportionally more spin to the opponent. Combined with a low-tooth layer (1 shallow tooth), assembly burst threshold is very low.
+
+**Compatible beys:** Any God Layer System assembly (even-numbered Disc slot).
+
+---
+
+## CASE 1688 — Disc Frame: Flow [Burst God Layer System Frame]
+
+**Part overview**
+Flow is a triangular Disc Frame at 2.4 g. Each of three sides has three sloped blades (nine blades total), intended to provide Upper Force in right-spin and Down Force in left-spin. Official testing confirms negligible effect from the small blades. The triangular rough perimeter provides inferior LAD vs round frames (Cross, Expand, Glaive, Proof) and insufficient mass for Attack contribution.
+
+**Dimensions and mass**
+- Mass: 2.4 g = 0.0024 kg
+- Triangular profile; r_i=14 mm, effective r_o=19 mm (triangular cutouts reduce effective outer radius vs round frames)
+
+**Moment of inertia**
+I_Flow = (1/2)(0.0024)((14e-3)^2 + (19e-3)^2)
+        = (1/2)(0.0024)(1.96e-4 + 3.61e-4)
+        = (1/2)(0.0024)(5.57e-4)
+        = **6.684e-7 kg*m^2**
+
+**Upper Force aerodynamic drag (9 blades)**
+A_blade = 2mm x 2mm = 4e-6 m^2 each; 9 blades -> A_total = 3.6e-5 m^2
+r_mid = 16.5 mm; C_D = 0.6
+
+At omega = 700: v = 700*0.0165 = 11.55 m/s
+  F_drag = (1/2)(1.225)(0.6)(3.6e-5)(133.4) = 1.757e-3 N
+  tau_drag_Flow = 1.757e-3 * 0.0165 = 2.899e-5 N*m
+  omega=420: 1.044e-5; omega=280: 4.638e-6
+
+**LAD comparison**
+Round frames (Expand, Cross): continuous rim -> strong LAD. Flow triangular: ~65% contact arc coverage -> weaker LAD. Precessional orbit less stable at low omega than round-frame assemblies.
+
+**Compatible beys:** Any God Layer System Core Disc with Frame slots.
+
+---
+
+## CASE 1689 — Performance Tip: Flugel [Burst God Layer System]
+
+**Part overview**
+Flugel (5.88 g) features a low-angled cone tip at standard height plus four wings akin to MFB Down Force 145, intended for Upper Force (right-spin) and Down Force (left-spin). Wings are negligibly small and produce no discernible effect. The cone geometry provides low friction, stable Stamina, and floor-scrape resistance.
+
+**Dimensions and mass**
+- Mass: 5.88 g = 0.00588 kg
+- Cone tip: r_contact = 1.5 mm (low-angled cone; wider than sharp tips, narrower than flat)
+- Four wings at r_wing = 7 mm; height: standard (same as Survive)
+
+**Moment of inertia**
+Cone body + stem: m_cone = 4.0 g, r_i=0.5 mm, r_o=6 mm
+  I_cone = (1/2)(0.0040)((0.5e-3)^2 + (6e-3)^2) = (1/2)(0.0040)(2.5e-7 + 3.6e-5) = 7.205e-8 kg*m^2
+
+Four wings: m_wings = 1.88 g, r_i=5 mm, r_o=8 mm
+  I_wings = (1/2)(0.00188)((5e-3)^2 + (8e-3)^2) = (1/2)(0.00188)(2.5e-5 + 6.4e-5) = 8.366e-8 kg*m^2
+
+**I_Flugel = 7.205e-8 + 8.366e-8 = 1.557e-7 kg*m^2**
+
+**Cone tip friction**
+tau_Flugel(N) = 0.35 * N * 1.5e-3 = N * 5.25e-4 N*m per unit N (mu_ABS=0.35, r=1.5 mm)
+
+Comparison:
+  Eternal sharp tip: N * 8.5e-5 N*m -> Flugel is 6.18x more friction per unit N
+  Survive (same cone geometry): tau_Survive ~ tau_Flugel
+
+**Wing aerodynamic contribution**
+A_total = 3.6e-5 m^2; r_wing = 7 mm
+At omega=700: v = 4.9 m/s; tau_wings = 2.225e-6 N*m (< 1.1% of tip friction; negligible)
+
+**Compatible beys:** Any Burst God Layer System assembly.
+
+---
+
+## CASE 1690 — Assembly: Maximum Garuda 8Flow Flugel [Burst God Stamina/Defense]
+
+**Assembly summary**
+| Part | Mass | I (kg*m^2) | I fraction |
+|------|------|-----------|------------|
+| Energy Layer -- Maximum Garuda | 9.8 g | 2.752e-6 | 19.0% |
+| Forge Disc -- 8 | 22.0 g | 8.793e-6 | 60.7% |
+| Disc Frame -- Flow | 2.4 g | 6.684e-7 | 4.6% |
+| Performance Tip -- Flugel | 5.88 g | 1.557e-7 | 1.1% |
+| **Total** | **40.08 g** | **1.237e-5 kg*m^2** | 100% |
+
+Burst God era: omega_0 = 700 rad/s; battle omega = 420 rad/s (60%); wobble onset omega = 280 rad/s (40%).
+
+**m_total = 9.8 + 22.0 + 2.4 + 5.88 = 40.08 g = 0.04008 kg**
+**I_total = 2.752e-6 + 8.793e-6 + 6.684e-7 + 1.557e-7 = 1.237e-5 kg*m^2**
+**L_launch = 1.237e-5 * 700 = 8.659e-3 kg*m^2/s = 8.659 mN*m*s**
+
+**Disc dominance**
+Forge Disc 8 holds 60.7% of I_total -- the largest single fraction of any assembly in this case series. At 22 g with outer protrusions at r=28 mm, it functions as the dominant stamina flywheel. Maximum Garuda (19.0%) is secondary; Flow (4.6%) and Flugel (1.1%) are minor.
+
+**Spin decay analysis**
+
+(A) Flugel cone tip friction (omega-independent):
+  N = 0.04008 * 9.81 = 0.3932 N
+  tau_Flugel = 0.35 * 0.3932 * 1.5e-3 = 2.065e-4 N*m
+  domega/dt_tip = -2.065e-4 / 1.237e-5 = -16.69 rad/s^2
+  t_spinout tip-only = 700 / 16.69 = 41.9 s
+
+(B) Maximum Garuda blade drag (omega^2):
+  tau_MG(omega) = 7.360e-5 * (omega/700)^2
+  omega=700: 7.360e-5; omega=420: 2.650e-5; omega=280: 1.178e-5
+
+(C) Flow blade drag (omega^2):
+  tau_Flow(omega) = 2.899e-5 * (omega/700)^2
+  omega=700: 2.899e-5; omega=420: 1.044e-5; omega=280: 4.638e-6
+
+**Combined torque and deceleration:**
+  omega=700: tau = 2.065e-4 + 7.360e-5 + 2.899e-5 = 3.091e-4 N*m; domega/dt = -24.99 rad/s^2
+  omega=420: tau = 2.065e-4 + 2.650e-5 + 1.044e-5 = 2.434e-4 N*m; domega/dt = -19.68 rad/s^2
+  omega=280: tau = 2.065e-4 + 1.178e-5 + 4.638e-6 = 2.229e-4 N*m; domega/dt = -18.02 rad/s^2
+
+**Time from launch to wobble onset (omega: 700 -> 280):**
+avg domega/dt = (24.99 + 18.02) / 2 = 21.51 rad/s^2
+t_launch_to_wobble = 420 / 21.51 = **19.5 s**
+
+**Battle phase (omega: 420 -> 280):**
+avg domega/dt = (19.68 + 18.02) / 2 = 18.85 rad/s^2
+t_battle = 140 / 18.85 = **7.4 s**
+
+**Flugel friction dominance**
+At omega=700: tip fraction = 2.065e-4 / 3.091e-4 = 66.8%
+At omega=420: tip fraction = 2.065e-4 / 2.434e-4 = 84.8%
+At omega=280: tip fraction = 2.065e-4 / 2.229e-4 = 92.6%
+Flugel tip friction dominates at all spin rates; aerodynamic drag is secondary. Inverse of the Air Knight 12Expand Eternal pattern (CASE 1685) where aero drag dominated.
+
+**Burst resistance vulnerability**
+Disc 8 OWD + 1 shallow tooth on Maximum Garuda = very low burst threshold. Against Attack types, this assembly is highly burst-vulnerable. Practical use limited to Stamina-vs-Stamina matchups.
+
+**Thesis**
+Maximum Garuda 8Flow Flugel is a Burst God System Stamina/Defense assembly where Forge Disc 8 (I=8.793e-6 kg*m^2, 60.7% of I_total) provides a 19.6% angular momentum advantage over Disc 12 at L_launch=8.659 mN*m*s. However, Flugel's ABS cone tip (r=1.5 mm, mu=0.35) is the dominant decay mechanism at 66-93% of total torque regardless of spin rate, limiting theoretical tip-only spinout to 41.9 s. The two aerodynamic gimmicks (MG 5 blades + Flow 9 micro-blades) add up to 33% of torque at launch but shrink to 7.4% near wobble onset, becoming irrelevant as the Flugel tip dominates. The assembly's critical vulnerability is burst resistance: Disc 8 OWD plus Maximum Garuda's 1 shallow tooth produce minimal burst threshold, making the combo highly susceptible to Attack types. Suitable for Stamina-vs-Stamina matchups where burst is not a threat and Disc 8's flywheel mass determines the outcome.
