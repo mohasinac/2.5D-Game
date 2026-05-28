@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1362 cases** across 14 files + 1 master reference.
+Total: **1374 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1387** — All new cases must start here. Update this block before writing any new case.
+> **1399** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -27,7 +27,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1386 | 418 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1398 | 430 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -61,7 +61,11 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1376–1380 | 5 | CS9 Superking/BU supplement: Hyperion 2 chip, Burn Ring (Limit Break), Cho disc, Xceed'+X driver, Hyperion Burn Cho Xceed'+X assembly | CS9 |
 | 1381–1383 | 3 | Fate's Judgement — Judgement Layer Base strong/weak-side rubber-blade burst gamble (Joe Lazure · Judgement Joker 00Turn Trick Zan) | CS13 |
 | 1384–1386 | 3 | Fierce Lady Flash — ED145 free-ring Tai-Chi deflection + Poison Virgo counter-slash (Chao Xin · Virgo/Poison Virgo ED145ES) | CS13 |
-| **1387+** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| 1387–1389 | 3 | Fierce Tiger Blast — Byakko Chrome Wheel claw-concentrated impact + Synchrome mass (Baihu Xiao · Berserker Byakko 125S) | CS13 |
+| 1390–1392 | 3 | Fighting Snake Flash — Aquario F-tip sinusoidal slither attack + sonic wave AR (Mei-Mei · Aquario 105F) | CS13 |
+| 1393–1395 | 3 | Omega Blast — Prime Apocalypse sword-point concentrated impact (Arthur Peregrine · Prime Apocalypse 0Dagger UR’) | CS13 |
+| 1396–1398 | 3 | Final Blast — spring-lock sword two-stage KE release (Arthur Peregrine · Prime Apocalypse 0Dagger UR’) | CS13 |
+| **1399+** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
@@ -1036,13 +1040,13 @@ All former conflicts have been resolved. The notes below document what was fixed
 ---
 
 
-## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1386
+## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1398
 
 > Franchise special moves, gimmick foundations, and derived combos (CS13)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
-| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1386 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1398 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
 
 ---
 
@@ -1151,6 +1155,147 @@ The following part types are **physics-negligible** — they share near-identica
 
 ---
 
+## Naming & Terminology
+
+Part names vary across generations, official TT vs Hasbro releases, and fan communities.
+This section records every confirmed equivalence and clarification found across all case study files.
+
+### Generation-Neutral Part Names
+
+| Preferred term (used in this index) | Also known as | Notes |
+|--------------------------------------|---------------|-------|
+| Weight Disk (WD) | — | Gen 1 Plastics / HMS only. The large flat disc around the BB. |
+| Blade Base (BB) | — | Gen 1 Plastics base unit (houses SG, tip). |
+| Spin Gear (SG) | — | Gen 1 sub-unit inside the BB that holds the shaft and tip. |
+| Attack Ring (AR) | — | Gen 1 top layer. |
+| Core (RC) | Running Core | HMS inner tip unit (equivalent to Gen 1 SG+BB merged). |
+| CWD | Circle Weight Disk | HMS outer ring (replaces WD). |
+| CEW | Changeable End Wheel | Gen 1 Engine Gear tip insert (interchangeable). CEW ≠ CWD. |
+| Metal Wheel / Fusion Wheel | Wheel (MFB shorthand) | MFB (Gen 2) outer metal ring. Both names are official TT. |
+| Clear Wheel / Energy Ring | CW, ER | MFB inner plastic ring. Both names are official TT. |
+| Spin Track / Track | — | MFB height column between the Wheel and the Tip. |
+| Bottom / Performance Tip | Tip, Driver | MFB spinning tip. All three names are in official use. |
+| Chrome Wheel | Synchrome Wheel | Zero-G (Gen 2) outer metal wheel. Designed to be stacked 2× (Synchrome). |
+| Crystal Wheel | Element Wheel | Zero-G (Gen 2) inner plastic wheel. |
+| Layer / Blade | — | Burst (Gen 3) top disc. Early TT = “Layer”; later TT and HW system = “Blade”. |
+| Chip / Core | — | Burst (Gen 3) inner centre piece. “Chip” in GT/DB/BU; “Core” in CZ/SK lines. |
+| Disc | — | Burst (Gen 3) mid ring (HW / DB / BU). Not to be confused with Weight Disk. |
+| Ratchet | — | BX (Gen 4) track piece with burst mechanism teeth. |
+| Bit | Driver | BX (Gen 4) spinning tip. |
+
+### Tip / Bottom Abbreviation Reference
+
+| Abbreviation | Full name | Generation |
+|--------------|-----------|------------|
+| F | Flat | MFB |
+| HF | Hole Flat | MFB |
+| WF | Wide Flat | MFB |
+| MF | Metal Flat | MFB |
+| LF | Left Flat | MFB (L-Drago spin) |
+| RF | Rubber Flat | MFB |
+| SF | Semi Flat | MFB |
+| MFS | Metal Semi Flat | MFB |
+| CS | Coat Sharp | MFB |
+| RS | Rubber Sharp | MFB |
+| RSF | Rubber Semi Flat | MFB |
+| S | Sharp | Gen 1 + MFB |
+| MS | Metal Sharp | MFB |
+| D | Defense | MFB |
+| SD | Semi Defense | MFB |
+| WD | Wide Defense | MFB tip — **NOT** the Gen 1 Weight Disk |
+| EWD | Eternal Wide Defense | MFB |
+| SWD | Sharp Wide Defense | MFB |
+| B | Ball | MFB |
+| WB | Wide Ball | MFB |
+| RB | Rubber Ball | MFB |
+| JB | Jog Ball | MFB |
+| AS | Around Sharp | MFB |
+| ES | Eternal Sharp | MFB — **not** EDS |
+| EDS | Eternal Defense Sharp | MFB / Zero-G — **not** ES |
+| XF | Extreme Flat | MFB 4D |
+| CF | Circle Flat | Zero-G |
+| GCF | Gear Circle Flat | Zero-G |
+| BSF | Blade Semi-Flat | Zero-G |
+| BWD | Big Wide Defense | Zero-G |
+| FD | Final Drive | MFB 4D |
+| MS (tip) | Metal Sharp | HMS (context-dependent) |
+
+### Track / Spin Track Abbreviation Reference
+
+| Abbreviation | Full name | Notes |
+|--------------|-----------|-------|
+| T125 | Track 125 | Standard height; do not confuse with the number 125 (= 125-height track) |
+| WA130 | Wave 130 | Wavy profile |
+| SW145 | Synchrome Weight 145 | Zero-G; weighted |
+| SA165 | Synchrome Absorb 165 | Zero-G |
+| SR200 | Synchrome Rubber 200 | Zero-G |
+| F230 | Free 230 | Zero-G |
+| E230 | Edge 230 | Zero-G |
+| SP230 | Spike 230 | Zero-G |
+| A230 | Attack 230 | Zero-G |
+| GB145 | Gravity Ball 145 | MFB |
+| AD145 | Armor Defense 145 | MFB |
+| UW145 | Underwater 145 | MFB |
+| ED145 | Eternal Defense 145 | MFB |
+| LW105 | Left Wing 105 | MFB (L-Drago) |
+| W145 | Wing 145 | Zero-G |
+| LW160 | Low Wing 160 | Zero-G |
+| TH170 | Triple Height 170 | MFB 4D |
+| C145 | Cross 145 | MFB |
+
+### Hasbro vs Takara Tomy Name Differences
+
+This index uses **Takara Tomy (TT)** names throughout. Hasbro names appear in brackets on bey rows where relevant.
+
+| Takara Tomy name | Hasbro name | System |
+|------------------|-------------|--------|
+| Saramanda | Salamander | Zero-G Chrome Wheel |
+| Orojya | Orochi | Zero-G Chrome Wheel |
+| Begirados | Behemoth | Zero-G Chrome Wheel |
+| Dark Knight | Ronin | Zero-G Crystal Wheel |
+| Shinobi | Ninja | Zero-G Crystal Wheel |
+| Phoenix (Clear Wheel) | Fireblaze | MFB Clear Wheel |
+| Capricorne | Capricorn | MFB (common alternate spelling) |
+| Horuseus | Horuseus / Horusus | MFB (spelling varies) |
+| Heracleo | Herculeo | MFB (common alternate spelling) |
+| Cross Horn (4LS) | — | Gen 1 Wolborg 03 AR — **different** from Neo Cross Horn (V2/G AR of Uriel 2) |
+
+### Common Abbreviations Used in Case Studies
+
+| Abbreviation | Meaning |
+|--------------|---------|
+| OS | Out-Spin |
+| RO | Ring Out |
+| KO | Knock Out |
+| LAD | Life After Death (continued spin after losing contact with stadium floor) |
+| EWD | Eternal Wide Defense (tip) or Engine Weight Disk (Gen 1, rare) — distinguish by context |
+| OWD | Original Wide Defense (older WD designation) |
+| SP | Support Part (Gen 1 optional clip-on part; also: Special / Stamina in Burst context) |
+| EG | Engine Gear (Gen 1 G/GT series motor spring) |
+| MSF | Metal Stone Face (launcher-side piece on some Gen 1 EG beys) |
+| CEW | Changeable End Wheel (Gen 1 EG interchangeable tip) |
+| HWS | Heavy-Weight System (MFB second release wave with heavier metals) |
+| 4D | 4-Drive System (MFB fourth release wave, adds movable parts) |
+| Zero-G | Zero-Gravity System (Gen 2, also Synchrome era) |
+| HMS | Heavy Metal System (Gen 1 final era, magnesium/aluminium bodies) |
+| BO | Burst Out |
+| SGS | Spin Gear System |
+| MGS | Magnacore (Magnet) Gear System |
+| EGS | Engine Gear System |
+| BB | Blade Base (Gen 1) |
+| RC | Running Core (HMS) |
+| FC | Free Core (HMS variant) |
+| CW | Clear Wheel / Chrome Wheel (context-dependent) |
+| TT | Takara Tomy |
+| DB | Dynamite Battle (Burst sub-system) |
+| BU | Burst Ultimate (Burst sub-system) |
+| SK | Superking (Burst sub-system) |
+| CZ | Cho-Z (Burst sub-system) |
+| GT | God/Turbo (Burst sub-system) |
+| BX | Beyblade X (Gen 4) |
+| UX | Beyblade UX (Gen 4 variant) |
+
+---
 ## Quick Search by Beyblade Name — Stock Combos
 
 > Case numbers in parentheses where that part is covered. **[M]** = part not yet analysed in any case study.
@@ -1203,12 +1348,12 @@ The following part types are **physics-negligible** — they share near-identica
 | Bound Attacker | Bound Attack Ring [M] | Balance [M] | Flat Base [M] |
 | Bound Defenser | Bound Defense Ring [M] | Heavy [M] | Sharp Base [M] |
 | Roller Attacker | Roller Attack Ring [M] | Balance [M] | Flat Base [M] |
-| Roller Defenser | Roller Defense Ring [M] | Heavy [M] | Semi-Flat Base [M] |
+| Roller Defenser | Roller Defense Ring (177) | Heavy [M] | Semi-Flat Base [M] |
 | Dranzer Auto Change Balancer | Wing Cutter [M] | Balance [M] | Auto Change Base (194) |
 | Wing Attacker | Wing Attack Ring (261) | Balance [M] | Semi-Flat Base [M] |
 | Wing Defenser | Wing Defense Ring [M] | Heavy [M] | Semi-Flat Base [M] |
 | Draciel Metal Ball Defenser | Max Shield (269) | Heavy (256) | Metal Ball Base (272) |
-| Sparkling Attacker | Spark Attack Ring [M] | Heavy [M] | Flat Base [M] |
+| Sparkling Attacker | Spark Attack Ring (182) | Heavy [M] | Flat Base [M] |
 | Jumping Base (set) | Tiger Defenser (102) | Eight Wide (104) | Jumping Base (99) |
 
 ### Gen 1 — Plastics: Spin Gear System (A–F Series)
@@ -1219,15 +1364,15 @@ The following part types are **physics-negligible** — they share near-identica
 | Driger S (Slash) | Tiger Defenser (102) | Eight Heavy [M] | Right SG (111b) | Metal Change Base (101) |
 | Death Driger | Star Shape [M] | Eight Balance (121a) | Right SG (111b) | SG Sharp Base (111c) |
 | Knight Dranzer | Knight Claws Ring (268) | Eight Balance (121a) | Right SG (111b) | SG Semi-Flat Base (109a) |
-| Metal Draciel | Turtle Survivor [M] | Eight Heavy [M] | Right SG (111b) | Metal Sting Base [M] |
+| Metal Draciel | Turtle Survivor (1281) | Eight Heavy (255) | Right SG (111b) | Metal Sting Base (1282) |
 | Kids Dragoon | Upper Dragoon (174) | Eight Wide (104) | Right SG (111b) | SG Flat Base (117) |
 | Kids Draciel | Smash Turtle (173) | Eight Heavy [M] | Right SG (111b) | SG Sharp Base (111c) |
-| Dranzer S (Spiral) | Double Wing [M] | Eight Balance (121a) | Right SG Free Shaft [M] | Spiral Change Base [M] |
+| Dranzer S (Spiral) | Double Wing (243) | Eight Balance (121a) | Right SG Free Shaft [M] | Spiral Change Base (242) |
 | Galeon | War Lion (112c) | Eight Heavy [M] | Right SG (111b) | SG Semi-Flat Base (109a) |
 | Galzzly | War Bear (244) | Eight Wide (104) | Right SG (111b) | SG Flat Base (117) |
 | Galman | War Monkey (245) | Eight Heavy [M] | Right SG (111b) | SG Sharp Base (111c) |
 | Galux | War Lynx (273) [UNRELEASED] | Eight Wide (104) | Metal Ball Base 4LS (272) |
-| Wolborg | Reverse Wolf (166) | Eight Balance (121a) | Right SG Bearing [M] | SG Bearing Base [M] |
+| Wolborg | Reverse Wolf (166) | Eight Balance (121a) | Right SG Bearing [M] | SG Bearing Base (249) |
 | Seaborg | Whale Attacker (246) | Eight Wide (104) | Right SG (111b) | Defense Grip Base (113a) |
 | Draciel S (Shield) | Cross Spike (247) | Eight Balance (121a) | Right SG (111b) | SG Metal Ball Base (248) |
 | Trygle | Triple Wing (111a) | Eight Wide (104) | Right SG Spring (112a) | Jumping Base Trygle (110a) |
@@ -1237,12 +1382,12 @@ The following part types are **physics-negligible** — they share near-identica
 | Dranzer F (Flame) | Flame Wing (115b) | Eight Heavy [M] | Right SG TC (116b) | Flame Change Base (117b) |
 | Griffolyon | Cross Griffon (127) | Eight Balance (121a) | — | Griffolyon Base (136) |
 | Master Dragoon | Upper Dragoon (174) | Eight Heavy [M] | Right SG (111b) | SG Flat Base (117) |
-| Master Dranzer | Turtle Survivor [M] | Eight Balance (121a) | Right SG (111b) | Metal Sting Base [M] |
+| Master Dranzer | Turtle Survivor (1281) | Eight Balance (121a) | Right SG (111b) | Metal Sting Base (1282) |
 | Master Draciel | Smash Turtle (173) | Eight Wide (104) | Right SG (111b) | SG Sharp Base (111c) |
 | Salamalyon | Fire Cracker (184) | Eight Wide (104) | — | Salamalyon Base [M] |
-| Draciel F (Fortress) | Eight Spike [M] | Eight Balance (121a) | Right SG Grease Ball [M] | Fortress Base [M] |
+| Draciel F (Fortress) | Eight Spike (252) | Eight Balance (121a) | Right SG Grease Ball [M] | Fortress Base [M] |
 | Wyborg | Double Snake (120a) | Eight Balance (121a) | Right SG AC (122a) | SG Auto Change Base (119a) |
-| Master Driger | Knight Claws Ring [M] | Eight Wide (104) | Right SG (111b) | SG Semi-Flat Base (109a) |
+| Master Driger | Knight Claws Ring (268) | Eight Wide (104) | Right SG (111b) | SG Semi-Flat Base (109a) |
 | Wolborg 2 | Upper Wolf (123a) | Eight Balance (121a) | Right SG Bearing v2 [M] | Defense Grip Base 2 [M] |
 | Seaborg 2 | Whale Crusher (116) | Eight Wide (104) | Right SG (111b) | SG Flat Base (117) |
 | Gaia Dragoon | Great Dragon (259) | Heavy Attack (257) | Right SG G Ball (274) | G Special Base (276) |
@@ -1253,23 +1398,23 @@ The following part types are **physics-negligible** — they share near-identica
 | Beyblade | AR | WD | SG | BB |
 |----------|----|----|-----|-----|
 | Dragoon V (Victory) | Eight Attacker (130) | Ten Wide (154) | Neo Left SG MW (107b) | Magne Flat Base (131) |
-| Metal Dranzer | Scissor Attacker [M] | Ten Balance (144) | Neo Right SG South (121) | SG Flat Base (117) |
+| Metal Dranzer | Scissor Attacker [M] | Ten Balance (144) | Neo Right SG South (916) | SG Flat Base (117) |
 | Flash Leopard | Panther Claw (266) | Ten Heavy (114a) | Neo Right SG MW/North (107b/120) | SG Semi-Flat Base (109a) |
-| Driger V (Vulcan) | Sonic Tiger (134) | Ten Balance (144) | Neo Right SG South (121) | SG Metal Flat Base (135) |
+| Driger V (Vulcan) | Sonic Tiger (134) | Ten Balance (144) | Neo Right SG South (916) | SG Metal Flat Base (135) |
 | Flash Leopard 2 | Panther Head (119) | Ten Heavy (114a) | Neo Right SG North (120) | SG Metal Sharp Base (118) |
-| Dranzer V (Volcano) | Cross Attacker [M] | Ten Balance (144) | Neo Right SG South [M] | Volcano Change Base (125) |
+| Dranzer V (Volcano) | Cross Attacker (250) | Ten Balance (144) | Neo Right SG South (916) | Volcano Change Base (125) |
 | Cyber Dragoon | Cybernetic Dragon (137) | Ten Wide (154) | Right SG MG Spring (210) | Jumping Base 2 (113c) |
-| Draciel V (Viper) | Ten Spike [M] | Ten Balance (144) | Neo Right SG North (120) | Viper Metal Ball Base [M] |
-| Wolborg 03 (Uriel) | Cross Horn [M] | Revolver Attack (162) | Neo Right SG South (121) | SG Grip Base (133) |
+| Draciel V (Viper) | Ten Spike (251) | Ten Balance (144) | Neo Right SG North (120) | Viper Metal Ball Base (258) |
+| Wolborg 03 (Uriel) | Cross Horn [M] | Revolver Attack (162) | Neo Right SG South (916) | SG Grip Base (133) |
 | Gabriel | Twin Horn (178) | Revolver Attack (162) | Neo Right SG MW (107b) | SG Wing Base (110b) |
-| Guardian Driger | Great Tiger [M] | Eight Heavy [M] | Neo Right SG South (121) | SG Flat Base (117) |
+| Guardian Driger | Great Tiger [M] | Eight Heavy [M] | Neo Right SG South (916) | SG Flat Base (117) |
 | Spike Lizard | Lizard Blocker (176) | Ten Heavy (114a) | Neo Right SG North (120) | SG Roller Base (175) |
 | Crab Diver | Scissors Arm (280) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
 | Vanishing Moot [ANIME] | Vanishing Moot AR (282) | ??? [ANIME] | Magnacore (standard) | ??? [ANIME] |
 | Orca Diver | Delta Wave (279) | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
 | Manta Diver | Square Edge (116a) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
 | Killer Eagle | Penta Wing (172) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
-| Death Gargoyle | Genocide Circle [M] | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
+| Death Gargoyle | Genocide Circle (263) | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
 | Rushing Boar | Hammer Tusk (264) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
 | Galeon 2 | Howling Leo [M] | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
 | Trygle 2 | Triple Beak (165) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
@@ -1290,7 +1435,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Dragoon V2 | Spike Dragon (138) | Magne WD (139) | Neo Left SG [M] | Reverse Attack (140) | Customize Grip Base (141) |
 | Driger V2 | Upper Claw (143) | Ten Balance (144) | Neo Right SG MW (107b) | Upper Attack (145) | Customize Metal Change Base (146) |
 | Voltaic Ape | Mountain Hammer (148) | Magne WD (139) | Neo Right SG North (120) | Defense Ring (149) | Customize Metal Sharp Base (147) |
-| Gaia Dragoon V | Dragon Breaker (123–124) | Ten Wide (154) | Neo Right SG South (121) | — | SG Metal Flat Base GDV (122) |
+| Gaia Dragoon V | Dragon Breaker (123–124) | Ten Wide (154) | Neo Right SG South (916) | — | SG Metal Flat Base GDV (122) |
 | Dranzer V2 | Cross Dranzer (151) | Ten Balance (144) | Neo Right SG MW (107b) | Cross Survivor (152) | Customize Clutch Change (150) |
 | Burning Kerberous | Triple Attacker (153) | Ten Wide (154) | Neo Right SG DB (155–156) | Cross Attack (157) | Customize Bearing Base (158) |
 | Draciel V2 | Strike Turtle (159) | Ten Heavy (114a) | Neo Right SG North (120) | Fin Tector (179) | Switch Metal Ball Base (180) |
@@ -1316,7 +1461,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Draciel G (Gravity) | Shield Hammer (205) | Ten Wide (154) | Right EG Metal Ball (206) | Final Clutch Base Draciel G (211) |
 | Gaia Dragoon G (Great) | Dragon Saucer (212–213) | Ten Heavy (114a) | Right EG Metal Flat (215) | Final Clutch Base GDG (216) |
 | Flame Pegasus | Wing Upper (217) | N/A | Gyro EG (218) | Engine Stopper Base (219) · CEW: Metal Sharp (220) |
-| Desert Sphinxer | Ark Pyramid [M] | Ten Wide (154) | Right EG Mystery Cutter (197) | Final Clutch Base Desert Sphinxer [M] |
+| Desert Sphinxer | Ark Pyramid (1285) | Ten Wide (154) | Right EG Mystery Cutter (197) | Final Clutch Base Desert Sphinxer (1287) |
 
 ### Gen 1 — Plastics: GT Series (Engine Gear Turbo)
 
@@ -1347,7 +1492,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Advance Guardian | Advance Defenser (48) | Circle Heavy (82) | Grip Sharp Core [M] | — |
 | Advance Striker | Advance Attacker [M] | Circle Heavy (82) | Metal Flat Core [M] | — |
 | Advance Eterner | Advance Survivor [M] | Circle Wide (79) | Metal Sharp Core [M] | — |
-| Phantom Fox MS | Upper Fox (89) | CWD Circle Attacker [M] | Bunshin Core (49) | — |
+| Phantom Fox MS | Upper Fox (89) | CWD Circle Attacker (49) | Bunshin Core (49) | — |
 | Slash Riger MS | Slash Upper (88) | CWD Free Crusher [M] | Free Wing Core [M] | — |
 | Dark Leopard MS | Smash Leopard (90) | CWD Needle Attacker (91) | Tornado Change Core (93) | — |
 | Magical Ape MS | Metal Ape [M] | Circle Heavy (82) | Flat Core [M] | — |
@@ -1395,26 +1540,26 @@ The following part types are **physics-negligible** — they share near-identica
 | Mad Cancer CH120FS | Cancer [M] | Mad (Light) [M] | CH120 [M] | Flat Sharp (353f) |
 | Flame Sagittario C145S | Sagittario | Flame (264) | C145 (35) | Sharp (335) |
 | Wind Aquario 100HF/S | Aquario | Wind (Light) [M] | 100 (286) | Hole Flat (68) / Sharp (335) |
-| Dark Bull H145SD | Bull | Dark [M] | H145 (57) | Semi Defense (331) |
+| Dark Bull H145SD | Bull | Dark (353e) | H145 (57) | Semi Defense (331) |
 | Lightning L Drago 100HF | L Drago (30–31) | Lightning (263/308) | 100 (286) | Hole Flat (68) |
 | Clay Aries ED145B | Aries | Clay (Light) [M] | ED145 (353b) | Ball (325) |
 | Earth Aquila 145WD | Aquila (282) | Earth (266/283) | 145 (280) | Wide Defense (332) |
-| Flame Libra T125ES | Libra | Flame (264/289) | T125 [M] | Eternal Sharp (337) |
+| Flame Libra T125ES | Libra | Flame (264/289) | T125 (1316) | Eternal Sharp (337) |
 | Storm Capricorne M145Q | Capricorne | Storm (261) | M145 (298) | Quake (299) |
 | Rock Orso D125B | Orso [M] | Rock (262) | D125 (59) | Ball (325) |
 | Counter Leone D125B | Leone (274) | Counter [M] | D125 (59) | Ball (325) |
-| Dark Cancer CH120SF | Cancer [M] | Dark [M] | CH120 [M] | Semi Flat [M] |
+| Dark Cancer CH120SF | Cancer [M] | Dark (353e) | CH120 [M] | Semi Flat [M] |
 | Killer Gemios DF145FS | Gemios [M] | Killer [M] | DF145 (254) | Flat Sharp (353f) |
-| Thermal Pisces T125ES | Pisces | Thermal [M] | T125 [M] | Eternal Sharp (337) |
+| Thermal Pisces T125ES | Pisces | Thermal [M] | T125 (1316) | Eternal Sharp (337) |
 | Cyber Pegasis 100HF | Pegasis | Cyber [M] | 100 (286) | Hole Flat (68) |
-| Burn Phoenix 135MS | Phoenix [M] | Burn (265) | 135 [M] | Metal Sharp (338) |
+| Burn Phoenix 135MS | Phoenix [M] | Burn (265) | 135 (759) | Metal Sharp (338) |
 | Earth Virgo GB145BS | Virgo | Earth (266/283) | GB145 (58) | Ball Sharp (336) |
-| Rock Escolpio T125JB | Escolpio | Rock (262) | T125 [M] | Jog Ball (326a) |
+| Rock Escolpio T125JB | Escolpio | Rock (262) | T125 (1316) | Jog Ball (326a) |
 | Poison Serpent SW145SD | Serpent (353i) | Poison (353h) | SW145 (255) | Semi Defense (331) |
 | Galaxy Pegasis W105R²F | Pegasis II (290) | Galaxy (291) | W105 (37/292) | R²F (38/293) |
 | Ray Unicorno D125CS | Unicorno [M] | Ray [M] | D125 (59) | Coat Sharp (60/353) |
 | Thermal Lacerta WA130HF | Lacerta [M] | Thermal [M] | WA130 (69) | Hole Flat (68) |
-| Mercury Anubius 85XF | Anubis [M] | Mercury [M] | 85 (249) | Extreme Flat (341) |
+| Mercury Anubius 85XF | Anubis [M] | Mercury (1041) | 85 (249) | Extreme Flat (341) |
 | Infinity Libra GB145S | Libra | Infinity [M] | GB145 (58) | Sharp (335) |
 | Rock Giraffe R145WB | Giraffe [M] | Rock (262) | R145 (26) | Wide Ball (326) |
 | Gravity Perseus AD145WD | Perseus [M] | Gravity (24–25) | AD145 (253) | Wide Defense (332) |
@@ -1445,7 +1590,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Fang Leone 130W²D | Leone II [M] | Fang (44) | 130 [M] | Wave Wide Defense (65) |
 | Beat Lynx TH170WD | Lynx [M] | Beat [M] | TH170 (23) | Wide Defense (332) |
 | L Drago Destroy F:S | — | L Drago Destroy (39/347) | — | Final Survive (348) |
-| Scythe Kronos T125EDS | Kronos [M] | Scythe [M] | T125 [M] | EDS [M] |
+| Scythe Kronos T125EDS | Kronos [M] | Scythe [M] | T125 (1316) | EDS (1317) |
 | VariAres D:D | — | VariAres (276) | — | Delta Drive (277) |
 | Jade Jupiter S130RB | Jupiter [M] | Jade (19/29) | S130 (352) | Rubber Ball (328) |
 | Forbidden Eonis 130D / ED145FB | Eonis (353d) | Forbidden (353a) | 130 [M] / ED145 (353b) | Defense (330) / Flat Ball (353c) |
@@ -1459,7 +1604,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Wing Pegasis 90WF | Pegasis III [M] | Wing [M] | 90 [M] | Wide Flat (340) |
 | Diablo Nemesis X:D | Nemesis (275) | Diablo (17/346) | — | X Drive (345) |
 | Fusion Hades AD145SWD | Hades [M] | Fusion (21/304) | AD145 (253) | Sharp Wide Defense (22/333) |
-| Bakushin/Hell Beelzeb T125XF / 125XF | Beelzeb [M] | Bakushin/Hell [M] | T125/125 [M] | Extreme Flat (341) |
+| Bakushin/Hell Beelzeb T125XF / 125XF | Beelzeb [M] | Bakushin/Hell [M] | T125 (1316)/125 [M] | Extreme Flat (341) |
 | Kreis Cygnus 145WD | Cygnus [M] | Kreis (16) | 145 (280) | Wide Defense (332) |
 | Omega Dragonis 85XF | Dragonis [M] | Omega [M] | 85 (249) | Extreme Flat (341) |
 | Flash Sagittario 230WD | Sagittario II [M] | Flash (61/309) | 230 (62) | Wide Defense (332) |
@@ -1471,24 +1616,24 @@ The following part types are **physics-negligible** — they share near-identica
 
 | Beyblade | Chrome Wheel(s) | Crystal Wheel | Track | Bottom |
 |----------|----------------|---------------|-------|--------|
-| Samurai Ifraid W145CF | Ifraid [M] | Samurai [M] | W145 [M] | Circle Flat [M] |
-| Shinobi Saramanda SW145SD | Saramanda [M] | Shinobi [M] | SW145 (255) | Semi-Defense (331) |
-| Pirates Orojya 145D | Orojya [M] | Pirates [M] | 145 (280) | Defense (330) |
-| Thief Phoenic E230GCF | Phoenic (310) | Thief [M] | E230 (257) | Gear Circle Flat [M] |
+| Samurai Ifraid W145CF | Ifraid (1062) | Samurai (1048) | W145 (1072) | Circle Flat (1078) |
+| Shinobi Saramanda SW145SD | Saramanda (1065) | Shinobi (1049) | SW145 (255) | Semi-Defense (331) |
+| Pirates Orojya 145D | Orojya (1066) | Pirates (1047) | 145 (280) | Defense (330) |
+| Thief Phoenic E230GCF | Phoenic (310) | Thief (1050) | E230 (257) | Gear Circle Flat (1081) |
 | Guardian Revizer 160SB | Revizer (319) | Guardian (320) | 160 [M] | Sharp Ball (329) |
-| Archer Gryph C145S | Gryph [M] | Archer [M] | C145 (35) | Sharp (335) |
-| Pirates Killerken A230JSB | Killerken (321) | Pirates [M] | A230 (322) | Jog Sharp Ball [M] |
-| Dark Knight Dragooon LW160BSF | Dragooon (316) | Dark Knight [M] | LW160 [M] | Blade Semi-Flat [M] |
-| Archer Gargole SA165WSF | Gargole (311) | Archer [M] | SA165 (312) | Wide Semi-Flat (334) |
-| Bandid Goreim DF145BS | Goreim [M] | Bandid [M] | DF145 (254) | Ball Sharp (336) |
-| Berserker Begirados SR200BWD | Begirados [M] | Berserker [M] | SR200 (314) | Big Wide Defense [M] |
-| Bandid Genbull F230TB | Genbull (313) | Bandid [M] | F230 (259) | Twin Ball (260) |
-| Gryph Girago WA130HF | Girago [M] + Gryph [M] | — | WA130 (69) | Hole Flat (68) |
-| Saramanda Balro DF145SWD | Balro [M] + Saramanda [M] | — | DF145 (254) | Sharp Wide Defense (333) |
-| Killerken Balro A230WB | Balro [M] + Killerken (321) | — | A230 (322) | Wide Ball (326) |
-| Orojya Wyvang 145EDS | Wyvang (324) + Orojya [M] | — | 145 (280) | EDS [M] |
-| Samurai Pegasis W105R²F | Pegasis (323) | Samurai [M] | W105 (292) | R²F (293) |
-| Gladiator Bahamdia SP230GF | Bahamdia (317) | Gladiator [M] | SP230 (258) | Giga Flat (318) |
+| Archer Gryph C145S | Gryph [M] | Archer (1042) | C145 (35) | Sharp (335) |
+| Pirates Killerken A230JSB | Killerken (321) | Pirates (1047) | A230 (322) | Jog Sharp Ball [M] |
+| Dark Knight Dragooon LW160BSF | Dragooon (316) | Dark Knight (1045) | LW160 (1073) | Blade Semi-Flat (1079) |
+| Archer Gargole SA165WSF | Gargole (311) | Archer (1042) | SA165 (312) | Wide Semi-Flat (334) |
+| Bandid Goreim DF145BS | Goreim (1064) | Bandid (1043) | DF145 (254) | Ball Sharp (336) |
+| Berserker Begirados SR200BWD | Begirados (1063) | Berserker (1044) | SR200 (314) | Big Wide Defense (1080) |
+| Bandid Genbull F230TB | Genbull (313) | Bandid (1043) | F230 (259) | Twin Ball (260) |
+| Gryph Girago WA130HF | Girago (1067) + Gryph [M] | — | WA130 (69) | Hole Flat (68) |
+| Saramanda Balro DF145SWD | Balro (1068) + Saramanda (1065) | — | DF145 (254) | Sharp Wide Defense (333) |
+| Killerken Balro A230WB | Balro (1068) + Killerken (321) | — | A230 (322) | Wide Ball (326) |
+| Orojya Wyvang 145EDS | Wyvang (324) + Orojya (1066) | — | 145 (280) | EDS (1317) |
+| Samurai Pegasis W105R²F | Pegasis (323) | Samurai (1048) | W105 (292) | R²F (293) |
+| Gladiator Bahamdia SP230GF | Bahamdia (317) | Gladiator (1046) | SP230 (258) | Giga Flat (318) |
 
 ---
 
@@ -1497,52 +1642,37 @@ The following part types are **physics-negligible** — they share near-identica
 Parts appearing in stock combos above that have **no case study coverage** ([M]). Grouped by type.
 
 **Attack Rings (Gen 1 Plastics):**
-Cross Dragon · Try Cutter · Wing Cross · Down Force Ring · Upper Force Ring · Scissor Cutter · Bound Attack Ring · Bound Defense Ring · Roller Attack Ring · Roller Defense Ring · Wing Cutter · Wing Attack Ring · Wing Defense Ring · Max Shield · Spark Attack Ring · Turtle Survivor · Metal Sting Base (BB) · Star Shape · Knight Claws Ring · Double Wing · Whale Attacker · Cross Spike · Cross Fang · Eight Spike · Scissor Attacker · Cross Attacker · Panther Claw · Ten Spike · Cross Horn · Great Tiger · Howling Leo · Jungle Shock · Dark Wing
+Try Cutter · Wing Cross · Down Force Ring · Upper Force Ring · Scissor Cutter · Bound Defense Ring · Roller Attack Ring · Wing Cutter · Wing Defense Ring · Star Shape · Scissor Attacker · Cross Horn · Great Tiger · Howling Leo
 
 **Weight Disks (Gen 1):**
-Heavy (4LS) · Balance (4LS) · Eight Heavy · Heavy Attack
+Wide Attack (V-series)
 
 **Blade Bases (Gen 1):**
-Flat Base (4LS) · Sharp Base (4LS) · Semi-Flat Base (4LS) · Bearing Base (4LS) · Metal Ball Base (4LS) · Spiral Change Base · SG Bearing Base · SG Metal Ball Base · Salamalyon Base · Fortress Base · Defense Grip Base 2 · G Special Base · Viper Metal Ball Base · Customize Sharp Base · SG Grip Change Base · First Clutch Base (Dragoon G) · Final Clutch Base (Desert Sphinxer)
+Sharp Base (4LS) · Semi-Flat Base (4LS) · Bearing Base (4LS) · Salamalyon Base · Fortress Base · Defense Grip Base 2 · Customize Sharp Base · SG Grip Change Base · First Clutch Base (Dragoon G)
 
 **Spin Gears:**
-Right SG (Free Shaft Version) · Right SG (Bearing Version) · Right SG (Bearing Version 2) · Right SG (Grease Ball Version) · Right SG (G Ball Version) · Neo Left SG (Normal Version) · Neo Right SG (Dranzer V South Magnecore Version)
+Right SG (Free Shaft Version) · Right SG (Bearing Version) · Right SG (Bearing Version 2) · Right SG (Grease Ball Version) · Neo Left SG (Normal Version)
 
 **Support Parts:**
 Over Attack
 
 **HMS:**
-Metal Saucer AR · Metal Upper AR · Metal Shield AR · Spiral Upper AR · Ultimate Attacker AR · Spark Dragon AR · Metal Ball Attacker AR · DJ Spiker AR · Advance Attacker AR · Advance Survivor AR · Metal Ape AR · Upper Dragon AR · Smash Phoenix AR · Knight Crusher AR · Jiraiya Blade AR · Devil Crusher AR · God Smasher AR · CWD Free Survivor · CWD Defense Ring · CWD Free Saucer · CWD Circle Attacker · CWD Free Crusher · CWD Wing Attacker · CWD Free Cross · CWD Devil Saucer · CWD God Ring · Semi-Flat Core RC · Manual Change Core RC · Metal Change Core RC · Metal Weight Flat Core RC · Metal Ball Core RC · Metal Sharp Core RC · Grip Sharp Core RC · Metal Flat Core RC · Metal Weight Grip Core RC · Free Shaft Core RC · Free Wing Core RC · Bunshin Core RC · Bearing Core 2 RC · Shooter Change Core α/γ RC · Flat Core RC · Aero Ring SP
+Metal Shield AR · Ultimate Attacker AR · Metal Ball Attacker AR · DJ Spiker AR · Advance Attacker AR · Advance Survivor AR · CWD Free Crusher · Metal Ball Core RC · Grip Sharp Core RC · Metal Flat Core RC · Free Wing Core RC · Aero Ring SP
 
 **MFB Metal Wheels:**
-Bull · Wolf · Aries · Quetzalcoatl · Aquario · Escolpio · Gemios · Capricorne · Dark · Mad (Light) · Wind (Light) · Clay (Light) · Counter · Killer · Thermal · Cyber · Poison · Ray · Mercury · Infinity · Bakushin · Sol · Tornado · Nightmare · Screw · Omega · Wing · Beat · Forbidden · Divine
+Bull · Wolf · Aries · Quetzalcoatl · Aquario · Escolpio · Gemios · Capricorne · Mad (Light) · Wind (Light) · Clay (Light) · Counter · Killer · Thermal · Cyber · Ray · Infinity · Bakushin · Sol · Tornado · Nightmare · Screw · Omega · Wing · Beat · Divine
 
 **MFB Clear Wheels:**
-Cancer · Orso · Serpent · Unicorno · Lacerta · Anubis · Giraffe · Perseus · Susanow · Blaze · Horuseus · Gill · Heracleo · Byxis · Chimera · Rex · Beafowl · Phoenix · Beelzeb · Eonis · Crown · Lyra · Hades · Cygnus · Dragonis
+Cancer · Orso · Unicorno · Lacerta · Anubis · Giraffe · Perseus · Susanow · Blaze · Horuseus · Gill · Heracleo · Byxis · Chimera · Rex · Beafowl · Phoenix · Beelzeb · Crown · Lyra · Hades · Cygnus · Dragonis
 
 **MFB Tracks:**
-125 · 90 · T125 · CH120 · ED145 · 130 · 135 · V145 · TH170 · 160 · W145 · LW160
+125 · 90 · CH120 · 130 · V145 · 160
 
 **MFB Bottoms:**
-Semi Flat (MFS) · Flat Sharp · Jog Ball · Left Flat · Flat Ball · Around Sharp · Eternal Defense Sharp · Circle Flat · Gear Circle Flat · Jog Sharp Ball · Blade Semi-Flat · Big Wide Defense
+Semi Flat (MFS) · Left Flat · Around Sharp · Jog Sharp Ball
 
-**Zero-G Chrome Wheels:**
-Ifraid · Saramanda · Orojya · Gryph · Goreim · Begirados · Girago · Balro
-
-**Zero-G Crystal Wheels:**
-Samurai · Shinobi · Pirates · Thief · Archer · Dark Knight · Bandid · Berserker · Gladiator
+**Zero-G Chrome Wheels (= Synchrome Wheels):**
+Gryph
 
 **4D Clear Wheels:**
 Pegasis III · Leone II · Lynx · Kronos · Jupiter · Uranus · Sagittario II · Quetzalcoatl (4D)
-
-**Ark Pyramid AR (Desert Sphinxer):**
-Listed in part list but no dedicated case study.
-
-
-
-
-
-
-
-
-

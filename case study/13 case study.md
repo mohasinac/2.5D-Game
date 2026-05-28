@@ -24490,4 +24490,543 @@ function ladysFeintCombo(
 // ladysFeintCombo(false) => {spin: -5, dmg:1.12x, lock:20ms, deflect:0.15, cost:25}
 ```
 
-*Cases continue from Case 1387 as further franchise moves are provided.*
+---
+
+## Case 1387 -- [GIMMICK]: Fierce Tiger Blast -- Byakko Chrome Wheel Claw-Concentrated Impact (Baihu Xiao . Berserker Byakko 125S)
+
+**Part:** Byakko Chrome Wheel (claw-shaped peripheral protrusions) + S Performance Tip
+**Assembly:** Berserker Byakko 125S -- Berserker Chrome Wheel (bottom) . Byakko Chrome Wheel (top) . 125 track . S tip  [Zero-G Synchrome configuration]
+**Gen / System:** Beyblade Zero-G (MFB era continuation) | Zero-G Synchrome System
+**Tags:** chrome-wheel, claw-smash, concentrated-impact, synchrome, sharp-pivot, zero-g
+
+**Mechanism**
+
+The Byakko Chrome Wheel carries four tiger-claw protrusions at r_claw ~21 mm [M], each with a curved leading edge (attack type: smash + upper). Zero-G Chrome Wheels use a zinc alloy at higher density than standard MFB metal wheels, concentrating rotational kinetic energy at the peripheral claw tips.
+
+**Chrome Wheel mass distribution:**
+```
+Berserker Chrome Wheel: m1 ~18.0 g [M],  r_inner = 14 mm,  r_outer = 20 mm
+Byakko Chrome Wheel:    m2 ~19.0 g [M],  r_inner = 16 mm,  r_outer = 21 mm  (claw tips)
+125 track:              ~5.0 g [M],  r = 8 mm
+S tip:                  ~3.8 g [M],  r = 1 mm
+Total assembly:         ~45.8 g [M]
+
+I_total = sum of (m/2)(r_i^2 + r_o^2) terms:
+  Berserker CW: (0.018/2)(0.014^2 + 0.020^2) = 5.36 x 10^-6 kg m^2
+  Byakko CW:    (0.019/2)(0.016^2 + 0.021^2) = 6.62 x 10^-6 kg m^2
+  track + tip:  ~0.42 x 10^-6 kg m^2  [M]
+I_total ~2.24 x 10^-5 kg m^2  [M]
+```
+
+**Claw contact pressure at operating spin:**
+```
+At omega = 550 rad/s [M]:
+v_claw = omega x r_claw = 550 x 0.021 = 11.55 m/s [M]
+KE = (1/2) x I_total x omega^2 = (1/2) x 2.24e-5 x 302500 = 3.39 J [M]
+
+Contact force during claw impact (t_contact ~5 ms [M]):
+  F = 2 x KE / (v_claw x t) = 2 x 3.39 / (11.55 x 0.005) = 117 N [M]
+
+Claw tip contact area: A_claw ~4 mm^2 [M]  (curved claw leading edge, small footprint)
+Contact pressure: P = F / A_claw = 117 / (4 x 10^-6) ~29 MPa [M]
+  Polycarbonate yield stress ~60 MPa [M] -- physical claw impact reaches ~48% of yield [M]
+  With BeySpirit x5 force amplification: ~145 MPa >> yield --> stadium fracture [M]
+    (explains Beystadium breaking into 3 pieces in Episode 20)
+```
+
+**S tip pivot mechanics:**
+```
+S tip r_tip ~1.0 mm [M],  mu_S ~0.06 [M]
+dw/dt = -(0.06 x 0.001 x 9.81 x 0.046) / (2.24e-5) ~-1.21 rad/s^2 [M]
+S tip provides near-zero spin decay -- the bey remains stationary on sharp point while
+accumulating BeySpirit charge, delivering all stored KE in the single directed claw strike.
+Unlike RF/WB tips that trade stamina for movement, S tip conserves ALL spin for the attack moment.
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Berserker Chrome Wheel | 18.0 g | 14–20 mm |
+| Byakko Chrome Wheel | 19.0 g | 16–21 mm (claw tips) |
+| 125 track | 5.0 g | 8 mm |
+| S tip | 3.8 g | 1 mm |
+| **Total** | **~45.8 g** | **21 mm** |
+| I_total | -- | ~2.24 x 10^-5 kg m^2 |
+
+---
+
+## Case 1388 -- [SPECIAL]: Fierce Tiger Blast (Baihu Xiao . Berserker Byakko 125S)
+
+**Special Move:** Fierce Tiger Blast
+**User:** Baihu Xiao
+**Series:** Beyblade: Zero-G
+**Compatible beys:** Any bey whose primary attack layer has peripheral claw- or blade-shaped protrusions at r >= 18 mm [M] with a contact area per protrusion <= 8 mm^2 [M] (concentrated-impact geometry); and a sharp or semi-sharp tip (S, DS, or equivalent r_tip <= 2 mm [M]) that provides a stable pivot for directed charge; distributed-blade ARs (large contact patches > 20 mm^2 [M]) spread the force and cannot achieve claw-level contact pressure; broad rubber tips (RF, WB) waste spin in translation and cannot hold the accumulate-and-release posture.
+
+**Mechanic**
+
+Baihu channels BeySpirit through Byakko, summoning the White Tiger spirit. BeySpirit overrides the mechanical contact force ceiling and concentrates all stored rotational KE into a single directed claw strike:
+
+**Physical claw strike (unaided):**
+```
+Contact force: F_phys ~117 N [M]  (at full operating spin)
+Contact pressure: ~29 MPa [M]  (below polycarbonate yield -- no stadium damage)
+```
+
+**BeySpirit strike (Byakko tiger manifestation):**
+```
+BeySpirit force amplification: x5 [M]  (beast channels entire bey KE into claw)
+F_BS = 5 x 117 = 585 N [M]
+Contact pressure: 5 x 29 = 145 MPa [M] >> polycarbonate yield ~60 MPa
+  --> stadium fracture (matches Episode 20 outcome -- Beystadium breaks into 3 pieces) [M]
+
+KE delivered to opponent on claw contact:
+  delta_KE_opp = F_BS x delta_x = 585 x 0.004 = 2.34 J [M]
+  (delta_x = contact deformation ~4 mm [M])
+```
+
+The strike is directional -- Byakko must be aimed at the opponent. When Ninja Salamander dodges (Episode 24), the claw passes through empty space and the full force is not delivered (Baihu confirmed this as the attack's weakness).
+
+**QTE**
+- Input: Hold **J** (charge Byakko spirit -- accumulate BeySpirit into claw), release when tiger materialises
+- Window: 500 ms charge + 200 ms release
+- Power cost: 95
+
+**Move Parameters**
+```typescript
+function fierceTigerBlast(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 95;
+  const r = Math.min(chargeMs / 500, 1.0);
+  if (!qteHit) return { spinDelta: -12, dmgMult: 1.22, lockMs: 0, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -40 : Math.round(-15 - 25 * r),
+    dmgMult:   perfect ?  1.48 : 1.24 + 0.22 * r,
+    lockMs:    perfect ?  150  : Math.round(50 + 90 * r),
+    powerCost: cost,
+  };
+}
+// fierceTigerBlast(500, true)  => {spin:-40, dmg:1.48x, lock:150ms}  full charge perfect
+// fierceTigerBlast(250, true)  => {spin:-28, dmg:1.35x, lock: 73ms}  partial charge
+// fierceTigerBlast(500, false) => {spin:-12, dmg:1.22x, lock:  0ms}  QTE miss (no beast)
+```
+
+> NOTE: BeySpirit amplifies the physical claw contact force x5 (physical maximum ~117 N, BeySpirit strike ~585 N) and raises contact pressure above the polycarbonate yield stress -- stadium fracture is the anime physics override; physically the claw strike operates well below material failure thresholds.
+
+---
+
+## Case 1389 -- COMBO: Tiger Pounce (derived from Fierce Tiger Blast claw-charge posture)
+
+**Sequence:** J ↓ J (attack -> moveDown -> attack)
+**Interpretation:** J (first claw swipe -- initial smash strike from standing orbit) -> ↓ (crouch low -- drop posture like tiger winding up for pounce, claw tips angle downward toward opponent base) -> J (pounce slash -- low-to-high upward claw strike while opponent is recoiling from first hit, Byakko AR upper-attack geometry catches the underside)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.44x | <= 1.5x | OK |
+| lockMs | 85 ms | <= 300 ms | OK |
+| spinDelta | -24 | <= 50 abs | OK |
+
+```typescript
+function tigerPounceCombo(
+  firstHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!firstHit) return { spinDelta: -10, dmgMult: 1.22, lockMs: 30, powerCost: cost };
+  return { spinDelta: -24, dmgMult: 1.44, lockMs: 85, powerCost: cost };
+}
+// tigerPounceCombo(true)  => {spin:-24, dmg:1.44x, lock:85ms, cost:25}
+// tigerPounceCombo(false) => {spin:-10, dmg:1.22x, lock:30ms, cost:25}
+```
+
+---
+
+## Case 1390 -- [GIMMICK]: Fighting Snake Flash -- F Tip Sinusoidal Slither Orbit (Mei-Mei . Aquario 105F)
+
+**Part:** F (Flat) Performance Tip + Aquario Metal Wheel (wave-protrusion AR)
+**Assembly:** Aquario 105F -- Aquario wheel . 105 track . F tip
+**Gen / System:** Metal Fusion (MFB) | HWS
+**Tags:** flat-tip, sinusoidal-orbit, wave-ar, multi-hit, aggressive-movement
+
+**Mechanism**
+
+The F (Flat) tip (r_F ~4 mm [M], mu_F ~0.55 [M]) generates aggressive lateral translational velocity via high-friction floor contact. Unlike a sharp or WD tip that orbits in near-circular paths, the flat contact patch creates a periodic lateral instability: as the bey orbits and precesses, the friction vector's tangential component alternates in sign, injecting a rhythmic lateral perturbation into the translational path.
+
+**Orbital instability model:**
+```
+Flat tip lateral coupling coefficient C_lat ~0.18 [M]
+Precession angular rate: Omega_p = (m x g x r_CoM) / I_total x omega ~1.8 rad/s [M]  (at omega=500)
+Slither half-period: T_s/2 = pi / Omega_p ~1.75 s / 2 = 0.87 s [M]  -- too slow for visual effect
+
+Actual sinusoidal path arises from the combined effect of:
+  (a) F tip inward spiral (bowl force redirects bey toward centre)
+  (b) Repeated crossings of the bowl centre at different approach angles
+  (c) Each crossing arc appears shifted ~60–90 deg from the previous, tracing an S-curve
+Effective "slither wavelength" ~40–60 mm [M]  across the stadium floor
+```
+
+**Aquario wave AR contribution:**
+The Aquario wheel has 4 curved wave-shaped protrusions at r_AR ~17 mm [M], each angled to generate a periodic lateral impulse as the protrusion sweeps past the opponent's AR. At omega = 550 rad/s [M]:
+```
+Protrusion sweep frequency: f_p = omega x N_prong / (2*pi) = 550 x 4 / 6.28 ~350 Hz [M]
+Each protrusion contact: delta_F_lat ~2 N per protrusion [M]  (small impulse, high frequency)
+Cumulative lateral effect over slither arc: forces sum to reinforce the orbit's S-curve shape
+```
+
+**Spin decay and translational velocity (F tip):**
+```
+v_trans ~0.90 m/s [M]  (aggressive -- F tip flat contact drives high lateral speed)
+dw/dt = -(mu_F x r_F x g x m) / I_total = -(0.55 x 0.004 x 9.81 x 0.029) / (1.40e-5)
+      ~-44.8 rad/s^2 [M]
+High decay rate -- attack must succeed before spin drops below contact threshold [M]
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Aquario wheel | 19.5 g | 17 mm |
+| 105 track | 5.5 g | 8 mm |
+| F tip | 4.0 g | 4 mm |
+| **Total** | **~29.0 g** | **17 mm** |
+| I_total | -- | ~1.40 x 10^-5 kg m^2 |
+
+---
+
+## Case 1391 -- [SPECIAL]: Fighting Snake Flash (Mei-Mei . Aquario 105F)
+
+**Special Move:** Fighting Snake Flash
+**User:** Mei-Mei
+**Series:** Beyblade: Metal Fusion
+**Compatible beys:** Any bey with a flat or wide-rubber-flat tip (F, WF, WRF, or equivalent contact radius >= 3 mm [M] generating lateral translation >= 0.6 m/s [M]); and a wave- or curve-protrusion AR that adds periodic lateral impulses to reinforce the slither path; sharp or semi-sharp tips (S, DS) cannot generate the sinusoidal lateral instability and produce only a circular orbit; high-friction rubber tips (RF) can approximate the slither path but without the wave-AR reinforcement the path is less directional.
+
+**Mechanic**
+
+Mei-Mei channels BeySpirit through Aquario, overriding the flat-tip spin decay rate and amplifying the lateral coupling:
+
+**BeySpirit enhancement:**
+```
+Physical C_lat ~0.18 [M]  (flat tip lateral instability)
+BeySpirit C_lat_BS ~0.55 [M]  (lateral coupling tripled -- true snake sinusoidal path)
+Orbit crossing angle: ~90 deg (full S-curve crossing, each pass targets a different zone)
+Multi-target reach: each leg of the S-curve can contact a separate opponent bey [M]
+Maximum targets per activation: 3 [M]  (3 slither crossings = 3 contact events)
+```
+
+The snake path is used in multi-bey battles to hit 3 opponents sequentially without stopping -- each crossing of the stadium delivers a wave-AR protrusion strike. In single-opponent battles, the 3 hits accumulate on one target.
+
+**QTE**
+- Input: Tap **J** at each slither crossing (up to 3 taps for full chain)
+- Window: 200 ms per tap; next tap available ~0.4 s after previous
+- Power cost: 70
+
+**Move Parameters**
+```typescript
+function fightingSnakeFlash(
+  tapCount: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 70;
+  if (!qteHit) return { spinDelta: -8, dmgMult: 1.12, lockMs: 20, powerCost: cost };
+  const n = Math.min(Math.max(tapCount, 1), 3);
+  return {
+    spinDelta: -Math.round(8 * n),
+    dmgMult:   1.15 + 0.08 * (n - 1),
+    lockMs:    25 * n,
+    powerCost: cost,
+  };
+}
+// fightingSnakeFlash(3, true)  => {spin:-24, dmg:1.31x, lock:75ms}  3-hit full chain
+// fightingSnakeFlash(2, true)  => {spin:-16, dmg:1.23x, lock:50ms}  2-hit
+// fightingSnakeFlash(1, true)  => {spin: -8, dmg:1.15x, lock:25ms}  1-hit
+// fightingSnakeFlash(-, false) => {spin: -8, dmg:1.12x, lock:20ms}  QTE miss
+```
+
+> NOTE: BeySpirit triples the flat-tip lateral coupling coefficient, converting the random orbital instability into a controlled sinusoidal path that can reach 3 targets per activation; the 3-crossing-per-activation reach is the anime physics override.
+
+---
+
+## Case 1392 -- COMBO: Snake Slither (derived from Fighting Snake Flash sinusoidal orbit)
+
+**Sequence:** → J ← (moveRight -> attack -> moveLeft)
+**Interpretation:** -> (arc right -- enter the first slither leg approaching from the right) -> J (wave-AR strike at crossing apex -- contact delivered as orbit crosses opponent's zone) -> <- (slip left -- exit along the second leg of the S-curve, leveraging flat-tip lateral momentum to continue past opponent)
+**Type:** attack  **Cost:** 15
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.28x | <= 1.5x | OK |
+| lockMs | 45 ms | <= 300 ms | OK |
+| spinDelta | -12 | <= 50 abs | OK |
+
+```typescript
+function snakeSlitherCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 15;
+  if (!jHit) return { spinDelta: -5, dmgMult: 1.10, lockMs: 15, powerCost: cost };
+  return { spinDelta: -12, dmgMult: 1.28, lockMs: 45, powerCost: cost };
+}
+// snakeSlitherCombo(true)  => {spin:-12, dmg:1.28x, lock:45ms, cost:15}
+// snakeSlitherCombo(false) => {spin: -5, dmg:1.10x, lock:15ms, cost:15}
+```
+
+---
+
+## Case 1393 -- [GIMMICK]: Omega Blast -- Prime Apocalypse Sword Point Concentrated Strike (Arthur Peregrine . Prime Apocalypse 0Dagger Ultimate Reboot')
+
+**Part:** Prime Apocalypse GT Layer (sword-protrusion contact point) + Dagger Frame
+**Assembly:** Prime Apocalypse 0Dagger Ultimate Reboot' -- Prime Apocalypse chip . Apocalypse layer base . 0 disc . Dagger frame . Ultimate Reboot' driver
+**Gen / System:** Beyblade Burst GT (Rise in English) | GT-System (Gatinko)
+**Tags:** sword-point, concentrated-impact, single-strike, gt-chip, dagger-frame
+
+**Mechanism**
+
+The Prime Apocalypse GT Layer has a single large sword-shaped protrusion at r_sword ~18 mm [M] with a pointed leading contact face (contact area A_sword ~3 mm^2 [M]). The Dagger frame on the 0 disc adds 4 short dagger-blade tabs at r_dagger ~20 mm [M] (contact area per dagger ~6 mm^2 [M]) that act as secondary contact reinforcement.
+
+**Sword point contact force:**
+```
+At omega = 530 rad/s [M]:
+v_sword = omega x r_sword = 530 x 0.018 = 9.54 m/s [M]
+KE = (1/2) x I_total x omega^2 = (1/2) x 1.20e-5 x 530^2 = 1.686 J [M]
+Contact force (t_contact ~4 ms [M]):
+  F_sword = 2 x KE / (v_sword x t) = 2 x 1.686 / (9.54 x 0.004) = 88.4 N [M]
+Contact pressure: P = F / A = 88.4 / (3e-6) ~29.5 MPa [M]
+  (Polycarbonate yield ~60 MPa -- sword point below yield; Dagger tabs distribute secondary contact)
+```
+
+**Dagger Frame secondary contact:**
+```
+4 dagger tabs at r_dagger = 20 mm, each A = 6 mm^2 [M]:
+v_dagger = 530 x 0.020 = 10.6 m/s
+F_dagger_each = 2 x (I_dagger_contribution x omega^2 / 2) / (v_d x t)
+  ~8.5 N per tab [M]  (smaller contribution from partial I_dagger)
+F_dagger_total = 4 x 8.5 = 34 N [M]
+Combined sword + dagger: F_total_phys ~122 N [M]  (significantly above bare-sword strike)
+```
+
+**Ultimate Reboot' driver characteristics:**
+```
+UR' driver: bearing + spring mechanism at base
+mu_UR ~0.05 [M] (idle, ball bearing contact)
+dw/dt = -(0.05 x 0.008 x 9.81 x 0.047) / (1.20e-5) ~-1.54 rad/s^2 [M]
+Excellent stamina; the driver's spring can absorb arena-wall impacts and "reboot" spin direction [M]
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Prime Apocalypse chip + layer base | 22.0 g | 18 mm (sword) |
+| 0 disc | 14.5 g | 16 mm |
+| Dagger frame | 5.0 g | 20 mm (dagger tabs) |
+| Ultimate Reboot' driver | 5.5 g | 8 mm |
+| **Total** | **~47.0 g** | **20 mm** |
+| I_total | -- | ~1.20 x 10^-5 kg m^2 |
+
+---
+
+## Case 1394 -- [SPECIAL]: Omega Blast / End Blaster (Arthur Peregrine . Prime Apocalypse 0Dagger Ultimate Reboot')
+
+**Special Move:** Omega Blast (End Blaster / Endo Burasuta in Japan)
+**User:** Arthur Peregrine
+**Series:** Beyblade Burst Rise
+**Compatible beys:** Any bey whose Layer has a single concentrated sword- or spike-type protrusion at r >= 16 mm [M] with contact area <= 8 mm^2 [M] (Xcalius-type sword, Roktavor spike, or equivalent); and a frame or disc tab reinforcing secondary contact at r >= 18 mm [M]; distributed multi-blade layers cannot concentrate force to the pressure levels required; the move scales with frame tab count and tab radius.
+
+**Mechanic**
+
+Arthur channels BeySpirit through Prime Apocalypse, focusing all stored rotational energy into the sword point. BeySpirit overrides the distributed contact model:
+
+**Physical combined strike:**
+```
+F_total_phys ~122 N [M]  (sword + Dagger frame combined)
+Contact pressure (sword): ~29.5 MPa [M]  (below yield)
+```
+
+**BeySpirit Omega Blast:**
+```
+BeySpirit concentration: routes full KE to sword contact point (frame tabs disengage from energy path)
+F_sword_BS = BeySpirit x F_total_phys ~3 x 122 = 366 N [M]
+Contact pressure (sword, BeySpirit): 366 / (3e-6) = 122 MPa [M]  >> polycarbonate yield [M]
+  --> spike contact deforms/pierces opponent layer surface (anime impact effect)
+```
+
+Description: similar to Saber Strike (Xander Shakadera's move) -- concentrated sword point driving through opponent layer surface.
+
+**QTE**
+- Input: Hold **J** (charge sword energy into Apocalypse point) -> release at contact
+- Window: 400 ms charge + 150 ms release
+- Power cost: 85
+
+**Move Parameters**
+```typescript
+function omegaBlast(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 85;
+  const r = Math.min(chargeMs / 400, 1.0);
+  if (!qteHit) return { spinDelta: -10, dmgMult: 1.18, lockMs: 0, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -30 : Math.round(-10 - 18 * r),
+    dmgMult:   perfect ?  1.42 : 1.22 + 0.18 * r,
+    lockMs:    perfect ?  110  : Math.round(30 + 70 * r),
+    powerCost: cost,
+  };
+}
+// omegaBlast(400, true)  => {spin:-30, dmg:1.42x, lock:110ms}  full charge perfect
+// omegaBlast(200, true)  => {spin:-19, dmg:1.31x, lock: 65ms}  partial
+// omegaBlast(400, false) => {spin:-10, dmg:1.18x, lock:  0ms}  QTE miss
+```
+
+> NOTE: BeySpirit routes all KE through the sword contact point (physically the Dagger frame shares the load), amplifying the sword point contact pressure x3 to beyond polycarbonate yield; the layer-surface penetration effect is the anime physics override.
+
+---
+
+## Case 1395 -- COMBO: Sword Point (derived from Omega Blast concentrated sword strike)
+
+**Sequence:** ↑ J → (moveUp -> attack -> moveRight)
+**Interpretation:** ↑ (charge up orbit -- gain altitude on bowl wall, building approach speed) -> J (sword-point strike -- Apocalypse sword protrusion contacts opponent at high relative velocity) -> -> (exit right -- break away along bowl wall arc before opponent spin-recovery)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.38x | <= 1.5x | OK |
+| lockMs | 90 ms | <= 300 ms | OK |
+| spinDelta | -20 | <= 50 abs | OK |
+
+```typescript
+function swordPointCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!jHit) return { spinDelta: -8, dmgMult: 1.18, lockMs: 25, powerCost: cost };
+  return { spinDelta: -20, dmgMult: 1.38, lockMs: 90, powerCost: cost };
+}
+// swordPointCombo(true)  => {spin:-20, dmg:1.38x, lock:90ms, cost:25}
+// swordPointCombo(false) => {spin: -8, dmg:1.18x, lock:25ms, cost:25}
+```
+
+---
+
+## Case 1396 -- [GIMMICK]: Final Blast -- Prime Apocalypse Spring-Lock Sword Enhancement (Arthur Peregrine . Prime Apocalypse 0Dagger Ultimate Reboot')
+
+**Part:** Prime Apocalypse GT Layer (spring-loaded sword retract-and-release mechanism)
+**Assembly:** [same as Case 1393] Prime Apocalypse 0Dagger Ultimate Reboot'
+**Gen / System:** Beyblade Burst Rise | GT-System
+**Tags:** spring-lock, sword-push-in, two-stage-strike, energy-storage, counter-release
+
+**Mechanism**
+
+The Prime Apocalypse sword protrusion has a spring-loaded cam inside the layer body that allows the sword to compress inward when struck by sufficient opposing force. When the sword is pushed in, elastic potential energy is stored; when the spring releases, the sword snaps back outward with amplified contact force.
+
+**Spring mechanism parameters:**
+```
+Spring constant k_sword ~12 N/mm [M]  (stiff polymer-composite spring inside layer body)
+Maximum compression stroke x_comp ~3 mm [M]
+Spring PE stored: E_spring = (1/2) x k x x_comp^2 = (1/2) x 12000 x (0.003)^2 = 0.054 J [M]
+
+Trigger condition: incoming force F_trigger >= k x x_comp = 12000 x 0.003 = 36 N [M]
+  (standard Omega Blast level hit or stronger easily exceeds this threshold [M])
+
+Spring release force: F_spring = k x x_comp = 36 N [M]  (at full compression)
+Spring release duration: t_release ~1.5 ms [M]
+Additional impulse from spring: J_spring = F_spring x t_release = 36 x 0.0015 = 0.054 N s [M]
+```
+
+**Two-stage energy comparison:**
+```
+Stage 1 (Omega Blast -- sword in normal position):
+  Contact impulse: J_normal ~F_sword_phys x t_contact ~88 x 0.004 = 0.352 N s [M]
+
+Stage 2 (Final Blast -- sword compressed then released):
+  Base contact impulse: J_normal = 0.352 N s [M]
+  Spring additive impulse: J_spring = 0.054 N s [M]
+  Total: J_final_phys = 0.352 + 0.054 = 0.406 N s [M]  (+15% vs Omega Blast) [M]
+  With BeySpirit x3: J_final_BS = 3 x 0.406 = 1.218 N s [M]  (>>3x Omega Blast at BeySpirit level)
+```
+
+The spring pre-compression turns a standard hit into a trigger for an amplified follow-up -- canonically "more devastating than Omega Blast."
+
+**Trigger geometry:**
+The sword can only be pushed in when contacted from the FRONT face (chord angle within ±40 deg of the blade normal [M]). Glancing hits do not compress the spring. This means the opponent must deliver a head-on hit to trigger Final Blast, adding a strategic element.
+
+---
+
+## Case 1397 -- [SPECIAL]: Final Blast / Final Blaster (Arthur Peregrine . Prime Apocalypse 0Dagger Ultimate Reboot')
+
+**Special Move:** Final Blast (Final Blaster / Fainaru Burasuta in Japan)
+**User:** Arthur Peregrine
+**Series:** Beyblade Burst Rise
+**Compatible beys:** Any bey whose Layer has a spring-loaded sword or spike protrusion with documented retract-and-release mechanism (compression stroke >= 2 mm [M], spring constant >= 8 N/mm [M]); beys with rigid fixed sword protrusions (no spring) produce only the Omega Blast baseline; the spring must be pre-compressed by a sufficient incoming force (>= 36 N physical threshold [M]) before the Final Blast release triggers.
+
+**Mechanic**
+
+Arthur allows Apocalypse to receive a head-on hit (sword pushed in), then channels BeySpirit at the spring release moment. BeySpirit overrides the spring release speed:
+
+```
+Physical spring release: v_release = sqrt(2 x E_spring / m_sword) ~sqrt(2 x 0.054 / 0.003) ~6.0 m/s [M]
+BeySpirit override: spring energy amplified x3 before release
+  E_spring_BS = 3 x 0.054 = 0.162 J [M]
+  v_release_BS = sqrt(2 x 0.162 / 0.003) ~10.4 m/s [M]  (nearly matching full wheel tip speed)
+Combined strike velocity: v_sword_spin + v_release_BS = 9.54 + 10.4 = 19.9 m/s [M]
+  (combined contact force >> Omega Blast)
+```
+
+**QTE**
+- Input: K (guard -- present sword to opponent's incoming hit, absorbing compression) -> tap J immediately when spring releases (the snap-back)
+- Window: 120 ms after spring trigger
+- Power cost: 90
+
+**Move Parameters**
+```typescript
+function finalBlast(
+  swordPushedIn: boolean, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 90;
+  if (!swordPushedIn) {
+    // Spring not pre-loaded -- fallback to Omega Blast level
+    return { spinDelta: -18, dmgMult: 1.28, lockMs: 50, powerCost: cost };
+  }
+  if (!qteHit) return { spinDelta: -14, dmgMult: 1.24, lockMs: 30, powerCost: cost };
+  return { spinDelta: -42, dmgMult: 1.50, lockMs: 160, powerCost: cost };
+}
+// finalBlast(true, true)   => {spin:-42, dmg:1.50x, lock:160ms}  spring loaded + perfect QTE
+// finalBlast(true, false)  => {spin:-14, dmg:1.24x, lock: 30ms}  spring loaded, QTE miss
+// finalBlast(false, -)     => {spin:-18, dmg:1.28x, lock: 50ms}  spring not triggered (Omega fallback)
+```
+
+> NOTE: BeySpirit amplifies the spring release energy x3 (physical spring PE ~0.054 J, BeySpirit PE ~0.162 J) and combines spring velocity with wheel tip velocity for ~20 m/s effective contact speed; the combined strike exceeding Omega Blast output by more than 3x is the anime physics override.
+
+---
+
+## Case 1398 -- COMBO: Break Blaster (derived from Final Blast spring-lock counter)
+
+**Sequence:** K ↓ J (defense -> moveDown -> attack)
+**Interpretation:** K (guard stance -- present sword face-on to absorb opponent strike, spring compresses) -> ↓ (drop angle -- position Apocalypse at low contact angle to maximise spring-to-floor-level strike arc) -> J (spring release blast -- sword snaps back at full spring + spin velocity while opponent is in the recoil from their own strike)
+**Type:** attack  **Cost:** 35
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult (spring loaded) | 1.46x | <= 1.5x | OK |
+| dmgMult (no spring) | 1.30x | <= 1.5x | OK |
+| lockMs | 120 ms | <= 300 ms | OK |
+| spinDelta | -28 | <= 50 abs | OK |
+
+```typescript
+function breakBlasterCombo(
+  kHit: boolean, swordPushedIn: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 35;
+  if (!kHit) return { spinDelta: -10, dmgMult: 1.20, lockMs: 30, powerCost: cost };
+  return swordPushedIn
+    ? { spinDelta: -28, dmgMult: 1.46, lockMs: 120, powerCost: cost }
+    : { spinDelta: -18, dmgMult: 1.30, lockMs: 80,  powerCost: cost };
+}
+// breakBlasterCombo(true, true)  => {spin:-28, dmg:1.46x, lock:120ms, cost:35}  spring loaded
+// breakBlasterCombo(true, false) => {spin:-18, dmg:1.30x, lock: 80ms, cost:35}  no spring
+// breakBlasterCombo(false, -)    => {spin:-10, dmg:1.20x, lock: 30ms, cost:35}  miss
+```
+
+*Cases continue from Case 1399 as further franchise moves are provided.*
