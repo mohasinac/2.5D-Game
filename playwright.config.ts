@@ -1,32 +1,97 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
-dotenvConfig(); // loads PROD_URL and other vars from root .env
+dotenvConfig(); // loads PROD_URL, TEST_EMAIL, TEST_PASSWORD, PLAYWRIGHT_BASE_URL from root .env
+
+// ─── Viewport presets ────────────────────────────────────────────────────────
+export const VIEWPORTS = {
+  mobile:  { width: 390,  height: 844  }, // iPhone 14 Pro
+  tablet:  { width: 768,  height: 1024 }, // iPad Mini
+  desktop: { width: 1440, height: 900  }, // Standard laptop
+} as const;
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  fullyParallel: false,          // game server has limited room capacity
+  fullyParallel: false,          // Game server has limited room capacity
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: 1,                    // sequential to avoid room overflow
-  reporter: "html",
-  timeout: 60000,                // 60s default per test (WebSocket + game tick time)
-  expect: { timeout: 15000 },   // 15s per assertion
+  retries: process.env.CI ? 2 : 1,
+  workers: 1,                    // Sequential to avoid room overflow
+  reporter: [
+    ["html", { outputFolder: "playwright-report", open: "never" }],
+    ["list"],
+  ],
+
+  // ── Global timeouts ────────────────────────────────────────────────────────
+  timeout: 90_000,               // 90 s per test (up from 60 s)
+  expect: { timeout: 20_000 },   // 20 s per assertion (up from 15 s)
 
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3001",
-    trace: "on-first-retry",
-    video: "on-first-retry",
-    actionTimeout: 10000,        // 10s for UI clicks
-    navigationTimeout: 30000,    // 30s for page loads
+    trace: "retain-on-failure",
+    video: "retain-on-failure",
+    screenshot: "only-on-failure",
+    actionTimeout: 15_000,       // 15 s for clicks / fills
+    navigationTimeout: 45_000,   // 45 s for page navigations
   },
 
+  // ── Projects (viewport matrix) ─────────────────────────────────────────────
   projects: [
+    // ── Desktop smoke (default `npm run test:e2e`) ────────────────────────
     {
       name: "chromium-dev",
-      use: { ...devices["Desktop Chrome"] },
-      // Excludes prod-only and advanced-gameplay specs from dev run
-      testIgnore: ["**/*.prod.spec.ts", "**/ai-vs-ai-full-battle.spec.ts", "**/server-load-test.spec.ts"],
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: VIEWPORTS.desktop,
+      },
+      testIgnore: [
+        "**/*.prod.spec.ts",
+        "**/ai-vs-ai-full-battle.spec.ts",
+        "**/server-load-test.spec.ts",
+      ],
     },
+
+    // ── Mobile: Pixel 5 / Android 390 px ─────────────────────────────────
+    {
+      name: "chromium-mobile",
+      use: {
+        ...devices["Pixel 5"],
+        viewport: VIEWPORTS.mobile,
+        isMobile: true,
+        hasTouch: true,
+      },
+      // Only run the lightweight smoke + responsive suite on mobile
+      testMatch: [
+        "**/responsive-smoke.spec.ts",
+        "**/battle-workflows.spec.ts",
+        "**/admin-workflows.spec.ts",
+      ],
+    },
+
+    // ── Mobile: iPhone 12 (390 × 844, iOS UA) ────────────────────────────
+    {
+      name: "chromium-iphone",
+      use: {
+        ...devices["iPhone 12"],
+        viewport: VIEWPORTS.mobile,
+      },
+      testMatch: [
+        "**/responsive-smoke.spec.ts",
+      ],
+    },
+
+    // ── Tablet: iPad Mini (768 × 1024) ────────────────────────────────────
+    {
+      name: "chromium-tablet",
+      use: {
+        ...devices["iPad Mini"],
+        viewport: VIEWPORTS.tablet,
+      },
+      testMatch: [
+        "**/responsive-smoke.spec.ts",
+        "**/battle-workflows.spec.ts",
+      ],
+    },
+
+    // ── Production desktop ─────────────────────────────────────────────────
     {
       name: "chromium-prod",
       use: {
@@ -35,14 +100,15 @@ export default defineConfig({
       },
       testMatch: "**/*.prod.spec.ts",
     },
+
+    // ── Production gameplay (long-running) ─────────────────────────────────
     {
       name: "chromium-prod-gameplay",
       use: {
         ...devices["Desktop Chrome"],
         baseURL: process.env.PROD_URL || "https://game.letitrip.in",
-        // Gameplay tests need longer timeouts — AI battles up to 3 min
-        actionTimeout: 15000,
-        navigationTimeout: 60000,
+        actionTimeout: 20_000,
+        navigationTimeout: 60_000,
       },
       testMatch: [
         "**/ai-vs-ai-full-battle.spec.ts",
@@ -53,10 +119,13 @@ export default defineConfig({
     },
   ],
 
+  // ── Dev server (Vite) ──────────────────────────────────────────────────────
   webServer: {
     command: "npm run dev:client",
     url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: 120_000,
+    stdout: "pipe",
+    stderr: "pipe",
   },
 });

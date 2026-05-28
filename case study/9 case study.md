@@ -1448,9 +1448,9 @@ Mode-switch critical speed:
 
 Two-zone inertia:
   Body ring (m_body = 12.6 g, r_i = 4 mm, r_o = 22 mm):
-    I_body = ½ × 0.01260 × ((4.0×10⁻³)² + (22.0×10⁻³)²)
-           = ½ × 0.01260 × (1.60×10⁻⁵ + 4.84×10⁻⁴)
-           = ½ × 0.01260 × 5.00×10⁻⁴
+    I_body = ½ × 0.01306 × ((4.0×10⁻³)² + (22.0×10⁻³)²)
+           = ½ × 0.01306 × (1.60×10⁻⁵ + 4.84×10⁻⁴)
+           = ½ × 0.01306 × 5.00×10⁻⁴
            = 3.150×10⁻⁶ kg·m²
 
   Sword arm — Normal Mode (r = 18 mm):
@@ -11618,7 +11618,7 @@ function revolveLadPhase(iTotal: number, mTotal_g: number, muBushing: number, rS
 }
 // revolveLadPhase(3.657e-5, 64.3, 0.05, 2) -> { t=6.31uN*m, dw=-0.172, ext=2416s }
 // revolveLadPhase(3.657e-5, 64.3, 0.05, 3) -> { t=9.47uN*m, dw=-0.259, ext=1607s }
-// revolveLadPhase(3.657e-5, 64.3, 0.10, 2) -> { t=12.6uN*m, dw=-0.345, ext=1206s }
+// revolveLadPhase(3.657e-5, 64.3, 0.10, 2) -> { t=12.6uN*m, dw=-0.345, ext=1301s }
 
 function revolveKoResistance(iTotal: number, omega_radps: number, rArena_m: number): {
   nKo_N: number; tipContact_mm: number; ringContact_mm: number
@@ -20053,7 +20053,7 @@ BANKING PATTERN (Tornado Ridge):
   F_friction = 0.50 × 0.0333 × 9.81 × cos(30°) = 0.142 N
   v_bank_max = sqrt(F_friction × R / (m × sin(θ)))
              = sqrt(0.142 × 0.085 / (0.0333 × sin(30°)))
-             = sqrt(0.01207 / 0.01665)
+             = sqrt(0.01302 / 0.01665)
              = sqrt(0.7250) = 0.851 m/s  [ESTIMATED]
 
   vs. Accel (μ=0.20):
@@ -26160,3 +26160,3462 @@ Dread Bahamut spins down **17.6x slower** than Super Hyperion in isolation. This
 | KO resistance | Low |
 
 **Conclusion:** Dread Bahamut 7Wall Orbit Metal is a high-mass, ultra-low-friction spin equalization combination. Its 325-second theoretical spin time and near-zero spin decay rate make it one of the longest-spinning configurations in the Burst GT era. The Dread gimmick converts the initial high-burst-risk (gap catches) into a post-activation circular deflector, Gen weight provides a last-resort burst save, and Wall Frame lowers the CoM to maintain the upright stable orbit required for Orbit Metal to function without scraping. The assembly is designed to outlast opponents through spin equalization and left-spin counter-rotation drain, accepting low KO resistance as the trade-off for exceptional stamina. The critical match moment is the activation window: surviving the first 1–3 hard contacts before Dread goes circular is the difference between victory and an early burst.
+
+
+---
+
+## Plastic Gen Anime-Exclusive: Unicolyon (Oliver) — Spin Gear System
+
+**Beyblade:** Unicolyon (Japanese: ユニコリオン, Yunikorion)
+**Owner:** Oliver (one of the Majestics), *Beyblade: 2000* anime
+**Classification:** Anime Exclusive — Spin Gear System (Gen 1 Plastic)
+**Type per card:** Defense (防御), ATK 3000 / DEF 4000
+**Spin direction:** Right (Right SG)
+
+Unicolyon does not appear to have been sold in the standard retail lineup; it was associated with the anime character Oliver and documented in the Hudson Soft / Takara Beyblade trading card game (card #162, Ver.3.0). The component parts (Tail Defense AR, Eight Heavy WD, Right SG, Unicolyon Base) are real Spin Gear System parts.
+
+**Center piece convention:** The Bit Chip (1 g, confirmed) is excluded from official Beyblade weight nomenclature across all generations — it sits at r ~= 0 and provides negligible inertia. Masses below follow the official convention (Bit Chip excluded from component masses; noted separately in the assembly case).
+
+---
+
+## Case 1297 — Bit Chip: Unicolyon (1.0 g, Plastic Gen Spin Gear System)
+
+**Generation:** Gen 1 Plastic — Spin Gear System
+**Role:** Center piece — houses the Unicolyon Bit Beast; confers special move in anime
+
+---
+
+### 1. Description
+
+The Bit Chip depicts the Unicolyon Bit Beast — a composite unicorn-lion creature. As with all Bit Chips, its physical role is purely structural: it snaps into the top of the Blade Base, holds the face sticker, and in the anime serves as the conduit for the Bit Beast's power.
+
+**Mass:** 1.0 g (standard Bit Chip, confirmed by convention)
+**Material:** ABS plastic
+**Location:** Center of assembly, r ~= 0
+
+---
+
+### 2. Moment of Inertia
+
+Point mass at r ~= 8 mm (outer edge of chip):
+
+I_chip = m * r^2 = 0.001 * 0.008^2 = **6.40e-8 kg*m^2**
+
+Assembly fraction (Case 1302): 6.40e-8 / 1.503e-5 = **0.43%** — negligible.
+
+---
+
+### 3. Anime Physics Note
+
+Per the series, the Bit Beast (Unicolyon) grants Oliver BeySpirit-powered special moves. These override all physical limits — the Bit Chip's mechanical role (face carrier, assembly retention) is separate from its anime physics role. See the Anime Physics Override note; standard real-part physics apply in case studies.
+
+---
+
+### 4. Physics Verdict
+
+| I_chip | 6.40e-8 kg*m^2 |
+|--------|---------------|
+| Mass | 1.0 g (per convention, excluded from assembly nomenclature mass) |
+| Assembly fraction | 0.43% |
+| Competitive value | None — purely structural; interchangeable with any same-gen Bit Chip |
+
+---
+
+## Case 1298 — Attack Ring: Tail Defense (4.4 g, Plastic Gen Spin Gear System, Defense Type)
+
+**Generation:** Gen 1 Plastic — Spin Gear System
+**Type:** Defense
+**Spin direction:** Right
+
+---
+
+### 1. Description and Shape
+
+The Tail Defense AR has a near-circular profile with swept-back blade surfaces intended to deflect incoming contact. The user notes it is "similar to the Unicorn energy layer from Burst but lighter weight." Both the Unicorn (Burst, 8.3 g, 10-blade circular stamina layer) and Tail Defense share:
+
+- Large outer diameter relative to center hub
+- Multiple evenly-distributed shallow protrusions around the circumference
+- Defensive / stamina orientation (protrusions deflect rather than catch)
+
+The Burst Unicorn reference images confirm this shape: 10 thin protrusions distributed symmetrically, large OWD-favoring annular body.
+
+**Mass:** 4.4 g (confirmed)
+**Protrusions:** Estimated 10 (matching the "Tail Defense" name and shape reference)
+
+---
+
+### 2. Shape Comparison: Tail Defense vs Burst Unicorn
+
+| Property | Tail Defense AR (plastic gen) | Unicorn Layer (Burst) |
+|----------|-------------------------------|----------------------|
+| Mass | 4.4 g | 8.3 g |
+| Protrusion count | ~10 (estimated) | 10 (confirmed: 8 manes + 2 horns) |
+| Profile | Near-circular, deflective | Near-circular, OWD stamina |
+| Generation system | SG Attack Ring | Burst Energy Layer |
+| Type | Defense | Defense (stamina capable) |
+
+The Tail Defense AR is approximately **53% of Burst Unicorn's mass** with a similar shape philosophy — a lighter, older-gen equivalent of the same design archetype.
+
+---
+
+### 3. Moment of Inertia
+
+Annular approximation (near-circular AR, r_i ~= 18 mm, r_o ~= 36 mm):
+
+I_AR = (1/2) * m * (r_i^2 + r_o^2)
+     = (1/2) * 0.0044 * (0.018^2 + 0.036^2)
+     = (1/2) * 0.0044 * (3.24e-4 + 1.296e-3)
+     = (1/2) * 0.0044 * 1.620e-3
+     = **3.564e-6 kg*m^2**
+
+For Burst Unicorn (8.3 g, r_o ~= 38 mm) for comparison:
+I_Unicorn_burst = (1/2) * 0.0083 * (0.018^2 + 0.038^2)
+               = (1/2) * 0.0083 * 1.766e-3
+               = 7.329e-6 kg*m^2
+
+Tail Defense I = 3.564e-6 = **48.6% of Burst Unicorn's I** (consistent with 53% of the mass at slightly smaller radius).
+
+---
+
+### 4. Defense Contact Geometry
+
+Tail Defense AR's deflective protrusion shape redirects incoming blade contact tangentially:
+
+At battle omega = 185 rad/s (plastic gen, see Case 1302):
+  v_tip = omega * r_o = 185 * 0.036 = **6.66 m/s**
+
+For a defensive contact (theta_deflect ~= 60 deg from radial; smooth protrusion surface):
+  J_effective = J_impact * cos(60 deg) = J * 0.5
+  (deflective surface halves the effective force component on the burst mechanism vs a flat-catching AR)
+
+The "Tail" profile geometry means the protrusion trailing edge provides a smooth exit path — classic defense AR design.
+
+---
+
+### 5. Physics Verdict
+
+| I_AR | 3.564e-6 kg*m^2 |
+|------|----------------|
+| Mass | 4.4 g (confirmed) |
+| Assembly fraction (Case 1302) | 23.7% |
+| Shape analogue | Burst Unicorn at 53% mass / 48.6% I |
+| Deflection type | Tangential (tail shape) |
+| Competitive value | Moderate defense within plastic gen; outclassed by purpose-built defensive ARs with harder edges |
+
+---
+
+## Case 1299 — Weight Disk: Eight Heavy (est. 14.5 g, Plastic Gen, Compact / Center-Weighted)
+
+**Generation:** Gen 1 Plastic — Spin Gear System
+**Type:** Compact (center-weighted); used for Defense and Compact attack combos
+
+---
+
+### 1. Official Description Summary
+
+Eight Heavy is part of the **Heavy series** — the heaviest WD category in plastic gen. Key official notes:
+
+- Among the heaviest WDs overall (Ten Heavy outclasses it; Eight Heavy outclasses Six Heavy)
+- **Compact design**: weight focused towards the **centre** (vs Wide series which focuses mass at the perimeter)
+- Centre-weighting **increases RPM** for the same launcher energy
+- Used for **Compact type combos** (high RPM) and **Defense combos** (high total weight)
+- Ten Heavy is generally preferred over Six/Eight Heavy when customizing for maximum weight
+
+---
+
+### 2. OWD vs IWD (Compact) Physics
+
+All WDs receive the same launcher energy E at launch. The relationship between I and initial omega depends on the energy model:
+
+**Fixed-energy launch (string launcher approximation):**
+  omega_0 = sqrt(2E / I)
+  L = I * omega = sqrt(2EI)
+
+**Consequence:**
+- Lower I (Eight Heavy, compact) -> higher omega_0, lower L
+- Higher I (Wide Heavy) -> lower omega_0, higher L
+
+**RPM comparison (Eight Heavy vs Wide Heavy):**
+
+For Eight Heavy (r_o ~= 28 mm, I_8H = 6.148e-6):
+  omega_0_8H = sqrt(2E / 6.148e-6) = sqrt(E) * 569.5
+
+For Wide Heavy (r_o ~= 38 mm, est. I_Wide ~= 1.056e-5):
+  omega_0_Wide = sqrt(2E / 1.056e-5) = sqrt(E) * 435.1
+
+RPM ratio: 569.5 / 435.1 = **1.31** — Eight Heavy spins **31% faster** at launch vs Wide Heavy for the same energy.
+
+L ratio: sqrt(6.148e-6) / sqrt(1.056e-5) = 2.479e-3 / 3.250e-3 = **0.763** — Eight Heavy has **23.7% less** angular momentum.
+
+This confirms the official text: Eight Heavy boosts RPM at the cost of total angular momentum (and therefore stamina).
+
+---
+
+### 3. Geometry and Mass
+
+Estimated mass: **14.5 g** (est.; official mass not confirmed for this component)
+
+| Dimension | Value |
+|-----------|-------|
+| Shape | 8-sided (octagonal), compact |
+| Outer radius r_o | ~28 mm (compact, fits within blade base profile) |
+| Inner bore r_i | ~8 mm |
+| Material | ABS plastic (plastic gen WDs are plastic, unlike Burst-era metal Forge Discs) |
+
+Note: Plastic gen WDs are made of ABS (not die-cast metal). Their mass comes from thickness and material, not metal casting. Eight Heavy is heavy for ABS because of its compact-but-thick geometry.
+
+---
+
+### 4. Moment of Inertia
+
+I_8H = (1/2) * m * (r_i^2 + r_o^2)
+     = (1/2) * 0.0145 * (0.008^2 + 0.028^2)
+     = (1/2) * 0.0145 * (6.40e-5 + 7.84e-4)
+     = (1/2) * 0.0145 * 8.48e-4
+     = **6.148e-6 kg*m^2**
+
+Assembly fraction (Case 1302): 6.148e-6 / 1.503e-5 = **40.9%** — dominant inertia contributor.
+
+---
+
+### 5. Physics Verdict
+
+| I_8H | 6.148e-6 kg*m^2 |
+|------|----------------|
+| Mass | ~14.5 g (est.) |
+| Assembly fraction | 40.9% |
+| Weight type | Compact (IWD) — centre-weighted |
+| RPM boost vs Wide Heavy | +31% at launch (same energy) |
+| Angular momentum vs Wide Heavy | -23.7% |
+| Primary use | Compact attack combos (high RPM); defense combos (weight priority) |
+
+**Conclusion:** Eight Heavy's compact geometry maximises launch RPM at the cost of angular momentum and stamina. The 31% RPM advantage translates to higher contact speed during attacks while the combination is at high spin. For defense, the pure mass (14.5 g) resists displacement even without the OWD benefit of Wide-type WDs. In Unicolyon, the Eight Heavy provides high initial RPM consistent with the defense classification (faster spin = harder to destabilise).
+
+---
+
+## Case 1300 — Spin Gear: Right SG (est. 4.5 g, Plastic Gen, Standard Right-Spin)
+
+**Generation:** Gen 1 Plastic — Spin Gear System
+**Spin direction:** Right (clockwise when viewed from above)
+**Type:** Standard (no special weights, bearings, or engine)
+
+---
+
+### 1. Official Description Summary
+
+Right SG (Right Spin Gear):
+
+- Allows **right-spin** when used with a Right-Spin Shooter
+- Two tabs on the right side of the SG body attach to the Right-Spin Shooter
+- Structure: **plastic casing surrounding a metal ring and gear** placed into the Blade Base and held by base clips
+- The **core (centre pieces) is not interchangeable** in Standard Spin Gears (unlike weighted or bearing variants)
+- Advanced variants exist: weighted SG, bearing SG, engine SG — but this is the standard version
+
+---
+
+### 2. Geometry and Mass
+
+Estimated mass: **4.5 g** (est.; plastic casing ~2.5 g + metal ring + gear ~2.0 g)
+
+| Sub-component | Est. mass | Radius |
+|--------------|-----------|--------|
+| ABS plastic casing | ~2.5 g | r ~= 8–14 mm |
+| Metal ring + gear | ~2.0 g | r ~= 13–15 mm |
+
+The metal ring and gear serve to transmit torque from the string launcher to the beyblade body. Their mass concentration at r ~= 14 mm gives the SG slightly more I than a pure plastic equivalent.
+
+---
+
+### 3. Moment of Inertia
+
+Annular approximation (r_i = 5 mm, r_o = 15 mm; combined plastic + metal):
+
+I_SG = (1/2) * m * (r_i^2 + r_o^2)
+     = (1/2) * 0.0045 * (0.005^2 + 0.015^2)
+     = (1/2) * 0.0045 * (2.5e-5 + 2.25e-4)
+     = (1/2) * 0.0045 * 2.50e-4
+     = **5.625e-7 kg*m^2**
+
+Assembly fraction (Case 1302): 5.625e-7 / 1.503e-5 = **3.7%** — minor contributor.
+
+---
+
+### 4. Function in Assembly
+
+The SG's primary role is mechanical:
+1. **Torque transmission**: metal gear meshes with launcher driver gear during the pull
+2. **Spin direction locking**: the two right-side tabs engage the launcher, defining CW rotation
+3. **Click-release**: at the end of the pull, the SG releases cleanly into free spin
+
+The metal ring adds a small inertia boost at r ~= 14 mm (useful vs pure-plastic comparable) and provides the gear teeth needed for reliable mesh with the launcher.
+
+---
+
+### 5. Physics Verdict
+
+| I_SG | 5.625e-7 kg*m^2 |
+|------|----------------|
+| Mass | ~4.5 g (est.) |
+| Assembly fraction | 3.7% |
+| Metal content | Yes — ring + gear (~2.0 g at r ~= 14 mm) |
+| Spin direction | Right (CW) |
+| Special features | None (standard SG; no bearing, weight, or engine) |
+
+---
+
+## Case 1301 — Blade Base: Unicolyon Base (est. 9.0 g, Plastic Gen, Defense Type)
+
+**Generation:** Gen 1 Plastic — Spin Gear System
+**Type:** Defense (poor — "useless" per community assessment)
+**Spin direction:** Right
+**Similar to:** Griffolyon Base (comparable wide/flat tip geometry)
+
+---
+
+### 1. Description
+
+The Unicolyon Base is noted as "similar to the Griffolyon Base, useless." In plastic gen, blade base quality is the dominant performance factor — the tip geometry determines orbital behavior, stamina, and maneuverability. The Unicolyon Base and Griffolyon Base share:
+
+- Wide, flat underside profile (large contact area with stadium)
+- Non-competitive tip geometry
+- The "wide flat" profile creates high friction with the stadium at any spin speed, causing rapid spin loss
+
+---
+
+### 2. Tip Friction Analysis
+
+For a wide flat base tip (mu ~= 0.18, r_eff ~= 5 mm):
+
+tau_tip = mu * m_assembly * g * r_eff = 0.18 * 0.0334 * 9.81 * 0.005 = 2.948e-4 N*m
+
+This is 3–5x higher than a competitive Sharp tip (mu ~= 0.06, r_eff ~= 1.5 mm):
+
+tau_Sharp = 0.06 * 0.0334 * 9.81 * 0.0015 = 2.95e-5 N*m
+
+The ratio: 2.948e-4 / 2.95e-5 = **10x more friction** than a Sharp tip. This quantifies the "useless" rating — the base destroys the stamina potential that Eight Heavy and Tail Defense AR would otherwise enable.
+
+---
+
+### 3. Geometry and Mass
+
+Estimated mass: **9.0 g** (est.; Griffolyon Base reference)
+
+| Dimension | Value |
+|-----------|-------|
+| Outer radius r_o | ~32 mm |
+| Inner hub r_i | ~10 mm |
+| Tip type | Wide flat (poor contact geometry) |
+| Tip r_eff | ~5 mm |
+| Tip mu | ~0.18 (wide plastic on polycarbonate) |
+
+---
+
+### 4. Moment of Inertia
+
+I_BB = (1/2) * m * (r_i^2 + r_o^2)
+     = (1/2) * 0.009 * (0.010^2 + 0.032^2)
+     = (1/2) * 0.009 * (1.0e-4 + 1.024e-3)
+     = (1/2) * 0.009 * 1.124e-3
+     = **5.058e-6 kg*m^2**
+
+Assembly fraction (Case 1302): 5.058e-6 / 1.503e-5 = **33.7%**
+
+---
+
+### 5. Physics Verdict
+
+| I_BB | 5.058e-6 kg*m^2 |
+|------|----------------|
+| Mass | ~9.0 g (est.) |
+| Assembly fraction | 33.7% |
+| Tip geometry | Wide flat (mu ~= 0.18, r_eff ~= 5 mm) |
+| Spin decay penalty | 10x higher friction vs Sharp tip |
+| Competitive value | Poor ("useless" — wide flat tip negates Eight Heavy stamina advantage) |
+| Upgrade path | Replace with any Sharp, Semi-Flat, or Grip-type base with narrow tip |
+
+---
+
+## Case 1302 — Unicolyon: Full Assembly (Plastic Gen Spin Gear System, Defense / Anime-Exclusive, Right-Spin)
+
+**Generation:** Gen 1 Plastic — Spin Gear System
+**Type:** Defense (per card: DEF 4000, ATK 3000)
+**Spin direction:** Right
+**Owner:** Oliver (Majestics), Beyblade: 2000
+**Card stats:** ATK 3000, DEF 4000 (Hudson Soft / Takara TCG card #162, Ver.3.0)
+
+---
+
+### 1. Component Summary
+
+Center piece mass convention: Bit Chip (1 g) is excluded from official assembly mass following standard nomenclature. It is listed separately.
+
+| Part | Case | Mass (g) | I (kg*m^2) | Assembly fraction |
+|------|------|---------|-----------|------------------|
+| Bit Chip: Unicolyon | 1297 | 1.0 (excl. from nomenclature) | 6.40e-8 | 0.4% |
+| AR: Tail Defense | 1298 | 4.4 | 3.564e-6 | 23.7% |
+| WD: Eight Heavy | 1299 | ~14.5 | 6.148e-6 | 40.9% |
+| SG: Right SG | 1300 | ~4.5 | 5.625e-7 | 3.7% |
+| BB: Unicolyon Base | 1301 | ~9.0 | 5.058e-6 | 33.7% |
+| **Total (excl. Bit Chip)** | | **32.4** | | |
+| **Total (incl. Bit Chip)** | | **33.4** | | |
+
+Note: Assembly mass used in all physics calculations below = **33.4 g** (including Bit Chip per physical reality; the 32.4 g is the official-nomenclature mass).
+
+---
+
+### 2. Total Moment of Inertia
+
+I_total = I_chip + I_AR + I_WD + I_SG + I_BB
+        = 6.40e-8 + 3.564e-6 + 6.148e-6 + 5.625e-7 + 5.058e-6
+        = (0.064 + 3.564 + 6.148 + 0.563 + 5.058) * 10^-6
+        = 15.397 * 10^-6
+        = **1.540e-5 kg*m^2**
+
+---
+
+### 3. Angular Momentum at Launch
+
+Plastic gen snap launcher: omega_0 ~= 300 rad/s (lower than Burst era string launcher ~700 rad/s)
+
+L_0 = I_total * omega_0 = 1.540e-5 * 300 = **4.620e-3 N*m*s**
+
+At battle omega (~= 185 rad/s, ~62% of launch, typical for plastic gen after 3 s):
+L_battle = 1.540e-5 * 185 = 2.849e-3 N*m*s
+
+---
+
+### 4. Spin Decay Analysis
+
+**With stock Unicolyon Base (wide flat tip, mu = 0.18, r_eff = 5 mm):**
+
+tau_stock = 0.18 * 0.0334 * 9.81 * 0.005 = 2.948e-4 N*m
+d_omega/dt_stock = tau / I = 2.948e-4 / 1.540e-5 = 19.14 rad/s^2
+t_stall_stock = omega_0 / (d_omega/dt) = 300 / 19.14 = **15.7 s** (theoretical, no hits)
+
+**Hypothetical sharp-tip base (mu = 0.06, r_eff = 1.5 mm) — upgrade reference:**
+
+tau_sharp = 0.06 * 0.0334 * 9.81 * 0.0015 = 2.95e-5 N*m
+d_omega/dt_sharp = 2.95e-5 / 1.540e-5 = 1.92 rad/s^2
+t_stall_sharp = 300 / 1.92 = **156 s** (theoretical)
+
+**The Unicolyon Base wastes 90% of the assembly's potential spin time:**
+Spin time with stock base: 15.7 s (15.7 / 156 = 10.1% of potential)
+
+This numerically confirms why the base is described as "useless."
+
+---
+
+### 5. Impact Contact Analysis at battle omega = 185 rad/s
+
+v_tip = omega * r_AR = 185 * 0.036 = **6.66 m/s**
+
+For contact with a representative plastic gen opponent (m2 ~= 38 g; v_approach = 0.8 m/s; e = 0.25):
+
+mu_red = (0.0334 * 0.038) / (0.0334 + 0.038) = 1.269e-3 / 0.0714 = 0.01778 kg
+J = mu_red * v_approach * (1+e) = 0.01778 * 0.8 * 1.25 = 0.01778 N*s
+
+delta_omega_self = J * r_AR / I = 0.01778 * 0.036 / 1.540e-5 = **41.6 rad/s per hit**
+
+From battle omega = 185 rad/s, wobble threshold ~= 0.4 * omega_0 = 120 rad/s:
+Spin margin = 185 - 120 = 65 rad/s
+Hits to wobble threshold = 65 / 41.6 = **~1.6 hits** — only 1-2 direct contacts before wobble onset!
+
+This illustrates why defense type beyblades need both high I AND good burst resistance — even with I = 1.540e-5, the low total L (from plastic gen launch speeds) means very little spin reserve.
+
+---
+
+### 6. Plastic Gen I Comparison
+
+| Assembly | I (1e-5 kg*m^2) | Mass (g) | Era |
+|----------|-----------------|----------|-----|
+| Unicolyon (stock) | 1.540 | 33.4 | Plastic SG |
+| Trygle (from Case 1125) | 2.314 | ~38 est. | Plastic SG |
+| Wyborg Mode 1 (from Case 1126) | 2.124 | ~36 est. | Plastic SG |
+
+Unicolyon's I is significantly lower than Trygle and Wyborg. The Eight Heavy WD is compact (IWD), contributing only 6.148e-6 to I. A Wide Heavy or Wide Defense WD would push I to ~2.0e-5 by adding ~9e-6 at the disc level.
+
+---
+
+### 7. Eight Heavy RPM Advantage in Context
+
+At launch, Eight Heavy's 31% RPM boost vs Wide Heavy translates to:
+- v_tip_8H = omega_8H * r_AR = 1.31 * 300 * 0.036 = 14.17 m/s at launch
+- vs Wide Heavy: 300 * 0.036 = 10.8 m/s
+
+The 31% higher launch speed is erased within ~2.5 s due to the higher d_omega/dt from lower I:
+  d_omega/dt_8H = 2.948e-4 / 1.540e-5 = 19.14 rad/s^2
+  d_omega/dt_Wide = 2.948e-4 / (1.540e-5 + 9.4e-6) = 2.948e-4 / 2.48e-5 = 11.89 rad/s^2 (est.)
+
+Time for same omega: omega_8H(t) = 393 - 19.14t; omega_Wide(t) = 300 - 11.89t
+At crossover: 393 - 19.14t = 300 - 11.89t -> 93 = 7.25t -> t = 12.8 s
+
+So Eight Heavy has faster blade speed for the first ~13 s then falls behind Wide Heavy. In a plastic gen match typically lasting 30–90 s real time, this RPM advantage is relevant only in the initial engagement phase.
+
+---
+
+### 8. Competitive Assessment
+
+| Category | Rating | Reason |
+|----------|--------|--------|
+| Defense (passive) | Low-moderate | Low I (1.540e-5) from compact WD; only 1-2 hits before wobble onset at battle omega |
+| Stamina | Very poor | Stock base t_stall = 15.7 s (10% of theoretical optimum) |
+| Attack | Poor | Low L_0 = 4.620e-3 N*m*s; insufficient impulse for KO at plastic gen masses |
+| RPM / early contact | Moderate | Eight Heavy provides +31% RPM at launch (~13 s advantage window) |
+| Burst resistance | Low | Standard SG with no special locking mechanism |
+| Overall | Below average | The Unicolyon Base negates the Eight Heavy's mass and RPM contributions |
+
+**Critical limitation:** The Unicolyon Base is the single point of failure. With a wide flat tip and no defensive blade geometry, it drains spin 10x faster than optimal and provides no defensive stability.
+
+---
+
+### 9. Upgrade Path
+
+| Component | Stock | Upgrade | Benefit |
+|-----------|-------|---------|---------|
+| BB: Unicolyon Base | Wide flat, useless | Any Sharp or Grip-type base | 10x less friction; t_stall -> 100+ s |
+| WD: Eight Heavy | Compact, high RPM | Wide Defense / Wide Heavy | +30% I, +23% L, better stamina |
+| AR: Tail Defense | Moderate defense | Purpose-built defense AR | Better deflection geometry |
+
+Replacing just the Blade Base transforms Unicolyon from t_stall = 15.7 s to ~100+ s theoretical — a 6-7x improvement in stamina from a single swap.
+
+---
+
+### 10. Physics Verdict
+
+| I_total | 1.540e-5 kg*m^2 |
+|---------|----------------|
+| Total mass (incl. Bit Chip) | 33.4 g |
+| Total mass (excl. Bit Chip, official) | 32.4 g |
+| L_0 (omega_0 = 300 rad/s) | 4.620e-3 N*m*s |
+| d_omega/dt (stock base) | 19.14 rad/s^2 |
+| t_stall (stock base) | **15.7 s** |
+| t_stall (hypothetical sharp tip) | 156 s |
+| Hits to wobble (at battle omega) | ~1-2 |
+| Eight Heavy RPM advantage | +31% for first ~13 s vs Wide Heavy |
+| Card stats (TCG) | ATK 3000, DEF 4000 — Defense type |
+
+**Conclusion:** Unicolyon is an anime-exclusive plastic gen beyblade with fundamentally sound components (Tail Defense AR provides good deflection geometry; Eight Heavy provides high initial RPM) severely undermined by the Unicolyon Base's wide flat tip. The base generates 10x more friction than a competitive Sharp-type tip, reducing theoretical spin time from 156 s to 15.7 s — meaning the combination stalls in roughly 10% of its potential spin time. The Eight Heavy's +31% RPM advantage at launch provides only ~13 s of improved contact speed before the angular velocity advantage is eroded by faster spin decay. As shipped, Unicolyon is a below-average defensive combination whose anime characterization (DEF 4000) reflects BeySpirit-enhanced performance rather than mechanical reality. The assembly is fully redeemable: replacing the Unicolyon Base alone transforms it into a competitive high-RPM defense/stamina combination.
+
+
+## Plastic Gen Anime-Exclusive: Amphilyon (Enrique) — Spin Gear System
+
+---
+
+## Case 1303 — Bit Chip: Amphilyon (1.0 g, Plastic Gen Spin Gear System)
+
+**Tags:** Gen1-Plastic · SGS · Bit-Chip · Anime-Exclusive
+
+### Part Identity
+- **Official name:** Bit Chip — Amphilyon (アンフィリオン)
+- **Owner:** Enrique (Majestics team, European Blader)
+- **System:** Spin Gear System (Plastic Generation)
+- **Series appearance:** Bakuten Shoot Beyblade (original anime)
+- **Type:** Anime-exclusive (no commercial release)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 1.0 g (standard Bit Chip) |
+| Diameter | ~20 mm |
+| Thickness | ~3 mm |
+| Material | Transparent ABS plastic |
+| Radial position | r ≈ 0 mm (center of assembly) |
+
+### Inertia Contribution
+Since r ≈ 0, the Bit Chip contributes negligible rotational inertia:
+- I_chip ≈ m × r² = 0.001 × (0.010)² = 1.0 × 10⁻⁷ kg·m²
+- This is < 0.1% of any full assembly I — treated as zero in all dynamics calculations.
+
+### Functional Role
+- **Physical:** Locking cap that secures the Attack Ring to the Weight Disk stack; provides the recessed face for sticker art.
+- **Convention note:** Excluded from official assembly mass nomenclature (same as all Bit Chips). Assembly masses cited in subsequent cases do not include this 1 g piece unless explicitly stated.
+- **Anime role:** Houses the Bit Beast Amphilyon — a mythological griffin-like creature associated with Enrique. Enables the special move Earth Beast / Amphilyon special attacks via BeySpirit. This is the anime-physics-override domain; real-part physics are unaffected.
+
+### Game-Engine Note
+- Bit Chip mass = 1 g; r = 0; I contribution ignored in all assembly calculations.
+- BeySpirit special move override applies: Amphilyon's special moves bypass normal spin/torque limits when triggered.
+- **Compatible beys:** Any bey assembled with the Amphilyon Bit Chip.
+
+---
+
+## Case 1304 — Attack Ring: Twin Head (est. 5.5 g, Plastic Gen Spin Gear System, Balance Type)
+
+**Tags:** Gen1-Plastic · SGS · AR · Anime-Exclusive · Balance
+
+### Part Identity
+- **Official name:** Attack Ring — Twin Head (ツインヘッド)
+- **Beyblade:** Amphilyon
+- **Owner:** Enrique
+- **System:** Spin Gear System
+- **Type classification:** Balance (moderate attack geometry, sub-AR concept)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass (estimated) | 5.5 g |
+| Outer radius r_o | ~38 mm |
+| Inner radius r_i | ~14 mm |
+| Material | ABS plastic |
+| Contact geometry | Twin-blade design; two raised "head/horn" protrusions at 180° offset |
+| Sub-AR concept | Similar to Warlion (War Lion Core + sub-AR); two smaller horn protrusions reduce recoil |
+| Spin compatibility | Right-spin only (standard SGS) |
+
+### Design Analysis
+Twin Head features two symmetrical horn-shaped contact protrusions positioned 180° apart on the outer rim. The twin-blade geometry means contact points are evenly distributed for balanced spin — neither pure attack (asymmetric) nor pure defense (fully circular), fitting the Balance type classification.
+
+The sub-AR concept: two smaller secondary protrusions (the "horns") sit between the main blades, analogous to how Warlion's sub-AR reduces the main AR's recoil upon impact. In Amphilyon's design, the secondary horns are smaller to limit recoil from aggressive contacts, supporting the Balance orientation.
+
+Comparison to Griffolyon AR: Griffolyon features wider, more wing-like blades with more pronounced OWD. Twin Head is more compact at the blade tips with a more symmetric, twin-focused profile.
+
+### Inertia Calculation
+Using annular ring approximation:
+- I_AR = ½ × m × (r_i² + r_o²)
+- I_AR = ½ × 0.0055 × (0.014² + 0.038²)
+- I_AR = 0.00275 × (0.000196 + 0.001444)
+- I_AR = 0.00275 × 0.001640
+- **I_AR ≈ 4.51 × 10⁻⁶ kg·m²**
+
+### Torque-Transfer Geometry
+- Twin contact protrusions: θ_contact ≈ 0° and 180° (two impact zones per revolution)
+- Each horn tip: ~6 mm arc width → contact dwell time ~5 ms at peak spin
+- Sub-AR horn protrusions (secondary): smaller, ~3 mm arc width → brief deflection contacts
+- Net effect: moderate smash attack combined with partial deflection from secondary horns
+
+### Game-Engine Mapping
+- AR type: `balance` (dual-blade symmetric)
+- Contact count: 2 primary + 2 secondary (sub-AR)
+- Attack geometry: moderate smash; not upper-attack (flat-profile tips)
+- Recoil: moderate (sub-AR reduces main blade recoil vs. Dragoon-class aggressive ARs)
+- Burst risk contribution: moderate (two symmetric catch points on teeth)
+
+---
+
+## Case 1305 — Weight Disk: Wide (13.0 g, Plastic Gen, OWD Stamina / Balance)
+
+**Tags:** Gen1-Plastic · SGS · WD · OWD · Stamina · Balance
+
+### Part Identity
+- **Official name:** Weight Disk — Wide (ワイド)
+- **Beyblade:** Amphilyon (primary WD); also used in other balance/stamina combos
+- **System:** Spin Gear System
+- **Distinction:** The original Wide WD — first Wide WD released in the plastic generation; sets the OWD archetype for the system
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 13.0 g (confirmed exact) |
+| Shape | Hexagonal — 6-sided flat disc |
+| Outer radius r_o | ~40 mm |
+| Inner radius r_i | ~10 mm |
+| Material | ABS plastic (heavier-grade wide-body) |
+| Weight distribution | OWD — weight concentrated at outer perimeter |
+
+### Inertia Calculation
+Using annular ring approximation:
+- I_WD = ½ × m × (r_i² + r_o²)
+- I_WD = ½ × 0.013 × (0.010² + 0.040²)
+- I_WD = 0.0065 × (0.000100 + 0.001600)
+- I_WD = 0.0065 × 0.001700
+- **I_WD ≈ 1.105 × 10⁻⁵ kg·m²**
+
+### OWD vs. Eight Heavy Comparison
+The Wide WD (13.0 g, r_o ≈ 40 mm) vs. Eight Heavy (est. 14.5 g, r_o ≈ 30 mm, compact IWD):
+
+For fixed launcher energy E:
+- ω₀_Wide = √(2E / I_Wide)
+- ω₀_Eight = √(2E / I_Eight)
+- I_Eight ≈ ½ × 0.0145 × (0.008² + 0.030²) ≈ 0.00725 × 0.000964 ≈ 6.99 × 10⁻⁶ kg·m²
+- Ratio: I_Wide / I_Eight ≈ 1.105 / 0.699 ≈ 1.58
+- ω₀_Eight / ω₀_Wide ≈ √1.58 ≈ 1.26 → Eight Heavy spins 26% faster at launch
+
+Despite lower launch RPM, Wide's higher I provides superior **angular momentum L = I × ω**:
+- L_Wide = 1.105 × 10⁻⁵ × ω₀
+- L_Eight = 6.99 × 10⁻⁶ × 1.26 × ω₀ ≈ 8.81 × 10⁻⁶ × ω₀
+- L_Wide / L_Eight ≈ 1.105 / 0.881 ≈ 1.25 → Wide carries 25% more angular momentum
+
+**Physics verdict:** Wide WD provides better stamina (more L for given energy), better spin-stealing resistance, and longer LAD due to the flat hexagonal perimeter making better contact during wobble. Eight Heavy provides higher initial RPM but decays faster — better suited to compact-defense or attack combos needing fast spin rather than long survival.
+
+### Spin Decay Analysis
+- Friction torque: τ = μ × m_total × g × r_eff_tip
+- For a Wide WD combo, typical r_eff_tip (flat base) ≈ 10 mm
+- Normalized decay: dω/dt = τ / I_total
+- Higher I_total from Wide WD reduces dω/dt → slower spin decay per unit torque
+- **Wide WD is the definitive stamina WD for plastic-gen SGS combos**
+
+### Hexagonal Shape Note
+The hexagonal perimeter creates 6 flat faces. During LAD (life-after-death tilt wobble), the hex faces engage the stadium floor at discrete contact angles, producing a slight "skip" rhythm rather than the smooth oval-trace of a circular WD. This provides marginally better floor traction during wobble but also slightly higher rolling friction. Net stamina benefit remains positive vs. IWD designs of equal mass.
+
+### Game-Engine Mapping
+- WD type: `OWD` (outer-weighted)
+- I contribution: 1.105 × 10⁻⁵ kg·m² (highest of plastic-gen standard WDs)
+- LAD quality: ★★★ (confirmed OWD + large radius hexagonal edge)
+- Launch RPM penalty: −26% vs. compact IWD combos (acceptable trade-off for stamina)
+
+---
+
+## Case 1306 — Spin Gear: Right SG (est. 4.5 g, Plastic Gen, Standard Right-Spin)
+
+**Tags:** Gen1-Plastic · SGS · SG · Right-Spin
+
+### Part Identity
+- **Official name:** Spin Gear — Right SG (右回転スピンギア)
+- **Beyblade:** Amphilyon (same as Unicolyon — standard Right SG)
+- **System:** Spin Gear System
+- **Spin direction:** Right (clockwise when viewed from above)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass (estimated) | 4.5 g |
+| Components | Plastic outer casing (~2.5 g) + metal ring/internal gear (~2.0 g) |
+| Outer radius | ~15 mm |
+| Inner radius | ~5 mm |
+| Radial position | ~10–12 mm (nested inside BB, near center) |
+| Material | ABS plastic housing + steel gear |
+
+### Inertia Contribution
+- I_SG ≈ ½ × 0.0045 × (0.005² + 0.015²)
+- I_SG ≈ 0.00225 × (0.000025 + 0.000225)
+- I_SG ≈ 0.00225 × 0.000250
+- **I_SG ≈ 5.6 × 10⁻⁷ kg·m²**
+
+Small contribution: the SG contributes ~5% of typical assembly I. Its primary role is mechanical (transmitting launcher input torque) not inertial.
+
+### Functional Role
+- Interfaces between the launcher's drive shaft and the blade assembly — accepts the string launcher's pull and converts it to the assembly's initial spin.
+- The metal internal gear prevents slippage under high-torque snap launch.
+- Right SG is used by the majority of plastic-gen beyblades; left-spin variants (Left SG) are rare (notable: Trypio, some special editions).
+- **No clutch mechanism** — unlike Engine Gear types, standard Right SG has no spring-release or freewheel feature. Torque is transferred directly, one-to-one.
+
+### Game-Engine Mapping
+- Spin direction: `right` (+ω)
+- Gear efficiency: 1.0 (no clutch loss for standard SG)
+- Launch torque amplification: ×1 (direct transfer)
+- I contribution: 5.6 × 10⁻⁷ kg·m² (included in assembly I_total for completeness)
+
+*(Refer to Case 1299 for the identical Right SG used in Unicolyon — physics are the same.)*
+
+---
+
+## Case 1307 — Blade Base: Amphilyon Base (est. 9.5 g, Plastic Gen, Balance Type with Free-Spin Tip)
+
+**Tags:** Gen1-Plastic · SGS · BB · Balance · Anime-Exclusive · Free-Spin
+
+### Part Identity
+- **Official name:** Blade Base — Amphilyon Base (アンフィリオンベース)
+- **Beyblade:** Amphilyon
+- **Owner:** Enrique
+- **Type:** Balance (dual-purpose: moderate KO resistance + stamina via free-spin tip)
+- **Design lineage:** Majestics series — shares Griffolyon-style base architecture; the Majestics beys (Amphilyon, Griffolyon, Galeon, Unicolyon) all feature a Griffolyon-type base with free-spinning tip arrangement.
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass (estimated) | 9.5 g |
+| Tip type | Free-spinning tip (bearing or low-friction pivot) |
+| Tip radius r_tip | ~2–3 mm (ball-pivot or bearing style) |
+| Effective friction | μ_eff ≈ 0.04–0.06 (free-spin bearing) |
+| Sub-AR / horn design | Two horn protrusions on lower body (smaller than main AR horns) — reduces lateral recoil on glancing contacts |
+| Outer radius r_o | ~16 mm |
+| Inner radius r_i | ~5 mm |
+| Material | ABS plastic |
+
+### Free-Spin Tip Physics
+The Amphilyon Base features a free-spinning tip similar to the ES (Eternal Sharp) or similar bearing-tip designs in later MFB generation. The tip barrel rotates independently of the main beyblade body via a low-friction bearing or pivot point.
+
+**Why free-spin reduces friction:**
+- In a fixed-tip base, all rotational drag occurs at the contact patch: τ_friction = μ_fixed × m × g × r_tip
+- In a free-spin base, the tip outer surface can rotate with or against the floor independently — the friction seen by the spinning body is reduced to bearing friction rather than floor contact friction:
+  - μ_fixed (rubber or ABS flat) ≈ 0.20–0.35
+  - μ_bearing (ball bearing) ≈ 0.01–0.03
+  - μ_free-spin (plastic pivot) ≈ 0.04–0.06
+
+For Amphilyon Base (est. μ_eff ≈ 0.05):
+- τ_spin_decay = μ_eff × m_total × g × r_tip
+- With m_total ≈ 33.5 g (full assembly) and r_tip ≈ 2.5 mm:
+- τ ≈ 0.05 × 0.0335 × 9.81 × 0.0025 ≈ 4.11 × 10⁻⁵ N·m
+
+For comparison, a standard sharp/pointed tip (μ ≈ 0.08, r_tip ≈ 1.5 mm):
+- τ_sharp ≈ 0.08 × 0.0335 × 9.81 × 0.0015 ≈ 3.95 × 10⁻⁵ N·m
+
+The free-spin tip in this case gives similar or marginally higher friction torque than a sharp tip due to the slightly larger contact radius (2.5 vs 1.5 mm), but critically avoids the destabilization effects of a sharp tip on rough stadium surfaces.
+
+**KO Resistance from free-spin:**
+The free-spin tip decouples lateral push-force from the spinning body. When hit laterally:
+- A fixed tip transfers lateral impulse directly to the spinning frame → KO
+- A free-spin tip allows the tip to slide laterally while the frame continues spinning → reduced KO
+- The two-horn sub-AR design further dampens lateral impulse transfer
+
+This gives Amphilyon its Balance-type character: moderate stamina (better than ordinary flat/sharp bases) combined with decent KO resistance from the free-spin decoupling.
+
+### Comparison to Orthros / Warlion Concept
+The summary describes Amphilyon Base as "similar to Orthros in concept with twin heads/sub-AR, similar to Warlion having War Lion Core + sub-AR, 2 horns smaller to reduce recoil." This is the key design principle:
+
+| Feature | Orthros concept | Warlion concept | Amphilyon Base |
+|---------|----------------|-----------------|----------------|
+| Sub-AR | Full secondary AR ring | Sub-AR attached to core | Two horn protrusions on base body |
+| Purpose | Counter-spin / recoil management | Adds attack surface | Reduces lateral recoil on base contact |
+| Tip | Various | Various | Free-spinning (Balance) |
+| Net effect | Complex recoil cycling | Increased attack | Reduced recoil + improved stamina |
+
+### Inertia Contribution
+- I_BB ≈ ½ × 0.0095 × (0.005² + 0.016²)
+- I_BB ≈ 0.00475 × (0.000025 + 0.000256)
+- I_BB ≈ 0.00475 × 0.000281
+- **I_BB ≈ 1.33 × 10⁻⁶ kg·m²**
+
+### Game-Engine Mapping
+- Tip type: `free-spin` (bearing-style pivot)
+- μ_eff: 0.05 (bearing friction model)
+- r_tip: 2.5 mm
+- KO resistance modifier: +15% (free-spin decoupling vs. fixed tip)
+- Sub-AR recoil damping: −20% lateral impulse transfer on base contacts
+- Stamina modifier: +8% vs. standard flat/sharp base (lower friction than flat, more stable than pure sharp)
+
+---
+
+## Case 1308 — Amphilyon: Full Assembly (Plastic Gen, Balance Type, Anime-Exclusive, Right-Spin)
+
+**Tags:** Gen1-Plastic · SGS · Assembly · Balance · Anime-Exclusive · Majestics
+
+### Assembly Identity
+- **Beyblade:** Amphilyon (アンフィリオン)
+- **Owner:** Enrique (Majestics, European representative)
+- **Series:** Bakuten Shoot Beyblade (original anime, non-commercial)
+- **Type:** Balance
+- **Spin direction:** Right-spin
+- **TCG stats:** ATK 4000 / DEF 4000, Water-type, Speed 626, Attack 567, Guard 547, Endure 321, Balance 490
+- **TCG card number:** #161
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Bit Chip | Amphilyon | 1.0 g (excluded from assembly mass per convention) |
+| Attack Ring | Twin Head | 5.5 g (est.) |
+| Weight Disk | Wide | 13.0 g (confirmed) |
+| Spin Gear | Right SG | 4.5 g (est.) |
+| Blade Base | Amphilyon Base | 9.5 g (est.) |
+| **Assembly total (excl. Bit Chip)** | | **~32.5 g** |
+| **Assembly total (incl. Bit Chip)** | | **~33.5 g** |
+
+### Geometric Parameters
+| Parameter | Value |
+|-----------|-------|
+| AR outer radius | 38 mm |
+| WD outer radius | 40 mm |
+| WD inner radius | 10 mm |
+| BB tip radius | 2.5 mm (free-spin) |
+| Overall height | ~35 mm (standard SGS stack) |
+| Center of mass height | ~12 mm above tip |
+
+### Moment of Inertia (Full Assembly)
+Summing all components:
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Attack Ring (Twin Head, 5.5 g) | 4.51 × 10⁻⁶ |
+| Weight Disk (Wide, 13.0 g) | 1.105 × 10⁻⁵ |
+| Spin Gear (Right SG, 4.5 g) | 5.6 × 10⁻⁷ |
+| Blade Base (Amphilyon Base, 9.5 g) | 1.33 × 10⁻⁶ |
+| Bit Chip (1.0 g, r≈0) | ~0 |
+| **I_total** | **≈ 1.74 × 10⁻⁵ kg·m²** |
+
+### Launch Physics (Plastic Gen Snap Launcher)
+- ω₀ ≈ 300 rad/s (snap launcher, plastic gen standard)
+- L₀ = I_total × ω₀ = 1.74 × 10⁻⁵ × 300 ≈ **5.22 × 10⁻³ N·m·s**
+- Battle ω ≈ 185 rad/s (62% of launch, post-drift stabilization)
+- L_battle = 1.74 × 10⁻⁵ × 185 ≈ **3.22 × 10⁻³ N·m·s**
+
+### Spin Decay Analysis
+- Friction torque: τ = μ_eff × m × g × r_tip
+  - τ = 0.05 × 0.0335 × 9.81 × 0.0025 ≈ 4.11 × 10⁻⁵ N·m
+- Angular deceleration: dω/dt = τ / I_total = 4.11 × 10⁻⁵ / 1.74 × 10⁻⁵ ≈ **2.36 rad/s²**
+- Theoretical stall time: t_stall = ω₀ / (dω/dt) = 300 / 2.36 ≈ **127 s** (under ideal no-contact conditions)
+- Realistic match survival: ~50–70 s after impacts
+
+### Balance Type Physics
+Amphilyon's equal ATK/DEF values (4000/4000 on TCG) reflect the dual-capability design:
+
+**Attack contribution:** Twin Head AR provides two symmetric contact points with moderate smash geometry. Not aggressive enough for dedicated attack combos but delivers meaningful hits on opponents.
+
+**Defense contribution:** Wide WD provides high angular momentum (resistance to spin-out from hits). Free-spin Amphilyon Base provides KO-resistance via decoupled tip dynamics. Sub-AR horn protrusions on base reduce lateral impulse transfer.
+
+**Stamina contribution (secondary):** The free-spin tip gives better endurance than fixed-base peers (Galeon, Orthros standard bases). Wide WD maximizes L for plastic-gen launch energy.
+
+### Center of Mass and Precession
+- CoM height ≈ 12 mm above tip contact
+- Gyroscopic precession rate: Ω_p = τ_gravity / L
+  - τ_gravity = m × g × r_CoM_offset × sin(θ) (θ = tilt angle)
+  - At θ = 5° tilt: τ_gravity ≈ 0.0335 × 9.81 × 0.005 × sin(5°) ≈ 1.43 × 10⁻⁴ N·m
+  - Ω_p = 1.43 × 10⁻⁴ / 3.22 × 10⁻³ ≈ **0.044 rad/s** (slow, stable precession → Balance type behavior)
+
+Wide WD's high L suppresses rapid precession, contributing to the stable balanced motion rather than the aggressive wobble of low-L attack combos.
+
+### Majestics Series Context
+The Majestics are a set of four European/international Bladers whose beyblades all use the Griffolyon-type base architecture with free-spinning tips:
+- **Amphilyon** (Enrique) — Balance, Twin Head AR, Wide WD
+- **Griffolyon** (Robert) — Defense/Stamina, Wing Saber AR, Ten Wide WD
+- **Galeon** (Olivier, French) — Attack, Leon Claw AR, Eight Wide WD
+- **Unicolyon** (Oliver, Violin-player) — Defense, Tail Defense AR, Eight Heavy WD
+
+All four share the free-spin base concept, making them universally more durable than standard fixed-tip equivalents. Amphilyon's Balance orientation sets it apart as the all-rounder of the quartet.
+
+### Anime Physics Note
+Enrique's special move (Earth Beast / mythological griffin attack) invokes BeySpirit override: all EG/mechanical limits are suspended and the move bypasses normal spin and momentum constraints. This is the standard anime-physics-override domain (see [[project_anime_physics_override]]). The real-part physics above apply to non-special-move gameplay.
+
+### Compatible Beys (Special Move)
+Any bey assembled with the Amphilyon Bit Chip may access Enrique's special moves in anime-mode gameplay. Standard rules otherwise apply.
+
+### Game-Engine Mapping
+- Assembly type: `balance`
+- I_total: 1.74 × 10⁻⁵ kg·m²
+- Launch ω₀: 300 rad/s
+- L₀: 5.22 × 10⁻³ N·m·s
+- Spin decay rate: 2.36 rad/s²
+- Tip model: `free-spin` (μ = 0.05, r = 2.5 mm)
+- KO resistance: +15% (free-spin) + moderate L buffer from Wide WD
+- AR profile: dual-blade balance (2 primary + 2 secondary contacts)
+- Generation: `Gen1-Plastic`
+
+
+## Burst GT Gatinko — Bigbang Genesis Hybrid (Anime Combo)
+
+---
+
+## Case 1309 — Energy Layer: Bigbang Genesis (26.6 g without Armor / 30.8 g with Bigbang Armor, Burst GT Gatinko Layer System)
+
+**Tags:** Gen3-Burst · Burst-GT · Gatinko · Layer · Defense · Monolithic · Anime-Exclusive
+
+### Part Identity
+- **Official name:** Energy Layer — Bigbang Genesis (ビッグバンジェネシス)
+- **Stylized:** Bigbang γenesis
+- **Beyblade:** Bigbang Genesis Hybrid (anime combo); stock combo: Bigbang Genesis 0 Yard Metal
+- **System:** Burst System — Gatinko Layer System (Burst GT generation)
+- **Type:** Defense
+- **Spin direction:** Right-spin
+- **Takara Tomy release:** Yes (commercial; anime featured version uses Hybrid driver)
+- **Hasbro equivalent:** Not directly noted (GT Hasbro releases generally use weaker plastics)
+
+### Unique Architecture — Monolithic Non-Customizable Layer
+Unlike all other Gatinko Layers (which separate into Gatinko Chip + Layer Base + optional Layer Weight), Bigbang Genesis is cast as a **single unified piece** — the Gatinko Chip mounting boss, the Base plate, and the integrated Weight mass are all part of one non-separable layer.
+
+This makes it the **third non-customizable Gatinko Layer** after:
+1. Prime Apocalypse (another monolithic Gatinko layer)
+2. Regalia Genesis (same — also compatible with Bigbang Armor)
+3. **Bigbang Genesis** (this part)
+
+The "Eclipse Genesis" nickname arises from the thematic pairing: Regalia Genesis (sun motif) and Prime Apocalypse (moon motif) together suggest a solar eclipse — Bigbang Genesis is the third element of this set.
+
+### Bigbang Armor Compatibility
+Bigbang Genesis is one of three layers compatible with the **Bigbang Armor** accessory:
+- Bigbang Genesis (this layer)
+- Regalia Genesis
+- Prime Apocalypse
+
+With Bigbang Armor attached: **30.8 g**
+Without Bigbang Armor: **26.6 g**
+Bigbang Armor mass: 30.8 − 26.6 = **4.2 g**
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass (without Armor) | 26.6 g |
+| Mass (with Armor) | 30.8 g |
+| Outer radius r_o | ~40 mm |
+| Inner radius r_i | ~10 mm |
+| Metal content | Integrated into monolithic cast (internal metal ring or inserts in weight zone) |
+| Layer profile | Defense — sloped/rounded contact points to deflect attacks |
+| Burst teeth | High burst resistance (Defense type priority) |
+| Material | ABS + integrated metal |
+
+### Inertia Calculation (Without Armor)
+- I_layer = ½ × m × (r_i² + r_o²)
+- I_layer = ½ × 0.0266 × (0.010² + 0.040²)
+- I_layer = 0.0133 × (0.000100 + 0.001600)
+- I_layer = 0.0133 × 0.001700
+- **I_layer(no armor) ≈ 2.261 × 10⁻⁵ kg·m²**
+
+### Inertia Calculation (With Bigbang Armor)
+- I_layer = ½ × 0.0308 × 0.001700
+- **I_layer(with armor) ≈ 2.618 × 10⁻⁵ kg·m²**
+
+### Defense Contact Geometry
+As a Defense type, the layer's contact points are sloped or curved — designed to redirect incoming attack-type strikes tangentially rather than absorbing them head-on. This reduces burst torque transferred per impact.
+
+Monolithic construction means there are no gaps from removable Weight inserts, giving the layer a more continuous mass distribution than chip+base+weight assemblies — slightly improving burst resistance by eliminating mechanical looseness at the connection interfaces.
+
+### Game-Engine Mapping
+- Layer type: `defense` (monolithic, non-customizable)
+- I_contribution(no armor): 2.261 × 10⁻⁵ kg·m²
+- I_contribution(with armor): 2.618 × 10⁻⁵ kg·m²
+- Burst resistance: high (Defense type + monolithic rigidity)
+- Armor toggle: boolean flag — `bigbangArmorAttached: true/false`
+
+---
+
+## Case 1310 — Bigbang Armor (4.2 g, Burst GT Gatinko Add-On)
+
+**Tags:** Gen3-Burst · Burst-GT · Gatinko · Armor · Add-On · Defense
+
+### Part Identity
+- **Official name:** Bigbang Armor (ビッグバンアーマー)
+- **Compatible layers:** Bigbang Genesis, Regalia Genesis, Prime Apocalypse
+- **System:** Burst System — Gatinko Layer System
+- **Function:** Mass add-on that clips onto compatible monolithic Gatinko layers to increase total layer mass and I
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 4.2 g (derived: 30.8 − 26.6 g) |
+| Mount position | Outer rim of compatible layer (adds to perimeter) |
+| Material | ABS plastic with possible metal accent |
+| Outer radius contribution | ~40–42 mm (adds to effective r_o slightly) |
+
+### Inertia Contribution
+Treating as an annular ring at r ≈ 40 mm (outer rim mount):
+- I_armor ≈ m × r_eff²  (point-mass at rim)
+- I_armor ≈ 0.0042 × (0.041)² ≈ 0.0042 × 0.001681
+- **I_armor ≈ 7.06 × 10⁻⁶ kg·m²**
+
+Difference check: I_layer(with) − I_layer(no) = 2.618 × 10⁻⁵ − 2.261 × 10⁻⁵ = 3.57 × 10⁻⁶ kg·m²
+- Simple annular ring model gives 7.06 × 10⁻⁶ which is 2× higher
+- The armor sits at outer perimeter but also has mass toward center of the attachment frame — a more realistic estimate: r_eff ≈ 30 mm
+- I_armor ≈ 0.0042 × (0.030)² = 0.0042 × 0.000900 ≈ **3.78 × 10⁻⁶ kg·m²** ✓ (consistent with mass-difference method)
+
+### Effect on Spin
+With Armor attached:
+- Higher I_total → lower launch ω₀ for same launcher energy
+- Higher angular momentum L at any given ω → better stamina, better resistance to KO and spin-out
+- Marginally better burst resistance (more mass to absorb and distribute burst torque)
+
+### Use Case
+Armor is primarily used in Defense and Stamina combos that can afford the reduced launch RPM in exchange for sustained spin and impact resistance. In attack-type combinations, the RPM penalty usually outweighs the L benefit.
+
+### Game-Engine Mapping
+- Add-on type: `armor`
+- Compatible layers: `bigbang_genesis`, `regalia_genesis`, `prime_apocalypse`
+- I_add: 3.78 × 10⁻⁶ kg·m²
+- Mass_add: 4.2 g
+- Effect: +I, +L at given ω, −ω₀ for fixed launch energy
+
+---
+
+## Case 1311 — Performance Tip: Hybrid (Disc-Integrated Driver, Burst GT Gatinko)
+
+**Tags:** Gen3-Burst · Burst-GT · Gatinko · Disc · Driver · Disc-Integrated · Defense · Stamina
+
+### Part Identity
+- **Official name:** Performance Tip — Hybrid (ハイブリッド)
+- **Beyblade:** Bigbang Genesis Hybrid (anime combo); reused from Regalia Genesis Hybrid
+- **System:** Burst System — Gatinko Layer System
+- **Special architecture:** Disc-integrated driver — combines the Forge Disc and Performance Tip into a single unit
+- **Type:** Defense / Stamina hybrid (name reflects dual-mode behavior)
+
+### Disc-Integrated Architecture
+The Hybrid driver is unique in the Gatinko system: it combines the normally-separate Forge Disc and Performance Tip into one piece. This means:
+- No separate Forge Disc slot is needed — the driver assembly mounts directly to the Layer
+- The driver's disc section provides the OWD/IWD mass distribution
+- The driver section (tip contact) provides the movement behavior
+- Total part count for Bigbang Genesis Hybrid is just **2 parts**: the Layer (Bigbang Genesis) and the Hybrid driver — the most minimal Gatinko assembly possible
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass (estimated) | ~20–22 g (disc-integrated; includes disc mass) |
+| Disc outer radius r_o | ~38 mm |
+| Disc inner radius r_i | ~8 mm |
+| Tip type | Combined disc-tip mechanism |
+| Tip contact radius | ~5–8 mm (defense-type wide base) |
+| Material | ABS with metal disc insert (OWD design) |
+
+### Inertia (Disc Component)
+Treating the disc portion as annular ring (m_disc ≈ 15 g of total 21 g):
+- I_disc = ½ × 0.015 × (0.008² + 0.038²)
+- I_disc = 0.0075 × (0.000064 + 0.001444)
+- I_disc = 0.0075 × 0.001508
+- **I_disc ≈ 1.131 × 10⁻⁵ kg·m²**
+
+Tip/driver housing (m_tip ≈ 6 g, concentrated at r ≈ 10 mm):
+- I_tip ≈ 0.006 × (0.010)² = **6.0 × 10⁻⁷ kg·m²**
+
+**I_hybrid_total ≈ 1.191 × 10⁻⁵ kg·m²**
+
+### Defense / Stamina Hybrid Behavior
+The "Hybrid" name describes the driver's dual movement profile:
+- At high spin: defense-type movement — stays near center, resists KO due to the wide-base disc contact
+- At low spin / tilt: transitions toward stamina-preserving behavior — the tip geometry allows gradual center-hold as spin decays
+- This is analogous to later Burst drivers like Atomic or Bearing that shift behavior with spin rate
+
+Effective friction coefficient depends on spin state:
+- High spin (ω > 60% ω₀): μ_eff ≈ 0.10–0.15 (wide base = some friction, center-stable)
+- Low spin (ω < 40% ω₀): μ_eff ≈ 0.05–0.08 (tip settles to narrow contact → LAD mode)
+
+### Game-Engine Mapping
+- Driver type: `disc-integrated`
+- I_contribution: 1.191 × 10⁻⁵ kg·m²
+- Tip model: `hybrid` (spin-rate dependent μ)
+- μ_high: 0.12, μ_low: 0.06
+- Movement: `defense-center` → `stamina-LAD` transition
+- No separate disc slot; disc and driver are one unit
+
+---
+
+## Case 1312 — Bigbang Genesis Hybrid: Full Assembly (Burst GT Gatinko, Defense Type, Anime Combo)
+
+**Tags:** Gen3-Burst · Burst-GT · Gatinko · Assembly · Defense · Monolithic · Anime
+
+### Assembly Identity
+- **Beyblade:** Bigbang Genesis Hybrid (ビッグバンジェネシス・ハイブリッド)
+- **Stylized:** Bigbang γenesis Hybrid
+- **Type:** Defense
+- **Spin direction:** Right-spin
+- **System:** Burst System — Gatinko Layer System
+- **Anime combo context:** Anime/manga combo of Bigbang Genesis 0 Yard Metal; reuses Hybrid driver from Regalia Genesis Hybrid
+- **Also known as:** "Eclipse Genesis" (fan nickname — Regalia = sun, Prime Apocalypse = moon → Eclipse pairing)
+- **Note:** Bigbang Genesis (TT) has no stated Hasbro equivalent with Hybrid; Hasbro GT combos used different configurations
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Energy Layer | Bigbang Genesis | 26.6 g (without Armor) |
+| Bigbang Armor | Bigbang Armor | 4.2 g (if attached) |
+| Driver (disc-integrated) | Hybrid | ~21 g (est.) |
+| **Assembly total (no Armor)** | | **~47.6 g** |
+| **Assembly total (with Armor)** | | **~51.8 g** |
+
+*(No Stone Face in Gatinko system; Layer mass is the chip+base+weight monolith)*
+
+### Moment of Inertia (Full Assembly, Without Armor)
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Energy Layer — Bigbang Genesis (26.6 g) | 2.261 × 10⁻⁵ |
+| Driver — Hybrid (~21 g disc-integrated) | 1.191 × 10⁻⁵ |
+| **I_total (no Armor)** | **≈ 3.452 × 10⁻⁵ kg·m²** |
+
+### Moment of Inertia (Full Assembly, With Armor)
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Energy Layer — Bigbang Genesis (30.8 g) | 2.618 × 10⁻⁵ |
+| Driver — Hybrid (~21 g) | 1.191 × 10⁻⁵ |
+| **I_total (with Armor)** | **≈ 3.809 × 10⁻⁵ kg·m²** |
+
+### Launch Physics (Burst GT LR String Launcher)
+- ω₀ ≈ 700 rad/s (LR string launcher, Burst era standard)
+
+**Without Armor:**
+- L₀ = 3.452 × 10⁻⁵ × 700 ≈ **2.416 × 10⁻² N·m·s**
+
+**With Armor:**
+- L₀ = 3.809 × 10⁻⁵ × 700 ≈ **2.666 × 10⁻² N·m·s**
+- Launch RPM penalty vs. no-armor: ω₀_armor/ω₀_plain = √(I_plain/I_armor) = √(3.452/3.809) ≈ **0.953** → −4.7% RPM, +10.4% angular momentum
+
+### Spin Decay Analysis
+Using Hybrid driver at high-spin phase (μ_eff ≈ 0.12, r_tip ≈ 6 mm):
+- τ = 0.12 × 0.0476 × 9.81 × 0.006 ≈ 3.37 × 10⁻⁴ N·m
+- dω/dt = 3.37 × 10⁻⁴ / 3.452 × 10⁻⁵ ≈ **9.76 rad/s²**
+- t_stall (no armor, high-spin phase) ≈ 700 / 9.76 ≈ **71.7 s**
+
+At low-spin LAD phase (μ_eff ≈ 0.06, r_tip ≈ 3 mm):
+- τ = 0.06 × 0.0476 × 9.81 × 0.003 ≈ 8.43 × 10⁻⁵ N·m
+- dω/dt ≈ 8.43 × 10⁻⁵ / 3.452 × 10⁻⁵ ≈ **2.44 rad/s²** (much slower decay → extended LAD)
+
+### Wobble and Nutation
+Stability threshold (same as all Burst-era beys): ω_crit = 0.40 × ω₀ = 0.40 × 700 = **280 rad/s**
+
+Below 280 rad/s, PRNG-seeded wobble perturbations begin. High I_total means the bey is more resistant to these perturbations — the gyroscopic stiffness L/I_total = ω remains the governing factor, but the high I delays the onset of visible precession.
+
+### Two-Part Simplicity
+Bigbang Genesis Hybrid is the simplest possible Gatinko assembly:
+- Part 1: Bigbang Genesis (monolithic layer)
+- Part 2: Hybrid (disc-integrated driver)
+- No separate disc = no disc-selection optimization required
+- Defense performance derived entirely from the layer's geometry and the driver's center-hold behavior
+
+This mirrors the design philosophy of Regalia Genesis Hybrid (same driver, different monolithic layer), making both beys variants of the same physical archetype: maximum mass concentration with minimal part count.
+
+### Anime Context
+Bigbang Genesis Hybrid is the anime/manga signature combo. The "Eclipse Genesis" fan name reflects the visual and thematic trio: Regalia Genesis (gold/sun energy), Prime Apocalypse (dark/moon energy), and Bigbang Genesis (cosmic explosion/union) — the three monolithic layers representing mythological celestial events. In the anime, special moves involving this trio invoke BeySpirit override (anime-physics domain; see [[project_anime_physics_override]]).
+
+### Compatible Beys (Special Move)
+Any bey carrying the Bigbang Genesis layer may access the anime special moves in BeySpirit-enabled gameplay. Hybrid driver combos from Regalia Genesis Hybrid use the same driver physics.
+
+### Game-Engine Mapping
+- Assembly type: `defense`
+- I_total (no armor): 3.452 × 10⁻⁵ kg·m²
+- I_total (with armor): 3.809 × 10⁻⁵ kg·m²
+- Launch ω₀: 700 rad/s
+- L₀ (no armor): 2.416 × 10⁻² N·m·s
+- L₀ (with armor): 2.666 × 10⁻² N·m·s
+- Spin decay (high-spin): 9.76 rad/s²
+- Spin decay (LAD phase): 2.44 rad/s²
+- Tip model: `hybrid` (μ spin-rate dependent)
+- Generation: `Gen3-Burst` / `Burst-GT`
+- Layer architecture: `monolithic-non-customizable`
+- Armor: optional toggle (`bigbangArmorAttached`)
+
+
+## Burst Cho-Z System — Orb Egis Outer Quest
+
+---
+
+## Case 1267 — Energy Layer: Orb Egis (18.67 g, Burst Cho-Z Layer System, Defense Type)
+
+**Tags:** Gen3-Burst · Burst-CZ · Cho-Z · Layer · Defense · Metal · Destabilizer
+
+### Part Identity
+- **Official name:** Energy Layer — Orb Egis (オーブイージス)
+- **System:** Burst System — Cho-Z Layer System
+- **Type:** Defense
+- **Spin direction:** Right-spin
+- **Takara Tomy release:** Yes (Cho-Z commercial release)
+- **Hasbro equivalent:** Pro Series Orb Engaard — virtually unchanged from Orb Egis but manufactured with weaker materials
+- **Mythology:** Design depicts the Aegis — the legendary divine shield from Greek mythology — featuring six serpentine heads of a Gorgon (Medusa motif) on the layer face
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 18.67 g (Takara Tomy; confirmed) |
+| Shape | Trapezoid-shaped perimeter design |
+| Outer radius r_o | ~40 mm |
+| Inner radius r_i | ~8 mm |
+| Metal placement | Inner circumference metal lining + two metal spheres on opposite sides (180° apart) |
+| Contact geometry | Sloped contact points (defense / destabilization) |
+| Material | ABS + metal inserts |
+
+### Metal Distribution Analysis
+Orb Egis features two types of metal placement:
+1. **Inner circumference metal ring** (~3–4 mm width lining at r ≈ 30–34 mm inner boundary) — adds distributed mass near the middle-radius zone
+2. **Two metal spheres** positioned 180° apart at r ≈ 37–40 mm — concentrated high-r point masses
+
+This dual metal layout produces a non-uniform I distribution:
+- Metal ring contribution (treating as annular section, m_ring ≈ 2 g at r_avg ≈ 32 mm):
+  - I_ring ≈ 0.002 × (0.032)² = 2.048 × 10⁻⁶ kg·m²
+- Two metal spheres (m_spheres ≈ 1.5 g total, r ≈ 39 mm each):
+  - I_spheres ≈ 0.0015 × (0.039)² = 2.281 × 10⁻⁶ kg·m²
+- ABS body (m_ABS ≈ 15.17 g, annular ring approximation):
+  - I_ABS = ½ × 0.01517 × (0.008² + 0.040²) = 0.007585 × 0.001664 = 1.262 × 10⁻⁵ kg·m²
+
+**I_total_layer ≈ 1.262 × 10⁻⁵ + 2.048 × 10⁻⁶ + 2.281 × 10⁻⁶ ≈ 1.695 × 10⁻⁵ kg·m²**
+
+Full annular ring approximation check (18.67 g total):
+- I_simple = ½ × 0.01867 × (0.008² + 0.040²) = 0.009335 × 0.001664 = **1.553 × 10⁻⁵ kg·m²**
+
+The detailed calculation gives higher I (~9% more) because the metal spheres are at near-maximum r — the OWD effect of the spheres increases I above what a uniform mass distribution would predict.
+
+**Best estimate: I_layer ≈ 1.60 × 10⁻⁵ kg·m²** (between simple and detailed estimates)
+
+### Sloped Contact Points — Destabilizer Function
+The sloped contact points are the key performance feature. In standard Defense type layers, contact points are rounded to deflect hits outward. Orb Egis takes this further — the slope angle is tuned to transfer incoming attack-bey momentum into a **destabilizing tilt perturbation** on the attacker rather than a clean deflection.
+
+Mechanism:
+- Attacker strikes Orb Egis contact slope at angle θ_slope
+- Normal force component: F_n = F_impact × cos(θ_slope)
+- Tangential (destabilizing) component: F_tang = F_impact × sin(θ_slope)
+- F_tang is directed upward relative to the attacker → applies a tilting moment: τ_tilt = F_tang × r_contact
+- This tilt moment is most effective when paired with a wide, stable tip (Atomic, Quest, etc.) on Orb Egis — the defender stays put while the attacker wobbles off
+
+This is why Orb Egis is noted as an **excellent destabilizer with Atomic' tip**: the sloped contacts consistently tilt the attacker while the stable tip keeps Orb Egis centered.
+
+### High Defense Potential Note
+On release, Orb Egis was a top-tier Defense choice because:
+1. High mass (18.67 g) — one of the heaviest Cho-Z layers, high angular momentum buffer
+2. Metal inner lining — raises burst resistance (metal-to-plastic contact gives better tooth grip)
+3. Sloped contacts — deflect burst torque to reduce teeth engagement force per hit
+4. Two metal spheres — add OWD inertia, improving spin-theft resistance
+
+### Game-Engine Mapping
+- Layer type: `defense` (destabilizer sub-type)
+- I_contribution: 1.60 × 10⁻⁵ kg·m²
+- Metal inserts: inner ring + 2× sphere at r ≈ 39 mm
+- Burst resistance: high (metal lining on burst teeth)
+- Destabilize modifier: +20% tilt induction on attacker per contact vs. standard Defense contacts
+- Generation: `Gen3-Burst` / `Burst-CZ`
+
+---
+
+## Case 1268 — Forge Disc: Outer (22.05 g, Burst Cho-Z)
+
+**Tags:** Gen3-Burst · Burst-CZ · Disc · OWD · Stamina · LAD
+
+### Part Identity
+- **Official name:** Forge Disc — Outer (アウター)
+- **System:** Burst System (compatible across God/Cho-Z/GT/Sparking)
+- **Weight:** 22.05 g (confirmed)
+- **Performance classification:** Highest Stamina and LAD in the Burst disc lineup
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 22.05 g |
+| Shape | Wide, nearly perfectly circular perimeter; large central gaps |
+| Outer radius r_o | ~42 mm |
+| Inner radius r_i | ~8 mm |
+| Gap design | Large gaps between center hub and outer perimeter (open spoke structure) |
+| Material | Metal (zinc alloy or similar) |
+| Weight distribution | OWD — mass concentrated at outer circular perimeter |
+
+### Design Rationale
+Outer features a distinctive construction: the center hub connects to the outer perimeter ring via thin spokes or minimal bridging, with large open gaps. This concentrates virtually all the disc mass at the outermost ring.
+
+**Why large gaps + circular perimeter = best stamina:**
+1. **OWD maximization:** By leaving the center near-empty and massing at the rim, Outer achieves the highest I-per-gram ratio of any standard Burst disc
+2. **Circular perimeter for LAD:** The smooth circular outer edge makes consistent contact with the stadium floor during tilt-wobble, enabling the best possible Life-After-Death
+3. **No burst risk from disc shape:** Unlike Core Disc + Frame combinations (e.g., 2/4/5/7 Cross/Glaive with various frames), which add burst risk due to the additional frame layer, Outer is a single unit — it does not worsen burst resistance
+4. **Better than Ring disc for stamina:** Ring disc is similar in concept but Outer's larger outer radius and more perfectly circular perimeter edge it out for pure LAD
+
+### Inertia Calculation
+Treating as thin annular ring at r_eff ≈ 40 mm (mass concentrated at perimeter):
+- I_Outer = m × r_eff² = 0.02205 × (0.040)² = 0.02205 × 0.001600
+- **I_Outer ≈ 3.528 × 10⁻⁵ kg·m²** (point-mass-at-rim model)
+
+Full annular ring approximation:
+- I_Outer = ½ × 0.02205 × (0.008² + 0.042²) = 0.011025 × (0.000064 + 0.001764) = 0.011025 × 0.001828
+- **I_Outer ≈ 2.016 × 10⁻⁵ kg·m²**
+
+Best estimate (OWD mass concentration between the two models, ~70% of mass at r > 35 mm):
+- I_Outer ≈ **2.5 × 10⁻⁵ kg·m²**
+
+### Stamina/LAD Comparison
+Outer vs. other major Cho-Z discs (comparative I estimates at equal mass basis):
+| Disc | Mass | Shape | I_est |
+|------|------|-------|-------|
+| Outer | 22.05 g | Circular OWD | 2.5 × 10⁻⁵ |
+| 7 (Disc 7) | 23.2 g | Asymmetric elliptical | ~2.0 × 10⁻⁵ |
+| 0 (Zero) | ~21 g | Circular with ridges | ~2.2 × 10⁻⁵ |
+| Ring | ~19 g | Ring with frame-compatible | ~2.0 × 10⁻⁵ |
+
+Outer leads in effective I for stamina use cases despite not being the heaviest disc (7 and 0 are heavier) because its circular perimeter maximizes r_eff.
+
+### Burst Risk Note
+Outer presents **no additional burst risk** relative to its weight: it is a single-piece disc without a removable frame, and its smooth perimeter does not create torque-amplifying contact geometry that some asymmetric discs (like 7) can produce.
+
+### Game-Engine Mapping
+- Disc type: `OWD` (circular perimeter, gap-spoke construction)
+- I_contribution: 2.5 × 10⁻⁵ kg·m²
+- LAD quality: ★★★★★ (highest in Burst disc roster)
+- Burst risk from disc: none
+- Generation: `Gen3-Burst` (universal cross-gen compatibility)
+
+---
+
+## Case 1269 — Performance Tip: Quest (7.3 g, Burst Cho-Z, Defense Type — Suction Cup)
+
+**Tags:** Gen3-Burst · Burst-CZ · Driver · Defense · Suction-Cup · KO-Resistance
+
+### Part Identity
+- **Official name:** Performance Tip — Quest (クエスト)
+- **System:** Burst System (Cho-Z era; cross-gen compatible)
+- **Weight:** 7.3 g (confirmed)
+- **Type:** Defense
+- **Unique gimmick:** Free-spinning downward-facing conical suction cup tip with a central sharp point
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 7.3 g |
+| Tip design | Conical suction cup (downward-facing) + central sharp tip |
+| Suction cup outer radius | ~8–10 mm |
+| Central sharp tip radius | ~0.5 mm |
+| Free-spinning mechanism | Suction cup spins freely relative to driver body |
+| Material | ABS outer + rubber suction cup |
+
+### Suction Cup Gimmick — Physics Analysis
+The Quest tip uses a free-spinning conical suction cup. The suction cup faces downward and is sized to form a low-pressure seal with the stadium floor at low spin rates (when the bey tilts slightly and pressure increases).
+
+**KO Resistance mechanism:**
+At moderate spin, the suction cup engages the floor surface. The seal creates a mild vacuum-like adhesion force:
+- Pressure differential ΔP ≈ 0.1–0.5 kPa (very modest suction for a small cup)
+- Adhesion force: F_adhesion = ΔP × A_cup = 0.3 × 10³ × π × (0.009)² ≈ 0.076 N
+- For a ~50 g combo (m ≈ 0.050 kg): F_adhesion / (m × g) ≈ 0.076 / 0.49 ≈ **15.5% of weight**
+- This adds ~15% effective normal force bonus → proportional KO resistance increase
+
+The central sharp tip acts as a pivot when suction is not engaged (at high spin, the cup lifts slightly). At high spin, Quest behaves more like a sharp tip with moderate friction; as spin decays and the bey settles, the cup engages more fully for maximum floor adhesion.
+
+**Trade-offs:**
+1. **Poor Stamina:** Suction cup friction is far higher than a free-spinning bearing or sharp tip:
+   - μ_quest_cup ≈ 0.25–0.35 (suction cup rubber on stadium floor)
+   - r_contact ≈ 8 mm (large effective radius)
+   - τ_friction = 0.30 × 0.050 × 9.81 × 0.008 ≈ 1.18 × 10⁻³ N·m → very high spin drain
+
+2. **High tilt:** The suction cup's circular base creates a restoring moment against tilt that paradoxically causes the bey to tilt further when the seal breaks unevenly. Quest combos are noted for unusual tilt behavior — the cup grip and release creates oscillatory tilt cycles.
+
+3. **Free-spinning cup:** The cup rotates independently, reducing the spin-transmitted torque to the floor — similar to how a free-spin ring tip reduces LAD friction. But the suction adhesion still produces net-high friction.
+
+### Inertia Contribution
+- I_Quest ≈ ½ × 0.0073 × (0.003² + 0.010²) = 0.00365 × (0.000009 + 0.000100) = 0.00365 × 0.000109
+- **I_Quest ≈ 3.98 × 10⁻⁷ kg·m²** (small contribution to assembly I)
+
+### Performance Summary
+| Attribute | Rating | Reason |
+|-----------|--------|--------|
+| KO Resistance | ★★★★★ | Highest in any Burst driver — suction adhesion |
+| Stamina | ★ | Very high friction from suction cup |
+| Stability | ★★ | Tilt oscillation from cup engage/release |
+| Burst Resistance | ★★★ | Center-stable, not an aggressive mover |
+
+### Best Combos
+Quest is specifically recommended for Destabilizer builds where the goal is to survive KO while the sloped layer tilts attackers. With Orb Egis:
+- Orb Egis slopes the attacker → attacker tilts and loses stamina
+- Outer disc provides high L → Orb Egis resists spin-out
+- Quest anchors position → Orb Egis cannot be KO'd
+
+The poor stamina is mitigated when the combo wins before stamina becomes the deciding factor (opponent tilts out first).
+
+### Game-Engine Mapping
+- Tip type: `suction-cup` (free-spinning conical)
+- μ_eff: 0.30 (high friction; stadium floor suction)
+- r_contact: 8 mm
+- KO resistance modifier: +35% (suction adhesion)
+- Stamina modifier: −40% (vs. Bearing or Atomic-class drivers)
+- Tilt behavior: oscillatory (cup engage/release cycle)
+- I contribution: 3.98 × 10⁻⁷ kg·m²
+
+---
+
+## Case 1270 — Orb Egis Outer Quest: Full Assembly (Burst Cho-Z, Defense / Destabilizer)
+
+**Tags:** Gen3-Burst · Burst-CZ · Assembly · Defense · Destabilizer · OWD · KO-Resist
+
+### Assembly Identity
+- **Beyblade combo:** Orb Egis Outer Quest
+- **Type:** Defense (Destabilizer sub-type)
+- **Spin direction:** Right-spin
+- **System:** Burst System — Cho-Z Layer System
+- **Strategy:** Maximum KO resistance + opponent destabilization via sloped contacts and suction-cup anchoring
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Energy Layer | Orb Egis | 18.67 g |
+| Forge Disc | Outer | 22.05 g |
+| Performance Tip | Quest | 7.3 g |
+| **Assembly total** | | **48.02 g** |
+
+*(No Stone Face/Face Bolt in Cho-Z Burst system; not included in assembly mass per convention)*
+
+### Moment of Inertia (Full Assembly)
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Energy Layer — Orb Egis (18.67 g) | 1.60 × 10⁻⁵ |
+| Forge Disc — Outer (22.05 g) | 2.50 × 10⁻⁵ |
+| Performance Tip — Quest (7.3 g) | 3.98 × 10⁻⁷ |
+| **I_total** | **≈ 4.14 × 10⁻⁵ kg·m²** |
+
+### Launch Physics (Burst LR String Launcher)
+- ω₀ ≈ 700 rad/s (Burst gen launch standard)
+- L₀ = I_total × ω₀ = 4.14 × 10⁻⁵ × 700 ≈ **2.898 × 10⁻² N·m·s**
+- Battle ω ≈ 420 rad/s (60% of launch)
+- L_battle = 4.14 × 10⁻⁵ × 420 ≈ **1.739 × 10⁻² N·m·s**
+
+### Spin Decay Analysis
+Quest driver at suction engagement (μ ≈ 0.30, r ≈ 8 mm):
+- τ = 0.30 × 0.04802 × 9.81 × 0.008 ≈ 1.132 × 10⁻³ N·m
+- dω/dt = 1.132 × 10⁻³ / 4.14 × 10⁻⁵ ≈ **27.3 rad/s²**
+- t_stall ≈ 700 / 27.3 ≈ **25.6 s** (theoretical; actual ~15–20 s with impacts)
+
+This confirms the "poor stamina" assessment — Quest is not a stamina driver. The combo wins through KO avoidance, not endurance.
+
+### Defense Performance Analysis
+
+**KO Resistance (from Quest suction):**
+- Suction adhesion force ≈ 0.076 N
+- Effective weight-equivalent adhesion: F_adh / (m × g) = 0.076 / (0.04802 × 9.81) = **16.1%**
+- At battle contact velocities (~0.5 m/s lateral impact from attacker mass ~50 g):
+  - Impulse J_lateral = 0.050 × 0.5 = 0.025 N·s (typical aggressive attacker impulse)
+  - Quest adhesion resists lateral displacement: requires extra impulse to overcome suction
+  - Net effect: attacker must deliver ~16% more impulse to achieve same KO probability
+
+**Destabilizer Effect (from Orb Egis slopes):**
+- Each sloped contact transfers F_tang = F_impact × sin(θ_slope) upward on attacker
+- At θ_slope ≈ 25°: F_tang ≈ 0.42 × F_impact
+- Tilt torque on attacker: τ_tilt = F_tang × r_contact
+- After 3–5 contacts, cumulative tilt accumulates → attacker enters wobble
+- Outer disc's high L on Orb Egis combo resists the equal/opposite reaction tilt force
+
+**Synergy:** The Quest anchoring keeps Orb Egis in place for multiple slope contacts on the attacker — the attacker is repeatedly tilted while the defender cannot be pushed away. This is the meta-defining mechanic of the Orb Egis Outer Quest archetype.
+
+### Angular Momentum vs. Attacker
+High L_battle (1.739 × 10⁻² N·m·s) is one of the highest for a Cho-Z Defense combo:
+- Outer disc alone contributes I = 2.50 × 10⁻⁵ → L_disc = 2.50 × 10⁻⁵ × 420 = 0.0105 N·m·s (60% of total L)
+- This confirms Outer disc is the primary stamina/resistance driver; it provides the angular momentum buffer that makes spin-stealing ineffective against this combo
+
+### Nutation / Wobble Threshold
+- ω_crit = 0.40 × 700 = **280 rad/s**
+- At battle ω ≈ 420 rad/s: well above threshold → no wobble perturbations
+- With fast decay (27.3 rad/s²): reaches 280 rad/s at t ≈ (420−280)/27.3 ≈ **5.1 s** after battle phase begins
+- Wobble onset is early for this combo — another reason stamina is its weakness
+
+### Recommended Strategy
+- Launch with right-spin to maintain standard contact geometry
+- Position defensively (center or mid-stadium) to maximize Quest floor contact time
+- Allow attacker to approach → slope contacts initiate → attacker tilts within 3–5 hits
+- If attacker is stamina-type: Quest poor stamina becomes a liability; substitute Atomic or Bearing for stamina matchups
+
+### Game-Engine Mapping
+- Assembly type: `defense` (destabilizer)
+- I_total: 4.14 × 10⁻⁵ kg·m²
+- Launch ω₀: 700 rad/s
+- L₀: 2.898 × 10⁻² N·m·s
+- L_battle: 1.739 × 10⁻² N·m·s
+- Spin decay rate: 27.3 rad/s² (high — poor stamina)
+- KO resistance: +16% (suction adhesion)
+- Destabilize output: +20% tilt-per-contact (Orb Egis slopes)
+- Tip model: `suction-cup` (μ = 0.30, r = 8 mm)
+- Burst resistance: high (metal inner lining on Orb Egis teeth)
+- Generation: `Gen3-Burst` / `Burst-CZ`
+
+
+## Burst God Layer System — Kreis Satan 2Glaive Loop (aka "Kinetic Satomb")
+
+---
+
+## Case 1271 — Energy Layer: Kreis Satan (9.31 g, Burst God Layer System, Defense Type)
+
+**Tags:** Gen3-Burst · Burst-God · God-Layer · Layer · Defense · Roller-Gimmick
+
+### Part Identity
+- **Official name:** Energy Layer — Kreis Satan (クレイスサタン; "Kreis" = German for "circle")
+- **System:** Burst System — God Layer System (Burst God generation)
+- **Type:** Defense
+- **Spin direction:** Right-spin
+- **Official description:** "A right-spin Defense Type God Layer that gives a counter with the wings of the devil while parrying the opponent's attack with its three rollers."
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 9.31 g (confirmed) |
+| Outer radius r_o | ~37 mm |
+| Inner radius r_i | ~8 mm |
+| Teeth count | 4 (1× medium + 3× medium-tall) |
+| Gimmick | 3 small free-rotating rollers at alternating gap positions |
+| Core material | Clear ABS (hexagonal inner layer) |
+| Wing material | Colored ABS (three large wings with small integrated blades) |
+
+### Layer Architecture
+Kreis Satan consists of:
+1. **Hexagonal inner layer** — clear plastic, provides structural base and houses the three roller slots
+2. **Three large wings** — colored ABS, each wing includes small molded blade protrusions; wings are positioned at alternating positions around the inner hexagon
+3. **Three gap positions** — between each wing pair; these house the roller gimmick
+4. **Three small rollers** — free-rotating wheels seated in the gap positions (every other corner of the hexagonal inner layer)
+
+The naming "Kreis" (circle) refers to the circular nature of the roller mechanism and the overall round/compact silhouette — a stark contrast to aggressive angular layers.
+
+### Roller Gimmick — Physics Analysis
+The gimmick premise: when an attacker's layer contacts the rollers, the rollers spin freely, converting the sharp collision impulse into a rolling contact. In theory this should:
+- Reduce normal force → lower burst torque transfer
+- Deflect attacker tangentially → lower KO impulse on defender
+
+**Why the gimmick underperforms in practice:**
+
+*Size problem:* The rollers are small (estimated diameter ~6–8 mm). For rolling contact to meaningfully redirect an incoming layer, the roller must have sufficient radius to lever the attacker away before the attacker's blade edge contacts the deeper ABS surface. Small rollers bottom out quickly — the blade reaches the ABS behind the roller within the same contact event.
+
+*Protrusion problem:* The rollers sit in gaps but protrude slightly beyond the layer perimeter. This makes the rollers the **first contact** on each gap — but their small mass and free-spin nature mean they deflect rapidly, then the gap edge itself becomes the contact surface. The gap edge IS a recoil point (flat face vs. curved approach = sharp impulse), so:
+- Net roller effect ≈ minor deflection at the start of contact
+- Followed by gap-edge contact = recoil spike
+
+This is why "the rollers create points of recoil due to sticking out from the perimeter."
+
+**Quantifying the recoil contribution:**
+- 3 wings (low-recoil compact blades): each blade ~8 mm arc width → short contact dwell, low recoil
+- 3 roller gaps: each gap ~12 mm → roller provides ~2 ms free-spin, then gap edge creates impulse spike
+- Net recoil profile: 3 low-recoil contacts + 3 moderate-recoil contacts per revolution → asymmetric contact map
+
+Compare to Alter Chronos or Maximum Garuda (both have smoother perimeters or better-sized deflection geometry), which show lower average recoil per contact.
+
+### Burst Resistance Analysis
+Four teeth: 1× medium + 3× medium-tall:
+- Medium tooth: holds under ~2.5 N·m burst torque threshold
+- Medium-tall teeth: hold under ~3.5 N·m burst torque threshold
+- Average threshold: ~3.25 N·m for this 4-tooth configuration
+
+The low-recoil blade design on the wings limits burst torque per contact to ~1.5–2.0 N·m. Combined with the teeth ratings:
+- Single-contact burst probability: low (~15–20%)
+- Cumulative burst probability after 5 contacts: moderate (~45%)
+
+This gives "high Burst Resistance" as described — the low-recoil blades don't generate enough single-contact torque to reliably burst the 4-tooth arrangement.
+
+### Stamina Limitation
+The "bulky design cripples Stamina" note is explained by the combination of:
+1. Low mass (9.31 g) for a God Layer — not the heaviest layer, limiting angular momentum contribution
+2. Non-circular perimeter (wings + roller gaps) creates aerodynamic drag compared to smooth circular layers
+3. Roller gaps introduce air turbulence pockets during spin — minor but non-zero drag increase
+
+At battle ω, the non-circular cross-section generates ~5–10% more aerodynamic drag torque vs. a smooth circular layer of equal mass.
+
+### Inertia Calculation
+- I_layer = ½ × 0.00931 × (0.008² + 0.037²)
+- I_layer = 0.004655 × (0.000064 + 0.001369)
+- I_layer = 0.004655 × 0.001433
+- **I_layer ≈ 6.67 × 10⁻⁶ kg·m²**
+
+### Game-Engine Mapping
+- Layer type: `defense` (roller-deflect sub-type)
+- I_contribution: 6.67 × 10⁻⁶ kg·m²
+- Burst resistance: high (4 teeth; low-recoil blades)
+- Recoil profile: mixed (3 low + 3 moderate per revolution)
+- Roller gimmick: partial deflection only; modeled as μ_contact_reducer = 0.85× on roller-gap contacts
+- KO resistance: high (compact round shape, low recoil limits lateral impulse)
+- Stamina penalty: −8% vs. circular smooth layer (aerodynamic drag from non-circular profile)
+- Generation: `Gen3-Burst` / `Burst-God`
+
+---
+
+## Case 1272 — Forge Disc: 2 (21.21 g, Burst God / Burst Standard)
+
+**Tags:** Gen3-Burst · Burst-God · Disc · Balanced · Jack-of-All-Trades
+
+### Part Identity
+- **Official name:** Forge Disc — 2 (ツー)
+- **System:** Burst System (cross-gen compatible: God, Cho-Z, GT, Sparking)
+- **Weight:** 21.21 g (confirmed)
+- **Classification:** Core Disc (even-numbered → elliptical, supports Disc Frame)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 21.21 g |
+| Shape | Symmetrical elliptical Core Disc |
+| Outer radius r_o (long axis) | ~42 mm |
+| Outer radius r_o (short axis) | ~38 mm |
+| Inner radius r_i | ~8 mm |
+| Frame compatibility | Yes (even-numbered Core Disc) |
+| Protrusions | 1 per side (2 total), "2"-shaped molding |
+| Material | Metal (zinc alloy) |
+
+### Even-Numbered Core Disc Design
+All even-numbered Core Discs (2, 4, 6, 7-Cross, etc.) have an elliptical shape that allows Disc Frames to seat around their perimeter. The ellipse creates two slightly longer axes and two shorter axes — the Frame sits flush on the perimeter.
+
+Disc 2's ellipse ratio is moderate (close to circular), giving it:
+- **Standard weight distribution** — neither strongly IWD nor strongly OWD
+- **Average weight among Core Discs** — mid-tier mass (21.21 g vs. lightest ~18 g and heaviest ~25 g)
+
+This balanced profile is why "2 works as an excellent alternative if [heavier attack/defense/stamina discs] are unavailable."
+
+### Inertia Calculation
+Using elliptical annular approximation (average r_o = (42+38)/2 = 40 mm):
+- I_Disc2 = ½ × 0.02121 × (0.008² + 0.040²)
+- I_Disc2 = 0.010605 × (0.000064 + 0.001600)
+- I_Disc2 = 0.010605 × 0.001664
+- **I_Disc2 ≈ 1.765 × 10⁻⁵ kg·m²**
+
+### "2" Protrusion Molding
+The "2"-shaped protrusion on each side is primarily decorative/structural but adds a minor asymmetric contact surface if the Disc Frame does not fully cover it. In practice with Glaive Frame installed, the protrusions are inset below the frame perimeter and do not affect battle contact geometry.
+
+### Comparison to Key Competitors
+| Disc | Mass | Best Use | Relative I |
+|------|------|----------|------------|
+| 2 | 21.21 g | Balanced/any | 1.765 × 10⁻⁵ |
+| 4 | ~22 g | Attack | ~1.85 × 10⁻⁵ |
+| 7 | 23.2 g | Stamina/asymmetric | ~2.0 × 10⁻⁵ |
+| 0 | ~22 g | Defense/Stamina | ~1.9 × 10⁻⁵ |
+| Outer | 22.05 g | Pure stamina | ~2.5 × 10⁻⁵ |
+
+Disc 2 is deliberately mid-table on all metrics — adequate for any role when specialized discs are unavailable.
+
+### Game-Engine Mapping
+- Disc type: `balanced` (Jack-of-All-Trades)
+- I_contribution: 1.765 × 10⁻⁵ kg·m²
+- Frame compatibility: `yes` (even-numbered Core Disc)
+- Attack modifier: 0.95× (vs. best attack discs like 4)
+- Defense modifier: 0.95× (vs. best defense discs like 0)
+- Stamina modifier: 0.90× (vs. best stamina discs like Outer/7)
+- Generation: `Gen3-Burst` (universal)
+
+---
+
+## Case 1273 — Disc Frame: Glaive (2.34 g, Burst God / Burst Standard)
+
+**Tags:** Gen3-Burst · Burst-God · Frame · LAD · Stamina
+
+### Part Identity
+- **Official name:** Disc Frame — Glaive (グレイブ)
+- **System:** Burst System (universal Frame, seats on even-numbered Core Discs)
+- **Weight:** 2.34 g (confirmed)
+- **Material:** Clear/translucent ABS plastic
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 2.34 g |
+| Shape | Mostly round with two sharp wave-like protrusions (one per side, 180° apart) |
+| Outer radius r_o | ~43 mm |
+| Inner radius r_i | ~36 mm (seats on Core Disc perimeter) |
+| Protrusion geometry | Sharp, wave-like; directed upward to avoid stadium floor scraping |
+| Material | ABS (clear plastic) |
+
+### Design Analysis
+
+**Round base for LAD:** The predominantly circular perimeter of Glaive ensures smooth contact with the stadium floor during tilt-wobble (Life-After-Death). A smooth circle minimizes angular drag variation as the bey wobbles — it traces an oval path with even friction.
+
+**Wave-like protrusions:** Two sharp protrusions extend from the round perimeter, 180° apart. They are:
+1. **Too small to reach the opponent's Layer** — they do not create meaningful attack contacts; the layer is above the Frame level
+2. **Directed upward** — the protrusion tips angle upward rather than downward, ensuring they don't drag along the stadium floor during LAD wobble (which would create friction spikes and kill spin)
+
+This design philosophy (round base + upward-directed small protrusions) gives Glaive its "high Life-After-Death while the upwards direction of the protrusions ensure they do not scrape along the stadium floor" property.
+
+**Comparison to Cross Frame:**
+Cross has greater LAD than Glaive because Cross has a purely circular profile (no protrusions at all). Glaive's two protrusions, even though upward-directed, create two points of slight non-circularity that generate minor floor-contact variations during deep tilt. Cross avoids this entirely. However, Glaive is "still comparable" — the protrusions are small enough that the LAD difference is marginal (~5–10%).
+
+### Inertia Contribution
+Glaive sits at r_eff ≈ 39–43 mm (thin outer ring):
+- I_Glaive = ½ × 0.00234 × (0.036² + 0.043²)
+- I_Glaive = 0.00117 × (0.001296 + 0.001849)
+- I_Glaive = 0.00117 × 0.003145
+- **I_Glaive ≈ 3.68 × 10⁻⁶ kg·m²**
+
+Small mass but large r_eff: Glaive's I contribution is disproportionately high per gram (1.57 × 10⁻⁶ kg·m²/g) — useful for OWD stamina builds when paired with Outer or similar.
+
+### Game-Engine Mapping
+- Frame type: `LAD` (round base, upward protrusions)
+- I_contribution: 3.68 × 10⁻⁶ kg·m²
+- LAD quality: ★★★★ (near-Cross performance)
+- Attack value: 0 (protrusions too small to contact)
+- Stadium floor scrape risk: none (upward protrusion direction)
+- Compatibility: even-numbered Core Discs
+
+---
+
+## Case 1274 — Performance Tip: Loop (6.2 g, Burst God / Burst Standard, Defense Type)
+
+**Tags:** Gen3-Burst · Burst-God · Driver · Defense · Roller · Braking · KO-Resist
+
+### Part Identity
+- **Official name:** Performance Tip — Loop (ループ)
+- **System:** Burst System (cross-gen compatible)
+- **Weight:** 6.2 g (confirmed)
+- **Type:** Defense
+- **Architecture:** Ball tip + 4 tabs + 2 free-rotating rollers (replaces defensive ring)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 6.2 g |
+| Tip type | Ball (rounded) |
+| Ball radius | ~5 mm |
+| Tab count | 4 (same diameter/placement as Defense driver tabs) |
+| Roller count | 2 (free-rotating; one per side, draping down from the driver body) |
+| Roller placement | Lower than Defense driver ring — closer to stadium floor level |
+| Material | ABS |
+
+### Architecture Comparison: Loop vs. Defense Driver
+
+Defense driver has:
+- Ball tip (same as Loop)
+- 4 tabs at identical diameter/placement
+- Defensive ring at a standard height above the stadium floor
+
+Loop driver has:
+- Ball tip (identical)
+- 4 tabs (identical placement/diameter)
+- **No defensive ring** → replaced by two free-rotating rollers
+
+The 4 tabs behave identically between the two: they contact the stadium floor when the bey tilts, acting as brakes. This provides KO resistance at the cost of stamina in both Loop and Defense.
+
+### Free-Rotating Rollers — Physics Analysis
+
+**Premise:** If the bey tilts over, the rollers contact the floor and their free-rotating nature should roll the bey back upright with minimal friction (rolling friction << sliding friction). This is the "righting" mechanism:
+- Sliding contact (fixed ring): μ_slide ≈ 0.25–0.35 → high energy loss per tilt event
+- Rolling contact (free roller): μ_roll ≈ 0.02–0.05 → ~10× less energy loss per tilt event
+
+**Why it works early (high ω):**
+At high spin velocity, the bey's gyroscopic stiffness (L = I × ω) is large — when the roller contacts the floor, the bey is stiff enough to use the reduced-friction rolling contact to recover posture with minimal spin loss. The free-spin roller provides a gentle, low-friction righting nudge.
+
+**Why it fails late (low ω):**
+At low spin velocity, L is small — the bey tilts more readily and the roller contact is longer and deeper. Two compounding problems emerge:
+1. **Lower roller placement** — the rollers hang lower than the Defense ring. At high spin this is fine (bey is nearly vertical). At low spin with significant tilt, the low-hanging rollers drag along the floor for a longer arc than the higher-placed Defense ring would. This extended contact arc significantly increases friction torque.
+2. **Scraping transition:** At deep tilt / very low ω, the rollers no longer roll efficiently — the bey's precession rate exceeds the roller's optimal contact speed and the roller begins to scrape (slides on the contact edge). This creates a braking spike that kills the remaining spin.
+
+Net low-spin effect: rollers scrape → high braking torque → spin killed rapidly → zero LAD
+
+Compare to Defense driver:
+- Defense ring sits higher → contacts floor only at shallower tilt angles
+- At low ω, Defense ring provides a consistent low-drag contact (smooth ring → smooth slide or LAD trace)
+- Defense has better LAD than Loop specifically because of this height advantage
+
+### Tab Braking (Shared with Defense)
+Both drivers use identical 4-tab arrangement:
+- When bey tilts ~15–20°: tabs contact floor
+- Each tab contact: braking impulse ~0.3–0.5 N·m·s per contact event
+- Ball tip stays centered → KO resistance maintained
+
+This braking mechanism is why both Loop and Defense "stay in the center of the stadium" — the tabs prevent lateral drift without the aggressive movement of flat/rubber tips.
+
+**KO resistance mechanism:** Central positioning + tab braking prevents the bey from being deflected to the stadium wall. Even with a strong lateral impulse from an attacker, the tabs catch the stadium floor and arrest lateral velocity.
+
+### Stamina Trade-off
+Tab braking costs stamina:
+- Each tab contact (at full tilt): estimated spin loss ~2–5 rad/s per event
+- In a 30-second battle, ~20–40 tab contact events → cumulative loss ~80–150 rad/s
+- This is significant for a 700 rad/s launch → ~11–21% of launch spin lost to tabs alone
+
+### Inertia Contribution
+- I_Loop ≈ ½ × 0.0062 × (0.003² + 0.010²) = 0.0031 × (0.000009 + 0.000100) = 0.0031 × 0.000109
+- **I_Loop ≈ 3.38 × 10⁻⁷ kg·m²** (minor contribution to assembly I)
+
+### Performance Summary
+| Phase | Behavior | Rating |
+|-------|----------|--------|
+| High spin | Center-stable, tabs inactive | Defense ≈ ★★★★ |
+| Mid spin (rollers engage) | Righting mechanism works | KO resist ★★★★ |
+| Low spin (rollers scrape) | Braking → kills LAD | Stamina ★★ |
+| KO resistance (overall) | Tab braking + center hold | ★★★★ |
+
+### Game-Engine Mapping
+- Tip type: `loop` (ball + 4 tabs + 2 free rollers)
+- μ_ball: 0.06 (ball tip, normal spin)
+- Tab braking: active at tilt > 15° (2–5 rad/s loss per event)
+- Roller righting: active at tilt < 20° + ω > 60% ω₀ (reduces tilt recovery cost)
+- Roller scrape: active at tilt > 25° + ω < 35% ω₀ (high braking; LAD eliminated)
+- KO resistance modifier: +20% (tab braking + center positioning)
+- LAD: poor (rollers scrape at low spin; no ring LAD)
+- I contribution: 3.38 × 10⁻⁷ kg·m²
+
+---
+
+## Case 1275 — Kreis Satan 2Glaive Loop: Full Assembly (Burst God, Defense Type)
+
+**Tags:** Gen3-Burst · Burst-God · Assembly · Defense · KO-Resist · Destabilizer · Roller-Gimmick
+
+### Assembly Identity
+- **Beyblade combo:** Kreis Satan 2Glaive Loop (クレイスサタン・ツー・グレイブ・ループ)
+- **Fan nickname:** "Kinetic Satomb" (Satan + combo; referring to the roller/rolling kinetic defense concept)
+- **Type:** Defense
+- **Spin direction:** Right-spin
+- **System:** Burst System — God Layer System
+- **Strategy:** Maximum KO resistance + recoil management; Kreis Satan's roller-mediated deflection + Loop's tab braking + Glaive's LAD for survival
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Energy Layer | Kreis Satan | 9.31 g |
+| Forge Disc (Core) | 2 | 21.21 g |
+| Disc Frame | Glaive | 2.34 g |
+| Performance Tip | Loop | 6.2 g |
+| **Assembly total** | | **39.06 g** |
+
+### Moment of Inertia (Full Assembly)
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Energy Layer — Kreis Satan (9.31 g) | 6.67 × 10⁻⁶ |
+| Forge Disc — 2 (21.21 g) | 1.765 × 10⁻⁵ |
+| Disc Frame — Glaive (2.34 g) | 3.68 × 10⁻⁶ |
+| Performance Tip — Loop (6.2 g) | 3.38 × 10⁻⁷ |
+| **I_total** | **≈ 2.845 × 10⁻⁵ kg·m²** |
+
+### Launch Physics (Burst God LR String Launcher)
+- ω₀ ≈ 700 rad/s
+- L₀ = 2.845 × 10⁻⁵ × 700 ≈ **1.992 × 10⁻² N·m·s**
+- Battle ω ≈ 420 rad/s
+- L_battle = 2.845 × 10⁻⁵ × 420 ≈ **1.195 × 10⁻² N·m·s**
+
+### Spin Decay Analysis
+Loop driver at ball-tip contact (μ ≈ 0.06, r ≈ 5 mm):
+- τ_ball = 0.06 × 0.03906 × 9.81 × 0.005 ≈ 1.148 × 10⁻⁴ N·m
+- dω/dt_base = 1.148 × 10⁻⁴ / 2.845 × 10⁻⁵ ≈ **4.04 rad/s²**
+- t_stall_base ≈ 700 / 4.04 ≈ **173 s** (theoretical, no tabs active)
+
+With tab braking (20–40 events at 3 rad/s each):
+- Additional spin loss: 60–120 rad/s over battle duration
+- Effective survival time estimate: ~40–60 s with normal contact engagement
+
+### Defense Performance Analysis
+
+**KO Resistance contributions:**
+1. Loop tab braking: +20% impulse resistance
+2. Disc 2 balanced mass: maintains moderate L for spin-theft resistance
+3. Kreis Satan's compact round profile: low lateral cross-section → attacker contacts roller/wing alternately (partial deflection)
+4. Loop center positioning: bey stays in stadium center → further from walls → longer path for ring-out
+
+**Burst Resistance:**
+- Kreis Satan: 4 teeth (1 medium + 3 medium-tall), burst threshold avg ~3.25 N·m
+- Layer recoil per contact: low (compact blades) to moderate (roller gap edges)
+- Disc 2 contributes moderate I → moderate angular momentum buffer for burst torque absorption
+- **Net burst resistance: high** (teeth + low recoil + moderate L buffer)
+
+**Why Kreis Satan loses to Alter Chronos / Maximum Garuda:**
+- Alter Chronos: features actual functional mode-change gimmick with better contact geometry → lower effective recoil
+- Maximum Garuda: features a smooth or better-distributed perimeter → less recoil spike from gap edges
+- Both outperform Kreis Satan in stamina (smoother profiles, better aerodynamics) and in clean defense (no gap-recoil problem)
+
+### Stamina Weakness Assessment
+The combo's stamina limitation comes from multiple sources:
+
+| Source | Estimated dω contribution |
+|--------|--------------------------|
+| Loop tab braking (20 events) | −60 rad/s total |
+| Kreis Satan aerodynamic drag penalty (8%) | −0.32 rad/s² additional decay |
+| Roller gap recoil (~10 events, 5 rad/s each) | −50 rad/s total |
+| Ball tip base friction | −4.04 rad/s² decay rate |
+
+Effective stall time with all losses ≈ 35–45 s → significantly below top stamina combos (80–120 s).
+
+### Nutation and Wobble
+- ω_crit = 280 rad/s (40% of 700 rad/s)
+- Reaches ω_crit at: t ≈ (700−280)/4.04 ≈ 104 s base → but with tab/recoil losses, practically ~30–40 s
+- Below 280 rad/s: PRNG wobble begins; Loop rollers should theoretically help but scraping at low ω negates this
+- LAD phase: minimal — roller scrape kills remaining spin before stable LAD trace can form
+
+### Combo Assessment
+| Attribute | Rating | Reason |
+|-----------|--------|--------|
+| KO Resistance | ★★★★ | Tab braking + center-hold + compact layer |
+| Burst Resistance | ★★★★ | 4 teeth, low-recoil layer |
+| Stamina | ★★ | Tab losses + roller scrape kill LAD; gap recoil |
+| Attack | ★ | Not the purpose; roller deflection reduces hit output |
+| Destabilize | ★★ | Roller gaps can occasionally tilt attacker but inconsistent |
+
+**Best use case:** Short-to-medium matches against aggressive attack-type opponents where the attacker is likely to burst themselves on Kreis Satan's teeth before stamina becomes a factor. Against stamina types, the combo is disadvantaged (will be outspin at ~40 s).
+
+### Disc 2 Flexibility Note
+The "Jack-of-All-Trades" Disc 2 is well-suited here: it provides moderate I (supporting both KO resistance and decent burst absorption) without the specialization penalties of heavier discs (like 7's OWD stamina focus) that would shift the combo away from its KO-resistance identity.
+
+### Glaive Frame Contribution
+Glaive's near-circular LAD profile aids during mid-spin wobble phase. The upward protrusions don't contribute to attack but also don't scrape — they are inert. The Frame adds I_contribution 3.68 × 10⁻⁶ kg·m² at large r, slightly improving angular momentum without changing the combat profile.
+
+### Game-Engine Mapping
+- Assembly type: `defense` (KO-resistance sub-type)
+- I_total: 2.845 × 10⁻⁵ kg·m²
+- Launch ω₀: 700 rad/s
+- L₀: 1.992 × 10⁻² N·m·s
+- L_battle: 1.195 × 10⁻² N·m·s
+- Spin decay (base, no tabs): 4.04 rad/s²
+- Tab braking loss: 60–120 rad/s total (battle)
+- Burst resistance: high (4 teeth, 3.25 N·m avg threshold)
+- KO resistance: +20% from tabs; compact layer reduces lateral impulse
+- Stamina: low (tabs + gap recoil + roller scrape eliminate LAD)
+- Gimmick: `roller-deflect` (partial; gap recoil partially negates)
+- Generation: `Gen3-Burst` / `Burst-God`
+
+
+## Superking / Burst Sparking System — Variant Lucifer Mobius 2D
+
+---
+
+## Case 1276 — Superking Chip: Lucifer 1 (5.7 g, Burst Superking / Sparking)
+
+**Tags:** Gen3-Burst · Burst-SK · Superking · Chip · Metal · Defense
+
+### Part Identity
+- **Official name:** Superking Chip — Lucifer 1 (ルシファー1)
+- **Also called:** Lucifer (shortened); Hasbro equivalent: "Lucius" (anglicized/localized)
+- **System:** Burst System — Superking Layer System (Burst Sparking generation)
+- **Spin direction:** Right-spin
+- **Type:** Defense
+- **Metal content:** Yes — Lucifer 1 is one of five Superking Chips to feature metal inserts
+- **Mythology:** Lucifer — the fallen angel from Abrahamic religions; depicted on the chip face along with the DB Core design
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 5.7 g (confirmed) |
+| Metal content | Yes (metal elements embedded in chip body) |
+| Outer radius r_o | ~18 mm |
+| Inner radius r_i | ~5 mm |
+| Spin direction | Right-spin only |
+| Material | ABS + metal inserts |
+
+### Metal Superking Chips — Context
+Five Superking Chips include metal. For reference:
+| Chip | Mass | Notes |
+|------|------|-------|
+| Lucifer 1 | 5.7 g | This chip; right-spin, defense |
+| Lucifer 2 | ~6.5 g est. | Second Lucifer chip; heavier |
+| Solomon | ~7 g est. (with Metal Chip Core) | Heavier + more balanced mass distribution |
+| Others | varies | — |
+
+**Solomon with Metal Chip Core is "generally better"** because:
+1. Solomon is heavier (more I contribution from chip)
+2. "More balanced" — Solomon's metal mass distribution produces more symmetric I around the rotation axis vs. Lucifer 1's face-oriented metal placement
+3. For defense builds, symmetric mass distribution minimizes wobble from chip-level imbalance
+
+Lucifer 1 remains a viable alternative when Solomon is unavailable, and performs adequately for defense builds.
+
+### Inertia Contribution
+- I_chip = ½ × 0.0057 × (0.005² + 0.018²)
+- I_chip = 0.00285 × (0.000025 + 0.000324)
+- I_chip = 0.00285 × 0.000349
+- **I_chip ≈ 9.95 × 10⁻⁷ kg·m²**
+
+Compared to non-metal Superking Chips (~3–4 g, I ≈ 5–6 × 10⁻⁷ kg·m²), Lucifer 1 provides ~70% more chip-level I, helping the chip's metal mass contribute meaningfully to angular momentum.
+
+### Functional Role
+The Superking Chip provides:
+- Spin direction (right for Lucifer 1)
+- Chip-level mass contribution to assembly I
+- God Chip / DB Core architecture seat — hosts the burst mechanism's top engagement surface
+- In the Superking Double Chassis system, the chip integrates with the Ring and Chassis stack
+
+### Game-Engine Mapping
+- Chip type: `metal` (right-spin)
+- I_contribution: 9.95 × 10⁻⁷ kg·m²
+- Metal flag: `true`
+- Burst engagement: chip participates in top burst-tooth interface
+- Generation: `Gen3-Burst` / `Burst-SK`
+
+---
+
+## Case 1277 — Ring: Variant (5.9 g, Burst Superking)
+
+**Tags:** Gen3-Burst · Burst-SK · Superking · Ring · Defense
+
+### Part Identity
+- **Official name:** Ring — Variant (バリアント)
+- **System:** Burst System — Superking Layer System
+- **Weight:** 5.9 g (confirmed)
+- **Type:** Defense (inferred from combo role and images)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 5.9 g |
+| Outer radius r_o | ~35–38 mm (estimated from images) |
+| Inner radius r_i | ~12 mm |
+| Contact geometry | Jagged/ridged perimeter (from images: dark textured outer edge with angular contact points) |
+| Material | ABS (black/dark colored) |
+
+### Design Observations (from images)
+The Variant Ring shows a compact, heavily-textured dark perimeter ring. The outer edge features multiple small ridged/angular protrusions distributed around the circumference — denser and more numerous than typical attack rings. This dense-protrusion geometry suggests:
+- **Multiple small contact points** rather than a few large blades → many low-energy contacts per revolution rather than high-energy spike contacts
+- **Reduced recoil profile** — small protrusions catch but do not deeply engage attacker blades
+- **Defense orientation** consistent with the combo's Defense type
+
+The name "Variant" implies versatility or a deviation from standard profiles — the ring does not commit to a single aggressive geometry.
+
+### Inertia Calculation
+- I_ring = ½ × 0.0059 × (0.012² + 0.037²)
+- I_ring = 0.00295 × (0.000144 + 0.001369)
+- I_ring = 0.00295 × 0.001513
+- **I_ring ≈ 4.46 × 10⁻⁶ kg·m²**
+
+### Role in Assembly
+In the Superking system, the Ring sits atop the Double Chassis. For 2D (disc-integrated Double Chassis), the Ring provides:
+- The outer contact surface with opponent layers (the Ring is the uppermost part that touches incoming attacks)
+- Layer-level burst resistance via its tooth interface with the Chip above
+- The visual/aesthetic profile of the top layer
+
+With 2D chassis's Barrier Blades deploying at the mid/lower level, the Ring's contribution is primarily the upper contact geometry — keeping attack contacts at the ring level manageable (small protrusions = low recoil) while the massive chassis below provides inertia.
+
+### Game-Engine Mapping
+- Ring type: `defense` (multi-protrusion, low recoil)
+- I_contribution: 4.46 × 10⁻⁶ kg·m²
+- Contact geometry: small multi-ridged (low recoil, multiple catches per revolution)
+- Generation: `Gen3-Burst` / `Burst-SK`
+
+---
+
+## Case 1278 — Chassis: 2D (47.1 g, Burst Superking, Defense Type — Barrier Blades)
+
+**Tags:** Gen3-Burst · Burst-SK · Superking · Chassis · Double-Chassis · Disc-Integrated · Defense · Barrier-Blades · Gimmick · Dual-Spin
+
+### Part Identity
+- **Official name:** Chassis — 2D (2-Defense, ツーディー)
+- **System:** Burst System — Superking Layer System (Double Chassis sub-system)
+- **Weight:** 47.1 g (confirmed — one of the heaviest single Burst parts ever produced)
+- **Type:** Defense
+- **Spin compatibility:** Dual-spin (can be used right or left spin — Double Chassis design)
+- **Special feature:** No separate Forge Disc needed — 2D integrates the disc into the chassis body
+- **Gimmick:** Barrier Blades — 6 blade tabs that deploy outward under centrifugal force at high spin velocity
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 47.1 g (confirmed) |
+| Chassis type | Double Chassis (disc-integrated) |
+| Outer radius (blades retracted) r_o | ~43 mm |
+| Outer radius (blades deployed) r_o | ~55–60 mm (estimated from images — blades extend significantly) |
+| Inner radius r_i | ~10 mm |
+| Blade count | 6 (3 pairs, evenly spaced at 120°) |
+| Blade material | ABS plastic (translucent pink/rose in standard release) |
+| Material (chassis body) | Metal + ABS hybrid (the 47.1 g mass requires metal content) |
+| Dual-spin | Yes (right or left spin chassis) |
+
+### Mass Context
+At 47.1 g, the 2D Chassis is extraordinarily heavy for a single Burst part:
+- Typical God Layer: ~10–20 g
+- Typical Cho-Z Layer: ~20–30 g
+- Typical Forge Disc: ~18–25 g
+- **2D Chassis alone: 47.1 g — comparable to an entire 3-piece Burst Gen combo**
+
+This mass is achieved by integrating both the disc and chassis functions into one heavy metal-and-ABS unit. The practical effect: the assembly's I and angular momentum are almost entirely determined by the 2D Chassis regardless of which chip/ring/driver is used.
+
+### Barrier Blades Gimmick — Physics Analysis
+
+**Mechanism:** Six blade tabs are hinged or pivoted within the chassis body. At rest (or low spin), spring tension or gravity holds them retracted near the chassis perimeter. At high spin velocity, centrifugal force (F_cf = m_blade × ω² × r_cm) overcomes the retraction force and the blades swing outward.
+
+**Centrifugal deployment force:**
+For each blade (m_blade ≈ 1.5 g est., r_cm ≈ 35 mm at retracted):
+- F_cf = 0.0015 × ω² × 0.035
+- At ω = 700 rad/s: F_cf = 0.0015 × 490,000 × 0.035 ≈ **25.7 N** per blade
+- 25.7 N greatly exceeds any realistic return spring force (spring preload typically ~0.5–2 N for plastic tab mechanisms)
+- → Blades deploy fully at launch-level spin
+
+**Inertia change with blade deployment:**
+
+*Blades retracted* (r_blade ≈ 43 mm):
+- I_2D_retracted = ½ × 0.0471 × (0.010² + 0.043²)
+- I_2D_retracted = 0.02355 × (0.000100 + 0.001849)
+- I_2D_retracted = 0.02355 × 0.001949
+- **I_2D_retracted ≈ 4.590 × 10⁻⁵ kg·m²**
+
+*Blades deployed* (blades extend to r ≈ 57 mm; 6 blades × ~1.5 g each at r_cm ≈ 52 mm):
+- I_chassis_body = ½ × (0.0471 − 0.009) × (0.010² + 0.043²) ≈ ½ × 0.0381 × 0.001949 ≈ 3.71 × 10⁻⁵ kg·m²
+- I_blades_deployed = 6 × 0.0015 × (0.052)² ≈ 6 × 0.0015 × 0.002704 ≈ 2.43 × 10⁻⁵ kg·m²
+- **I_2D_deployed ≈ 3.71 × 10⁻⁵ + 2.43 × 10⁻⁵ ≈ 6.14 × 10⁻⁵ kg·m²**
+
+**ΔI from blade deployment: +1.55 × 10⁻⁵ kg·m² (+34% over retracted)**
+
+### Barrier Blades — Defense Function
+
+The blades deployed at high spin:
+1. **Increase effective outer radius** to ~57 mm → attacker contacts the blades before reaching the inner chassis
+2. **Blade geometry designed to deflect** (not catch) — similar to Kreis Satan's philosophy but at much larger scale
+3. **Recoil concern:** The blades stick out → they create their own contact points. If blades are thin and smooth-edged, recoil is low. From images, the blades have an oval/leaf shape with a smooth leading edge → primarily deflect rather than catch
+4. **At low spin:** Blades retract → smaller profile → different combat behavior (no blade contact)
+
+**Why this aids defense:**
+- Deployed blades absorb/deflect attack-type impacts at a larger r, spreading force over a longer lever arm → lower torque transfer per unit force
+- Increased I (deployed) means higher L → better resistance to spin-out
+- Centrifugal return of blades means the gimmick is purely passive and self-regulating with spin velocity
+
+### Dual-Spin Capability
+2D works for both right and left spin. The chassis accommodates both spin directions, making it universally combinable. For Variant Lucifer, the right-spin Lucifer 1 chip determines the spin direction.
+
+### 2D vs. 2A Comparison
+The Superking Double Chassis line includes both attack (2A) and defense (2D) variants. 2D's Barrier Blades deploy outward with smooth leaf-shaped tips (defense geometry). 2A's blades deploy outward with more angular edges (attack geometry). The principle is the same; the blade tip shape determines the contact type.
+
+### Inertia Summary
+- I_2D_retracted: 4.590 × 10⁻⁵ kg·m²
+- I_2D_deployed: 6.14 × 10⁻⁵ kg·m²
+- Blade deployment threshold ω: ~150 rad/s (centrifugal force exceeds spring at this speed — effectively always deployed in battle)
+
+### Game-Engine Mapping
+- Chassis type: `defense` (barrier-blades)
+- I_retracted: 4.590 × 10⁻⁵ kg·m²
+- I_deployed: 6.14 × 10⁻⁵ kg·m²
+- Blade deploy threshold ω: 150 rad/s (below battle speeds → always deployed during battle)
+- Blade retract ω: < 100 rad/s (retracted only after spin-out)
+- Disc integration: `yes` (no separate disc needed)
+- Dual-spin: `yes`
+- Generation: `Gen3-Burst` / `Burst-SK`
+
+---
+
+## Case 1279 — Performance Tip: Mobius (7.7 g, Burst Superking, Stamina / Defense Type)
+
+**Tags:** Gen3-Burst · Burst-SK · Superking · Driver · Stamina · Free-Spin · Opposite-Spin
+
+### Part Identity
+- **Official name:** Performance Tip — Mobius (メビウス)
+- **System:** Burst System — Superking Layer System (cross-gen compatible)
+- **Weight:** 7.7 g (confirmed)
+- **Type:** Stamina / Defense (dual classification)
+- **Successor:** Bearing Mobius (slightly different performance trade-offs)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 7.7 g |
+| Tip type | Tall driver, free-spinning conical sharp tip |
+| Driver height | Tall (taller shaft than standard Burst drivers) |
+| Tip cone angle | Low (shallow cone = near-sharp; small contact patch) |
+| Free-spin mechanism | Conical tip rotates independently of driver body |
+| Tip contact radius | ~0.5–1 mm (effectively sharp — small contact area) |
+| Wide diameter (free-spinning section) | ~12–14 mm (the wide free-spinning cone provides stability) |
+| Material | ABS + low-friction bearing/pivot |
+
+### Free-Spinning Conical Sharp Tip — Physics
+
+**Two performance benefits from the free-spin mechanism:**
+
+**1. High Stamina — Low Friction:**
+The conical sharp tip is free-spinning, meaning the tip barrel rotates independently. Contact friction is bearing friction, not floor-contact friction:
+- μ_bearing_pivot ≈ 0.01–0.03
+- μ_fixed_sharp ≈ 0.08–0.12
+
+Friction torque: τ = μ × m × g × r_tip
+- Mobius (μ ≈ 0.02, r_tip ≈ 1 mm): τ ≈ 0.02 × 0.060 × 9.81 × 0.001 ≈ 1.18 × 10⁻⁵ N·m
+- Fixed sharp (μ ≈ 0.10): τ ≈ 0.10 × 0.060 × 9.81 × 0.001 ≈ 5.89 × 10⁻⁵ N·m
+- **Mobius has ~5× lower spin decay per unit mass than a fixed sharp tip**
+
+**2. Burst Defense — Free-Spin Isolation:**
+When an opponent's layer strikes the assembled beyblade, the impact transfers torque attempting to spin the blade assembly faster or slower relative to the tip. A fixed tip transmits this burst torque directly through the tip-to-chassis connection. A free-spinning tip allows the tip to spin independently — it absorbs a portion of the burst torque via the bearing's rotational freedom:
+- Burst torque transferred to teeth: reduced by the bearing's angular compliance
+- Effective burst resistance improvement: ~15–25% vs. fixed sharp tip equivalent
+
+**Why "wide diameter of the free-spinning sharp tip helps maintain stability":**
+The conical section is wider than a standard sharp tip. A wider free-spinning cone acts like a small gyroscope at the tip contact point — the rotating cone has its own angular momentum about the vertical axis, which resists lateral perturbations (wobble initiation). This is particularly important for tall drivers (which have higher CoM → more prone to tilt).
+
+### Opposite-Spin Performance
+Mobius excels against opposite-spin opponents. When a left-spin attacker contacts a right-spin Mobius combo:
+- Opposite-spin contact: friction forces from the attacker's rotation ADD to the Mobius combo's spin (they are contra-rotating → relative spin at contact = ω_right + ω_left)
+- This means each contact event with an opposite-spin attacker slightly transfers spin FROM the attacker TO the Mobius combo (spin equalization physics)
+- The free-spinning tip further insulates the spin transfer to the chassis — the tip can absorb opposite-spin relative velocity without transmitting it to the bearing
+
+Mobius vs. Bearing Mobius comparison:
+| Feature | Mobius | Bearing Mobius |
+|---------|--------|----------------|
+| Opposite-spin resistance | Slightly better | Slightly worse |
+| Same-spin stamina | Slightly worse | Slightly better |
+| Best release (B-194 Mobius) | Maximum free-spin; best performance | — |
+
+The B-194 (blue colorway) Mobius has the most free-spin due to tighter manufacturing tolerances on the bearing pivot — this is not a different part design but a production variation.
+
+### Inertia Contribution
+- I_Mobius ≈ ½ × 0.0077 × (0.003² + 0.012²)
+- I_Mobius ≈ 0.00385 × (0.000009 + 0.000144)
+- I_Mobius ≈ 0.00385 × 0.000153
+- **I_Mobius ≈ 5.89 × 10⁻⁷ kg·m²**
+
+Small I contribution from driver; main role is friction management, not inertia.
+
+### Spin Decay Analysis
+- τ ≈ 1.18 × 10⁻⁵ N·m (as calculated above for Variant Lucifer combo, m ≈ 0.060 kg)
+- dω/dt = τ / I_total (to be calculated in full assembly case)
+
+### Game-Engine Mapping
+- Tip type: `free-spin-conical` (Mobius bearing sharp)
+- μ_eff: 0.02 (bearing-pivot free-spin)
+- r_tip: 1 mm
+- Burst defense modifier: +20% (free-spin bearing absorption)
+- Opposite-spin resistance: +15% (free-spin contra-rotation absorption)
+- Same-spin stamina: standard (no enhancement vs. same-spin)
+- I_contribution: 5.89 × 10⁻⁷ kg·m²
+- Height: tall (raises CoM; offset by wide free-spinning cone stability)
+- Generation: `Gen3-Burst` / `Burst-SK`
+
+---
+
+## Case 1280 — Variant Lucifer Mobius 2D: Full Assembly (Burst Superking, Defense Type, Dual-Spin)
+
+**Tags:** Gen3-Burst · Burst-SK · Superking · Assembly · Defense · Double-Chassis · Barrier-Blades · Stamina · Opposite-Spin
+
+### Assembly Identity
+- **Beyblade combo:** Variant Lucifer Mobius 2D (バリアント・ルシファー・メビウス・2D)
+- **Hasbro chip name:** Lucius (for Lucifer 1)
+- **Type:** Defense
+- **Spin direction:** Right-spin (from Lucifer 1 chip)
+- **System:** Burst System — Superking Layer System
+- **Architecture note:** No separate Forge Disc (2D is disc-integrated Double Chassis)
+- **Strategy:** Extreme angular momentum from 2D chassis + Barrier Blade KO defense + Mobius stamina/burst-defense synergy
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Superking Chip | Lucifer 1 | 5.7 g |
+| Ring | Variant | 5.9 g |
+| Chassis (disc-integrated) | 2D | 47.1 g |
+| Performance Tip | Mobius | 7.7 g |
+| **Assembly total** | | **66.4 g** |
+
+At **66.4 g**, Variant Lucifer Mobius 2D is extraordinarily heavy — exceeding most Burst-era combos by 15–20 g. This is primarily due to the 2D Chassis (47.1 g = 70.9% of assembly mass).
+
+### Moment of Inertia (Full Assembly — Blades Deployed, Battle State)
+
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Superking Chip — Lucifer 1 (5.7 g) | 9.95 × 10⁻⁷ |
+| Ring — Variant (5.9 g) | 4.46 × 10⁻⁶ |
+| Chassis — 2D deployed (47.1 g) | 6.14 × 10⁻⁵ |
+| Performance Tip — Mobius (7.7 g) | 5.89 × 10⁻⁷ |
+| **I_total (deployed)** | **≈ 6.74 × 10⁻⁵ kg·m²** |
+
+### Moment of Inertia (Blades Retracted — below 100 rad/s)
+
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Chip + Ring + Tip | 6.04 × 10⁻⁶ |
+| Chassis — 2D retracted | 4.590 × 10⁻⁵ |
+| **I_total (retracted)** | **≈ 5.19 × 10⁻⁵ kg·m²** |
+
+I_total transitions from 6.74 × 10⁻⁵ (battle) to 5.19 × 10⁻⁵ (end-of-battle / dying spin). This transition occurs around ω ≈ 100–150 rad/s.
+
+### Launch Physics (Burst Superking LR String Launcher)
+- ω₀ ≈ 700 rad/s (same launcher family as Cho-Z/GT)
+- L₀ = 6.74 × 10⁻⁵ × 700 ≈ **4.718 × 10⁻² N·m·s**
+- Battle ω ≈ 420 rad/s
+- L_battle = 6.74 × 10⁻⁵ × 420 ≈ **2.831 × 10⁻² N·m·s**
+
+**L_battle = 2.831 × 10⁻² N·m·s is exceptionally high** — compare to:
+- Dread Bahamut 7Wall Orbit Metal: ~2.0 × 10⁻² N·m·s
+- Orb Egis Outer Quest: 1.739 × 10⁻² N·m·s
+- Variant Lucifer 2D exceeds both by 40–63%
+
+This is almost entirely attributable to the 2D Chassis mass and deployed-blade I.
+
+### Spin Decay Analysis
+Mobius free-spin tip (μ ≈ 0.02, r_tip ≈ 1 mm, m_total = 0.0664 kg):
+- τ = 0.02 × 0.0664 × 9.81 × 0.001 ≈ 1.303 × 10⁻⁵ N·m
+- dω/dt = 1.303 × 10⁻⁵ / 6.74 × 10⁻⁵ ≈ **0.193 rad/s²**
+- t_stall ≈ 700 / 0.193 ≈ **3,627 s** (theoretical, no contacts) — effectively does not stall under friction alone
+
+In practice with contacts: each impact event at ~420 rad/s costs ~10–30 rad/s. With ~50 contacts in a 180s match: total loss ~500–1500 rad/s. Even with maximum contact losses, the bey survives the entire match at high spin.
+
+**Verdict: Best-in-class stamina under most conditions.**
+
+### Defense Performance
+
+**KO Resistance:**
+1. Barrier Blades (deployed): outer r ≈ 57 mm → attacker contacts blades first, deflecting at large lever arm → low torque transfer per impact
+2. Variant Ring small protrusions: low-recoil upper contacts → limited lateral impulse
+3. Mobius tip center-stability: tall driver with free-spin cone → centered positioning, resists lateral drift
+4. Enormous L (2.831 × 10⁻² N·m·s): attacker must deliver proportionally enormous impulse to deflect the combo off course; most attack combos cannot generate sufficient impulse to ring-out this mass
+
+**Burst Resistance:**
+1. Mobius bearing burst defense: +20% vs. fixed tip
+2. 2D chassis torque distribution: massive I means the chassis "absorbs" burst torque across its rotational inertia — burst torque required to rotate the chassis backward by one tooth = τ_burst × t_contact, and with I_total = 6.74 × 10⁻⁵, achieving reverse rotation requires much larger cumulative impulse
+3. Variant Ring low-recoil contacts: burst torque per contact reduced
+
+Net result: **very high burst resistance**.
+
+### Blade Transition Effect
+As spin decays through the blade deployment threshold (~150 rad/s):
+- I drops from 6.74 × 10⁻⁵ to 5.19 × 10⁻⁵ (−23%)
+- **ω increases when I drops:** conservation of angular momentum (L = I × ω = const in absence of friction):
+  - ω_new = L / I_new = (6.74 × 10⁻⁵ × 150) / 5.19 × 10⁻⁵ ≈ **194.8 rad/s** (vs. 150 rad/s before retraction)
+  - This is a **self-boosting effect**: blade retraction at 150 rad/s briefly raises spin to ~195 rad/s!
+  - The bey gets a ~30% spin boost at the moment blades retract
+  - This delays reaching the nutation wobble threshold (280 rad/s) → effectively extends survival
+
+**However:** At 195 rad/s (after retraction), the bey is at 28% of launch ω₀ < the 40% wobble threshold (280 rad/s). So by the time blades retract, wobble has already started. The spin boost from retraction pushes from 150 to 195 — still below 280, so it doesn't escape wobble, but it does extend wobble survival time.
+
+### Opposite-Spin Match-up
+Mobius's superior opposite-spin performance is amplified by the enormous L:
+- Opposite-spin attacker contact: contra-rotation adds to effective contact velocity → higher spin transfer from attacker to Mobius combo
+- But L is so high that even significant spin transfer doesn't meaningfully change the combo's ω
+- Net: Variant Lucifer Mobius 2D is nearly impervious to left-spin spin-stealers
+
+### Nutation and Wobble
+- ω_crit = 280 rad/s (40% of 700)
+- With dω/dt ≈ 0.193 rad/s² (friction only): reaches 280 rad/s at t ≈ (700−280)/0.193 ≈ **2,176 s** (effectively never under pure friction)
+- With contact losses (50 impacts × 20 rad/s): effective survival at battle ω ≈ (700−1000) → combat-scenario floor ≈ 420 rad/s baseline minus losses
+- In competitive play (180s match cap): bey is still well above wobble threshold at match end
+
+### Overall Combo Assessment
+| Attribute | Rating | Reason |
+|-----------|--------|--------|
+| Stamina | ★★★★★ | Mobius free-spin + massive I = near-infinite theoretical endurance |
+| KO Resistance | ★★★★★ | Barrier blades + enormous L + center-stable Mobius |
+| Burst Resistance | ★★★★ | Mobius bearing + 2D inertia buffer |
+| Attack | ★ | Not the purpose; Variant Ring low-recoil avoids own attacks |
+| Versatility | ★★★★ | Dual-spin chassis; strong vs. all spin directions |
+
+**Meta note:** Variant Lucifer Mobius 2D represents the apex of Superking Defense — the 2D Chassis's mass alone elevates it above all previous-generation defense combos. Its primary weakness is launch difficulty (heavy combo requires maximum string pull for launch RPM) and price/availability.
+
+### Blade Deployment Physics Summary
+| State | Condition | I_total | L (at ω) |
+|-------|-----------|---------|----------|
+| Deployed | ω > 150 rad/s (battle) | 6.74 × 10⁻⁵ | 2.831 × 10⁻² at 420 rad/s |
+| Retracted | ω < 100 rad/s (dying) | 5.19 × 10⁻⁵ | — |
+| Transition boost | at ω = 150 → 195 rad/s | — | L conserved; ω rises |
+
+### Game-Engine Mapping
+- Assembly type: `defense` (barrier-blades + stamina)
+- I_total_battle (deployed): 6.74 × 10⁻⁵ kg·m²
+- I_total_dying (retracted): 5.19 × 10⁻⁵ kg·m²
+- Launch ω₀: 700 rad/s
+- L₀: 4.718 × 10⁻² N·m·s
+- L_battle: 2.831 × 10⁻² N·m·s
+- Spin decay: 0.193 rad/s² (friction-only; effectively permanent spin)
+- Blade state: `deployed` when ω > 150 rad/s (boolean in-engine)
+- Blade transition: angular momentum conserved at deploy/retract threshold
+- Burst resistance: very high (Mobius bearing + 2D inertia buffer)
+- KO resistance: extreme (Barrier Blades + massive L + center hold)
+- Opposite-spin bonus: +15% spin-theft resistance (Mobius free-spin)
+- Generation: `Gen3-Burst` / `Burst-SK`
+
+
+## Burst Cho-Z System — Archer Hercules 13 Eternal
+
+---
+
+## Case 1289 — Energy Layer: Archer Hercules (19.73 g, Burst Cho-Z Layer System, Stamina Type)
+
+**Tags:** Gen3-Burst · Burst-CZ · Cho-Z · Layer · Stamina · Metal · Centrifugal-Gimmick · OWD
+
+### Part Identity
+- **Official name:** Energy Layer — Archer Hercules (アーチャーヘラクレス)
+- **System:** Burst System — Cho-Z Layer System (Burst Turbo generation)
+- **Type:** Stamina
+- **Spin direction:** Right-spin
+- **Mythology:** Heracles — divine hero of Greek mythology; layer features the lion motif from the Nemean Lion (Hercules' first labor), with two symmetrical bows on either side
+- **Official description:** "A Stamina-Type Cho-Z Layer in which the large metal bow and arrow placed on the outer circumference moves outward with a high-speed rotation and inward with a low-speed rotation, making it difficult for the rotational force to drop."
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 19.73 g (confirmed) |
+| Shape | Symmetrical (two bows at 180° offset) |
+| Outer radius r_o (bows retracted) | ~38 mm |
+| Outer radius r_o (bows extended) | ~41–42 mm (estimated from small extension) |
+| Inner radius r_i | ~8 mm |
+| Teeth | Medium + medium-tall length (high burst resistance configuration) |
+| Metal placement | Two bows lined with metal along their inner curve |
+| Gimmick | Centrifugal bow extension — same principle as Shadow Orichalcum / Orichalcum |
+| Balance | **Unbalanced** (like most Cho-Z layers) |
+| Material | ABS + metal-lined bows |
+
+### Metal Bow Design
+The metal lining runs along the inner surface of each bow arm. This concentrates significant metal mass at ~r = 35–40 mm from center — placing it near-maximally effective for OWD:
+
+Metal mass estimate per bow: ~1.5 g (×2 = ~3 g metal total)
+ABS body: ~16.73 g
+
+Metal bow I contribution (treating as mass at r = 38 mm):
+- I_metal = 2 × 0.0015 × (0.038)² = 0.003 × 0.001444 = **4.33 × 10⁻⁶ kg·m²**
+
+This gives Archer Hercules a higher effective OWD than non-metal God Layers of similar total mass.
+
+### Centrifugal Bow Gimmick — Physics Analysis
+
+**Mechanism:** Each bow arm is hinged at one end and free to pivot outward under centrifugal force. At high ω, the centrifugal force (F_cf = m_bow × ω² × r_cm) pushes each bow arm outward, increasing r_eff and thus I. At low ω, the bow retracts (spring or gravity restores).
+
+**Why the gimmick effect is minor:**
+
+The bow extension is small — estimated radial displacement Δr ≈ 3–4 mm (from ~38 mm to ~41–42 mm). The I change:
+- I_before = 2 × 0.0015 × (0.038)² = 4.33 × 10⁻⁶ kg·m²
+- I_after = 2 × 0.0015 × (0.042)² = 5.29 × 10⁻⁶ kg·m²
+- ΔI_bow = 9.6 × 10⁻⁷ kg·m²
+
+As a fraction of total assembly I (≈3.5 × 10⁻⁵ kg·m² for a typical Stamina combo):
+- ΔI/I_total ≈ 9.6 × 10⁻⁷ / 3.5 × 10⁻⁵ ≈ **2.7%**
+
+A 2.7% I increase is noticeable in theory but barely measurable in practice — the official description's "does not create a noticeable increase in OWD" is physically accurate. Contrast with 2D Chassis Barrier Blades: Δr ≈ 14 mm → ΔI ≈ 34% — a meaningful effect.
+
+**Retraction at low ω (defense mode):**
+When spin drops and bows retract, the layer profile becomes rounder/more compact:
+- Reduced r_o → fewer protrusive recoil points on the perimeter
+- Rounder shape = smoother deflection → lower recoil per contact
+- This is the "improves Defense potential" at low spin: the bow retraction coincidentally makes the layer better at deflecting attacks
+
+**Angular momentum conservation at retraction:**
+When bows retract from 41→38 mm, I decreases → ω increases (L conserved):
+- ω_after = L / I_after = (I_before × ω_before) / I_after
+- At ω = 150 rad/s (retraction threshold): ω_after ≈ (I+ΔI)/I × 150 ≈ 1.027 × 150 ≈ **154.1 rad/s**
+- A +2.7% spin boost at retraction — again minor but present
+
+### OWD Without Gimmick
+Even ignoring the bow gimmick, the metal-lined bows at r ≈ 38 mm give excellent OWD:
+
+Full layer I calculation:
+- I_layer = ½ × 0.01973 × (0.008² + 0.038²)
+- I_layer = 0.009865 × (0.000064 + 0.001444)
+- I_layer = 0.009865 × 0.001508
+- **I_layer ≈ 1.488 × 10⁻⁵ kg·m²**
+
+This is high for a single Cho-Z layer — compared to Orb Egis (1.60 × 10⁻⁵ kg·m²) at similar mass. The symmetric bow design keeps this I distributed around both axes, giving Archer Hercules stable rotation (no asymmetric wobble source from the layer).
+
+### Burst Resistance
+Medium and medium-tall teeth:
+- Medium-tall teeth: burst threshold ~3.5 N·m per tooth
+- Combined with the layer's stamina-oriented low-recoil contact geometry:
+  - Bow tips: curved/smooth → low recoil on contact
+  - No sharp aggressive blades → low burst torque transfer per hit
+- **Net burst resistance: high** — excellent for stamina combos that need to survive sustained contact
+
+### Unbalance and Level Chip
+The unbalanced mass distribution (common to Cho-Z layers — the metal mass is not perfectly symmetric due to manufacturing or design choices) creates a wobble component:
+- Unbalance eccentricity: estimated e ≈ 0.5–1.5 mm off-center
+- At ω = 420 rad/s: centrifugal force from eccentricity ≈ m × e × ω² = 0.01973 × 0.001 × 176,400 ≈ **3.48 N** (lateral periodic force)
+- This oscillating force → periodic tilt perturbation → stamina drain (~5–8% faster decay) + burst risk (~+10% per contact event due to off-center loading)
+
+**Level Chip fix:** A Level Chip inserts below the Cho-Z Layer to raise it, filling the gap between the bottom of the layer and the top of the disc. This removes the layer's eccentric wobble motion by:
+1. Providing a flat seated contact for the layer to rest against (reduces free lateral play)
+2. Adding ~1–2 g of mass at center (negligible I, but stabilizes the layer against eccentric oscillation)
+
+With Level Chip: burst risk reduction ~10%, stamina drain reduction ~5%.
+
+### Game-Engine Mapping
+- Layer type: `stamina` (centrifugal OWD + metal bow)
+- I_contribution (bows retracted): 1.488 × 10⁻⁵ kg·m²
+- I_contribution (bows extended): 1.584 × 10⁻⁵ kg·m² (+6.4% over retracted at layer level; +2.7% at assembly level)
+- Bow deploy threshold ω: ~300 rad/s (centrifugal force exceeds spring preload at this speed)
+- Bow retract ω: ~200 rad/s
+- Burst resistance: high (medium-tall teeth + low recoil bows)
+- Unbalance penalty: +8% decay rate, +10% burst risk (mitigated by Level Chip)
+- Metal mass: 2× bow at r ≈ 38 mm; I_metal = 4.33 × 10⁻⁶ kg·m²
+- Generation: `Gen3-Burst` / `Burst-CZ`
+
+---
+
+## Case 1290 — Performance Tip: Eternal (5.93 g, Burst Cho-Z, Stamina Type — POM Free-Spinning Dish)
+
+**Tags:** Gen3-Burst · Burst-CZ · Cho-Z · Driver · Stamina · Free-Spin · POM · Precession · Opposite-Spin
+
+### Part Identity
+- **Official name:** Performance Tip — Eternal (エターナル)
+- **System:** Burst System (cross-gen compatible: Cho-Z, GT, Sparking)
+- **Weight:** 5.93 g (confirmed)
+- **Type:** Stamina
+- **Architecture:** Sharp tip (small diameter) + free-spinning POM dish (wide diameter)
+- **Material:** ABS housing + POM (PolyOxyMethylene / acetal resin / Delrin) free-spinning ring
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 5.93 g |
+| Tip type | Sharp (small diameter central contact) |
+| Sharp tip radius r_tip | ~0.8 mm (sharp point, slightly wider than true sharp) |
+| POM dish outer radius r_dish | ~10–11 mm (wide for a stamina driver) |
+| POM dish inner radius | ~3 mm |
+| Driver height | Slightly shorter than most Pre-Cho-Z drivers |
+| Free-spin mechanism | POM ring rotates independently of driver body |
+| POM friction | μ_POM ≈ 0.03–0.05 (very low friction thermoplastic) |
+
+### POM Material Properties
+PolyOxyMethylene (POM, trade names: Delrin, Celcon, Hostaform):
+- **Very low sliding friction** — μ_POM vs. ABS stadium floor ≈ 0.03–0.05 (similar to lubricated metal-on-metal)
+- **High stiffness** — POM deforms minimally under normal Beyblade contact forces (~0.5–2 N at the dish rim)
+- **Good wear resistance** — maintains consistent friction over many battles (unlike rubber which degrades)
+- **Self-lubricating** — POM's molecular structure provides inherent lubricity without surface treatment
+
+### Eternal Driver — Component Physics
+
+**Sharp tip (central contact, primary drive at high spin):**
+- r_tip ≈ 0.8 mm, μ_sharp ≈ 0.05 (fixed in driver body, not free-spinning)
+- τ_sharp = 0.05 × m × g × 0.0008 (tiny contribution due to r_tip)
+- This is the primary contact surface when spin is high and the bey is near-vertical
+
+**POM dish (outer contact, primary during tilt/precession):**
+- r_dish ≈ 10 mm, free-spinning at μ_bearing ≈ 0.015–0.025
+- When the bey tilts (during wobble/precession phase), the POM dish rim contacts the stadium floor
+- Being free-spinning and POM: friction torque during dish contact = very low
+- τ_dish = μ_POM × m × g × r_dish = 0.04 × 0.040 × 9.81 × 0.010 ≈ **1.57 × 10⁻⁴ N·m**
+
+### Precession Time — Why Eternal Excels
+
+During Life-After-Death (LAD) wobble, the bey's dish rim traces an oval path on the stadium floor. The precession rate and decay rate depend on:
+1. **Dish diameter** — larger → lower friction force moment → slower precession decay
+2. **Dish friction** — lower → slower energy loss per precession cycle
+
+**Eternal vs. Revolve vs. Atomic (Bearing):**
+
+| Driver | Dish r | Friction | Precession time | Notes |
+|--------|--------|---------|----------------|-------|
+| Revolve | ~8 mm | ABS, μ≈0.15 | Medium | Good but dish is smaller |
+| Atomic | ~9 mm | Free-spin rubber+ABS, μ≈0.08 | High | Best same-spin performance |
+| **Eternal** | ~10 mm | POM, μ≈0.04 | **Highest** | Wide POM dish = best precession |
+| Bearing | ~8 mm | Steel bearing, μ≈0.01 | Very high | Better same-spin; less precession-focused |
+
+Why Eternal beats Atomic for precession:
+- Atomic: rubber ring provides grip → slightly higher friction
+- Eternal: POM ring has lower friction AND larger diameter → both factors favor longer precession
+- Atomic's rubber also grips the floor during the initial spin phase (good stamina) but increases friction at the dish (worse precession)
+
+Why Eternal has lower KO resistance than Revolve:
+- Revolve uses standard ABS/rubber with higher friction → floor grip → more lateral resistance
+- Eternal's POM dish: ultra-low friction → when hit laterally, dish slides easily instead of gripping
+- Net: Eternal combos slide laterally more easily under impact → lower KO resistance
+
+### Opposite-Spin Performance
+Eternal performs well against opposite-spin opponents because:
+- Free-spinning dish: when a contra-rotating opponent contacts the dish rim, the dish can spin with the opponent's direction independently of the main body → reduces spin absorption from contra-rotation
+- Wide dish: more contact area to absorb contra-rotational relative velocity without transmitting it to the main body's spin direction
+
+### Shorter Height Note
+Eternal is slightly shorter than most pre-Cho-Z drivers:
+- **Intended benefit:** The layer sits lower → opponent's lower-layer contact geometry cannot easily strike from below and destabilize
+- **Unintended risk:** Shorter height increases the chance of the opponent's disc contacting the Eternal combo's own layer from below → disc-to-layer friction → burst torque
+- In practice: the height reduction is minor (~0.5–1 mm), so the burst risk increase is small; the stability benefit also marginal
+
+### Inertia Contribution
+- I_Eternal ≈ ½ × 0.00593 × (0.0008² + 0.011²)
+- I_Eternal ≈ 0.002965 × (0.00000064 + 0.000121)
+- I_Eternal ≈ 0.002965 × 0.0001216
+- **I_Eternal ≈ 3.61 × 10⁻⁷ kg·m²** (minor; driver I rarely dominates assembly)
+
+### Spin Decay Analysis (Eternal driver standalone)
+For a ~40 g Archer Hercules 13 combo (m ≈ 0.040 kg):
+
+Sharp tip phase (high spin, ω > 300 rad/s, bey near-vertical):
+- τ_sharp = 0.05 × 0.040 × 9.81 × 0.0008 ≈ 1.57 × 10⁻⁵ N·m → **very low decay**
+
+POM dish phase (low spin / tilt, ω < 200 rad/s):
+- τ_dish = 0.04 × 0.040 × 9.81 × 0.010 ≈ 1.57 × 10⁻⁴ N·m → 10× higher than sharp tip but still low vs. non-POM drivers
+
+Burst defense contribution (free-spin dish, sharp tip):
+- The sharp tip sits fixed; burst torque through the sharp tip is limited by its small r_contact
+- The POM dish can absorb lateral angular impulse from attacks (dish free-spins) → reduced burst torque transmission to the layer
+- Net: +15% burst resistance from Eternal vs. fixed-tip equivalents
+
+### Game-Engine Mapping
+- Tip type: `eternal` (sharp-center + free-spin POM dish)
+- μ_sharp: 0.05, r_sharp: 0.8 mm (high spin primary contact)
+- μ_POM_dish: 0.04, r_dish: 10 mm (LAD/tilt contact)
+- Precession time modifier: +25% vs. Revolve, +10% vs. Atomic (wide POM = best in class)
+- KO resistance modifier: −15% vs. Revolve (POM slides easily)
+- Burst defense: +15% (free-spin dish)
+- Opposite-spin resistance: +10% (dish free-spin)
+- I_contribution: 3.61 × 10⁻⁷ kg·m²
+- Generation: `Gen3-Burst` (universal Burst compatibility)
+
+---
+
+## Case 1291 — Archer Hercules 13 Eternal: Full Assembly (Burst Cho-Z, Stamina Type)
+
+**Tags:** Gen3-Burst · Burst-CZ · Assembly · Stamina · OWD · Metal · Precession · Opposite-Spin
+
+### Assembly Identity
+- **Beyblade combo:** Archer Hercules 13 Eternal
+- **Type:** Stamina
+- **Spin direction:** Right-spin
+- **System:** Burst System — Cho-Z Layer System
+- **Strategy:** Top-tier stamina with excellent precession survivability; centrifugal OWD bow gimmick supplements the already-excellent metal-bow OWD; Eternal provides maximum precession time for LAD survival
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Energy Layer | Archer Hercules | 19.73 g |
+| Forge Disc | 13 | ~19–20 g (see previously covered case) |
+| Performance Tip | Eternal | 5.93 g |
+| **Assembly total** | | **~44.7–45.7 g** |
+
+*(Stone Face excluded per convention. Disc 13 mass estimated at ~19.5 g for calculations.)*
+
+### Moment of Inertia (Full Assembly — Bows Deployed, Battle State)
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Energy Layer — Archer Hercules (bows deployed) | 1.584 × 10⁻⁵ |
+| Forge Disc — 13 (~19.5 g, annular approximation r_o ≈ 40 mm) | ~1.67 × 10⁻⁵ |
+| Performance Tip — Eternal (5.93 g) | 3.61 × 10⁻⁷ |
+| **I_total (bows deployed)** | **≈ 3.29 × 10⁻⁵ kg·m²** |
+
+Bows retracted (low-spin defense mode):
+- I_total_retracted ≈ 3.19 × 10⁻⁵ kg·m²
+
+### Launch Physics (Burst LR String Launcher)
+- ω₀ ≈ 700 rad/s
+- L₀ = 3.29 × 10⁻⁵ × 700 ≈ **2.303 × 10⁻² N·m·s**
+- Battle ω ≈ 420 rad/s
+- L_battle = 3.29 × 10⁻⁵ × 420 ≈ **1.382 × 10⁻² N·m·s**
+
+### Spin Decay Analysis
+
+**High spin phase (ω > 300 rad/s) — sharp tip contact:**
+- τ_sharp = 0.05 × 0.0455 × 9.81 × 0.0008 ≈ 1.79 × 10⁻⁵ N·m
+- dω/dt_high = 1.79 × 10⁻⁵ / 3.29 × 10⁻⁵ ≈ **0.54 rad/s²**
+- Duration: (700 − 300) / 0.54 ≈ 741 s (theoretical; combat losses will intervene)
+
+**Low spin / LAD phase (ω < 200 rad/s) — POM dish contact:**
+- τ_dish = 0.04 × 0.0455 × 9.81 × 0.010 ≈ 1.79 × 10⁻⁴ N·m
+- dω/dt_LAD = 1.79 × 10⁻⁴ / 3.19 × 10⁻⁵ ≈ **5.61 rad/s²**
+- t_LAD_survival (from 200 → 0): 200 / 5.61 ≈ **35.7 s** of LAD (exceptional)
+
+### Precession Analysis
+
+During LAD, the precession rate Ω_p = τ_tilt / L_battle:
+- τ_tilt at tilt θ = 30°: ≈ m × g × r_CoM × sin(30°) ≈ 0.0455 × 9.81 × 0.012 × 0.5 ≈ 2.68 × 10⁻³ N·m
+- Ω_p = 2.68 × 10⁻³ / 1.382 × 10⁻² ≈ **0.194 rad/s** (very slow precession — extremely stable)
+
+The wide POM dish maintains this slow precession for ~35.7 s after entering LAD. This makes Archer Hercules 13 Eternal one of the best LAD-survival combos in the Cho-Z era.
+
+### Centrifugal Bow Gimmick — Battle Impact
+In battle at ω = 420 rad/s:
+- Bows deployed → I slightly higher (+ΔI = 9.6 × 10⁻⁷ kg·m²)
+- L_deployed = 3.29 × 10⁻⁵ × 420 = 1.382 × 10⁻² N·m·s
+- L_retracted = 3.19 × 10⁻⁵ × 420 = 1.340 × 10⁻² N·m·s
+- Difference: **Δ L ≈ 4.2 × 10⁻⁴ N·m·s (~3% more L with bows deployed)**
+
+The bow deployment gives a small but genuine L advantage during the high-spin battle phase. When an opponent attacks at high spin, the deployed bows provide slightly more resistance to spin-out.
+
+When spin drops below bow retraction threshold (~200 rad/s):
+- I drops from 3.29 × 10⁻⁵ to 3.19 × 10⁻⁵
+- By L conservation: ω_boost = (3.29/3.19) × ω_before ≈ 1.031 × ω_before ≈ +3.1% spin
+- At the retraction point (~200 rad/s): jumps to ~206 rad/s
+- This is the bow gimmick's best actual contribution: a small spin-preservation effect at the transition
+
+### Burst Resistance Assessment
+- Archer Hercules teeth (medium + medium-tall): avg burst threshold ~3.25 N·m
+- Layer recoil (rounded bow tips): low — ≤ 1.5 N·m per contact → comfortable burst margin
+- Eternal's free-spin dish: −15% burst torque vs. fixed tip → further reduces per-contact burst torque
+- Unbalance risk: +10% burst risk per contact (mitigated with Level Chip)
+- **Net: High burst resistance without Level Chip; Very High with Level Chip**
+
+### Stamina Comparison vs. Peers
+| Combo | Approx. L_battle | dω/dt | Stamina Tier |
+|-------|-----------------|-------|-------------|
+| Archer Hercules 13 Eternal | 1.382 × 10⁻² | 0.54 rad/s² | ★★★★★ |
+| Orb Egis Outer Quest | 1.739 × 10⁻² | 27.3 rad/s² | ★ (KO-spec, not stamina) |
+| Dread Bahamut 7Wall Orbit Metal | ~2.0 × 10⁻² | ~8–10 rad/s² | ★★★ |
+| Bigbang Genesis Hybrid | 2.416 × 10⁻² | 9.76 rad/s² | ★★★ |
+| Variant Lucifer Mobius 2D | 2.831 × 10⁻² | 0.193 rad/s² | ★★★★★ |
+
+Archer Hercules 13 Eternal has much lower base L than Variant Lucifer 2D, but its decay rate is also very low. In a pure no-contact stamina test, Archer Hercules 13 Eternal outlasts many combos with higher L but worse tip friction.
+
+### Opposite-Spin Match-up
+The combo's effectiveness against opposite-spin (left-spin) attackers:
+- Eternal dish free-spin absorbs contra-rotational contact → +10% spin preservation
+- Archer Hercules symmetrical bows: contact geometry is symmetric → equal deflection regardless of opponent spin direction
+- L is substantial → spin-steal transfer is limited
+- **Net: good opposite-spin performance**, slightly below dedicated opposite-spin specialists (Fafnir-type) but above average for a right-spin layer
+
+### Wobble / Nutation Threshold
+- ω_crit = 280 rad/s
+- Reaches ω_crit at t ≈ (700−280) / 0.54 ≈ **778 s** (theoretical, no contacts) — effectively never enters wobble from friction alone
+- With combat contact losses (~50 events × 20 rad/s): effective threshold at t ≈ (700−280−1000)/0.54 → already below wobble threshold from contacts alone after ~30–40 contacts
+- At ω = 280 → LAD phase begins with exceptional Eternal dish precession survival (~35 s LAD)
+
+### Recommended Use
+- Pure Stamina vs. pure Stamina or vs. Defense types that lack strong spin-stealing
+- Add Level Chip to remove unbalance: eliminates burst risk from eccentric oscillation
+- Disc 13: provides standard weight distribution (see previously covered case); suitable here as a balanced Disc that does not shift the combo toward attack or defense
+
+### Game-Engine Mapping
+- Assembly type: `stamina` (OWD + high precession)
+- I_total_battle (deployed): 3.29 × 10⁻⁵ kg·m²
+- I_total_retracted: 3.19 × 10⁻⁵ kg·m²
+- Launch ω₀: 700 rad/s
+- L₀: 2.303 × 10⁻² N·m·s
+- L_battle: 1.382 × 10⁻² N·m·s
+- Spin decay (high spin): 0.54 rad/s²
+- Spin decay (LAD phase): 5.61 rad/s²
+- LAD survival: ~35.7 s
+- Precession rate: 0.194 rad/s (very slow → very stable)
+- Burst resistance: high (teeth + low recoil; very high with Level Chip)
+- Unbalance penalty: −8% stamina, +10% burst risk (Level Chip negates)
+- Bow gimmick: +3% L at battle ω; +3.1% spin boost at retraction threshold
+- Opposite-spin resistance: +10% (Eternal dish)
+- Generation: `Gen3-Burst` / `Burst-CZ`
+
+
+## Burst God Layer System — Alter Chronos 6Meteor Trans
+
+---
+
+## Case 1292 — Energy Layer: Alter Chronos (10.6 g, Burst God Layer System, Balance Type)
+
+**Tags:** Gen3-Burst · Burst-God · God-Layer · Layer · Balance · Mode-Change · OWD · Defense
+
+### Part Identity
+- **Official name:** Energy Layer — Alter Chronos (アルタークロノス)
+- **Hasbro equivalent:** Cognite (same layer, standard Hasbro material quality reduction)
+- **System:** Burst System — God Layer System (Burst God generation)
+- **Type:** Balance (Stamina Mode and Attack Mode; true competitive strength = Defense)
+- **Spin direction:** Right-spin
+- **Mythology:** Chronos — the personification of time in Greek mythology; gear motifs surround the God Chip to emphasize the time theme
+- **Official description:** "A right-spin Balance Type God Layer that can change into two modes by changing the bias of the center of gravity, with a well-balanced endurance mode and an Attack mode with an eccentric center of gravity."
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 10.6 g (confirmed) |
+| Blade count | 5 (large blades; one protrudes slightly further than the others) |
+| Outer radius r_o | ~37 mm |
+| Inner radius r_i | ~8 mm |
+| Blade gap | Small gaps between blades (near-continuous perimeter) |
+| Mode indicator | Blue dot (Stamina Mode) / Red dot (Attack Mode) |
+| Teeth quality | Excellent (top-tier God Layer burst resistance) |
+| Material | ABS plastic (no metal inserts — God Layer era predates Cho-Z metal layers) |
+
+### Five-Blade Design
+Alter Chronos has five large blades with small gaps between them. This near-continuous perimeter provides:
+1. **OWD** — mass distributed at maximum r; five-fold near-symmetry (almost circular profile)
+2. **Low recoil** — small gaps mean fewer hard recoil-inducing edges; contact is mostly smooth blade-to-blade
+3. **Attack potential** — the one protruding blade creates a single asymmetric contact point per revolution (the "attack" vector in Attack Mode)
+
+The large blades extend to r ≈ 37 mm, providing good I despite the absence of metal inserts.
+
+### Mode-Change Gimmick — Stamina Mode vs. Attack Mode
+
+The underside of the layer slides/rotates to shift an internal weight to different positions:
+
+**Stamina Mode (blue dot):**
+- Internal weight centered or evenly distributed
+- Mass distribution: symmetric around spin axis
+- Effect: stable, even spin → no eccentric wobble → standard stamina properties
+- CoM offset e ≈ 0 mm (ideal symmetric case)
+
+**Attack Mode (red dot):**
+- Internal weight shifted to one side of the layer
+- CoM offset: e ≈ 1–2 mm from spin axis
+- Effect: eccentric spin → centrifugal force creates asymmetric outward-pull → the bey follows a wandering, non-circular path → contact with opponent is more frequent (approach behavior)
+- Destabilization mechanism: small slopes on the blade tips direct upward-angled impacts on the opponent at the point of eccentric contact → tilt induction
+- **Burst attack limited:** the compact blade design doesn't create large catch/hook surfaces → burst torque per contact is low even in Attack Mode
+
+**Why Attack Mode is at the cost of spin time:**
+The eccentric CoM oscillation is an energy loss mechanism. Each revolution, the eccentric mass must be "pulled" back toward center by the bearing/body — creating a periodic internal stress cycle that dissipates energy as heat/vibration. Estimated additional spin decay: ~10–15% faster than Stamina Mode.
+
+### Why Defense is Alter Chronos's True Role
+Despite the Balance type classification:
+- **Stamina mode** — outclassed by Drain Fafnir (left-spin rubber absorber) and Deep Chaos for pure stamina
+- **Attack mode** — limited burst attack (compact blades); wandering path creates contact but not necessarily damaging contact
+- **Defense** — the compact low-recoil blades are exceptional for defense:
+  - Small gaps → fewer recoil spikes per revolution
+  - Large 5-blade coverage → attacker contacts smooth blade surfaces, not edges
+  - Excellent teeth → very high burst resistance
+  - Higher-than-average OWD for a God Layer → good L for spin-theft resistance
+  - "Top-tier choice for Defense Combinations" per official assessment
+
+### Inertia Calculation
+- I_layer = ½ × 0.0106 × (0.008² + 0.037²)
+- I_layer = 0.0053 × (0.000064 + 0.001369)
+- I_layer = 0.0053 × 0.001433
+- **I_layer ≈ 7.59 × 10⁻⁶ kg·m²**
+
+In Stamina Mode (symmetric): I is as calculated.
+In Attack Mode (CoM offset e ≈ 1.5 mm): I about geometric center = I_cm + m×e² ≈ 7.59 × 10⁻⁶ + 0.0106 × (0.0015)² ≈ 7.59 × 10⁻⁶ + 2.39 × 10⁻⁸ ≈ essentially unchanged (eccentricity adds negligible I).
+
+The mode change affects CoM position, not significantly the I magnitude.
+
+### Game-Engine Mapping
+- Layer type: `balance` (mode-switch: `stamina` or `attack`)
+- I_contribution: 7.59 × 10⁻⁶ kg·m²
+- Mode: `stamina` (symmetric) | `attack` (CoM offset e=1.5 mm)
+- Stamina mode: standard spin decay
+- Attack mode: +12% decay rate; +wandering path (±15° drift per revolution); destabilize modifier +15% tilt-per-contact
+- Burst attack (attack mode): low (compact blades; +5% burst torque vs. standard)
+- Burst resistance (both modes): very high (excellent teeth + low-recoil compact blades)
+- Best competitive use: `defense` (Stamina Mode for defense combos)
+- Generation: `Gen3-Burst` / `Burst-God`
+
+---
+
+## Case 1293 — Forge Disc: 6 (21.2 g, Burst God / Burst Standard)
+
+**Tags:** Gen3-Burst · Burst-God · Disc · Balanced · Core-Disc · Frame-Compatible
+
+### Part Identity
+- **Official name:** Forge Disc — 6 (シックス)
+- **System:** Burst System (universal cross-gen compatibility)
+- **Weight:** 21.2 g (confirmed)
+- **Type:** Core Disc — even-numbered → elliptical, Frame-compatible
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 21.2 g |
+| Shape | Symmetrical elliptical (even-numbered Core Disc) |
+| Outer radius r_o (long axis) | ~42 mm |
+| Outer radius r_o (short axis) | ~38 mm |
+| Inner radius r_i | ~10 mm (large central holes around performance tip seat) |
+| Protrusions | 3 loop-shaped protrusions per side (6 total) |
+| Central holes | 4 large holes surrounding the performance tip seat — reduce center mass |
+| Material | Metal (zinc alloy) |
+| Frame compatibility | Yes (even-numbered) |
+
+### Design — Weight Penalty from Central Holes
+The four large central holes are the critical design feature. The holes serve a functional purpose (housing the performance tip mechanism), but they remove metal mass from the center of the disc — a region that contributes very little to I regardless (since I ∝ r²). Paradoxically, the holes reduce total mass (fewer grams of material) while barely reducing I (the removed mass was near-center anyway).
+
+However, compared to peer Core Discs (2, 4, 5, 7) which do not have as large or as many center holes:
+- Disc 6 total mass 21.2 g vs. Disc 7 at 23.2 g
+- Mass difference mostly from the center hole void
+- Disc 7 and others with denser center sections are simply heavier overall → more I at equivalent r_o
+
+**Visual resemblance to Disc 7:**
+Both 6 and 7 have loop/protrusion-oriented designs that cluster mass at the outer zone. But 7 outweighs 6 by 2 g, and 7 uses an asymmetric elliptical design (more pronounced ellipse) — making 7 better for attack (asymmetric I distribution) while 6 is more balanced.
+
+### Inertia Calculation
+Using elliptical annular approximation (average r_o = (42+38)/2 = 40 mm, r_i = 10 mm):
+- I_Disc6 = ½ × 0.0212 × (0.010² + 0.040²)
+- I_Disc6 = 0.0106 × (0.000100 + 0.001600)
+- I_Disc6 = 0.0106 × 0.001700
+- **I_Disc6 ≈ 1.802 × 10⁻⁵ kg·m²**
+
+Central hole correction (4 holes × ~0.5 g each at r ≈ 10 mm, removing mass that would otherwise contribute):
+- ΔI_holes = −4 × 0.0005 × (0.010)² = −2.0 × 10⁻⁷ kg·m²
+- Corrected I_Disc6 ≈ 1.782 × 10⁻⁵ kg·m²
+
+This is similar to Disc 2 (1.765 × 10⁻⁵ kg·m²) — confirming Disc 6 is in the same performance tier as Disc 2 (mid-tier, not specialized).
+
+### Loop-Shaped Protrusions
+Three loop-shaped protrusions per side are primarily structural (maintain disc rigidity despite the central holes) and aesthetic. They do not significantly affect combat contact geometry since they sit below the Layer level and are covered by the Frame.
+
+### Performance Tier
+Disc 6 is explicitly "hindered by its relatively light weight" (21.2 g) and "far heavier" peers outperform it:
+| Disc | Mass | I_est | Best Use |
+|------|------|-------|---------|
+| 2 | 21.21 g | 1.765 × 10⁻⁵ | Balanced |
+| 4 | ~22 g | ~1.85 × 10⁻⁵ | Attack |
+| 5 | ~21.5 g | ~1.80 × 10⁻⁵ | Varied |
+| **6** | **21.2 g** | **1.782 × 10⁻⁵** | **Balanced/limited** |
+| 7 | 23.2 g | ~2.0 × 10⁻⁵ | Attack/Stamina |
+
+Disc 6 is viable but not optimal — a Disc 2 provides essentially the same performance with slightly better availability/weight.
+
+### Game-Engine Mapping
+- Disc type: `balanced` (mid-tier; light for a Core Disc)
+- I_contribution: 1.782 × 10⁻⁵ kg·m²
+- Frame compatibility: `yes`
+- Attack modifier: 0.92× vs. Disc 7 (lighter, less asymmetric)
+- Generation: `Gen3-Burst` (universal)
+
+---
+
+## Case 1294 — Disc Frame: Meteor (2.7 g, Burst God / Burst Standard)
+
+**Tags:** Gen3-Burst · Burst-God · Frame · Attack · Thick · Rough-Perimeter
+
+### Part Identity
+- **Official name:** Disc Frame — Meteor (メテオ)
+- **System:** Burst System (universal Frame for even-numbered Core Discs)
+- **Weight:** 2.7 g (confirmed)
+- **Material:** ABS plastic (clear dark blue/navy in standard release)
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 2.7 g |
+| Shape | Pentagonal with numerous protrusions ("rough perimeter") |
+| Outer radius r_o | ~43 mm |
+| Inner radius r_i | ~36 mm |
+| Thickness | One of the thickest Frames available |
+| Protrusion count | Multiple small protrusions distributed around the pentagonal base |
+| Contact geometry | Protrusions too small to reach opponent Layer; rough surface texture |
+| Material | ABS (translucent dark navy) |
+
+### Pentagonal Profile with Rough Perimeter
+Meteor's distinguishing features:
+1. **Pentagonal base shape** — 5 sides rather than circular; creates 5 slightly flat faces around the Frame's circumference
+2. **Numerous small protrusions** — distributed around all 5 sides; these are too small to reach the opponent's Layer but contribute to the overall rough/angular perimeter texture
+3. **One of the thickest Frames** — thicker plastic construction means more mass concentrated at r ≈ 40–43 mm → higher I per gram than thin frames
+
+### Attack Potential — Why Thickness Matters
+Meteor's attack potential comes from its thick body + pentagonal edges:
+- A thick Frame has more "collision volume" — when the Frame's outer surface contacts the opponent's disc or tip, the larger contact area can generate more impulse
+- The pentagonal flat faces create 5 slightly sharp angle transitions per revolution (not true sharp blades, but edges where the face meets the protrusion)
+- With heavy Core Discs like 7 (23.2 g): the combination of 7's mass and Meteor's thick attack frame creates meaningful contact force per impact
+- With lighter Disc 6: the attack potential is reduced (lower overall momentum behind each Meteor contact)
+
+### Why Protrusions Don't Reach the Layer
+Burst System geometry: the Layer sits atop the Disc+Frame stack, with the Frame's outer radius (~43 mm) slightly below the Layer's contact height. The Frame contacts the opponent's disc/frame level, not the layer level. Meteor's protrusions are sized to engage at the disc-disc contact zone, not disc-layer zone — so they never directly contact the opponent's blades.
+
+This is actually beneficial for Defense builds: Meteor adds thickness/mass without adding attack recoil at the layer level.
+
+### Inertia Contribution
+Thick frame at maximum r:
+- I_Meteor ≈ ½ × 0.0027 × (0.036² + 0.043²)
+- I_Meteor = 0.00135 × (0.001296 + 0.001849)
+- I_Meteor = 0.00135 × 0.003145
+- **I_Meteor ≈ 4.25 × 10⁻⁶ kg·m²**
+
+High I per gram (1.57 × 10⁻⁶ kg·m²/g) — same as Glaive Frame due to similar outer radius. The thickness makes Meteor marginally heavier than Glaive (2.7 g vs. 2.34 g), giving slightly more I.
+
+### Game-Engine Mapping
+- Frame type: `attack` (thick, rough pentagonal perimeter)
+- I_contribution: 4.25 × 10⁻⁶ kg·m²
+- Contact geometry: rough-perimeter (pentagonal face transitions at disc level)
+- Attack modifier: +8% at disc-disc contact level (with heavy Core Discs like 7); +4% with lighter discs
+- LAD quality: ★★★ (pentagonal edges create slight floor-contact variation, worse than circular Glaive/Cross)
+- Compatibility: even-numbered Core Discs
+
+---
+
+## Case 1295 — Performance Tip: Trans (6.5 g, Burst God / Burst Standard, Balance Type — Dual Mode)
+
+**Tags:** Gen3-Burst · Burst-God · Driver · Balance · Mode-Change · Stamina · Attack · Mobile-Stamina
+
+### Part Identity
+- **Official name:** Performance Tip — Trans (トランス)
+- **System:** Burst System (cross-gen compatible)
+- **Weight:** 6.5 g (confirmed)
+- **Type:** Balance (dual mode: Stamina setting and Attack setting)
+- **Adjustment:** Bottom portion twists to switch modes; top embossed with stylized "T"
+
+### Physical Specification
+| Parameter | Value |
+|-----------|-------|
+| Mass | 6.5 g |
+| Height | Standard (pre-Cho-Z driver height) |
+| Stamina tip | Small diameter, low-angle cone (fixed — not free-spinning) |
+| Attack tip | Flat tip with central hole (like Zephyr); 4 small tabs around edges |
+| Mode switch | Twist bottom portion |
+| Material | ABS plastic |
+
+### Stamina Setting — Small Cone Tip
+
+**Tip geometry:** A small, low-angle cone tip. "Low angle" = shallow cone → contact patch is slightly wider than a true sharp point but narrower than a ball tip.
+
+| Feature | Value |
+|---------|-------|
+| Contact radius r_tip | ~1.5–2 mm |
+| Cone half-angle | ~15° (shallow) |
+| Friction | μ ≈ 0.08–0.10 (fixed ABS cone) |
+| Free-spin | None |
+
+**Why it lags behind Eternal:**
+- No free-spinning component → μ is floor friction (0.08–0.10) rather than bearing friction (0.02)
+- Eternal: μ_eff ≈ 0.02 → τ = 0.02 × m × g × r_tip (very low)
+- Trans Stamina: τ = 0.09 × m × g × r_tip ≈ 4.5× higher spin decay than Eternal at same r_tip
+
+**Susceptibility to off-balance knock:**
+The very small tip diameter means the equilibrium contact point is highly sensitive to perturbations:
+- A sharp tip (r → 0) has infinite sensitivity: any lateral force immediately tilts the bey
+- Trans's small cone (r ≈ 1.5 mm) approaches this limit — attacker contacts or stadium floor imperfections more easily initiate tilt
+- The low cone angle partially mitigates this (shallow cone rolls back to center when tilted slightly)
+- **Bulky body size** of Trans makes this worse: the large driver body above the tip has high inertia that amplifies any tilt perturbation
+
+**Scraping risk:**
+The bulky driver body extends relatively wide. At high tilt, the body's outer edge contacts the stadium floor → scraping. The low cone angle reduces the tilt threshold at which this occurs (a steeper cone would let the bey tilt more before scraping). In practice, scraping occurs at tilt angles > ~20° — which is manageable in early battle but dangerous at low spin.
+
+### Attack Setting — Flat Tip with Tabs
+
+**Tip geometry:** A flat tip with a central hole covers the cone, akin to Zephyr driver's aggressive flat movement pattern.
+
+| Feature | Value |
+|---------|-------|
+| Contact radius r_tip | ~5–6 mm (flat disc contact) |
+| Friction | μ ≈ 0.20–0.30 (flat ABS on stadium) |
+| Movement | Aggressive flat-tip wandering; hybrid of attack and stamina |
+| 4 tabs | Small tabs around the flat tip rim |
+
+**Flat tip movement physics:**
+A flat tip creates high friction over a moderate contact area → the friction force is not centered but offset from the tip center. This creates a random lateral torque that drives the bey along a curved, wandering path — typical flat-tip attack behavior.
+
+Trans's flat tip is described as "aggressive but controllable" because:
+- The central hole in the flat disc reduces the effective contact area slightly (compared to a solid flat tip)
+- The 4 tabs around the rim add discrete contact points at a larger r_tab — but these tabs are designed to prevent catching the Tornado Ridge (the elevated inner stadium ring)
+
+**The 4 tabs — Tornado Ridge problem:**
+Standard flat tips (like Quake, Zephyr) can "catch" the Tornado Ridge — the stadium ridge deflects the bey outward in a controlled manner for ring-out attacks or stamina-orbital paths. The 4 tabs on Trans's attack-mode flat prevent this catch — they grind on the Tornado Ridge surface instead of catching the edge.
+- Catching: bey jumps outward along ridge → aggressive orbital movement
+- Grinding: bey slides along ridge → friction spike → spin loss
+- Net result: Trans Attack mode cannot use Tornado Stall tactics; stamina is worse when near the Tornado Ridge
+
+**Why it's still a "Mobile Stamina" combination:**
+Mobile Stamina = a stamina-type bey that moves around the stadium rather than staying fixed at center. The flat tip in Attack mode creates enough movement to remain mobile (chasing opponents, maintaining dynamic spin rather than stationary spin decay), while the combo's overall I gives enough angular momentum for sustained spin.
+
+### Inertia Contribution
+- I_Trans ≈ ½ × 0.0065 × (0.003² + 0.010²)
+- I_Trans = 0.00325 × (0.000009 + 0.000100) = 0.00325 × 0.000109
+- **I_Trans ≈ 3.54 × 10⁻⁷ kg·m²**
+
+### Performance Summary
+| Setting | dω/dt ratio vs. Eternal | KO Resist | Use Case |
+|---------|------------------------|-----------|---------|
+| Stamina | ~4.5× worse | Lower | Center-stable stamina (poor vs. Eternal) |
+| Attack | ~15× worse | Moderate | Mobile Stamina; attack-defense hybrid |
+
+### Game-Engine Mapping
+- Tip type: `trans` (dual-mode: `stamina-cone` or `attack-flat`)
+- Stamina setting: μ = 0.09, r_tip = 1.5 mm, fixed (no free-spin)
+- Attack setting: μ = 0.25, r_tip = 5.5 mm, wandering movement (+/− 15° per revolution)
+- Tornado Ridge: Attack mode — grinding (no catch; −20% stamina near ridge)
+- KO resistance: Stamina mode moderate (small tip, low friction, center-stable); Attack mode moderate (moving target)
+- Burst defense: minimal (fixed tip; no free-spin protection)
+- I_contribution: 3.54 × 10⁻⁷ kg·m²
+- Mode embossed indicator: "T" on top
+- Generation: `Gen3-Burst` (God-era, cross-gen compatible)
+
+---
+
+## Case 1296 — Alter Chronos 6Meteor Trans: Full Assembly (Burst God, Balance / Defense Type)
+
+**Tags:** Gen3-Burst · Burst-God · Assembly · Balance · Defense · Mode-Change · OWD · Mobile-Stamina
+
+### Assembly Identity
+- **Beyblade combo:** Alter Chronos 6Meteor Trans (アルタークロノス・6・メテオ・トランス)
+- **Hasbro layer name:** Cognite
+- **Type:** Balance (Defense in competitive play; Mobile Stamina in Attack Mode with Trans Attack setting)
+- **Spin direction:** Right-spin
+- **System:** Burst System — God Layer System
+- **Strategy:** Versatile mode-switch combo; Stamina Mode + Trans Stamina = defensive center-hold; Attack Mode + Trans Attack = mobile-stamina hybrid
+
+### Part List
+| Part | Name | Mass |
+|------|------|------|
+| Energy Layer | Alter Chronos | 10.6 g |
+| Forge Disc (Core) | 6 | 21.2 g |
+| Disc Frame | Meteor | 2.7 g |
+| Performance Tip | Trans | 6.5 g |
+| **Assembly total** | | **41.0 g** |
+
+### Moment of Inertia (Full Assembly — Stamina Mode)
+| Component | I (kg·m²) |
+|-----------|-----------|
+| Energy Layer — Alter Chronos (Stamina Mode) | 7.59 × 10⁻⁶ |
+| Forge Disc — 6 | 1.782 × 10⁻⁵ |
+| Disc Frame — Meteor | 4.25 × 10⁻⁶ |
+| Performance Tip — Trans | 3.54 × 10⁻⁷ |
+| **I_total (Stamina Mode)** | **≈ 3.064 × 10⁻⁵ kg·m²** |
+
+### Moment of Inertia (Attack Mode)
+Attack Mode adds eccentric CoM offset (e ≈ 1.5 mm) — I about geometric center unchanged; motion changes due to CoM shift, not I change.
+- I_total (Attack Mode) ≈ same: **3.064 × 10⁻⁵ kg·m²**
+
+### Launch Physics (Burst God LR String Launcher)
+- ω₀ ≈ 700 rad/s
+- L₀ = 3.064 × 10⁻⁵ × 700 ≈ **2.145 × 10⁻² N·m·s**
+- Battle ω ≈ 420 rad/s
+- L_battle = 3.064 × 10⁻⁵ × 420 ≈ **1.287 × 10⁻² N·m·s**
+
+### Spin Decay Analysis
+
+**Stamina Mode + Trans Stamina setting (small cone, μ = 0.09, r = 1.5 mm):**
+- τ = 0.09 × 0.041 × 9.81 × 0.0015 ≈ 5.44 × 10⁻⁵ N·m
+- dω/dt = 5.44 × 10⁻⁵ / 3.064 × 10⁻⁵ ≈ **1.78 rad/s²**
+- t_stall ≈ 700 / 1.78 ≈ 393 s (theoretical) → good but not exceptional stamina
+- Attack Mode penalty: ×1.12 → dω/dt_attack ≈ **1.99 rad/s²**
+
+**Attack Mode + Trans Attack setting (flat, μ = 0.25, r = 5.5 mm):**
+- τ = 0.25 × 0.041 × 9.81 × 0.0055 ≈ 5.53 × 10⁻⁴ N·m
+- dω/dt = 5.53 × 10⁻⁴ / 3.064 × 10⁻⁵ ≈ **18.1 rad/s²**
+- Much faster decay — this mode is for aggressive mobile use, not endurance
+
+### Defense Performance (Stamina Mode + Trans Stamina)
+
+**KO Resistance:**
+- Trans Stamina small cone: center-stable → combos stays near center → further from walls
+- Alter Chronos compact low-recoil blades: minimal lateral impulse per contact
+- L_battle = 1.287 × 10⁻² N·m·s: moderate — enough to resist casual attack-type pushes
+- Meteor frame thick edges: some lateral resistance at disc level
+- Net: moderate KO resistance (not as high as Quest/2D combos, but adequate for defense)
+
+**Burst Resistance:**
+- Alter Chronos teeth: excellent (top-tier God Layer teeth) → very high burst resistance
+- Trans stamina mode: fixed tip, minimal burst protection contribution
+- Compact blade design: low recoil → per-contact burst torque well below tooth thresholds
+- **Net: very high burst resistance** — one of the best burst resistances of all God Layers
+
+### Attack Mode Combat Analysis
+When switched to Attack Mode with Trans Attack setting:
+- Wandering flat-tip movement: bey moves around stadium
+- CoM offset: creates periodic extra centrifugal force → destabilizes opponent on contact
+- Destabilize modifier: +15% tilt induction per contact (from Attack Mode CoM slope mechanics)
+- Attack Mode burst risk: compact blades still limit burst attack → not a burst-attack combo even in Attack Mode
+- Speed of approach: flat tip drives bey at ~0.3–0.5 m/s lateral speed → moderate chase ability
+- Best use: chasing down stamina opponents with high LAD to force contact and destabilize, rather than trying to burst
+
+### Mode Combination Matrix
+| Layer Mode | Trans Setting | Result |
+|-----------|--------------|--------|
+| Stamina | Stamina | **Defense** — low decay, center-stable, excellent burst resistance |
+| Stamina | Attack | Mobile Defense — moves around but with stable layer contact |
+| **Attack** | **Stamina** | **Unstable** — eccentric layer + center-cone = conflict |
+| **Attack** | **Attack** | **Mobile Stamina** — wandering path with destabilize potential |
+
+Optimal competitive setup: **Stamina Mode + Trans Stamina = Defense**
+Alternative: **Attack Mode + Trans Attack = Mobile Stamina destabilizer**
+
+### Comparison to Alter Chronos Meta Peers (God Layer era)
+| Combo | Burst resist | Stamina | KO resist | Best role |
+|-------|-------------|---------|----------|---------|
+| Alter Chronos 6Meteor Trans | ★★★★★ | ★★★★ | ★★★ | Defense |
+| Drain Fafnir (Stamina) | ★★ | ★★★★★ | ★★★ | Pure Stamina |
+| Deep Chaos (Stamina) | ★★★ | ★★★★★ | ★★★ | Pure Stamina |
+
+Alter Chronos's superior burst resistance differentiates it from pure stamina competitors — it excels where they don't: surviving contact without bursting, while maintaining reasonable stamina.
+
+### Wobble / Nutation
+- ω_crit = 280 rad/s (Stamina Mode) → Reaches at t = (700−280)/1.78 ≈ **236 s** from launch (theoretical)
+- Combat losses reduce this significantly; in 3-minute competitive match, still stable through most of the match
+- Trans Stamina tip: scraping risk at tilt > 20° (see Case 1295) — if bey tilts significantly, scraping accelerates end
+
+### Game-Engine Mapping
+- Assembly type: `balance` (primary: `defense` in Stamina mode)
+- I_total: 3.064 × 10⁻⁵ kg·m²
+- Launch ω₀: 700 rad/s
+- L₀: 2.145 × 10⁻² N·m·s
+- L_battle: 1.287 × 10⁻² N·m·s
+- Spin decay (Stamina/Stamina): 1.78 rad/s²
+- Spin decay (Attack/Attack): 18.1 rad/s²
+- Burst resistance: very high (excellent Alter Chronos teeth + compact low-recoil)
+- KO resistance: moderate (center-stable, moderate L)
+- Mode flags: `layerMode: stamina|attack`, `tipMode: stamina|attack` (2×2 combination)
+- Destabilize (Attack mode): +15% tilt-per-contact
+- Generation: `Gen3-Burst` / `Burst-God`
+
+
+## Case 1313 — Face Bolt: Kronos
+
+**Generation:** MFB / 4D System
+**Part type:** Face Bolt (center piece)
+**Beyblade:** Scythe Kronos T125EDS
+
+**Description:**
+The Kronos Face Bolt depicts Cronus (Κρόνος), the Titan of time from Greek mythology, rendered as a scythe-wielding skull motif. The face sticker carries the iconography; the plastic bolt provides the mechanical seat for the Energy Ring and serves as the structural spine of the assembly.
+
+**Physical properties:**
+- Mass: ~1–2 g (typical Face Bolt range; MFB bolts vary by mold generation)
+- Position: geometric center of the assembly (r ≈ 0 mm)
+- Moment of inertia contribution: I ≈ m × r² ≈ negligible (< 0.5% of assembly I)
+
+**Nomenclature convention (per session standard):**
+Face Bolts are **excluded** from official Beyblade assembly mass nomenclature. The "Scythe Kronos T125EDS" name does not include the Face Bolt in its listed weight. This convention is consistent across all MFB / HWS / 4D / Zero-G / Burst generations (cf. Bit Chip and Stone Face for other gens).
+
+**Game engine note:**
+The Face Bolt contributes zero meaningful I and zero meaningful CoM offset. It is not modeled as a separate physics object. Its relevance in the game is purely cosmetic (face sticker texture) and as the anchor point for Energy Ring attachment in the 2.5D part system.
+
+---
+
+## Case 1314 — Energy Ring: Kronos
+
+**Generation:** MFB / 4D System
+**Part type:** Clear Wheel (Energy Ring)
+**Beyblade:** Scythe Kronos T125EDS
+
+**Physical properties:**
+- Mass: m = 2.6 g = 0.0026 kg
+- Outer radius: r_o ≈ 41 mm (standard Energy Ring outer lip)
+- Inner radius: r_i ≈ 34 mm (seats on the Fusion Wheel inner hub)
+- Width (radial): ~7 mm
+- Geometry: Annular ring with raised scythe-shaped protrusions on two opposing sides
+
+**Moment of inertia (annular ring model):**
+I = ½ × m × (r_i² + r_o²)
+= ½ × 0.0026 × (0.034² + 0.041²)
+= ½ × 0.0026 × (0.001156 + 0.001681)
+= ½ × 0.0026 × 0.002837
+= **3.688 × 10⁻⁶ kg·m²**
+
+**Profile notes:**
+The Kronos Energy Ring has a round, smooth outer circumference with two scythe-head protrusions at ~0° and ~180°. These protrusions add minor asymmetric mass, but the ring remains functionally balanced for spin purposes. The protrusion adds < 2% asymmetric I contribution (negligible for competitive physics).
+
+The clear polycarbonate material (typical Energy Ring) has a density of ~1.2 g/cm³. At 2.6 g and r ≈ 37–41 mm, this is a mid-weight Energy Ring — comparable to other round Gen-2 rings.
+
+**Role in assembly:**
+The Energy Ring contributes to the outer perimeter of the Layer system but does not add contact points in the 4D context (the Scythe Fusion Wheel's PC frame overhangs and dominates contact geometry). The Kronos ring is primarily an LAD contributor at the outer rim.
+
+---
+
+## Case 1315 — Fusion Wheel: Scythe (4D)
+
+**Generation:** MFB / 4D System
+**Part type:** 4D Fusion Wheel (Metal + PC Frame)
+**Beyblade:** Scythe Kronos T125EDS
+
+**Physical properties (composite):**
+- Total mass: m_total = 40.2 g = 0.0402 kg
+  - Metal sub-wheel: m_metal = 37.8 g = 0.0378 kg
+  - PC (polycarbonate) free-spinning outer frame: m_PC = 2.4 g = 0.0024 kg
+- Outer radius (PC frame): r_o ≈ 41.5 mm (to outer contact edge)
+- Inner radius (metal wheel): r_i_metal ≈ 13 mm (hub bore)
+- PC frame spans: ~r = 36–41.5 mm (thin outer ring, ~5.5 mm wide)
+
+**4D Construction:**
+Scythe is one of the early MFB 4D wheels (B-series). Its design is characterized by:
+1. **Round, flat profile** — Unlike aggressive attack wheels (e.g., Beat, Variares), Scythe has a near-circular cross-section, minimizing recoil at impact.
+2. **Free-spinning PC outer frame** — The polycarbonate ring can rotate independently of the metal inner wheel. This reduces the effective contact friction during collisions: when struck, the outer ring rotates with the opponent's bey rather than transferring full recoil force to the inner metal core.
+3. **Thin PC frame** — The PC ring is thin and offers minimal contact surface area. Combined with the free-spinning behavior, this gives Scythe its "non-contact" or "minimum contact" defensive philosophy.
+
+**Moment of inertia (metal sub-wheel, disc approximation):**
+The metal wheel is approximately a thick annular disc:
+r_i_metal ≈ 13 mm, r_o_metal ≈ 38 mm (inner face of PC frame seating)
+
+I_metal = ½ × m_metal × (r_i² + r_o²)
+= ½ × 0.0378 × (0.013² + 0.038²)
+= ½ × 0.0378 × (0.000169 + 0.001444)
+= ½ × 0.0378 × 0.001613
+= **3.049 × 10⁻⁵ kg·m²**
+
+**PC frame contribution:**
+The PC ring is thin and free-spinning. In a fixed-spin model:
+I_PC = ½ × m_PC × (r_i_PC² + r_o_PC²)
+= ½ × 0.0024 × (0.036² + 0.0415²)
+= ½ × 0.0024 × (0.001296 + 0.001722)
+= ½ × 0.0024 × 0.003018
+= **3.622 × 10⁻⁶ kg·m²**
+
+However, because the PC frame free-spins independently, its angular momentum is decoupled from the main spin axis during collisions. For spin-decay modeling, the effective coupled I uses only I_metal. The PC frame's I becomes relevant only for contact-force modeling (it spins separately, absorbing and re-emitting angular momentum at the contact interface).
+
+**Effective coupled I (spin decay):** I_eff = I_metal = **3.049 × 10⁻⁵ kg·m²**
+**Total static I (if fully coupled):** I_total_wheel = I_metal + I_PC = 3.049 × 10⁻⁵ + 3.622 × 10⁻⁶ = **3.411 × 10⁻⁵ kg·m²**
+
+**Free-spinning PC frame — recoil absorption:**
+On a normal (non-PC-wheel) beyblade, a collision transfers angular impulse:
+ΔL = F_contact × r × Δt
+
+With the free-spinning PC frame, the collision first spins up the outer ring separately. The torque transferred to the inner metal wheel is reduced by the ratio of frame inertia to total inertia:
+η_recoil = I_metal / (I_metal + I_PC) ≈ 3.049 × 10⁻⁵ / 3.411 × 10⁻⁵ ≈ 0.894
+
+So ~89.4% of normal recoil is transferred to the metal core; ~10.6% is absorbed by the spinning-up of the PC frame. Combined with Scythe's round, flat profile (low contact height), this makes Scythe a strong defensive/stamina wheel despite its modest static I.
+
+**Game engine implementation:**
+- contactRecoilReduction: 0.106 (10.6% recoil absorbed by free-spinning frame)
+- Wheel type: `defense-stamina` (round, low recoil)
+- PC frame friction: μ_PC ≈ 0.08 (polycarbonate on polycarbonate, lower than ABS)
+
+---
+
+## Case 1316 — Spin Track: T125 / Tornado 125
+
+**Generation:** MFB / 4D System
+**Part type:** Spin Track
+**Beyblade:** Scythe Kronos T125EDS
+
+**Physical properties:**
+- Mass: m = 1.7 g = 0.0017 kg
+- Height: 12.5 mm (nominal "125" designation in MFB naming = 12.5 mm)
+- Track body radius: r ≈ 7 mm (standard MFB track bore ~4 mm, outer body ~7 mm)
+- Wings: 4 upward-angled fins, span to ~r = 11 mm
+
+**Track name explained:**
+"T125" = **Tornado 125**. The four wings are angled upward like a tornado's blade geometry, theoretically generating downward airflow/pressure when spinning. In practice, at competition RPMs the aerodynamic effect is negligible:
+
+**Aerodynamic force estimate:**
+At ω₀ ≈ 600 rad/s (MFB 4D launch), the wing tip speed:
+v_tip = ω × r_wing = 600 × 0.011 ≈ 6.6 m/s
+
+Dynamic pressure: q = ½ρv² = ½ × 1.225 × 6.6² ≈ 26.7 Pa
+Wing projected area: A ≈ 4 wings × (4 mm × 3 mm) ≈ 4.8 × 10⁻⁵ m²
+Lift (downforce): F_aero = C_L × q × A ≈ 1.0 × 26.7 × 4.8 × 10⁻⁵ ≈ 0.00128 N
+
+Normal force without T125: F_N = m_assembly × g ≈ 0.046 × 9.81 ≈ 0.451 N
+Additional normal force from T125 wings: 0.00128 N
+Fractional increase: 0.28% — **negligible in practice**
+
+This confirms the community consensus that T125 performs similarly to D125 (standard height, no wing effect). The wings are aesthetic / have minor effect only at very low spin (low RPM, high wobble angle) where aerodynamic drag could increase normal force slightly during precession.
+
+**Height comparison with D125:**
+D125 = 12.5 mm (same height, no wings). Performance is virtually identical; T125 is slightly heavier (+0.1 g) due to wing material.
+
+**Moment of inertia:**
+I_T125 = ½ × m × r_body²  (approximate disc, wings are thin)
+= ½ × 0.0017 × 0.007²
+= ½ × 0.0017 × 4.9 × 10⁻⁵
+= **4.165 × 10⁻⁸ kg·m²**
+
+At 0.0417 × 10⁻⁶ kg·m², T125 contributes < 0.2% of assembly I — negligible.
+
+**Game engine note:** No special airflow modifier applied. T125 and D125 are treated as equivalent height-125 tracks (standard defensive height zone, above scraping risk, below RS/230 altitude).
+
+---
+
+## Case 1317 — Performance Tip: EDS / Eternal Defense Spike
+
+**Generation:** MFB / 4D System
+**Part type:** Performance Tip
+**Beyblade:** Scythe Kronos T125EDS
+
+**Physical properties:**
+- Mass: m = 0.6 g = 0.0006 kg
+- Contact geometry: sharp spike tip (initially), worn-down flat (after use)
+- Free-spinning component: outer dish (POM/plastic bearing ring) rotates independently around the inner spike shaft
+- Overall height contribution: EDS is one of the tallest MFB performance tips — the spike shaft extends ~3–4 mm below the DS/S tip position (hence "Eternal" — increased height delays floor scrape during wobble)
+- Tip radius (spike): r_spike ≈ 0.5 mm (sharp)
+- Outer dish outer radius: r_dish ≈ 7 mm; inner bore ≈ 3 mm
+
+**Design concept:**
+EDS is the free-spinning (Eternal) variant of DS (Defense Spike). DS is itself a variant of S (Spike), the tall sharp tip used for Stamina/Defense type Beyblades in the MFB era.
+
+The free-spinning outer dish is the key feature:
+- During normal spin: the dish rotates with the beyblade (or slower, depending on bearing friction)
+- During collision: the dish absorbs lateral contact (like a free-spinning bumper), reducing recoil transferred to the beyblade body — the same anti-recoil principle as RS (Rubber Sharp/Revolve Sharp) but using bearing-decoupled plastic instead of rubber.
+- The inner spike provides the actual ground contact — sharp for minimal friction area (μ_eff ≈ 0.04–0.06 for plastic spike on standard stadium)
+
+**Free-spinning dish moment of inertia:**
+I_dish = ½ × m_dish × (r_i² + r_o²)
+Estimate m_dish ≈ 0.35 g (majority of EDS mass in the dish):
+= ½ × 0.00035 × (0.003² + 0.007²)
+= ½ × 0.00035 × (9×10⁻⁶ + 4.9×10⁻⁵)
+= ½ × 0.00035 × 5.8×10⁻⁵
+= **1.015 × 10⁻⁸ kg·m²**
+
+**Spike shaft I:**
+I_spike ≈ m_spike × r_spike² = 0.00025 × 0.0005² ≈ 6.25 × 10⁻¹¹ kg·m² (negligible)
+
+**Spin decay model (spike contact):**
+τ = μ × m_assembly × g × r_eff
+For EDS: r_eff = r_spike ≈ 0.5 mm = 0.0005 m, μ ≈ 0.05
+
+τ_EDS = 0.05 × 0.046 × 9.81 × 0.0005 ≈ **1.128 × 10⁻⁴ N·m**
+
+Compare to a flat-tip (r_eff ≈ 7 mm, μ ≈ 0.35):
+τ_flat = 0.35 × 0.046 × 9.81 × 0.007 ≈ **1.107 × 10⁻³ N·m**
+
+EDS produces ~10× less spin decay torque than a flat tip → excellent Stamina/Defense type.
+
+**Wear mechanism:**
+The spike tip wears down with use (plastic on polycarbonate stadium floor):
+- New tip: r_contact ≈ 0.5 mm (spike, very low friction, low τ)
+- Moderately worn: r_contact ≈ 1.5–2 mm (rounded spike, still low friction)
+- Heavily worn: r_contact ≈ 3–5 mm (effectively becomes a small flat, μ rises)
+
+When heavily worn, τ_EDS approaches DS/S performance:
+τ_worn = 0.10 × 0.046 × 9.81 × 0.004 ≈ **1.807 × 10⁻⁴ N·m**
+Still only ~16% of flat, but noticeably worse than new EDS.
+
+**Tournament recommendation:**
+EDS should be replaced when the spike tip is visually worn to more than ~2 mm flat contact diameter. In tournament settings, using a worn EDS significantly degrades Stamina performance.
+
+**Game engine implementation:**
+- tipType: `eternal-spike`
+- μ_new: 0.05 (spike contact)
+- μ_worn: 0.10 (worn rounded tip)
+- wearRate: moderate (track contact minimal due to tall height + spike geometry)
+- freeSpin: true (outer dish bearing-decoupled, recoilReduction: 0.08)
+- height: tall (above scrape-risk zone, similar to RS/Revolve)
+
+---
+
+## Case 1318 — Assembled Beyblade Analysis: Scythe Kronos T125EDS
+
+**Generation:** MFB / 4D System
+**Type:** Stamina / Defense (free-spinning outer frame + spike tip = maximum spin retention with lateral recoil absorption)
+**System:** 4D (Fusion Wheel composite: metal core + free-spinning PC outer frame)
+**Beyblade:** Scythe Kronos T125EDS
+
+**Assembly components:**
+| Part | Mass | I (kg·m²) |
+|------|------|-----------|
+| Face Bolt Kronos | ~1.5 g (excl.) | negligible |
+| Energy Ring Kronos | 2.6 g | 3.688 × 10⁻⁶ |
+| Fusion Wheel Scythe (metal) | 37.8 g | 3.049 × 10⁻⁵ |
+| Fusion Wheel Scythe (PC frame, free-spin) | 2.4 g | 3.622 × 10⁻⁶ |
+| Spin Track T125 | 1.7 g | ~4.2 × 10⁻⁸ |
+| Performance Tip EDS | 0.6 g | ~1.0 × 10⁻⁸ |
+
+**Total assembly mass (excl. Face Bolt):**
+m = 2.6 + 37.8 + 2.4 + 1.7 + 0.6 = **45.1 g = 0.0451 kg**
+
+**Total static I (all parts fixed):**
+I_static = 3.688×10⁻⁶ + 3.049×10⁻⁵ + 3.622×10⁻⁶ + 4.2×10⁻⁸ + 1.0×10⁻⁸
+= 3.688×10⁻⁶ + 30.49×10⁻⁶ + 3.622×10⁻⁶ + 0.042×10⁻⁶ + 0.010×10⁻⁶
+≈ **3.785 × 10⁻⁵ kg·m²**
+
+**Effective coupled I (for spin decay — PC frame and EDS dish excluded as free-spinning):**
+I_coupled = I_Kronos_ring + I_metal_wheel + I_T125 + I_EDS_spike
+= 3.688×10⁻⁶ + 3.049×10⁻⁵ + 4.2×10⁻⁸ + 6.3×10⁻¹¹
+≈ **3.418 × 10⁻⁵ kg·m²**
+
+**Angular momentum at launch (MFB 4D, ω₀ = 600 rad/s):**
+L₀ = I_coupled × ω₀ = 3.418×10⁻⁵ × 600 = **2.051 × 10⁻² kg·m²/s**
+
+**Spin decay (EDS spike contact, new tip):**
+τ_friction = μ_EDS × m × g × r_spike = 0.05 × 0.0451 × 9.81 × 0.0005 = **1.108 × 10⁻⁴ N·m**
+
+dω/dt = τ_friction / I_coupled = 1.108×10⁻⁴ / 3.418×10⁻⁵ ≈ **3.24 rad/s²**
+
+t_stall = ω₀ / (dω/dt) = 600 / 3.24 ≈ **185 s** (theoretical, spike only — actual shorter due to wall contact)
+
+**Battle ω (≈60% of launch ω₀):**
+ω_battle = 0.60 × 600 = 360 rad/s
+
+**Nutation threshold (40% ω₀):**
+ω_wobble = 0.40 × 600 = 240 rad/s
+t_wobble = (600 − 240) / 3.24 ≈ **111 s** from launch (theoretical)
+
+**Competitive characteristics:**
+
+1. **Stamina type (primary):**
+   - EDS spike tip gives minimal τ_friction (≈10× less than flat tips)
+   - Scythe's round profile avoids recoil-inducing contact angles
+   - PC free-spinning frame further reduces net spin loss from collisions
+   - Combined: best-in-class spin retention for MFB 4D era stamina combos
+
+2. **Defense type (secondary):**
+   - Free-spinning PC frame absorbs ~10.6% of collision recoil
+   - EDS free-spinning dish absorbs additional lateral impact (~8% recoil reduction)
+   - Total recoil reduction: ~18% vs a non-free-spinning equivalent
+   - T125 height: places the beyblade in the mid-height zone, above floor-scrape risk but low enough for stability
+
+3. **Attack type: poor**
+   - Round, flat wheel profile means near-zero upper-attack or smash angles
+   - No aggressive contact points on Energy Ring Kronos
+   - EDS spike provides no lateral momentum on attack runs
+
+**Optimal competitive use:**
+- **Best combo context:** Stamina vs Stamina (EDS outlasts most other tips); Defense vs Attack (PC frame + EDS dish absorb recoil while Scythe's round profile deflects cleanly)
+- **Known weakness:** Against aggressive attack combinations with high-friction rubber tips (e.g., RF, MF), the round profile provides little stopping power; a well-aimed attack bey can still ring out Scythe Kronos if it generates sufficient force
+- **Classic Stamina configuration:** Scythe Kronos T125EDS was a top-tier Stamina choice in MFB competitive play (2012–2014 era) before Burst-era parts replaced it
+
+**Wear caveat:**
+Tournament performance degrades significantly when EDS spike is worn. Players should inspect and replace EDS tips before competitive events.
+
+**Game engine values:**
+- assemblyMass: 45.1 g
+- I_coupled: 3.418 × 10⁻⁵ kg·m²
+- ω₀: 600 rad/s (MFB 4D string launcher)
+- spinDecayRate: 3.24 rad/s² (new EDS spike)
+- spinDecayRate_worn: 5.28 rad/s² (worn EDS, r_contact ≈ 3 mm)
+- recoilReduction: 0.18 (combined PC frame 10.6% + EDS dish 8%)
+- tipType: eternal-spike
+- wheelType: defense-stamina-4D-freespin
+- beyType: stamina

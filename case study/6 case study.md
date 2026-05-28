@@ -11140,7 +11140,7 @@ function track500TopplingRisk(height_mm: number, standard_height_mm: number): nu
 > **Stock combos:** Gladiator Bahamdia SP230GF (BBG-27, Kira Hayama second bey)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Spike-claw 230
 
-**Thesis.** SP230 (Spike 230) is a 23.0 mm height track featuring four downward-projecting spike claws — BD145-style protrusions that engage the tilted ZeroG stadium floor. [FACT — linka gladiator-bahamoote.md: ~4.3 g, 23.0 mm height, ~25.0 mm wide, four downward spike claws.] The claws create floor friction during the ZeroG tilt phase, resisting the centrifugal slope-push that sends beys downhill toward the ring-out zone. In combination with the GF/GCF disc tip's wall engagement, SP230 enables Bahamoote to anchor the outer stadium ring.
+**Thesis.** SP230 (Spike 230) is a 23.0 mm height track featuring four downward-projecting spike claws — BD145-style protrusions that engage the tilted ZeroG stadium floor. [FACT — linka gladiator-bahamoote.md: ~4.3 g, 23.0 mm height, ~25.0 mm wide, four downward spike claws.] The claws create floor friction during the ZeroG tilt phase, resisting the centrifugal slope-push that sends beys downhill toward the ring-out zone. In combination with the GF/GCF disc tip's wall engagement, SP230 enables Bahamdia to anchor the outer stadium ring.
 
 **Spin Track Geometry**
 

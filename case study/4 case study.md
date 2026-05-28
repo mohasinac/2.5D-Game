@@ -10192,7 +10192,7 @@ function inversionViable(arExtended: boolean, topShaftProtrudes: boolean): boole
 
 ---
 
-## Attack Ring: Turtle Survivor (Master Dranzer)
+## Case 1281 — Attack Ring: Turtle Survivor (Master Dranzer)
 
 **Weight:** 3.7 g  
 **Beyblade:** Master Dranzer  
@@ -10279,7 +10279,7 @@ Competitive tier:     Mid (RS smash, not top tier); Low-Mid (LS survival, outcla
 
 ---
 
-## Blade Base: Metal Sting Base (Master Dranzer)
+## Case 1282 — Blade Base: Metal Sting Base (Master Dranzer)
 
 **Weight:** 6.3 g  
 **Beyblade:** Master Dranzer  
@@ -10398,7 +10398,7 @@ Competitive tier:     Tier 2 Compact (viable; outclassed by MCB / CMCB on stabil
 
 ---
 
-## Blade Base: Flat Base
+## Case 1283 — Blade Base: Flat Base
 
 **Weight:** 6.5 g  
 **Spin Direction:** Right Spin Only (built-in Spin Gear, non-swappable)  
@@ -10560,7 +10560,7 @@ The competitive ceiling is low — Metal Change Base, Customize Metal Change Bas
 
 ---
 
-## Attack Ring: Bound Attack Ring
+## Case 1284 — Attack Ring: Bound Attack Ring
 
 **Weight:** 3.4 g total (Core Part: 2.0 g | Sub Part: 1.4 g)  
 **Spin Direction:** Right Spin Only  
@@ -10694,7 +10694,7 @@ Competitive tier:      No competitive use
 
 ---
 
-## Attack Ring: Ark Pyramid (Desert Sphinxer)
+## Case 1285 — Attack Ring: Ark Pyramid (Desert Sphinxer)
 
 **Weight:** 5.2 g total (Core AR: 4.0 g | Sub AR: 1.2 g)  
 **Beyblade:** Desert Sphinxer  
@@ -10935,7 +10935,7 @@ SAR:
 
 ---
 
-## Spin Gear: Right Engine Gear (Mystery Cutter)
+## Case 1286 — Spin Gear: Right Engine Gear (Mystery Cutter) [Supplementary to Case 197]
 
 **Weight:** 6.9 g  
 **Also named:** Right Engine Gear (Circle Defenser) — identical part, different CEW bundled  
@@ -11137,7 +11137,7 @@ Gimmick use:   Flying Defense counter to tall Circle Survivor Defense (niche)
 
 ---
 
-## Blade Base: Final Clutch Base (Desert Sphinxer Version)
+## Case 1287 — Blade Base: Final Clutch Base (Desert Sphinxer Version)
 
 **Weight:** 7.4 g  
 **Beyblade:** Desert Sphinxer  
@@ -11351,7 +11351,7 @@ Competitive tier: Tier 1 (slightly above Normal Bases; not a must-have due to ra
 
 ---
 
-## Assembled Beyblade Analysis: Darllanzer (ダリランザー) — Hydro-Siphon Tip Mechanism
+## Case 1288 — Assembled Beyblade Analysis: Darllanzer (ダリランザー) — Hydro-Siphon Tip Mechanism
 
 **Series:** V-Force (2002)  
 **Owner:** Darill (Team Psykick)  
