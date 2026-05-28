@@ -105,6 +105,27 @@ input[type=range] { cursor: pointer; width: 100%; }
 }
 .bey-spin-up  { animation: beySpinUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .shockwave    { animation: shockwave 0.4s ease-out forwards; }
+
+/* Game canvas — portrait: top-aligned; landscape: centred. Fixed in one place. */
+.game-canvas-container {
+  position: absolute;
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
+}
+@media (orientation: portrait) {
+  .game-canvas-container {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+@media (orientation: landscape) {
+  .game-canvas-container {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
 .stat-flash   { animation: statFlash 0.4s ease-in-out; }
 .slide-in     { animation: slideIn 0.2s ease-out forwards; }
 .fade-in      { animation: fadeIn 0.15s ease-out forwards; }

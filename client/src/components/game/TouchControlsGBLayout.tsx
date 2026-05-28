@@ -25,9 +25,12 @@ interface CanvInfo { cl: number; ct: number; cr: number; cb: number; vw: number;
 
 function getCanvas(): CanvInfo {
   const vw = window.innerWidth, vh = window.innerHeight;
+  const portrait = vh > vw + 50;
   const size = Math.min(vw, vh);
   const cl = (vw - size) / 2;
-  const ct = (vh - size) / 2;
+  // Portrait: canvas sits at TOP so control area is in thumb reach zone
+  // Landscape: canvas centred (gutters left/right)
+  const ct = portrait ? 0 : (vh - size) / 2;
   return { cl, ct, cr: cl + size, cb: ct + size, vw, vh, size };
 }
 
@@ -302,78 +305,76 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
   const shw  = Math.min(Math.round(vw * 0.22), 88);
   const nav  = useNavigate();
 
-  // ── Controls go into bottom strip (cb → vh)
-  // Position WITHIN that strip (all y coords relative to cb):
+  // Canvas sits at TOP (ct=0 in portrait from getCanvas).
+  // Controls fill the bottom strip cb → vh.
   const stripH  = vh - cb;
-  const ctrlTop = Math.round(stripH * 0.1);
-  const rowMid  = Math.round(stripH * 0.18);
-  const rowBot  = Math.round(stripH * 0.65);
+  const ctrlTop = Math.round(stripH * 0.08);
+  const rowBot  = Math.round(stripH * 0.62);
 
-  // D-pad: left side, vertically centred in upper half
+  // Shoulder tabs sit just below the canvas (at cb, overlapping the body panel)
+  const shTop = cb;
+
+  // D-pad: bottom-left of control strip
   const dpLeft = Math.round(Math.max(10, cl + 10));
   const dpTop  = cb + ctrlTop;
 
-  // B button: right area, above A
+  // ATK: bottom-right area
   const aRight = Math.round(Math.max(14, (vw - cr) + 14));
   const aTop   = cb + ctrlTop + Math.round((dp - btnA) / 2) + 6;
-  const bRight = aRight + btnA + 10;
-  const bTop   = cb + ctrlTop + Math.round((dp - btnB) / 2);
+  // DEF: upper-left of ATK
+  const bRight = aRight + Math.round(btnA * 0.6) + 8;
+  const bTop   = aTop - Math.round(btnB * 0.7);
 
-  // SELECT/START/EXIT row (near bottom of strip)
+  // Pills row (EXIT / JMP / DGE) near bottom of strip
   const pillRowY = cb + rowBot;
   const pillCx   = vw / 2;
 
   return (
     <>
-      {/* TOP BODY (above canvas) */}
-      <div
-        style={{ position: 'fixed', left: 0, top: 0, right: 0, height: Math.max(0, ct), background: BODY, borderRadius: '18px 18px 0 0', zIndex: 52, pointerEvents: 'none' }}
-      >
-        <div style={{ position: 'absolute', left: 14, top: 10, width: 8, height: 8, borderRadius: '50%', background: '#ff3333', boxShadow: '0 0 7px #ff3333' }} />
-        <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,0.2)', fontWeight: 800, whiteSpace: 'nowrap' }}>BEYBLADE X</div>
-      </div>
-
-      {/* SCREEN BEZEL — transparent centre, border ring only */}
+      {/* SCREEN BEZEL — transparent centre, ring border only */}
       <div
         style={{ position: 'fixed', left: cl, top: ct, width: size, height: size, boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}`, borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent' }}
       />
 
-      {/* L SHOULDER (CHARGE) */}
-      <div style={{ position: 'fixed', left: 0, top: ct - shh, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="l" label="CHG" hold w={shw} h={shh} />
-      </div>
-
-      {/* R SHOULDER (SPECIAL) */}
-      <div style={{ position: 'fixed', right: 0, top: ct - shh, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} />
-      </div>
-
-      {/* BOTTOM BODY (below canvas) */}
+      {/* BOTTOM BODY (below canvas — control area) */}
       <div
         style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: BODY, borderRadius: '0 0 36px 36px', zIndex: 52, pointerEvents: 'none' }}
       />
+
+      {/* L SHOULDER (CHARGE) — at top of control strip, left side */}
+      <div style={{ position: 'fixed', left: 0, top: shTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <ShoulderTab side="l" label="CHG" hold w={shw} h={shh} />
+      </div>
+
+      {/* R SHOULDER (SPECIAL) — at top of control strip, right side */}
+      <div style={{ position: 'fixed', right: 0, top: shTop, zIndex: 60, pointerEvents: 'auto' }}>
+        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} />
+      </div>
 
       {/* D-PAD */}
       <div style={{ position: 'fixed', left: dpLeft, top: dpTop, zIndex: 60, pointerEvents: 'auto' }}>
         <CrossDpad size={dp} />
       </div>
 
-      {/* DEF BUTTON — above ATK, shifted left */}
+      {/* DEF BUTTON */}
       <div style={{ position: 'fixed', right: bRight, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
         <GBBtn field="defense" label="DEF" size={btnB} bg="#0d3380" border="#2255bb" />
       </div>
 
-      {/* ATK BUTTON — right */}
+      {/* ATK BUTTON */}
       <div style={{ position: 'fixed', right: aRight, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
         <GBBtn field="attack" label="ATK" size={btnA} bg="#881122" border="#cc2233" />
       </div>
 
-      {/* JMP + DGE + EXIT row (near bottom of strip) */}
+      {/* EXIT / JMP / DGE row */}
       <div style={{ position: 'fixed', top: pillRowY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
         <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
         <PillBtn label="JMP" field="jump"  w={sW} h={sH} />
         <PillBtn label="DGE" field="dodge" w={sW} h={sH} />
       </div>
+
+      {/* Power LED — top-left corner of canvas */}
+      <div style={{ position: 'fixed', left: cl + 6, top: ct + 6, width: 7, height: 7, borderRadius: '50%', background: '#ff3333', boxShadow: '0 0 6px #ff3333', zIndex: 60, pointerEvents: 'none' }} />
 
       {/* Toggle bar */}
       <div style={{ position: 'fixed', bottom: 'max(6px, env(safe-area-inset-bottom,0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 70, display: 'flex', gap: 6 }}>

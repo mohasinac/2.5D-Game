@@ -201,9 +201,9 @@ async function run() {
 
   // Navigate to AI setup
   await page.goto(`${BASE_URL}/game/2d/ai-battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  await sleep(1500);
+  await sleep(2500); // wait for Firestore data (beyblades/arenas) to load
 
-  // Pick Medium
+  // Pick Medium difficulty
   console.log("  👆  Selecting Medium difficulty…");
   await clickText(page, /medium/i, { touch: true });
   await sleep(300);
@@ -212,28 +212,59 @@ async function run() {
   console.log("  👆  Selecting BO1…");
   await clickText(page, /^bo1$/i);
   await sleep(300);
+
+  // Select first beyblade from the player picker (click first list item)
+  console.log("  👆  Selecting player beyblade…");
+  try {
+    // EntityPicker renders a list — click the first selectable item
+    const items = await page.$$('[role="option"], li[data-id], button[data-bey], .entity-item, [class*="cursor-pointer"]');
+    for (const item of items) {
+      const text = await page.evaluate((el) => el.textContent?.trim() ?? "", item);
+      if (text.length > 2) { // skip empty/icon-only elements
+        await item.click();
+        console.log("    ✅  Selected player bey:", text.slice(0, 30));
+        break;
+      }
+    }
+  } catch (e) { console.log("  ⚠️  bey select:", e.message); }
+  await sleep(500);
+  await ss(page, "battle-D-setup-bey");
+
   await ss(page, "battle-D-setup-ready");
 
-  // Start
+  // Start — use regular click (not touch) to ensure navigation fires
   console.log("  ▶️   Starting battle…");
-  const started = await clickText(page, /^start\b/i, { touch: true });
-  if (!started) await page.keyboard.press("Enter");
-  await sleep(500);
+  let started = false;
+  try {
+    const buttons = await page.$$("button");
+    for (const btn of buttons) {
+      const text = await page.evaluate((el) => el.textContent?.trim() ?? "", btn);
+      const disabled = await page.evaluate((el) => el.disabled, btn);
+      if (/^start\b/i.test(text) && !disabled) {
+        await btn.click();
+        console.log("  ✅  Clicked Start:", text);
+        started = true;
+        break;
+      }
+    }
+    if (!started) console.log("  ⚠️  Start button not found or disabled (selections missing)");
+  } catch (e) { console.log("  ⚠️  start:", e.message); }
+  await sleep(800);
 
-  // Wait for game page
+  // Wait for game page — longer timeout since server cold-start
   try {
     await page.waitForFunction(
       () => window.location.pathname.includes("ai-battle/play"),
-      { timeout: 20_000 }
+      { timeout: 30_000 }
     );
-    console.log("  ✅  Game page reached");
-  } catch { console.log("  ⚠️  game page navigation timeout"); }
+    console.log("  ✅  Game page reached:", page.url());
+  } catch { console.log("  ⚠️  game page navigation timeout — still at:", page.url()); }
 
-  await sleep(1500);
+  await sleep(2000);
   await ss(page, "battle-D-loading");
 
-  // Wait for canvas
-  console.log("  ⏳  Waiting for canvas…");
+  // Wait for canvas + loading overlay to dismiss (up to 20s — fallback timers run at 14s)
+  console.log("  ⏳  Waiting for canvas + loading overlay to clear…");
   try {
     await page.waitForSelector("canvas", { timeout: 30_000 });
     await page.waitForFunction(() => {
@@ -242,6 +273,10 @@ async function run() {
     }, { timeout: 30_000 });
     console.log("  ✅  Canvas visible!");
   } catch { console.log("  ⚠️  canvas not visible in 30 s"); }
+
+  // Extra wait for loading overlay to dismiss (fallback timers: step4=3s, step5=8s, step6=14s)
+  await sleep(16_000);
+  await ss(page, "battle-D-loading-clear");
 
   await sleep(1000);
   await ss(page, "battle-D-canvas");

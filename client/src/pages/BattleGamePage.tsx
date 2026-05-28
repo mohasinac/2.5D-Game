@@ -312,7 +312,7 @@ export function BattleGamePage() {
 
   return (
     <div className="min-w-[320px] max-w-[1920px] w-full mx-auto relative h-screen bg-black overflow-hidden">
-      <div ref={containerRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(100vw,100vh)] h-[min(100vw,100vh)]" />
+      <div ref={containerRef} className="game-canvas-container" />
 
       {showLoading && (
         <LoadingProgress
