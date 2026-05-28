@@ -662,7 +662,7 @@ export function BattleGamePage() {
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (
-        <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/75">
+        <div className="fixed inset-0 flex items-center justify-center z-[80] bg-black/75">
           <div className="text-center">
             <p className="text-[14px] font-semibold mb-1 text-theme-yellow">Game {gameEndData.gameNumber} Complete</p>
             <p className="text-[22px] font-black text-theme-text">
@@ -686,7 +686,7 @@ export function BattleGamePage() {
 
       {/* Series-end overlay */}
       {(gameState?.status === "series-finished" || seriesEndData) && !gameEndData && (
-        <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/[0.88]">
+        <div className="fixed inset-0 flex items-center justify-center z-[80] bg-black/[0.88]">
           <div className="text-center max-w-[400px]">
             <div className="text-[64px] mb-3">
               {(seriesEndData?.winner ?? gameState?.winner) === userId ? "🏆" : "💀"}
@@ -720,7 +720,7 @@ export function BattleGamePage() {
 
       {/* Single-game finished overlay (BO1 only) */}
       {gameState?.status === "finished" && !gameEndData && !seriesEndData && (gameState.targetWins ?? 1) <= 1 && (
-        <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/85">
+        <div className="fixed inset-0 flex items-center justify-center z-[80] bg-black/85">
           <div className="text-center max-w-[420px]">
             <div className="text-[60px] mb-4">
               {gameState.winner === userId ? "🏆" : isSpectating ? "🏁" : "💀"}
@@ -792,7 +792,7 @@ export function BattleGamePage() {
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && (
-        <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/85">
+        <div className="fixed inset-0 flex items-center justify-center z-[80] bg-black/85">
           <div className="text-center">
             <div className="spin w-12 h-12 rounded-full mx-auto mb-4 border-4 border-theme-red border-t-transparent" />
             <p className="text-theme-text">

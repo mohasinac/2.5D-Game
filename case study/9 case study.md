@@ -31683,3 +31683,953 @@ Adaptive burst resistance: modest during Attack Mode contact phase, hardens dram
 - AstralSpriggan Over Quattro-0 (77.9 g): I_total = 5.212e-5 (includes free-spin ring at separate omega)
 - Greatest Raphael Over HXe+' (73.7 g): I_attack = 6.327e-5 (all components rigidly coupled in Attack Mode)
 - Difference attributable to Overdrive arms at r = 42 mm adding I_attack not present in Astral Spriggan sub-layer
+
+---
+
+## CASE 1546 — Energy Ring: Dragonis [MFB 4D System]
+
+**Part overview**
+Dragonis is the Energy Ring for Omega in the BB-109 4D set. Transparent aquamarine ABS with glitter. Design: two curved daggers with tribal engravings, each attached to a diamond-link chain whip representing Dragonis' tail. Notable as the sole right-spin dragon-motif Energy Ring in MFB (L-Drago series holds the left-spin dragon niche). The 2-fold quasi-symmetry means mass is not evenly distributed around the ring.
+
+**Dimensions and mass**
+- Mass: 2.8 g (estimated; described as notably light for competitive note)
+- Outer radius (dagger tips): r_o ≈ 32 mm
+- Inner seating radius: r_i ≈ 18 mm
+- Geometry: 2 dagger blades at ~160° separation; diamond-chain whip fills the arcs between
+
+**Moment of inertia**
+- Dagger blades (40% = 1.12 g at r_mean = 30 mm): I = 0.00112 × 0.030² = 1.008×10⁻⁶ kg·m²
+- Chain-whip ring (40% = 1.12 g, r_i=24 mm, r_o=28 mm): I = ½ × 0.00112 × (0.024² + 0.028²) = 7.62×10⁻⁷ kg·m²
+- Inner hub (20% = 0.56 g, r_i=18 mm, r_o=22 mm): I = ½ × 0.00056 × (0.018² + 0.022²) = 2.26×10⁻⁷ kg·m²
+
+**I_Dragonis = 1.997×10⁻⁶ kg·m²**
+
+**CoM offset and vibration**
+The ~160° blade separation (not exactly 180°) creates a small CoM offset Δr_CoM ≈ 0.4–0.7 mm. Centrifugal imbalance force at battle ω = 390 rad/s: F = m × Δr × ω² = 0.0028 × 0.0006 × 390² ≈ 0.26 N. This continuous micro-vibration dissipates energy via tip micro-oscillation, explaining the competitive verdict of accelerated spin decay relative to symmetric Energy Rings.
+
+**Competitive verdict**
+I_Dragonis contributes only 5.0% of total assembly I (vs 95.0% from Omega + track/tip). Low mass combined with CoM offset makes it a neutral-to-negative part. Value is purely aesthetic (right-spin dragon motif unique in MFB).
+
+---
+
+## CASE 1547 — Fusion Wheel Core: Omega [MFB 4D System]
+
+**Part overview**
+The Omega Core is the inner metal component of the 4D Fusion Wheel at 25.3 g. Six protrusions: 3 overlapping curved scales (inward curve, shallow slope, dominant outer profile) + 3 blunt cylindrical talons (shorter reach, overshadowed by scales). Underside is hollowed, reducing mass while allowing the Frame to provide targeted outer weight.
+
+**Dimensions and mass**
+- Mass: 25.3 g (confirmed)
+- Outer radius (scale tips): r_scale ≈ 38 mm
+- Talon reach: r_talon ≈ 32 mm
+- Inner bore: r_i ≈ 8 mm
+
+**Moment of inertia (hollow-corrected model)**
+- Inner hub (15% = 3.8 g, r: 8–16 mm): I = ½ × 0.0038 × (0.008² + 0.016²) = 6.08×10⁻⁷ kg·m²
+- Mid body (20% = 5.06 g, r: 16–28 mm): I = ½ × 0.00506 × (0.016² + 0.028²) = 4.60×10⁻⁶ kg·m²
+- Outer protrusions (65% = 16.45 g, r_mean = 34 mm): I = 0.01645 × 0.034² = 1.902×10⁻⁵ kg·m²
+
+**I_Core = 2.369×10⁻⁵ kg·m²**
+
+**Attack profile geometry**
+Scale protrusions curve inward at α ≈ 20° from tangent. This produces:
+- F_radial = F_contact × cos 20° ≈ 0.940 × F (pushes opponent away — main KO force)
+- F_tangential = F_contact × sin 20° ≈ 0.342 × F (drives spin deceleration of attacker — recoil)
+
+Low tangential/recoil fraction mirrors Lightning wheel behaviour. Talon protrusions at α ≈ 5° — even lower recoil but overshadowed since scales contact first at their larger radius.
+
+---
+
+## CASE 1548 — Fusion Wheel Frame: Omega [MFB 4D System]
+
+**Part overview**
+The Omega Frame is the outer metal ring component: 12.5 g, r_inner ≈ 20 mm, r_outer ≈ 44 mm, three evenly-spaced wings. Two asymmetric internal tabs match uniquely-oriented sockets on the Core, preventing upside-down mounting and constraining exactly two mode positions: Assault and Barrage.
+
+**Moment of inertia**
+- Main ring (80% = 10.0 g, r_i=20 mm, r_o=42 mm): I = ½ × 0.0100 × (0.020² + 0.042²) = 1.082×10⁻⁵ kg·m²
+- Three wings (20% = 2.5 g at r_tip = 43 mm): I = 0.0025 × 0.043² = 4.622×10⁻⁶ kg·m²
+
+**I_Frame = 1.544×10⁻⁵ kg·m²**
+
+**Asymmetric tab constraint**
+The two tabs have different widths. Possible seating positions = exactly 2 (Assault and Barrage). Upside-down: tabs misalign with sockets → physically impossible to seat. This deterministic orientation lock means mode selection is intentional and non-reversible mid-battle (unlike some beys with rotationally symmetric frames).
+
+---
+
+## CASE 1549 — Fusion Wheel: Omega — Assault Mode [MFB 4D System]
+
+**Mode definition**
+Frame wings fill the gap between talon and scale protrusions; scale protrusions remain exposed at the outer profile. Both scale tips (r ≈ 38 mm) and frame wing edges (r ≈ 44 mm) are active contact points.
+
+**Combined mass and inertia**
+Total Omega: 25.3 + 12.5 = **37.8 g**
+I_Omega_Assault = I_Core + I_Frame = 2.369×10⁻⁵ + 1.544×10⁻⁵ = **3.913×10⁻⁵ kg·m²**
+
+(Mode does not change inertia — same parts, same mass distribution.)
+
+**Attack profile**
+Contact events per revolution: 6 (3 scales + 3 frame-wing edges)
+Primary contact radius: r_scale = 38 mm, α = 20° from tangent
+Secondary contact: r_wing = 44 mm
+
+Surface velocity at battle ω = 390 rad/s:
+v_scale = 390 × 0.038 = **14.82 m/s**
+
+Restitution (low-recoil, scale geometry): e ≈ 0.25
+m_eff (vs equal opponent): ≈ 0.021 kg
+J_Assault = 0.021 × 14.82 × 1.25 = **0.389 N·s per hit**
+Hit rate: 6 × (390/2π) = **372 hits/s** at battle ω
+
+**Characterisation**
+Sustained moderate-impact attack. 6-event frequency compensates lower per-hit impulse. Gap-filling by the Frame maintains continuous outer profile → less spacing between contact events → opponent experiences quasi-continuous grinding rather than discrete impacts.
+
+---
+
+## CASE 1550 — Fusion Wheel: Omega — Barrage Mode [MFB 4D System]
+
+**Mode definition**
+Frame rotated so wings fully cover the scale protrusions. Only the three Frame wings define the outer profile; all Core protrusions buried. Contact events: 3 per revolution (Frame wings only).
+
+**Attack profile**
+Primary contact: r_wing = 44 mm, α ≈ 35° (wing-tip wedge geometry)
+v_wing = 390 × 0.044 = **17.16 m/s**
+e ≈ 0.30 (wing tips slightly sharper than scale curve)
+J_Barrage = 0.021 × 17.16 × 1.30 = **0.469 N·s per hit**
+Hit rate: 3 × (390/2π) = **186 hits/s**
+
+**Mode comparison**
+
+| Parameter | Assault | Barrage |
+|---|---|---|
+| Contact radius | 38 mm | 44 mm |
+| Surface speed | 14.82 m/s | 17.16 m/s |
+| Impulse per hit | 0.389 N·s | 0.469 N·s |
+| Hit frequency | 372/s | 186/s |
+| Sustained impact power | 144.8 N·s/s | 87.4 N·s/s |
+
+Assault delivers 65% more sustained impact power. Barrage's advantage: larger contact radius means higher tilt torque per hit (τ_tilt = J × Δh_CoM / r_contact is identical; the advantage is purely in J magnitude at the cost of half the frequency). Assault preferred for sustained grinding; Barrage for single high-speed opening strike.
+
+**LAD note (Barrage)**
+Three discrete wings create an interrupted outer profile. When precessing at low spin, the bey contacts the ground intermittently between wing segments → poor LAD versus a continuous ring.
+
+---
+
+## CASE 1551 — Spin Track: 85 [MFB System]
+
+**Part overview**
+Spin Track 85 is the shortest available MFB track at 8.5 mm height (track numbers = height × 0.1 mm). Defines "low attacker" customisations by placing the Fusion Wheel contact band at the opponent's Tip/Track junction level.
+
+**Dimensions and mass**
+- Mass: ~0.9 g (estimated)
+- Height: 8.5 mm
+- Outer diameter: ~8 mm (narrow cylinder)
+
+**Moment of inertia**: I_85 ≈ 9×10⁻⁹ kg·m² (negligible — 0.02% of assembly)
+
+**Low-attacker geometry**
+Contact band height ≈ 8.5 − 1.0 mm underside overhang ≈ **7.5 mm above arena floor**
+
+vs standard 145 track opponent: Fusion Wheel lower edge at ~14.5 mm
+→ Omega hits 7 mm below their wheel, at Track/Tip junction
+
+Tilt torque per hit on opponent (CoM height ~20 mm):
+τ_tilt = J × (h_CoM_opponent − h_contact) / r_contact
+= 0.389 × (0.020 − 0.0075) / 0.038 = 0.389 × 0.3026 = **0.118 N·m per hit**
+
+This tilt moment destabilises opponents by inducing off-axis torque below their rotational plane.
+
+**Floor-scrape critical angle**
+θ_crit = arcsin(h_clearance / (h_track + R_tip)) ≈ arcsin(0.5/9.0) ≈ **3.2°**
+Even minor wobble (>3°) causes floor contact. This is why Hades Kerbecs BD145DS and Flame Byxis 230WD are immune: their Track height places the Fusion Wheel at 23 mm, entirely above the 85-track attacker's effective reach.
+
+---
+
+## CASE 1552 — Performance Tip: XF (Extreme Flat) [MFB System]
+
+**Part overview**
+Extreme Flat (XF) is the second widest plastic flat tip after GF. Diameter ≈ 16 mm (same as rubber RF). Four small plastic nubs spaced evenly at the edge. Hard ABS construction trades RF's grip and flower-pattern controllability for raw speed and moderate stamina.
+
+**Dimensions and mass**
+- Mass: ~0.7 g (estimated)
+- Tip face radius: R_face = 8 mm
+- Effective friction radius (flat-disc uniform pressure): R_eff = ⅔ × 8 = **5.33 mm**
+- μ_kinetic (ABS on BeySadium): 0.35
+
+**Moment of inertia**: I_XF = ½ × 0.0007 × 0.008² = 2.24×10⁻⁸ kg·m² (negligible)
+
+**Friction and spin decay**
+N = 0.0422 × 9.81 = 0.414 N
+τ_friction = μ_k × N × R_eff = 0.35 × 0.414 × 0.00533 = **7.72×10⁻⁴ N·m**
+
+dω/dt = −τ / I_total = −7.72×10⁻⁴ / 3.982×10⁻⁵ = **−19.4 rad/s²**
+
+| Threshold | ω (rad/s) | Time from launch (s) |
+|---|---|---|
+| Battle (60%) | 390 | 13.4 |
+| Wobble onset (40%) | 260 | 20.1 |
+| Spin-out | 0 | 33.5 |
+
+**Precession and movement**
+Precession rate at battle ω: Ω = τ / L = 7.72×10⁻⁴ / (3.982×10⁻⁵ × 390) = **0.0497 rad/s**
+
+Wide 16 mm contact amplifies the friction moment arm, driving aggressive wandering. Flower pattern control requires Ω to stay within a narrow range — XF's rate is too high for clean oval paths → devolves to Tornado Stalling under inexperienced handling, or chaotic paths generally.
+
+**Left-spin advantage**
+XF's plastic surface provides optimal spin-equalisation coefficient: sufficient friction to transfer angular momentum between opposite-spin beys without rubber's over-grip. Wider than MF → larger transfer area → more efficient equalisation per contact event.
+
+---
+
+## CASE 1553 — Assembly: Omega Dragonis 85XF — Assault Mode [MFB 4D System]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Face Bolt | Dragonis | ~1.0 g (excluded from I/L) |
+| Energy Ring | Dragonis | ~2.8 g |
+| Fusion Wheel | Omega (Core 25.3 + Frame 12.5) | 37.8 g |
+| Spin Track | 85 | ~0.9 g |
+| Performance Tip | XF | ~0.7 g |
+| **Total (excl. Face Bolt)** | | **42.2 g** |
+
+**Aggregate moment of inertia**
+I_total = I_Dragonis + I_Omega + I_85 + I_XF
+= 1.997×10⁻⁶ + 3.913×10⁻⁵ + 9×10⁻⁹ + 2.24×10⁻⁸
+= **4.118×10⁻⁵ kg·m²**
+
+(Omega accounts for 95.0%; Dragonis 4.9%; Track+Tip <0.1%)
+
+**Launch and combat parameters (MFB era, ω₀ = 650 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 650 | 8.702 | 26.77 |
+| Battle (60%) | 390 | 3.133 | 16.06 |
+| Wobble onset (40%) | 260 | 1.392 | 10.71 |
+
+Spin decay (XF tip, τ = 7.72×10⁻⁴ N·m): **dω/dt = −18.8 rad/s²**
+Battle reached at 13.8 s; wobble at 20.7 s; spin-out at 34.6 s.
+
+**Attack characterisation**
+Assault Mode: 6 contact events/rev × 372 hits/s × 0.389 N·s = 144.5 N·s/s sustained impact power.
+Low recoil (e = 0.25) → Omega persists through contact, grinding opponent spin.
+85 track → 7.5 mm contact height → tilt-destabilisation of standard-height opponents.
+
+**Competitive context**
+Angular momentum at launch: L = 26.77 mN·m·s. Compare: Flash/Variares assembly at comparable ω₀: L ≈ 35–40 mN·m·s (from heavier wheels at ~46–48 g). Omega's ~33% angular momentum deficit makes it insufficient for top-tier attack. Sustained low-recoil hits work in theory but lack the mass to convert into decisive KOs against heavy defense types. Effective against lighter stamina customs in the low-attack niche.
+
+---
+
+## CASE 1554 — Assembly: Omega Dragonis 85XF — Barrage Mode [MFB 4D System]
+
+**Inertia and mass**: identical to Case 1532 — I_total = 4.118×10⁻⁵ kg·m². Mode does not alter mass distribution.
+
+**Barrage attack profile**
+Frame wing contact: r = 44 mm, e = 0.30
+J_Barrage = 0.469 N·s per hit
+Hit rate: 186 hits/s
+Sustained impact power: 87.3 N·s/s (vs Assault's 144.5 N·s/s)
+
+**Key differences from Assault**
+
+| Parameter | Assault | Barrage |
+|---|---|---|
+| Outer contact radius | 38 mm | 44 mm |
+| Impulse/hit | 0.389 N·s | 0.469 N·s |
+| Hit frequency | 372/s | 186/s |
+| Sustained power | 144.5 N·s/s | 87.3 N·s/s |
+| Self-recoil | Low | Low-moderate |
+
+Barrage is inferior for sustained grinding. Practical use case: opening burst attempt where the three discrete wing impacts at higher radius can catch opponents whose Layer profile has recesses matching Barrage's 44 mm contact circle. The momentum advantage of 44 mm contact → longer lever arm for angular momentum transfer per hit (ΔL_per_hit = 0.469 × 0.044 = 20.6 mN·m·s vs Assault's 14.8 mN·m·s), but the gap between hits (186/s vs 372/s) allows opponents to recover.
+
+**Spin decay and LAD**: identical to Case 1532. XF tip contact unchanged by mode. Spin-out at 34.6 s. Barrage Mode's three-wing interrupted outer profile provides poor LAD.
+
+---
+
+## CASE 1555 — Energy Ring: Aries [MFB Standard System]
+
+**Part overview**
+Aries is the Energy Ring for Clay Aries ED145B, depicting the Ram constellation via three outward-pointing "head" protrusions with rock-like engravings and "ARIES" sticker labels. Translucent hot-pink ABS. The three heads form a triangular outer perimeter — 3-fold symmetry with rock-like protrusions as the outer contact points.
+
+**Dimensions and mass**
+- Mass: 3.0 g (confirmed: 3 gm)
+- Outer radius (head tips): r_o ≈ 30 mm
+- Inner seating radius: r_i ≈ 18 mm
+- 3-fold symmetric geometry
+
+**Moment of inertia**
+Main ring (60% = 1.8 g, r_i=18 mm, r_o=26 mm): I = ½ × 0.0018 × (0.018² + 0.026²) = ½ × 0.0018 × (3.24e-4 + 6.76e-4) = 9.0×10⁻⁷ kg·m²
+Head protrusions (40% = 1.2 g at r_mean = 28 mm): I = 0.0012 × 0.028² = 9.408×10⁻⁷ kg·m²
+
+**I_Aries = 1.841×10⁻⁶ kg·m²**
+
+**Contact geometry**
+Three heads create a symmetric triangular contact perimeter. Protrusion contact angle α ≈ 25° from tangent — moderate recoil profile. The rock-like surface texture creates higher local friction at contact vs smooth Energy Rings, providing marginally better grip during scraping spin equalization but no competitive advantage.
+
+**Competitive role**
+Aries ER contributes 14.5% of assembly I (vs 82.8% from Clay LW). Not the bottleneck — Clay LW's plastic construction and lightness is the primary limitation.
+
+---
+
+## CASE 1556 — Light Wheel: Clay [MFB Light Wheel Series]
+
+**Part overview**
+Clay is the plastic Light Wheel equivalent of the Counter Metal Wheel. Same profile as Counter (4 rounded, wing-like arms) but fabricated entirely from ABS plastic instead of zinc alloy. Weight is 15 g vs Counter's ~30 g — exactly half the rotational mass. Material substitution eliminates corrosion and reduces cost but introduces fatigue failure risk from repeated high-energy impacts. "Should be considered as a collector's item only" per official guidance.
+
+**Dimensions and mass**
+- Mass: 15 g (confirmed)
+- Outer radius (arm tips): r_o ≈ 36 mm
+- Inner bore: r_i ≈ 8 mm
+- Profile: 4-arm counter-type rounded cross
+
+**Material comparison**
+ABS plastic:
+- Young's modulus E ≈ 2.3 GPa
+- Yield strength σ_y ≈ 50 MPa
+- Density ρ ≈ 1.05 g/cm³
+
+Zinc alloy (Counter/standard Metal Wheels):
+- E ≈ 83 GPa (36× stiffer)
+- σ_y ≈ 220 MPa (4.4× stronger)
+- ρ ≈ 6.6 g/cm³ (6.3× denser)
+
+At the same geometry, Clay LW holds roughly ¼ the impact energy before yield onset. Combined with cycle fatigue (repeated micro-yield per battle), structural failure occurs at the arm roots — the narrow junction between arm and center hub where bending stress concentrates.
+
+**Moment of inertia**
+- Inner hub (20% = 3.0 g, r: 8–15 mm): I = ½ × 0.003 × (0.008² + 0.015²) = 4.34×10⁻⁷ kg·m²
+- Arm spokes (30% = 4.5 g, r: 15–28 mm): I = ½ × 0.0045 × (0.015² + 0.028²) = 2.27×10⁻⁶ kg·m²
+- Arm ends (50% = 7.5 g, r: 28–36 mm): I = ½ × 0.0075 × (0.028² + 0.036²) = 7.80×10⁻⁶ kg·m²
+
+**I_Clay = 1.051×10⁻⁵ kg·m²**
+
+This is 52.3% of the estimated Counter metal equivalent (I_Counter ≈ 2.0×10⁻⁵ kg·m²), reflecting the 50% mass reduction at the same radial geometry.
+
+---
+
+## CASE 1557 — Spin Track: ED145 (Eternal Defense 145) [MFB System]
+
+**Part overview**
+Eternal Defense 145 features three free-spinning wing segments mounted around the track body at 14.5 mm height. Wings are similar in shape to WD145 but mount on a free-spinning pivot rather than fixed. Total weight: 1.7 g (body ~1.1 g, three wings ~0.6 g combined).
+
+**Free-spin wing slip mechanics**
+At spin ω, centrifugal force presses each wing outward against its pivot shoulder:
+F_centrifugal_wing = m_wing × ω² × r_wing_CoM
+= 0.0002 × 390² × 0.022 = **0.671 N per wing** (at battle ω)
+
+Static friction holding wing to body: τ_slip_threshold = μ_s × F_centrifugal × r_pivot
+= 0.55 × 0.671 × 0.003 = **1.107×10⁻³ N·m per wing**
+Total 3 wings: **3.322×10⁻³ N·m combined**
+
+For typical track-height collision (τ_impact ≈ 50–150 mN·m at the track):
+τ_impact >> τ_slip_threshold → wings always slip on meaningful impacts.
+
+**Absorption mechanism**
+When a wing slips, the impact energy is partially converted to rotational kinetic energy of the wing about its pivot. Let I_wing_pivot = m_wing × L_wing²/3 = 0.0002 × 0.018²/3 = 2.16×10⁻⁸ kg·m².
+
+This is small — each wing absorbs only a fraction of the hit. The key benefit is that wing slip redirects a portion of the hit tangentially (along the wing's rotation direction) rather than purely radially. This creates a "glancing" interaction that partially deflects the impact rather than fully transferring it to the body.
+
+**Comparison to WD145 (fixed wings) and BD145**
+- WD145 (fixed): wings deflect hit elastically → recoil returns energy to attacker
+- ED145 (free wings): wings rotate with the hit → absorbs tangential component → less KO recoil
+- BD145 (large solid disc with long protrusions): rigid wide disc absorbs hits via mass and redirects vector efficiently → more effective overall
+
+ED145's free-spin gives ~15–25% reduction in effective KO recoil vs WD145. BD145 is still superior due to higher mass at larger radius and bearing-assisted absorption.
+
+**I (track body + wings coupled)**
+I_ED145 = I_body + I_wings = 2.5×10⁻⁸ + 2.904×10⁻⁷ ≈ **3.15×10⁻⁷ kg·m²** (2.5% of assembly I)
+
+---
+
+## CASE 1558 — Performance Tip: Ball (B) [MFB System]
+
+**Part overview**
+Ball (B) is a hemispherical plastic tip, 0.6 g, with hemisphere radius R ≈ 5 mm. The curved bottom creates center-seeking behaviour: when the bey tilts, the point of contact shifts, generating a restoring moment that returns the bey toward vertical. This behaviour keeps the bey in the stadium center, complementing defense combos.
+
+**Contact mechanics**
+For a hemisphere of radius R resting on a flat surface:
+- When upright: contact at a single point at the hemisphere's lowest point — point contact, theoretical zero friction area
+- When tilted by θ: contact shifts to a circle of radius r_c = R × sin(θ) around the hemisphere
+
+Effective friction torque at tilt θ = 5° (typical operation):
+r_contact = R × sin(5°) = 5 × 0.087 = 0.436 mm = 4.36×10⁻⁴ m
+N = 0.0203 × 9.81 = 0.199 N
+τ_Ball = μ_k × N × r_contact = 0.35 × 0.199 × 4.36×10⁻⁴ = **3.04×10⁻⁵ N·m**
+
+This is ~25× lower friction torque than XF tip (7.72×10⁻⁴ N·m). Ball tip dramatically extends theoretical stamina.
+
+**Spin decay (tip friction only)**
+dω/dt_tip = -3.04×10⁻⁵ / 1.266×10⁻⁵ = **-2.40 rad/s²**
+Theoretical spin-out: 650/2.40 = 271 s
+
+In practice, air drag at high spin is the dominant loss (τ_air at ω=390 ≈ 7×10⁻⁴ N·m > τ_Ball), compressing real spin-out to ~30–60 s depending on tilt stability.
+
+**Center-seeking stability limit**
+The hemispherical tip provides a restoring moment M_restore = m × g × R × sin(θ) ≈ 0.0203 × 9.81 × 0.005 × θ = 9.96×10⁻⁴ × θ N·m per radian of tilt.
+
+This opposes the destabilising gyroscopic nutation moment. As spin drops below ω_critical ≈ 250 rad/s, gyroscopic rigidity weakens and restoring moment can no longer suppress wobble onset — bey tips over rapidly. With Clay Aries' low I_total, ω_critical arrives sooner than for a heavier assembly.
+
+**I_Ball = 2/5 × 0.0006 × 0.005² = 6×10⁻⁹ kg·m²** (negligible)
+
+---
+
+## CASE 1559 — Assembly: Clay Aries ED145B [MFB Light Wheel Series]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Face Bolt | Aries | 1.0 g (excluded from I/L) |
+| Energy Ring | Aries | 3.0 g |
+| Light Wheel | Clay | 15.0 g |
+| Spin Track | ED145 | 1.7 g |
+| Performance Tip | Ball | 0.6 g |
+| **Total (excl. Face Bolt)** | | **20.3 g** |
+
+**Aggregate moment of inertia**
+I_total = I_Aries + I_Clay + I_ED145 + I_Ball
+= 1.841×10⁻⁶ + 1.051×10⁻⁵ + 3.15×10⁻⁷ + 6×10⁻⁹
+= **1.270×10⁻⁵ kg·m²**
+
+(Clay LW: 82.8%; Aries: 14.5%; ED145 wings: 2.5%; Ball: <0.1%)
+
+**Launch and combat parameters (MFB era, ω₀ = 650 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 650 | 2.683 | 8.255 |
+| Battle (60%) | 390 | 0.966 | 4.953 |
+| Wobble onset (40%) | 260 | 0.430 | 3.302 |
+
+**Angular momentum deficit**
+L_launch = 8.26 mN·m·s vs Omega Dragonis 85XF (26.8 mN·m·s) vs typical metal MFB combo (20–35 mN·m·s). Clay Aries has only **31% of the angular momentum** of a standard competitive MFB bey at the same ω₀.
+
+**ED145 defense contribution**
+Wing slip threshold at battle ω: 3.322 mN·m. Typical track-height hits: 50–150 mN·m → wings always slip → partial absorption of KO-directed recoil. Reduces effective KO impulse to the body by ~15–20%.
+
+**Ball tip stability**
+Center-seeking behaviour keeps bey in stadium center (defense position). Low friction extends stamina vs flat tips. Critical failure: once wobble exceeds ~10–15° tilt, restoring force cannot stabilise → rapid spin-out. With L_launch only 8.26 mN·m·s, gyroscopic rigidity depletes quickly.
+
+**Competitive verdict**
+Clay Aries ED145B is mechanically a defense-oriented design (center-seeking tip, free-spin wings) but is completely outclassed due to the plastic Light Wheel. The 20.3 g assembly is lighter than almost any Metal Wheel bey. Strictly a display/collector item. Collectible value: unique right-spin Aries design with ED145 track which has situational competitive use in custom builds (ED145 as a standalone track part remains relevant even if Clay is not).
+
+---
+
+## CASE 1560 — Energy Layer: Holy Horusood [Burst Standard System]
+
+**Part overview**
+Takara Tomy's Holy Horusood (B-35) is a Defense/Stamina Type Burst Layer at 8.1 g. Features two-tier design: upper layer of four feathered blades (2 opaque colored, 2 clear) arranged around a central Horus falcon motif. The outer shape appears round but is actually square — four corners at ~32 mm radius with flat sides recessing to ~24 mm between them. This "square-in-circle" silhouette creates four recoil points at the corners and two failure modes: burst susceptibility and stamina loss from recoil.
+
+Burst teeth: 4 total — first tooth short, teeth 2–4 medium-short. n_eff classification: **3.5** (below Standard tier of 4.0 due to short first tooth reducing effective resistance).
+
+**Dimensions and mass**
+- Mass: 8.1 g (confirmed)
+- Corner radius: r_corner ≈ 32 mm
+- Side-midpoint radius: r_side ≈ 24 mm (recessed ~8 mm)
+- Inner hub: r_i ≈ 10 mm
+
+**Moment of inertia**
+Central area (30% = 2.43 g, r: 10–18 mm): I = ½ × 0.00243 × (0.010² + 0.018²) = 4.53×10⁻⁷ kg·m²
+Mid ring (40% = 3.24 g, r: 18–26 mm): I = ½ × 0.00324 × (0.018² + 0.026²) = 1.63×10⁻⁶ kg·m²
+Corner protrusions (30% = 2.43 g, r: 26–32 mm): I = ½ × 0.00243 × (0.026² + 0.032²) = 2.02×10⁻⁶ kg·m²
+
+**I_Horusood = 4.105×10⁻⁶ kg·m²**
+
+**Burst vulnerability analysis**
+n_eff = 3.5, τ_floor = 14 mN·m
+Burst threshold (full meter, single hit): τ_required = n_eff × τ_floor = 3.5 × 14 = **49 mN·m**
+
+Any hit delivering > 49 mN·m to the ratchet bursts Holy Horusood instantly. Typical attack Layers at battle ω generate 80–150 mN·m → one-hit burst is routine.
+
+High-recoil partial mitigation: α_corner ≈ 35–45° from tangent at corner contact. Recoil fraction ε ≈ 0.50 (corners deflect ~50% of impact energy).
+Effective τ reaching ratchet = τ_impact × (1 − ε) = 120 × 0.50 = 60 mN·m > 49 mN·m threshold.
+Still bursts in one strong hit even with corner recoil deflecting half the energy.
+
+**Destabilisation potential**
+The waved colored blades create non-flat contact surfaces: at blade peak contact, normal force has a lateral out-of-plane component → applies tilt torque to opponent. However, the feather surface texture creates chaotic friction → inconsistent destabilisation vector. Effective for minor wobble induction but unreliable for targeted destabilisation.
+
+---
+
+## CASE 1561 — Forge Disc: Upper [Burst Standard System]
+
+**Part overview**
+Upper features two sloped metal wings (20 g confirmed) designed to generate Upper Force (right-spin) or Down Force (left-spin) via aerodynamic lift. The wing angle is low (~10°) and width short, making the aerodynamic effect negligible in practice.
+
+**Dimensions and mass**
+- Mass: 20.0 g (confirmed)
+- Two wings at 180° symmetry (elliptical/2-fold disc)
+- Wing major axis reach: r_o ≈ 36 mm, minor axis: r_o ≈ 18 mm
+- Inner hub: r_i ≈ 8 mm
+
+**Moment of inertia**
+Central hub (40% = 8.0 g, r_i=8 mm, r_o=18 mm): I = ½ × 0.008 × (0.008² + 0.018²) = 1.424×10⁻⁶ kg·m²
+Wings (60% = 12.0 g, r_mean = 26 mm): I = 0.012 × 0.026² = **8.112×10⁻⁶ kg·m²**
+
+**I_Upper = 9.536×10⁻⁶ kg·m²**
+
+**Upper Force aerodynamic analysis**
+Wing incidence angle ≈ 10°. At battle ω = 420 rad/s, v at r = 24 mm:
+v = 420 × 0.024 = 10.08 m/s
+Aerodynamic lift per wing: F_L = ½ × C_L × ρ × v² × A_wing
+A_wing ≈ 12 mm × 8 mm = 9.6×10⁻⁵ m², C_L(10°) ≈ 0.25
+F_L = ½ × 0.25 × 1.225 × 101.6 × 9.6×10⁻⁵ = **0.00150 N per wing**
+
+Both wings combined: 0.003 N upward force
+vs bey weight: 0.0331 × 9.81 = 0.325 N
+
+Upper Force = 0.9% of bey weight — confirmed negligible. Effective normal force increase ≈ 0.3 g equivalent. No measurable effect on stability or KO resistance.
+
+**Weight contribution to assembly**
+Upper is the lightest disc in the Burst Standard era at the time of release. This limits KO resistance and angular momentum vs the recommended Stamina discs (4 at 21.11 g, 7 at ~21.5 g). Upper lacks both the weight advantage of heavier discs AND the OWD of disc 4 or 7 for Stamina.
+
+---
+
+## CASE 1562 — Performance Tip: Claw [Burst Standard System]
+
+**Part overview**
+Claw (5 g) features a low-angled cone tip (akin to Survive but smaller diameter) with four free-moving plastic claw appendages along the tip's sides. At high spin, centrifugal force extends the claws outward. When spin drops or the bey is knocked, claws fall down and scrape the stadium floor, resisting KO via floor friction.
+
+**Claw centrifugal mechanics**
+At ω_spin, centrifugal force on each claw:
+F_centrifugal = m_claw × ω² × r_CoM_claw
+m_claw ≈ 0.5 g/4 = 0.125 g = 1.25×10⁻⁴ kg; r_CoM ≈ 6 mm
+
+At ω = 420 rad/s: F = 1.25×10⁻⁴ × 420² × 0.006 = **0.132 N per claw**
+Spring-return force (estimated): F_spring ≈ 0.03–0.05 N
+Claw extends when F_centrifugal > F_spring → occurs above ω_crit ≈ 150 rad/s
+Below ω_crit (~21% of ω₀): claws retract → floor contact.
+
+**KO resistance via claw scraping**
+When knocked off-balance, tilted bey's claws contact stadium floor at r_claw ≈ 9–10 mm.
+Friction torque opposing KO tipping: τ_KO = μ_k × N_claw × r_claw
+At N_claw = contact force × 4 claws (pressed down by tilt): τ_KO adds laterally opposing KO.
+This is the "tabs of Defense"-equivalent mechanism for Claw.
+
+**Cone tip spin decay**
+Cone contact radius r_cone ≈ 2.5 mm (small, similar to Survive)
+τ_cone = μ_k × N × r_cone = 0.25 × (0.0331 × 9.81) × 0.0025 = **2.03×10⁻⁴ N·m**
+
+**I_Claw (claws extended, r=9 mm):** 0.002 × 0.009² = **1.62×10⁻⁶ kg·m²** (negligible contribution)
+
+**Burst resistance**
+The small cone contact creates low tip-to-disc friction. In the burst model: driver tip resistance to burst = μ_tip × N_normal × r_tip / τ_burst_mechanism.
+Small r_cone → lower friction moment opposing ratchet advancement → **increased Burst Resistance** (per description: "small point of contact... increases Burst Resistance").
+This is counter-intuitive but correct: a smaller contact means less friction "drag" trying to de-rotate the driver relative to the ratchet, meaning impacts are transmitted more cleanly to the ratchet mechanism rather than being partially dissipated by tip slip.
+
+---
+
+## CASE 1563 — Assembly: Holy Horusood Upper Claw [Burst Standard System]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Energy Layer | Holy Horusood | 8.1 g |
+| Forge Disc | Upper | 20.0 g |
+| Performance Tip | Claw | 5.0 g |
+| **Total** | | **33.1 g** |
+
+**Aggregate moment of inertia**
+I_total = I_Horusood + I_Upper + I_Claw_extended
+= 4.105×10⁻⁶ + 9.536×10⁻⁶ + 1.62×10⁻⁶
+= **1.526×10⁻⁵ kg·m²**
+
+(Upper: 62.5%; Horusood: 26.9%; Claw: 10.6%)
+
+**Launch and combat parameters (Burst Standard era, ω₀ = 700 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 700 | 3.739 | 10.68 |
+| Battle (60%) | 420 | 1.346 | 6.409 |
+| Wobble onset (40%) | 280 | 0.598 | 4.273 |
+
+Spin decay (Claw cone, τ = 2.03×10⁻⁴ N·m):
+dω/dt = −2.03×10⁻⁴ / 1.526×10⁻⁵ = **−13.3 rad/s²**
+Battle threshold: 21.1 s; Wobble: 31.6 s; Spin-out: 52.7 s
+
+**Burst vulnerability summary**
+n_eff = 3.5, τ_threshold = 49 mN·m
+At 50% recoil deflection (corner contacts): effective τ = τ_impact × 0.50
+One-hit burst condition: τ_impact > 98 mN·m (achievable by any competitive attack Layer)
+Two-hit burst condition: τ_impact > 49 mN·m (any meaningful hit)
+Any attacker hitting solid corner contact with >49 mN·m: instant burst.
+
+**Physical verdict**
+Theoretically a stamina/defense build (center-seeking Claw, Upper disc). In practice severely limited by three compounding failures:
+1. Short teeth + high recoil → burst in 1–2 hits
+2. Upper disc too light → low L, poor KO resistance
+3. Recoil losses from square corners drain spin faster than expected
+
+Holy Horusood's square geometry creates recoil that both (a) endangers the burst meter and (b) wastes angular momentum into KO-deflection paths that don't contribute to sustained spin. Unsuitable for any competitive role. Moderate collector value as a first-wave God Layer with unique geometry.
+
+---
+
+## CASE 1564 — Energy Layer: Vise Leopard [Burst Cho-Z System]
+
+**Part overview**
+Takara Tomy's Vise Leopard is a symmetrical Attack Type Cho-Z Layer at 18.9 g. Two leopard-head metal inclusions at 180° symmetry form the primary attack surfaces and outer contact points. The layer's design intent is a spring-loaded "bite" gimmick: the upper half is spring-loaded to close onto an opponent Layer caught in the perimeter gap, with rubberised "teeth" for grip. Three strong teeth provide Burst resistance classification: n_eff = **5** (Strong tier).
+
+**Dimensions and mass**
+- Mass: 18.9 g (confirmed; heavier than God Layers due to metal inclusions)
+- Outer radius (metal head tips): r_o ≈ 38 mm
+- Metal leopard heads: 2× at 180°, mass fraction ~30%
+- Plastic body: ~70% at r: 8–36 mm
+
+**Cho-Z metal inclusion physics**
+Metal heads (18.9 × 0.30 = 5.67 g total, r_mean ≈ 33 mm):
+I_metal = 0.00567 × 0.033² = **6.174×10⁻⁶ kg·m²**
+
+Plastic body (13.23 g):
+I_plastic = ½ × 0.01323 × (0.008² + 0.036²) = ½ × 0.01323 × (6.4e-5 + 1.296e-3) = 9.001×10⁻⁶ kg·m²
+
+**I_Vise_Leopard = 1.517×10⁻⁵ kg·m²**
+
+Metal vs plastic contact durability: Metal heads maintain yield strength (σ_y ≈ 200 MPa) vs ABS (σ_y ≈ 50 MPa). Metal contact profiles do not flatten over time → consistent attack geometry across battles. This is the primary competitive advantage of Cho-Z metal inclusions over pure-plastic God Layers.
+
+**Spring bite gimmick failure analysis**
+Gap width at layer perimeter: ~2–3 mm (visual estimate)
+Typical opponent protrusion width: 4–8 mm → too wide to enter gap in most matchups
+
+Spring retention force: F_spring ≈ 2–5 N
+Impact force at contact (m_eff × Δv / Δt ≈ 0.02 × 15 / 0.003): F_impact ≈ 100 N
+Spring:impact ratio ≈ 1:20–50 → spring cannot hold a caught layer against battle dynamics.
+
+Even when gap geometry permits entry, the rubber "teeth" (described as too small to grip) provide insufficient friction: F_grip = μ_rubber × N_contact_teeth ≈ 0.8 × (tooth pressure) — insufficient surface area for hold. Gimmick effectively non-functional in combat.
+
+**Burst resistance (functional)**
+Three strong teeth: n_eff = 5, τ_floor = 14 mN·m
+τ_to_burst = 5 × 14 = 70 mN·m per full click worth of advance
+At τ_impact = 120 mN·m: advance = 120/70 = 1.71 clicks = 0.343 of burst meter per hit
+→ Requires ~3 strong consecutive hits to burst. Solid burst resistance for an attack type.
+
+---
+
+## CASE 1565 — Forge Disc: 12 [Burst Cho-Z System]
+
+**Part overview**
+Forge Disc 12 at 16.1 g is the lightest Core Disc in the Cho-Z/SwitchStrike era. Symmetrical, elliptical with Frame accommodation. Each side features three protrusions (center one marked "12", flanking ones stylised). The aggressive serrated perimeter design can score plastic Layers on Disc-to-Layer contact. However, same-height Burst tips make such contact rare.
+
+**Dimensions and mass**
+- Mass: 16.1 g (confirmed)
+- Elliptical shape: major axis r_o ≈ 34 mm, minor axis r_o ≈ 24 mm
+- 3 protrusions per side, frame accommodation slots at major axis
+
+**Moment of inertia**
+Central hub (35% = 5.635 g, r_i=6 mm, r_o=16 mm): I = ½ × 0.005635 × (0.006² + 0.016²) = 8.204×10⁻⁷ kg·m²
+Mid body (40% = 6.44 g, r: 16–26 mm): I = ½ × 0.00644 × (0.016² + 0.026²) = 2.907×10⁻⁶ kg·m²
+Outer protrusions (25% = 4.025 g, r_mean = 30 mm): I = 0.004025 × 0.030² = **3.623×10⁻⁶ kg·m²**
+
+**I_12 = 7.350×10⁻⁶ kg·m²**
+
+**Weight deficit impact**
+At 16.1 g, disc 12 is lighter than Armed (~17 g — itself considered light), Heavy (~21 g), and the preferred Stamina/Attack discs (4 at 21.11 g, 7 at ~21.5 g, 0 at ~22 g). The weight reduction directly lowers KO resistance, angular momentum at launch, and overall attack output. Partially compensated by the Lift Frame (3.5 g — heaviest available Frame) in this assembly.
+
+**Disc-to-Layer contact damage risk**
+The serrated protrusion edges at r ≈ 30 mm create stress concentrations on opponent Layers during incidental contact. This represents a material wear concern for repeated use: plastic Layer contact points gradually degrade from repeated 12-protrusion scoring. For the game physics model: 12 disc causes incremental Layer wear that could be modelled as progressive degradation of burst resistance over extended match series.
+
+---
+
+## CASE 1566 — Disc Frame: Lift [Burst Cho-Z System]
+
+**Part overview**
+Lift (3.5 g) is the heaviest Disc Frame at the time of release — heavier than Bump. Thick profile with numerous surface protrusions creating a rough outer perimeter. The Frame is flip-able to expose two modes:
+- **Defense Mode**: round smooth perimeter (reduces recoil from Disc-to-Layer contact)
+- **Attack Mode**: rough Under-like perimeter (wedge protrusions meant to advance opponent's burst meter during Disc-to-Layer contact)
+
+**Dimensions and mass**
+- Mass: 3.5 g (confirmed)
+- Outer radius: r_o ≈ 38 mm
+- Inner radius (seats on Disc 12): r_i ≈ 20 mm
+
+**Moment of inertia**
+I_Lift = ½ × 0.0035 × (0.020² + 0.038²) = ½ × 0.0035 × (4.0×10⁻⁴ + 1.444×10⁻³) = **3.227×10⁻⁶ kg·m²**
+
+**Dual-mode geometry (Defense vs Attack)**
+Defense Mode: round r_o ≈ 38 mm → smooth contact vector → recoil redirected tangentially → less burst advance on defender during Disc-to-Layer hits.
+
+Attack Mode: Under-like protrusions at r ≈ 38 mm with wedge angle ~20° → F_burst_component = F_contact × sin(20°) ≈ 0.342 × F applied toward ratchet. The aim is to add burst advance during Disc-to-Layer contact events. In practice, same-height tips make this contact rare (as documented).
+
+**Scrape risk**
+Lift's size and protrusion height place the Frame's lower edge at risk for stadium floor contact when:
+1. Bey tilts past θ_crit ≈ arcsin(h_clearance / r_Lift) = arcsin(2mm/38mm) ≈ **3.0°**
+2. Even slight precession wobble triggers floor contact
+3. Floor scrape creates τ_scrape ≈ μ × N × r_Lift ≈ 0.35 × 0.4386 × 0.038 = **5.83×10⁻³ N·m** — enormous spin drain
+
+At battle ω = 420 rad/s, the assembly's spin decay increases dramatically during scrape events. This limits Lift's practical use to stable spinning combos where tilt is minimised — contradicting its intended "Attack Mode" application on aggressive movement patterns.
+
+**Combined 12+Lift inertia**
+I_12 + I_Lift = 7.350×10⁻⁶ + 3.227×10⁻⁶ = **1.058×10⁻⁵ kg·m²** (combined disc system)
+
+---
+
+## CASE 1567 — Performance Tip: Destroy [Burst Cho-Z System]
+
+**Part overview**
+Destroy (6.2 g) features an eight-pointed star tip under a free-spinning plate. The star tip creates Jaggy-equivalent aggressive movement. The free-spinning plate sits at a deliberately low position to avoid lock-up with the Layer, making the gimmick reliable. Plate provides KO resistance (floor scrape during tilts) and high LAD (free-spin gyroscopic stabilisation during wobble phase). Poor Stamina from the star contact geometry.
+
+**Dimensions and mass**
+- Mass: 6.2 g (confirmed)
+- Star tip: 8 points alternating at r_inner ≈ 6 mm (valleys) and r_outer ≈ 12 mm (peaks)
+- Free-spinning plate: r_plate ≈ 20–22 mm, positioned low (no Layer lock-up)
+- Plate mass ≈ 40% = 2.48 g
+
+**Moment of inertia (body, plate locked for I)**
+Star tip body (60% = 3.72 g, r_mean=8 mm): I ≈ ½ × 0.00372 × 0.008² = 1.190×10⁻⁷ kg·m²
+Free plate (40% = 2.48 g at r=21 mm): I = 0.00248 × 0.021² = 1.094×10⁻⁶ kg·m²
+
+**I_Destroy = 1.213×10⁻⁶ kg·m²**
+
+**Star tip spin decay**
+r_eff = (r_inner + r_outer)/2 = 9 mm; μ_k = 0.35 (plastic on BeySadium)
+τ_star = μ_k × N × r_eff = 0.35 × (0.0447 × 9.81) × 0.009 = **1.382×10⁻³ N·m**
+
+**Free-spinning plate LAD mechanics**
+The plate is decoupled from the Layer via free-spin mount. When the bey tilts and precesses at low spin:
+1. Plate contacts stadium floor
+2. Floor friction spins the plate (independent of bey body spin)
+3. Spinning plate → small angular momentum L_plate = I_plate × ω_plate
+4. L_plate acts as secondary gyroscope → resists further tilt change
+
+At ω_plate = 80 rad/s (from floor-driven spin):
+L_plate = 1.094×10⁻⁶ × 80 = 8.75×10⁻⁵ N·m·s
+
+Small but non-zero. This secondary gyroscopic moment extends precession time without consuming the main body's angular momentum. Effect: bey can continue precessing for additional 3–8 revolutions after main body spin would normally cause tipover. High LAD confirmed.
+
+**Lock-up prevention (low plate placement)**
+Plate sits low relative to Layer flange → plate contacts FLOOR, not Layer when tilted. Other tips (Guard, Cycle) with high plate placement contact the Layer → lock-up: plate forced to spin at body ω → eliminates free-spin benefit. Destroy's low placement is the design reason gimmick works as intended (unique confirmation among free-plate drivers).
+
+---
+
+## CASE 1568 — Assembly: Vise Leopard 12Lift Destroy [Burst Cho-Z System]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Energy Layer | Vise Leopard | 18.9 g |
+| Forge Disc | 12 | 16.1 g |
+| Disc Frame | Lift | 3.5 g |
+| Performance Tip | Destroy | 6.2 g |
+| **Total** | | **44.7 g** |
+
+**Aggregate moment of inertia**
+I_total = I_VL + I_12 + I_Lift + I_Destroy
+= 1.517×10⁻⁵ + 7.350×10⁻⁶ + 3.227×10⁻⁶ + 1.213×10⁻⁶
+= **2.706×10⁻⁵ kg·m²**
+
+**Launch and combat parameters (Cho-Z era, ω₀ = 700 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 700 | 6.628 | 18.94 |
+| Battle (60%) | 420 | 2.386 | 11.36 |
+| Wobble onset (40%) | 280 | 1.061 | 7.577 |
+
+Spin decay (Destroy star tip, τ = 1.382×10⁻³ N·m):
+dω/dt = −1.382×10⁻³ / 2.706×10⁻⁵ = **−51.1 rad/s²**
+Battle: 5.5 s; Wobble: 8.2 s; Spin-out: 13.7 s
+
+**Attack phase window**
+The aggressive Destroy tip drives the bey close to the Tornado Ridge at launch. Useful attack window (from launch to wobble onset): ~8.2 s. During this window, Vise Leopard's metal heads at r_o = 38 mm:
+v_contact = 420 × 0.038 = **15.96 m/s** at battle ω.
+n_eff = 5, τ_threshold = 70 mN·m → 3 solid hits to burst a standard opponent.
+
+**Burst resistance at rest state**
+n_eff = 5 → 3 hits for opponent to burst Vise Leopard (see Case 1543).
+However: Destroy tip's low tip friction actually improves Vise Leopard's burst resistance (small contact area → less rotational drag → ratchet engages more fully per hit, but this is fully offset by the strong teeth count).
+
+**Lift scrape risk in practice**
+Destroy's aggressive movement creates lateral forces → bey orbits near stadium wall. During orbit, tilt angle fluctuates: θ_tilt ≈ 3–8° from vertical. With θ_crit_Lift = 3.0°, Lift Frame will scrape stadium floor during most of the aggressive movement phase. This creates periodic τ_scrape events of ~5.83×10⁻³ N·m, dramatically accelerating spin decay beyond the steady-state 51.1 rad/s² figure.
+
+Practical spin-out (with scraping): estimated 6–10 s — consistent with the description of "severe scrape risk" making stationary combinations scrape even at relatively high spin.
+
+**LAD performance**
+After Destroy star tip spin runs down, free-spinning plate extends precession by ~5–10 additional revolutions. Combined with Glaive LAD and Atomic ball: this assembly has weak mid-battle stamina but non-trivial late-battle persistence from Destroy's plate mechanism.
+
+---
+
+## CASE 1569 — Energy Layer: Tornado Wyvern [Burst God System]
+
+**Part overview**
+Takara Tomy's Tornado Wyvern (B-35) is a Defense Type God Layer at 9.2 g. Construction: solid eight-bladed upper layer + translucent eight-bladed lower layer. The lower layer is free-spinning around the central axis on a low-friction pivot. Four teeth — all short (below Standard length). The free-spinning ring is the defining gimmick: it absorbs tangential impact components, drastically reducing effective burst advance per hit. Weaknesses: large inter-blade gaps expose the burst mechanism to gap-contact hits; ring-body friction creates stamina penalty.
+
+**Dimensions and mass**
+- Mass: 9.2 g (confirmed)
+- Top layer (solid, 55% = 5.06 g): eight blades, outer radius r_o ≈ 34 mm
+- Bottom ring (free-spinning, 45% = 4.14 g): eight translucent blades, r_ring ≈ 28 mm mean
+
+**Moment of inertia (components)**
+Top layer (r_i=10 mm, r_o=34 mm): I_top = ½ × 0.00506 × (0.010² + 0.034²) = ½ × 0.00506 × (1.0e-4 + 1.156e-3) = 3.175×10⁻⁶ kg·m²
+Free ring (at r_mean=28 mm, point-mass approx): I_ring = 0.00414 × 0.028² = 3.246×10⁻⁶ kg·m²
+
+**I_TW_total (coupled) = 6.421×10⁻⁶ kg·m²**
+
+**Free-spinning ring burst absorption**
+On impact, the tangential component of force acts on the free ring. Ring decouples and absorbs this component. Fraction absorbed:
+
+f_absorbed = I_ring / (I_ring + I_top) = 3.246e-6 / (3.246e-6 + 3.175e-6) = **0.505**
+
+~50.5% of each impact's tangential component is absorbed by the ring.
+
+Effective τ reaching teeth = τ_impact × (1 − f_absorbed) = τ_impact × 0.495
+
+Burst teeth: 4 short → n_eff = 3 (short tier, below standard 4). Short teeth have lower τ_floor: τ_floor_short ≈ 10 mN·m.
+Effective burst threshold = n_eff × τ_floor = 3 × 10 = 30 mN·m (without ring)
+With ring absorption: effective threshold = 30 / 0.495 = **60.6 mN·m input** to burst in one hit.
+
+vs standard 4-tooth (n=4, τ_floor=14): threshold = 56 mN·m → Tornado Wyvern with ring absorption achieves ~8% better effective burst resistance than a standard 4-tooth bey despite its teeth being short. The ring more than compensates.
+
+**Gap vulnerability**
+8 blades on top layer with wide gaps (~22.5° blade width, ~22.5° gap at outer radius).
+Probability of gap contact per hit ≈ gap_arc / total_arc = 0.5 (simplified).
+
+When attacker contacts a gap: the top layer's tooth is directly behind with no ring protection. Effective τ to ratchet = τ_impact × 1.0 (full transfer).
+Gap-hit burst threshold: τ_input = 30 mN·m (just the teeth, no ring protection).
+
+For a 120 mN·m attacker: gap hit bursts in 1 hit (120 >> 30). Solid contact: needs >60.6 mN·m. Against attack types generating 80–120 mN·m, about half of hits will burst Tornado Wyvern and half will not — depending on rotational alignment at contact moment.
+
+**Ring-body friction stamina penalty**
+At ω = 420 rad/s, centrifugal force pressing ring against pivot shoulder:
+F_CF_ring = m_ring × ω² × r_mean = 0.00414 × 420² × 0.028 = **20.4 N**
+τ_ring_friction = μ_ABS × F_CF × r_pivot = 0.3 × 20.4 × 0.004 = **2.448×10⁻² N·m**
+
+Hmm, that is 24.5 mN·m — but this torque acts on the RING (accelerating it toward body ω), not directly on the body's spin decay. The net drain on the body depends on the ω differential between ring and body.
+
+At steady state (ring at ω_ring, body at ω_body): if ω_ring ≈ ω_body (ring has been spun up), τ_net_drag ≈ 0. The ring only creates significant drag during the initial spin-up phase and during impact-induced ring slip recovery. This explains why the stamina penalty is real but not catastrophic — the ring operates near-synchronously with the body most of the time.
+
+---
+
+## CASE 1570 — Forge Disc: 4 [Burst God System]
+
+**Part overview**
+Forge Disc 4 at 21.11 g (confirmed) is the primary Stamina-oriented Core Disc of the Standard Burst era. Symmetrical, elliptical with high OWD: protrusions extend further from centre than other Core Discs of the era (e.g., 7 has comparable Stamina, 4's reach is the key parameter). Accepts Disc Frames at the major-axis slots. Each side features "4" and "IV" protrusion labels at the outermost positions.
+
+**Dimensions and mass**
+- Mass: 21.11 g (confirmed)
+- Major axis reach: r_o ≈ 36 mm
+- Minor axis reach: r_o ≈ 22 mm
+- Inner hub bore: r_i ≈ 8 mm
+
+**Moment of inertia**
+Central hub (30% = 6.33 g, r: 8–16 mm): I = ½ × 0.00633 × (0.008² + 0.016²) = 1.008×10⁻⁶ kg·m²
+Mid body (40% = 8.44 g, r: 16–28 mm): I = ½ × 0.00844 × (0.016² + 0.028²) = 4.383×10⁻⁶ kg·m²
+Extended protrusions (30% = 6.33 g, r_mean = 32 mm): I = 0.00633 × 0.032² = **6.481×10⁻⁶ kg·m²**
+
+**I_4 = 1.187×10⁻⁵ kg·m²**
+
+**OWD and Stamina relationship**
+Higher OWD → more mass at larger r → larger I per gram. Comparing Disc 4 vs a uniform disc of same mass and r_outer = 28 mm:
+I_uniform_28 = ½ × 0.02111 × 0.028² = 8.286×10⁻⁶ kg·m²
+I_4_actual = 1.187×10⁻² kg·m²
+
+OWD factor = 1.187e-5 / 8.286e-6 = **1.433** — Disc 4's extended protrusions increase effective I by 43.3% vs uniform mass distribution at the same outer radius. This increases L per gram, improving KO resistance and spin persistence (stamina).
+
+---
+
+## CASE 1571 — Disc Frame: Glaive [Burst God System]
+
+**Part overview**
+Glaive (2.34 g) is a mostly round Disc Frame with two sharp wave-like protrusions at opposite sides. The upward direction of the protrusions prevents floor scraping. The round outer profile grants high LAD — second only to Cross among available Frames.
+
+**Dimensions and mass**
+- Mass: 2.34 g (confirmed)
+- Outer radius (ring): r_o ≈ 36 mm
+- Inner radius (seats on Disc 4): r_i ≈ 20 mm
+- Two wave protrusions at r ≈ 38 mm, pointing upward (away from floor)
+
+**Moment of inertia**
+Main ring (80% = 1.872 g): I = ½ × 0.001872 × (0.020² + 0.036²) = ½ × 0.001872 × (4e-4 + 1.296e-3) = 1.587×10⁻⁶ kg·m²
+Wave protrusions (20% = 0.468 g, r=37 mm): I = 0.000468 × 0.037² = 6.41×10⁻⁷ kg·m²
+
+**I_Glaive = 2.228×10⁻⁶ kg·m²**
+
+**LAD mechanism**
+Glaive's round outer profile (r_round ≈ 36 mm) provides continuous contact arc with the stadium wall during precession. When the bey tilts toward spin-out and begins contact with the stadium bowl:
+- Round profile → contact occurs over a continuous arc rather than at discrete points
+- Continuous arc → the bowl wall normal force acts steadily → longer effective precession path
+- Upward protrusions → do not add floor-scrape drag → net LAD is uninterrupted
+
+LAD duration extension: estimated +3–6 s relative to no-Frame assembly, based on the frame's round contact arc providing sustained directed precession rather than intermittent tumbling.
+
+---
+
+## CASE 1572 — Performance Tip: Atomic [Burst God System]
+
+**Part overview**
+Atomic features a free-rotating ball tip (r ≈ 3.25 mm; ~1.3× diameter of Orbit) surrounded by a four-tabbed free-spinning ring. Both the ball and ring are independently decoupled from the bey's spin axis. Three release variants exist (Hasbro); TT version has a weaker Burst Lock spring than Orbit.
+
+**Free-rotating ball contact physics**
+The ball rotates on a low-friction bearing (or smooth pin). When the bey spins, the ball rolls on the stadium floor rather than sliding.
+
+Rolling friction coefficient: μ_roll ≈ 0.01 (vs μ_slide ≈ 0.35 for flat ABS tip)
+τ_roll = μ_roll × N × R_ball = 0.01 × (0.0385 × 9.81) × 0.00325 = **1.228×10⁻⁵ N·m**
+
+This is **63× lower** than a flat ABS tip (7.72×10⁻⁴ N·m). Spin decay from tip contact alone:
+dω/dt_tip = −1.228×10⁻⁵ / I_total ≈ negligible (theoretical spin-out: ~10³ s)
+
+At high spin, air drag dominates spin decay. The extremely low ball friction means the bey's spin life is determined by aerodynamics and ring friction rather than tip mechanics — fundamentally different from all flat/cone/rubber tips.
+
+**Burst resistance (Atomic ball contribution)**
+Small ball contact radius (3.25 mm) → very low tip-to-disc friction moment → less rotational drag opposing ratchet engagement. Additionally, the ball free-rotates → absorbs some tangential impact components (similar to Tornado Wyvern's free ring but smaller scale):
+
+f_absorbed_ball ≈ I_ball_pivot / (I_ball_pivot + I_mechanism) ≈ 0.05–0.10 (small ball, limited contribution)
+
+Primary Burst Lock note: TT Atomic's burst spring is weaker than Orbit. Quantified:
+TT Atomic: τ_floor_spring = ~12 mN·m (vs Orbit's ~14–16 mN·m)
+→ n_eff × τ_floor_Atomic slightly lower, meaning TT Atomic is marginally easier to burst vs Orbit.
+Hasbro V2 performance is closer to Orbit's spring strength.
+
+**Free-spinning ring and KO resistance**
+Four ring tabs contact the stadium wall/floor at r_tab ≈ 15 mm during severe tilt. Ring free-spins → tabs can rotate with impact → less abrupt stoppage vs fixed tabs (Defense-type). However, large ball diameter makes tab-floor contact less frequent → "large diameter makes such contact rare" per description.
+
+**I_Atomic (housing contribution):** ≈ 1.5×10⁻⁷ kg·m² (housing only; ball decoupled; negligible to assembly I)
+
+**Estimated mass:** ~6.0 g
+
+---
+
+## CASE 1573 — Assembly: Tornado Wyvern 4Glaive Atomic [Burst God System]
+
+**Full assembly**
+
+| Component | Part | Mass |
+|---|---|---|
+| Energy Layer | Tornado Wyvern | 9.2 g |
+| Forge Disc | 4 | 21.11 g |
+| Disc Frame | Glaive | 2.34 g |
+| Performance Tip | Atomic | ~6.0 g |
+| **Total** | | **~38.65 g** |
+
+**Aggregate moment of inertia (ring coupled at launch)**
+I_total = I_TW_coupled + I_4 + I_Glaive + I_Atomic
+= 6.421×10⁻⁶ + 1.187×10⁻⁵ + 2.228×10⁻⁶ + 1.5×10⁻⁷
+= **2.073×10⁻⁵ kg·m²**
+
+**Launch and combat parameters (God System Burst era, ω₀ = 700 rad/s)**
+
+| State | ω (rad/s) | KE (J) | L (mN·m·s) |
+|---|---|---|---|
+| Launch | 700 | 5.079 | 14.51 |
+| Battle (60%) | 420 | 1.828 | 8.707 |
+| Wobble onset (40%) | 280 | 0.813 | 5.804 |
+
+**Spin decay — two-regime model**
+Atomic ball tip contribution: τ_ball = 1.228×10⁻⁵ N·m (negligible).
+Dominant loss: aerodynamic drag (speed-dependent) + ring slip recovery events.
+
+At battle ω = 420 rad/s (air drag estimate): τ_air ≈ 7×10⁻⁴ N·m
+dω/dt_mid = −7×10⁻⁴ / 2.073×10⁻⁵ = **−33.8 rad/s²** (mid-battle)
+
+At low ω = 150 rad/s (air drag reduced by (150/420)² factor):
+τ_air_low ≈ 7×10⁻⁴ × (150/420)² = 8.93×10⁻⁵ N·m
+dω/dt_low = −8.93×10⁻⁵ / 2.073×10⁻⁵ = **−4.3 rad/s²** (late battle, air drag reduced)
+
+The spin decay slows dramatically at low speeds because air drag drops with ω². Combined with Atomic ball's near-zero tip friction, the bey can persist at low ω for extended periods. This is the Stamina + Spin Equalization capability: at low spin, very little friction loss → bey outlasts opponents who have flat/rubber tips that continue draining spin even at low ω.
+
+**Burst resistance summary**
+Effective burst threshold (ring-protected, solid contact): 60.6 mN·m input per full burst (one hit)
+Gap contact: 30 mN·m (vulnerable)
+Atomic ball adds marginal burst resistance (~5% additional absorption).
+TT Atomic weak spring: τ_floor reduced slightly → slightly more burst-vulnerable vs Hasbro V2.
+
+**Defense role characterisation**
+Tornado Wyvern 4Glaive Atomic is a defense/stamina hybrid: Disc 4's OWD + Glaive's LAD + Atomic ball's near-zero tip friction combine for high Stamina and Spin Equalization potential. Tornado Wyvern's free ring compensates for its short teeth against solid contacts. Primary failure mode: attacker who consistently contacts blade gaps bypasses ring protection → burst in 1–2 hits. Against stamina types (no aggressive contact), this combination performs at top competitive tier due to extremely low spin loss per second at low ω.

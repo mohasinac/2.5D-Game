@@ -107,20 +107,23 @@ input[type=range] { cursor: pointer; width: 100%; }
 .shockwave    { animation: shockwave 0.4s ease-out forwards; }
 
 /* Game canvas — portrait: top-aligned; landscape: centred. Fixed in one place. */
-.game-canvas-container {
+.game-canvas-container,
+.game-canvas-overlay {
   position: absolute;
   width: min(100vw, 100vh);
   height: min(100vw, 100vh);
 }
 @media (orientation: portrait) {
-  .game-canvas-container {
+  .game-canvas-container,
+  .game-canvas-overlay {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
   }
 }
 @media (orientation: landscape) {
-  .game-canvas-container {
+  .game-canvas-container,
+  .game-canvas-overlay {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

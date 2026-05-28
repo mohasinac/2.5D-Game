@@ -44,7 +44,7 @@ export function Countdown({ status, timer, show }: CountdownProps) {
   return (
     <div
       aria-live="polite"
-      className={`absolute inset-0 flex items-center justify-center pointer-events-none z-[60] [transition:background_200ms] ${flash ? "bg-[rgba(255,200,60,0.18)]" : "bg-transparent"}`}
+      className={`fixed inset-0 flex items-center justify-center pointer-events-none z-[80] [transition:background_200ms] ${flash ? "bg-[rgba(255,200,60,0.18)]" : "bg-transparent"}`}
     >
       <div
         className={`font-mono font-black tracking-[0.08em] [text-shadow:0_0_24px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.4)] [transition:transform_200ms_ease-out,font-size_200ms] ${flash ? "text-[10rem] text-[#ffcc44] scale-[1.12]" : "text-[8rem] text-[#f1f5f9] scale-100"}`}

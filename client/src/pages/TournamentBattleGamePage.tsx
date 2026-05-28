@@ -506,7 +506,7 @@ export function TournamentBattleGamePage() {
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/75 z-40">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/75 z-[80]">
           <div className="text-center">
             <p className="text-theme-yellow text-[14px] font-semibold mb-1">
               Game {gameEndData.gameNumber} Complete
@@ -532,7 +532,7 @@ export function TournamentBattleGamePage() {
 
       {/* Series-end overlay */}
       {(gameState?.status === "series-finished" || seriesEndData) && !gameEndData && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/[0.88] z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/[0.88] z-[80]">
           <div className="text-center max-w-[400px]">
             <div className="text-[64px] mb-3">🏆</div>
             <p className="text-theme-yellow font-bold text-[16px] mb-1">Tournament Match Over</p>
@@ -588,7 +588,7 @@ export function TournamentBattleGamePage() {
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && !loadError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/85 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/85 z-[80]">
           <div className="text-center">
             <div className="spin w-12 h-12 border-4 border-theme-yellow border-t-transparent rounded-full mx-auto mb-4" />
             <p className="text-theme-text">

@@ -144,7 +144,8 @@ async function startAiBattle(page) {
 }
 
 // Play gameplay loop for durationMs, pressing KEYS in sequence.
-const KEYS = ["KeyD","KeyA","KeyW","KeyS","KeyD","KeyJ","KeyK","KeyA","KeyD","KeyJ","KeyL","KeyW","KeyJ","KeyD","KeyA","KeyJ"];
+const KEYS = ["KeyD","KeyA","KeyW","KeyS","KeyD","KeyJ","KeyK","KeyA","KeyD","KeyL","KeyW","KeyD","KeyA","KeyS","KeyW","KeyD"];
+
 async function playLoop(page, label, durationMs) {
   console.log(`  ⚔️   Playing ${durationMs / 1000} s (${label})…`);
   const startMs = Date.now();
@@ -158,6 +159,76 @@ async function playLoop(page, label, durationMs) {
     if (Math.floor(elapsed / 10_000) > Math.floor((elapsed - 260) / 10_000)) {
       await ss(page, `${label}-playing-${Math.floor(elapsed / 1000)}s`);
       console.log(`    🕐  t=${Math.floor(elapsed/1000)}s`);
+    }
+  }
+}
+
+// Zoom camera out N times so both beys fit in frame.
+async function zoomOut(page, times = 5) {
+  for (let i = 0; i < times; i++) {
+    await page.keyboard.down("Minus"); await sleep(60); await page.keyboard.up("Minus");
+    await sleep(120);
+  }
+}
+
+// Tap Space < 150 ms → specialTap bit fires on server.
+async function fireSpecial(page) {
+  await page.keyboard.down("Space"); await sleep(60); await page.keyboard.up("Space");
+  await sleep(400);
+}
+
+// Rapid key sequence for server-side combo detection.
+async function fireCombo(page, keys, holdMs = 80, gapMs = 45) {
+  for (const k of keys) {
+    await page.keyboard.down(k); await sleep(holdMs); await page.keyboard.up(k);
+    await sleep(gapMs);
+  }
+  await sleep(300);
+}
+
+// Full battle play block: zoom out + combo + special + normal loop.
+async function battlePlayBlock(page, label, durationMs) {
+  // Zoom out so both beys are visible in one frame
+  await zoomOut(page, 5);
+  await ss(page, `${label}-both-beys`);
+
+  const startMs = Date.now();
+  let turn = 0;
+  let comboFired = false, specialFired = false, combo2Fired = false;
+
+  console.log(`  ⚔️   Playing ${durationMs / 1000} s (${label}) — combos + specials…`);
+  while (Date.now() - startMs < durationMs) {
+    const elapsed = Date.now() - startMs;
+
+    if (elapsed >= 2_000 && !comboFired) {
+      comboFired = true;
+      console.log("    🥊  Combo: JJJ (power-thrust)…");
+      await fireCombo(page, ["KeyJ","KeyJ","KeyJ"]);
+      await ss(page, `${label}-combo-power-thrust`);
+
+    } else if (elapsed >= 6_000 && !specialFired) {
+      specialFired = true;
+      console.log("    ⚡  Special: Space tap…");
+      await fireSpecial(page);
+      await ss(page, `${label}-special-move`);
+
+    } else if (elapsed >= 12_000 && !combo2Fired) {
+      combo2Fired = true;
+      console.log("    🛡️  Combo: KKK (guard-tap)…");
+      await fireCombo(page, ["KeyK","KeyK","KeyK"]);
+      await ss(page, `${label}-combo-guard-tap`);
+
+    } else {
+      const k = KEYS[turn % KEYS.length];
+      await pressKey(page, k, k === "KeyJ" || k === "KeyK" || k === "KeyL" ? 80 : 300);
+      await sleep(60);
+      turn++;
+    }
+
+    const elapsedNow = Date.now() - startMs;
+    if (Math.floor(elapsedNow / 10_000) > Math.floor((elapsedNow - 360) / 10_000)) {
+      await ss(page, `${label}-playing-${Math.floor(elapsedNow / 1000)}s`);
+      console.log(`    🕐  t=${Math.floor(elapsedNow/1000)}s`);
     }
   }
 }
@@ -283,12 +354,11 @@ async function run() {
   // SECTION D — Full AI battle run (portrait phone, GBC layout)
   //
   // Timing diagram:
-  //   t=0s   room join → connecting-ws → joining-room → loading steps
-  //   t=1-2s loading overlay hides (warmup starts)
-  //   t=1-2s + 3.8s sleep = t=4.8-5.8s (warmup just ended, launching started)
-  //   t=5-6s Space held during entire 5 s launch window
-  //   t=11s  Space released — beyblade launches at full power
-  //   t=11-41s 30 s gameplay + screenshots every 10 s
+  //   t=0s    room join → connecting-ws → joining-room → loading steps
+  //   t=3-5s  status="launching" → loading overlay HIDES (warmup-ready step)
+  //   t+0.5s  sleep buffer, then hold Space for 9s (full 10s launch window)
+  //   t+9.5s  Space released → bey launches at max power
+  //   Gameplay: zoom out to show both beys, fire combos + special, 30s play
   // ══════════════════════════════════════════════════════════════════════════════
 
   console.log("\n━━━  D. Full AI battle run (GBC portrait)  ━━━");
@@ -314,16 +384,16 @@ async function run() {
 
   await ss(page, "battle-D-canvas");
 
-  // Wait for loading overlay to clear, then sleep through warmup.
-  await waitForLoadingGone(page, 3800);
-  await ss(page, "battle-D-warmup-done");
+  // Wait for loading overlay → launching phase starts → 0.5s buffer → hold Space 9s.
+  // This gives maximum time in the 10s launch window.
+  await waitForLoadingGone(page, 500);
+  await ss(page, "battle-D-launching");
 
-  // Hold Space through the 5 s launch window.
-  await doLaunch(page, 5500);
+  await doLaunch(page, 9000);
   await ss(page, "battle-D-launched");
 
-  // Play 30 s
-  await playLoop(page, "battle-D", 30_000);
+  // Gameplay: zoom out + combos + special + 30s loop
+  await battlePlayBlock(page, "battle-D", 30_000);
   await ss(page, "battle-D-end");
   console.log("  ✅  30 s play complete");
 
@@ -361,19 +431,21 @@ async function run() {
 
   await ss(page, "battle-E-canvas");
 
-  await waitForLoadingGone(page, 3800);
-  await doLaunch(page, 5500);
+  await waitForLoadingGone(page, 500);
+  await ss(page, "battle-E-launching");
+  await doLaunch(page, 9000);
   await ss(page, "battle-E-launched");
 
-  await playLoop(page, "battle-E", 15_000);
+  await battlePlayBlock(page, "battle-E", 20_000);
   await ss(page, "battle-E-end");
 
   // ══════════════════════════════════════════════════════════════════════════════
   // SECTION F — Tryout mode (server-free, portrait)
   //
-  // TryoutGamePage runs local physics with no Colyseus connection.
-  // Countdown is 3 s, launch phase is 5 s.
-  // Beyblade spins for ~60 s before spinning out (no AI — slow decay).
+  // - SP never depletes (floor at 5% maxSpin); no timeout; only Exit ends it.
+  // - SP auto-refills to 150 every 10 s → press J to fire special.
+  // - 4-position screenshots: bey steered to top / right / bottom / left.
+  // - 40 s of normal play with combo + special captures.
   // ══════════════════════════════════════════════════════════════════════════════
 
   console.log("\n━━━  F. Tryout mode (server-free, portrait)  ━━━");
@@ -400,11 +472,41 @@ async function run() {
   await sleep(3800);
   await ss(page, "tryout-F-countdown-done");
 
-  // Hold Space through the 5 s launch window
-  await doLaunch(page, 5500);
+  // Hold Space through the launch window (10 s locally, same constants as server)
+  await doLaunch(page, 9000);
   await ss(page, "tryout-F-launched");
 
-  // Play 40 s — screenshot every 10 s; fire J at t=10s and t=20s when SP refills
+  // ── 4-position arena shots ────────────────────────────────────────────────
+  // Steer the bey to each wall, screenshot, then move to next position.
+  await sleep(400);
+
+  console.log("  📍  Position: TOP (hold W)…");
+  await page.keyboard.down("KeyW"); await sleep(2800); await page.keyboard.up("KeyW");
+  await sleep(350);
+  await ss(page, "tryout-F-position-top");
+
+  console.log("  📍  Position: RIGHT (hold D)…");
+  await page.keyboard.down("KeyD"); await sleep(3200); await page.keyboard.up("KeyD");
+  await sleep(350);
+  await ss(page, "tryout-F-position-right");
+
+  console.log("  📍  Position: BOTTOM (hold S)…");
+  await page.keyboard.down("KeyS"); await sleep(3200); await page.keyboard.up("KeyS");
+  await sleep(350);
+  await ss(page, "tryout-F-position-bottom");
+
+  console.log("  📍  Position: LEFT (hold A)…");
+  await page.keyboard.down("KeyA"); await sleep(3200); await page.keyboard.up("KeyA");
+  await sleep(350);
+  await ss(page, "tryout-F-position-left");
+
+  // Return roughly to centre
+  await page.keyboard.down("KeyD"); await sleep(800); await page.keyboard.up("KeyD");
+  await page.keyboard.down("KeyW"); await sleep(600); await page.keyboard.up("KeyW");
+  await sleep(500);
+  await ss(page, "tryout-F-centre");
+
+  // ── 40 s play: fire J at t=10s and t=20s (SP auto-refills) ───────────────
   console.log("  ⚔️   Playing 40 s (tryout — no AI, SP refills every 10 s)…");
   const startFMs = Date.now();
   let turnF = 0;
@@ -413,18 +515,17 @@ async function run() {
   while (Date.now() - startFMs < 40_000) {
     const elapsed = Date.now() - startFMs;
 
-    // Fire special move at ~10 s (first SP refill) and ~20 s (second refill)
     if (elapsed >= 10_000 && !spFiredAt10) {
       spFiredAt10 = true;
-      console.log("    ⚡  t=10s: Firing special move (J key)…");
+      console.log("    ⚡  t=10s: Firing special (J key)…");
       await pressKey(page, "KeyJ", 100);
-      await sleep(200);
+      await sleep(300);
       await ss(page, "tryout-F-special-10s");
     } else if (elapsed >= 20_000 && !spFiredAt20) {
       spFiredAt20 = true;
-      console.log("    ⚡  t=20s: Firing special move (J key)…");
+      console.log("    ⚡  t=20s: Firing special (J key)…");
       await pressKey(page, "KeyJ", 100);
-      await sleep(200);
+      await sleep(300);
       await ss(page, "tryout-F-special-20s");
     } else {
       const k = KEYS[turnF % KEYS.length];
@@ -471,12 +572,12 @@ async function run() {
 
   await ss(page, "2d5-G-canvas");
 
-  await waitForLoadingGone(page, 3800);
-  await doLaunch(page, 5500);
+  await waitForLoadingGone(page, 500);
+  await doLaunch(page, 9000);
   await ss(page, "2d5-G-launched");
 
-  // Play 15 s — the tilt perspective should be visible
-  await playLoop(page, "2d5-G", 15_000);
+  // Play 20 s — show tilt perspective with both beys and combos
+  await battlePlayBlock(page, "2d5-G", 20_000);
   await ss(page, "2d5-G-end");
   console.log("  ✅  2.5D render test complete");
 

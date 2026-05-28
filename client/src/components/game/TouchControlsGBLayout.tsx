@@ -39,12 +39,12 @@ function currentOrient(): 'pt' | 'ls' {
 // ─── Sizing helpers ────────────────────────────────────────────────────────────
 
 function vmin(): number { return Math.min(window.innerWidth, window.innerHeight) / 100; }
-function dpSize():  number { return Math.max(88,  Math.min(112, Math.round(23 * vmin()))); }
-function aSize():   number { return Math.max(56,  Math.min(72,  Math.round(15 * vmin()))); }
-function bSize():   number { return Math.max(44,  Math.min(58,  Math.round(12 * vmin()))); }
-function selH():    number { return Math.max(22,  Math.min(28,  Math.round(6  * vmin()))); }
-function selW():    number { return Math.max(46,  Math.min(56,  Math.round(12 * vmin()))); }
-function shH():     number { return Math.max(26,  Math.min(34,  Math.round(7  * vmin()))); }
+function dpSize():  number { return Math.max(92,  Math.min(116, Math.round(24 * vmin()))); }
+// All action buttons (ATK / DEF / JMP / DGE) are the same large size
+function aSize():   number { return Math.max(60,  Math.min(76,  Math.round(16 * vmin()))); }
+function selH():    number { return Math.max(26,  Math.min(32,  Math.round(7  * vmin()))); }
+function selW():    number { return Math.max(52,  Math.min(64,  Math.round(13 * vmin()))); }
+function shH():     number { return Math.max(36,  Math.min(48,  Math.round(10 * vmin()))); }
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 
@@ -288,219 +288,225 @@ function SpeakerGrill({ size }: { size: number }) {
 }
 
 // ─── GBC Portrait frame ───────────────────────────────────────────────────────
+// Layout (thumb-reach focused, all action buttons same size):
+//
+//  ┌──────────────────────────────────┐ ← cb (canvas bottom)
+//  │ [CHG──L shoulder──]  [──R──SPC] │ ← shoulder tabs, full width
+//  │                                  │
+//  │  (GBC body panel — indigo)       │
+//  │                                  │
+//  │  [D-pad]        [JMP]            │ ← lower strip, thumb reach
+//  │                [DEF] [ATK]       │
+//  │                 [DGE]            │
+//  │                                  │
+//  │     [EXIT]            [Hide][Keys│ ← very bottom
+//  └──────────────────────────────────┘ ← vh
 
 function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void; onKeys: () => void }) {
-  const { cl, ct, cr, cb, vw, vh, size } = canv;
-  const dp   = dpSize();
-  const btnA = aSize();
-  const btnB = bSize();
-  const sW   = selW();
-  const sH   = selH();
-  const shh  = shH();
-  const shw  = Math.min(Math.round(vw * 0.22), 88);
-  const nav  = useNavigate();
+  const { cl, ct, vw, vh, size, cb } = canv;
+  const dp  = dpSize();
+  const btn = aSize();   // all four action buttons are the same size
+  const shh = shH();
+  const shw = Math.round(vw * 0.32);   // shoulder tab ≈ 32% of screen width each
+  const nav = useNavigate();
 
-  // Canvas sits at TOP (ct=0 in portrait from getCanvas).
-  // Controls fill the bottom strip cb → vh.
-  const stripH  = vh - cb;
-  const ctrlTop = Math.round(stripH * 0.08);
-  const rowBot  = Math.round(stripH * 0.62);
+  const stripH = vh - cb;
 
-  // Shoulder tabs sit just below the canvas (at cb)
-  const shTop = cb;
+  // ── D-pad: lower-left, positioned 58% down the control strip ──────────────
+  const dpLeft = Math.max(14, Math.round(vw * 0.04));
+  const dpTop  = cb + Math.round(stripH * 0.38);
 
-  // D-pad: bottom-left of control strip
-  const dpLeft = Math.round(Math.max(10, cl + 10));
-  const dpTop  = cb + ctrlTop;
+  // ── Action diamond: lower-right, center aligned with D-pad center ─────────
+  // Diamond center X: right-side, inset from screen edge
+  const diamCx = vw - Math.max(Math.round(btn * 1.6), 100);
+  // Diamond center Y: same as D-pad vertical center
+  const diamCy = dpTop + Math.round(dp / 2);
+  // Diamond radius: spacing between center and each button center
+  const diamR  = Math.round(btn * 0.92);
 
-  // ATK: bottom-right area
-  const aRight = Math.round(Math.max(14, (vw - cr) + 14));
-  const aTop   = cb + ctrlTop + Math.round((dp - btnA) / 2) + 6;
-  // DEF: upper-left of ATK
-  const bRight = aRight + Math.round(btnA * 0.6) + 8;
-  const bTop   = aTop - Math.round(btnB * 0.7);
-
-  // Pills row (EXIT / JMP / DGE) near bottom of strip
-  const pillRowY = cb + rowBot;
-  const pillCx   = vw / 2;
-
-  // Speaker grill: bottom-right of body strip
-  const grillSize = 40;
-  const grillRight = Math.max(12, (vw - cr) + 12);
-  const grillBottom = 10;
+  // Individual button positions (top-left corner of each button)
+  const jmpL = diamCx - Math.round(btn / 2);
+  const jmpT = diamCy - diamR - Math.round(btn / 2);
+  const atkL = diamCx + diamR - Math.round(btn / 2);
+  const atkT = diamCy - Math.round(btn / 2);
+  const defL = diamCx - diamR - Math.round(btn / 2);
+  const defT = diamCy - Math.round(btn / 2);
+  const dgeL = diamCx - Math.round(btn / 2);
+  const dgeT = diamCy + diamR - Math.round(btn / 2);
 
   return (
     <>
-      {/* SCREEN BEZEL — dual ring: inner dark, outer blends into body */}
-      <div
-        style={{
-          position: 'fixed', left: cl, top: ct, width: size, height: size,
-          boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}, 0 0 0 ${BEZEL_LIP_W}px ${BEZEL_LIP}`,
-          borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent',
-        }}
-      />
+      {/* SCREEN BEZEL — dual ring */}
+      <div style={{ position:'fixed', left:cl, top:ct, width:size, height:size,
+        boxShadow:`0 0 0 ${BEZEL_W}px ${BEZEL}, 0 0 0 ${BEZEL_LIP_W}px ${BEZEL_LIP}`,
+        borderRadius:6, zIndex:51, pointerEvents:'none' }} />
 
-      {/* BOTTOM BODY (below canvas — control area) */}
-      <div
-        style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: GBC_BODY, borderRadius: '0 0 36px 36px', zIndex: 52, pointerEvents: 'none' }}
-      />
+      {/* BOTTOM BODY */}
+      <div style={{ position:'fixed', left:0, top:cb, right:0, bottom:0,
+        background:GBC_BODY, borderRadius:'0 0 36px 36px', zIndex:52, pointerEvents:'none' }} />
 
-      {/* BRANDING — "BEYBLADE X" at top of body panel */}
-      <div style={{ position: 'fixed', left: 0, right: 0, top: cb + 2, zIndex: 53, pointerEvents: 'none', display: 'flex', justifyContent: 'center' }}>
-        <span style={{ fontSize: 8, letterSpacing: '0.22em', color: 'rgba(255,255,255,0.18)', fontWeight: 700, textTransform: 'uppercase', userSelect: 'none' }}>
-          BEYBLADE X
-        </span>
+      {/* BRANDING */}
+      <div style={{ position:'fixed', left:0, right:0, top:cb+2, zIndex:53, pointerEvents:'none', display:'flex', justifyContent:'center' }}>
+        <span style={{ fontSize:8, letterSpacing:'0.22em', color:'rgba(255,255,255,0.18)', fontWeight:700, textTransform:'uppercase', userSelect:'none' }}>BEYBLADE X</span>
       </div>
 
-      {/* L SHOULDER (CHARGE) — at top of control strip, left side */}
-      <div style={{ position: 'fixed', left: 0, top: shTop, zIndex: 60, pointerEvents: 'auto' }}>
+      {/* L SHOULDER — CHG (hold) */}
+      <div style={{ position:'fixed', left:0, top:cb, zIndex:60, pointerEvents:'auto' }}>
         <ShoulderTab side="l" label="CHG" hold w={shw} h={shh} bg={GBC_SHOULDER} />
       </div>
 
-      {/* R SHOULDER (SPECIAL) — at top of control strip, right side */}
-      <div style={{ position: 'fixed', right: 0, top: shTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} bg={GBC_SHOULDER} />
+      {/* R SHOULDER — SPC (tap) */}
+      <div style={{ position:'fixed', right:0, top:cb, zIndex:60, pointerEvents:'auto' }}>
+        <ShoulderTab side="r" label="SPC"
+          onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }}
+          w={shw} h={shh} bg={GBC_SHOULDER} />
       </div>
 
-      {/* D-PAD */}
-      <div style={{ position: 'fixed', left: dpLeft, top: dpTop, zIndex: 60, pointerEvents: 'auto' }}>
+      {/* D-PAD — lower left */}
+      <div style={{ position:'fixed', left:dpLeft, top:dpTop, zIndex:60, pointerEvents:'auto' }}>
         <CrossDpad size={dp} />
       </div>
 
-      {/* DEF BUTTON */}
-      <div style={{ position: 'fixed', right: bRight, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="defense" label="DEF" size={btnB} bg="#0d3380" border="#2255bb" />
+      {/* Action diamond — all four buttons same size */}
+      {/* JMP — top */}
+      <div style={{ position:'fixed', left:jmpL, top:jmpT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="jump" label="JMP" size={btn} bg="#3b1a6e" border="#7744bb" />
+      </div>
+      {/* DEF — left */}
+      <div style={{ position:'fixed', left:defL, top:defT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="defense" label="DEF" size={btn} bg="#0d3380" border="#2255bb" />
+      </div>
+      {/* ATK — right */}
+      <div style={{ position:'fixed', left:atkL, top:atkT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="attack" label="ATK" size={btn} bg="#9b1926" border="#cc2233" />
+      </div>
+      {/* DGE — bottom */}
+      <div style={{ position:'fixed', left:dgeL, top:dgeT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="dodge" label="DGE" size={btn} bg="#0d4a24" border="#1a8a3e" />
       </div>
 
-      {/* ATK BUTTON */}
-      <div style={{ position: 'fixed', right: aRight, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="attack" label="ATK" size={btnA} bg="#9b1926" border="#cc2233" />
+      {/* EXIT — bottom left */}
+      <div style={{ position:'fixed', bottom:'max(10px,env(safe-area-inset-bottom,0px))', left:14, zIndex:60, pointerEvents:'auto' }}>
+        <PillBtn label="EXIT" onTap={() => nav('/game')} w={Math.round(btn * 1.1)} h={Math.round(btn * 0.46)} accent />
       </div>
 
-      {/* EXIT / JMP / DGE row */}
-      <div style={{ position: 'fixed', top: pillRowY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-        <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
-        <PillBtn label="JMP" field="jump"  w={sW} h={sH} />
-        <PillBtn label="DGE" field="dodge" w={sW} h={sH} />
+      {/* Hide / Keys — bottom right (below action buttons) */}
+      <div style={{ position:'fixed', bottom:'max(10px,env(safe-area-inset-bottom,0px))', right:10, zIndex:70, display:'flex', gap:5 }}>
+        <button onClick={onHide} className="h-7 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Hide</button>
+        <button onClick={onKeys} className="h-7 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Keys</button>
       </div>
 
-      {/* Speaker grill — bottom-right of body strip */}
-      <div style={{ position: 'fixed', right: grillRight, bottom: grillBottom, zIndex: 53, pointerEvents: 'none' }}>
-        <SpeakerGrill size={grillSize} />
+      {/* Speaker grill */}
+      <div style={{ position:'fixed', right:16, top:cb + Math.round(shh * 1.4), zIndex:53, pointerEvents:'none' }}>
+        <SpeakerGrill size={34} />
       </div>
 
-      {/* Power LED — top-left corner of canvas */}
-      <div style={{ position: 'fixed', left: cl + 6, top: ct + 6, width: 7, height: 7, borderRadius: '50%', background: '#ff3333', boxShadow: '0 0 6px #ff3333', zIndex: 60, pointerEvents: 'none' }} />
-
-      {/* Toggle bar */}
-      <div style={{ position: 'fixed', bottom: 'max(6px, env(safe-area-inset-bottom,0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 70, display: 'flex', gap: 6 }}>
-        <button onClick={onHide} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Hide</button>
-        <button onClick={onKeys} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Keys</button>
-      </div>
+      {/* Power LED */}
+      <div style={{ position:'fixed', left:cl+6, top:ct+6, width:7, height:7, borderRadius:'50%', background:'#ff3333', boxShadow:'0 0 6px #ff3333', zIndex:60, pointerEvents:'none' }} />
     </>
   );
 }
 
 // ─── GBA Landscape frame ──────────────────────────────────────────────────────
+// Layout:
+//  ┌─────────────┬──────────────────────┬─────────────┐
+//  │ [CHG──L sh] │                      │  [R sh──SPC]│
+//  │             │   GAME CANVAS        │             │
+//  │  [D-pad]    │   [390×390]          │  [JMP]      │
+//  │             │                      │ [DEF] [ATK] │
+//  │             │                      │  [DGE]      │
+//  │ [Hide][Keys]│                      │  [EXIT]     │
+//  └─────────────┴──────────────────────┴─────────────┘
 
 function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void; onKeys: () => void }) {
   const { cl, ct, cr, cb, vw, vh, size } = canv;
-  const dp   = dpSize();
-  const btnA = aSize();
-  const btnB = bSize();
-  const sW   = selW();
-  const sH   = selH();
-  const shh  = shH();
-  const nav  = useNavigate();
+  const dp  = dpSize();
+  const btn = aSize();   // all four action buttons same size
+  const shh = shH();
+  const nav = useNavigate();
 
-  // GBA: canvas fills full height (ct≈0, cb≈vh)
-  // Left gutter: 0→cl  Right gutter: cr→vw
   const leftGutterW  = cl;
   const rightGutterW = vw - cr;
 
-  // Shoulder tabs span entire gutter width at top
-  const lShW = Math.min(leftGutterW,  Math.round(leftGutterW  * 0.88));
-  const rShW = Math.min(rightGutterW, Math.round(rightGutterW * 0.88));
+  // Shoulder tabs: full gutter width
+  const lShW = leftGutterW;
+  const rShW = rightGutterW;
 
-  // D-pad: centred vertically in left gutter, flush right (near canvas edge)
-  const dpLeft  = Math.max(4, cl - dp - 16);
-  const dpTop   = (vh - dp) / 2;
+  // D-pad: centred horizontally in left gutter, vertically centred in screen
+  const dpLeft = Math.max(2, Math.round((leftGutterW - dp) / 2));
+  const dpTop  = Math.round((vh - dp) / 2);
 
-  // A (ATK): near canvas right edge, vertically centred
-  const aLeft = cr + 16;
-  const aTop  = (vh - btnA) / 2 + 8;
-  // B (DEF): to the upper-left of A — proper GBA diagonal offset, no overlap
-  const bLeft = aLeft - Math.round(btnA * 0.5);
-  const bTop  = aTop - Math.round(btnA * 0.55 + btnB * 0.5);
+  // Action diamond: centred in right gutter, vertically centred
+  const diamCx = cr + Math.round(rightGutterW / 2);
+  const diamCy = Math.round(vh / 2);
+  const diamR  = Math.round(btn * 0.92);
 
-  // SELECT/START/EXIT: below canvas centre (or within gutter if no bottom space)
-  const pillY = (vh - sH) / 2 + Math.round(size * 0.35);
-  const pillCx = vw / 2;
+  const jmpL = diamCx - Math.round(btn / 2);
+  const jmpT = diamCy - diamR - Math.round(btn / 2);
+  const atkL = diamCx + diamR - Math.round(btn / 2);
+  const atkT = diamCy - Math.round(btn / 2);
+  const defL = diamCx - diamR - Math.round(btn / 2);
+  const defT = diamCy - Math.round(btn / 2);
+  const dgeL = diamCx - Math.round(btn / 2);
+  const dgeT = diamCy + diamR - Math.round(btn / 2);
 
   return (
     <>
       {/* LEFT BODY */}
-      <div style={{ position: 'fixed', left: 0, top: 0, width: leftGutterW, bottom: 0, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
-
+      <div style={{ position:'fixed', left:0, top:0, width:leftGutterW, bottom:0, background:GBA_BODY, zIndex:52, pointerEvents:'none' }} />
       {/* RIGHT BODY */}
-      <div style={{ position: 'fixed', top: 0, right: 0, width: rightGutterW, bottom: 0, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
+      <div style={{ position:'fixed', top:0, right:0, width:rightGutterW, bottom:0, background:GBA_BODY, zIndex:52, pointerEvents:'none' }} />
+      {ct > 0 && <div style={{ position:'fixed', left:0, top:0, right:0, height:ct, background:GBA_BODY, zIndex:52, pointerEvents:'none' }} />}
+      {cb < vh && <div style={{ position:'fixed', left:0, top:cb, right:0, bottom:0, background:GBA_BODY, zIndex:52, pointerEvents:'none' }} />}
 
-      {/* TOP BODY (narrow strip above canvas if any) */}
-      {ct > 0 && (
-        <div style={{ position: 'fixed', left: 0, top: 0, right: 0, height: ct, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
-      )}
-      {/* BOTTOM BODY (narrow strip below canvas if any) */}
-      {cb < vh && (
-        <div style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
-      )}
+      {/* SCREEN BEZEL */}
+      <div style={{ position:'fixed', left:cl, top:ct, width:size, height:size,
+        boxShadow:`0 0 0 ${BEZEL_W}px ${BEZEL}, 0 0 0 ${BEZEL_LIP_W}px ${BEZEL_LIP}`,
+        borderRadius:6, zIndex:51, pointerEvents:'none' }} />
 
-      {/* SCREEN BEZEL — dual ring: inner dark, outer blends into GBA body */}
-      <div style={{
-        position: 'fixed', left: cl, top: ct, width: size, height: size,
-        boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}, 0 0 0 ${BEZEL_LIP_W}px ${BEZEL_LIP}`,
-        borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent',
-      }} />
-
-      {/* L SHOULDER (CHARGE) — top of left gutter */}
-      <div style={{ position: 'fixed', left: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
+      {/* L SHOULDER — CHG */}
+      <div style={{ position:'fixed', left:0, top:0, zIndex:60, pointerEvents:'auto' }}>
         <ShoulderTab side="l" label="CHG" hold w={lShW} h={shh} bg={GBA_SHOULDER} />
       </div>
-
-      {/* R SHOULDER (SPECIAL) — top of right gutter */}
-      <div style={{ position: 'fixed', right: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={rShW} h={shh} bg={GBA_SHOULDER} />
+      {/* R SHOULDER — SPC */}
+      <div style={{ position:'fixed', right:0, top:0, zIndex:60, pointerEvents:'auto' }}>
+        <ShoulderTab side="r" label="SPC"
+          onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }}
+          w={rShW} h={shh} bg={GBA_SHOULDER} />
       </div>
 
-      {/* D-PAD (left gutter) */}
-      <div style={{ position: 'fixed', left: dpLeft, top: dpTop, zIndex: 60, pointerEvents: 'auto' }}>
+      {/* D-PAD — left gutter, vertically centred */}
+      <div style={{ position:'fixed', left:dpLeft, top:dpTop, zIndex:60, pointerEvents:'auto' }}>
         <CrossDpad size={dp} />
       </div>
 
-      {/* DEF BUTTON — upper-left of ATK, no overlap */}
-      <div style={{ position: 'fixed', left: bLeft, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="defense" label="DEF" size={btnB} bg="#0d3380" border="#2255bb" />
+      {/* Action diamond — right gutter, all buttons same size */}
+      <div style={{ position:'fixed', left:jmpL, top:jmpT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="jump" label="JMP" size={btn} bg="#3b1a6e" border="#7744bb" />
+      </div>
+      <div style={{ position:'fixed', left:defL, top:defT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="defense" label="DEF" size={btn} bg="#0d3380" border="#2255bb" />
+      </div>
+      <div style={{ position:'fixed', left:atkL, top:atkT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="attack" label="ATK" size={btn} bg="#9b1926" border="#cc2233" />
+      </div>
+      <div style={{ position:'fixed', left:dgeL, top:dgeT, zIndex:60, pointerEvents:'auto' }}>
+        <GBBtn field="dodge" label="DGE" size={btn} bg="#0d4a24" border="#1a8a3e" />
       </div>
 
-      {/* ATK BUTTON */}
-      <div style={{ position: 'fixed', left: aLeft, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="attack" label="ATK" size={btnA} bg="#9b1926" border="#cc2233" />
+      {/* EXIT — right gutter, below action diamond */}
+      <div style={{ position:'fixed', left:cr + Math.round(rightGutterW / 2) - Math.round(btn * 0.55), bottom:'max(10px,env(safe-area-inset-bottom,0px))', zIndex:60, pointerEvents:'auto' }}>
+        <PillBtn label="EXIT" onTap={() => nav('/game')} w={Math.round(btn * 1.1)} h={Math.round(btn * 0.46)} accent />
       </div>
 
-      {/* JMP + DGE + EXIT (centre-bottom area) */}
-      <div style={{ position: 'fixed', top: pillY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-        <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
-        <PillBtn label="JMP" field="jump"  w={sW} h={sH} />
-        <PillBtn label="DGE" field="dodge" w={sW} h={sH} />
-      </div>
-
-      {/* Power LED */}
-      <div style={{ position: 'fixed', left: cl + 8, top: ct + 8, width: 7, height: 7, borderRadius: '50%', background: '#ff3333', boxShadow: '0 0 6px #ff3333', zIndex: 60 }} />
-
-      {/* Toggle bar */}
-      <div style={{ position: 'fixed', bottom: 'max(6px, env(safe-area-inset-bottom,0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 70, display: 'flex', gap: 6 }}>
+      {/* Hide / Keys — left gutter bottom */}
+      <div style={{ position:'fixed', bottom:'max(8px,env(safe-area-inset-bottom,0px))', left:4, zIndex:70, display:'flex', flexDirection:'column', gap:4 }}>
         <button onClick={onHide} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Hide</button>
         <button onClick={onKeys} className="h-6 px-2 rounded-full bg-black/40 border border-white/10 text-white/40 text-[9px] font-bold">Keys</button>
       </div>
+
+      {/* Power LED */}
+      <div style={{ position:'fixed', left:cl+8, top:ct+8, width:7, height:7, borderRadius:'50%', background:'#ff3333', boxShadow:'0 0 6px #ff3333', zIndex:60 }} />
     </>
   );
 }

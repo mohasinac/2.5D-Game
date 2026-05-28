@@ -75,7 +75,7 @@ export default function VictoryOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer"
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center cursor-pointer"
       onClick={handleDismiss}
     >
       <style>{`

@@ -16174,7 +16174,7 @@ Full+Full (both QTE1 late + QTE3 late):
   → KE_combined ~10J [M] — guaranteed KO
 
 selfCost: −80; powerCost: 130; cooldown: 9000 ms
-Invulnerability: Phase 1 (~950ms) + Phase 3 re-ascent (~600ms) = ~1550ms total
+Invulnerability: Phase 1 (~950ms) + Phase 3 re-ascent (~600ms) = ~1578ms total
 QTE: Three-stage hold-J / tap-J / hold-J — most demanding QTE in CS13
 ```
 
@@ -21118,7 +21118,7 @@ v₀ = 3.0 m/s → v₁ = 3.678 m/s → v₁.₅ ≈ 4.2 m/s  [M]
 
 ```
 KE_impact = ½ m v₁.₅² = ½ × 0.037 × 4.2² = 0.326 J  [M]
-J_impact   = m × v₁.₅  = 0.037 × 4.2     = 0.1554 N·s  [M]
+J_impact   = m × v₁.₅  = 0.037 × 4.2     = 0.1582 N·s  [M]
 ```
 
 In-game: ~1400 eu [M] — enhanced by BeySpirit amplification (2-3× in special) to ~1750 eu [M]
@@ -21139,7 +21139,7 @@ function cycloneLoopGimmick(
   return { v_final_ms: +v.toFixed(3), J_impact_Ns: +(m * v).toFixed(4), C_orbit_m: +C.toFixed(3) };
 }
 // cycloneLoopGimmick(3.0, 1)   → {v:3.678, J:0.1361, C:2.394}
-// cycloneLoopGimmick(3.0, 1.5) → {v:4.200, J:0.1554, C:2.394}
+// cycloneLoopGimmick(3.0, 1.5) → {v:4.200, J:0.1582, C:2.394}
 // cycloneLoopGimmick(3.0, 2)   → {v:4.678, J:0.1731, C:2.394}
 ```
 
@@ -30304,5 +30304,807 @@ function gracefulLeap(
 
 **Ceiling check:** dmgMult 1.30× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
 
-*Cases continue from Case 1546 as further franchise moves are provided.*
+## Case 1574 -- [GIMMICK]: Hades Kerbecs BD145DS — BD145 Flywheel Ring & DS Tip Ground Coupling (Damian Hart · Hades Kerbecs BD145DS)
+
+**Part:** BD145 (Bottom Defense 145) Spin Track — large-diameter bottom disk acting as secondary flywheel ring + DS (Defense Sharp) tip with dual sharp/dome contact modes; physical basis of both Hades Drive (Case 1575) and Hades Gate (Case 1578). Also documents Kerbecs Metal Wheel three-segment Cerberus frame.
+**Assembly:** Hades Kerbecs BD145DS (m≈38g, I_total≈7.40e-6 kg·m², ω₀=628 rad/s)
+**Tags:** MFB, hades-kerbecs, BD145, DS-tip, kerbecs-MW, flywheel, ground-coupling, defense-stamina
+
+**BD145 Track — Flywheel Ring**
+
+BD = Bottom Defense. 145mm-height track carries a wide circular disk ring at the base, spinning close to the stadium floor (h_gap ≈ 3 mm).
+
+| Parameter | Value |
+|-----------|-------|
+| BD disk outer radius r_BD | 30 mm |
+| BD disk mass m_BD | 4 g |
+| I_BD = ½ × m_BD × r_BD² | **1.80e-6 kg·m²** |
+| I_BD as % of I_total | 24.3% |
+
+Spin-life extension: with BD (I=7.40e-6) vs without BD (I=5.60e-6) under equal tip friction torque → **32% longer spin life**.
+
+Near-floor venturi suction at ω₀ = 628 rad/s (h_gap ≈ 3 mm):
+  v_rim = ω₀ × r_BD = 628 × 0.030 = **18.84 m/s**
+  Re = 18.84 × 0.030 / 1.5e-5 = **37,680** (turbulent ground-effect)
+  Δp_suction = ½ × ρ_air × v_rim² = ½ × 1.225 × 18.84² = **217.5 Pa**
+  F_suction = Δp × π × r_BD² = 217.5 × π × 0.030² = **0.615 N** downward [CALCULATED]
+  Effective weight ratio: 0.615 / (0.038 × 9.81) = **1.65×** — BD nearly doubles uplift resistance at full spin
+
+**DS Tip — Hybrid Ground Coupling**
+
+DS = Defense Sharp: wide dome-base + sharp conical centre.
+  r_sharp = 0.8 mm (high-spin sharp mode); r_dome = 4.0 mm (low-spin/tilt dome mode, ω < 200 rad/s)
+
+High-spin (sharp mode): F_N = m×g + F_suction = 0.373 + 0.615 = **0.988 N**
+  τ_tip = 0.18 × 0.988 × 0.0008 = **1.42e-4 N·m** (low — stamina preserved)
+
+Low-spin (dome mode): F_N ≈ 0.373 N
+  τ_tip_dome = 0.35 × 0.373 × 0.004 = **5.22e-4 N·m** (3.7× higher — self-centering at low spin)
+
+**Kerbecs Metal Wheel — Three-Segment Cerberus Frame**
+
+Three symmetric Cerberus-head segments at r_outer ≈ 23 mm, m_MW ≈ 28 g:
+  I_MW ≈ ½ × 0.028 × 0.023² × 0.72 = **5.30e-6 kg·m²**
+  Contact rate: f_contact = 3ω/(2π) = 3×628/6.283 = **300 Hz** (three-segment sequential impact)
+
+**Total Assembly**
+
+| Property | Value |
+|----------|-------|
+| m_total | 38 g |
+| I_total | 7.40e-6 kg·m² |
+| L₀ = I × ω₀ | **4.647e-3 kg·m²/s** |
+| E_kinetic | ½ × 7.40e-6 × 628² = **1.459 J** |
+| P_burst (t=0.1s) | **14.6 W** [physical max power pulse] |
+
+## Case 1575 -- [SPECIAL]: Hades Drive (Damian Hart · Hades Kerbecs BD145DS, Metal Fight Beyblade Metal Masters)
+
+**Source:** Metal Fight Beyblade Metal Masters; English: "Hades Drive"; Japanese: ヘルズドライブ (Hell's Drive). First special move of Damian Hart. First used to defeat Julian Konzern.
+**Classification:** Ground-pressure vortex / stadium-wave AoE; spin drain + displacement
+**Gimmick base:** BD145 flywheel ring + DS near-floor venturi suction (Case 1574)
+**Note:** Described in-series as similar to Storm Bringer (Ryuga, L-Drago aerial tornado vortex). Both create centrifugal wind vortex; Storm Bringer is aerial/upward; Hades Drive is ground-coupled/downward — a chthonic inversion of the same mechanism.
+**Compatible beys:** Hades Kerbecs BD145DS (Damian Hart). Requires BD-class bottom disk track (r_BD ≥ 28 mm, h_gap ≤ 5 mm at full spin) + low-friction tip for stadium coupling. Damian's BeySpirit provides amplitude amplification [M].
+
+### Move Description
+
+Kerbecs holds stadium center at full spin. The BD145 disk (v_rim = 18.84 m/s) generates centrifugal radial outflow — a ground-hugging pressure wave p(d) = 217.5 × (0.030/d)² Pa. Physical wave force at 10 cm: 19.6 Pa; at 20 cm: 4.9 Pa (small). Damian's BeySpirit [M] amplifies this into a full-stadium hellfire ground vortex (radius 200 mm), coupling E_kinetic = 1.459 J into a simultaneous spin-drain field. Hell-Lock QTE: DS ground-stamp timing (350 ms window).
+
+```typescript
+function hadesDrive(
+  fullSpin: boolean,       // ω > 80% max (BD145 flywheel high-energy state)
+  groundContact: boolean,  // DS tip contacting floor
+  qteHit: boolean          // Hell-Lock QTE press within 350ms
+): {
+  spinDelta: number;
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  aoeRadius: number;      // mm; BeySpirit ground-wave radius [M]
+  spinDrainAoe: number;   // spin drain to all opponents in radius [M]
+} {
+  if (fullSpin && groundContact && qteHit) {
+    return {
+      spinDelta:    -50,    // flywheel discharge (E=1.459J physical base)
+      dmgMult:       1.65,  // [M — BeySpirit; P_burst=14.6W physical]
+      lockMs:        200,
+      powerCost:     90,
+      aoeRadius:     200,   // full stadium [M]
+      spinDrainAoe:  -20,   // all opponents [M]
+    };
+  }
+  if (fullSpin && groundContact) {
+    return {
+      spinDelta:    -30,
+      dmgMult:       1.35,
+      lockMs:        150,
+      powerCost:     90,
+      aoeRadius:     100,
+      spinDrainAoe:  -10,
+    };
+  }
+  return {
+    spinDelta:    -15,
+    dmgMult:       1.10,
+    lockMs:         50,
+    powerCost:      90,
+    aoeRadius:       0,
+    spinDrainAoe:    0,
+  };
+}
+// Physical base: v_rim=18.84 m/s, E_kinetic=1.459 J, P_burst=14.6 W (Case 1574).
+// aoeRadius and dmgMult>1.5 are BeySpirit-amplified [M].
+```
+
+| Scenario | spinDelta | dmgMult | AoE | spinDrainAoe |
+|----------|-----------|---------|-----|--------------|
+| Full + QTE | −50 | ×1.65 [M] | 200mm | −20 all |
+| Full, no QTE | −30 | ×1.35 | 100mm | −10 all |
+| No ground | −15 | ×1.10 | — | — |
+
+Force state: `must_hold_center` — displacement to boundary dissipates the wave; degrades to partial.
+
+## Case 1576 -- COMBO: Hades Press (↓J↓) [mD·J·mD] — Derived from Case 1575 Hades Drive
+
+**Sequence:** moveDown → jump → moveDown (↓ J ↓)
+**Cost:** 25
+**Type restriction:** defense or stamina (heavy-bodied beys for BD145-class venturi suction)
+**Parent gimmick:** BD145 flywheel ring + DS ground coupling (Case 1574)
+
+**Thesis:** Hades Press delivers the BD145 ground-stamp mechanic at combo intensity without BeySpirit AoE. ↓ drives Kerbecs toward stadium center (establishing DS ground contact and BD venturi suction), J fires the single floor-coupling impulse (the physical pressure pulse from Case 1574), ↓ resumes the downward press after impact. Against airborne or tilted opponents the floor coupling dissipates and effect is reduced.
+
+```typescript
+function hadesPress(
+  heavyBey: boolean,  // m > 35g — BD145-class mass for meaningful venturi suction (Case 1574)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    heavyBey ? -18 : -12,
+      dmgMult:      heavyBey ? 1.25 : 1.15,
+      lockMs:       150,
+      powerCost:    25,
+      ringOutBonus: heavyBey ? 0.05 : 0.02,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.25× ≤ 1.5 ✓ | lockMs 150 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+## Case 1577 -- [GIMMICK]: Hades Kerbecs BD145DS — BD145 Centripetal Vortex Inversion & Cerberus Devour Contact (EXTENDS Case 1574)
+
+**Part:** BD145 in centripetal-pull configuration (inversion of Case 1574 outward wave) + Kerbecs three-segment devour impact geometry; physical basis of Hades Gate (Case 1578). Establishes the physical boundary between measurable centripetal air pull and BeySpirit chain amplification [M]; models multi-opponent reach extension via button-mash QTE.
+**Assembly:** Hades Kerbecs BD145DS (m=38g, I=7.40e-6 kg·m², ω₀=628 rad/s — Case 1574 baseline)
+**Tags:** MFB, hades-kerbecs, BD145, hades-gate, centripetal-pull, multi-target, chain-mechanic, extends-1574
+
+**Distinction from Case 1575**
+
+Case 1575 = Hades Drive: centrifugal outward push, ground wave, AoE spin drain.
+Case 1577 = Hades Gate foundation: centripetal inward pull [M], chains draw opponents to Kerbecs, Cerberus devour on arrival.
+
+**BD145 centripetal inflow — physical boundary**
+
+Estimated inward drag at d = 0.10 m:
+  v_inflow ≈ v_rim × (r_BD/d)² = 18.84 × (0.030/0.10)² = **1.70 m/s** (inward component)
+  F_pull = ½ × 1.225 × 1.0 × π×0.023² × 1.70² = **9.7 × 10⁻⁴ N** [CALCULATED — physically negligible]
+
+Physical pull ≈ 1 mN at 10 cm — too small to drag any opponent. **The chain-pull mechanic is entirely BeySpirit-generated [M].** L = 4.647e-3 kg·m²/s (Case 1574) provides the gyroscopic anchor.
+
+**Chain reach vs button-mash QTE**
+
+Each rapid J press extends Damian's BeySpirit [M]:
+  Base reach (0 presses): 80 mm
+  Per-press extension: +25 mm [M]
+  Max reach (10 presses): 80 + 250 = 330 mm → capped at 200 mm arena radius
+  QTE window: 3,000 ms; required press rate for maximum: 3.3 Hz (achievable)
+
+**Cerberus three-point devour contact**
+
+When pulled opponent reaches Kerbecs, three Cerberus segments contact in rapid succession at f_contact = 300 Hz (Case 1574):
+  F_contact per segment [M]: m_MW × ω² × r_MW = 0.028 × 628² × 0.023 = **253.6 N**
+  Δp per segment = F / f_contact = 253.6 / 300 = **0.845 N·s**
+  Net devour impulse (3 segments): 3 × 0.845 = **2.535 N·s** [CALCULATED — sufficient ring-out on any sub-50g opponent]
+
+## Case 1578 -- [SPECIAL]: Hades Gate (Damian Hart · Hades Kerbecs BD145DS, Metal Fight Beyblade Metal Masters)
+
+**Source:** Metal Fight Beyblade Metal Masters; English: "Hades Gate"; Japanese: ヘルズゲート (Hell's Gate). Second special move of Damian Hart. Used to simultaneously defeat Julian Konzern, Sophie (Grand Cetus T125RS), and Wales (Grand Cetus WD145RS) — a 3-vs-1 victory.
+**Classification:** Multi-target centripetal chain pull + Cerberus devour; ring-out
+**Gimmick base:** BD145 centripetal vortex inversion + Cerberus devour contact (Case 1577); chain reach extended by J button-mash QTE
+**Compatible beys:** Hades Kerbecs BD145DS (Damian Hart). Chain-pull is entirely BeySpirit [M]; requires high-L assembly (L ≥ 4.5e-3 kg·m²/s, Case 1574) as gyroscopic anchor.
+
+### Move Description
+
+Underworld gates open [M]. Chains deploy toward all opponents; the player rapidly mashes J during the 3-second pull window, each press extending chain reach +25 mm via Damian's BeySpirit [M] (Case 1577). Opponents within reach are dragged toward Kerbecs; three Cerberus segments deliver the devour sequence (300 Hz, Δp = 2.535 N·s) on arrival. Canon use: all three opponents simultaneously defeated at maximum chain reach (10 presses).
+
+```typescript
+function hadesGate(
+  chainPresses: number,     // J presses during 3000ms QTE window (0–10)
+  opponentsInRange: number  // opponents within calculated chain reach (1–3)
+): {
+  spinDelta: number;
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  chainReachMm: number;
+  targetsHit: number;
+  ringOutForce: number;
+} {
+  const reach    = Math.min(80 + chainPresses * 25, 200);
+  const targets  = Math.min(opponentsInRange, 3);
+  const devourStr = 0.50 + (chainPresses / 10) * 0.45;
+
+  return {
+    spinDelta:      -(30 + chainPresses * 3),             // −30 (0 presses) → −60 (10 presses)
+    dmgMult:         1.50 + (chainPresses / 10) * 0.70,  // 1.50 → 2.20 [M at max]
+    lockMs:          200,
+    powerCost:       95,
+    chainReachMm:    reach,
+    targetsHit:      targets,
+    ringOutForce:    devourStr,
+  };
+}
+// Physical base: Cerberus devour Δp=2.535 N·s (Case 1577); chain pull is BeySpirit [M].
+// dmgMult>1.5 is [M]; spinDelta=-30 base is physically grounded (flywheel energy cost, Case 1574).
+// Canon: 10 presses → targets=3 (Julian+Sophie+Wales) → ringOutForce=0.95, dmgMult=2.20 [M].
+```
+
+| chainPresses | reach | dmgMult | spinDelta | ringOutForce |
+|--------------|-------|---------|-----------|--------------|
+| 0 | 80mm | ×1.50 | −30 | 0.50 |
+| 5 | 200mm | ×1.85 | −45 | 0.73 |
+| 10 | 200mm | ×2.20 [M] | −60 | 0.95 |
+
+Force state: `must_hold_center` — displacement from center during gate-open phase causes chains to extend asymmetrically and reach is halved.
+
+## Case 1579 -- COMBO: Cerberus Drag (←J↓) [mL·J·mD] — Derived from Case 1578 Hades Gate
+
+**Sequence:** moveLeft → jump → moveDown (← J ↓)
+**Cost:** 25
+**Type restriction:** defense or stamina (requires high-mass assembly for gyroscopic anchor)
+**Parent gimmick:** BD145 centripetal pull + Cerberus devour (Case 1577)
+
+**Thesis:** Cerberus Drag condenses Hades Gate's pull-then-devour into a single combo. ← drives Kerbecs into a lateral flanking orbit (establishing the pull geometry from the side — the BD vortex axis aligns toward the opponent), J fires a scaled combo-level single grab contact, and ↓ presses the opponent downward toward the bowl wall after contact, converting pull momentum into a wall-press ring-out bonus. No multi-target chain reach at combo level (BeySpirit absent).
+
+```typescript
+function cerberusDrag(
+  nearWall: boolean,  // opponent within 30mm of boundary
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    -16,
+      dmgMult:       nearWall ? 1.30 : 1.20,
+      lockMs:        150,
+      powerCost:     25,
+      ringOutBonus:  nearWall ? 0.20 : 0.05,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.30× ≤ 1.5 ✓ | lockMs 150 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+## Case 1580 -- [GIMMICK]: Scythe Kronos T125EDS — Dual-Axis Vertical Impact Geometry (EXTENDS Cases 1267 & 1270)
+
+**Part:** Scythe Fusion Wheel asymmetric arm — reanalysed for vertical dual-axis force decomposition: heaven component = upward blade deflection; earth component = downward arm mass centrifugal drive. EXTENDS Case 1267 (T125 debris vortex + EDS platform) and Case 1270 (Scythe FW radial ring discharge). This case analyses the VERTICAL plane: Scythe blade contact at height differential creates simultaneous upward (heaven) and downward (earth) force components on the opposing AR.
+**Assembly:** Scythe Kronos T125EDS (Aguma) — parameters from Cases 1267/1270
+**Tags:** MFB-fury, scythe-kronos, dual-axis, vertical-impact, heaven-earth, extends-1267, extends-1270
+
+**Distinction from Cases 1267 and 1270**
+
+Case 1267 = T125 prong debris vortex (radial/vertical debris field).
+Case 1270 = Scythe FW radial ring discharge (horizontal plane, outward expanding ring).
+Case 1580 = VERTICAL plane: blade contact at height differential → simultaneous upward lift (heaven) + horizontal smash (earth). Name reference: Kronos' parents — Uranus (Heaven/sky) + Gaea (Earth/ground) from Greek mythology.
+
+**Scythe FW arm — vertical force decomposition**
+
+From Cases 1267/1270: r_arm_tip ≈ 22 mm, m_arm ≈ 12 g [M], blade angled upward at φ_blade ≈ 15° from horizontal.
+
+At height-advantage contact (Kronos elevated above opponent AR):
+  F_normal [M] = m_arm × ω² × r_arm = 0.012 × 628² × 0.022 = **103.5 N**
+
+Decomposition at φ = 15°:
+  F_horiz (earth smash)  = 103.5 × cos(15°) = 103.5 × 0.966 = **99.9 N** [CALCULATED]
+  F_vert_up (heaven lift) = 103.5 × sin(15°) = 103.5 × 0.259 = **26.8 N** upward [CALCULATED]
+
+Tilting torque on opponent from vertical lift:
+  τ_tilt = F_up × r_AR_opp = 26.8 × 0.023 = **0.616 N·m** [CALCULATED]
+  Angular impulse (Δt = 2 ms): L_tilt = 0.616 × 0.002 = **1.23e-3 N·m·s**
+  For opponent I_AR ≈ 3.5e-5 kg·m²: Δω_tilt = 1.23e-3 / 3.5e-5 = **35.1 rad/s** tilt rate induced [CALCULATED]
+
+This dual-axis geometry — horizontal smash AND vertical lift acting simultaneously on different contact points — is distinct from both Case 1267 (debris vortex) and Case 1270 (radial ring). Against Diablo Nemesis X:D (high mass, high I, extreme stability), normal single-axis attacks are absorbed; the dual-axis contact induces both translational displacement and forced AR precession simultaneously. Aguma's BeySpirit amplifies both axes [M] for the single-use canon strike.
+
+## Case 1581 -- [SPECIAL]: Heaven and Earth Strike (Aguma · Scythe Kronos T125EDS, Metal Fight Beyblade Metal Fury)
+
+**Source:** Metal Fight Beyblade Metal Fury. Single canon use against Diablo Nemesis X:D (series final boss). "Heaven and Earth Strike" references Kronos' parents: Uranus (Heaven/sky) + Gaea (Earth/ground) from Greek mythology — both cosmic planes in one strike.
+**Classification:** Dual-axis vertical smash; maximum single-hit damage + tilt induction
+**Gimmick base:** Scythe FW dual-axis vertical geometry (Case 1580); T125/EDS from Cases 1267/1270
+**Compatible beys:** Scythe Kronos T125EDS (Aguma). Requires asymmetric Fusion Wheel with upward-angled blade (φ > 10°) + height-giving track for elevated approach. Aguma's BeySpirit provides simultaneous dual-axis amplification [M].
+
+### Move Description
+
+Kronos elevates on T125 height and approaches Nemesis from above. At the strike moment (QTE: simultaneous J + ↑ dual-input within 200ms), the blade delivers both force components at once (Case 1580): F_up = 26.8 N (blade angle 15°, heaven) + F_horiz = 99.9 N (arm mass centrifugal, earth). Contact induces both translational displacement and Δω_tilt = 35.1 rad/s forced AR precession simultaneously. Single canonical use — maximum BeySpirit expenditure.
+
+```typescript
+function heavenAndEarthStrike(
+  heightAdvantage: boolean,  // Kronos elevated above opponent AR (T125 height, Case 1267)
+  qteHit: boolean            // simultaneous J+↑ dual-input within 200ms window
+): {
+  spinDelta: number;
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  tiltInduced: number;       // tilt rate on opponent AR (rad/s) — physically grounded (Case 1580)
+  dualAxisBonus: boolean;
+} {
+  if (heightAdvantage && qteHit) {
+    return {
+      spinDelta:      -65,    // max BeySpirit expenditure [M]
+      dmgMult:         2.10,  // [M — dual-axis simultaneous; single-use desperation]
+      lockMs:          250,
+      powerCost:       100,   // full power drain — used exactly once in canon
+      tiltInduced:      35.1, // physically grounded (Case 1580)
+      dualAxisBonus:   true,
+    };
+  }
+  if (heightAdvantage) {
+    return {
+      spinDelta:    -35,
+      dmgMult:       1.50,
+      lockMs:        150,
+      powerCost:     100,
+      tiltInduced:    10.0,   // partial (single-axis, reduced BeySpirit)
+      dualAxisBonus: false,
+    };
+  }
+  return {
+    spinDelta:    -20,
+    dmgMult:       1.15,
+    lockMs:         80,
+    powerCost:     100,
+    tiltInduced:     0,
+    dualAxisBonus: false,
+  };
+}
+// Physical base: F_up=26.8N, F_horiz=99.9N, tiltInduced=35.1 rad/s (Case 1580).
+// dmgMult>1.5 and spinDelta=-65 are [M]; tiltInduced=35.1 is physically grounded.
+// powerCost=100: full BeySpirit drain — used exactly once in canon (Nemesis fight).
+```
+
+| Scenario | spinDelta | dmgMult | tiltInduced | dualAxis |
+|----------|-----------|---------|-------------|----------|
+| Height + QTE | −65 | ×2.10 [M] | 35.1 rad/s | yes |
+| Height, no QTE | −35 | ×1.50 | 10.0 rad/s | no |
+| No height | −20 | ×1.15 | — | no |
+
+Force state: `must_be_elevated` — Kronos must maintain T125 height position before strike; forced flat contact loses dual-axis geometry and dualAxisBonus = false.
+
+## Case 1582 -- COMBO: Divine Cross (↑J↓) [mU·J·mD] — Derived from Case 1581 Heaven and Earth Strike
+
+**Sequence:** moveUp → jump → moveDown (↑ J ↓)
+**Cost:** 35
+**Type restriction:** balanced or attack (ascending approach required for height differential)
+**Parent gimmick:** Scythe FW dual-axis vertical impact geometry (Case 1580)
+
+**Thesis:** Divine Cross compresses Heaven and Earth Strike's vertical geometry into a combo. ↑ drives Kronos up the bowl toward the lip (gaining height — the "heaven" approach, replicating T125 elevation from Case 1580), J fires the dual-axis contact at the height position (combo intensity: both F_up and F_horiz present, without full BeySpirit amplification), ↓ follows through downward after the strike (the "earth" exit, absorbing recoil from the dual-axis contact). At combo scale the tilt torque is proportionally reduced but physically present (blade geometry from Case 1580 unchanged).
+
+```typescript
+function divineCross(
+  heightGained: boolean,  // ↑ approach raised Kronos above opponent AR height
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    heightGained ? -22 : -14,
+      dmgMult:      heightGained ? 1.35 : 1.20,
+      lockMs:       150,
+      powerCost:    35,
+      ringOutBonus: heightGained ? 0.10 : 0.03,
+    };
+  }
+  return { spinDelta: -8, dmgMult: 1.05, lockMs: 0, powerCost: 35, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.35× ≤ 1.5 ✓ | lockMs 150 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+## Case 1583 -- [GIMMICK]: Thermal Lacerta WA130HF — Wing Attack Forced-Convection Column & Hole Flat Orbital Positioning (Chi-yun Li · Thermal Lacerta WA130HF) [EXTENDS Case 816]
+
+**Part:** WA130 (Wing Attack 130) Spin Track — radially-extending wing elements generating forced-convection airflow column + HF (Hole Flat) tip (Cases 68/3901) providing cooperative positioning via 15% faster pivot-redirect; analysed as the assembly partner for Heaven's Supreme Destruction Palm (Case 1584, JOINT with Rock Zurafa R145WB, Case 816). Rock Zurafa R145WB is fully documented in Case 816.
+**Assembly:** Thermal Lacerta WA130HF (Chi-yun Li, Metal Fight Beyblade Metal Masters / Metal Fury) — m≈37g, I_total≈5.90e-6 kg·m²
+**Tags:** MFB, thermal-lacerta, WA130, HF-tip, forced-convection, wing-airflow, cooperative, extends-816
+
+**Thermal Metal Wheel**
+
+Smooth curved segments with lacerta-scale surface texture (broad, shallow contact faces):
+  m_Thermal ≈ 25 g, r_outer ≈ 22 mm
+  I_Thermal ≈ ½ × 0.025 × 0.022² × 0.70 = **4.23e-6 kg·m²**
+  Broad face geometry maximises heat exchange coefficient when adjacent to R145 rubber bumpers (Case 816).
+
+**WA130 Track — Wing Attack 130**
+
+Radial wings deploy at h = 130 mm under centrifugal force at operating spin:
+  r_wing ≈ 28 mm, m_WA130 ≈ 3 g
+  F_deploy = 0.003 × 628² × 0.028 = **33.1 N** (wings fully extended at ω₀) [CALCULATED]
+  v_wing_tip = ω₀ × r_wing = 628 × 0.028 = **17.58 m/s**
+  Re_wing = 17.58 × 0.028 / 1.5e-5 = **32,805** (turbulent forced convection)
+  h_conv ≈ 120 W/(m²·K) [standard forced convection at Re~33k]
+  Q_retained per wing ≈ h_conv × A_wing × ΔT × η = 120 × 3.30e-4 × ΔT × 0.60 = **0.0238 × ΔT W** [CALCULATED]
+
+WA130 wings concentrate rather than dissipate thermal energy from R145 friction (Case 816) — they form an aerodynamic column around the cooperative pair.
+
+**HF Tip — Hole Flat Orbital Positioning (Cases 68/3901)**
+
+HF = Hole Flat (annular contact ring, r_outer=12mm, r_hole=4mm). Per Case 3901:
+- 4% slower spin decay vs full Flat (reduced contact area 89%)
+- 15% faster pivot-redirect capability (reduced centre-axis friction)
+
+The 15% faster heading correction allows Lacerta to efficiently align beside Rock Zurafa during cooperative orbit, enabling the proximity needed for the fireball build phase.
+
+**Assembly Summary**
+
+| Property | Value |
+|----------|-------|
+| m_total | 37 g |
+| I_total | 5.90e-6 kg·m² |
+| L₀ | 5.90e-6 × 628 = **3.705e-3 kg·m²/s** |
+| E_kinetic | ½ × 5.90e-6 × 628² = **1.163 J** |
+
+Combined with Rock Zurafa (Case 816, E_Zurafa ≈ 1.182 J):
+  E_combined ≈ 1.182 + 1.163 = **2.345 J** [CALCULATED — physical cooperative energy base]
+
+## Case 1584 -- [SPECIAL]: Heaven's Supreme Destruction Palm (Chi-yun Li + Dashan Wang · Thermal Lacerta WA130HF + Rock Zurafa R145WB, Metal Fight Beyblade Metal Fury) [JOINT SPECIAL]
+
+**Source:** Metal Fight Beyblade Metal Fury; joint special move of Chi-yun Li and Dashan Wang. First used against Gingka Hagane and Yuki Mizusawa; caused Yuki to nearly fall off a cliff.
+**Classification:** Cooperative thermal vortex → concentrated fireball projectile; AoE impact
+**Gimmick base:** WA130 forced-convection column (Case 1583) + R145 rubber friction heating (Case 816); fireball requires both beys spinning simultaneously within cooperative range
+**Compatible beys:** Thermal Lacerta WA130HF (Chi-yun Li) + Rock Zurafa R145WB (Dashan Wang). WA130 forced convection concentrates R145 friction heat; neither bey alone reaches fireball formation — BeySpirit amplifies combined thermal output to combustion [M].
+
+### Move Description
+
+Rock Zurafa's R145 rubber bumpers generate frictional heat (P_rubber ≈ 1.74 W, Case 816 parameters). Thermal Lacerta orbits near Zurafa; WA130 wings (v_wing = 17.58 m/s) create a forced-convection column (Q_retained ≈ 1.04 W per wing) that concentrates the thermal field rather than dispersing it. After ≥ 2 seconds cooperative proximity, combined BeySpirit [M] ignites the thermal field into a concentrated fireball (E_combined = 2.345 J physical base). The fireball is launched by the combined angular momentum toward the target.
+
+Physical heat (without BeySpirit): time to ignite 1 cm³ of air (300°C): t = m_air × c_p × ΔT / Q_retained = (1.225e-6 × 700 × 280) / 1.04 = **0.23 s** for a tiny air volume only — full fireball requires BeySpirit [M].
+
+```typescript
+function heavensSupremeDestructionPalm(
+  bothActive: boolean,       // both Thermal Lacerta AND Rock Zurafa spinning
+  thermalPrimed: boolean,    // beys within 60mm of each other for ≥ 2s (thermal buildup)
+  qteHit: boolean            // simultaneous input from both players within 400ms window
+): {
+  spinDelta: number;          // per-bey spin cost
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  fireballRadius: number;    // mm [M]
+  aoeRingOut: boolean;       // [M — Yuki knocked off cliff in canon]
+} {
+  if (bothActive && thermalPrimed && qteHit) {
+    return {
+      spinDelta:       -55,
+      dmgMult:          2.40,   // [M — combined E=2.345J physical base]
+      lockMs:           300,
+      powerCost:          0,    // cost drawn from both beys' angular momentum, not power meter
+      fireballRadius:   150,    // [M]
+      aoeRingOut:       true,   // [M — Yuki cliff canon]
+    };
+  }
+  if (bothActive && thermalPrimed) {
+    return {
+      spinDelta:    -35,
+      dmgMult:       1.80,      // [M partial]
+      lockMs:        200,
+      powerCost:       0,
+      fireballRadius:  80,
+      aoeRingOut:    false,
+    };
+  }
+  return {
+    spinDelta:    -15,
+    dmgMult:       1.10,
+    lockMs:         50,
+    powerCost:       0,
+    fireballRadius:  0,
+    aoeRingOut:    false,
+  };
+}
+// Physical base: E_combined=2.345J, Q_retained≈1.04W (Cases 816, 1583).
+// Fireball, dmgMult>1.5, aoeRingOut are BeySpirit [M]. powerCost=0: energy from angular momentum.
+```
+
+| Scenario | spinDelta | dmgMult | fireballRadius | ringOut |
+|----------|-----------|---------|----------------|---------|
+| Both + primed + QTE | −55 each | ×2.40 [M] | 150mm | yes |
+| Both + primed, no QTE | −35 each | ×1.80 [M] | 80mm | no |
+| Partial | −15 each | ×1.10 | — | no |
+
+Force state: `must_stay_near_partner` — Thermal Lacerta must remain within 60mm of Rock Zurafa during charge; separation disperses the thermal column and the move fails.
+
+## Case 1585 -- COMBO: Thermal Cross (↑←J) [mU·mL·J] — Derived from Case 1584 Heaven's Supreme Destruction Palm
+
+**Sequence:** moveUp → moveLeft → jump (↑ ← J)
+**Cost:** 25
+**Type restriction:** balanced or stamina (orbital positioning required)
+**Parent gimmick:** WA130 wing forced-convection column (Case 1583)
+
+**Thesis:** Thermal Cross compresses Heaven's Supreme Destruction Palm's dual-orbital approach into a single-bey combo. ↑ drives toward the upper bowl (building approach speed and WA130 wing centrifugal deployment), ← swings into a lateral sweep (wings at this orbital inflection point generate a brief convective turbulence burst over the contact zone), and J fires a single thermal-augmented strike. No fireball at combo level (single bey, no R145 cooperative heat source); the WA130 wing turbulence adds a scaled aerodynamic impulse to the strike. Against clustered opponents, the wing-turbulence cone incidentally contacts both without being true AoE (single swept arc).
+
+```typescript
+function thermalCross(
+  opponentClustered: boolean,  // two+ opponents within 30mm of each other
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    opponentClustered ? -20 : -14,
+      dmgMult:      opponentClustered ? 1.30 : 1.20,
+      lockMs:       100,
+      powerCost:    25,
+      ringOutBonus: 0.05,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.30× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+## Case 1586 -- [GIMMICK]: Draciel V / Draciel V2 — Turtle AR Hydrodynamic Impeller & V2 Blade Upgrade (Max Tate · Draciel V / Draciel V2) [EXTENDS Cases 1492–1494]
+
+**Part:** Draciel V Attack Ring (AR) — four-wing turtle shell hydrodynamic impeller generating radial water-wave thrust + Draciel V2 AR upgraded blade profile (+25% wave momentum); physical basis of Heavy Viper Wall (Case 1587). EXTENDS Gravity Control (Cases 1492–1494, Draciel G, MFB-era). This case covers the earlier plastic-gen Draciel V/V2 with a distinct wave-burst (vs Draciel G's sustained orbital drain) mechanism.
+**Assembly:** Draciel V / Draciel V2 (plastic generation, Max Tate, V-Force / G-Revolution eras) — m≈32–33g, ω₀=628 rad/s
+**Tags:** plastic-gen, draciel-V, draciel-V2, turtle-AR, hydrodynamic, wave-burst, ring-out, extends-1492
+
+**Distinction from Cases 1492–1494 (Gravity Control, Draciel G)**
+
+Case 1492 = Gravity Control: Draciel G (MFB-era), counter-rotation orbital waterspout, sustained stamina drain.
+Case 1586 = Heavy Viper Wall: Draciel V/V2 (plastic-gen), single high-amplitude wave burst + ring-out carrier. Distinct AR design (four-wing turtle shell vs Draciel G's reinforced defense wings), different generation, different mechanism.
+
+**Draciel V AR — Four-Wing Turtle Shell Impeller**
+
+Four symmetric wings modelled on sea turtle shell plates; each acts as a hydrodynamic impeller blade [M — BeySpirit provides water]:
+  r_AR = 20 mm, m_AR ≈ 8 g; wing chord c = 15 mm, wing span h_V = 8 mm
+  A_wing = c × h = 0.015 × 0.008 = 1.20e-4 m² per wing
+
+  v_wing_tip = ω₀ × r_AR = 628 × 0.020 = **12.56 m/s**
+  F_hydro per wing = ½ × ρ_water × C_L × A_wing × v² = ½ × 1000 × 1.0 × 1.20e-4 × 12.56² = **9.47 N** [CALCULATED]
+  Total 4-wing thrust: **37.9 N** [CALCULATED — physically real hydrodynamic force in water]
+  Volume flow: Q = 2π × r_AR × h_V × v_tip / 4 = 2π × 0.020 × 0.008 × 12.56 / 4 = **2.51 × 10⁻³ m³/s** [CALCULATED]
+  Wave momentum (50ms burst): p_wave = ρ_water × Q × c_wave × t = 1000 × 2.51e-3 × 0.140 × 0.050 = **0.0176 kg·m/s** [CALCULATED]
+    c_wave = √(g × h_water) = √(9.81 × 0.002) = 0.140 m/s (shallow water wave)
+
+**Draciel V2 upgrade (G-Revolution AR)**
+
+V2 AR has deeper blade faces: h_V2 = 10 mm (vs 8 mm):
+  F_hydro_V2 per wing = 9.47 × (10/8) = **11.84 N** → total **47.3 N** (+25%) [CALCULATED]
+  p_wave_V2 = 0.0176 × (10/8) = **0.022 kg·m/s** per 50ms burst [CALCULATED]
+
+G-Revolution canon confirms "Heavy Viper Wall gained strength" — physically grounded by V2 AR geometry improvement.
+
+| Version | AR thrust | Wave momentum (50ms) | I_total | L₀ |
+|---------|-----------|----------------------|---------|-----|
+| V (V-Force) | 37.9 N | 0.0176 kg·m/s | 4.20e-6 kg·m² | 2.638e-3 kg·m²/s |
+| V2 (G-Rev) | 47.3 N | 0.022 kg·m/s | 4.35e-6 kg·m² | 2.732e-3 kg·m²/s |
+
+## Case 1587 -- [SPECIAL]: Heavy Viper Wall (Max Tate · Draciel V / Draciel V2, Beyblade V-Force / G-Revolution)
+
+**Source:** Beyblade V-Force (Draciel V): defeated Alan McKenzie and Burning Kerbeous. Beyblade G-Revolution (Draciel V2): defeated Emily and Julia in tournament — canon confirms V2 version is noticeably stronger.
+**Classification:** Hydrodynamic wave burst; drown phase (spin drain) + wave-carrier ring-out
+**Gimmick base:** Draciel V/V2 turtle-shell AR hydrodynamic impeller (Case 1586)
+**Compatible beys:** Draciel V / Draciel V2 (Max Tate). The 4-wing turtle AR hydrodynamic pump (Case 1586) is the physical basis; BeySpirit provides the water volume [M]. Any plastic-gen bey with a 4-wing balanced AR at r ≥ 18 mm can generate a scaled wave; Max's Draciel water spirit provides the full amplitude.
+
+### Move Description
+
+Draciel spins at stadium center; BeySpirit conjures the water field [M]. Four-wing AR pumps Q = 2.51 L/s radially outward (Case 1586). Drown phase: a standing wave ring submerges opponents; viscous coupling drains spin (τ_visc = 5.17e-8 N·m physical — BeySpirit amplifies water depth [M] for in-game spin drain). Fly phase: the wave collapses and bowl geometry redirects it outward — wave carrier (p_wave = 0.0176/0.022 kg·m/s per 50ms burst) carries opponents toward the ring-out boundary. V2 physical Δv improvement: 0.0176/0.027 = 0.65 m/s (V) → 0.022/0.027 = 0.81 m/s (V2) — both below ~1.0 m/s ring-out threshold physically; BeySpirit amplifies [M] for full ring-out. Wave Launch QTE (300ms): time the wave crest.
+
+```typescript
+function heavyViperWall(
+  v2Version: boolean,         // true = Draciel V2 (+25% wave momentum, Case 1586)
+  drowningPhaseHit: boolean,  // opponent submerged in standing wave (drown phase)
+  qteHit: boolean             // Wave Launch QTE within 300ms
+): {
+  spinDelta: number;
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  drownSpinDrain: number;   // additional drown-phase drain [M]
+  ringOutForce: number;
+} {
+  const waveBonus = v2Version ? 1.25 : 1.0;  // V2 +25% physical wave momentum (Case 1586)
+
+  if (drowningPhaseHit && qteHit) {
+    return {
+      spinDelta:      -20,
+      dmgMult:         1.55 * waveBonus,          // V: ×1.55; V2: ×1.94 [M]
+      lockMs:          150,
+      powerCost:       85,
+      drownSpinDrain:  v2Version ? -25 : -18,     // [M]
+      ringOutForce:    v2Version ? 0.80 : 0.65,   // [M]
+    };
+  }
+  if (qteHit) {
+    return {
+      spinDelta:    -15,
+      dmgMult:       1.30 * waveBonus,             // V: ×1.30; V2: ×1.63 [M]
+      lockMs:        100,
+      powerCost:     85,
+      drownSpinDrain: 0,
+      ringOutForce:  v2Version ? 0.55 : 0.45,
+    };
+  }
+  return {
+    spinDelta:    -10,
+    dmgMult:       1.05,
+    lockMs:          0,
+    powerCost:      85,
+    drownSpinDrain:  0,
+    ringOutForce:   0.20,
+  };
+}
+// Physical base: v_tip=12.56 m/s, Q=2.51 L/s, p_wave V=0.0176/V2=0.022 kg·m/s (Case 1586).
+// waveBonus=1.25 (V2) physically grounded. Full dmgMult and ringOutForce are [M].
+```
+
+| Scenario | spinDelta | dmgMult | drownDrain | ringOut |
+|----------|-----------|---------|------------|---------|
+| V + drown + QTE | −20 | ×1.55 [M] | −18 | 0.65 |
+| V2 + drown + QTE | −20 | ×1.94 [M] | −25 | 0.80 |
+| QTE only, V | −15 | ×1.30 | — | 0.45 |
+| QTE only, V2 | −15 | ×1.63 [M] | — | 0.55 |
+| Miss | −10 | ×1.05 | — | 0.20 |
+
+Force state: `must_hold_center` — off-center conjuration causes asymmetric wave; ringOutForce halved.
+
+## Case 1588 -- COMBO: Viper Surge (↑↑J) [mU·mU·J] — Derived from Case 1587 Heavy Viper Wall
+
+**Sequence:** moveUp → moveUp → jump (↑ ↑ J)
+**Cost:** 15
+**Type restriction:** defense or stamina
+**Parent gimmick:** Draciel V/V2 AR hydrodynamic wave pumping (Case 1586)
+
+**Thesis:** Viper Surge compresses Heavy Viper Wall's wave-buildup orbital approach into a combo. ↑↑ drives Draciel toward the upper bowl wall twice, building orbital speed (the repeated upward drive mimics the centripetal spin-up that feeds the AR hydrodynamic pump at combo intensity), and J fires a high-speed tangential AR contact at the bowl lip. No BeySpirit water at combo level; the "wave" is the orbital momentum built over ↑↑ converted into an AR impulse at the bowl-wall position. Against opponents near the bowl wall, the reflective geometry adds a rebound ring-out bonus. Low cost (15) reflects the early V-Force era where Max's BeySpirit was developing.
+
+```typescript
+function viperSurge(
+  orbitalSpeedHigh: boolean,  // ↑↑ approach built >80% max orbital velocity
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    orbitalSpeedHigh ? -16 : -10,
+      dmgMult:      orbitalSpeedHigh ? 1.25 : 1.15,
+      lockMs:        80,
+      powerCost:    15,
+      ringOutBonus: orbitalSpeedHigh ? 0.10 : 0.03,
+    };
+  }
+  return { spinDelta: -6, dmgMult: 1.05, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.25× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+## Case 1589 -- [GIMMICK]: Krusher Doomscizor 2Vortex Hunter — Hunter Rubber Tip Floor-Grinding Tribology & Doomscizor Unbalanced Layer Wobble Frequency (EXTENDS Cases 1155 & 1358)
+
+**Part:** Hunter Performance Tip in floor-grinding mode (flat rubber contact → friction-to-linear-acceleration tribological conversion) + Doomscizor Ring asymmetric mass unbalanced-layer oscillation analysis; basis of Hunt Launch (Case 1590). EXTENDS Case 1155 (Doomscizor sliding scythe sequential strike) and Case 1358 (wall-ride gravity dive, Hunter tip in wall-contact mode). This case analyses a DISTINCT Hunter tip configuration: horizontal floor-grinding (vs Case 1358's angled wall-climbing), and the Doomscizor Ring's unbalanced eccentric mass frequency (not covered in Case 1155's spring-reload analysis).
+**Assembly:** Krusher Doomscizor 2Vortex Hunter (Daigo Kurogami, Beyblade Burst Turbo) — m=43.5g (Case 1358 baseline), ω₀=720 rad/s
+**Tags:** burst-turbo, krusher-doomscizor, hunter-tip, grinding, tribological, unbalanced-layer, wobble, extends-1155, extends-1358
+
+**Distinction from Cases 1155 and 1358**
+
+Case 1155 = Doomscizor sliding scythe spring-reload sequential double-hit (GIMMICK).
+Case 1358 = Hunter tip in WALL-CLIMB configuration (angled contact, Vortex Frame upward lift).
+Case 1589 = Hunter tip in FLOOR-GRINDING configuration (flat contact, friction-to-speed boost) + Doomscizor eccentric mass wobble frequency (new — not in Case 1155's spring analysis).
+
+**Hunter Tip — Floor-Grinding Tribological Speed Boost**
+
+From Case 1358: Hunter = semi-sharp rubber tip with aggressive movement. In Hunt Launch mode, the rubber face is pressed flat against the stadium floor (not the angled wall contact of Case 1358):
+  r_Hunter_flat ≈ 7 mm, μ_Hunter_rubber ≈ 0.80 (rubber on polycarbonate stadium)
+  F_N = m × g = 0.0435 × 9.81 = **0.427 N** (floor-grinding, no Vortex Frame lift in horizontal mode)
+
+  F_drive = μ_Hunter × F_N = 0.80 × 0.427 = **0.342 N** [CALCULATED]
+  a_linear = F_drive / m = 0.342 / 0.0435 = **7.86 m/s²** [CALCULATED — physically grounded speed boost]
+  Δv over t = 0.5s grinding: 7.86 × 0.5 = **3.93 m/s** velocity gain [CALCULATED]
+
+This tribological pathway converts spin-energy into linear translation through floor friction — distinct from the orbital-speed approach of Case 1358. At ω₀ = 720 rad/s, the Hunter tip rubber engagement sustains F_drive for several seconds before spin drops below the activation threshold.
+
+Spark generation: kinetic friction energy dissipated as heat at the rubber-stadium interface:
+  P_heat = F_drive × v_contact = 0.342 × (7 × π × 720 / 60) = 0.342 × 527 = **180 W** locally at the tip [M — rubber would not spark; BeySpirit generates the visible dark-purple spark trail]
+  Physical: P_heat = μ × F_N × v_slip (rubber deformation heating) ≈ a few watts — no actual sparks from rubber on polycarbonate.
+
+**Doomscizor Ring — Unbalanced Layer Wobble Frequency**
+
+From Case 1358: Doomscizor Layer mass = 9.0 g (ring) + 4.5 g (Krusher chip). The scythe-blade protrusions are asymmetric — heavier on one side:
+  Estimated CM offset Δr ≈ 1.5 mm from spin axis
+  m_ring = 9.0 g (Doomscizor ring only)
+
+  F_eccentric = m_ring × ω² × Δr = 0.009 × 720² × 0.0015 = **7.0 N** at ω₀ [CALCULATED]
+
+Oscillation frequency: f = ω₀ / (2π) = 720 / 6.283 = **114.6 Hz** [CALCULATED]
+
+At 114.6 Hz the attack vector rotates 115 times per second — well beyond human reaction limit (~20 Hz). A defensive player cannot reactively dodge an attack whose angle changes 115 times/second. At medium spin (ω = 360 rad/s): f = 57.3 Hz, F_eccentric = 1.75 N — wobble AMPLITUDE increases (lower gyroscopic stability at ω/2 magnifies nutation), making Doomscizor visually MORE unpredictable at mid-spin despite lower eccentric force.
+
+Impact momentum at v_approach = 3.5 m/s (after 0.45s grind):
+  p_impact = m × v = 0.0435 × 3.5 = **0.152 N·s** [CALCULATED]
+  Δv_opponent (27g): 0.152 / 0.027 = **5.63 m/s** [CALCULATED — well above ring-out threshold]
+
+## Case 1590 -- [SPECIAL]: Hunt Launch (Daigo Kurogami · Krusher Doomscizor 2Vortex Hunter, Beyblade Burst Turbo)
+
+**Source:** Beyblade Burst Turbo anime; English: "Hunt Launch"; Japanese: ハントシュート (Hunt Shoot). Special move of Daigo Kurogami. Hunter Performance Tip grinds against stadium for speed boost; Doomscizor unbalanced layer creates unpredictable movement. Dark purple BeySpirit trail marks the attack path.
+**Classification:** Tribological floor-grinding speed burst + unbalanced wobble approach unpredictability; linear strike
+**Gimmick base:** Hunter rubber tip floor-grinding + Doomscizor eccentric mass oscillation (Case 1589); Hunter wall-climb from Case 1358 is complementary but distinct
+**Compatible beys:** Krusher Doomscizor 2Vortex Hunter (Daigo Kurogami). Requires rubber flat-grinding Performance Tip (r_contact ≥ 6 mm, μ_rubber ≥ 0.70) + unbalanced Energy Layer (CM offset Δr ≥ 1 mm) for 114.6 Hz approach unpredictability. Daigo's BeySpirit amplifies the friction energy into the visible dark purple trail [M] and sustains grind beyond physical limits.
+
+### Move Description
+
+Doomscizor engages Hunter tip grinding mode: rubber face flat to stadium floor, generating a_linear = 7.86 m/s² linear acceleration (Case 1589). After 0.5s grinding, Doomscizor reaches v ≈ 3.93 m/s toward target; p_impact = 0.152 N·s at v = 3.5 m/s. The Doomscizor Ring's 114.6 Hz eccentric wobble makes the approach vector physically unresponsive to dodge — the direction changes 115 times/second (Case 1589). BeySpirit amplifies friction heat to a dark purple energy trail [M] that marks the attack path but is generated too rapidly for evasion. QTE: Edge Grind Lock — player holds K within 250ms of Hunter tip ground-contact to maintain flat rubber face and sustain full a = 7.86 m/s².
+
+```typescript
+function huntLaunch(
+  grindLockHeld: boolean,   // K held within 250ms — Hunter tip stays flat; full a_grind sustained
+  highSpin: boolean,        // ω > 70% max (sufficient E_kinetic for sustained grind, Case 1589)
+  wobbleActive: boolean     // Doomscizor eccentric layer engaged (40–80% spin range, peak unpredictability)
+): {
+  spinDelta: number;
+  dmgMult: number;
+  lockMs: number;
+  powerCost: number;
+  approachSpeedMms: number; // mm/s velocity gain from Hunter grinding (physically grounded, Case 1589)
+  hitChanceBonus: number;   // added hit probability from 114.6Hz wobble (opponent dodge reduced)
+} {
+  if (highSpin && grindLockHeld) {
+    return {
+      spinDelta:         -40,
+      dmgMult:            1.70,   // [M — dark-trail BeySpirit amplification; p_impact=0.152 N·s physical]
+      lockMs:             200,
+      powerCost:           90,
+      approachSpeedMms:  3930,    // 3.93 m/s = 0.5s grind (Case 1589)
+      hitChanceBonus:    wobbleActive ? 0.55 : 0.10,  // 114.6Hz wobble: 55% dodge-reduction
+    };
+  }
+  if (highSpin) {
+    return {
+      spinDelta:        -25,
+      dmgMult:           1.40,
+      lockMs:            100,
+      powerCost:          90,
+      approachSpeedMms: 2000,     // partial grind (no lock — Hunter tip bounces)
+      hitChanceBonus:   wobbleActive ? 0.55 : 0.10,
+    };
+  }
+  return {
+    spinDelta:        -15,
+    dmgMult:           1.15,
+    lockMs:             50,
+    powerCost:          90,
+    approachSpeedMms:  500,       // low-spin grind — minimal acceleration
+    hitChanceBonus:    0.05,
+  };
+}
+// Physical base: a_grind=7.86 m/s², p_impact=0.152 N·s, Δv_opp=5.63 m/s at 27g (Case 1589).
+// approachSpeedMms and hitChanceBonus at 114.6Hz are physically grounded.
+// dmgMult>1.5 and dark trail are BeySpirit [M]; spinDelta=-40 covers flywheel cost.
+```
+
+| Scenario | spinDelta | dmgMult | approachSpeed | hitBonus |
+|----------|-----------|---------|---------------|----------|
+| High + lock + wobble | −40 | ×1.70 [M] | 3930 mm/s | +0.55 |
+| High + lock, no wobble | −40 | ×1.70 [M] | 3930 mm/s | +0.10 |
+| High, no lock | −25 | ×1.40 | 2000 mm/s | +0.55/0.10 |
+| Low spin | −15 | ×1.15 | 500 mm/s | +0.05 |
+
+Force state: `must_maintain_grind` — if Doomscizor is deflected or launched airborne before reaching the target, the speed build collapses and the move degrades to low-spin result.
+
+## Case 1591 -- COMBO: Hunt Sweep (↑→J) [mU·mR·J] — Derived from Case 1590 Hunt Launch
+
+**Sequence:** moveUp → moveRight → jump (↑ → J)
+**Cost:** 25
+**Type restriction:** attack or balanced (Hunter tip aggressive drift; heavy defense beys lack the orbital agility for ↑→ diagonal approach)
+**Parent gimmick:** Hunter tip tribological speed boost (Case 1589)
+
+**Thesis:** Hunt Sweep compresses Hunt Launch's grind-and-strike into a diagonal-approach combo. ↑ drives Doomscizor toward the upper bowl arc (building orbital speed while Hunter tip begins preliminary floor contact at combo intensity — a shorter grind than the full 0.5s special), → swings into a rightward cut (the directional change replicates the Doomscizor layer's single angle-shift at combo scale — one planned direction change vs the 114.6 Hz special), and J fires the strike at peak diagonal momentum. The diagonal ↑→ approach vector catches opponents who expect a cardinal-direction strike. Against wall-adjacent opponents the ↑ approach stores additional wall-rebound energy that feeds the → cut.
+
+```typescript
+function huntSweep(
+  diagonalApproach: boolean,  // both ↑ and → inputs registered before J (non-cardinal vector)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    diagonalApproach ? -19 : -12,
+      dmgMult:      diagonalApproach ? 1.28 : 1.18,
+      lockMs:       120,
+      powerCost:    25,
+      ringOutBonus: diagonalApproach ? 0.12 : 0.04,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.28× ≤ 1.5 ✓ | lockMs 120 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+*Cases continue from Case 1592 as further franchise moves are provided.*
 

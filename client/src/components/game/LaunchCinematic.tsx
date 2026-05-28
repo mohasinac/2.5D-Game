@@ -31,7 +31,7 @@ export default function LaunchCinematic({
 
   return (
     <div
-      className="fixed inset-0 z-50 pointer-events-none overflow-hidden flex items-center justify-center"
+      className="fixed inset-0 z-[80] pointer-events-none overflow-hidden flex items-center justify-center"
       style={{
         opacity: fadeOut ? 0 : 1,
         transition: "opacity 500ms ease-out",

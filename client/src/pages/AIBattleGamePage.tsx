@@ -573,7 +573,7 @@ export function AIBattleGamePage() {
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/75 z-40">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/75 z-[80]">
           <div className="text-center">
             <p className="text-[14px] font-semibold mb-1 text-theme-yellow">Game {gameEndData.gameNumber} Complete</p>
             <p className="text-[22px] font-black text-theme-text">
@@ -597,7 +597,7 @@ export function AIBattleGamePage() {
 
       {/* Series-end / single-game finished overlay */}
       {(gameState?.status === "series-finished" || gameState?.status === "finished" || seriesEndData) && !gameEndData && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-20">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-[80]">
           <div className="text-center">
             <div className="text-[72px] mb-4">
               {(seriesEndData?.winner ?? gameState?.winner) === userId ? "🏆" : isSpectating ? "🏁" : "💀"}
@@ -707,7 +707,7 @@ export function AIBattleGamePage() {
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/85 z-20">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/85 z-[80]">
           <div className="text-center">
             {connectionState !== "error" ? (
               <div

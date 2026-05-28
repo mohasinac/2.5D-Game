@@ -45,7 +45,7 @@ export default function BurstOverlay({
   });
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 z-[80] pointer-events-none overflow-hidden">
       {/* Keyframe definitions */}
       <style>{`
         @keyframes burst-flash {

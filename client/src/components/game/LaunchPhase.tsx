@@ -558,7 +558,7 @@ export function LaunchPhase({
   return (
     <div
       data-testid="launch-phase-overlay"
-      className="absolute inset-0 z-[55] flex flex-col items-center justify-center pointer-events-none select-none"
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center pointer-events-none select-none"
     >
       {/* World background */}
       {hasWorldBg && (

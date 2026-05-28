@@ -143,7 +143,7 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
   const barColor = error ? "#ef4444" : isDone ? "#22c55e" : activeColor;
 
   return (
-    <div data-testid="loading-progress" className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,#0a1428_0%,#050c18_100%)] text-theme-text p-8 overflow-hidden">
+    <div data-testid="loading-progress" className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,#0a1428_0%,#050c18_100%)] text-theme-text p-8 overflow-hidden">
       {/* Background particle dots (pure CSS, no JS) */}
       {[...Array(12)].map((_, i) => (
         <div key={i}
