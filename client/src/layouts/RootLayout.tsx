@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { SoundManager } from "@/game/audio/SoundManager";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
@@ -12,6 +13,10 @@ import toast from "react-hot-toast";
 const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai-battle/play", "/rpg/game", "/rpg/battle"];
 function isFullScreenGame(pathname: string) {
   return FULLSCREEN_GAME_PATHS.some(p => pathname.startsWith(p));
+}
+
+function isGameOrRpgRoute(pathname: string) {
+  return pathname.startsWith("/game") || pathname.startsWith("/rpg");
 }
 
 function AuthChip() {
@@ -59,9 +64,11 @@ export function RootLayout() {
     };
   }, []);
 
+  const showControls = isGameOrRpgRoute(location.pathname);
+
   return (
     <GameProvider>
-      <div className="min-h-screen bg-bg0 text-theme-text min-w-[400px]">
+      <div className="min-h-screen bg-bg0 text-theme-text min-w-[320px]">
         {IS_LOCAL && (
           <div className="fixed top-2 left-1/2 -translate-x-1/2 z-[200] bg-yellow-400 text-black px-2.5 py-0.5 rounded text-[11px] font-bold tracking-[0.05em] pointer-events-none">
             LOCAL · ws://localhost:2567
@@ -74,6 +81,7 @@ export function RootLayout() {
           </div>
         )}
         <Outlet />
+        {showControls && <TouchControlsGBLayout />}
       </div>
     </GameProvider>
   );

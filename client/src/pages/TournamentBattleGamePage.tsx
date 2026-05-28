@@ -27,7 +27,6 @@ import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 
@@ -259,7 +258,7 @@ export function TournamentBattleGamePage() {
       {showLoading && (
         <LoadingProgress
           currentStep={loadingStep}
-          stepProgress={loadingStep === "warmup-ready" ? 1 : connectionState === "connected" ? 0.5 : 0.2}
+          stepProgress={connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />
       )}
@@ -591,7 +590,6 @@ export function TournamentBattleGamePage() {
           </div>
         </div>
       )}
-      <TouchControlsGBLayout />
     </div>
   );
 }

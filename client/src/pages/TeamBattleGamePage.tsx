@@ -15,7 +15,6 @@ import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { CameraControls } from "@/components/game/CameraControls";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import type { ServerBeyblade, ServerGameState } from "@/types/game";
 import { TYPE_COLORS } from "@/types/game";
@@ -216,7 +215,7 @@ export function TeamBattleGamePage() {
       {showLoading && (
         <LoadingProgress
           currentStep={loadingStep}
-          stepProgress={loadingStep === "warmup-ready" ? 1 : connectionState === "connected" ? 0.5 : 0.2}
+          stepProgress={connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />
       )}
@@ -268,7 +267,6 @@ export function TeamBattleGamePage() {
           {possessionMsg}
         </div>
       )}
-      <TouchControlsGBLayout />
     </div>
   );
 }

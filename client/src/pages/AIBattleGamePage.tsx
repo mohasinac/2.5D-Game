@@ -29,7 +29,6 @@ import { CollisionQTEOverlay } from "@/components/game/CollisionQTEOverlay";
 import { SplitScreenCinematic } from "@/components/game/SplitScreenCinematic";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
@@ -337,7 +336,7 @@ export function AIBattleGamePage() {
       {showLoading && (
         <LoadingProgress
           currentStep={loadingStep}
-          stepProgress={loadingStep === "warmup-ready" ? 1 : connectionState === "connected" ? 0.5 : 0.2}
+          stepProgress={connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />
       )}
@@ -715,7 +714,6 @@ export function AIBattleGamePage() {
           </div>
         </div>
       )}
-      <TouchControlsGBLayout />
     </div>
   );
 }

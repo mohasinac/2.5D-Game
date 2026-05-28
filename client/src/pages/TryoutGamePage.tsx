@@ -16,7 +16,6 @@ import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import {
   LAUNCH_DURATION_S, LAUNCH_MAX_POWER, LAUNCH_MAX_TILT,
   LAUNCH_TILT_RATE, LAUNCH_POSITION_RATE, LAUNCH_GRACE_POWER,
@@ -567,7 +566,6 @@ export function TryoutGamePage() {
           </div>
         </div>
       )}
-      <TouchControlsGBLayout />
     </div>
   );
 }
