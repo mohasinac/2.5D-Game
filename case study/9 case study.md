@@ -31365,3 +31365,321 @@ Even Disc 5's KO resistance and Star's LAD cannot compensate for this burst frag
 
 ### Assembly Verdict
 Shelter Regulus 5Star Tower is a combination where all four gimmick-bearing parts (Layer claw, Disc is passive, Frame, Driver Tower) either fail to deliver their designed benefit or actively harm performance. The only competitive application is casual/introductory play. For any competitive Balance or Attack role, this combination should be rebuilt with a stronger-toothed Layer, a heavier/smoother driver, and non-gimmick components.
+
+## Case 1521 -- Energy Layer: Greatest Raphael (Dynamite Battle, DB)
+
+**System:** Dynamite Battle (DB) -- single-piece non-customizable Layer (combines DB Core + Blade + Armor into one moulded unit; first non-customizable Layer since Bigbang Genesis, 2020)
+**Generation:** Burst DB, ~2021 (Takara Tomy; also sold as Glory Regnar internationally)
+**Mass:** 30.7 g
+**Type:** Balance (rounds/stamina body, Attack-to-Defense Overdrive gimmick)
+**Spin direction:** Right-Spin
+
+---
+
+### Geometry and Mass Model
+
+Greatest Raphael is a round Layer with eight perimeter protrusions. Six are spike-like (the "Greatest Armor"), arranged three per half-arc. Two metal protrusions serve the Metal Burst Lock. The Overdrive System moves all eight features simultaneously: at high spin, centrifugal force holds the spikes outward (Attack Mode, OWD); as spin decays, spikes swing upward toward the spin axis (Defense Mode, CWD).
+
+**Sub-component breakdown:**
+
+| Sub-part | Mass | Position -- Attack | Position -- Defense |
+|----------|------|-------------------|-------------------|
+| Body (fixed plate + central face + internal frame) | 23.5 g | annular r_i = 4 mm, r_o = 36 mm | same (fixed) |
+| Greatest Armor arms (6 PC spikes) | 4.5 g | ring at r = 42 mm (extended outward) | ring at r = 26 mm (retracted toward axis) |
+| Metal Burst Lock protrusions (2 metal tabs) | 2.7 g | ring at r = 36 mm (seated in disc groove) | ring at r = 21 mm (obstructing disc groove) |
+
+Mass total: 23.5 + 4.5 + 2.7 = **30.7 g (check)**
+
+---
+
+### Moment of Inertia
+
+**Attack Mode (high-spin, arms extended):**
+
+I_body = (1/2) x 0.0235 x (0.004^2 + 0.036^2) = (1/2) x 0.0235 x 1.312e-3 = **1.541e-5 kg*m^2**
+
+I_arm_atk = 4.5e-3 x (0.042)^2 = **7.938e-6 kg*m^2**
+
+I_lock_atk = 2.7e-3 x (0.036)^2 = **3.499e-6 kg*m^2**
+
+**I_GR_attack = 1.541e-5 + 7.938e-6 + 3.499e-6 = 2.685e-5 kg*m^2**
+
+---
+
+**Defense Mode (low-spin, arms retracted/vertical):**
+
+I_arm_def = 4.5e-3 x (0.026)^2 = **3.042e-6 kg*m^2**
+
+I_lock_def = 2.7e-3 x (0.021)^2 = **1.191e-6 kg*m^2**
+
+**I_GR_defense = 1.541e-5 + 3.042e-6 + 1.191e-6 = 1.964e-5 kg*m^2**
+
+---
+
+**Delta_I = 2.685e-5 - 1.964e-5 = 7.21e-6 kg*m^2 (-26.8% at transition)**
+
+---
+
+### Overdrive System -- Physics of Mode Change
+
+The Overdrive System is centrifugally driven. Arms remain extended while centrifugal force > arm spring restoring force. Transition omega_t ~= 200 rad/s (estimated from "latter half of battle" description; well below battle window omega_battle = 420 rad/s at omega_0 = 700 rad/s).
+
+By angular momentum conservation (Layer only, isolated):
+
+L = I_attack x omega_t = I_defense x omega_after
+
+omega_after = (2.685e-5 x 200) / 1.964e-5 = **273.4 rad/s (+36.7%)**
+
+*Note: this layer-only figure illustrates the raw delta_I effect. For the full assembly see Case 1524.*
+
+At assembly level (adding Over and HXe+'):
+omega_after_assembly = (I_atk_total x 200) / I_def_total = **(Case 1524 --> 225.7 rad/s, +12.9%)**
+
+The spin boost is smaller at assembly level because Over disc (I_Over = 3.520e-5) dominates the total I and does not change; the fractional delta_I of the system is only -11.4%.
+
+**Why the spin boost matters against Opposite-Spin (Fafnir-type):**
+Fafnir-type absorbers spin-equalize by applying a reverse torque. At omega_t, Greatest Raphael omega suddenly increases by +12.9% before the absorber can re-equalize, effectively resetting the equalization rate and buying extra spin cycles.
+
+---
+
+### Metal Burst Lock
+
+Two metal tabs slide from r = 36 mm --> r = 21 mm as Overdrive activates, physically obstructing the Disc-Layer interface groove.
+
+**Burst resistance:**
+
+- Standard medium-size locks (high spin, Attack Mode): tau_burst_std ~= **14 mN*m**
+- Metal Lock engaged (Defense Mode, omega < omega_t):
+  delta_I_lock = 2.7e-3 x (0.036^2 - 0.021^2) = 2.7e-3 x (1.296e-3 - 4.41e-4) = 2.302e-6 kg*m^2
+  Additional groove obstruction torque: delta_tau_ML ~= **+6 mN*m**
+  tau_burst_defense ~= **20 mN*m** (near-strong Burst resistance, activates automatically at low spin)
+
+---
+
+### Competitive Notes
+
+**Vs. Opposite-Spin:** Primary competitive use. Overdrive spin boost at omega_t + Metal Lock + CWD (improved tilt stability at low spin) = sustained Spin Equalization platform. Recommended pairing: Mobius or Drift (Stamina).
+
+**Vs. Same-Spin:** Layer is only 30.7 g. Typical DB Layers with separate Armor pieces are heavier. Greatest Raphael is outclassed on angular momentum against same-spin heavy OWD combinations.
+
+**Overdrive arm interruption:** If the Armor arm is struck during mid-transition, only one side or neither activates -- asymmetric CWD (wobble risk) and partial Metal Lock (reduced tau_burst_defense).
+
+---
+
+## Case 1522 -- Forge Disc: Over (Dynamite Battle, DB)
+
+**System:** Dynamite Battle (DB) Forge Disc
+**Mass:** 33.7 g
+**Profile:** Circular (homage to Oval and Disc 0); one of the heaviest Forge Discs
+
+---
+
+### Geometry
+
+Over is a smooth circular disc with no protrusions or internal cavities that reduce outer mass. Its smooth perimeter maximises both OWD (Outward Weight Distribution) and LAD (Life-After-Death -- no edges to catch stadium walls during final spin-out roll).
+
+| Parameter | Value |
+|-----------|-------|
+| r_inner (bore) | 8 mm |
+| r_outer | 45 mm |
+| Profile | Smooth annular -- no ridges, no tabs |
+
+**I_Over = (1/2) x 0.0337 x (0.008^2 + 0.045^2)**
+**= (1/2) x 0.0337 x (6.4e-5 + 2.025e-3)**
+**= (1/2) x 0.0337 x 2.089e-3**
+**= 3.520e-5 kg*m^2**
+
+*(r_o = 45 mm validated against AstralSpriggan Over Quattro-0 I_total = 5.212e-5 -- inferred Over contribution from layer + driver residual.)*
+
+---
+
+### Comparison with Other Heavy DB Discs
+
+| Disc | Mass | I | Notes |
+|------|------|---|-------|
+| Disc 0 (reference) | 25.2 g | ~2.097e-5 | symmetric 0-shape |
+| Karma | 29.2 g | 2.545e-5 | circular with ridges, r_eff ~= 41 mm |
+| Giga | 32.8 g | ~3.371e-5 | circular with surface ribs |
+| Over | 33.7 g | 3.520e-5 | smooth circular, max OWD and LAD |
+
+Over exceeds Giga by +4.4% in I despite only +2.7% in mass, confirming its optimised circular mass placement.
+
+**Fractional OWD vs Disc 0:**
+I_Over / I_0 = 3.520e-5 / 2.097e-5 = **1.679 (+67.9% more I than Disc 0)**
+
+---
+
+### Competitive Notes
+
+Over pairs with any Layer type but synergises particularly well with spin-equalization Layers because: (1) high I_disc slows the rate of spin decay during equalization battles; (2) LAD profile extends final-stage stability.
+
+Over is the Disc of choice whenever maximum OWD + LAD is required regardless of bey type.
+
+---
+
+## Case 1523 -- Performance Tip: High Xtend+' (DB, Dash variant)
+
+**System:** Dynamite Battle (DB), Dash (') spring
+**Mass:** 9.3 g
+**Variant context:** High Xtend+' is a Dash variant of Xtend+, adding: (a) increased height vs. standard Xtend+, (b) stronger Dash spring for higher Burst resistance.
+
+---
+
+### Structure
+
+High Xtend+' contains the adjustable "Xtend Chip" (Ekusutendo Chippu) that clicks between three modes. The chip repositions within the housing, changing the contact point geometry:
+
+| Mode | Contact geometry | mu (est.) | r_contact | Primary use |
+|------|-----------------|-----------|-----------|-------------|
+| Attack | Wide hollow flat, ~= Zephyr diameter | 0.25 | 8 mm | Aggressive movement, flower pattern |
+| Defense | Low-angle stepped cone | 0.05 (cone primary), 0.15 (step edge brief) | 1.5 mm cone, 8 mm edge | Stadium-bank counterattack attempt |
+| Stamina | Low-angle cone (Trans profile, lower height) | 0.04 | 2 mm | Spin retention -- best of three modes |
+
+---
+
+### Moment of Inertia
+
+The tip body is a compact cylinder housing the spring and chip mechanism. Mode changes affect only the contact point geometry, not the tip mass distribution.
+
+I_HXe+' = (1/2) x 0.0093 x (0.006^2 + 0.015^2)
+= (1/2) x 0.0093 x (3.6e-5 + 2.25e-4)
+= (1/2) x 0.0093 x 2.610e-4
+= **1.214e-6 kg*m^2**
+
+---
+
+### Spin Decay per Mode (reference: 73.7 g assembly, I_total ~= 6.327e-5 kg*m^2, omega_0 = 700 rad/s)
+
+**Attack Mode (r = 8 mm, mu = 0.25):**
+tau = 0.25 x 0.0737 x 9.81 x 0.008 = **1.446e-3 N*m**
+d_omega/dt = 1.446e-3 / 6.327e-5 = 22.86 rad/s^2
+t_stall ~= 700 / 22.86 = **30.6 s** (highly aggressive; short operational window)
+
+**Defense Mode (primary cone, r = 1.5 mm, mu = 0.05):**
+tau_primary = 0.05 x 0.0737 x 9.81 x 0.0015 = **5.425e-5 N*m**
+*(Step edge engages briefly at high stadium position, adding transient burst force; plastic edge, not rubber -- minimal sustained effect.)*
+
+**Stamina Mode (r = 2 mm, mu = 0.04):**
+tau = 0.04 x 0.0737 x 9.81 x 0.002 = **5.784e-5 N*m**
+t_stall ~= (see full assembly, Case 1524) -- best of three modes.
+
+*Stamina Mode described as comparable to Zone+Z and Bearing in LAD profile and low-friction cone geometry.*
+
+---
+
+### Dash Spring
+
+Estimated k_Dash ~= 1.25 x k_std. Raises burst force threshold:
+delta_tau_Dash ~= **+2.5 mN*m** above standard Xtend+ burst resistance.
+
+Combined with Greatest Raphael medium locks (14 mN*m) and Metal Lock (+6 mN*m):
+tau_burst_total (Defense Mode) ~= 14 + 6 + 2.5 = **22.5 mN*m** (approaching strong-lock tier)
+
+---
+
+### LAD Profile
+
+High Xtend+' has a wide outer base. At final tilt (theta -> 90 deg), the flat base underside provides ground contact at r_base ~= 7 mm. Effective LAD radius comparable to Zone+Z (free-spin ring ~= 8 mm). LAD time is assembly-dependent; both tips reach similar final-stage roll duration due to comparable contact geometry.
+
+---
+
+## Case 1524 -- Full Assembly: Greatest Raphael Over High Xtend+' (Dynamite Battle)
+
+**Also sold as:** Glory Regnar Over High Xtend+'
+**System:** Dynamite Battle (DB), Takara Tomy, ~2021
+**Archetype:** Opposite-Spin Stamina / Spin Equalization (Stamina Mode); Balance with Defense sub-profile
+**Mass:** 30.7 + 33.7 + 9.3 = **73.7 g**
+**Spin:** Right-Spin, omega_0 = 700 rad/s
+
+---
+
+### Moment of Inertia Summary
+
+| Assembly State | I (kg*m^2) | Notes |
+|---------------|-----------|-------|
+| Attack Mode (high spin, arms extended) | **6.327e-5** | Layer 2.685e-5 + Over 3.520e-5 + HXe+' 1.214e-6 |
+| Defense Mode (low spin, arms retracted) | **5.606e-5** | Layer 1.964e-5 + Over 3.520e-5 + HXe+' 1.214e-6 |
+| Delta_I at Overdrive transition | 7.21e-6 | Layer gimmick only; Over and HXe+' unchanged |
+
+**L_0 (Attack Mode) = 6.327e-5 x 700 = 4.429e-2 N*m*s**
+
+*(Over disc contributes 55.6% of I_attack, establishing it as the primary angular momentum reservoir.)*
+
+---
+
+### Overdrive Transition (Full Assembly)
+
+At omega_t = 200 rad/s, Overdrive arms and Metal Burst Lock slide inward simultaneously.
+
+By angular momentum conservation (no energy input):
+
+L_before = I_attack x omega_t = 6.327e-5 x 200 = 1.265e-2 N*m*s
+
+omega_after = 1.265e-2 / 5.606e-5 = **225.7 rad/s (+12.9%)**
+
+The spin boost is +25.7 rad/s at assembly level. Reduced from layer-only boost (+73.4 rad/s) because Over disc large fixed I damps the fractional change.
+
+**Effect on Spin Equalization (Opposite-Spin scenario):**
+At omega_t, an opposing Fafnir absorber runs at its steady-state drain rate. The sudden +12.9% omega increase causes the effective spin differential to reverse briefly (GR faster than absorber equilibrium), interrupting the drain cycle for ~0.3-0.8 s. GR then decays again, but the interruption prolongs the equalization battle.
+
+**Mathematically, t_total (Stamina Mode) is unaffected by the Overdrive transition:**
+t_total = L_0 / tau = I_attack x omega_0 / tau = const (independent of I redistribution)
+Angular momentum is conserved through the transition; total spin time depends only on I_attack x omega_0 and friction torque.
+
+---
+
+### Spin Decay -- Stamina Mode
+
+tau_stam = 0.04 x 0.0737 x 9.81 x 0.002 = 5.784e-5 N*m
+
+**t_stall_stamina = L_0 / tau_stam = 4.429e-2 / 5.784e-5 = 765.5 s ~= 766 s**
+
+Phase breakdown:
+- Phase 1 (Attack Mode, 700 --> 200 rad/s): t_1 = 500 / (5.784e-5 / 6.327e-5) = 500 / 0.9143 = **546.9 s**
+- Overdrive fires: omega jumps 200 --> 225.7 rad/s
+- Phase 2 (Defense Mode, 225.7 --> 0 rad/s): t_2 = 225.7 / (5.784e-5 / 5.606e-5) = 225.7 / 1.032 = **218.7 s**
+- t_1 + t_2 = 546.9 + 218.7 = **765.6 s (check: matches L_0/tau directly)**
+
+Wobble threshold (Attack Mode): 0.40 x 700 = **280 rad/s**
+Effective wobble threshold (Defense Mode, CWD active): **~245 rad/s** (CWD shifts CoM toward axis, improving precession resistance)
+
+---
+
+### Spin Decay -- Attack Mode
+
+tau_atk = 0.25 x 0.0737 x 9.81 x 0.008 = 1.446e-3 N*m
+d_omega/dt = 1.446e-3 / 6.327e-5 = 22.86 rad/s^2
+
+**t_stall_attack = 700 / 22.86 = 30.6 s**
+
+Wide flat tip creates anti-banking pattern; operational window before self-ring-out is narrower than 30.6 s in practice.
+
+---
+
+### Burst Resistance Profile
+
+| Phase | tau_burst | Source |
+|-------|---------|--------|
+| High spin, Attack Mode | ~14 mN*m | Medium-size plastic locks |
+| Low spin, Defense Mode (omega < 200 rad/s) | ~22.5 mN*m | Medium locks + Metal Lock (+6) + Dash spring (+2.5) |
+
+Adaptive burst resistance: modest during Attack Mode contact phase, hardens dramatically in equalization territory. Vs. same-spin opponents: can be Burst at medium spin before Metal Lock activates. Vs. opposite-spin: by equalization phase, locks are near-strong tier.
+
+---
+
+### Competitive Verdict
+
+**Recommended combos:**
+- Greatest Raphael Over **Mobius** -- zero-friction bearing, maximise Stamina; best Spin Equalization platform
+- Greatest Raphael Over **Drift** -- comparable LAD; free-spin cone
+
+**Performance ceiling (Stamina Mode):**
+- t_stall = 766 s (theoretical flat stadium)
+- Not recommended vs. same-spin heavy DB beys (lighter 30.7 g single-piece layer vs. Armor-wearing DB Layers)
+- Overdrive gimmick adds ~0.3-0.8 s per interrupt cycle vs. Fafnir-type opponents; no spin energy added
+
+**Series I context:**
+- I_attack = 6.327e-5 kg*m^2 is high for a single-Disc DB combo
+- AstralSpriggan Over Quattro-0 (77.9 g): I_total = 5.212e-5 (includes free-spin ring at separate omega)
+- Greatest Raphael Over HXe+' (73.7 g): I_attack = 6.327e-5 (all components rigidly coupled in Attack Mode)
+- Difference attributable to Overdrive arms at r = 42 mm adding I_attack not present in Astral Spriggan sub-layer

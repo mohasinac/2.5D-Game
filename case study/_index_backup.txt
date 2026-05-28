@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1458 cases** across 14 files + 1 master reference.
+Total: **1392 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1462** — All new cases must start here. Update this block before writing any new case.
+> **1417** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,11 +23,11 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 | 277 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 | 252 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1461 | 493 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1416 | 448 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -71,23 +71,7 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1408–1410 | 3 | Flame Claw — C145 passive-fin fire tornado tangential strike (Kenta · Sagittario C145S) | CS13 |
 | 1411–1413 | 3 | Fire Execution — Dark Gargoyle wing-vortex fire tornado ring-out (Miguel · Dark Gargoyle) | CS13 |
 | 1414–1416 | 3 | Fire Arrow — Dranzer S fire-coated direct charge explosive impact (Kai Hiwatari · Dranzer S) | CS13 |
-| 1417–1419 | 3 | Final Wall — Lucius Endbringer Ring Limit Break two-layer free-spin barrier (Lain Valhalla · Lucius Endbringer Kou Drift) | CS13 |
-| 1420–1422 | 3 | Final Limit Breaker — Endbringer Ring explosive dual-layer separation 96% deflect (Lain Valhalla · Lucius Endbringer Kou Drift) | CS13 |
-| 1423–1425 | 3 | Inferno Blast — Flame Libra T125 fin blade sonic resonance draw-in frequency tuning (Yu Tendo · Flame Libra T125ES) | CS13 |
-| 1426–1428 | 3 | Final Inferno Blast — stadium constructive resonance coherent acoustic beam rock levitation (Yu Tendo · Flame Libra T125ES) | CS13 |
-| 1429–1431 | 3 | Final Guard — 2Bump ratchet shift + BeySpirit spherical shield (Boa Alcazaba · Arc Balkesh 2Bump Atomic) | CS13 |
-| 1432–1434 | 3 | Final Dread Impact — wall-ricochet skyrocket + gravity dive (Phi · Dread Phoenix 10 Friction) | CS13 |
-| 1435–1437 | 3 | Final Crash — 3-shift shield + slope momentum crash (Boa Alcazaba · Arc Balkesh 2Bump Atomic) | CS13 |
-| 1438–1440 | 3 | Fang Attack — lion fang BeySpirit extension concentrated impact (Ren Wu Sun · Shelter Regulus 5Star Tower) | CS13 |
-| 1441–1443 | 3 | Galaxy Nova — Pegasus wing-tip nova KE burst (Gingka Hagane · Galaxy Pegasus W105R2F) | CS13 |
-| 1444–1446 | 3 | Galaxy Storm — LEG left-rotation air-column vortex draw-in (Tyson Granger · Dragoon G) | CS13 |
-| 1447–1449 | 3 | Galaxy Turbo Twister — Turbo EG dual-vortex interference tornado (Tyson Granger · Dragoon GT) | CS13 |
-| 1450–1452 | 3 | Gambit Break — Gatling Dragon movable-blade SHM/CHM mode-switch speed attack (Dante Koryu · Gatling Dragon Metal Charge) | CS13 |
-| 1453–1455 | 3 | Gatling Claw — Driger G REG stroboscopic clone multi-hit barrage (Ray Kon · Driger G) | CS13 |
-| 1456–1458 | 3 | Gatling Claw Maximum — BeySpirit over-rev imperceptible-speed assault (Ray Kon · Driger G) | CS13 |
-| 1459–1461 | 3 | Gatling Fang — multi-pass translational rush claw attack (Ray Kon · Driger G, manga) | CS13 |
-| 1500–1524 | 25 | CS9 Burst series: Aquario 105F (MFB), Berserker Byakko 125S (Zero-G), Shelter Regulus 5Star Tower (God), Hyperion Burn Cho Xceed'+X (SK), Greatest Raphael Over High Xtend+' (DB) | CS9 |
-| **1525** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| **1417+** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
@@ -1062,13 +1046,13 @@ All former conflicts have been resolved. The notes below document what was fixed
 ---
 
 
-## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1461
+## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1416
 
 > Franchise special moves, gimmick foundations, and derived combos (CS13)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
-| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1461 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1416 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
 
 ---
 

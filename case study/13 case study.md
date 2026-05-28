@@ -25984,4 +25984,2172 @@ function arrowFlashCombo(
 // arrowFlashCombo(false) => {spin: -7, dmg:1.16x, lock:15ms, cost:15}
 ```
 
-*Cases continue from Case 1417 as further franchise moves are provided.*
+---
+
+## Case 1417 -- [GIMMICK]: Final Wall -- Lucius Endbringer Ring Limit Break Two-Layer Free-Spin Barrier (Lain Valhalla . Lucius Endbringer Kou Drift)
+
+**Part:** Endbringer Ring (DB Layer Ring -- two concentric blade layers, inner layer on bearing race with Limit Break lock)
+**Assembly:** Lucius Endbringer Kou Drift -- Lucius chip . Endbringer Ring . Kou disc . Drift driver
+**Gen / System:** Beyblade Burst Surge | Burst-DB (Dynamite Battle)
+**Tags:** limit-break, free-spin-ring, two-layer, zigzag-deflect, barrier, stamina, DB-ring
+
+**Mechanism**
+
+The Endbringer Ring is a DB-system Layer Ring with two concentric blade layers. The inner blade layer (r ~26mm [M]) sits on a bearing race and can free-spin independently when the Limit Break lock releases. In the locked state both layers turn together; the lock releases at accumulated impact count ~5-8 hard hits [M] or a single impact exceeding F_trigger ~45 N [M].
+
+**Lucius Endbringer Kou Drift assembly:**
+```
+Lucius chip:       m_chip  ~3.0 g  [M],  r ~6 mm  (negligible I)
+Endbringer Ring:   m_ring  ~28.0 g [M],  r_inner = 20 mm,  r_outer = 33 mm
+  Inner blade layer: m_inner ~12.0 g [M], r 20--26 mm
+  Outer blade layer: m_outer ~16.0 g [M], r 26--33 mm
+Kou disc:          m_disc  ~12.0 g [M],  r_inner = 10 mm,  r_outer = 25 mm
+Drift driver:      m_drift ~5.5 g  [M],  r_tip = 3 mm  (metal ball bearing, near-zero friction)
+Total:             ~48.5 g [M]
+
+I_ring = (0.028/2)(0.020^2 + 0.033^2) = 0.014 x (4.00e-4 + 1.089e-3) = 2.085 x 10^-5 kg m^2
+I_disc = (0.012/2)(0.010^2 + 0.025^2) = 0.006 x (1.00e-4 + 6.25e-4) = 4.35 x 10^-6 kg m^2
+I_chip + Drift: negligible [M]
+I_total (both layers locked) ~2.52 x 10^-5 kg m^2  [M]
+```
+
+**Limit Break single-layer free-spin deflection:**
+```
+When inner blade layer free-spins on bearing (mu_bearing ~0.02 [M]):
+  First-contact deflect fraction: ~48% [M]  (ring must spin up first, identical to ED145 transient, Case 1384)
+  Steady-state deflect (ring speed matched): ~95% [M]
+  On repeated attacks (ring pre-spun ~60% match): ~75-80% deflect [M]
+
+Force transmitted to Lucius body at steady state:
+  F_body = mu_bearing x N ~0.02 x N  (vs 0.40 x N for rigid layer)
+  Steady-state deflect ratio: 0.02 / 0.40 = 5%  =>  95% of lateral force diverted [M]
+```
+
+**Zigzag counter blade return geometry:**
+```
+Outer blade layer: 8 angled zigzag facets at r ~33mm [M]
+  Each facet redirects incoming contact tangentially: deflect angle ~40 deg [M]
+  Tangential return fraction: sin^2(40 deg) ~0.41 [M]
+  (41% of deflected force returned as tangential counter-impulse directed at opponent)
+```
+
+**Drift driver stamina:**
+```
+Drift tip: mu_Drift ~0.015 [M],  r_Drift = 3 mm [M]
+dw/dt = -(0.015 x 0.003 x 9.81 x 0.0485) / (2.52e-5) = -(2.14e-5) / (2.52e-5) = -0.85 rad/s^2  [M]
+Near-zero spin decay -- sustains operating omega through extended defensive encounters
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Lucius chip | 3.0 g | 6 mm |
+| Endbringer Ring | 28.0 g | 20--33 mm |
+| Kou disc | 12.0 g | 10--25 mm |
+| Drift driver | 5.5 g | 3 mm |
+| **Total** | **~48.5 g** | **33 mm** |
+| I_total | -- | ~2.52 x 10^-5 kg m^2 |
+
+---
+
+## Case 1418 -- [SPECIAL]: Final Wall (Lain Valhalla . Lucius Endbringer Kou Drift)
+
+**Special Move:** Final Wall
+**User:** Lain Valhalla
+**Series:** Beyblade Burst Surge
+**Compatible beys:** Any bey whose Layer Ring uses a Limit Break-type freely transforming ring system (any DB/BU-era Ring with an inner free-spinning blade layer triggered by accumulated impact count or a single heavy impact [M]); conventional rigid Burst layers without a Limit Break mechanism cannot form the energy barrier; the defensive energy barrier requires BeySpirit to extend the physical free-spin deflection zone into a spherical repulsion field beyond the ring surface.
+
+**Mechanic**
+
+Lain channels BeySpirit through Lucius, overriding the mechanical Limit Break trigger threshold and immediately pre-spinning the inner blade layer to match speed:
+
+**Physical Limit Break deflection (hit-accumulated):**
+```
+Physical trigger:    ~5-8 accumulated impacts [M]
+First-contact deflect: ~48% [M]
+Steady-state deflect:  ~95% [M]
+Zigzag counter-return: 41% of deflected force back at opponent [M]
+```
+
+**BeySpirit Final Wall:**
+```
+BeySpirit override: inner blade layer instantly pre-spins to match omega -- zero spin-up transient
+  => First contact already at steady-state 95% deflect [M]
+  => Zigzag counter-return: 0.41 x 0.95 x F_impact directed at opponent [M]
+
+BeySpirit energy barrier: spherical field extends 8 mm beyond ring outer surface [M]
+  => Approaching opponent feels repulsion before physical ring contact
+  => Knock-back impulse: J_KB = m_opp x delta_v_KB ~0.045 x 1.2 = 0.054 N s [M]
+```
+
+**QTE**
+- Input: Hold **K** (Endbringer Ring primes -- BeySpirit overrides Limit Break threshold), hold through opponent contact
+- Window: 500 ms guard window
+- Power cost: 85
+
+**Move Parameters**
+```typescript
+function finalWall(
+  limitBreakActive: boolean, qteHit: boolean
+): { spinDelta_self: number; spinDelta_opp: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 85;
+  if (!limitBreakActive) {
+    return qteHit
+      ? { spinDelta_self: +3,  spinDelta_opp: -12, dmgMult: 1.20, lockMs:  60, powerCost: cost }
+      : { spinDelta_self:  0,  spinDelta_opp:  -5, dmgMult: 1.10, lockMs:  20, powerCost: cost };
+  }
+  return qteHit
+    ? { spinDelta_self: +8,  spinDelta_opp: -30, dmgMult: 1.42, lockMs: 140, powerCost: cost }
+    : { spinDelta_self: +2,  spinDelta_opp: -10, dmgMult: 1.18, lockMs:  40, powerCost: cost };
+}
+// finalWall(true,  true)  => {self:+8, opp:-30, dmg:1.42x, lock:140ms}  LB perfect
+// finalWall(true,  false) => {self:+2, opp:-10, dmg:1.18x, lock: 40ms}  LB miss
+// finalWall(false, true)  => {self:+3, opp:-12, dmg:1.20x, lock: 60ms}  no LB perfect
+```
+
+> NOTE: BeySpirit overrides the Limit Break activation threshold -- physically the inner blade layer requires ~5-8 accumulated impacts before the lock releases; BeySpirit activates the free-spin instantly at any spin speed regardless of impact count; the spherical energy barrier (physical Endbringer Ring deflects at the surface; the 8mm exclusion zone and the visible red BeySpirit sphere that visually surrounds Lucius) and the knock-back impulse on non-contacting opponents are the anime physics overrides.
+
+---
+
+## Case 1419 -- COMBO: Barrier Crush (derived from Final Wall Limit Break free-ring defensive posture)
+
+**Sequence:** K ↑ K (defense -> moveUp -> defense)
+**Interpretation:** K (prime Endbringer Ring -- Limit Break inner layer locks into free-spin deflect mode) -> ↑ (rise on gyroscopic lift -- Lucius gains elevation as Drift tip near-zero friction allows pure precession rise) -> K (barrier slam -- Endbringer Ring descends while in barrier mode, gravitational component amplifies the deflect force, zigzag facets return the combined downward + lateral force to the opponent)
+**Type:** defense  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.38x | <= 1.5x | OK |
+| lockMs | 100 ms | <= 300 ms | OK |
+| spinDelta_opp | -20 | <= 50 abs | OK |
+
+```typescript
+function barrierCrushCombo(
+  bothKHit: boolean
+): { spinDelta_self: number; spinDelta_opp: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!bothKHit) return { spinDelta_self: 0, spinDelta_opp: -8, dmgMult: 1.16, lockMs: 30, powerCost: cost };
+  return { spinDelta_self: +5, spinDelta_opp: -20, dmgMult: 1.38, lockMs: 100, powerCost: cost };
+}
+// barrierCrushCombo(true)  => {self:+5, opp:-20, dmg:1.38x, lock:100ms, cost:25}
+// barrierCrushCombo(false) => {self: 0, opp: -8, dmg:1.16x, lock: 30ms, cost:25}
+```
+
+---
+
+## Case 1420 -- [GIMMICK]: Final Limit Breaker -- Endbringer Ring Explosive Dual-Layer Separation Double Free-Spin (Lain Valhalla . Lucius Endbringer Kou Drift)
+
+**Part:** Endbringer Ring (explosive separation mode -- both blade layers independently free-spin on their respective bearings)
+**Assembly:** Lucius Endbringer Kou Drift -- same as Case 1417
+**Gen / System:** Beyblade Burst Surge | Burst-DB (Dynamite Battle)
+**Tags:** limit-break-full, explosive-separation, double-free-spin, 96pct-deflect, burst-defense
+
+**Mechanism**
+
+Final Limit Breaker activates the second stage of the Endbringer Ring: both inner AND outer blade layers simultaneously separate and free-spin independently. This is a deeper transformation than Case 1417 (single-layer), and physically requires a much heavier trigger impact.
+
+**Dual-layer explosive separation:**
+```
+Physical full-separation trigger: F_trigger_full ~80 N [M]  (vs 45 N for single-layer)
+  Requires a very heavy direct smash -- rare in normal battle without BeySpirit bypass
+
+When both layers free-spin independently on bearings (mu_bearing ~0.02 [M] each):
+  Inner layer alone:  I_inner = (0.012/2)(0.020^2 + 0.026^2) = 6.46 x 10^-6 kg m^2 [M]
+  Outer layer alone:  I_outer = (0.016/2)(0.026^2 + 0.033^2) = 1.41 x 10^-5 kg m^2 [M]
+```
+
+**Double-layer cascaded deflection:**
+```
+When both layers already spinning at ~match speed (BeySpirit pre-spin):
+  Contact with outer layer:  F1 = 0.80 deflect fraction [M]  (bearing steady-state)
+  Residual reaches inner:    (1 - 0.80) x F_impact = 0.20 x F_impact
+  Inner deflect fraction F2: 0.80 [M]
+  Combined deflect: 1 - (1 - 0.80)^2 = 1 - 0.04 = 0.96 [M]  (96% total deflect)
+
+Double zigzag return: 0.41 x 0.96 x F_impact directed back at opponent (from both facet sets)
+```
+
+**Explosive separation impulse (BeySpirit):**
+```
+Physical spring separation: v_sep_phys ~0.5 m/s [M]
+BeySpirit explosive separation: v_sep_BS ~3.5 m/s [M]  (x7 from physical)
+
+Outward kick impulse on opponent (layers fly outward toward opponent):
+  Inner ring: J_in  = 0.012 x 3.5 = 0.042 N s [M]
+  Outer ring: J_out = 0.016 x 3.5 = 0.056 N s [M]
+  Total kick: J_kick = 0.098 N s [M]  (vs physical ~0.014 N s)
+```
+
+---
+
+## Case 1421 -- [SPECIAL]: Final Limit Breaker (Lain Valhalla . Lucius Endbringer Kou Drift)
+
+**Special Move:** Final Limit Breaker (Japanese: Limit Break The End)
+**User:** Lain Valhalla
+**Series:** Beyblade Burst Surge
+**Compatible beys:** Any bey with a two-layer Limit Break Ring where both inner and outer blade layers can independently free-spin simultaneously (any DB/BU-era Ring physically split into two independently rotating sections, each on its own bearing race, outer r >= 25mm [M]); single-layer LB rings (Final Wall level, Case 1418) cannot achieve the double-cascade 96% deflect fraction; the explosive ring-separation requires BeySpirit to bypass the physical F_trigger_full ~80 N threshold.
+
+**Mechanic**
+
+Lain channels maximum BeySpirit, explosively separating both Endbringer Ring layers simultaneously and pre-spinning both to match speed:
+
+**Physical full separation (triggered by heavy smash):**
+```
+Physical full separation: F_impact >= 80 N [M]  (rare without BeySpirit)
+Physical separation speed: v_sep ~0.5 m/s, kick impulse ~0.014 N s [M]
+Cascaded deflect once layers pre-spun: ~96% [M]
+```
+
+**BeySpirit Final Limit Breaker:**
+```
+BeySpirit override: both layers separate explosively at any spin speed, impact-independent
+  v_sep_BS = 3.5 m/s [M];  J_kick_total = 0.098 N s [M]
+  Both layers simultaneously pre-spun to match omega (zero transient)
+  => 96% deflect from first contact after separation [M]
+  => Double zigzag return: up to 0.41 x 0.96 = 39% of F_impact returned as counter [M]
+```
+
+**QTE**
+- Input: Hold **K** (both Endbringer Ring layers charge), release when ring glows at maximum intensity and both layers are visibly separated
+- Window: 400 ms hold
+- Power cost: 95
+
+**Move Parameters**
+```typescript
+function finalLimitBreaker(
+  limitBreakStage: 0 | 1 | 2,
+  qteHit: boolean
+): { spinDelta_self: number; spinDelta_opp: number; dmgMult: number; lockMs: number; deflectFraction: number; powerCost: number } {
+  const cost = 95;
+  if (limitBreakStage === 0) {
+    return qteHit
+      ? { spinDelta_self: +2, spinDelta_opp: -8,  dmgMult: 1.12, lockMs:  30, deflectFraction: 0.20, powerCost: cost }
+      : { spinDelta_self:  0, spinDelta_opp: -3,  dmgMult: 1.05, lockMs:  10, deflectFraction: 0.05, powerCost: cost };
+  }
+  if (limitBreakStage === 1) {
+    return qteHit
+      ? { spinDelta_self: +5, spinDelta_opp: -18, dmgMult: 1.30, lockMs:  80, deflectFraction: 0.80, powerCost: cost }
+      : { spinDelta_self: +1, spinDelta_opp: -8,  dmgMult: 1.15, lockMs:  30, deflectFraction: 0.50, powerCost: cost };
+  }
+  return qteHit
+    ? { spinDelta_self: +10, spinDelta_opp: -38, dmgMult: 1.50, lockMs: 170, deflectFraction: 0.96, powerCost: cost }
+    : { spinDelta_self:  +3, spinDelta_opp: -15, dmgMult: 1.24, lockMs:  60, deflectFraction: 0.70, powerCost: cost };
+}
+// finalLimitBreaker(2, true)  => {self:+10, opp:-38, dmg:1.50x, lock:170ms, deflect:0.96}  full LB perfect
+// finalLimitBreaker(1, true)  => {self: +5, opp:-18, dmg:1.30x, lock: 80ms, deflect:0.80}  single-LB
+// finalLimitBreaker(0, true)  => {self: +2, opp: -8, dmg:1.12x, lock: 30ms, deflect:0.20}  no LB
+// finalLimitBreaker(2, false) => {self: +3, opp:-15, dmg:1.24x, lock: 60ms, deflect:0.70}  full LB miss
+```
+
+> NOTE: BeySpirit overrides the explosive separation speed -- physical ring spring loading achieves v_sep ~0.5 m/s (kick ~0.014 N s); BeySpirit achieves 3.5 m/s (0.098 N s, 7x); the 96% deflect fraction is mechanically achievable after both layers reach match speed -- but BeySpirit achieves this instantaneously at separation rather than after multiple contact spin-up events; the visible explosive ring-opening animation and the dual-ring BeySpirit energy field surrounding Lucius are the anime physics overrides.
+
+---
+
+## Case 1422 -- COMBO: Limit Edge (derived from Final Limit Breaker two-layer separation defensive posture)
+
+**Sequence:** K → J (defense -> moveRight -> attack)
+**Interpretation:** K (prime both Endbringer Ring layers -- BeySpirit pre-charges inner and outer rings into free-spin state) -> → (yield right -- Lucius steps out of attack vector, opponent's force absorbed by both spinning ring layers simultaneously) -> J (edge strike -- Lucius angles back inward while both rings carry opponent's absorbed spin, counter-striking from the inter-layer gap with a concentrated blade-edge impact)
+**Type:** defense  **Cost:** 35
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.44x | <= 1.5x | OK |
+| lockMs | 110 ms | <= 300 ms | OK |
+| spinDelta_opp | -24 | <= 50 abs | OK |
+| deflectFraction | 0.75 | < 1.0 (no immunity) | OK |
+
+```typescript
+function limitEdgeCombo(
+  kHit: boolean
+): { spinDelta_self: number; spinDelta_opp: number; dmgMult: number; lockMs: number; deflectFraction: number; powerCost: number } {
+  const cost = 35;
+  if (!kHit) return { spinDelta_self: 0, spinDelta_opp: -8, dmgMult: 1.18, lockMs: 30, deflectFraction: 0.15, powerCost: cost };
+  return { spinDelta_self: +4, spinDelta_opp: -24, dmgMult: 1.44, lockMs: 110, deflectFraction: 0.75, powerCost: cost };
+}
+// limitEdgeCombo(true)  => {self:+4, opp:-24, dmg:1.44x, lock:110ms, deflect:0.75, cost:35}
+// limitEdgeCombo(false) => {self: 0, opp: -8, dmg:1.18x, lock: 30ms, deflect:0.15, cost:35}
+```
+
+---
+
+## Case 1423 -- [GIMMICK]: Inferno Blast -- Flame Libra T125 Fin Blade Sonic Resonance Acoustic Draw-In (Yu Tendo . Flame Libra T125ES)
+
+**Part:** T125 Spin Track (Tornado 125 -- 4 upright passive fin blades at height 125 mm) + ES Performance Tip
+**Assembly:** Flame Libra T125ES -- Libra wheel . T125 track . ES tip
+**Gen / System:** Metal Fusion (MFB) | HWS
+**Tags:** sonic-resonance, blade-passing, acoustic-radiation, draw-in, stamina, T125, frequency-tuning
+
+**Mechanism**
+
+The T125 track carries four passive fin blades at r_fin ~14mm [M] at 125mm height. The fins generate periodic acoustic pressure waves via blade passing. Yu Tendo tunes the blade-passing frequency by adjusting Libra's spin rate. The Libra wheel (scales/balance motif) provides exceptional CoM symmetry -- minimal precession nutation losses.
+
+**Flame Libra T125ES assembly:**
+```
+Libra wheel:      m_wheel ~22.0 g [M],  r_inner = 10 mm,  r_outer = 18 mm
+T125 track:       m_body  ~2.5 g  [M] (body),  r = 8 mm
+T125 fins (x4):   m_fin   ~0.875 g [M] each (total 3.5 g),  r_fin = 14 mm
+ES tip:           m_tip   ~4.8 g  [M],  r_center = 1 mm (sharp),  r_ring = 6 mm (bearing)
+Total:            ~32.8 g [M]
+
+I_wheel = (0.022/2)(0.010^2 + 0.018^2) = 0.011 x (1.0e-4 + 3.24e-4) = 4.66 x 10^-6 kg m^2
+I_T125  = (0.006/2)(0.004^2 + 0.014^2) = 0.003 x (1.6e-5 + 1.96e-4) = 0.64 x 10^-6 kg m^2
+I_ES:   negligible [M]
+I_total ~5.4 x 10^-6 kg m^2  [M]
+```
+
+**T125 blade-passing acoustic pressure:**
+```
+At omega = 600 rad/s [M]:
+  v_fin = 600 x 0.014 = 8.4 m/s
+  Blade-passing frequency: f_bp = (4 x 600) / (2pi) ~381.97 Hz  [M]  (~382 Hz)
+
+Acoustic pressure (near field, r = 0.10 m [M]):
+  p = (rho x c x f x A_fin x v_fin) / (4pi x r)
+    A_fin = 0.005 x 0.014 = 7.0 x 10^-5 m^2 [M]
+    p = (1.2 x 343 x 382 x 7.0e-5 x 8.4) / (4pi x 0.10) = 116.2 / 1.257 ~92.4 Pa [M]
+  SPL = 20 x log10(92.4 / 2e-5) ~133 dB  [M]  (exceeds pain threshold, explains physical opponent effect)
+
+Acoustic radiation draw-in force:
+  F_radiation = p^2 / (rho x c^2) = (92.4)^2 / (1.2 x 343^2) = 8538 / 141,254 = 0.060 N [M]
+  (60 mN physical -- small, but sustained throughout Libra's orbit)
+```
+
+**Frequency tuning (omega adjustment):**
+```
+Yellow: f_bp ~382 Hz  (omega ~600 rad/s [M])  -- standard
+Green:  f_bp ~480 Hz  (omega ~754 rad/s [M])  -- boosted (requires sustained effort)
+Blue:   f_bp ~600 Hz  (omega ~942 rad/s [M])  -- maximum (BeySpirit spin assist required [M])
+```
+
+**ES tip stamina:**
+```
+At omega > 400 rad/s [M]: sharp center active, mu_c ~0.06 [M], r_c = 1 mm
+dw/dt = -(0.06 x 0.001 x 9.81 x 0.0328) / (5.4e-6) = -(1.93e-5) / (5.4e-6) = -3.57 rad/s^2  [M]
+Excellent stamina -- ES sustains high omega for extended resonance periods
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r |
+|-----------|------|---|
+| Libra wheel | 22.0 g | 10--18 mm |
+| T125 track (body + 4 fins) | 6.0 g | 8--14 mm |
+| ES tip | 4.8 g | 1 mm (center) / 6 mm (ring) |
+| **Total** | **~32.8 g** | **18 mm** |
+| I_total | -- | ~5.4 x 10^-6 kg m^2 |
+
+---
+
+## Case 1424 -- [SPECIAL]: Inferno Blast (Yu Tendo . Flame Libra T125ES)
+
+**Special Move:** Inferno Blast (Japanese: Last Judgement Inferno)
+**User:** Yu Tendo
+**Series:** Beyblade: Metal Fusion / Metal Masters (3rd special move)
+**Compatible beys:** Any bey with a >= 4-fin spin track at height >= 100mm [M] whose blade-passing frequency at operating omega falls in 300-600 Hz [M]; fixed non-raised tracks (100, 145) without upright fin blades cannot generate the directed acoustic field; frequency tuning requires Blader Spirit frequency awareness; ES or S tip strongly recommended to sustain high omega through the resonance period.
+
+**Mechanic**
+
+Yu channels BeySpirit through Libra, amplifying the acoustic radiation force ×20 and enabling BeySpirit-assisted spin for frequency tuning:
+
+**Physical draw-in (unaided):**
+```
+Physical draw-in at 382 Hz: F_radiation ~0.060 N [M]  (negligible in competitive battle)
+```
+
+**BeySpirit Inferno Blast:**
+```
+BeySpirit amplification x20 [M] (Libra beast harmonics resonate with fin frequency):
+  Yellow: F_draw = 20 x 0.060 = 1.20 N [M]
+  Green:  F_draw ~1.90 N [M]  (higher omega, higher p, x20)
+  Blue:   F_draw ~2.96 N [M]  (maximum, BeySpirit-assisted spin to 942 rad/s)
+
+Sustained draw-in over 1 orbit (~0.5 s at 3 m/s): delta_r = F x t^2 / (2m) -- opponent pulled ~13-33 mm closer [M]
+```
+
+**QTE**
+- Input: Hold **K** (T125 resonance charge -- fins tune to draw-in frequency), tap **J** at peak (release directed sonic blast at opponent)
+- Window: 300 ms K hold + 150 ms J tap
+- Power cost: 80
+
+**Move Parameters**
+```typescript
+function infernoBlast(
+  frequencyLevel: 1 | 2 | 3,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 80;
+  if (!qteHit) return { spinDelta: -5, dmgMult: 1.10, lockMs: 20, powerCost: cost };
+  const m = (
+    frequencyLevel === 3 ? { sd: -32, dm: 1.44, lk: 160 } :
+    frequencyLevel === 2 ? { sd: -24, dm: 1.34, lk: 110 } :
+                           { sd: -18, dm: 1.26, lk:  80 }
+  );
+  return { spinDelta: m.sd, dmgMult: m.dm, lockMs: m.lk, powerCost: cost };
+}
+// infernoBlast(3, true)  => {spin:-32, dmg:1.44x, lock:160ms}  blue/maximum
+// infernoBlast(2, true)  => {spin:-24, dmg:1.34x, lock:110ms}  green/boosted
+// infernoBlast(1, true)  => {spin:-18, dmg:1.26x, lock: 80ms}  yellow/standard
+// infernoBlast(-, false) => {spin: -5, dmg:1.10x, lock: 20ms}  miss
+```
+
+> NOTE: BeySpirit overrides the acoustic radiation force limit -- physical sonic draw-in is ~60 mN (negligible in battle); BeySpirit amplifies the resonant acoustic field x20 to 1.20-2.96 N; the visible color change of the beam (yellow->green->blue as omega increases) and the frequency-tuning capability (Yu consciously adjusts the Libra beast resonance frequency mid-battle) are the anime physics overrides; at blue level the 133+ dB acoustic field causes visible arena and opponent distortion -- all structural effects at stadium scale are BeySpirit overrides.
+
+---
+
+## Case 1425 -- COMBO: Sonic Draw (derived from Inferno Blast T125 acoustic draw-in)
+
+**Sequence:** ↓ K J (moveDown -> defense -> attack)
+**Interpretation:** ↓ (low orbit -- Libra drops to bowl base so T125 fins are at floor level where acoustic pressure reflects off the stadium floor, doubling effective draw-in intensity near the center) -> K (resonance lock -- hold T125 blade-passing frequency precisely at draw-in pitch, Libra beast harmonics sustained) -> J (sonic smash -- Libra orbits inward toward the drawn opponent, wheel strike at the moment the opponent is caught in the acoustic funnel)
+**Type:** stamina  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.28x | <= 1.5x | OK |
+| lockMs | 70 ms | <= 300 ms | OK |
+| spinDelta | -16 | <= 50 abs | OK |
+
+```typescript
+function sonicDrawCombo(
+  kHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!kHit) return { spinDelta: -5, dmgMult: 1.10, lockMs: 20, powerCost: cost };
+  return { spinDelta: -16, dmgMult: 1.28, lockMs: 70, powerCost: cost };
+}
+// sonicDrawCombo(true)  => {spin:-16, dmg:1.28x, lock:70ms, cost:25}
+// sonicDrawCombo(false) => {spin: -5, dmg:1.10x, lock:20ms, cost:25}
+```
+
+---
+
+## Case 1426 -- [GIMMICK]: Final Inferno Blast -- Flame Libra Stadium Constructive Resonance Coherent Acoustic Beam (Yu Tendo . Flame Libra T125ES)
+
+**Part:** T125 Spin Track (same assembly as Case 1423) -- upgraded via BeySpirit to stadium-resonance mode
+**Assembly:** Flame Libra T125ES -- same as Case 1423
+**Gen / System:** Metal Fury (MFB) | HWS  (Metal Fury season upgrade of Inferno Blast)
+**Tags:** stadium-resonance, constructive-interference, coherent-beam, levitation, earth-vibration
+
+**Mechanism**
+
+Final Inferno Blast is the maximum stage of Inferno Blast. Yu tunes the T125 blade-passing frequency to match the closed-bowl stadium resonance frequency. All acoustic reflections arrive in phase at the stadium center (constructive interference), amplifying the pressure field by the number of coherent reflections. This is the physical basis for the earth and air vibration and the visible green energy column.
+
+**Stadium resonance tuning:**
+```
+Closed-bowl stadium: r_bowl ~0.40 m [M],  depth ~0.12 m [M]
+Effective bowl cavity length: L_eff ~2 x r / pi ~0.255 m [M]
+Bowl resonance fundamental: f_0 = c / (2 x L_eff) = 343 / (2 x 0.255) ~672 Hz [M]
+
+Yu tunes: f_bp_target = 672 Hz [M]
+  Required omega: omega = 672 x (2pi) / 4 = 1056 rad/s [M]
+  (BeySpirit spin boost required -- physical ES sustainable max ~750-800 rad/s [M])
+```
+
+**Constructive interference pressure amplification:**
+```
+Number of coherent reflections in closed bowl: N ~8 [M]
+p_individual at 1056 rad/s: v_fin = 1056 x 0.014 = 14.8 m/s
+  p_1056 = (1.2 x 343 x 672 x 7e-5 x 14.8) / (4pi x 0.10) ~285 Pa [M]  (individual fin contribution)
+P_amplified = N x p_1056 = 8 x 285 = 2280 Pa [M]
+  BeySpirit x5 overlay: P_BS = 11400 Pa [M]
+  SPL_BS = 20 x log10(11400 / 2e-5) ~115 dB ... wait let me redo:
+  SPL = 20 x log10(2280 / 2e-5) = 20 x log10(1.14e8) = 20 x 8.057 = 161 dB [M]
+
+Uplift force on rocks (m_rock ~0.5 kg, A_rock ~0.005 m^2 [M]):
+  F_uplift = P_BS x A_rock = 11400 x 0.005 = 57 N [M]  >>  rock weight 4.9 N  =>  rocks rise [M]
+  (explains rocky surroundings levitating in anime)
+```
+
+---
+
+## Case 1427 -- [SPECIAL]: Final Inferno Blast (Yu Tendo . Flame Libra T125ES)
+
+**Special Move:** Final Inferno Blast (Japanese: Final Judgement Inferno)
+**User:** Yu Tendo
+**Series:** Beyblade: Metal Fury (5th and most powerful special move)
+**Compatible beys:** Same as Inferno Blast (T125-class 4-fin spin track, r_fin >= 12mm [M]) PLUS closed-bowl stadium type (open stadiums cannot sustain the constructive standing-wave field -- no coherent wall reflections); sustained omega >= 650 rad/s [M] required through charge phase (ES or S tip essential); without BeySpirit resonance at the stadium natural frequency, no bey can physically reach omega ~1056 rad/s [M].
+
+**Mechanic**
+
+Yu channels maximum BeySpirit, boosting Libra past its physical spin limit to hit the stadium resonance frequency:
+
+**Physical Inferno Blast ceiling (pre-upgrade):**
+```
+Max physical omega: ~750 rad/s [M];  f_bp ~477 Hz -- no stadium resonance match
+Non-resonant p: ~92.4 Pa [M]  (Inferno Blast level, Case 1424)
+```
+
+**BeySpirit Final Inferno Blast:**
+```
+BeySpirit spin boost: omega_BS = 1056 rad/s [M]  (far above physical sustainable omega)
+  f_bp_BS = 672 Hz [M] -- hits closed-bowl resonance frequency
+  Constructive interference: P_amplified = 8 x 285 = 2280 Pa [M]
+  BeySpirit x5 overlay: P_BS ~11,400 Pa [M]
+
+Earth/air vibration: P_BS  >> 140 dB onset for structural vibration [M]
+  Rocks levitate: F_uplift = 11400 x 0.005 = 57 N >> rock weight [M]
+
+Opponent spin drain (sustained draw-in at full resonance):
+  F_draw_BS = 20 x (p_1056^2 / (rho x c^2)) = 20 x (285^2 / 141254) ~11.5 N [M]
+  At 0.5 s: J_draw = 5.75 N s -- opponent pulled well inside contact range [M]
+```
+
+**QTE**
+- Input: Hold **J** + **K** simultaneously (stadium resonance charge -- Libra climbs to resonance frequency, green beam forms), release when beam shifts white-blue (resonance locked)
+- Window: 600 ms simultaneous hold + 100 ms release
+- Power cost: 100
+
+**Move Parameters**
+```typescript
+function finalInfernoBlast(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 100;
+  const r = Math.min(chargeMs / 600, 1.0);
+  if (!qteHit) return { spinDelta: -8, dmgMult: 1.18, lockMs: 30, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -48 : Math.round(-20 - 26 * r),
+    dmgMult:   perfect ?  1.50 : 1.22 + 0.25 * r,
+    lockMs:    perfect ?  200  : Math.round(60 + 120 * r),
+    powerCost: cost,
+  };
+}
+// finalInfernoBlast(600, true)  => {spin:-48, dmg:1.50x, lock:200ms}  full charge perfect
+// finalInfernoBlast(300, true)  => {spin:-33, dmg:1.35x, lock:120ms}  half charge
+// finalInfernoBlast(600, false) => {spin: -8, dmg:1.18x, lock: 30ms}  miss
+```
+
+> NOTE: BeySpirit overrides the spin ceiling -- ES tip cannot physically sustain omega ~1056 rad/s (physical max ~750 rad/s); BeySpirit provides the impulse to reach and hold the resonance frequency; the stadium constructive resonance amplification is a real acoustic phenomenon (N=8 coherent reflections) but requires BeySpirit for perfect frequency locking; the visible green/white energy column, rock levitation (57 N uplift vs 4.9 N rock weight), and the earth-shaking vibration at geological scale are the BeySpirit physics overrides.
+
+---
+
+## Case 1428 -- COMBO: Inferno Pulse (derived from Final Inferno Blast T125 stadium resonance posture)
+
+**Sequence:** J ↓ K (attack -> moveDown -> defense)
+**Interpretation:** J (T125 frequency spike -- brief high-intensity sonic pulse aimed at opponent, 4-fin blade passing at resonance peak) -> ↓ (ground coupling -- Libra drives sharply downward so ES tip contacts the stadium floor, coupling acoustic energy directly into the stadium surface) -> K (hold resonance -- sustain the stadium vibration field, opponent's spin stability disrupted by floor-transmitted resonance propagating through the contact surface under them)
+**Type:** stamina  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| dmgMult | 1.32x | <= 1.5x | OK |
+| lockMs | 85 ms | <= 300 ms | OK |
+| spinDelta | -20 | <= 50 abs | OK |
+
+```typescript
+function infernoPulseCombo(
+  jHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!jHit) return { spinDelta: -5, dmgMult: 1.10, lockMs: 20, powerCost: cost };
+  return { spinDelta: -20, dmgMult: 1.32, lockMs: 85, powerCost: cost };
+}
+// infernoPulseCombo(true)  => {spin:-20, dmg:1.32x, lock:85ms, cost:25}
+// infernoPulseCombo(false) => {spin: -5, dmg:1.10x, lock:20ms, cost:25}
+```
+
+---
+
+## Case 1429 -- [GIMMICK]: 2Bump Disc Ratchet Shift -- Arc Balkesh Three-Position Detent Mechanism (Boa Alcazaba . Arc Balkesh 2Bump Atomic)
+
+**Part:** 2Bump Forge Disc (two raised bump protrusions at r_bump ~28 mm) + Arc Balkesh Energy Layer (three-lug inner detent track)
+**Assembly:** Arc Balkesh 2Bump Atomic -- Arc Balkesh Energy Layer . 2Bump Forge Disc . Atomic Performance Tip  [Burst GT / Rise configuration]
+**Gen / System:** Beyblade Burst GT (Rise) | Layer + Disc + Driver System
+**Tags:** ratchet-shift, detent-disc, three-position, ball-bearing, burst-gt, conditional-shield
+
+**Mechanism**
+
+The 2Bump Forge Disc carries two raised protrusions at r_bump ~28 mm [M] from the disc centre. These bumps engage a three-lug inner track on the underside of the Arc Balkesh Energy Layer. Each time the layer receives a significant angular impulse from an opponent collision, it advances one detent position (nominally 120 deg per shift, three positions total). After the third shift the layer reaches the shield orientation, which is the triggering condition for the Final Guard BeySpirit manifestation.
+
+**Assembly mass distribution:**
+```
+Arc Balkesh Energy Layer: m_L ~23.0 g [M],  r_inner = 15 mm,  r_outer = 37 mm
+2Bump Forge Disc:         m_D ~25.0 g [M],  r_inner = 12 mm,  r_outer = 30 mm
+Atomic Performance Tip:   m_T ~6.0 g  [M],  r_contact = 2 mm  (centre ball bearing)
+Total assembly:           ~54.0 g [M]
+
+I_Layer = (0.023/2)(0.015^2 + 0.037^2) = 0.0115 x (2.25e-4 + 1.369e-3) = 1.833 x 10^-5 kg m^2
+I_Disc  = (0.025/2)(0.012^2 + 0.030^2) = 0.0125 x (1.44e-4 + 9.00e-4) = 1.305 x 10^-5 kg m^2
+I_Tip   ~0.06 x 10^-6 kg m^2  (negligible)
+I_total ~3.14 x 10^-5 kg m^2  [M]
+```
+
+**Ratchet-shift threshold at operating spin:**
+```
+At omega = 500 rad/s [M]:
+v_rim = 500 x 0.037 = 18.5 m/s [M]
+KE    = (1/2) x 3.14e-5 x 500^2 = 3.93 J [M]
+
+Detent spring load per bump: F_detent ~4 N [M]
+Torque to advance one position:
+  tau_shift = 2 x F_detent x r_bump = 2 x 4 x 0.028 = 0.224 N m [M]
+
+Angular impulse required:
+  J_theta = I_Layer x delta_omega_shift = 1.833e-5 x 15 = 2.75 x 10^-4 N m s [M]
+  (delta_omega_shift ~15 rad/s -- brief layer acceleration while climbing bump)
+
+Typical opponent collision angular impulse:
+  J_hit ~0.01 N m s [M]  (>> J_theta -- any significant hit shifts the layer once)
+
+Physical deflection coefficient (no BeySpirit):
+  Shifts 0-2 (pre-shield orientation): e_disc ~0.72 [M]  (2Bump lateral overhang)
+  Shift 3   (shield orientation):      e_disc ~0.85 [M]  (360-degree symmetric contact)
+```
+
+**Atomic tip spin decay:**
+```
+mu_Atomic = 0.04 [M]  (ball bearing, low friction)
+r_contact = 0.002 m [M]
+d(omega)/dt = -(mu x r x g x m) / I_total
+           = -(0.04 x 0.002 x 9.81 x 0.054) / 3.14e-5
+           = -4.24e-5 / 3.14e-5
+           ~-1.35 rad/s^2 [M]
+High-stamina baseline: sustains centre-court orbit across all 3 shift events without significant spin loss.
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Arc Balkesh Layer | 23.0 g | 15 mm | 37 mm |
+| 2Bump Forge Disc | 25.0 g | 12 mm | 30 mm |
+| Atomic Tip | 6.0 g | -- | 2 mm (contact) |
+| **Total** | **~54.0 g** | | **37 mm** |
+| I_total | -- | | ~3.14 x 10^-5 kg m^2 |
+
+---
+
+## Case 1430 -- [SPECIAL]: Final Guard (Boa Alcazaba . Arc Balkesh 2Bump Atomic)
+
+**Special Move:** Final Guard
+**User:** Boa Alcazaba
+**Series:** Beyblade Burst GT (Rise)
+**Compatible beys:** Any bey with a multi-position ratchet Energy Layer (3+ spring-loaded detent positions, r_bump >= 25 mm [M], F_detent >= 3 N [M]) and a wide stamina Performance Tip (ball-bearing or equivalent, r_contact <= 3 mm [M]) -- the BeySpirit shield forms exclusively at the final detent; single-piece Energy Layers with no internal ratchet cannot accumulate shift events; broad rubber tips (WB, RF) sacrifice too much spin maintaining stadium positioning and cannot sustain the 3-hit accumulation sequence.
+
+**Mechanic**
+
+After 3 disc-shift events (each triggered by an opponent hit with J_hit >= J_theta ~2.75e-4 N m s [M]), BeySpirit forms a red spherical shield around Balkesh. The shield response is conditional on the force of the next incoming attack:
+
+**Physical deflection (pre-shield):**
+```
+e_disc = 0.72-0.85 [M]  (shifts 0-2 / shift 3)
+Standard collision return velocity: 0.72 x v_in  -->  partial energy absorption
+```
+
+**BeySpirit shield (3rd shift active):**
+```
+Low-force attack  (F_hit <= ~75 N [M]):
+  e_BS = 0.97 [M]  (near-perfect elastic return)
+  Opponent receives own momentum back at ~97% efficiency [M]
+  P_opp_burst ~0.85 [M]  (return impact into arena wall/floor causes burst)
+
+High-force attack (F_hit > ~75 N [M]):
+  Shield shatters --> Balkesh burst (all spin lost)
+  (requires a particularly powerful opponent move to exceed this threshold)
+```
+
+**QTE**
+- Input: K (brace) timed to each of 3 incoming hits
+- Window: 200 ms per hit
+- Power cost: 90
+
+**Move Parameters**
+```typescript
+function finalGuard(
+  shiftCount: number,
+  qteHit: boolean,
+  opponentForceTier: 'low' | 'high'
+): { selfSpinDelta: number; oppSpinDelta: number; dmgMult: number; lockMs: number; oppBurst: boolean; selfBurst: boolean; powerCost: number } {
+  const cost = 90;
+  if (shiftCount < 3) {
+    return { selfSpinDelta: +2, oppSpinDelta: -10, dmgMult: 0.85,
+             lockMs: 40, oppBurst: false, selfBurst: false, powerCost: cost };
+  }
+  if (opponentForceTier === 'high') {
+    return { selfSpinDelta: -999, oppSpinDelta: 0, dmgMult: 0,
+             lockMs: 0, oppBurst: false, selfBurst: true, powerCost: cost };
+  }
+  if (qteHit) {
+    return { selfSpinDelta: +3, oppSpinDelta: -35, dmgMult: 1.0,
+             lockMs: 200, oppBurst: true, selfBurst: false, powerCost: cost };
+  }
+  return { selfSpinDelta: +2, oppSpinDelta: -20, dmgMult: 1.0,
+           lockMs: 100, oppBurst: false, selfBurst: false, powerCost: cost };
+}
+// finalGuard(3, true,  'low')  => {self:+3, opp:-35, dmg:1.0x, lock:200ms, oppBurst:true}
+// finalGuard(3, false, 'low')  => {self:+2, opp:-20, dmg:1.0x, lock:100ms, oppBurst:false}
+// finalGuard(3, true,  'high') => {self:burst, dmg:0, selfBurst:true}
+// finalGuard(2, false, 'low')  => {self:+2, opp:-10, dmg:0.85x, lock:40ms}  (no shield)
+```
+
+> NOTE: BeySpirit elevates the physical deflection coefficient from e=0.85 to e=0.97 [M] and enables the opponent-burst-on-return outcome -- physically, the third disc shift alters the layer's contact-point orientation by ~120 deg [M], providing modestly improved 360-degree deflection geometry; the spherical shield manifestation, near-unity elasticity, and force-threshold self-burst/opponent-burst conditions are BeySpirit-only effects.
+
+---
+
+## Case 1431 -- COMBO: Shield Slam (derived from Final Guard 3-shift brace posture)
+
+**Sequence:** J ↑ K (attack -> moveUp -> defense)
+**Interpretation:** J (probe attack -- tests opponent resistance, first shift-pressure impulse applied to own layer as recoil reaction) -> ↑ (ride up bowl slope away from opponent, baiting a pursuit) -> K (plant at slope apex, brace raised layer as pursuing opponent crests into the braced contact face at elevated relative velocity)
+**Type:** defense  **Cost:** 15
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| selfSpinDelta | +2 | no ceiling | OK |
+| oppSpinDelta | -18 | <= 50 abs | OK |
+| dmgMult | 1.38x | <= 1.5x | OK |
+| lockMs | 95 ms | <= 300 ms | OK |
+
+```typescript
+function shieldSlamCombo(
+  chaseHit: boolean
+): { selfSpinDelta: number; oppSpinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 15;
+  if (!chaseHit) return { selfSpinDelta: +1, oppSpinDelta: -8, dmgMult: 1.10, lockMs: 25, powerCost: cost };
+  return { selfSpinDelta: +2, oppSpinDelta: -18, dmgMult: 1.38, lockMs: 95, powerCost: cost };
+}
+// shieldSlamCombo(true)  => {self:+2, opp:-18, dmg:1.38x, lock:95ms}
+// shieldSlamCombo(false) => {self:+1, opp: -8, dmg:1.10x, lock:25ms}
+```
+
+---
+
+## Case 1432 -- [GIMMICK]: Dread Phoenix 10 Friction Wall-Ricochet Skyrocket (Phi . Dread Phoenix 10 Friction)
+
+**Part:** "10" Forge Disc (10-sided polygon, high mass) + Friction Performance Tip (rubber, high-grip)
+**Assembly:** Dread Phoenix 10 Friction -- Dread Phoenix Energy Layer . 10 Forge Disc . Friction Performance Tip  [Burst GT configuration]
+**Gen / System:** Beyblade Burst GT | Layer + Disc + Driver System
+**Tags:** rubber-tip, wall-ricochet, aerial-launch, gravity-dive, high-mass, attack-type
+
+**Mechanism**
+
+Phi drives Dread Phoenix into the bowl wall at high approach velocity. The curved wall surface converts horizontal kinetic energy into vertical impulse (wall-ricochet phase). BeySpirit then amplifies the vertical component, launching Phoenix far above the stadium (skyrocket phase). Phoenix free-falls back under gravity, tip-first, accumulating gravitational potential energy as impact kinetic energy (gravity-dive phase).
+
+**Assembly mass distribution:**
+```
+Dread Phoenix Energy Layer: m_L ~25.0 g [M],  r_inner = 16 mm,  r_outer = 38 mm
+10 Forge Disc:              m_D ~28.0 g [M],  r_inner = 13 mm,  r_outer = 33 mm
+Friction Performance Tip:   m_T ~5.0 g  [M],  r_contact = 5 mm  (rubber)
+Total assembly:             ~58.0 g [M]
+
+I_Layer   = (0.025/2)(0.016^2 + 0.038^2) = 0.0125 x (2.56e-4 + 1.444e-3) = 2.125 x 10^-5 kg m^2
+I_10disc  = (0.028/2)(0.013^2 + 0.033^2) = 0.014  x (1.69e-4 + 1.089e-3) = 1.761 x 10^-5 kg m^2
+I_Friction ~0.07 x 10^-6 kg m^2  (negligible)
+I_total   ~3.89 x 10^-5 kg m^2  [M]
+```
+
+**Wall-ricochet kinematics at operating spin:**
+```
+At omega = 480 rad/s [M]:
+v_rim      = 480 x 0.038 = 18.24 m/s [M]
+KE         = (1/2) x 3.89e-5 x 480^2 = 4.48 J [M]
+
+Approach velocity (translational): v_in = 4.2 m/s [M]
+Bowl wall angle:                   theta_wall = 35 deg [M]
+Elastic coefficient (wall):        e_wall = 0.75 [M]
+
+Horizontal rebound: v_x = e_wall x v_in x cos(theta) = 0.75 x 4.2 x 0.819 = 2.58 m/s [M]
+Vertical component: v_z = e_wall x v_in x sin(theta) = 0.75 x 4.2 x 0.574 = 1.81 m/s [M]
+```
+
+**BeySpirit skyrocket (Phoenix spirit amplification):**
+```
+v_z_BS = v_z x BS_factor = 1.81 x 8 = 14.5 m/s [M]  (x8 BeySpirit vertical amplification)
+
+Apex height:
+  h = v_z_BS^2 / (2g) = (14.5)^2 / (2 x 9.81) = 210.25 / 19.62 = 10.7 m [M]
+  (anime consistent -- Phoenix is seen skyrocketing well above visible stadium height)
+```
+
+**Gravity-dive impact:**
+```
+Impact velocity (symmetric free-fall):
+  v_impact = v_z_BS = 14.5 m/s [M]
+
+Impact force (contact time t ~3 ms [M]):
+  F_impact = m x v_impact / t = 0.058 x 14.5 / 0.003 = 280 N [M]
+
+Rubber-tip torque transfer on opponent AR during landing:
+  tau_rub = F_impact x mu_rubber x r_contact = 280 x 0.55 x 0.005 = 0.77 N m [M]
+  (direct spin-drain via rubber grip on opponent's outer layer)
+```
+
+**Friction tip grounded spin decay:**
+```
+mu_Friction = 0.55 [M]  (rubber)
+d(omega)/dt = -(0.55 x 0.005 x 9.81 x 0.058) / 3.89e-5
+           = -1.563e-3 / 3.89e-5
+           ~-40.2 rad/s^2 [M]
+High rubber friction trades stamina for maximum grip during the dive landing torque transfer.
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Dread Phoenix Layer | 25.0 g | 16 mm | 38 mm |
+| 10 Forge Disc | 28.0 g | 13 mm | 33 mm |
+| Friction Tip | 5.0 g | -- | 5 mm (rubber) |
+| **Total** | **~58.0 g** | | **38 mm** |
+| I_total | -- | | ~3.89 x 10^-5 kg m^2 |
+
+---
+
+## Case 1433 -- [SPECIAL]: Final Dread Impact (Phi . Dread Phoenix 10 Friction)
+
+**Special Move:** Final Dread Impact
+**User:** Phi
+**Series:** Beyblade Burst GT
+**Compatible beys:** Any bey with an Energy Layer carrying broad diagonal blade faces or sweep-wing geometry (contact AR width >= 20 mm [M]) and a rubber Performance Tip (mu >= 0.5 [M]) -- the rubber tip is essential for gripping the bowl wall during the ricochet phase and for delivering the torque-drain on dive landing; a bowl-wall angle >= 25 deg [M] is required to produce sufficient vertical impulse from the ricochet; flat-bottom arenas cannot generate the climb trajectory regardless of BeySpirit magnitude.
+
+**Mechanic**
+
+**Phase 1 -- Wall charge and ricochet:**
+Phi drives Phoenix at the bowl wall at v_in ~4.2 m/s [M]. Wall elastic collision produces v_z ~1.81 m/s [M] vertical impulse (physical).
+
+**Phase 2 -- BeySpirit skyrocket:**
+Phoenix spirit amplifies v_z by x8 [M]: v_z_BS = 14.5 m/s [M]. Phoenix climbs to apex h ~10.7 m [M] (well above stadium height in anime).
+
+**Phase 3 -- Gravity dive:**
+Phoenix falls back under gravity, accumulating KE. At impact: v_impact = 14.5 m/s [M], F_impact = 280 N [M], rubber-tip torque transfer tau_rub = 0.77 N m [M] to opponent's spin axis.
+
+**QTE -- 3 phases:**
+1. ↑ (hold 400 ms -- charge wall approach velocity)
+2. J (150 ms window -- press at wall contact for ricochet)
+3. J (200 ms window -- press at dive descent for impact)
+Power cost: 95
+
+**Move Parameters**
+```typescript
+function finalDreadImpact(
+  phasesCompleted: number,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 95;
+  if (phasesCompleted === 0) return { spinDelta: -8,  dmgMult: 1.18, lockMs:  30, powerCost: cost };
+  if (phasesCompleted === 1) return { spinDelta: -18, dmgMult: 1.28, lockMs:  60, powerCost: cost };
+  if (phasesCompleted === 2 && !qteHit)
+                             return { spinDelta: -28, dmgMult: 1.38, lockMs: 100, powerCost: cost };
+  const perfect = phasesCompleted >= 3 && qteHit;
+  return {
+    spinDelta:  perfect ? -45 : -35,
+    dmgMult:    perfect ?  1.50 : 1.42,
+    lockMs:     perfect ?  180  : 130,
+    powerCost:  cost,
+  };
+}
+// finalDreadImpact(3, true)  => {spin:-45, dmg:1.50x, lock:180ms}  all phases perfect
+// finalDreadImpact(2, true)  => {spin:-28, dmg:1.38x, lock:100ms}  2 phases complete
+// finalDreadImpact(0, false) => {spin: -8, dmg:1.18x, lock: 30ms}  no phases
+```
+
+> NOTE: BeySpirit amplifies the wall-ricochet vertical velocity x8 [M], raising apex height from ~0.37 m (physical, v_z=1.81 m/s) to ~10.7 m [M] -- a physically impossible stadium exit. The 280 N dive impact force would fracture real polycarbonate parts (yield ~60 MPa on ~2 mm^2 contact --> F_yield ~12 N); in-game the force is capped at burst-trigger threshold. The rubber-tip torque transfer of 0.77 N m [M] during landing is a physical mechanism that operates without BeySpirit amplification.
+
+---
+
+## Case 1434 -- COMBO: Phoenix Dive (derived from Final Dread Impact wall-ride posture)
+
+**Sequence:** → ↑ J (moveRight -> moveUp -> attack)
+**Interpretation:** -> (lateral push toward bowl wall) -> ↑ (ride up the curved slope using orbital momentum) -> J (strike downward from the elevated position -- a shallow slope-assisted dive, not the full aerial skyrocket; the height advantage from the slope amplifies the downward impact component)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -26 | <= 50 abs | OK |
+| dmgMult | 1.42x | <= 1.5x | OK |
+| lockMs | 110 ms | <= 300 ms | OK |
+
+```typescript
+function phoenixDiveCombo(
+  elevatedHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!elevatedHit) return { spinDelta: -10, dmgMult: 1.22, lockMs:  35, powerCost: cost };
+  return { spinDelta: -26, dmgMult: 1.42, lockMs: 110, powerCost: cost };
+}
+// phoenixDiveCombo(true)  => {spin:-26, dmg:1.42x, lock:110ms}
+// phoenixDiveCombo(false) => {spin:-10, dmg:1.22x, lock: 35ms}
+```
+
+---
+
+## Case 1435 -- [GIMMICK]: Arc Balkesh 2Bump Shield-Active Slope Momentum (Boa Alcazaba . Arc Balkesh 2Bump Atomic)
+
+**Part:** Same assembly as Case 1429 (Arc Balkesh 2Bump Atomic). New analysis: bowl-wall slope trajectory with shield active for Final Crash momentum calculation.
+**Assembly:** Arc Balkesh 2Bump Atomic -- same as Case 1429 (I_total ~3.14 x 10^-5 kg m^2, m ~54 g [M])
+**Gen / System:** Beyblade Burst GT (Rise) | Layer + Disc + Driver System
+**Tags:** slope-momentum, wall-ride, shield-active, crash-trajectory, ring-out, burst-gt
+
+**Mechanism**
+
+After the 3-shift shield forms (as in Final Guard, Case 1429-1430), BeySpirit drives Balkesh up the bowl wall and down the slope toward the opponent with the red shield still active. The slope provides an acceleration component that amplifies the tangential orbit velocity into a directed crash vector.
+
+**Slope-momentum analysis (shield active):**
+```
+Tangential orbit velocity at omega = 500 rad/s [M]:
+  v_tan = omega x r_outer = 500 x 0.037 = 18.5 m/s [M]
+
+Bowl wall angle: theta = 30 deg [M]
+Wall radius of curvature: R_arc ~130 mm [M]
+
+Normal force on wall (centripetal reaction):
+  N = m x v_tan^2 / R_arc = 0.054 x 342.25 / 0.13 = 142.2 N [M]
+
+BeySpirit slope thrust (direct acceleration along slope face):
+  F_BS_thrust ~12 N [M]  (BeySpirit provides directed down-slope force while shield active)
+  a_slope_BS  = F_BS_thrust / m = 12 / 0.054 = 222 m/s^2 [M]
+
+Descent over arc s ~200 mm [M]:
+  v_slope^2 = 2 x a_slope_BS x s = 2 x 222 x 0.20 = 88.8  m^2/s^2
+  v_slope   = 9.42 m/s [M]  (BeySpirit-driven slope descent component)
+
+Combined crash vector (tangential + slope):
+  v_crash = sqrt(v_tan^2 + v_slope^2) = sqrt(342.25 + 88.8) = sqrt(431.05) = 20.8 m/s [M]
+```
+
+**Crash impact parameters:**
+```
+F_crash = m x v_crash / t_contact = 0.054 x 20.8 / 0.003 = 374 N [M]
+  (>> burst threshold ~75 N --> causes opponent burst or ring-out under BeySpirit)
+
+Opponent spin drain (Atomic bearing on opponent AR during crash contact):
+  tau_drain = F_crash x mu_Atomic x r_AR = 374 x 0.04 x 0.037 = 0.554 N m [M]
+  delta_omega_opp = tau_drain x t / I_opp = 0.554 x 0.003 / 2.5e-5 = 66.5 rad/s [M]
+
+Self-shield protection: Balkesh does not burst because BeySpirit shield absorbs crash recoil.
+```
+
+**Assembly parameters [M]:**
+*(Identical to Case 1429 -- reproduced for reference)*
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Arc Balkesh Layer | 23.0 g | 15 mm | 37 mm |
+| 2Bump Forge Disc | 25.0 g | 12 mm | 30 mm |
+| Atomic Tip | 6.0 g | -- | 2 mm (contact) |
+| **Total** | **~54.0 g** | | **37 mm** |
+| I_total | -- | | ~3.14 x 10^-5 kg m^2 |
+
+---
+
+## Case 1436 -- [SPECIAL]: Final Crash (Boa Alcazaba . Arc Balkesh 2Bump Atomic)
+
+**Special Move:** Final Crash
+**User:** Boa Alcazaba
+**Series:** Beyblade Burst GT (Rise)
+**Compatible beys:** Same conditions as Final Guard (Case 1430) -- requires a 3-position ratchet Energy Layer (r_bump >= 25 mm [M]) and a wide ball-bearing Performance Tip (r_contact <= 3 mm [M]); additionally the combo requires a bowl-wall angle >= 20 deg [M] to produce a viable slope descent vector; flat-bottom arenas reduce ring-out probability to near zero since no slope acceleration contributes to the crash trajectory.
+
+**Mechanic**
+
+After accumulating 3 disc shifts and forming the red shield (identical to Final Guard setup), BeySpirit drives Balkesh up the bowl wall and launches it down the slope into the opponent with shield-on momentum. The shield prevents Balkesh from bursting on the crash even though the impact force (~374 N [M]) far exceeds the normal burst threshold.
+
+**Physical crash (no BeySpirit slope thrust):** F_crash ~252 N [M] (tangential orbit + gravity only)
+**With BeySpirit slope thrust:**               F_crash ~374 N [M] (tangential + 9.42 m/s descent component)
+**Ring-out trajectory:** crash approach is angled toward the stadium edge -- primary win condition is ring-out rather than burst damage.
+
+**QTE**
+- Phase 1: K (tap 3 times to accumulate 3 shifts -- 300 ms window per tap)
+- Phase 2: ↑ (mount bowl wall -- 200 ms timing window)
+- Phase 3: J (release crash charge at apex -- 150 ms window)
+Power cost: 95
+
+**Move Parameters**
+```typescript
+function finalCrash(
+  shiftCount: number,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; ringOutChance: number; powerCost: number } {
+  const cost = 95;
+  if (shiftCount < 3) {
+    return { spinDelta: -15, dmgMult: 1.24, lockMs:  55, ringOutChance: 0.10, powerCost: cost };
+  }
+  if (!qteHit) {
+    return { spinDelta: -28, dmgMult: 1.38, lockMs: 110, ringOutChance: 0.38, powerCost: cost };
+  }
+  return {
+    spinDelta:      -42,
+    dmgMult:         1.48,
+    lockMs:          175,
+    ringOutChance:   0.65,
+    powerCost:       cost,
+  };
+}
+// finalCrash(3, true)  => {spin:-42, dmg:1.48x, lock:175ms, ringOut:0.65}  perfect
+// finalCrash(3, false) => {spin:-28, dmg:1.38x, lock:110ms, ringOut:0.38}  QTE miss
+// finalCrash(1, false) => {spin:-15, dmg:1.24x, lock: 55ms, ringOut:0.10}  partial shifts
+```
+
+> NOTE: BeySpirit provides the ~12 N slope-thrust force [M] that contributes the 9.42 m/s descent component and raises crash force from ~252 N (physical tangential orbit alone) to ~374 N [M] -- without BeySpirit, Atomic's ball-bearing friction cannot propel Balkesh up the wall and back down; the shield-on-crash self-protection (no self-burst at 374 N impact) is also purely a BeySpirit effect, as the physical burst threshold for Balkesh is ~75 N [M].
+
+---
+
+## Case 1437 -- COMBO: Slope Charge (derived from Final Crash wall-ride approach)
+
+**Sequence:** ↑ K J (moveUp -> defense -> attack)
+**Interpretation:** ↑ (drive up bowl slope using orbital momentum) -> K (brace layer at apex -- brief shield posture that keeps Balkesh pressed against the wall through the orbit arc) -> J (release down-slope smash as the wall carries Balkesh back into the stadium -- no full shield formation, just the slope momentum component)
+**Type:** defense  **Cost:** 15
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -20 | <= 50 abs | OK |
+| dmgMult | 1.36x | <= 1.5x | OK |
+| lockMs | 85 ms | <= 300 ms | OK |
+
+```typescript
+function slopeChargeCombo(
+  wallHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 15;
+  if (!wallHit) return { spinDelta: -8, dmgMult: 1.18, lockMs: 28, powerCost: cost };
+  return { spinDelta: -20, dmgMult: 1.36, lockMs: 85, powerCost: cost };
+}
+// slopeChargeCombo(true)  => {spin:-20, dmg:1.36x, lock:85ms}
+// slopeChargeCombo(false) => {spin: -8, dmg:1.18x, lock:28ms}
+```
+
+---
+
+## Case 1438 -- [GIMMICK]: Shelter Regulus Lion Fang Protrusion Contact (Ren Wu Sun . Shelter Regulus 5Star Tower)
+
+**Part:** Shelter Regulus Energy Layer (four lion-head fang protrusions at r_fang ~37 mm) + 5Star Forge Disc (five-point star body)
+**Assembly:** Shelter Regulus 5Star Tower -- Shelter Regulus Energy Layer . 5Star Forge Disc . Tower Performance Tip  [Burst Rise / DB configuration]
+**Gen / System:** Beyblade Burst Rise (or DB) | Layer + Disc + Driver System
+**Tags:** fang-contact, concentrated-tip, lion-head, star-disc, flat-wide-tip, burst-rise
+
+**Mechanism**
+
+The Shelter Regulus Energy Layer carries four lion-head fang protrusions distributed symmetrically around the layer perimeter at r_fang ~37 mm [M]. Each fang has a narrow, curved leading edge providing a small concentrated contact footprint. At operating spin, the fang tips deliver repeated smash impacts to the opponent's layer with contact pressure approaching but remaining below polycarbonate yield -- the BeySpirit extension in the SPECIAL (Case 1439) pushes the effective contact radius further, exceeding the material threshold.
+
+**Assembly mass distribution:**
+```
+Shelter Regulus Energy Layer: m_L ~24.0 g [M],  r_inner = 15 mm,  r_outer = 37 mm
+5Star Forge Disc:             m_D ~26.0 g [M],  r_inner = 12 mm,  r_outer = 32 mm
+Tower Performance Tip:        m_T ~5.0 g  [M],  r_contact = 6 mm  (flat disc, wide stance)
+Total assembly:               ~55.0 g [M]
+
+I_Layer = (0.024/2)(0.015^2 + 0.037^2) = 0.012 x (2.25e-4 + 1.369e-3) = 1.913 x 10^-5 kg m^2
+I_5Star = (0.026/2)(0.012^2 + 0.032^2) = 0.013 x (1.44e-4 + 1.024e-3) = 1.518 x 10^-5 kg m^2
+I_Tower = (0.005/2)(0.003^2 + 0.006^2) ~0.25 x 10^-6 kg m^2
+I_total ~3.46 x 10^-5 kg m^2  [M]
+```
+
+**Fang contact mechanics at operating spin:**
+```
+At omega = 490 rad/s [M]:
+v_fang = 490 x 0.037 = 18.1 m/s [M]
+KE     = (1/2) x 3.46e-5 x 490^2 = 4.16 J [M]
+
+Contact time per fang strike: t_contact ~4 ms [M]
+Impact force (full assembly): F_impact = m x v_fang / t = 0.055 x 18.1 / 0.004 = 249 N [M]
+  (4 fang tips share force: ~62 N per tip when all 4 contact simultaneously)
+
+Contact area per fang tip: A_fang ~6 mm^2 [M]  (narrow curved leading edge)
+Pressure per fang: P = 62 / (6e-6) ~10.3 MPa [M]
+  Polycarbonate yield stress ~60 MPa [M] -- physical contact well below yield (OK)
+  BeySpirit extension raises P above yield -- see Case 1439
+```
+
+**Tower tip spin decay:**
+```
+mu_Tower = 0.08 [M]  (flat polycarbonate disc, moderate friction)
+r_contact = 0.006 m [M]
+d(omega)/dt = -(0.08 x 0.006 x 9.81 x 0.055) / 3.46e-5
+           = -2.591e-4 / 3.46e-5
+           ~-7.5 rad/s^2 [M]
+Wide Tower tip maintains stable centred orbit, sacrificing some stamina for positional control.
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Shelter Regulus Layer | 24.0 g | 15 mm | 37 mm (fang tips) |
+| 5Star Forge Disc | 26.0 g | 12 mm | 32 mm |
+| Tower Tip | 5.0 g | -- | 6 mm (contact) |
+| **Total** | **~55.0 g** | | **37 mm** |
+| I_total | -- | | ~3.46 x 10^-5 kg m^2 |
+
+---
+
+## Case 1439 -- [SPECIAL]: Fang Attack (Ren Wu Sun . Shelter Regulus 5Star Tower)
+
+**Special Move:** Fang Attack
+**User:** Ren Wu Sun
+**Series:** Beyblade Burst Rise (or DB)
+**Compatible beys:** Any bey with an Energy Layer carrying >= 2 symmetric fang/claw protrusions at r >= 30 mm [M], each with a contact tip area <= 8 mm^2 [M] (concentrated geometry) -- distributed-blade ARs with large flat contact patches (> 20 mm^2 per protrusion [M]) spread the force and cannot achieve fang-level contact pressure; wide rubber tips that produce translational movement blur the contact timing required for the directed fang strike.
+
+**Mechanic**
+
+Ren Wu summons Regulus's lion spirit, which extends the fang protrusions beyond their physical extent as BeySpirit energy projections. The effective contact radius increases from r_fang = 37 mm [M] to r_ext ~44 mm [M], and all four fang tips concentrate simultaneously into a single directed assault.
+
+**Physical fang strike (unaided, all 4 tips):**
+```
+F_total = 249 N [M],  P per tip = ~10.3 MPa [M]  (below PC yield -- no layer damage)
+```
+
+**BeySpirit fang extension:**
+```
+r_ext = 44 mm [M]  (energy projection beyond physical layer boundary)
+v_ext = 490 x 0.044 = 21.6 m/s [M]
+F_BS  = 3 x (m x v_ext / t) = 3 x (0.055 x 21.6 / 0.004) = 3 x 297 = 891 N [M]
+  (x3 BeySpirit amplification -- Regulus concentrates all 4 fangs into single focused hit [M])
+
+Contact area at extension (energy tip, sharper): A_ext ~4 mm^2 per fang [M]
+Pressure: P_BS = (891/4) / (4e-6) = 222 / 4e-6 = 55.6 MPa [M]  (just below PC yield at this calc)
+  With deeper BeySpirit commitment (full lion roar): ~62 MPa [M] --> PC yield --> opponent AR scoring [M]
+```
+
+**QTE**
+- Input: Hold **J** (charge fang BeySpirit extension), release on lion roar cue
+- Window: 400 ms charge + 150 ms release
+- Power cost: 80
+
+**Move Parameters**
+```typescript
+function fangAttack(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 80;
+  const r = Math.min(chargeMs / 400, 1.0);
+  if (!qteHit) return { spinDelta: -14, dmgMult: 1.26, lockMs: 40, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -32 : Math.round(-16 - 16 * r),
+    dmgMult:   perfect ?  1.44 : 1.26 + 0.16 * r,
+    lockMs:    perfect ?  130  : Math.round(40 + 80 * r),
+    powerCost: cost,
+  };
+}
+// fangAttack(400, true)  => {spin:-32, dmg:1.44x, lock:130ms}  full charge perfect
+// fangAttack(200, true)  => {spin:-24, dmg:1.34x, lock: 80ms}  partial charge
+// fangAttack(400, false) => {spin:-14, dmg:1.26x, lock: 40ms}  QTE miss
+```
+
+> NOTE: BeySpirit extends the physical fang radius from 37 mm to 44 mm [M] and concentrates all four protrusions into a focused lion-spirit assault with x3 force amplification [M]; physically the Energy Layer protrusions are rigid and cannot extend beyond the moulded boundary, and the 891 N computed force far exceeds what the layer-disc joint torque can mechanically transmit -- the near-yield contact pressure (~62 MPa [M]) is the BeySpirit's physical expression, not a direct material result.
+
+---
+
+## Case 1440 -- COMBO: Fang Rush (derived from Fang Attack protrusion-charge posture)
+
+**Sequence:** J → J (attack -> moveRight -> attack)
+**Interpretation:** J (first fang strike -- probe from standing orbit) -> -> (orbit right, carrying Regulus into a wider arc around opponent) -> J (second fang strike from the flanking position -- two-strike rapid diagonal rush using orbital momentum to increase the second contact velocity)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -22 | <= 50 abs | OK |
+| dmgMult | 1.40x | <= 1.5x | OK |
+| lockMs | 95 ms | <= 300 ms | OK |
+
+```typescript
+function fangRushCombo(
+  secondHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!secondHit) return { spinDelta: -10, dmgMult: 1.22, lockMs: 35, powerCost: cost };
+  return { spinDelta: -22, dmgMult: 1.40, lockMs: 95, powerCost: cost };
+}
+// fangRushCombo(true)  => {spin:-22, dmg:1.40x, lock:95ms}
+// fangRushCombo(false) => {spin:-10, dmg:1.22x, lock:35ms}
+```
+
+---
+
+## Case 1441 -- [GIMMICK]: Galaxy Pegasus W105R2F Wing-Tip Smash (Gingka Hagane . Galaxy Pegasus W105R2F)
+
+**Part:** Galaxy Pegasus Metal Wheel (two wing-blade protrusions at r_wing ~30 mm) + W105 Track + R2F Tip (large rubber flat)
+**Assembly:** Galaxy Pegasus W105R2F -- Face Bolt . Galaxy Pegasus Metal Wheel . PC Frame . W105 Track . R2F Tip  [Metal Fight Beyblade (MFB) 4D System]
+**Gen / System:** Beyblade Metal Masters / Metal Fury (MFB) | 4D System
+**Tags:** wing-blade, smash-attack, rubber-tip, high-speed-orbit, wide-track, mfb-4d
+
+**Mechanism**
+
+The Galaxy Pegasus Metal Wheel carries two asymmetric wing-blade protrusions -- each with a narrow, angled contact face -- at r_wing ~30 mm [M]. The W105 track (Wide 105) provides a lower centre of mass and wider stance than standard 105, improving gyroscopic stability during the high-speed R2F approach pattern. The R2F tip's large rubber footprint creates aggressive translational movement, carrying Pegasus around the stadium at high speed and maximising the approach velocity component in each wing-tip impact.
+
+**Assembly mass distribution:**
+```
+Galaxy Pegasus Metal Wheel: m_W ~30.0 g [M],  r_inner = 10 mm,  r_outer = 30 mm
+PC Frame:                   m_F ~3.0 g  [M],  r_inner = 8 mm,   r_outer = 20 mm
+W105 Track:                 m_T ~6.0 g  [M],  r = 9 mm
+R2F Tip:                    m_R ~4.0 g  [M],  r_contact = 7 mm  (rubber flat)
+Total assembly:             ~43.0 g [M]
+
+I_Wheel  = (0.030/2)(0.010^2 + 0.030^2) = 0.015 x (1.00e-4 + 9.00e-4) = 1.500 x 10^-5 kg m^2
+I_Frame  = (0.003/2)(0.008^2 + 0.020^2) = 0.0015 x (6.4e-5 + 4.00e-4) = 0.696 x 10^-6 kg m^2
+I_Track  ~0.25 x 10^-6 kg m^2
+I_R2F    ~0.12 x 10^-6 kg m^2
+I_total  ~1.62 x 10^-5 kg m^2  [M]
+```
+
+**Wing-tip contact at operating spin:**
+```
+At omega = 550 rad/s [M]:
+v_wing = 550 x 0.030 = 16.5 m/s [M]
+KE     = (1/2) x 1.62e-5 x 550^2 = 2.45 J [M]
+
+Contact time per wing strike: t ~4 ms [M]
+Impact force: F_wing = m x v_wing / t = 0.043 x 16.5 / 0.004 = 177 N [M]
+  (2 wing tips: ~89 N per tip)
+
+Contact area per wing tip: A_wing ~4 mm^2 [M]  (narrow angled blade face)
+Pressure per tip: P = 89 / (4e-6) ~22.3 MPa [M]  (below PC yield -- physical contact)
+  BeySpirit nova concentration raises P above yield -- see Case 1442
+```
+
+**R2F tip spin decay (high rubber friction):**
+```
+mu_R2F    = 0.62 [M]  (large rubber flat, aggressive traction)
+r_contact = 0.007 m [M]
+d(omega)/dt = -(0.62 x 0.007 x 9.81 x 0.043) / 1.62e-5
+           = -1.829e-3 / 1.62e-5
+           ~-113 rad/s^2 [M]
+High rubber friction gives R2F very fast spin decay -- all stamina traded for orbital speed.
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Galaxy Pegasus Wheel | 30.0 g | 10 mm | 30 mm |
+| PC Frame | 3.0 g | 8 mm | 20 mm |
+| W105 Track | 6.0 g | -- | 9 mm |
+| R2F Tip | 4.0 g | -- | 7 mm (rubber) |
+| **Total** | **~43.0 g** | | **30 mm** |
+| I_total | -- | | ~1.62 x 10^-5 kg m^2 |
+
+---
+
+## Case 1442 -- [SPECIAL]: Galaxy Nova (Gingka Hagane . Storm Pegasus 105RF / Galaxy Pegasus W105R2F / Samurai Pegasus W105R2F)
+
+**Special Move:** Galaxy Nova
+**User:** Gingka Hagane
+**Series:** Beyblade Metal Fight (Metal Masters / Metal Fury)
+**Compatible beys:** Any bey with an attack-type Metal Wheel carrying >= 2 wing/blade protrusions (r >= 25 mm [M], acute tip geometry A_tip <= 6 mm^2 [M]) and an aggressive rubber Performance Tip (mu >= 0.55 [M]) -- the "nova" requires high orbital velocity from the rubber tip to build kinetic approach energy, then concentrates all rotational + translational KE into the Pegasus wing-tip contact point; stamina-type beys with flat metal tips lack sufficient approach speed for the concentrated burst.
+
+**Mechanic**
+
+Gingka channels BeySpirit through the Pegasus constellation spirit. The "Nova" is the moment all stored rotational and translational kinetic energy converges into a single directed wing-tip point impact -- akin to a stellar nova (sudden release of accumulated energy):
+
+**Physical wing-tip strike (unaided):**
+```
+F_phys = 177 N [M],  P = 22.3 MPa [M]  (below PC yield -- no damage unaided)
+```
+
+**BeySpirit nova concentration (x4 factor [M]):**
+```
+F_BS = 4 x 177 = 708 N [M]
+P_BS = 4 x 22.3 = 89.2 MPa [M]  >> polycarbonate yield ~60 MPa
+  --> opponent Energy Layer fracture / burst at full charge [M]
+  (consistent with arena destruction effects seen in Metal Fury battles)
+
+KE delivered to opponent on wing contact:
+  delta_KE_opp = F_BS x delta_x = 708 x 0.004 = 2.83 J [M]
+  (delta_x = wing deformation ~4 mm [M])
+```
+
+**QTE**
+- Input: Hold **↑** (orbital charge -- build approach velocity), release on constellation flash
+- Window: 500 ms charge + 200 ms release
+- Power cost: 90
+
+**Move Parameters**
+```typescript
+function galaxyNova(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 90;
+  const r = Math.min(chargeMs / 500, 1.0);
+  if (!qteHit) return { spinDelta: -12, dmgMult: 1.24, lockMs: 40, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -40 : Math.round(-18 - 22 * r),
+    dmgMult:   perfect ?  1.50 : 1.26 + 0.22 * r,
+    lockMs:    perfect ?  160  : Math.round(45 + 100 * r),
+    powerCost: cost,
+  };
+}
+// galaxyNova(500, true)  => {spin:-40, dmg:1.50x, lock:160ms}  full charge perfect
+// galaxyNova(250, true)  => {spin:-29, dmg:1.37x, lock: 95ms}  partial charge
+// galaxyNova(500, false) => {spin:-12, dmg:1.24x, lock: 40ms}  QTE miss
+```
+
+> NOTE: BeySpirit concentrates all rotational and translational KE into the Pegasus wing-tip contact point at x4 force amplification [M], raising contact pressure above the polycarbonate yield stress (89.2 MPa [M] > 60 MPa [M]) -- physically the wing tip at this approach speed delivers 177 N, which is sub-yield; the concentrated nova point and stellar-burst energy conversion are BeySpirit manifestations.
+
+---
+
+## Case 1443 -- COMBO: Nova Strike (derived from Galaxy Nova orbital-charge posture)
+
+**Sequence:** ↑ → J (moveUp -> moveRight -> attack)
+**Interpretation:** ↑ (build vertical orbit -- carry Pegasus up the bowl slope, raising elevation and approach potential) -> -> (arc laterally right, converting elevation into high orbital speed via slope descent) -> J (release directed nova strike at peak approach velocity from the diagonal high-speed arc)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -24 | <= 50 abs | OK |
+| dmgMult | 1.40x | <= 1.5x | OK |
+| lockMs | 100 ms | <= 300 ms | OK |
+
+```typescript
+function novaStrikeCombo(
+  arcHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!arcHit) return { spinDelta: -10, dmgMult: 1.22, lockMs: 35, powerCost: cost };
+  return { spinDelta: -24, dmgMult: 1.40, lockMs: 100, powerCost: cost };
+}
+// novaStrikeCombo(true)  => {spin:-24, dmg:1.40x, lock:100ms}
+// novaStrikeCombo(false) => {spin:-10, dmg:1.22x, lock: 35ms}
+```
+
+---
+
+## Case 1444 -- [GIMMICK]: Dragoon G Left Engine Gear Vortex Air Column (Tyson Granger . Dragoon G)
+
+**Part:** Dragoon G Attack Ring (swept blade geometry) + Left Engine Gear (LEG, co-spin spring mechanism) + Wide Defense Weight Disk
+**Assembly:** Dragoon G -- Attack Ring . Wide Defense Weight Disk . Left Engine Gear . Grip Base  [Plastic Generation / G-Revolution]
+**Gen / System:** Beyblade G-Revolution | Hard Metal / Plastic System with Engine Gear
+**Tags:** engine-gear, vortex, air-column, draw-in, left-rotation, plastic-gen
+
+**Mechanism**
+
+Dragoon G's Left Engine Gear (LEG) is spring-wound at launch and releases during battle, delivering a rotational impulse in the same direction as the bey's left-hand spin. The ARs swept geometry sweeps a ~44 mm diameter air column. At the moment of EG release, the tip velocity of the AR jumps to ~40 m/s [M], creating an organised rotating air column (free-vortex profile) that exerts a draw-in pressure gradient on anything within its influence radius.
+
+**Assembly mass distribution:**
+```
+Dragoon G Attack Ring:  m_AR ~22.0 g [M],  r_inner = 8 mm,  r_outer = 22 mm
+Wide Defense WD:        m_WD ~13.0 g [M],  r_inner = 5 mm,  r_outer = 20 mm
+Left Engine Gear (EG):  m_EG ~15.0 g [M],  r_inner = 4 mm,  r_outer = 20 mm
+Grip Base:              m_B  ~8.0 g  [M],  r_inner = 2 mm,  r_outer = 8 mm
+Total assembly:         ~58.0 g [M]
+
+I_AR  = (0.022/2)(0.008^2 + 0.022^2) = 0.011 x (6.4e-5 + 4.84e-4) = 6.03 x 10^-6 kg m^2
+I_WD  = (0.013/2)(0.005^2 + 0.020^2) = 0.0065 x (2.5e-5 + 4.00e-4) = 2.76 x 10^-6 kg m^2
+I_EG  = (0.015/2)(0.004^2 + 0.020^2) = 0.0075 x (1.6e-5 + 4.00e-4) = 3.12 x 10^-6 kg m^2
+I_B   ~0.27 x 10^-6 kg m^2
+I_total ~1.22 x 10^-5 kg m^2  [M]
+```
+
+**EG release kinetics:**
+```
+Spring stored energy: E_spring ~2.5 J [M]
+EG angular velocity boost: delta_omega_EG = sqrt(2 x E_spring / I_EG)
+  = sqrt(2 x 2.5 / 3.12e-6) = sqrt(1.603e6) = 1266 rad/s [M]
+Total omega post-release: omega_EG = 530 + 1266 = 1796 rad/s [M]  (brief spike)
+
+AR tip velocity at EG release:
+  v_tip_EG = 1796 x 0.022 = 39.5 m/s [M]
+```
+
+**Free-vortex air column:**
+```
+Model: free vortex  v(r) = v_tip x r_AR / r  (angular momentum conservation)
+
+At r = 22 mm (AR tip):   v = 39.5 m/s [M]
+At r = 50 mm (near):     v = 39.5 x 0.022 / 0.050 = 17.4 m/s [M]
+At r = 100 mm (mid):     v = 39.5 x 0.022 / 0.100 = 8.7 m/s [M]
+
+Dynamic pressure at AR tip: q_tip = (1/2) x rho x v^2 = 0.5 x 1.225 x 39.5^2 = 955 Pa [M]
+  (r_air = 1.225 kg/m^3 at sea level [M])
+
+Draw-in force on opponent (effective cross-section A_opp ~2.83 x 10^-3 m^2 [M]):
+  At r=50 mm:  q = (1/2) x 1.225 x 17.4^2 = 185 Pa [M]
+  Delta_P draw = q_tip - q_50mm = 955 - 185 = 770 Pa [M]
+  F_draw_phys = 770 x 2.83e-3 = 2.18 N [M]
+  (draws opponent inward at ~2.18 N -- positions them for AR contact [M])
+
+BeySpirit vortex amplification (x8 [M]):
+  v_BS = 8 x 39.5 = 316 m/s [M]  (tornado-class wind speed)
+  q_BS = (1/2) x 1.225 x 316^2 = 61157 Pa [M]
+  F_draw_BS = 61157 x 2.83e-3 = 173 N [M]
+  (BeySpirit draw-in force comparable to a direct hit -- cannot escape the vortex [M])
+```
+
+**Base tip spin decay:**
+```
+mu_Grip = 0.50 [M]  (Grip-type rubber base, moderate-to-high friction)
+r_contact = 0.004 m [M]
+d(omega)/dt = -(0.50 x 0.004 x 9.81 x 0.058) / 1.22e-5
+           = -1.137e-3 / 1.22e-5 ~-93.2 rad/s^2 [M]
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Dragoon G AR | 22.0 g | 8 mm | 22 mm |
+| Wide Defense WD | 13.0 g | 5 mm | 20 mm |
+| Left Engine Gear | 15.0 g | 4 mm | 20 mm |
+| Grip Base | 8.0 g | 2 mm | 8 mm |
+| **Total** | **~58.0 g** | | **22 mm** |
+| I_total | -- | | ~1.22 x 10^-5 kg m^2 |
+
+---
+
+## Case 1445 -- [SPECIAL]: Galaxy Storm (Tyson Granger . Dragoon G)
+
+**Special Move:** Galaxy Storm (Ginga Senpu-geki / Galactic Whirlwind)
+**User:** Tyson Granger
+**Series:** Beyblade G-Revolution (anime + manga)
+**Compatible beys:** Any bey with a left-rotation co-spin Engine Gear (spring energy >= 2.0 J [M]) and an Attack Ring with swept blade geometry covering >= 60% of the rotation circle arc [M] -- right-rotation EG produces an opposing-spin air column that partially cancels the vortex; without an EG the tip velocity is insufficient to create an organised draw-in vortex above the 2 N threshold; beys with smooth, round ARs (no blade sweep) produce weaker vortex cores.
+
+**Mechanic**
+
+The LEG releases, spinning the AR to ~40 m/s [M], and the Dragoon G BeySpirit (Dragon wind entity) amplifies the rotating air column into a galaxy-scale whirlwind:
+
+**Physical vortex draw-in:** F_draw_phys ~2.18 N [M] (positions opponent)
+**BeySpirit whirlwind (x8):** v_storm_BS ~316 m/s [M], F_draw_BS ~173 N [M] (opponent cannot escape, dragged into AR strike zone)
+
+After opponent is drawn in, the rotating AR delivers the final smash strike at v_tip_EG ~39.5 m/s [M].
+
+**QTE**
+1. J (EG release -- tap at peak spin) -- 150 ms window
+2. K (hold vortex -- sustain BeySpirit for 300 ms) -- hold window
+3. J (draw-in strike -- press as opponent enters AR radius) -- 200 ms window
+Power cost: 85
+
+**Move Parameters**
+```typescript
+function galaxyStorm(
+  vortexMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 85;
+  const v = Math.min(vortexMs / 300, 1.0);
+  if (!qteHit) return { spinDelta: -10, dmgMult: 1.22, lockMs: 35, powerCost: cost };
+  const perfect = v >= 0.9;
+  return {
+    spinDelta: perfect ? -35 : Math.round(-14 - 21 * v),
+    dmgMult:   perfect ?  1.44 : 1.22 + 0.20 * v,
+    lockMs:    perfect ?  150  : Math.round(40 + 100 * v),
+    powerCost: cost,
+  };
+}
+// galaxyStorm(300, true)  => {spin:-35, dmg:1.44x, lock:150ms}  full vortex perfect
+// galaxyStorm(150, true)  => {spin:-25, dmg:1.32x, lock: 90ms}  partial vortex
+// galaxyStorm(300, false) => {spin:-10, dmg:1.22x, lock: 35ms}  QTE miss
+```
+
+> NOTE: BeySpirit amplifies the vortex air-column velocity x8 [M] from 39.5 m/s to 316 m/s (F3-class tornado wind speed), raising draw-in force from 2.18 N (physical, barely perceptible) to 173 N [M] -- an irresistible suction force; the AR tip velocity of 39.5 m/s [M] is physically real (EG spring energy), but the atmospheric tornado effect and the "galaxy" scale of the whirlwind are BeySpirit manifestations driven by the Dragoon wind spirit.
+
+---
+
+## Case 1446 -- COMBO: Whirlwind Slash (derived from Galaxy Storm vortex-approach posture)
+
+**Sequence:** J ↓ ← (attack -> moveDown -> moveLeft)
+**Interpretation:** J (release the EG boost -- first claw-of-the-vortex strike from standing position) -> ↓ (drop posture, pulling opponent toward the lower contact arc like a descending spiral) -> <- (swing orbit counter-clockwise, delivering the second vortex-arc strike from the low-sweep angle -- mimics the whirlwind's spiral descent)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -20 | <= 50 abs | OK |
+| dmgMult | 1.38x | <= 1.5x | OK |
+| lockMs | 80 ms | <= 300 ms | OK |
+
+```typescript
+function whirlwindSlashCombo(
+  spiralHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!spiralHit) return { spinDelta: -8, dmgMult: 1.20, lockMs: 28, powerCost: cost };
+  return { spinDelta: -20, dmgMult: 1.38, lockMs: 80, powerCost: cost };
+}
+// whirlwindSlashCombo(true)  => {spin:-20, dmg:1.38x, lock:80ms}
+// whirlwindSlashCombo(false) => {spin: -8, dmg:1.20x, lock:28ms}
+```
+
+---
+
+## Case 1447 -- [GIMMICK]: Dragoon GT Turbo Left EG Dual-Vortex Interference (Tyson Granger . Dragoon GT)
+
+**Part:** Turbo Left Engine Gear (TLEG, higher spring energy than standard LEG) + Dragoon GT Attack Ring (wide-sweep geometry for multi-vortex arc)
+**Assembly:** Dragoon GT -- Attack Ring . Wide Defense Weight Disk . Turbo Left Engine Gear . Base  [Plastic Generation / G-Revolution]
+**Gen / System:** Beyblade G-Revolution | Hard Metal / Plastic System with Turbo Engine Gear
+**Tags:** turbo-eg, dual-vortex, interference, stadium-resonance, multi-target, g-revolution
+
+**Mechanism**
+
+Dragoon GT's Turbo Left Engine Gear stores more spring energy than the standard LEG (~3.5 J [M] vs ~2.5 J) and releases a higher-velocity air column. At the higher vortex velocity, the primary air column reflects off the stadium wall and a secondary reflected column forms. Where the primary and reflected columns cross, destructive/constructive interference creates N=4-6 vortex nodes around the perimeter [M] -- visible in anime as multiple tornado funnels taking the form of Dragoon effigy projections.
+
+**Assembly mass distribution:**
+```
+Dragoon GT Attack Ring:      m_AR ~22.0 g [M],  r_inner = 8 mm,  r_outer = 22 mm
+Wide Defense WD:             m_WD ~13.0 g [M],  r_inner = 5 mm,  r_outer = 20 mm
+Turbo Left Engine Gear (TLEG): m_EG ~17.0 g [M], r_inner = 4 mm,  r_outer = 22 mm
+Base:                        m_B  ~8.0 g  [M],  r_inner = 2 mm,  r_outer = 8 mm
+Total assembly:              ~60.0 g [M]
+
+I_AR   = 6.03 x 10^-6 kg m^2  (same AR as Dragoon G)
+I_WD   = 2.76 x 10^-6 kg m^2
+I_TLEG = (0.017/2)(0.004^2 + 0.022^2) = 0.0085 x (1.6e-5 + 4.84e-4) = 4.25 x 10^-6 kg m^2
+I_B    ~0.27 x 10^-6 kg m^2
+I_total ~1.33 x 10^-5 kg m^2  [M]
+```
+
+**Turbo EG release kinetics:**
+```
+TLEG stored energy: E_TLEG ~3.5 J [M]  (vs 2.5 J for standard LEG)
+delta_omega_TLEG = sqrt(2 x 3.5 / 4.25e-6) = sqrt(1.647e6) = 1283 rad/s [M]
+Total omega post-TLEG: omega_T = 540 + 1283 = 1823 rad/s [M]
+v_tip_T = 1823 x 0.022 = 40.1 m/s [M]
+```
+
+**Primary-reflected vortex interference:**
+```
+Primary column tip velocity:   v_1 = 40.1 m/s [M]
+Stadium wall reflection coeff: e_w = 0.80 [M]
+Reflected column velocity:     v_2 = 0.80 x 40.1 = 32.1 m/s [M]
+
+At interference constructive maxima:
+  v_max = v_1 + v_2 = 40.1 + 32.1 = 72.2 m/s [M]
+  q_max = (1/2) x 1.225 x 72.2^2 = 3191 Pa [M]
+
+Number of interference nodes around arena perimeter:
+  N_nodes = 2 x R_arena / lambda_vortex [M]
+  lambda_vortex ~2 x r_AR = 2 x 0.022 = 0.044 m [M]  (vortex wavelength tied to AR geometry)
+  R_arena ~200 mm [M]  (Beystadium inner radius)
+  N_nodes = 2 x 0.200 / 0.044 ~9 -- but in-game capped at 4-6 [M] per anime depiction
+
+BeySpirit amplification (x12 [M]):
+  v_BS = 12 x 72.2 = 866 m/s [M]  (hypersonic, pure anime physics)
+  q_BS = (1/2) x 1.225 x 866^2 = 459680 Pa ~460 kPa [M]
+  F_node = 460000 x 2.83e-3 = 1302 N per node [M]  -- multi-target devastating
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Dragoon GT AR | 22.0 g | 8 mm | 22 mm |
+| Wide Defense WD | 13.0 g | 5 mm | 20 mm |
+| Turbo L.EG | 17.0 g | 4 mm | 22 mm |
+| Base | 8.0 g | 2 mm | 8 mm |
+| **Total** | **~60.0 g** | | **22 mm** |
+| I_total | -- | | ~1.33 x 10^-5 kg m^2 |
+
+---
+
+## Case 1448 -- [SPECIAL]: Galaxy Turbo Twister (Tyson Granger . Dragoon GT)
+
+**Special Move:** Galaxy Turbo Twister (Ginga Bakusenpu-dan / Galactic Blast)
+**User:** Tyson Granger
+**Series:** Beyblade G-Revolution (anime + manga)
+**Compatible beys:** Any bey with a Turbo Engine Gear variant (spring energy >= 3.0 J [M], left rotation) and an Attack Ring providing >= 70% arc sweep [M] -- the dual-vortex interference pattern requires the higher TLEG energy to produce sufficient reflected column strength; standard LEG produces only a single primary vortex; the manga version (rapid wind-barrier + tornado effigy) requires the same conditions.
+
+**Mechanic**
+
+The TLEG releases, generating a primary air column (v_1 ~40.1 m/s [M]) that reflects off the stadium wall to create a secondary column (v_2 ~32.1 m/s [M]). Constructive interference produces N=4-6 vortex nodes at v_max ~72.2 m/s [M] around the perimeter. BeySpirit (Dragoon dragon form) amplifies each node to v_BS ~866 m/s [M] -- all nodes simultaneously shaped as Dragoon effigy projections, creating a multi-point attack.
+
+**Physical dual-vortex draw-in:** F_per_node_phys ~9 N [M] (each node draws independently)
+**BeySpirit multi-node:** F_per_node_BS ~1302 N [M]; can strike multiple opponents simultaneously
+
+**Primary target:** highest hit; secondary/tertiary targets take 0.7x [M] of primary dmgMult.
+
+**QTE**
+1. J (TLEG release) -- 150 ms window
+2. ↑ (sustain rotation 300 ms hold -- builds interference pattern)
+3. J (release all nodes) -- 200 ms window
+Power cost: 95
+
+**Move Parameters**
+```typescript
+function galaxyTurboTwister(
+  vortexPower: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 95;
+  const v = Math.min(vortexPower / 300, 1.0);
+  if (!qteHit) return { spinDelta: -12, dmgMult: 1.26, lockMs: 40, powerCost: cost };
+  const perfect = v >= 0.9;
+  return {
+    spinDelta: perfect ? -42 : Math.round(-16 - 26 * v),
+    dmgMult:   perfect ?  1.50 : 1.28 + 0.20 * v,
+    lockMs:    perfect ?  170  : Math.round(45 + 110 * v),
+    powerCost: cost,
+  };
+}
+// galaxyTurboTwister(300, true)  => {spin:-42, dmg:1.50x, lock:170ms}  full power perfect
+// galaxyTurboTwister(150, true)  => {spin:-29, dmg:1.38x, lock:100ms}  partial
+// galaxyTurboTwister(300, false) => {spin:-12, dmg:1.26x, lock: 40ms}  QTE miss
+```
+
+> NOTE: BeySpirit amplifies each interference-node vortex velocity x12 [M] from 72.2 m/s to 866 m/s (hypersonic, physically impossible in atmosphere at this scale), forming the Dragoon dragon manifestations as visual BeySpirit projections at each constructive-interference node; the primary-reflected vortex interference mechanism and the N=4-6 node count are physically grounded in the arena geometry and TLEG energy; the anime multi-target effect and effigy manifestations are BeySpirit-only.
+
+---
+
+## Case 1449 -- COMBO: Turbo Spiral (derived from Galaxy Turbo Twister TLEG charge posture)
+
+**Sequence:** ← ↑ J (moveLeft -> moveUp -> attack)
+**Interpretation:** <- (pull orbit counter-clockwise -- wind up in the LEG release direction) -> ↑ (climb the bowl slope, building centrifugal energy in the upward arc) -> J (release spinning descent strike from the apex, mimicking the single-vortex convergence of the full move without the full stadium reflection pattern)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -22 | <= 50 abs | OK |
+| dmgMult | 1.40x | <= 1.5x | OK |
+| lockMs | 95 ms | <= 300 ms | OK |
+
+```typescript
+function turboSpiralCombo(
+  descendHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!descendHit) return { spinDelta: -10, dmgMult: 1.22, lockMs: 35, powerCost: cost };
+  return { spinDelta: -22, dmgMult: 1.40, lockMs: 95, powerCost: cost };
+}
+// turboSpiralCombo(true)  => {spin:-22, dmg:1.40x, lock:95ms}
+// turboSpiralCombo(false) => {spin:-10, dmg:1.22x, lock:35ms}
+```
+
+---
+
+## Case 1450 -- [GIMMICK]: Gatling Dragon Movable-Blade SHM to CHM Mode Switch (Dante Koryu . Gatling Dragon Metal Charge)
+
+**Part:** Gatling Dragon Blade (two spring-pivot movable blades, Slashing Hit Mode / Consecutive Hit Mode switch) + Metal Charge Chassis
+**Assembly:** Gatling Dragon Metal Charge -- Gatling Dragon Blade . Metal Charge Chassis  [Beyblade Burst Ultimate (BU) configuration]
+**Gen / System:** Beyblade Burst Ultimate (BU) | Blade + Chassis System
+**Tags:** movable-blade, mode-switch, slashing-hit-mode, consecutive-hit-mode, spring-pivot, burst-bu
+
+**Mechanism**
+
+The Gatling Dragon Blade carries two independently pivoting blade segments at r_blade ~40 mm [M] (SHM, extended) / r_retract ~33 mm [M] (CHM, retracted). In Slashing Hit Mode (SHM), dragon jaws close and blades lock at maximum extension, producing a nearly circular contact profile for concentrated smash attacks. When struck with force F_hit >= F_switch ~20 N [M], each blade pivots inward (spring-return mechanism), shifting to Consecutive Hit Mode (CHM), where the elliptical profile delivers 3-4 sequential contacts per stadium revolution. The mode switch is automatic and resets (blades re-extend) once the impact impulse decays below the spring-return threshold.
+
+**Assembly mass distribution:**
+```
+Gatling Dragon Blade: m_B ~25.0 g [M],  r_inner = 15 mm,  r_outer = 40 mm (SHM) / 33 mm (CHM)
+Metal Charge Chassis: m_C ~33.0 g [M],  r_inner = 10 mm,  r_outer = 30 mm
+  (includes integral driver at r_contact = 4 mm)
+Total assembly:       ~58.0 g [M]
+
+I_Blade   = (0.025/2)(0.015^2 + 0.040^2) = 0.0125 x (2.25e-4 + 1.60e-3) = 2.281 x 10^-5 kg m^2
+I_Chassis = (0.033/2)(0.010^2 + 0.030^2) = 0.0165 x (1.00e-4 + 9.00e-4) = 1.650 x 10^-5 kg m^2
+I_total   ~3.93 x 10^-5 kg m^2  [M]
+```
+
+**SHM blade contact at operating spin:**
+```
+At omega = 500 rad/s [M]:
+v_blade_SHM = 500 x 0.040 = 20.0 m/s [M]
+KE = (1/2) x 3.93e-5 x 500^2 = 4.91 J [M]
+
+Contact time: t ~3 ms [M]
+F_SHM = m x v_blade / t = 0.058 x 20.0 / 0.003 = 387 N [M]
+  (both blades, distributed: ~194 N per blade)
+
+Contact area per blade: A_blade ~8 mm^2 [M]  (extended blade face)
+Pressure per blade: P = 194 / (8e-6) ~24.3 MPa [M]  (below PC yield -- physical)
+```
+
+**Mode-switch to CHM:**
+```
+Mode-switch threshold: F_switch ~20 N [M]  (spring-pivot detent force)
+Spring energy stored per blade: E_spring ~0.3 J [M]
+
+In CHM (blades retracted to r_retract = 33 mm [M]):
+v_CHM = 500 x 0.033 = 16.5 m/s [M]
+Elliptical orbit: N_contacts ~3 per revolution [M]  (long-axis ellipse passes opponent 3x)
+F_CHM = 0.058 x 16.5 / 0.005 = 191 N [M] per contact  (t_contact ~5 ms for glancing hits)
+Total CHM impulse per revolution: 3 x 191 x 0.005 = 2.87 N s [M]
+```
+
+**Metal Charge chassis spin decay:**
+```
+mu_MC = 0.12 [M]  (hard polymer driver, moderate friction)
+r_contact = 0.004 m [M]
+d(omega)/dt = -(0.12 x 0.004 x 9.81 x 0.058) / 3.93e-5
+           = -2.729e-4 / 3.93e-5
+           ~-6.9 rad/s^2 [M]
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Gatling Dragon Blade | 25.0 g | 15 mm | 40 mm (SHM) |
+| Metal Charge Chassis | 33.0 g | 10 mm | 30 mm |
+| **Total** | **~58.0 g** | | **40 mm (SHM)** |
+| I_total | -- | | ~3.93 x 10^-5 kg m^2 |
+
+---
+
+## Case 1451 -- [SPECIAL]: Gambit Break (Dante Koryu . Gatling Dragon Metal Charge)
+
+**Special Move:** Gambit Break (Gatling Break)
+**User:** Dante Koryu
+**Series:** Beyblade Burst Ultimate (BU)
+**Compatible beys:** Any bey with a spring-pivot movable blade mechanism (r_blade_extended >= 35 mm [M], mode-switch threshold F_switch <= 25 N [M]) -- the BeySpirit speed-up requires blade geometry capable of concentrating the higher-velocity contact into smash impact; rigid single-piece blades without a pivot spring cannot switch modes and lose the consecutive-hit CHM phase; a heavy chassis (total mass >= 50 g [M]) is needed to maintain orbital stability under the BeySpirit speed amplification.
+
+**Mechanic**
+
+Dante channels BeySpirit through Gatling Dragon, triggering an immediate speed-up that doubles angular velocity. The amplified blade velocity produces devastating SHM strikes, and opponent recoil triggers CHM mode for the follow-up consecutive hits:
+
+**Physical SHM strike (unaided):**
+```
+F_SHM = 387 N [M],  P_blade ~24.3 MPa [M]  (below yield -- no fracture unaided)
+```
+
+**BeySpirit speed-up (x2 [M]):**
+```
+omega_BS = 2 x 500 = 1000 rad/s [M]
+v_blade_BS = 1000 x 0.040 = 40.0 m/s [M]
+F_BS_SHM = 0.058 x 40.0 / 0.003 = 773 N [M]
+P_BS = 773 / (2 x 8e-6) = 48.3 MPa [M]  (approaching PC yield ~60 MPa)
+  --> severe layer deformation; with full charge above 60 MPa --> burst [M]
+```
+
+**Follow-up CHM (opponent impact triggers mode switch):**
+```
+CHM after BS strike: F_CHM_BS = 0.058 x (1000 x 0.033) / 0.005 = 382 N per contact [M]
+3 CHM contacts at reduced BS spin: cumulative drain ~46 rad/s opponent [M]
+```
+
+**QTE**
+- Input: → (charge approach 300 ms), then J (blade strike window 150 ms)
+- Power cost: 85
+
+**Move Parameters**
+```typescript
+function gambitBreak(
+  modeActive: 'SHM' | 'CHM',
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 85;
+  if (modeActive === 'CHM') {
+    if (!qteHit) return { spinDelta: -20, dmgMult: 1.30, lockMs: 60, powerCost: cost };
+    return { spinDelta: -28, dmgMult: 1.38, lockMs: 110, powerCost: cost };
+  }
+  // SHM
+  if (!qteHit) return { spinDelta: -18, dmgMult: 1.28, lockMs: 55, powerCost: cost };
+  return {
+    spinDelta: -36,
+    dmgMult:    1.48,
+    lockMs:     155,
+    powerCost:  cost,
+  };
+}
+// gambitBreak('SHM', true)  => {spin:-36, dmg:1.48x, lock:155ms}  SHM perfect
+// gambitBreak('CHM', true)  => {spin:-28, dmg:1.38x, lock:110ms}  CHM perfect
+// gambitBreak('SHM', false) => {spin:-18, dmg:1.28x, lock: 55ms}  SHM miss
+```
+
+> NOTE: BeySpirit doubles Dante's angular velocity [M], producing a 40 m/s blade contact that drives pressure to ~48 MPa [M] -- near but below polycarbonate yield; a fully powered strike (~60 MPa [M]) causes burst, and is the BeySpirit expression of "critical damage" from the anime; physically the spring-pivot mode switch IS a real mechanism (it operates at 20 N [M] threshold), and the CHM consecutive hits are the physical result of that switch -- only the doubled speed is BeySpirit-only.
+
+---
+
+## Case 1452 -- COMBO: Dragon Blade Rush (derived from Gambit Break SHM approach)
+
+**Sequence:** → J ↑ (moveRight -> attack -> moveUp)
+**Interpretation:** -> (orbit right, positioning Gatling Dragon blade-face toward opponent) -> J (SHM blade strike at contact point) -> ↑ (ride momentum up the slope after the hit, carrying the impact force through and upward to prevent opponent from recovering laterally)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -22 | <= 50 abs | OK |
+| dmgMult | 1.40x | <= 1.5x | OK |
+| lockMs | 90 ms | <= 300 ms | OK |
+
+```typescript
+function dragonBladeRushCombo(
+  bladeHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!bladeHit) return { spinDelta: -10, dmgMult: 1.22, lockMs: 32, powerCost: cost };
+  return { spinDelta: -22, dmgMult: 1.40, lockMs: 90, powerCost: cost };
+}
+// dragonBladeRushCombo(true)  => {spin:-22, dmg:1.40x, lock:90ms}
+// dragonBladeRushCombo(false) => {spin:-10, dmg:1.22x, lock:32ms}
+```
+
+---
+
+## Case 1453 -- [GIMMICK]: Driger G Right Engine Gear Stroboscopic Clone Effect (Ray Kon . Driger G)
+
+**Part:** Driger G Attack Ring (two symmetric tiger-claw protrusions) + Right Engine Gear (REG, co-spin spring boost)
+**Assembly:** Driger G -- Attack Ring . Wide Defense Weight Disk . Right Engine Gear . Grip Base  [Plastic Generation / G-Revolution]
+**Gen / System:** Beyblade G-Revolution | Hard Metal / Plastic System with Engine Gear
+**Tags:** engine-gear, right-spin, stroboscopic, clone-effect, green-lightning, multi-hit, plastic-gen
+
+**Mechanism**
+
+Driger G's Right Engine Gear (REG) spins in the same direction as the bey, releasing a stored spring impulse that briefly elevates the AR tip velocity above 30 m/s [M]. At the resulting rotation frequency (~265 Hz [M]), the two tiger-claw protrusions create 26+ apparent "image" positions within a single human eye-persistence window (50 ms), producing the visual impression of 5-6 discrete Driger clones. Each AR-opponent contact at this frequency delivers a rapid-sequence of impacts before the EG boost decays.
+
+**Assembly mass distribution:**
+```
+Driger G Attack Ring:   m_AR ~18.0 g [M],  r_inner = 6 mm,  r_outer = 20 mm
+Wide Defense WD:        m_WD ~13.0 g [M],  r_inner = 5 mm,  r_outer = 20 mm
+Right Engine Gear (EG): m_EG ~15.0 g [M],  r_inner = 4 mm,  r_outer = 20 mm
+Grip Base:              m_B  ~8.0 g  [M],  r_inner = 2 mm,  r_outer = 8 mm
+Total assembly:         ~54.0 g [M]
+
+I_AR  = (0.018/2)(0.006^2 + 0.020^2) = 0.009 x (3.6e-5 + 4.00e-4) = 3.92 x 10^-6 kg m^2
+I_WD  = (0.013/2)(0.005^2 + 0.020^2) = 0.0065 x (2.5e-5 + 4.00e-4) = 2.76 x 10^-6 kg m^2
+I_EG  = (0.015/2)(0.004^2 + 0.020^2) = 0.0075 x (1.6e-5 + 4.00e-4) = 3.12 x 10^-6 kg m^2
+I_B   ~0.27 x 10^-6 kg m^2
+I_total ~1.01 x 10^-5 kg m^2  [M]
+```
+
+**REG release kinetics and clone effect:**
+```
+Spring stored energy: E_spring ~2.0 J [M]
+delta_omega_EG = sqrt(2 x 2.0 / 3.12e-6) = sqrt(1.282e6) = 1132 rad/s [M]
+omega_post_EG  = 530 + 1132 = 1662 rad/s [M]  (brief spike at release)
+v_AR_post = 1662 x 0.020 = 33.2 m/s [M]
+
+Stroboscopic clone calculation:
+  f_rot = 1662 / (2 x pi) = 264.5 Hz [M]
+  In one eye persistence window (t_persist = 50 ms [M]):
+    N_rot = 264.5 x 0.050 = 13.2 full rotations [M]
+  Apparent positions per protrusion: 13.2  (each protrusion seen at 13.2 positions)
+  With 2 protrusions: 2 x 13.2 = 26.4 apparent positions [M]
+  Distinct perceived "clone" impressions: ~5-6 [M]
+    (eye groups the 26 positions into ~5-6 discrete clumps -- consistent with anime 5-clone depiction)
+
+Multi-hit rate at peak EG spin:
+  f_claw = 2 x f_rot = 529 Hz [M]  (2 claws, 529 impacts per second at peak)
+  In a 300 ms burst window: N_hits = 529 x 0.300 = 158.7 [M]  (very rapid micro-impacts)
+
+Per-hit impulse:
+  J_hit = I_AR x delta_omega_per_hit / r_AR [M]
+  Approx: J_hit = 0.054 x delta_v_per_hit x t_contact [M]
+  At ~10% energy transfer per hit: delta_v ~3.32 m/s [M]
+  J_hit = 0.054 x 3.32 x 0.001 = 1.79 x 10^-4 N s [M]
+```
+
+**Grip Base spin decay:**
+```
+mu_Grip = 0.50 [M],  r_contact = 0.004 m [M]
+d(omega)/dt = -(0.50 x 0.004 x 9.81 x 0.054) / 1.01e-5
+           = -1.059e-3 / 1.01e-5 ~-105 rad/s^2 [M]
+Very high decay -- Driger G exhausts spin rapidly after EG release.
+```
+
+**Assembly parameters [M]:**
+| Component | Mass | r_inner | r_outer |
+|-----------|------|---------|---------|
+| Driger G AR | 18.0 g | 6 mm | 20 mm |
+| Wide Defense WD | 13.0 g | 5 mm | 20 mm |
+| Right EG | 15.0 g | 4 mm | 20 mm |
+| Grip Base | 8.0 g | 2 mm | 8 mm |
+| **Total** | **~54.0 g** | | **20 mm** |
+| I_total | -- | | ~1.01 x 10^-5 kg m^2 |
+
+---
+
+## Case 1454 -- [SPECIAL]: Gatling Claw (Ray Kon . Driger G)
+
+**Special Move:** Gatling Claw
+**User:** Ray Kon
+**Series:** Beyblade G-Revolution
+**Compatible beys:** Any bey with a right-rotation co-spin Engine Gear (spring energy >= 1.8 J [M]) and >= 2 symmetric claw/fang protrusions at r >= 18 mm [M] -- right EG provides a same-direction speed boost that amplifies claw tip velocity; a counter-spin (left-rotation) EG reduces claw approach velocity and cannot generate the stroboscopic clone frequency; beys without EG lack the brief high-frequency burst window needed to create 5+ perceived clone impressions within one eye-persistence frame.
+
+**Mechanic**
+
+Ray channels BeySpirit through the Tiger spirit (Driger). Green lightning energizes each physical claw protrusion into an energy projection. At the post-EG rotation frequency (~265 Hz [M]), each energy-clone delivers its own directed assault:
+
+**Physical multi-hit (unaided EG burst):**
+```
+f_claw = 529 Hz [M],  J_hit ~1.79e-4 N s per micro-impact [M]
+Cumulative over 300 ms: ~159 impacts, effective spin drain ~28 rad/s [M]
+```
+
+**BeySpirit energy clones (x4 per clone [M], ~5 clones):**
+```
+F_per_clone_BS = 4 x (0.054 x 33.2 / 0.003) = 4 x 597 = 2388 N [M]
+5 simultaneous clones: total force vector 5 x 2388 = 11940 N [M]  (multi-directional assault)
+(In-game: each clone hits from a different angle within the 300 ms window [M])
+```
+
+**QTE**
+- Input: J (EG release), then J (clone strike -- press within 300 ms window after release)
+- Power cost: 85
+
+**Move Parameters**
+```typescript
+function gatlingClaw(
+  cloneHits: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 85;
+  const h = Math.min(cloneHits, 5);
+  if (!qteHit) return { spinDelta: -10, dmgMult: 1.20, lockMs: 30, powerCost: cost };
+  const scale = h / 5;
+  return {
+    spinDelta: Math.round(-20 - 18 * scale),
+    dmgMult:   parseFloat((1.28 + 0.20 * scale).toFixed(2)),
+    lockMs:    Math.round(60 + 100 * scale),
+    powerCost: cost,
+  };
+}
+// gatlingClaw(5, true)  => {spin:-38, dmg:1.48x, lock:160ms}  5 clones
+// gatlingClaw(3, true)  => {spin:-31, dmg:1.40x, lock:120ms}  3 clones
+// gatlingClaw(5, false) => {spin:-10, dmg:1.20x, lock: 30ms}  QTE miss
+```
+
+> NOTE: BeySpirit manifests tiger-spirit energy clones at each stroboscopic position -- the 5-6 perceived clone positions are physically explained by the 264.5 Hz rotation frequency creating 26 retinal impressions per eye-persistence frame (Case 1453); the x4 force amplification per clone and simultaneous multi-vector assault are BeySpirit effects that override the physical per-impact momentum limits; the EG spring mechanism and resulting high-frequency rotation are entirely physical.
+
+---
+
+## Case 1455 -- COMBO: Tiger Flash (derived from Gatling Claw EG-burst posture)
+
+**Sequence:** J ← J (attack -> moveLeft -> attack)
+**Interpretation:** J (initial EG-boosted claw strike from orbital approach) -> <- (swing counter-clockwise away from opponent after first hit, bleeding off some EG spin into positional momentum) -> J (return claw strike from the opposite arc -- two-point flanking pattern, like a tiger striking with one paw then reversing to the other)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -22 | <= 50 abs | OK |
+| dmgMult | 1.40x | <= 1.5x | OK |
+| lockMs | 85 ms | <= 300 ms | OK |
+
+```typescript
+function tigerFlashCombo(
+  returnHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!returnHit) return { spinDelta: -9, dmgMult: 1.20, lockMs: 30, powerCost: cost };
+  return { spinDelta: -22, dmgMult: 1.40, lockMs: 85, powerCost: cost };
+}
+// tigerFlashCombo(true)  => {spin:-22, dmg:1.40x, lock:85ms}
+// tigerFlashCombo(false) => {spin: -9, dmg:1.20x, lock:30ms}
+```
+
+---
+
+## Case 1456 -- [GIMMICK]: Driger G Super-Charged Lightning Over-Rev (Ray Kon . Driger G)
+
+**Part:** Same assembly as Case 1453 (Driger G). New analysis: BeySpirit over-rev above EG spring ceiling for Gatling Claw Maximum.
+**Assembly:** Driger G -- Attack Ring . Wide Defense WD . Right Engine Gear . Grip Base  [G-Revolution; assembly parameters identical to Case 1453]
+**Gen / System:** Beyblade G-Revolution | Hard Metal / Plastic System with Engine Gear
+**Tags:** over-rev, beyspirit-lightning, imperceptible-speed, super-charge, green-electricity, g-revolution
+
+**Mechanism**
+
+In Gatling Claw Maximum, Ray's BeySpirit reserve ("huge green electricity") provides rotational energy above and beyond the EG spring ceiling, pushing Driger G's angular velocity to omega_super ~2510 rad/s [M] -- ~1.5× the post-EG peak. At this frequency, the bey rotates at ~400 Hz [M], far above the critical flicker-fusion rate (~50 Hz) and the stroboscopic clone threshold (~265 Hz). The claw protrusions now appear as a continuous green energy blur (no discrete clone positions visible).
+
+**Over-rev analysis (BeySpirit energy beyond EG):**
+```
+omega_super = 2510 rad/s [M]
+  = omega_post_EG x 1.51 = 1662 x 1.51  (BeySpirit adds 50% above EG ceiling [M])
+v_AR_super  = 2510 x 0.020 = 50.2 m/s [M]
+
+Rotation frequency: f_super = 2510 / (2 x pi) = 399.5 Hz [M]
+  Critical flicker-fusion rate: ~50 Hz [M]  --> f_super / 50 = 8x above visual resolution
+  --> Driger G appears as a solid green disc, not a discrete bey [M]
+  ("imperceptible speed" -- matches anime description)
+
+Eye persistence positions: 2 x (399.5 x 0.050) = 39.9 [M]  --> continuous blur (not 5-6 clones)
+```
+
+**Impact mechanics at over-rev:**
+```
+F_per_strike = 0.054 x 50.2 / 0.003 = 903 N [M]
+  (purely mechanical, BeySpirit over-rev treated as physical omega_super)
+
+P_per_strike = (903/2) / (4e-6) = 113 MPa [M]  >> PC yield ~60 MPa [M]
+  --> catastrophic layer fracture / burst on first contact [M]
+
+Energy content at omega_super:
+  KE_super = (1/2) x 1.01e-5 x 2510^2 = 31.8 J [M]
+  (vs ~4.4 J at normal EG peak -- over-rev stores 7.2x more rotational energy [M])
+```
+
+**Spin decay at over-rev:**
+```
+d(omega)/dt = -(0.50 x 0.004 x 9.81 x 0.054) / 1.01e-5 ~-105 rad/s^2 [M]  (same Grip Base)
+Time to decay from omega_super to omega_normal:
+  delta_t = (2510 - 530) / 105 ~18.9 s [M]  (sustained for a long time if not used in combat)
+```
+
+**Assembly parameters [M]:** *(same as Case 1453 -- see there for full table)*
+
+---
+
+## Case 1457 -- [SPECIAL]: Gatling Claw Maximum (Ray Kon . Driger G)
+
+**Special Move:** Gatling Claw Maximum
+**User:** Ray Kon
+**Series:** Beyblade G-Revolution
+**Compatible beys:** Same conditions as Gatling Claw (Case 1454) -- right EG + >= 2 claw protrusions -- but requires Ray's BeySpirit at >= 80% capacity [M] to achieve the over-rev above the EG ceiling; at partial BeySpirit the move degrades to a Gatling Claw variant; note that the Gatling Claw Maximum's continuous-blur mode requires omega >= 300 rad/s beyond the EG peak [M], making it inaccessible at low BeySpirit charge levels.
+
+**Mechanic**
+
+Ray injects a massive BeySpirit charge ("huge green electricity"), generating omega_super ~2510 rad/s [M]. At this over-rev, Driger G becomes a continuous green energy disc moving at imperceptible speed -- no clone impressions, just relentless omnidirectional contact pressure.
+
+**Physical over-rev impact:** F_per_strike ~903 N [M], P ~113 MPa [M] >> yield --> devastating
+**Counter requirements** (anime): Kai used Blazing Gigs Tempest (dual EG + mass); Tyson countered with Galaxy Turbo Twister (vortex dissipation). Both required high-power AoE responses to disrupt the continuous contact pressure.
+
+**QTE**
+- Input: Hold **K** (accumulate BeySpirit charge, 500 ms), release on full-charge flash
+- Window: 500 ms hold + 150 ms release
+- Power cost: 95
+
+**Move Parameters**
+```typescript
+function gatlingClawMaximum(
+  chargeMs: number, qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 95;
+  const r = Math.min(chargeMs / 500, 1.0);
+  if (!qteHit) return { spinDelta: -14, dmgMult: 1.28, lockMs: 45, powerCost: cost };
+  const perfect = r >= 0.9;
+  return {
+    spinDelta: perfect ? -44 : Math.round(-20 - 24 * r),
+    dmgMult:   perfect ?  1.50 : 1.28 + 0.20 * r,
+    lockMs:    perfect ?  175  : Math.round(50 + 115 * r),
+    powerCost: cost,
+  };
+}
+// gatlingClawMaximum(500, true)  => {spin:-44, dmg:1.50x, lock:175ms}  full charge perfect
+// gatlingClawMaximum(250, true)  => {spin:-32, dmg:1.38x, lock:108ms}  partial charge
+// gatlingClawMaximum(500, false) => {spin:-14, dmg:1.28x, lock: 45ms}  QTE miss
+```
+
+> NOTE: BeySpirit provides the rotational energy above the EG spring ceiling to achieve omega_super ~2510 rad/s [M] -- the EG spring stores ~2.0 J [M] and can only deliver omega_post_EG ~1662 rad/s; the additional ~848 rad/s (extra ~18 J [M]) is pure BeySpirit energy input with no physical mechanism; the 903 N per-strike force is then mechanical given omega_super but omega_super itself is BeySpirit-only; the "imperceptible speed" visual (continuous blur) is the physical consequence of f_super ~400 Hz >> human flicker-fusion rate.
+
+---
+
+## Case 1458 -- COMBO: Claw Maximum Rush (derived from Gatling Claw Maximum over-rev posture)
+
+**Sequence:** K J ← (defense -> attack -> moveLeft)
+**Interpretation:** K (hold ground and gather BeySpirit energy -- brief defensive charging posture like Ray coiling before the strike) -> J (release the charged burst strike -- not full over-rev, but an amplified claw hit from the gathered energy) -> <- (bleed off residual momentum counter-clockwise, repositioning for a follow-up orbit)
+**Type:** attack  **Cost:** 35
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -30 | <= 50 abs | OK |
+| dmgMult | 1.46x | <= 1.5x | OK |
+| lockMs | 130 ms | <= 300 ms | OK |
+
+```typescript
+function clawMaximumRushCombo(
+  chargedHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 35;
+  if (!chargedHit) return { spinDelta: -12, dmgMult: 1.26, lockMs: 40, powerCost: cost };
+  return { spinDelta: -30, dmgMult: 1.46, lockMs: 130, powerCost: cost };
+}
+// clawMaximumRushCombo(true)  => {spin:-30, dmg:1.46x, lock:130ms}
+// clawMaximumRushCombo(false) => {spin:-12, dmg:1.26x, lock: 40ms}
+```
+
+---
+
+## Case 1459 -- [GIMMICK]: Driger G Multi-Pass Translational Rush Mechanics (Ray Kon . Driger G, manga)
+
+**Part:** Same assembly as Case 1453 (Driger G). New analysis: Gatling Fang rapid-pass translational impulse model (manga variant, no EG release during the attack).
+**Assembly:** Driger G -- Attack Ring . Wide Defense WD . Right Engine Gear . Grip Base  [G-Revolution manga; assembly as Case 1453]
+**Gen / System:** Beyblade G-Revolution (manga) | Hard Metal / Plastic System with Engine Gear
+**Tags:** multi-pass, translational-rush, manga, rapid-orbit, cumulative-impulse, plastic-gen
+
+**Mechanism**
+
+Gatling Fang (manga) is a distinct move from the anime Gatling Claw: rather than triggering the EG for a brief high-frequency burst, Ray drives Driger G in a rapid series of orbital passes across the opponent, each delivering a claw-tip smash at combined rotational + translational velocity. The "Gatling" name refers to the rapid succession of passes (like a Gatling gun's multi-barrel rotation) rather than the stroboscopic multi-clone effect.
+
+**Multi-pass velocity and force model:**
+```
+Operating omega: 530 rad/s [M]  (EG held in reserve, not released)
+v_AR_spin  = 530 x 0.020 = 10.6 m/s [M]  (rotational tip velocity)
+v_approach = 4.5 m/s [M]  (translational orbital-pass velocity)
+
+Combined contact velocity: v_contact = v_AR_spin + v_approach = 10.6 + 4.5 = 15.1 m/s [M]
+  (AR tip and translational motion aligned at contact moment -- worst-case for opponent)
+
+Contact force per pass:
+  F_pass = m x v_contact / t_contact = 0.054 x 15.1 / 0.004 = 204 N [M]
+
+Number of passes in Gatling Fang sequence: N = 5 [M]  (rapid succession, ~80 ms apart)
+Total impulse: J_total = N x F_pass x t_contact = 5 x 204 x 0.004 = 4.08 N s [M]
+  (cumulative spin drain on opponent: J_total / r_opp / I_opp = 4.08 / 0.030 / 2.5e-5 ~5440 rad/s [M]
+    [M] -- BeySpirit amplifies to these anime-level numbers; physical drain << this)
+```
+
+**Pass-interval timing:**
+```
+Arena diameter: ~400 mm [M]  (Beystadium inner diameter)
+Orbital speed: v_orb_cen ~2.0 m/s [M]  (Driger G centre-of-mass translation speed)
+  (orbit circumference ~630 mm [M], revolution time ~315 ms [M])
+Pass interval: ~63 ms [M]  (5 passes in ~315 ms -- nearly full orbit, 5 claw contacts per orbit)
+```
+
+**BeySpirit amplification for rapid-pass:**
+```
+v_approach_BS = 4 x v_approach = 4 x 4.5 = 18.0 m/s [M]
+F_pass_BS = 0.054 x (10.6 + 18.0) / 0.004 = 386 N [M]
+J_total_BS = 5 x 386 x 0.004 = 7.72 N s [M]
+```
+
+**Assembly parameters [M]:** *(same as Case 1453 -- see there for full table)*
+
+---
+
+## Case 1460 -- [SPECIAL]: Gatling Fang (Ray Kon . Driger G, manga)
+
+**Special Move:** Gatling Fang (Rensha Ga-geki)
+**User:** Ray Kon
+**Series:** Beyblade G-Revolution (manga)
+**Compatible beys:** Any bey with >= 2 claw/fang protrusions at r >= 15 mm [M] and a grip/rubber Performance Tip providing translational mobility (mu >= 0.4 [M]) -- the multi-pass rush requires high translational speed (v_orb >= 3.5 m/s [M]) to close the pass interval below 100 ms; no Engine Gear is required (distinguishing Gatling Fang from Gatling Claw); beys with purely centred stamina tips (no translational drift) cannot execute the pass sequence since they remain stationary.
+
+**Mechanic**
+
+Ray drives Driger G in 5 rapid orbital passes across the opponent, each delivering a claw smash at combined spin + translational velocity. The BeySpirit amplifies the approach speed, shortening pass intervals and increasing per-pass force:
+
+**Physical 5-pass sequence:** F_pass ~204 N [M], J_total ~4.08 N s [M]
+**BeySpirit amplified:** F_pass_BS ~386 N [M], J_total_BS ~7.72 N s [M]
+
+**QTE**
+- Input: → (charge orbital approach 200 ms), then J (trigger burst timing 150 ms window -- releases all 5 passes)
+- Power cost: 80
+
+**Move Parameters**
+```typescript
+function gatlingFang(
+  passCount: 1 | 2 | 3,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 80;
+  const scale = passCount / 3;
+  if (!qteHit) {
+    return { spinDelta: Math.round(-8 - 6 * scale), dmgMult: parseFloat((1.18 + 0.10 * scale).toFixed(2)),
+             lockMs: Math.round(25 + 25 * scale), powerCost: cost };
+  }
+  return {
+    spinDelta:  passCount === 3 ? -35 : Math.round(-18 - 17 * (scale - 1/3)),
+    dmgMult:    passCount === 3 ?  1.46 : parseFloat((1.28 + 0.16 * (scale - 1/3)).toFixed(2)),
+    lockMs:     passCount === 3 ?  150  : Math.round(65 + 75 * (scale - 1/3)),
+    powerCost:  cost,
+  };
+}
+// gatlingFang(3, true)  => {spin:-35, dmg:1.46x, lock:150ms}  3 passes perfect
+// gatlingFang(2, true)  => {spin:-27, dmg:1.36x, lock:115ms}  2 passes
+// gatlingFang(1, false) => {spin: -9, dmg:1.21x, lock: 33ms}  1 pass, miss
+```
+
+> NOTE: BeySpirit amplifies the translational approach speed ×4 [M], increasing per-pass force from 204 N to 386 N [M] and total cumulative impulse to 7.72 N s [M]; physically, the 204 N per-pass force and 5-pass sequence are grounded in the orbital mechanics (translational approach + tip rotation at contact), and the 5-pass-per-orbit timing (~63 ms interval [M]) is physically achievable at v_orb ~2 m/s [M]; the catastrophic cumulative spin drain (~5440 rad/s [M]) is the BeySpirit expression.
+
+---
+
+## Case 1461 -- COMBO: Fang Barrage (derived from Gatling Fang multi-pass orbit posture)
+
+**Sequence:** J → K (attack -> moveRight -> defense)
+**Interpretation:** J (initial claw swipe from orbital approach -- first pass strike) -> -> (orbit right and reposition, tightening the pass radius to set up a closer second pass) -> K (brace and hold at the second pass point -- instead of hitting with full force, Driger G grazes the opponent with the claw and deflects off their spin, converting momentum into defensive positioning for a follow-up)
+**Type:** attack  **Cost:** 25
+
+### Ceiling Check
+| Parameter | Value | Ceiling | Pass? |
+|-----------|-------|---------|-------|
+| spinDelta | -18 | <= 50 abs | OK |
+| dmgMult | 1.38x | <= 1.5x | OK |
+| lockMs | 75 ms | <= 300 ms | OK |
+
+```typescript
+function fangBarrageCombo(
+  secondPassHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  const cost = 25;
+  if (!secondPassHit) return { spinDelta: -8, dmgMult: 1.18, lockMs: 25, powerCost: cost };
+  return { spinDelta: -18, dmgMult: 1.38, lockMs: 75, powerCost: cost };
+}
+// fangBarrageCombo(true)  => {spin:-18, dmg:1.38x, lock:75ms}
+// fangBarrageCombo(false) => {spin: -8, dmg:1.18x, lock:25ms}
+```
+
+*Cases continue from Case 1462 as further franchise moves are provided.*
