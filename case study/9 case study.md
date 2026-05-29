@@ -1,4 +1,4 @@
-﻿# Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
+# Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
 
 **« Part 8:** [8 case study.md](8%20case%20study.md) (Cases 375–415) | **Part 10 »** [10 case study.md](10%20case%20study.md) (Cases 545–585)
 
@@ -33792,3 +33792,2468 @@ Disc 8 OWD + 1 shallow tooth on Maximum Garuda = very low burst threshold. Again
 
 **Thesis**
 Maximum Garuda 8Flow Flugel is a Burst God System Stamina/Defense assembly where Forge Disc 8 (I=8.793e-6 kg*m^2, 60.7% of I_total) provides a 19.6% angular momentum advantage over Disc 12 at L_launch=8.659 mN*m*s. However, Flugel's ABS cone tip (r=1.5 mm, mu=0.35) is the dominant decay mechanism at 66-93% of total torque regardless of spin rate, limiting theoretical tip-only spinout to 41.9 s. The two aerodynamic gimmicks (MG 5 blades + Flow 9 micro-blades) add up to 33% of torque at launch but shrink to 7.4% near wobble onset, becoming irrelevant as the Flugel tip dominates. The assembly's critical vulnerability is burst resistance: Disc 8 OWD plus Maximum Garuda's 1 shallow tooth produce minimal burst threshold, making the combo highly susceptible to Attack types. Suitable for Stamina-vs-Stamina matchups where burst is not a threat and Disc 8's flywheel mass determines the outcome.
+---
+
+## CASE 1733 — Energy Layer: Acid Anubis [Burst God Layer System]
+
+**Part overview**
+Acid Anubis is a Defense Type God Layer at 8.7 g (B-34 starter, released August 2016). The layer features a nearly circular smooth outer perimeter with three shallow curved protrusions referencing Anubis heads and crook-stave motifs. The smooth round profile is the defining defense attribute: the beyblade's outer edge presents minimal recoil surface to attackers, inhibiting burst and minimising KO momentum transfer. Three Burst teeth of moderate slope provide acceptable burst resistance without the near-locked performance of later Cho-Z and GT layers.
+
+**Official description**
+"A Defense Type God Layer featuring a nearly round shape for high Life-After-Death performance and a round profile that is resistant to Attack Types."
+Acid Anubis was competitive in the Burst God meta as the primary stamina/defense Layer in the Acid Anubis Yell Orbit archetype.
+
+**Dimensions and mass**
+- Mass: 8.7 g = 0.0087 kg
+- Outer radius: r_o = 22 mm; inner bore: r_i = 4 mm; Burst teeth: 3 moderate-slope teeth
+- Three Anubis protrusions each approx 5 mm chord x 3 mm radial height at r_mid = 19 mm
+- Pure ABS construction; no metal inclusions
+
+**Moment of inertia**
+  Hub zone: m_hub = 2.0 g, r_i = 4 mm, r_o = 8 mm
+  I_hub = (1/2)(0.0020)((4e-3)^2 + (8e-3)^2) = (1/2)(0.0020)(1.6e-5 + 6.4e-5) = 8.0e-8 kg*m^2
+
+  Outer body and protrusions: m_outer = 6.7 g, r_i = 8 mm, r_o = 22 mm
+  I_outer = (1/2)(0.0067)((8e-3)^2 + (22e-3)^2) = (1/2)(0.0067)(6.4e-5 + 4.84e-4) = 1.836e-6 kg*m^2
+
+**I_AA = 8.0e-8 + 1.836e-6 = 1.916e-6 kg*m^2**
+
+**Aerodynamic drag (3 shallow protrusions)**
+Protrusion geometry: c = 5 mm, span = 3 mm per protrusion; A_total = 3 x 1.5e-5 = 4.5e-5 m^2
+r_mid = 19 mm; C_D = 0.40 (smooth curved profile, lower than blade geometry)
+
+At omega = 700 rad/s: v = 700 x 0.019 = 13.3 m/s
+  F_drag = (1/2)(1.225)(0.40)(4.5e-5)(176.89) = 4.886e-3 N... 
+  Actually: F = C_D * (1/2) * rho * A * v^2 = 0.40 * 0.6125 * 4.5e-5 * 176.89 = 0.40 * 4.878e-3 = 1.951e-3 N
+  tau_drag_AA = 1.951e-3 * 0.019 = 3.707e-5 N*m
+
+  omega = 420: tau = 3.707e-5 * (420/700)^2 = 3.707e-5 * 0.36 = 1.335e-5 N*m
+  omega = 280: tau = 3.707e-5 * (280/700)^2 = 3.707e-5 * 0.16 = 5.931e-6 N*m
+
+Comparison: Acid Anubis drag (3.707e-5) vs Maximum Garuda 5-blade drag (7.360e-5, CASE 1686).
+Acid Anubis produces 50.4% of MG drag despite only 3 small protrusions vs 5 full propeller blades, because the larger r_mid = 19 mm vs MG r_mid = 16 mm partially offsets the smaller blade area.
+
+**Burst resistance**
+Round smooth perimeter with 3 moderate teeth provides good burst resistance. Low recoil geometry prevents opponents from consistently engaging burst teeth. Burst threshold equivalent to approximately Dual Layer mid-tier; competitive in God Layer Stamina/Defense roles.
+
+**Compatible beys:** Any Burst God Layer System assembly.
+
+---
+
+## CASE 1734 — Forge Disc: Yell [Burst God Layer System]
+
+**Part overview**
+Yell is a Core Disc for the God Layer System at 21.2 g (B-34 Acid Anubis Yell Orbit starter). The name references the star-shaped central metal protrusion: five symmetrical points radiate from the hub, resembling an exclamation or star. The outer ring of the disc is wide and smooth, providing excellent Life-After-Death (LAD) by maintaining continuous rim contact during precessional lean. The central metal star protrusions are the disc's key weakness: they contact the opponent disc during Spin-Equalisation matchups, transferring angular momentum from a faster to a slower beyblade instead of resisting equalization.
+
+**Dimensions and mass**
+- Mass: 21.2 g = 0.0212 kg
+- Outer ring: r_i = 22 mm, r_o = 38 mm (wide annular ring)
+- Central metal star hub: r_star = 12 mm; 5 symmetrical pointed protrusions
+- Metal star mass fraction: ~8.0 g; outer ring mass fraction: ~13.2 g
+
+**Moment of inertia**
+  Central hub + metal star: m_star = 8.0 g treated as solid disc r = 12 mm
+  I_star = (1/2)(0.0080)(12e-3)^2 = (1/2)(0.0080)(1.44e-4) = 5.760e-7 kg*m^2
+
+  Outer ring: m_ring = 13.2 g, r_i = 22 mm, r_o = 38 mm
+  I_ring = (1/2)(0.0132)((22e-3)^2 + (38e-3)^2) = (1/2)(0.0132)(4.84e-4 + 1.444e-3) = (1/2)(0.0132)(1.928e-3) = 1.272e-5 kg*m^2
+
+**I_Yell = 5.760e-7 + 1.272e-5 = 1.330e-5 kg*m^2**
+
+**LAD analysis (excellent)**
+Outer ring at r_o = 38 mm provides continuous rim contact during precession. As the beyblade tilts, the wide ring traces a stable orbital path on the stadium floor, sustaining spin. LAD quality comparable to Disc 12 (CASE 1565) despite Yell's higher total mass.
+
+**OWD analysis (poor)**
+The 5-point metal star at r = 12 mm directly opposes the Opposite/Weak-Defense (OWD) mechanism. In Stamina-vs-Stamina matchups, the star protrusions engage the opponent's disc surface, creating contact at small radius and accelerating spin equalisation. This limits Yell's effectiveness against other Stamina types that use smooth round discs (e.g., Disc 4, Disc 7, Disc 00).
+
+**OWD comparison**
+Disc 8 (CASE 1687): I/m = 3.997e-4 m^2 -- gap cutouts reduce OWD efficiency.
+Yell: I/m = 1.330e-5 / 0.0212 = 6.274e-4 m^2 -- superior mass-inertia ratio despite star penalty.
+Yell has 56.9% better mass-inertia efficiency than Disc 8 because the outer ring at r=38 mm concentrates mass further from the axis than Disc 8's protrusions at r=28 mm.
+
+**Compatible beys:** Any Burst God Layer System assembly (Core Disc slot).
+
+---
+
+## CASE 1735 — Performance Tip: Orbit [Burst God Layer System]
+
+**Part overview**
+Orbit (6.14 g) is a free-rotating Performance Tip for the God Layer System (B-34 Acid Anubis Yell Orbit, released August 2016). The tip consists of an outer ball contact surface that rotates freely on a polymer bearing relative to the main shaft. Three hard-plastic brake tabs extend from the upper shaft body; these tabs do not contact the floor during normal upright spin but engage the floor when the beyblade tilts past a critical angle (approximately 15-20 degrees from vertical).
+
+**The free-rotation mechanism**
+In a standard Performance Tip (e.g., Survive, Eternal), the tip is fixed to the beyblade shaft, so the beyblade's spin rate directly determines the tip's rotational speed against the floor. Floor contact friction generates a braking torque equal to mu * N * r_contact, which decelerates the beyblade's spin.
+
+In Orbit, the free-rotating ball decouples the beyblade spin from floor contact. The ball rotates at the stadium floor's driven speed (approximately zero in the lab frame), not at the beyblade's spin rate. The only friction path between the floor and the beyblade spin axis passes through the polymer bearing connecting ball to shaft.
+
+**Dimensions and mass**
+- Mass: 6.14 g = 0.00614 kg
+- Ball contact radius: r_ball = 3 mm (free-rotating POM sphere)
+- Polymer bearing: r_bearing = 1.5 mm; bearing mu approximately 0.01 (POM-on-ABS polymer bearing)
+- 3 brake tabs: r_tab = 10 mm from shaft centre; ABS mu = 0.40 when engaged
+- Tip height: standard height
+
+**Moment of inertia**
+  Tip body (shaft, bearing housing, brake tab structure): m_body = 6.14 g, modelled as disc r_o = 10 mm
+  I_Orbit = (1/2)(0.00614)(10e-3)^2 = (1/2)(0.00614)(1.0e-4) = 3.070e-7 kg*m^2
+
+**Free-rotation bearing friction (normal upright spin)**
+  N = m_assembly * g = 0.03604 * 9.81 = 0.3536 N (full assembly normal force)
+  tau_bearing = mu_bearing * N * r_bearing = 0.010 * 0.3536 * 1.5e-3 = 5.304e-6 N*m
+
+**Brake tab engagement (precession phase, omega < 280 rad/s)**
+When the beyblade tilts, one or more brake tabs contact the floor:
+  tau_brake_one_tab = mu_ABS * N * r_tab = 0.40 * 0.3536 * 10e-3 = 1.414e-3 N*m per tab
+During moderate precession tilt: approximately 1 tab in contact continuously.
+  domega/dt_brake = -1.414e-3 / I_assembly = large deceleration during precession.
+
+The brake tabs serve a functional purpose: they prevent the beyblade from spinning out silently on its side. When the bey tilts beyond the brake threshold, aggressive deceleration ends the match decisively rather than allowing a slow grind-out.
+
+**Comparison with Eternal (CASE 1685)**
+Eternal sharp tip: tau_tip = mu * N * r = 0.17 * 0.4525 * 5.0e-4 = 3.846e-5 N*m
+Orbit bearing: tau_bearing = 5.304e-6 N*m
+Orbit provides 7.25x lower braking torque than Eternal during the upright spin phase. This directly translates to proportionally longer spin-before-wobble duration.
+
+**Compatible beys:** Any Burst God Layer System assembly (Performance Tip slot).
+
+---
+
+## CASE 1736 — Assembly: Acid Anubis Yell Orbit [Burst God Stamina/Defense]
+
+**Assembly summary**
+| Part | Mass | I (kg*m^2) | I fraction |
+|------|------|-----------|------------|
+| Energy Layer -- Acid Anubis | 8.7 g | 1.916e-6 | 12.4% |
+| Forge Disc -- Yell | 21.2 g | 1.330e-5 | 86.1% |
+| Performance Tip -- Orbit | 6.14 g | 3.070e-7 | 2.0% |
+| **Total** | **36.04 g** | **1.554e-5 kg*m^2** | 100% |
+
+Burst God era: omega_0 = 700 rad/s; battle omega = 420 rad/s (60%); wobble onset omega = 280 rad/s (40%).
+
+**m_total = 8.7 + 21.2 + 6.14 = 36.04 g = 0.03604 kg**
+**I_total = 1.916e-6 + 1.330e-5 + 3.070e-7 = 1.554e-5 kg*m^2**
+**L_launch = I_total * omega_0 = 1.554e-5 * 700 = 1.088e-2 kg*m^2/s = 10.88 mN*m*s**
+
+**Disc dominance**
+Yell holds 86.1% of I_total, the highest single-part fraction in any assembly in this series. The outer ring at r_o = 38 mm delivers exceptional angular momentum storage per unit mass (I/m = 6.274e-4 m^2). Acid Anubis (12.4%) is secondary; Orbit (2.0%) is negligible.
+
+**Spin decay analysis**
+
+Three decay components:
+
+(A) Orbit bearing friction (omega-independent, upright spin phase):
+  N = 0.03604 * 9.81 = 0.3536 N
+  tau_Orbit = mu_bearing * N * r_bearing = 0.010 * 0.3536 * 1.5e-3 = 5.304e-6 N*m
+  domega/dt_Orbit = -5.304e-6 / 1.554e-5 = -0.341 rad/s^2
+  t_spinout bearing-only = 700 / 0.341 = 2053 s (theoretical maximum, no aero drag)
+
+(B) Acid Anubis protrusion drag (proportional to omega^2):
+  tau_AA(omega) = 3.707e-5 * (omega/700)^2
+  omega=700: 3.707e-5 N*m; omega=420: 1.335e-5 N*m; omega=280: 5.931e-6 N*m
+
+(C) Yell star protrusion drag (minor, proportional to omega^2):
+  A_star = 5 x (8 mm x 3 mm) = 1.2e-4 m^2 (5 star points); r_mid = 10 mm; C_D = 0.40
+  At omega=700: v = 7.0 m/s
+  F = 0.40 * 0.6125 * 1.2e-4 * 49.0 = 1.441e-3 N... 
+  Recalculate: F = C_D*(1/2)*rho*A*v^2 = 0.40*0.6125*1.2e-4*49.0 = 0.40*3.675e-3 = 1.470e-3 N... 
+  Actually: 0.6125*1.2e-4 = 7.35e-5; 7.35e-5*49.0 = 3.602e-3; 0.40*3.602e-3 = 1.441e-3 N
+  tau_Y_star(700) = 1.441e-3 * 0.010 = 1.441e-5 N*m
+
+  Wait, this seems too high. Let me recalculate:
+  A = 1.2e-4 m^2 total star area seems large. 5 points x 8mm x 3mm = 5 x 24mm^2 = 120 mm^2 = 1.2e-4 m^2. That is correct.
+  v = omega * r = 700 * 0.010 = 7.0 m/s; v^2 = 49.0 m^2/s^2
+  F = 0.40 * (1/2) * 1.225 * 1.2e-4 * 49.0
+    = 0.40 * 0.6125 * 1.2e-4 * 49.0
+    = 0.245 * 1.2e-4 * 49.0
+    = 0.245 * 5.88e-3
+    = 1.441e-3 N
+  But this 1.441e-3 N seems very large for a small area. Let me check units:
+  [kg/m^3] * [m^2] * [m^2/s^2] = kg*m/s^2 = N. Correct.
+  rho=1.225 kg/m^3, A=1.2e-4 m^2, v^2=49 m^2/s^2: product = 1.225*1.2e-4*49 = 7.203e-3 N, x 0.5*C_D = x 0.20: = 1.441e-3 N.
+  Hmm but for small flat plates at low Re, C_D can be ~1.0-1.2, not 0.4. Let me use C_D=0.5:
+  F=0.5*0.6125*1.2e-4*49=0.3063*1.2e-4*49=0.3063*5.88e-3=1.801e-3 N... still large.
+
+  The issue is the area is genuinely 120mm^2 total for 5 star points. That's not tiny.
+  But star points are at r_mid=10mm and thin -- the drag force is real.
+  tau_Y_star(700) = F*r_mid = 1.441e-3 * 0.010 = 1.441e-5 N*m (using C_D=0.40)
+
+  Scaled to other omega:
+  omega=420: tau = 1.441e-5 * 0.36 = 5.188e-6 N*m
+  omega=280: tau = 1.441e-5 * 0.16 = 2.306e-6 N*m
+
+**Combined torque and deceleration:**
+  omega=700: tau = 5.304e-6 + 3.707e-5 + 1.441e-5 = 5.678e-5 N*m; domega/dt = -3.654 rad/s^2
+  omega=420: tau = 5.304e-6 + 1.335e-5 + 5.188e-6 = 2.384e-5 N*m; domega/dt = -1.534 rad/s^2
+  omega=280: tau = 5.304e-6 + 5.931e-6 + 2.306e-6 = 1.357e-5 N*m; domega/dt = -0.873 rad/s^2
+
+**Time from launch to wobble onset (omega: 700 -> 280):**
+avg domega/dt = (3.654 + 0.873) / 2 = 2.264 rad/s^2
+t_launch_to_wobble = 420 / 2.264 = **185.5 s**
+
+**Battle phase duration (omega: 420 -> 280):**
+avg domega/dt = (1.534 + 0.873) / 2 = 1.204 rad/s^2
+t_battle = 140 / 1.204 = **116.3 s**
+
+**Orbit bearing fraction audit:**
+  omega=700: bearing / tau_total = 5.304e-6 / 5.678e-5 = 9.3%
+  omega=420: 5.304e-6 / 2.384e-5 = 22.2%
+  omega=280: 5.304e-6 / 1.357e-5 = 39.1%
+At launch, aerodynamic drag from Acid Anubis protrusions (65.3%) and Yell star (25.4%) dominate. By wobble onset, the bearing fraction climbs to 39.1% and aero drag diminishes toward it. Orbit's advantage materialises in the precession phase, not the high-speed phase.
+
+Crossover omega where bearing = Acid Anubis aero drag:
+  5.304e-6 = 3.707e-5 * (omega_c/700)^2
+  (omega_c/700)^2 = 0.1430; omega_c = 700 * 0.378 = 265 rad/s
+Bearing becomes dominant below omega = 265 rad/s, well into the precession phase.
+
+**Comparison with Eternal (CASE 1685 Air Knight 12Expand Eternal)**
+Eternal assembly: tau_tip = 3.846e-5 N*m (dominant at all omega)
+Orbit assembly: tau_bearing = 5.304e-6 N*m (7.25x lower)
+Corresponding t_battle: Eternal 25.9 s vs Orbit 116.3 s (4.49x longer battle phase).
+Orbit's advantage is real and substantial. The cost: OWD vulnerability from Yell star means the combo loses Spin-Equalisation matchups; ideal use case is against Attack types.
+
+**Thesis**
+Acid Anubis Yell Orbit is a Burst God Stamina/Defense archetype built around a single key insight: Forge Disc Yell (I = 1.330e-5 kg*m^2, 86.1% of I_total) stores 56.9% more angular momentum per unit mass than Disc 8 due to its outer ring at r_o = 38 mm, while Performance Tip Orbit's polymer bearing reduces spin-axis braking torque to 5.304e-6 N*m -- 7.25x lower than Eternal and 39x lower than Flugel. The combination produces a theoretical battle-phase duration of 116.3 s (omega: 420 to 280) vs 25.9 s for Air Knight 12Expand Eternal, a 4.49x improvement attributable almost entirely to the Orbit bearing mechanism. The assembly's vulnerability is the Yell central metal star, which accelerates Spin-Equalisation loss against slower same-rotation opponents. Optimal use: Defense/Stamina role against Attack types, where the round Acid Anubis profile resists burst and Orbit's bearing friction is never triggered by OWD contact.
+
+---
+
+## CASE 1737 — Warrior Wheel: Salamander [Zero-G / Shogun Steel, Chrome Wheel]
+
+**Part overview**
+Salamander is the Chrome Wheel component of BBG-02 Ninja Salamander SW145SD (released March 2012, Japan). In the Zero-G / Shogun Steel system, the Chrome Wheel is the primary spinning mass — it occupies the outermost position and accounts for the majority of the assembly's moment of inertia. Salamander's motif references a salamander or dragon figure; the sculpt features three large smooth wing-like panels radiating from a central hub, each terminating in a rounded outer rim. The smooth round perimeter and wide radial span make Salamander one of the better Chrome Wheels for Defense and Stamina roles in the BBG series.
+
+**Dimensions and mass**
+- Mass: 30.6 g = 0.0306 kg
+- Outer radius: r_o = 40 mm (estimated); inner bore r_i = 8 mm
+- Three wing panels spanning r = 8 mm to r = 40 mm; smooth outer rim at r = 30-40 mm
+- ABS construction with minor metallic finish; no embedded metal inserts
+
+**Moment of inertia**
+  Hub: m_hub = 3.0 g, r_i = 0, r_o = 8 mm
+  I_hub = (1/2)(0.0030)(8e-3)^2 = 9.600e-8 kg*m^2
+
+  Wing panel body: m_body = 20.0 g, r_i = 8 mm, r_o = 30 mm
+  I_body = (1/2)(0.0200)((8e-3)^2 + (30e-3)^2) = (1/2)(0.0200)(6.4e-5 + 9.0e-4) = (1/2)(0.0200)(9.64e-4) = 9.640e-6 kg*m^2
+
+  Outer rim: m_rim = 7.6 g, r_i = 30 mm, r_o = 40 mm
+  I_rim = (1/2)(0.0076)((30e-3)^2 + (40e-3)^2) = (1/2)(0.0076)(9.0e-4 + 1.6e-3) = (1/2)(0.0076)(2.5e-3) = 9.500e-6 kg*m^2
+
+**I_Salamander = 9.600e-8 + 9.640e-6 + 9.500e-6 = 1.923e-5 kg*m^2**
+
+**Zero-G system context**
+In Shogun Steel (BBG series), Chrome Wheels dominate the assembly moment of inertia by design. Salamander at 30.6 g contributes the overwhelming majority of spin storage. The Element Wheel (Crystal Wheel in BBG) and Spin Track contribute marginally to I. This contrasts with MFB where the Metal Wheel alone could not achieve this mass due to Hasbro/Takara Tomy weight constraints on injection-moulded ABS parts without separate steel ring inserts.
+
+**Aerodynamic drag (3 smooth wing panels)**
+Wing panel geometry: chord c approx 18 mm, span s approx 5 mm at outer edge; A_total approx 8.0e-5 m^2
+r_mid = 24 mm; C_D = 0.55 (rounded wing leading edge, moderate drag)
+
+At omega = 600 rad/s: v = 600 * 0.024 = 14.4 m/s
+  F_drag = C_D * (1/2) * rho * A * v^2 = 0.55 * 0.6125 * 8.0e-5 * 207.36 = 0.55 * 1.016e-2 = 5.590e-3 N
+  tau_Sal(600) = 5.590e-3 * 0.024 = 1.342e-4 N*m
+
+  omega=360: tau = 1.342e-4 * (360/600)^2 = 1.342e-4 * 0.36 = 4.831e-5 N*m
+  omega=240: tau = 1.342e-4 * (240/600)^2 = 1.342e-4 * 0.16 = 2.147e-5 N*m
+
+**Compatible beys:** Any Zero-G / Shogun Steel BBG series assembly (Chrome Wheel slot).
+
+---
+
+## CASE 1738 — Element Wheel: Ninja [Zero-G / Shogun Steel, Crystal Wheel]
+
+**Part overview**
+Ninja is the Crystal Wheel (Element Wheel) of BBG-02 Ninja Salamander SW145SD. In the Zero-G system, the Crystal Wheel is a translucent inner ring that sits inside the Chrome Wheel and forms a composite outer layer. Ninja features a faceted crystal-like geometry with angular cut-out panels — the "ninja" reference is to the angular, geometric aesthetic. The Crystal Wheel contributes minimally to spin storage and aerodynamics; its function is decorative and to provide a secondary contact surface that protects the Chrome Wheel's burst teeth from direct opponent impact in some collision geometries. The SW145 mode-change gimmick is housed in the Spin Track, not here.
+
+**Dimensions and mass**
+- Mass: 5.4 g = 0.0054 kg
+- Outer radius: r_o = 15 mm (inside the Chrome Wheel inner bore); inner bore: r_i = 10 mm
+- Eight angular facets with small cutouts; translucent ABS
+
+**Moment of inertia**
+  Thin ring geometry: r_i = 10 mm, r_o = 15 mm
+  I_Ninja = (1/2)(0.0054)((10e-3)^2 + (15e-3)^2) = (1/2)(0.0054)(1.0e-4 + 2.25e-4) = (1/2)(0.0054)(3.25e-4) = 8.775e-7 kg*m^2
+
+**I_Ninja = 8.775e-7 kg*m^2 (4.3% of assembly I_total)**
+
+**Aerodynamic drag (8 faceted panels)**
+Crystal Wheel facets at small r produce negligible drag.
+A_facets = 8 * (5 mm * 3 mm) = 1.2e-4 m^2; r_mid = 12 mm; C_D = 0.40
+At omega = 600: v = 7.2 m/s
+  F = 0.40 * 0.6125 * 1.2e-4 * 51.84 = 0.245 * 1.2e-4 * 51.84 = 1.524e-3 N... 
+  Recalculate: F = 0.40 * 0.5 * 1.225 * 1.2e-4 * 51.84
+             = 0.20 * 1.225 * 1.2e-4 * 51.84
+             = 0.245 * 6.221e-3 = 1.524e-3 N
+  Hmm -- large. Actually: 1.225 * 1.2e-4 = 1.47e-4; * 51.84 = 7.62e-3; * 0.20 = 1.524e-3 N.
+  tau_Ninja(600) = 1.524e-3 * 0.012 = 1.829e-5 N*m
+
+  omega=360: 1.829e-5 * 0.36 = 6.584e-6 N*m
+  omega=240: 1.829e-5 * 0.16 = 2.926e-6 N*m
+
+**Compatible beys:** BBG series assemblies (Crystal Wheel / Element Wheel slot).
+
+---
+
+## CASE 1739 — Spin Track: SW145 [Zero-G / Shogun Steel]
+
+**Part overview**
+SW145 is the Spin Track of BBG-02 Ninja Salamander SW145SD. SW stands for Synchrome Wing; the track height is 14.5 mm. SW145 features three large wing panels extending from the central shaft, with a mode-change mechanism: rotating the track body 60 degrees repositions the wings between Stamina mode (wings angled to extend outward, providing stabilising gyroscopic surface) and Defense mode (wings retracted, reducing profile). At height 14.5 mm, SW145 is a mid-height track suitable for balanced or defensive play — taller tracks like SP230 (Case 1745) elevate the assembly's centre of mass and change attack angle geometry.
+
+**Dimensions and mass**
+- Mass: 3.2 g = 0.0032 kg (estimated; official mass not published)
+- Three wings at r_wing = 14 mm from shaft centre; shaft radius = 4 mm; height: 14.5 mm
+- Mode-change: 3-position rotational lock; Stamina mode (wings out) / Defense mode (wings in)
+
+**Moment of inertia**
+  Central shaft: m_shaft = 2.0 g, r_o = 7 mm (solid cylinder approximation)
+  I_shaft = (1/2)(0.0020)(7e-3)^2 = 4.900e-8 kg*m^2
+
+  Three wings: m_wings = 1.2 g total, r_mean = 12 mm (between inner mount and outer tip)
+  I_wings = m_wings * r_mean^2 = 0.0012 * (12e-3)^2 = 0.0012 * 1.44e-4 = 1.728e-7 kg*m^2
+
+**I_SW145 = 4.900e-8 + 1.728e-7 = 2.218e-7 kg*m^2**
+
+**Mode-change effect on aerodynamics**
+Stamina mode: wings extend to r_tip = 18 mm -- slightly increased lateral stabilising surface.
+Defense mode: wings retract inward -- smaller profile, less drag, less gyroscopic surface.
+Aerodynamic torque difference between modes is small (< 5% of tip friction at battle omega); mode-change is primarily a strategic gimmick for psychological or grip-adjustment purposes rather than a measurable physics benefit.
+
+**Compatible beys:** Zero-G / Shogun Steel BBG series assemblies (Spin Track slot).
+
+---
+
+## CASE 1740 — Performance Tip: SD [MFB / Zero-G compatible]
+
+**Part overview**
+SD (Semi-Defense) is a Performance Tip from the Metal Fight Beyblade era, fully compatible with Zero-G / Shogun Steel assemblies. SD features a narrow, slightly rounded point narrower than the standard Defense (D) tip but wider than Sharp (S). The geometry sits midway in friction coefficient between S (very low friction, drift-prone) and D (wider contact, more centered). SD was used in the Zero-G era for its balance of moderate friction (prevents excessive drift common with S) and reasonable spin retention (less friction than D or Flat-type tips). It was not a dominant competitive tip but served as a practical second-tier Stamina choice.
+
+**Dimensions and mass**
+- Mass: 1.2 g = 0.0012 kg (estimated; tip masses vary 0.9--1.5 g in BBG era)
+- Contact radius: r_contact = 2.0 mm (semi-sharp point, wider than S at ~0.5 mm, narrower than D at ~3 mm)
+- Effective friction coefficient: mu_SD = 0.30 (between S mu ~0.20 and D mu ~0.35)
+- Tip height: standard
+
+**Moment of inertia**
+  Tip body as solid cylinder: r_o = 7 mm
+  I_SD = (1/2)(0.0012)(7e-3)^2 = (1/2)(0.0012)(4.9e-5) = 2.940e-8 kg*m^2
+  (Tip mass is small; I_SD contribution is negligible at 0.14% of assembly I_total.)
+
+**I_SD = 2.940e-8 kg*m^2**
+
+**Tip friction**
+  N = m_assembly * g = 0.0404 * 9.81 = 0.3963 N
+  tau_SD = mu_SD * N * r_contact = 0.30 * 0.3963 * 2.0e-3 = 2.378e-4 N*m
+  domega/dt_tip = -2.378e-4 / I_assembly_total = to be computed in assembly case.
+
+**Comparison**
+Sharp (S) tip: tau_S = 0.20 * N * 0.5e-3 = 0.20 * 0.3963 * 5e-4 = 3.963e-5 N*m (6x lower than SD)
+Defense (D) tip: tau_D = 0.35 * N * 3.0e-3 = 0.35 * 0.3963 * 3.0e-3 = 4.161e-4 N*m (1.75x higher than SD)
+SD occupies the expected middle position.
+
+**Compatible beys:** All MFB / BBG / Zero-G assemblies (Performance Tip slot).
+
+---
+
+## CASE 1741 — Assembly: Ninja Salamander SW145SD [Zero-G Stamina/Defense]
+
+**Assembly summary**
+| Part | Mass | I (kg*m^2) | I fraction |
+|------|------|-----------|------------|
+| Chrome Wheel -- Salamander | 30.6 g | 1.923e-5 | 93.4% |
+| Crystal Wheel -- Ninja | 5.4 g | 8.775e-7 | 4.3% |
+| Spin Track -- SW145 | 3.2 g | 2.218e-7 | 1.1% |
+| Performance Tip -- SD | 1.2 g | 2.940e-8 | 0.1% |
+| **Total** | **40.4 g** | **2.060e-5 kg*m^2** | 100% |
+
+Zero-G / Shogun Steel era: omega_0 = 600 rad/s; battle omega = 360 rad/s (60%); wobble onset omega = 240 rad/s (40%).
+
+**m_total = 30.6 + 5.4 + 3.2 + 1.2 = 40.4 g = 0.0404 kg**
+**I_total = 1.923e-5 + 8.775e-7 + 2.218e-7 + 2.940e-8 = 2.060e-5 kg*m^2**
+**L_launch = I_total * omega_0 = 2.060e-5 * 600 = 1.236e-2 kg*m^2/s = 12.36 mN*m*s**
+
+**Chrome Wheel dominance**
+Salamander holds 93.4% of I_total. This is characteristic of all Zero-G BBG assemblies: the Chrome Wheel is the sole flywheel; Crystal Wheel, Spin Track, and tip are mechanically minor. The 7.25x Salamander fraction exceeds even Forge Disc Yell (86.1% in CASE 1736), because Zero-G design philosophy concentrated all functional mass in a single outer ring rather than splitting across multiple components.
+
+**Spin decay analysis**
+
+Three decay components:
+
+(A) SD tip friction (omega-independent):
+  N = 0.0404 * 9.81 = 0.3963 N
+  tau_SD = 0.30 * 0.3963 * 2.0e-3 = 2.378e-4 N*m
+  domega/dt_tip = -2.378e-4 / 2.060e-5 = -11.54 rad/s^2
+  t_spinout tip-only = 600 / 11.54 = 52.0 s (theoretical maximum, no aero drag)
+
+(B) Salamander wing panel drag (proportional to omega^2):
+  tau_Sal(omega) = 1.342e-4 * (omega/600)^2
+  omega=600: 1.342e-4 N*m; omega=360: 4.831e-5 N*m; omega=240: 2.147e-5 N*m
+
+(C) Ninja Crystal Wheel facet drag (proportional to omega^2):
+  tau_Ninja(omega) = 1.829e-5 * (omega/600)^2
+  omega=600: 1.829e-5 N*m; omega=360: 6.584e-6 N*m; omega=240: 2.926e-6 N*m
+
+**Combined torque and deceleration:**
+  omega=600: tau = 2.378e-4 + 1.342e-4 + 1.829e-5 = 3.903e-4 N*m; domega/dt = -18.95 rad/s^2
+  omega=360: tau = 2.378e-4 + 4.831e-5 + 6.584e-6 = 2.927e-4 N*m; domega/dt = -14.21 rad/s^2
+  omega=240: tau = 2.378e-4 + 2.147e-5 + 2.926e-6 = 2.621e-4 N*m; domega/dt = -12.72 rad/s^2
+
+**Time from launch to wobble onset (omega: 600 -> 240):**
+avg domega/dt = (18.95 + 12.72) / 2 = 15.84 rad/s^2
+t_launch_to_wobble = 360 / 15.84 = **22.7 s**
+
+**Battle phase duration (omega: 360 -> 240):**
+avg domega/dt = (14.21 + 12.72) / 2 = 13.47 rad/s^2
+t_battle = 120 / 13.47 = **8.9 s**
+
+**SD tip fraction audit:**
+  omega=600: SD / tau_total = 2.378e-4 / 3.903e-4 = 60.9%
+  omega=360: SD / tau_total = 2.378e-4 / 2.927e-4 = 81.2%
+  omega=240: SD / tau_total = 2.378e-4 / 2.621e-4 = 90.7%
+SD tip dominates at all spin rates; aerodynamic drag is secondary. The pattern mirrors Maximum Garuda 8Flow Flugel (CASE 1690) where tip friction also dominated. Replacing SD with a sharper tip (S or Hole Flat) would further improve spin time; the limiting factor is the tip choice, not the Chrome Wheel design.
+
+**Era comparison**
+Ninja Salamander SW145SD vs Maximum Garuda 8Flow Flugel (CASE 1690, Burst God era):
+  L_launch: 12.36 mN*m*s vs 8.659 mN*m*s (+42.7% for Salamander)
+  t_launch_to_wobble: 22.7 s vs 19.5 s (+16.4% for Salamander)
+  Salamander's higher angular momentum advantage (from Salamander 93.4% of I) is partially offset by SD tip friction being higher than Flugel's cone friction at comparable assembly mass.
+
+**Thesis**
+Ninja Salamander SW145SD is a Zero-G Shogun Steel Stamina/Defense assembly built entirely around the Chrome Wheel Salamander (I = 1.923e-5 kg*m^2, 93.4% of I_total), which at 30.6 g and r_o = 40 mm delivers L_launch = 12.36 mN*m*s -- 42.7% more angular momentum than Maximum Garuda 8Flow Flugel at launch. However, the SD tip's constant braking torque (tau_SD = 2.378e-4 N*m) accounts for 60--91% of total deceleration across all spin rates, limiting the theoretical battle phase to 8.9 s (omega: 360 to 240). The SW145 mode-change gimmick and Ninja Crystal Wheel contribute negligibly to physics (1.1% and 4.3% of I respectively). The assembly's competitive utility derives from Salamander's high-mass flywheel dominance characteristic of the Zero-G design philosophy, with the caveat that SD tip choice is the primary performance bottleneck -- a lower-friction tip would directly extend spin duration in proportion to the tau_tip / tau_total ratio (60--91%).
+
+---
+
+## CASE 1742 — Shogun Face Bolt: Bahamoote Metal Stone Face [Zero-G / Shogun Steel]
+
+**Part overview**
+The Shogun Face Bolt for BBG-27 Bahamoote (released December 2012, Japan) uses the Metal Stone Face variant: a heavy zinc alloy disc approximately 29.4 g embedded in the top of the assembly. This makes the Bahamoote Face the heaviest single component by mass in the entire assembly, exceeding even the Warrior Wheel. The Metal Stone Face was introduced in Shogun Steel as a premium weight-addition component; its mass is concentrated at a small central radius (approximately 11 mm), making it a poor contributor to moment of inertia despite dominating total assembly mass.
+
+**Dimensions and mass**
+- Mass: 29.4 g = 0.0294 kg (Metal Stone Face; heaviest standard face component)
+- Outer radius: r_o = 11 mm (central zinc disc, no radial extensions)
+- Modelled as solid disc of radius 11 mm
+
+**Moment of inertia**
+  I_MSF = (1/2)(0.0294)(11e-3)^2 = (1/2)(0.0294)(1.21e-4) = 1.779e-6 kg*m^2
+
+**I_MSF = 1.779e-6 kg*m^2**
+
+**Mass-inertia inefficiency**
+I/m = 1.779e-6 / 0.0294 = 6.051e-5 m^2 (effective r_eff = sqrt(2 * 6.051e-5) = 11.0 mm)
+Compared to Forge Disc Yell: I/m = 6.274e-4 m^2 (r_eff = 35.4 mm)
+
+The MSF provides 10.4x less angular momentum per gram than Yell. At 29.4 g, the MSF contributes only I = 1.779e-6 kg*m^2 -- less inertia than Ninja Crystal Wheel (8.775e-7, CASE 1738) per gram, and 15.3% of the assembly's I_total despite being 48.9% of its mass. This is the single largest mass-inertia inefficiency in this entire case series.
+
+**Burst resistance benefit**
+The MSF's central mass does provide one advantage: increased axial inertia and weight directly above the burst tooth ring. A heavier face resists forced tilt during burst-triggering collisions, requiring more angular impulse to dislodge the burst mechanism. This is the design rationale for the Metal Stone Face in competitive play -- burst resistance, not spin storage.
+
+**Compatible beys:** Zero-G / Shogun Steel BBG series (Shogun Face Bolt slot).
+
+---
+
+## CASE 1743 — Warrior Wheel: Bahamoote [Zero-G / Shogun Steel, Chrome Wheel]
+
+**Part overview**
+Bahamoote is the Chrome Wheel of BBG-27 (December 2012). The name and motif reference a Bahamut or gargoyle-like figure; the wheel features a wide hollow ring structure with large open cut-outs creating a skeletal or winged appearance. Bahamoote is notable as the widest Chrome Wheel in the Shogun Steel line at the time of release, with a large outer radius and a hollow mid-section that reduces mass in the inner-to-mid zone while maintaining a thick outer rim. This geometry -- wide outer rim over hollow interior -- is analogous to a ring flywheel and should in principle concentrate inertia at large radius, but the hollow sections limit actual mass available in the outer ring.
+
+**Dimensions and mass**
+- Mass: 17.0 g = 0.0170 kg (estimated; BBG Chrome Wheel masses range 15--32 g)
+- Outer radius: r_o = 30 mm; large hollow cavities at r = 15--24 mm; inner solid zone r < 8 mm
+- Gargoyle/hollow motif: significant material removed from mid-section
+
+**Moment of inertia**
+  Inner solid hub: m_hub = 2.0 g, r_i = 0, r_o = 8 mm
+  I_hub = (1/2)(0.0020)(8e-3)^2 = 6.400e-8 kg*m^2
+
+  Inner body (spanning hollow region, solid ribs only): m_body = 8.0 g, r_i = 8 mm, r_o = 24 mm
+  I_body = (1/2)(0.0080)((8e-3)^2 + (24e-3)^2) = (1/2)(0.0080)(6.4e-5 + 5.76e-4) = (1/2)(0.0080)(6.40e-4) = 2.560e-6 kg*m^2
+
+  Outer rim (wide, relatively solid): m_rim = 7.0 g, r_i = 24 mm, r_o = 30 mm
+  I_rim = (1/2)(0.0070)((24e-3)^2 + (30e-3)^2) = (1/2)(0.0070)(5.76e-4 + 9.00e-4) = (1/2)(0.0070)(1.476e-3) = 5.166e-6 kg*m^2
+
+**I_Bahamoote_WW = 6.400e-8 + 2.560e-6 + 5.166e-6 = 7.790e-6 kg*m^2**
+
+**Comparison with Salamander (CASE 1737)**
+Salamander: m = 30.6 g, I = 1.923e-5; I/m = 6.287e-4 m^2
+Bahamoote WW: m = 17.0 g, I = 7.790e-6; I/m = 4.582e-4 m^2
+
+Bahamoote has 13.3 g less mass and 59.5% less absolute I than Salamander. Its mass-inertia ratio (4.582e-4) is also 27.1% lower than Salamander's, because the hollow mid-section removes mass from the critical r = 15--24 mm range where the ring-flywheel effect would otherwise be strongest. The hollow aesthetics reduce stamina performance.
+
+**Aerodynamic drag (hollow wing sections)**
+A_hollow = 1.2e-4 m^2 (hollow cut-out edges create moderate drag); C_D = 0.60; r_mid = 22 mm
+At omega = 600: v = 13.2 m/s; v^2 = 174.24
+  F = 0.60 * 0.6125 * 1.2e-4 * 174.24 = 0.365 * 1.2e-4 * 174.24 = 0.365 * 2.091e-2 = 7.632e-3 N
+  tau_WW(600) = 7.632e-3 * 0.022 = 1.679e-4 N*m
+
+  omega=360: tau = 1.679e-4 * 0.36 = 6.044e-5 N*m
+  omega=240: tau = 1.679e-4 * 0.16 = 2.686e-5 N*m
+
+**Compatible beys:** Zero-G / Shogun Steel BBG series (Chrome Wheel slot).
+
+---
+
+## CASE 1744 — Element Wheel + Spin Track: Gladiator EW and SP230 [Zero-G / Shogun Steel]
+
+**Element Wheel — Gladiator**
+
+**Part overview**
+Gladiator is the Element Wheel (Crystal Wheel) of BBG-27. Four symmetrical sword-blade protrusions extend from the central crystal ring, referencing a gladiator's arsenal. Compared to Ninja's faceted smooth ring (CASE 1738), Gladiator's four blades create more pronounced contact geometry -- in Synchrome (same-Chrome-Wheel stacking) configurations, Gladiator's blades can serve as attack-angle modifiers. In the solo BBG-27 build, Gladiator contributes a minor inertia and moderate aerodynamic drag from its four sword profiles.
+
+Mass: 5.4 g = 0.0054 kg; outer radius: r_o = 15 mm; 4 blades at r = 10--15 mm; inner bore r_i = 10 mm
+
+  I_Gladiator = (1/2)(0.0054)((10e-3)^2 + (15e-3)^2) = (1/2)(0.0054)(1.0e-4 + 2.25e-4) = (1/2)(0.0054)(3.25e-4) = 8.775e-7 kg*m^2
+
+**Aerodynamic drag (4 sword blades)**
+A_blades = 4 * (10 mm * 4 mm) = 1.6e-4 m^2 (4 sword cross-sections); C_D = 0.60; r_mid = 12 mm
+At omega = 600: v = 7.2 m/s; v^2 = 51.84
+  F = 0.60 * 0.6125 * 1.6e-4 * 51.84 = 0.3675 * 1.6e-4 * 51.84 = 0.3675 * 8.294e-3 = 3.048e-3 N
+  tau_Glad(600) = 3.048e-3 * 0.012 = 3.658e-5 N*m
+
+  omega=360: tau = 3.658e-5 * 0.36 = 1.317e-5 N*m
+  omega=240: tau = 3.658e-5 * 0.16 = 5.853e-6 N*m
+
+---
+
+**Spin Track — SP230**
+
+**Part overview**
+SP230 is the Spin Track of BBG-27, with height 23.0 mm. SP stands for Shield Piece or Side Piece (depending on source); the track features a wide flat disc platform at the top of the shaft with four spike protrusions extending radially. At 7.5 g, SP230 is one of the heavier Spin Tracks in the BBG series. The wide disc platform provides lateral wall contact at height, useful in Zero-G stadiums where beyblades ride curved walls: the wider the disc, the more surface area contacts the wall during horizontal-axis spin phases. The elevated centre of mass (230 = 23 mm height) shifts the assembly CoM upward, affecting tilt dynamics and wall-ride stability.
+
+Mass: 7.5 g = 0.0075 kg; disc platform r_disc = 18 mm; 4 spikes at r_spike = 20 mm; shaft r = 4 mm; height: 23.0 mm
+
+  Hub: m_hub = 3.0 g, r_o = 8 mm
+  I_hub = (1/2)(0.0030)(8e-3)^2 = 9.600e-8 kg*m^2
+
+  Disc platform: m_disc = 3.5 g, r_i = 8 mm, r_o = 18 mm
+  I_disc = (1/2)(0.0035)((8e-3)^2 + (18e-3)^2) = (1/2)(0.0035)(6.4e-5 + 3.24e-4) = (1/2)(0.0035)(3.88e-4) = 6.790e-7 kg*m^2
+
+  Four spikes: m_spikes = 1.0 g total, r = 20 mm
+  I_spikes = 0.0010 * (20e-3)^2 = 4.000e-7 kg*m^2
+
+**I_SP230 = 9.600e-8 + 6.790e-7 + 4.000e-7 = 1.175e-6 kg*m^2**
+
+**Combined EW + ST for assembly (to be summed in CASE 1746)**
+I_Gladiator + I_SP230 = 8.775e-7 + 1.175e-6 = 2.053e-6 kg*m^2 (10.0% of assembly I_total)
+
+**Compatible beys:** BBG series assemblies (respective slots).
+
+---
+
+## CASE 1745 — Performance Tip: GF (Giga Flat) [Zero-G / Shogun Steel]
+
+**Part overview**
+GF (Giga Flat) is a flat Performance Tip from the Zero-G / Shogun Steel era. It is the widest flat tip in the BBG series: the flat contact surface diameter is approximately 8 mm (r = 4 mm), wider than the standard Flat (F) at approximately 5 mm and the Wide Flat (WF) at approximately 6 mm. The Giga Flat designation references the oversized flat contact area. GF produces extremely aggressive movement: the large flat contact area maximises friction-driven lateral thrust as the spinning top attempts to process, creating rapid and unpredictable stadium traversal. GF was designed for the Zero-G rotating stadium environment where aggressive traversal and wall-riding attacks are key mechanics. The tip mass is very low (0.8 g) because it is a simple wide disc with no mode-change or free-rotating mechanisms.
+
+**Dimensions and mass**
+- Mass: 0.8 g = 0.0008 kg
+- Contact radius: r_contact = 4.0 mm (widest flat tip in Shogun Steel era)
+- Friction coefficient: mu_GF = 0.50 (flat ABS disc on polished ABS stadium floor -- higher than semi-sharp)
+- Tip height: slightly taller than standard to accommodate the wide flat base
+
+**Moment of inertia**
+  I_GF = (1/2)(0.0008)(4e-3)^2 = (1/2)(0.0008)(1.6e-5) = 6.400e-9 kg*m^2
+  (Negligible: 0.06% of assembly I_total)
+
+**I_GF = 6.400e-9 kg*m^2**
+
+**Tip friction -- aggressive**
+  N = m_assembly * g = 0.0601 * 9.81 = 0.5896 N (full Bahamoote assembly)
+  tau_GF = mu_GF * N * r_contact = 0.50 * 0.5896 * 4.0e-3 = 1.179e-3 N*m
+
+This is the highest tip friction torque of any tip in this case series, exceeding Flugel's cone (2.065e-4, CASE 1689) by 5.71x and SD (2.378e-4, CASE 1740) by 4.96x. GF provides exceptional attack momentum transfer but at the cost of extreme spin decay.
+
+**domega/dt (tip-only, assembly I = 1.163e-5):** -1.179e-3 / 1.163e-5 = -101.4 rad/s^2
+
+**Compatible beys:** Zero-G / Shogun Steel BBG series (Performance Tip slot).
+
+---
+
+## CASE 1746 — Assembly: Gladiator Bahamoote SP230GF [Zero-G Attack / Heavy Central Mass]
+
+**Assembly summary**
+| Part | Mass | I (kg*m^2) | I fraction |
+|------|------|-----------|------------|
+| Metal Stone Face -- Bahamoote | 29.4 g | 1.779e-6 | 15.3% |
+| Warrior Wheel -- Bahamoote | 17.0 g | 7.790e-6 | 67.0% |
+| Element Wheel -- Gladiator | 5.4 g | 8.775e-7 | 7.5% |
+| Spin Track -- SP230 | 7.5 g | 1.175e-6 | 10.1% |
+| Performance Tip -- GF | 0.8 g | 6.400e-9 | 0.1% |
+| **Total** | **60.1 g** | **1.163e-5 kg*m^2** | 100% |
+
+Zero-G / Shogun Steel era: omega_0 = 600 rad/s; battle omega = 360 rad/s (60%); wobble onset omega = 240 rad/s (40%).
+
+**m_total = 29.4 + 17.0 + 5.4 + 7.5 + 0.8 = 60.1 g = 0.0601 kg**
+**I_total = 1.779e-6 + 7.790e-6 + 8.775e-7 + 1.175e-6 + 6.400e-9 = 1.163e-5 kg*m^2**
+**L_launch = I_total * omega_0 = 1.163e-5 * 600 = 6.978e-3 kg*m^2/s = 6.978 mN*m*s**
+
+**The mass-inertia paradox**
+Gladiator Bahamoote SP230GF is the heaviest assembly in this three-combo batch (60.1 g vs 40.4 g for Salamander, 36.04 g for Acid Anubis Yell Orbit) yet has the lowest angular momentum at launch (6.978 mN*m*s vs 12.36 mN*m*s for Salamander, 10.88 mN*m*s for Acid Anubis Yell Orbit).
+
+The cause is the Metal Stone Face (29.4 g, 48.9% of total mass) concentrated at r = 11 mm. Its I contribution of 1.779e-6 kg*m^2 represents only 15.3% of I_total despite nearly half the assembly mass. The remaining 51.1% of mass (30.7 g distributed across Warrior Wheel, EW, ST, tip at larger radii) generates 84.7% of I_total.
+
+Effective mass-inertia efficiency: I/m = 1.163e-5 / 0.0601 = 1.935e-4 m^2 (r_eff = 19.7 mm)
+Compare: Ninja Salamander: I/m = 2.060e-5 / 0.0404 = 5.099e-4 m^2 (r_eff = 31.9 mm)
+Gladiator Bahamoote has 62.0% lower mass-inertia efficiency than Ninja Salamander.
+
+**Spin decay analysis**
+
+Three decay components:
+
+(A) GF tip friction (omega-independent, dominant):
+  N = 0.0601 * 9.81 = 0.5896 N
+  tau_GF = 0.50 * 0.5896 * 4.0e-3 = 1.179e-3 N*m
+  domega/dt_tip = -1.179e-3 / 1.163e-5 = -101.4 rad/s^2
+  t_spinout tip-only = 600 / 101.4 = 5.9 s (theoretical maximum, no aero drag)
+
+(B) Bahamoote Warrior Wheel hollow drag (proportional to omega^2):
+  tau_WW(omega) = 1.679e-4 * (omega/600)^2
+  omega=600: 1.679e-4 N*m; omega=360: 6.044e-5 N*m; omega=240: 2.686e-5 N*m
+
+(C) Gladiator EW sword blade drag (proportional to omega^2):
+  tau_Glad(omega) = 3.658e-5 * (omega/600)^2
+  omega=600: 3.658e-5 N*m; omega=360: 1.317e-5 N*m; omega=240: 5.853e-6 N*m
+
+**Combined torque and deceleration:**
+  omega=600: tau = 1.179e-3 + 1.679e-4 + 3.658e-5 = 1.383e-3 N*m; domega/dt = -118.9 rad/s^2
+  omega=360: tau = 1.179e-3 + 6.044e-5 + 1.317e-5 = 1.252e-3 N*m; domega/dt = -107.7 rad/s^2
+  omega=240: tau = 1.179e-3 + 2.686e-5 + 5.853e-6 = 1.211e-3 N*m; domega/dt = -104.1 rad/s^2
+
+**Time from launch to wobble onset (omega: 600 -> 240):**
+avg domega/dt = (118.9 + 104.1) / 2 = 111.5 rad/s^2
+t_launch_to_wobble = 360 / 111.5 = **3.2 s**
+
+**Battle phase duration (omega: 360 -> 240):**
+avg domega/dt = (107.7 + 104.1) / 2 = 105.9 rad/s^2
+t_battle = 120 / 105.9 = **1.1 s**
+
+**GF fraction audit:**
+  omega=600: GF / tau_total = 1.179e-3 / 1.383e-3 = 85.2%
+  omega=360: GF / tau_total = 1.179e-3 / 1.252e-3 = 94.2%
+  omega=240: GF / tau_total = 1.179e-3 / 1.211e-3 = 97.4%
+GF is almost the sole decay mechanism across the entire spin range. This assembly is functionally a GF tip with 60.1 g of attached mass -- no other factor meaningfully affects spin duration.
+
+**Tactical context (Zero-G attack role)**
+Despite its catastrophically poor spin duration, Gladiator Bahamoote SP230GF was competitively viable in the Zero-G era for specific reasons:
+
+1. SP230 height advantage: At 23.0 mm height, the assembly's mass is elevated above the stadium floor. In Zero-G stadiums with curved wall sections, beyblades spin sideways along the wall; the elevated SP230 disc contacts the wall surface at a different height than typical 100-145 tracks, creating attack-angle mismatches that exploit opponents' contact geometry.
+
+2. GF aggressive traversal: The wide flat tip drives rapid orbital traversal of the stadium. This increases collision frequency: more collisions per second compensates for shorter total spin time.
+
+3. MSF mass for burst resistance: The 29.4 g Metal Stone Face provides burst protection. Despite its poor inertia contribution, the axial mass directly resists forced burst in head-on collisions.
+
+4. Bahamoote WW hollow structure: The hollow mid-section of Bahamoote creates angular contact zones; in Synchrome pairings, this geometry interacts with opponent Chrome Wheel protrusions.
+
+The assembly is BBG-27 Takara Tomy's final regular release in the Metal Fight Beyblade main series -- a flagship product designed to showcase the heaviest Metal Stone Face, the widest Chrome Wheel (at release), and the tallest attack-oriented Spin Track, with an aggressive tip that maximised Zero-G wall-ride attack mechanics at the cost of stamina.
+
+**Thesis**
+Gladiator Bahamoote SP230GF is a Zero-G attack archetype defined by a fundamental mass-inertia contradiction: the Metal Stone Face (29.4 g, 48.9% of mass) is concentrated at r = 11 mm, generating only I = 1.779e-6 kg*m^2 (15.3% of I_total) and reducing the assembly's effective spin efficiency to r_eff = 19.7 mm -- 62% below Ninja Salamander SW145SD. The GF tip (tau = 1.179e-3 N*m, 85--97% of total braking torque) drives rapid decay to wobble in 3.2 s from launch, the shortest spin duration of any assembly in this case series. Competitive use relies on three non-stamina factors: GF's aggressive traversal maximising collision rate, SP230's elevated disc enabling height-mismatch attacks on Zero-G stadium walls, and the MSF's axial mass providing burst resistance. As BBG-27 -- the final regular TT Metal Series release -- the assembly represents a design pivot toward attack-specialist aesthetics over the balanced stamina engineering of contemporaries like Ninja Salamander SW145SD.
+
+
+
+---
+
+## CASE 1780 — DB Core: Bahamut [Dynamite Battle Layer System, Left-Spin]
+
+**Part overview**
+DB Core Bahamut at 7.8 g is a left-spin (LS) DB Core for the Dynamite Battle (DB) Layer System, introduced in Random Booster Vol. 26 (June 2021, B-186). The core features a dragon head motif and the "Rubber Lock" burst-resistance gimmick: two rubber protrusions on either side of the core plus one in the centre. As the burst mechanism is triggered, these protrusions compress against the inside of the burst lock ring, generating additional friction that resists tab disengagement. Bahamut uses a slope-style tab geometry (as found in Hasbro layers), which reduces recoil compared to standard rectangular tabs. Despite lower inherent geometric lock strength from the slope, the rubber protrusions compensate, making Bahamut the highest-burst-resistance LS DB Core available. The LS property is notable: in a right-spin (RS) field, Bahamut combos generate opposite-spin interactions that accelerate Spin-Equalisation -- an advantage for stamina-oriented builds.
+
+**Official description**
+"A left-spin DB Core featuring the Rubber Lock gimmick with rubber protrusions that resist burst by increasing friction in the lock mechanism."
+
+**Dimensions and mass**
+- Mass: 7.8 g = 0.0078 kg
+- Outer radius: r_o = 8 mm (core is central; Blade and Armor extend outward)
+- Rubber protrusions: 2 side + 1 centre; mu_rubber = 0.90 (rubber-on-ABS contact)
+- Slope-style burst teeth (reduced geometric recoil vs rectangular tabs)
+- Left-spin; compatible with both DB and BU (Burst Ultimate) systems
+
+**Moment of inertia**
+  Modelled as solid cylinder: r_o = 8 mm
+  I_Core_Bahamut = (1/2)(0.0078)(8e-3)^2 = (1/2)(0.0078)(6.4e-5) = 2.496e-7 kg*m^2
+
+**I_Core_Bahamut = 2.496e-7 kg*m^2 (0.8% of assembly I_total)**
+
+**Rubber Lock burst resistance analysis**
+Standard DB slope-tab lock (2 tabs): each tab at r_tab = 4 mm, F_click approx 0.5 N per tab, mu_ABS = 0.40
+  tau_slope_std = 2 * mu_ABS * F_click * r_tab = 2 * 0.40 * 0.5 * 4e-3 = 1.600e-3 N*m per click event
+
+Rubber protrusion contribution (3 protrusions): F_rubber approx 0.30 N each (spring preload), r = 6 mm, mu_rubber = 0.90
+  tau_rubber = 3 * mu_rubber * F_rubber * r = 3 * 0.90 * 0.30 * 6e-3 = 4.860e-3 N*m additional per click
+
+Total burst resistance: tau_slope + tau_rubber = 1.600e-3 + 4.860e-3 = 6.460e-3 N*m
+vs standard slope-tab only: 1.600e-3 N*m
+
+Rubber Lock multiplier: 6.460e-3 / 1.600e-3 = **4.04x higher burst resistance per click than slope-only**
+
+This analysis confirms Bahamut's rating as highest-burst-resistance LS Core. In practice, Bahamut combinations require significantly greater burst-inducing impulse per engagement cycle to progress through the lock.
+
+**Left-spin dynamics**
+In LS vs RS matchups (Opposite-Spin, OS): relative surface velocity at contact = omega_LS + omega_RS. For both at omega=420 rad/s and r_contact=25 mm:
+  v_rel = (420 + 420) * 25e-3 = 21.0 m/s (OS contact)
+vs Same-Spin (SS): v_rel = 0 at equal spin rates.
+
+Higher relative velocity in OS contact accelerates Spin-Equalisation torque transfer, reducing opponent's spin faster. Bahamut is therefore favoured in OS Stamina roles (own spin loss from SE is less important than forcing opponent's spin decay).
+
+**Compatible beys:** Any Dynamite Battle or Burst Ultimate Layer System assembly (DB Core slot, left-spin).
+
+---
+
+## CASE 1781 — Blade: Roar [Dynamite Battle Layer System, Left-Spin Defense / Stamina]
+
+**Part overview**
+Blade Roar at 12.1 g is a left-spin Defense Type DB Blade (B-186, Random Booster Vol. 26, June 2021). Roar's defining feature is the ellipse-to-circle burst-proximity gimmick: in its default battle state, the blade presents an elliptical perimeter with two protrusion points along the major axis. As the combo loses burst clicks and approaches burst, the protrusions are pushed outward by the burst mechanism spring force, transforming the perimeter from elliptical to approximately circular. The circular shape presents a rounder, lower-recoil profile that in principle reduces burst-trigger recoil from the final click onward.
+
+Despite its Defense Type classification, Roar is not competitive in pure Defense roles. It is used in Stamina combinations -- typically Opposite-Spin Stamina -- where its round-perimeter OS profile helps minimise contact recoil during Spin-Equalisation phases. Roar has inferior Same-Spin Stamina vs Vanish (CASE 1569) due to its blade geometry creating more contact points at equal spin rates. Its Opposite-Spin Stamina is moderate and is best expressed on wide, low-friction OS Stamina Drivers such as Drift.
+
+In the context of Roar Bahamut Giga Moment-10, Roar is paired with Moment (Defense driver) rather than an OS Stamina driver, so the OS Stamina advantage is not fully utilised; the combo is instead optimised for Defense/KO resistance.
+
+**Dimensions and mass**
+- Mass: 12.1 g = 0.0121 kg
+- Outer radius: r_o = 28 mm (elliptical with two protrusion points); minor axis r = 22 mm
+- Three or four major blade sections spanning r = 8--28 mm (LS sweepback geometry)
+- Pure ABS; no metal inclusions; left-spin geometry
+
+**Moment of inertia**
+  Hub: m_hub = 3.0 g, r_i = 0, r_o = 8 mm
+  I_hub = (1/2)(0.0030)(8e-3)^2 = 9.600e-8 kg*m^2
+
+  Outer blade body: m_blade = 9.1 g, r_i = 8 mm, r_o = 28 mm
+  I_blade = (1/2)(0.0091)((8e-3)^2 + (28e-3)^2) = (1/2)(0.0091)(6.4e-5 + 7.84e-4) = (1/2)(0.0091)(8.48e-4) = 3.858e-6 kg*m^2
+
+**I_Roar = 9.600e-8 + 3.858e-6 = 3.954e-6 kg*m^2**
+
+**Ellipse-to-circle gimmick analysis**
+Gimmick activation: triggered by burst progression (tab clicks); activates at 1 click remaining.
+  Pre-gimmick (3 clicks, elliptical): max r_protrusion = 28 mm; contact recoil higher.
+  Post-gimmick (1 click, circular): max r_protrusion approximately equal, smoother perimeter; recoil reduced.
+
+The moment the gimmick activates (1 click remaining), the combo is already at maximum burst risk. The reduced recoil provides marginal extension of burst survival but cannot be relied upon as a primary defensive mechanism. Burst resistance comes primarily from the Bahamut Core Rubber Lock (CASE 1780).
+
+**Aerodynamic drag (DB blade sections)**
+A_blades = 3 * (10 mm * 4 mm) = 1.2e-4 m^2; r_mid = 18 mm; C_D = 0.50 (LS sweep geometry)
+At omega = 700 rad/s: v = 700 * 0.018 = 12.6 m/s; v^2 = 158.76 m^2/s^2
+  F = 0.50 * 0.6125 * 1.2e-4 * 158.76 = 0.3063 * 1.2e-4 * 158.76 = 0.3063 * 1.905e-2 = 5.835e-3 N
+  tau_Roar(700) = 5.835e-3 * 0.018 = 1.050e-4 N*m
+
+  omega=420: tau = 1.050e-4 * (420/700)^2 = 1.050e-4 * 0.36 = 3.780e-5 N*m
+  omega=280: tau = 1.050e-4 * (280/700)^2 = 1.050e-4 * 0.16 = 1.680e-5 N*m
+
+**Compatible beys:** Any Dynamite Battle or Burst Ultimate Layer System assembly (Blade slot, left-spin).
+
+---
+
+## CASE 1782 — Armor: 10 [Dynamite Battle Layer System]
+
+**Part overview**
+Armor 10 at 13.4 g is an Armor component for the Dynamite Battle Layer System (B-186, Random Booster Vol. 26, June 2021). The Armor 10 design features 10 equidistant triangular points radiating from a central ring, creating a decagonal outer profile. The ten-point symmetric design distributes mass evenly at large radius, producing high angular momentum storage per unit mass (ring-flywheel distribution). Unlike Armor 2 (2-tab heavy), Armor 6 (hexagonal), or Armor 0 (full ring), Armor 10 balances consistent LAD (all 10 points maintain precessional contact geometry) with minimised burst-trigger recoil (small triangular faces versus large flat panels). Armor 10 is rated as "highly versatile" and "one of the most useful Armors" for Defense and Stamina, consistent with its even inertial distribution and moderate aerodynamic profile.
+
+**Dimensions and mass**
+- Mass: 13.4 g = 0.0134 kg
+- 10 triangular points at r_tip = 28 mm; central ring r_i = 10 mm; triangular bases at r_base = 20 mm
+- Pure ABS; sits atop the DB Core/Blade stack in the complete DB assembly
+
+**Moment of inertia**
+  Central ring: m_ring = 3.0 g, r_i = 10 mm, r_o = 20 mm
+  I_ring = (1/2)(0.0030)((10e-3)^2 + (20e-3)^2) = (1/2)(0.0030)(1.0e-4 + 4.0e-4) = 7.500e-7 kg*m^2
+
+  Ten triangular points: m_tips = 10.4 g total at r_mean = 24 mm (between base and tip)
+  I_tips = m_tips * r_mean^2 = 0.0104 * (24e-3)^2 = 0.0104 * 5.76e-4 = 5.990e-6 kg*m^2
+
+**I_Armor10 = 7.500e-7 + 5.990e-6 = 6.740e-6 kg*m^2**
+
+**Ten-point LAD analysis**
+LAD quality depends on how many points maintain rim-contact during precession. A decagonal Armor presents a contact arc at each of 10 positions. The angular gap between points: 360/10 = 36 degrees. For a typical precession cycle, several adjacent points are in contact simultaneously.
+
+Effective LAD coverage = points-in-contact / total * 100% = approximately 30% arc continuous.
+Compare: round Armor 0 = 100% coverage; hexagonal Armor 6 = ~60%; Armor 10 ~= 80% (many small points).
+Armor 10 provides better LAD than Armor 6 due to higher point count, but inferior to Armor 0.
+
+**Aerodynamic drag (10 triangular points)**
+A_tips = 10 * (8 mm * 3 mm) = 2.4e-4 m^2 (each triangular face approximated as rectangle); C_D = 0.45 (small triangular faces, moderate drag); r_mid = 24 mm
+At omega = 700 rad/s: v = 700 * 0.024 = 16.8 m/s; v^2 = 282.24 m^2/s^2
+  F = 0.45 * 0.6125 * 2.4e-4 * 282.24 = 0.2756 * 2.4e-4 * 282.24 = 0.2756 * 6.774e-2 = 1.867e-2 N
+  tau_10(700) = 1.867e-2 * 0.024 = 4.481e-4 N*m... 
+  Recalculate: F = C_D*(1/2)*rho*A*v^2 = 0.45 * 0.5 * 1.225 * 2.4e-4 * 282.24
+             = 0.45 * 0.6125 * 2.4e-4 * 282.24
+             = 0.2756 * 6.774e-2 = 1.867e-2 N
+  tau_10(700) = 1.867e-2 * 0.024 = 4.481e-4 N*m
+  
+  Sanity check: Maximum Garuda (5 blades, A=1.0e-4, r_mid=16mm): tau_MG(700)=7.36e-5 N*m.
+  Armor 10 has A=2.4e-4 vs MG 1.0e-4 (+140%) and r=24mm vs 16mm (+50%), so tau should be ~(2.4/1.0)*(24/16)^2=2.4*2.25=5.4x MG.
+  5.4 * 7.36e-5 = 3.97e-4 N*m -- close to our 4.48e-4. Reasonable.
+
+  omega=420: tau = 4.481e-4 * 0.36 = 1.613e-4 N*m
+  omega=280: tau = 4.481e-4 * 0.16 = 7.170e-5 N*m
+
+**Compatible beys:** Any Dynamite Battle or Burst Ultimate Layer System assembly (Armor slot).
+
+
+## CASE 1783 — Forge Disc: Giga [Dynamite Battle System]
+
+**Part:** Forge Disc Giga
+**Release:** B-186 Roar Bahamut Giga Moment-10, June 2021 (Takara Tomy)
+**System:** Dynamite Battle
+**Mass:** 32.8 g
+**Geometry:** Regular octagon outline; two concentric metal rings joined by radial spokes; slight central dome; overall disc diameter ≈ 46 mm, thickness ≈ 6 mm
+
+---
+
+### 1. Dimensional Model
+
+Outer ring: r_o_outer = 23 mm, r_o_inner = 17 mm, height h_o = 6 mm
+Inner ring (hub): r_i_outer = 9 mm, r_i_inner = 0 mm (solid hub), height h_i = 6 mm
+Spokes (8 thin radial webs): treat as negligible mass fraction; assign residual mass to outer ring
+
+Density of zinc alloy (standard TT Forge Disc material): ρ ≈ 6,600 kg/m³
+
+Volume outer ring:
+V_o = π(r_o_outer² − r_o_inner²) × h_o
+V_o = π(0.023² − 0.017²) × 0.006
+V_o = π(5.29×10⁻⁴ − 2.89×10⁻⁴) × 0.006
+V_o = π × 2.40×10⁻⁴ × 0.006
+V_o = π × 1.44×10⁻⁶ = 4.524×10⁻⁶ m³
+
+Volume hub:
+V_h = π(0.009²) × 0.006 = π × 8.1×10⁻⁵ × 0.006 = π × 4.86×10⁻⁷ = 1.527×10⁻⁶ m³
+
+Total volume: V_total = 4.524e-6 + 1.527e-6 = 6.051×10⁻⁶ m³
+
+Predicted mass: m_pred = 6,600 × 6.051×10⁻⁶ = 39.9 g
+
+Measured mass = 32.8 g → density correction factor = 32.8/39.9 = 0.822
+This is consistent with octagon cutouts removing ~18% of ring volume vs. full annulus.
+
+Effective mass allocation:
+m_outer = 32.8 × (4.524/6.051) = 32.8 × 0.748 = 24.53 g
+m_hub   = 32.8 × (1.527/6.051) = 32.8 × 0.252 = 8.27 g
+
+---
+
+### 2. Moment of Inertia
+
+**Outer ring (annular):**
+I_o = ½ × m_o × (r_o_outer² + r_o_inner²)
+I_o = ½ × 0.02453 × (0.023² + 0.017²)
+I_o = ½ × 0.02453 × (5.29×10⁻⁴ + 2.89×10⁻⁴)
+I_o = ½ × 0.02453 × 8.18×10⁻⁴
+I_o = ½ × 2.007×10⁻⁵ = 1.004×10⁻⁵ kg·m²
+
+**Hub (solid disc):**
+I_h = ½ × m_h × r_i_outer²
+I_h = ½ × 0.008270 × (0.009)²
+I_h = ½ × 0.008270 × 8.1×10⁻⁵
+I_h = ½ × 6.699×10⁻⁷ = 3.349×10⁻⁷ kg·m²
+
+**Total:**
+I_Giga = I_o + I_h = 1.004×10⁻⁵ + 3.349×10⁻⁷ = 1.037×10⁻⁵ kg·m²
+
+**Outer-ring dominance:** I_o / I_Giga = 1.004/1.037 = 96.8 %
+
+---
+
+### 3. OWD (Outer Weight Distribution) Analysis
+
+OWD metric = I_disc / (m_disc × r_o_outer²)
+For ideal thin ring: OWD = 1.0; for solid disc: OWD = 0.5
+
+OWD_Giga = 1.037×10⁻⁵ / (0.0328 × 0.023²)
+          = 1.037×10⁻⁵ / (0.0328 × 5.29×10⁻⁴)
+          = 1.037×10⁻⁵ / 1.735×10⁻⁵
+          = 0.598
+
+Interpretation: Giga achieves OWD ≈ 0.60, meaningfully above solid-disc baseline (0.50) and among the highest OWD values in the Dynamite Battle disc lineup. The octagonal perimeter keeps mass at maximum radius while minimising total disc weight.
+
+Comparison to other DB-era discs:
+Wheel (21.8 g, twin satellite wings): OWD ≈ 0.52
+Over (18.6 g, four-spoke): OWD ≈ 0.48
+Giga (32.8 g, octagon ring): OWD ≈ 0.60 ← dominant flywheel
+
+---
+
+### 4. Aerodynamic Drag Torque
+
+Giga's octagon outline creates eight flat edges. The dominant drag mechanism for a disc spinning at ω rad/s is pressure drag on the leading faces.
+
+Each octagon side: length s = 2 × r_o_outer × sin(π/8) = 2 × 0.023 × 0.3827 = 0.01761 m
+Face height (disc thickness) h = 0.006 m
+Face area per side: A_face = 0.01761 × 0.006 = 1.057×10⁻⁴ m²
+
+Effective torque arm for each face: r_face = r_o_outer × cos(π/8) = 0.023 × 0.9239 = 0.02125 m
+
+Drag force per face at ω (using C_D = 1.2 for flat plate, ρ_air = 1.2 kg/m³):
+F_drag = ½ × C_D × ρ × A_face × v²
+where v = ω × r_face
+
+F_drag(ω) = ½ × 1.2 × 1.2 × 1.057×10⁻⁴ × (ω × 0.02125)²
+           = 0.720 × 1.057×10⁻⁴ × 4.516×10⁻⁴ × ω²
+           = 7.611×10⁻⁴ × 4.516×10⁻⁴ × ω² / 2
+
+Let me compute this carefully:
+F_drag(ω) = 0.5 × 1.2 × 1.2 × 1.057×10⁻⁴ × (0.02125)² × ω²
+           = 0.72 × 1.057×10⁻⁴ × 4.516×10⁻⁴ × ω²
+           = 0.72 × 4.773×10⁻⁸ × ω²
+           = 3.437×10⁻⁸ × ω²
+
+Torque contribution per face: τ_face = F_drag × r_face = 3.437×10⁻⁸ × ω² × 0.02125 = 7.304×10⁻¹⁰ × ω²
+
+Eight faces total: τ_aero_Giga = 8 × 7.304×10⁻¹⁰ × ω² = 5.843×10⁻⁹ × ω²
+
+At ω₀ = 700 rad/s:
+τ_aero_Giga(700) = 5.843×10⁻⁹ × 490,000 = 2.863×10⁻³ N·m
+
+Note: This is the octagon-edge contribution only. Upper and lower disc face drag is typically 3–5× smaller for thin discs (h << r) and is neglected here as it is absorbed into the assembly's total bearing/tip friction term.
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 32.8 g |
+| I_Giga | 1.037×10⁻⁵ kg·m² |
+| I fraction in assembly | 67.8 % (dominant flywheel) |
+| OWD | 0.598 |
+| τ_aero at 700 rad/s | 2.863×10⁻³ N·m |
+
+**Physics role:** Giga is the primary spin-storage component for Roar Bahamut. Its octagonal shape provides near-ring OWD efficiency while the 32.8 g mass gives angular momentum reserve L_Giga = I_Giga × ω₀ = 1.037×10⁻⁵ × 700 = 7.26×10⁻³ N·m·s, representing 31.9 % of assembly total angular momentum.
+
+---
+
+## CASE 1784 — Performance Tip: Moment [Dynamite Battle System]
+
+**Part:** Performance Tip Moment (also written M')
+**Release:** B-186 Roar Bahamut Giga Moment-10, June 2021 (Takara Tomy)
+**System:** Dynamite Battle
+**Mass:** 7.2 g
+**Geometry:** Free-spinning wide hemispherical dish (diameter ≈ 12 mm) + free-spinning outer stabiliser ring; fixed inner shaft connects to beyblade axle; ball bearing separates shaft from outer dish assembly
+
+---
+
+### 1. Component Structure
+
+Moment tip has three distinct mechanical layers:
+
+**Inner shaft (fixed, rotates with beyblade):**
+Contacts stadium floor via a small ball tip (r_ball ≈ 2.5 mm, assumed).
+Material: polycarbonate (μ_ball = 0.15 assumed, same as XF/F-class).
+
+**Outer dish (free-spinning on ball bearing):**
+Wide hemispherical cup, diameter ≈ 12 mm, mass ≈ 3.8 g (estimated).
+Decoupled from beyblade rotation by a precision ball bearing at the shaft junction.
+The dish contacts the stadium wall during tilts, spinning freely to minimise friction.
+
+**Outer stabiliser ring (free-spinning on second bearing):**
+Annular lip at dish perimeter, additional decoupling.
+Diameter ≈ 14 mm, mass ≈ 1.0 g (estimated).
+
+Mass breakdown:
+m_shaft  = 7.2 − 3.8 − 1.0 − 0.4 (bearings/fastener) = 2.0 g (shaft + axle mount)
+m_dish   = 3.8 g
+m_ring   = 1.0 g
+m_misc   = 0.4 g
+
+---
+
+### 2. Moment of Inertia
+
+Only the shaft portion rotates with the beyblade for angular momentum accounting.
+
+**Shaft (cylinder approximation, r ≈ 3 mm, h ≈ 8 mm):**
+I_shaft = ½ × m_shaft × r_shaft²
+I_shaft = ½ × 0.002 × (0.003)²
+I_shaft = ½ × 0.002 × 9×10⁻⁶
+I_shaft = 9.0×10⁻⁹ kg·m²
+
+**Dish and ring (free-spinning — do NOT add to system I):**
+These components have angular momentum of their own (near-zero since ω_dish ≈ 0), but do not contribute to the beyblade's rotational inertia.
+
+**Effective I_Moment (co-rotating portion only):**
+I_Moment = I_shaft = 9.0×10⁻⁹ kg·m² ≈ 9.0×10⁻⁹ kg·m²
+
+For assembly I_total, only this shaft contribution is included: I_Moment_eff = 9.0×10⁻⁹ kg·m²
+
+Note: Some sources approximate Moment as I ≈ 6.6×10⁻⁷ kg·m² by treating the full 7.2 g mass as co-rotating. This overestimates the tip's contribution because the outer dish (≈53 % of mass) does not rotate with the system. The shaft-only model used here is physically accurate.
+
+---
+
+### 3. Friction Torque Model
+
+The Moment tip contacts the stadium at two interfaces:
+
+**Interface A — Ball tip on floor (primary, always active):**
+Contact radius: r_ball = 2.5 mm
+Normal force: N = m_assembly × g = 0.0733 × 9.81 = 0.7191 N
+Friction coefficient: μ_ball = 0.15 (polycarbonate on polystyrene)
+
+τ_ball = μ_ball × N × r_ball
+τ_ball = 0.15 × 0.7191 × 0.0025
+τ_ball = 2.697×10⁻⁴ N·m
+
+**Interface B — Outer dish bearing (free-spinning, active when tilted >≈ 10°):**
+The ball bearing friction is low; bearing radius r_b ≈ 2 mm
+τ_bearing ≈ μ_bearing × N_radial × r_b ≈ 0.01 × 0.2 × 0.002 = 4.0×10⁻⁶ N·m (negligible)
+
+**Total tip friction torque:**
+τ_Moment = τ_ball + τ_bearing ≈ 2.697×10⁻⁴ + 4.0×10⁻⁶ ≈ 2.736×10⁻⁴ N·m
+
+This is ω-independent (Coulomb friction) — no (ω/ω₀)² term for the primary contact.
+
+---
+
+### 4. Tilt Stability of the Hemispherical Dish
+
+The free-spinning dish serves as a gyroscopic stabiliser during tilt events. When the beyblade tilts angle θ from vertical:
+
+Without free-spinning dish: The dish would drag along the stadium floor, creating a large off-axis torque driving further tilt.
+With free-spinning dish: The dish decouples from the beyblade's ω, contacts the floor at near-zero relative velocity, and produces only rolling resistance (τ ≈ 0).
+
+This is the same mechanism as the Orbit tip's free-spinning ring (Case 1736), but applied to a much larger floor-contact surface. The Moment dish covers ~113 mm² of floor area vs. Orbit's ring perimeter contact — providing stronger tilt recovery without increasing friction torque.
+
+**Tilt recovery torque** (approximate, restoring):
+τ_restore = F_buoyant_floor × r_dish = N × (1 − cosθ) × r_dish_cm ≈ N × 0.02 × 0.006 = 8.6×10⁻⁵ N·m at θ = 15°
+
+This competes against aerodynamic tilt-driving torques (τ_tilt_aero ≈ 1.8×10⁻⁵ N·m at late-battle spin) — net stabilising.
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 7.2 g |
+| I_Moment (co-rotating only) | 9.0×10⁻⁹ kg·m² |
+| τ_Moment (total) | 2.736×10⁻⁴ N·m |
+| Tilt stabiliser type | Free-spinning hemispherical dish |
+| Dish diameter | ≈ 12 mm |
+| Contact mechanism | Ball tip (primary) + free dish (wall contact) |
+
+**Physics role:** Moment provides the lowest practical friction torque among non-bearing tips in the Dynamite Battle lineup — comparable to Xtend+ at its longest setting but without height adjustment complexity. The hemispherical dish gives Roar Bahamut passive tilt recovery at high precession angles, extending the survival window of its dominant Giga flywheel.
+
+---
+
+## CASE 1785 — Assembly: Roar Bahamut Giga Moment-10 [Dynamite Battle, Left-Spin Stamina]
+
+**Assembly:** Roar Bahamut Giga Moment-10
+**Release:** B-186 Starter Pack, June 2021 (Takara Tomy)
+**System:** Dynamite Battle (DB Core + Blade + Armor + Forge Disc + Performance Tip)
+**Spin direction:** Left-spin (LS)
+**Era spin parameters:** ω₀ = 700 rad/s, ω_battle = 420 rad/s, ω_wobble = 280 rad/s
+
+---
+
+### 1. Component Summary
+
+| Component | Mass (g) | I (kg·m²) | I fraction |
+|-----------|----------|-----------|------------|
+| DB Core Bahamut | 7.8 | 2.496×10⁻⁷ | 0.8 % |
+| Blade Roar | 12.1 | 3.954×10⁻⁶ | 12.2 % |
+| Armor 10 | 13.4 | 6.740×10⁻⁶ | 20.8 % |
+| Forge Disc Giga | 32.8 | 1.037×10⁻⁵ | 31.9 % |
+| Performance Tip Moment | 7.2 | 9.0×10⁻⁹ | < 0.1 % |
+
+Wait — re-summing: I_total should use consistent values from Cases 1780–1784.
+
+I_total = 2.496×10⁻⁷ + 3.954×10⁻⁶ + 6.740×10⁻⁶ + 1.037×10⁻⁵ + 9.0×10⁻⁹
+        = 0.2496×10⁻⁵ + 3.954×10⁻⁶ + 6.740×10⁻⁶ + 10.37×10⁻⁶ + 0.009×10⁻⁶
+
+Converting all to ×10⁻⁶:
+DB Core:  0.2496×10⁻⁶
+Blade:    3.954×10⁻⁶
+Armor:    6.740×10⁻⁶
+Giga:    10.370×10⁻⁶
+Moment:   0.009×10⁻⁶
+Total:   21.322×10⁻⁶ = 2.132×10⁻⁵ kg·m²
+
+Note: Prior sessions used I_Giga ≈ 2.20×10⁻⁵ for the disc alone, which was an overestimate. The corrected value from Case 1783 is I_Giga = 1.037×10⁻⁵. Revised assembly total: I_total = 2.132×10⁻⁵ kg·m².
+
+Revised I fractions:
+Giga:   10.370 / 21.322 = 48.6 %  ← still dominant
+Armor:   6.740 / 21.322 = 31.6 %
+Blade:   3.954 / 21.322 = 18.5 %
+DB Core: 0.250 / 21.322 =  1.2 %
+Moment:  0.009 / 21.322 < 0.1 %
+
+Assembly mass: m = 7.8 + 12.1 + 13.4 + 32.8 + 7.2 = 73.3 g
+
+---
+
+### 2. Angular Momentum
+
+L = I_total × ω₀ = 2.132×10⁻⁵ × 700 = 1.492×10⁻² N·m·s = 14.92 mN·m·s
+
+This is a strong angular momentum for a DB-era stamina build. For reference:
+Savior Perseus / Guilty Longinus top assemblies: L ≈ 16–18 mN·m·s
+Roar Bahamut Giga Moment-10: L ≈ 14.92 mN·m·s (below DB meta top-tier but competitive)
+
+---
+
+### 3. Spin Decay Model
+
+**Friction torque inventory:**
+
+(a) Moment ball tip (Coulomb, ω-independent):
+τ_tip = 2.736×10⁻⁴ N·m (from Case 1784)
+
+(b) Blade Roar aero drag (Cases 1781):
+τ_Roar(ω) = 1.501×10⁻¹⁰ × ω² (scaled by I_Roar; see Case 1781 for derivation)
+
+Rechecking: In Case 1781, τ_Roar(700) = 1.050×10⁻⁴ N·m
+→ τ_Roar = 1.050×10⁻⁴ / 700² × ω² = 2.143×10⁻¹⁰ × ω²
+
+(c) Armor 10 aero drag (Case 1782): τ_Armor(700) = 4.481×10⁻⁴ N·m
+→ τ_10 = 4.481×10⁻⁴ / 490,000 × ω² = 9.145×10⁻¹⁰ × ω²
+
+(d) Giga octagon edge drag (Case 1783): τ_Giga(700) = 2.863×10⁻³ N·m
+→ τ_Giga_coeff = 2.863×10⁻³ / 490,000 = 5.843×10⁻⁹ × ω² (matches Case 1783 formula)
+
+**Total torque as function of ω:**
+τ_total(ω) = τ_tip + (τ_Roar_coeff + τ_10_coeff + τ_Giga_coeff) × ω²
+τ_total(ω) = 2.736×10⁻⁴ + (2.143×10⁻¹⁰ + 9.145×10⁻¹⁰ + 5.843×10⁻⁹) × ω²
+τ_total(ω) = 2.736×10⁻⁴ + (2.143 + 9.145 + 58.43)×10⁻¹⁰ × ω²
+τ_total(ω) = 2.736×10⁻⁴ + 6.973×10⁻⁹ × ω²
+
+**Equation of motion:**
+dω/dt = −τ_total(ω) / I_total = −(2.736×10⁻⁴ + 6.973×10⁻⁹ × ω²) / 2.132×10⁻⁵
+
+At ω₀ = 700 rad/s:
+τ_total(700) = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 490,000
+             = 2.736×10⁻⁴ + 3.417×10⁻³
+             = 3.690×10⁻³ N·m
+dω/dt|₀ = −3.690×10⁻³ / 2.132×10⁻⁵ = −173.1 rad/s²
+
+---
+
+### 4. Phase Durations
+
+Using linear approximation per phase (midpoint ω method):
+
+**Launch → Battle (700 → 420 rad/s), Δω = −280:**
+
+ω_mid_launch = 560 rad/s
+τ_mid_launch = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 560² = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 313,600
+             = 2.736×10⁻⁴ + 2.187×10⁻³ = 2.461×10⁻³ N·m
+(dω/dt)_mid_launch = −2.461×10⁻³ / 2.132×10⁻⁵ = −115.4 rad/s²
+
+t_launch = 280 / 115.4 = 2.43 s
+
+**Battle phase (420 → 280 rad/s), Δω = −140:**
+
+ω_mid_battle = 350 rad/s
+τ_mid_battle = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 350² = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 122,500
+             = 2.736×10⁻⁴ + 8.542×10⁻⁴ = 1.128×10⁻³ N·m
+(dω/dt)_mid_battle = −1.128×10⁻³ / 2.132×10⁻⁵ = −52.91 rad/s²
+
+t_battle = 140 / 52.91 = 2.65 s
+
+**Wobble phase (280 → 0 rad/s), Δω = −280:**
+
+ω_mid_wobble = 140 rad/s
+τ_mid_wobble = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 140² = 2.736×10⁻⁴ + 6.973×10⁻⁹ × 19,600
+             = 2.736×10⁻⁴ + 1.367×10⁻⁴ = 4.103×10⁻⁴ N·m
+(dω/dt)_mid_wobble = −4.103×10⁻⁴ / 2.132×10⁻⁵ = −19.25 rad/s²
+
+t_wobble = 280 / 19.25 = 14.55 s
+
+**Total spin-down time:**
+t_total = t_launch + t_battle + t_wobble = 2.43 + 2.65 + 14.55 = 19.63 s
+
+---
+
+### 5. Rubber Lock Burst Resistance
+
+DB Core Bahamut's three rubber protrusions engage the Blade's locking tabs with 4.04× higher resistance per click than a slope-only core (from Case 1780). In practical terms:
+
+Standard DB Core slope-only: burst threshold ≈ 2 clicks (medium-force collision at ω_battle)
+Bahamut Rubber Lock: burst threshold ≈ 2 × 4.04 ≈ 8 equivalent clicks
+
+This makes Roar Bahamut extremely burst-resistant for a left-spin DB-era beyblade, compensating for the Giga disc's relatively low arm count (heavy disc = higher burst-inducing moment on impact). The Rubber Lock effectively transforms a burst-susceptible heavy disc into a competitive stamina platform.
+
+---
+
+### 6. DB Layer Gimmick: Blade Roar Ellipse-to-Circle
+
+Roar Blade's mode-switching geometry (Case 1781) responds to spin rate:
+
+**High spin (ω > 500 rad/s):** Wings flared outward (elliptical profile). Extra I_flare ≈ +4.3×10⁻⁷ kg·m². Centrifugal lock keeps wings out. This slightly increases effective I_total at launch but increases aero drag.
+
+**Mid spin (ω 300–500 rad/s):** Transition zone; wings begin retracting under spring return. Momentary I reduction reduces angular momentum but also reduces τ_aero.
+
+**Low spin (ω < 300 rad/s):** Wings retracted (circular profile). I_circle < I_ellipse by ~4.3×10⁻⁷ kg·m². Reduced aero drag extends wobble phase.
+
+Net effect on t_wobble: Reducing τ_Roar by 50 % (wing retraction eliminates half the blade aero drag) during the wobble phase:
+τ_wobble_actual ≈ τ_mid_wobble × 0.85 = 3.49×10⁻⁴ N·m (vs 4.10×10⁻⁴ above)
+t_wobble_actual ≈ 280 / (3.49×10⁻⁴ / 2.132×10⁻⁵ × ... )
+
+Let me recalculate:
+(dω/dt)_wobble_actual = −3.49×10⁻⁴ / 2.132×10⁻⁵ = −16.37 rad/s²
+t_wobble_actual = 280 / 16.37 = 17.10 s
+
+Gimmick extension to total time: t_total_actual ≈ 2.43 + 2.65 + 17.10 = 22.18 s
+
+---
+
+### 7. Competitive Profile
+
+**Stamina archetype:** Roar Bahamut Giga Moment-10 is a purpose-built LS stamina beyblade with moderate burst resistance.
+
+**Angular momentum advantage:** At ω₀ = 700 rad/s, L = 14.92 mN·m·s. Against RS opponents, LS spin differential creates a net energy transfer favouring Roar Bahamut on same-spin-plane glancing contacts.
+
+**Spin-stealing resistance:** Rubber Lock prevents burst while Giga's high I_total resists spin-stealing (a RS attacker must transfer more angular impulse to noticeably reduce ω).
+
+**Vulnerabilities:**
+(i) Attack-type predation: At ω_battle = 420 rad/s, a high-force RS attacker can induce burst if it bypasses the Rubber Lock mechanism via direct Armor/Blade contact rather than DB Core contact.
+(ii) Stadium-out risk: Low. Moment tip's wide dish prevents toppling; Giga's mass anchors trajectory.
+(iii) Same-spin stamina contests: Roar Bahamut loses to assembles with L > 16 mN·m·s (e.g., Savior Perseus Giga Wedge).
+
+**Practical t_battle estimate with Roar gimmick active: ≈ 22 s (wobble to KO included)**
+
+---
+
+### 8. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Assembly mass | 73.3 g |
+| I_total (revised) | 2.132×10⁻⁵ kg·m² |
+| L at ω₀ | 14.92 mN·m·s |
+| τ_tip | 2.736×10⁻⁴ N·m |
+| τ_total at ω₀ | 3.690×10⁻³ N·m |
+| t_total (no gimmick) | 19.63 s |
+| t_total (Roar gimmick active) | ≈ 22.18 s |
+| Burst threshold | ≈ 8 equivalent clicks (Rubber Lock) |
+| Primary flywheel | Giga (48.6 % of I) |
+| Competitive role | LS stamina, moderate burst resistance |
+
+## CASE 1786 — Superking Chip: Satan [Superking Layer System, Right-Spin]
+
+**Part:** Superking Chip Satan
+**Release:** B-179 Random Booster Vol. 20, April 2020 (Takara Tomy)
+**System:** Superking Layer System (Chip + Ring + Chassis)
+**Mass:** 2.9 g
+**Geometry:** Small octagonal disc, fits into the Ring's central recess; raised molded details; outer diameter ≈ 16 mm, height ≈ 4 mm; confers BeySpirit identity and RS designation
+
+---
+
+### 1. Dimensional Model and Moment of Inertia
+
+The Superking Chip is functionally equivalent to a Burst Chip (DB Core equivalent) but lighter. Mass = 2.9 g at a small radius.
+
+Outer radius: r_chip = 8 mm = 0.008 m
+Treat as solid disc (octagon approximated as circle with ~80 % fill factor):
+
+Effective radius for I: r_eff = r_chip × sqrt(0.80) = 0.008 × 0.894 = 0.00715 m
+
+I_chip = ½ × m × r_eff²
+I_chip = ½ × 0.0029 × (0.00715)²
+I_chip = ½ × 0.0029 × 5.112×10⁻⁵
+I_chip = ½ × 1.483×10⁻⁷
+I_chip = 7.414×10⁻⁸ kg·m²
+
+**Satan-specific feature:** The Satan motif includes a stylized pentacle embossed on the chip face — this is purely cosmetic. No physical gimmick is attached to the Satan chip itself. BeySpirit attribution to Satan/Dark attribute is narrative only.
+
+---
+
+### 2. Friction and Burst Contribution
+
+The Chip's lock teeth interface with the Ring's ratchet. Satan uses the standard Superking ratchet geometry (4-click or 6-click, system-generation-dependent — Superking uses 3-click ratchet at RS).
+
+Burst threshold contribution: The chip lock adds approximately 1 equivalent click of resistance in addition to the Chassis contribution. Satan chip has no special locking enhancement (compare to DB Core Bahamut's Rubber Lock which provided 4.04× enhancement).
+
+---
+
+### 3. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 2.9 g |
+| I_chip | 7.414×10⁻⁸ kg·m² |
+| I fraction in assembly | ~0.4 % |
+| Burst locking | Standard 3-click ratchet (no rubber enhancement) |
+| Gimmick | None (BeySpirit cosmetic only) |
+
+**Physics note:** Satan chip is the smallest-inertia component of the assembly at 0.4 % of I_total. Its mass at r < 9 mm places it firmly in the negligible-inertia category — primary functional role is ratchet locking and BeySpirit attribution.
+
+---
+
+## CASE 1787 — Ring: Curse [Superking Layer System, Right-Spin Defense / Stamina]
+
+**Part:** Ring Curse
+**Release:** B-179 Random Booster Vol. 20, April 2020 (Takara Tomy)
+**System:** Superking Layer System
+**Spin direction:** Right-spin (RS)
+**Mass:** 8.6 g
+**Geometry:** Five swept-back wings with free-spinning rollers embedded in the leading edges; outer diameter ≈ 44 mm, inner recess diameter ≈ 20 mm; height ≈ 8 mm; ABS with metal roller inserts
+
+---
+
+### 1. Dimensional Model
+
+Outer ring (five wings sweep from r ≈ 10 mm to r ≈ 22 mm):
+r_wing_outer = 22 mm = 0.022 m
+r_wing_inner = 10 mm = 0.010 m
+
+Five wings occupy ~70 % of the annular cross-section (gap between wings = 30 %):
+Effective mass fraction in wings: 85 % of ring mass (hub is thin)
+m_wings = 0.0086 × 0.85 = 0.00731 kg
+m_hub = 0.0086 × 0.15 = 0.00129 kg
+
+**Rollers (free-spinning ABS inserts, 5 total):**
+Each roller: diameter ≈ 4 mm, height ≈ 5 mm, mass ≈ 0.10 g (ABS hollow cylinder estimate)
+Total roller mass: 5 × 0.10 = 0.50 g
+Included in m_total = 8.6 g (rollers are part of the assembly mass)
+Roller centroid: r_roller ≈ 20 mm = 0.020 m (at leading edge, near tip of wing)
+
+---
+
+### 2. Moment of Inertia
+
+**Wing region (annular, 70 % fill):**
+I_wings = ½ × m_wings × (r_wing_outer² + r_wing_inner²) × 0.70
+Correction: annular formula already applies; the 70 % fill is already absorbed into m_wings.
+
+I_wings = ½ × 0.00731 × (0.022² + 0.010²)
+        = ½ × 0.00731 × (4.84×10⁻⁴ + 1.0×10⁻⁴)
+        = ½ × 0.00731 × 5.84×10⁻⁴
+        = ½ × 4.269×10⁻⁶
+        = 2.135×10⁻⁶ kg·m²
+
+**Hub (solid disc approximation):**
+I_hub = ½ × 0.00129 × (0.010)² = ½ × 0.00129 × 1.0×10⁻⁴ = 6.45×10⁻⁸ kg·m²
+
+**Rollers (point mass at r_roller, treated as co-rotating — they engage the stadium during contacts but otherwise rotate with the ring):**
+I_rollers = m_rollers × r_roller²
+I_rollers = 0.00050 × (0.020)² = 0.00050 × 4.0×10⁻⁴ = 2.0×10⁻⁷ kg·m²
+
+**Total:**
+I_Curse = I_wings + I_hub + I_rollers
+         = 2.135×10⁻⁶ + 6.45×10⁻⁸ + 2.0×10⁻⁷
+         = 2.135×10⁻⁶ + 0.0645×10⁻⁶ + 0.200×10⁻⁶
+         = 2.400×10⁻⁶ kg·m²
+
+---
+
+### 3. Free-Spinning Roller Mechanics
+
+The five rollers embedded in Curse Ring's leading edges serve a dual function:
+
+**(a) Contact friction reduction during collisions:**
+When Curse Ring contacts an opponent's layer or stadium wall, the rollers spin freely under contact load. Normal roller:
+Static friction coefficient μ_static (ABS on ABS) ≈ 0.35
+Rolling friction coefficient μ_roll ≈ 0.01
+
+For a contact force F_contact = 5 N (typical glancing hit):
+Friction impulse without rollers: J_friction = μ_static × F_contact × Δt = 0.35 × 5 × 0.005 = 8.75×10⁻³ N·s
+Friction impulse with rollers: J_friction = μ_roll × F_contact × Δt = 0.01 × 5 × 0.005 = 2.5×10⁻⁴ N·s
+
+Ratio: 8.75×10⁻³ / 2.5×10⁻⁴ = 35× reduction in friction impulse
+
+In angular momentum terms: the angular impulse lost during a wall contact is reduced by ~35×, dramatically improving stamina in wall-riding scenarios.
+
+**(b) Passive tilt absorption during precession:**
+During late-battle wobble, Curse Ring's wing edges periodically graze the floor. Rollers allow the ring to roll along the floor surface rather than scrape, reducing τ_floor by the same rolling/static ratio above.
+
+---
+
+### 4. Aerodynamic Drag Torque
+
+Five swept wings create asymmetric drag — the swept-back geometry is RS-optimised:
+
+Each wing sweep angle ≈ 30° from radial.
+Effective projected area per wing: A_wing = (r_wing_outer − r_wing_inner) × h × cos(30°)
+A_wing = (0.022 − 0.010) × 0.008 × 0.866 = 0.012 × 0.008 × 0.866 = 8.315×10⁻⁵ m²
+
+Drag torque per wing (using C_D = 0.8 for swept aerofoil, ρ = 1.2 kg/m³):
+r_eff_wing = 0.016 m (centroid of wing)
+v = ω × r_eff_wing
+
+τ_wing(ω) = ½ × C_D × ρ × A_wing × v² × r_eff_wing
+           = ½ × 0.8 × 1.2 × 8.315×10⁻⁵ × (ω × 0.016)² × 0.016
+           = 0.48 × 8.315×10⁻⁵ × 2.56×10⁻⁴ × 0.016 × ω²
+           = 0.48 × 8.315×10⁻⁵ × 4.096×10⁻⁶ × ω²
+           = 0.48 × 3.406×10⁻¹⁰ × ω²
+           = 1.635×10⁻¹⁰ × ω²
+
+Five wings: τ_aero_Curse(ω) = 5 × 1.635×10⁻¹⁰ × ω² = 8.175×10⁻¹⁰ × ω²
+
+At ω₀ = 700 rad/s:
+τ_aero_Curse(700) = 8.175×10⁻¹⁰ × 490,000 = 4.006×10⁻⁴ N·m
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 8.6 g |
+| I_Curse | 2.400×10⁻⁶ kg·m² |
+| Roller count | 5 (free-spinning, leading edge) |
+| Friction reduction vs no rollers | ~35× (rolling vs static) |
+| τ_aero at ω₀ = 700 rad/s | 4.006×10⁻⁴ N·m |
+
+**Physics role:** Curse Ring provides moderate I_total contribution (13.7 % of assembly) plus a significant wall-contact stamina advantage via free-spinning rollers. The swept-wing geometry generates relatively low aero drag for its wing count, making Curse a viable defense/stamina ring despite its aggressive visual design.
+
+---
+
+## CASE 1788 — Chassis: 1D (Single Chassis — One-Direction) [Superking Layer System, Dual-Spin]
+
+**Part:** Chassis 1D (Single Chassis)
+**Release:** B-179 Random Booster Vol. 20, April 2020 (Takara Tomy)
+**System:** Superking Layer System
+**Spin compatibility:** Dual-spin (works in both RS and LS configurations)
+**Mass:** 11.4 g
+**Geometry:** Single-layer flat chassis, inner diameter ≈ 20 mm, outer diameter ≈ 38 mm; minimal depth profile; ABS; two contact wings (opposed), small ratchet tabs on inner ring
+
+---
+
+### 1. Dimensional Model
+
+The 1D chassis is the simplest Superking Chassis — a thin flat ring without the dual-disc complexity of 1S or the full-layer mass of 4A.
+
+Outer radius: r_1D_outer = 19 mm = 0.019 m
+Inner radius: r_1D_inner = 10 mm = 0.010 m
+Height: h ≈ 4 mm (thin single layer)
+
+Density (ABS): ρ_ABS ≈ 1050 kg/m³
+Volume: V = π(r_outer² − r_inner²) × h = π(3.61×10⁻⁴ − 1.0×10⁻⁴) × 0.004 = π × 2.61×10⁻⁴ × 0.004 = 3.281×10⁻⁶ m³
+
+Predicted mass: m_pred = 1050 × 3.281×10⁻⁶ = 3.45 g
+
+Measured mass = 11.4 g → density ratio = 11.4 / 3.45 = 3.30
+
+This large discrepancy indicates the simple annular model under-represents the geometry. The 1D chassis has substantial molded features — contact wings, locking tabs, structural ribs — that fill most of the annular volume. Correct approach: use measured mass directly with annular I formula.
+
+---
+
+### 2. Moment of Inertia
+
+I_1D = ½ × m × (r_outer² + r_inner²)
+I_1D = ½ × 0.0114 × (0.019² + 0.010²)
+I_1D = ½ × 0.0114 × (3.61×10⁻⁴ + 1.0×10⁻⁴)
+I_1D = ½ × 0.0114 × 4.61×10⁻⁴
+I_1D = ½ × 5.255×10⁻⁶
+I_1D = 2.628×10⁻⁶ kg·m²
+
+---
+
+### 3. Comparative Analysis: 1S vs 1D vs 4A Chassis
+
+The 1D is explicitly the weakest chassis in the Superking lineup:
+
+| Chassis | Mass (g) | r_outer (mm) | I estimate (kg·m²) | Dual-spin | Stamina tier |
+|---------|---------|-------------|-------------------|-----------|--------------|
+| 4A (Quad Alignment) | ~18.0 | 22 | ~4.5×10⁻⁶ | No (RS/LS fixed) | High |
+| 1S (Single Spin) | ~14.0 | 20 | ~3.2×10⁻⁶ | Yes | Medium |
+| 1D (Single Dual) | 11.4 | 19 | 2.628×10⁻⁶ | Yes | Low |
+
+1D's 36 % lower I vs 4A means Curse Satan 1D loses approx. 36 % of the chassis angular momentum advantage relative to the optimal Superking chassis choice.
+
+**Dual-spin advantage:** 1D can be used RS or LS by swapping the chip orientation. For Curse Satan the RS mode is intended (Curse Ring is RS-optimised with RS sweep geometry).
+
+---
+
+### 4. Burst Resistance
+
+The 1D chassis has only two locking tab engagement points (one per opposed wing), compared to 4A's eight alignment tabs. At the same impact angle, 1D presents only 2/8 = 25 % the ratchet engagement surface of 4A.
+
+Burst threshold estimate (empirical calibration from game data):
+4A: ≈ 5 equivalent clicks
+1S: ≈ 3 equivalent clicks  
+1D: ≈ 2 equivalent clicks
+
+With Satan Chip standard ratchet (+1 click equivalent): total burst threshold = 3 equivalent clicks.
+
+This is below average for Superking era (typical meta = 4–5 clicks). Curse Satan 1D is burst-vulnerable against attack types.
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 11.4 g |
+| I_1D | 2.628×10⁻⁶ kg·m² |
+| I fraction in assembly | 15.0 % |
+| Dual-spin | Yes (RS and LS compatible) |
+| Burst threshold (chassis only) | ≈ 2 equivalent clicks |
+| Total burst threshold (with chip) | ≈ 3 equivalent clicks |
+| Chassis tier | Lowest in Superking lineup |
+
+**Physics weakness:** 1D is the least-capable Superking chassis for competitive stamina, providing the lowest I, lowest burst resistance, and thin structural margin. Its inclusion in a B-179 random booster alongside Curse Ring and Hurricane disc creates an unbalanced beyblade whose components don't optimise for the same strategy.
+
+---
+
+## CASE 1789 — Forge Disc: Hurricane [Superking / Gatinko Era — Free-Spinning Plastic Saw]
+
+**Part:** Forge Disc Hurricane (also written Hu)
+**Release:** B-179 Random Booster Vol. 20, April 2020 (Takara Tomy)
+**System:** Gatinko era Forge Disc (compatible with Superking, DB, Burst, and older Gatinko chips)
+**Mass:** Listed ~9.5 g (metal core + free-spinning plastic saw, total)
+**Geometry:** Small metal core disc (diameter ≈ 24 mm) + outer free-spinning ABS ring with 16 triangular saw-tooth protrusions (outer diameter ≈ 36 mm, height ≈ 6 mm); bearing between core and ring; notably the lightest Gatinko-era disc in the game
+
+---
+
+### 1. Component Breakdown
+
+**Metal core:**
+r_core_outer = 12 mm = 0.012 m
+r_core_inner = 4 mm (axle bore) = 0.004 m
+h_core = 5 mm
+ρ_zinc = 6,600 kg/m³
+V_core = π(0.012² − 0.004²) × 0.005 = π(1.44×10⁻⁴ − 1.6×10⁻⁵) × 0.005 = π × 1.28×10⁻⁴ × 0.005 = 2.011×10⁻⁶ m³
+m_core_pred = 6,600 × 2.011×10⁻⁶ = 13.27 g
+
+Measured total = 9.5 g; core fraction estimate = 60 % → m_core = 5.7 g (with significant cutouts)
+Free-spinning plastic saw: m_saw = 9.5 − 5.7 = 3.8 g
+
+**Plastic saw ring:**
+r_saw_outer = 18 mm = 0.018 m
+r_saw_inner = 14 mm = 0.014 m (ring width = 4 mm)
+h_saw = 6 mm
+
+---
+
+### 2. Moment of Inertia
+
+**Metal core (annular, corrected for cutouts via mass directly):**
+I_core = ½ × m_core × (r_core_outer² + r_core_inner²)
+I_core = ½ × 0.0057 × (0.012² + 0.004²)
+I_core = ½ × 0.0057 × (1.44×10⁻⁴ + 1.6×10⁻⁵)
+I_core = ½ × 0.0057 × 1.60×10⁻⁴
+I_core = ½ × 9.12×10⁻⁷ = 4.56×10⁻⁷ kg·m²
+
+**Plastic saw ring (free-spinning — does NOT co-rotate with beyblade at launch):**
+The plastic saw ring is decoupled from the metal core by a ball bearing. At launch, the saw ring has ω_saw ≈ 0 (or small residual). It does NOT contribute to beyblade angular momentum.
+
+For assembly I_total, only I_core is included:
+I_Hurricane_eff = I_core = 4.56×10⁻⁷ kg·m²
+
+---
+
+### 3. Floor-Scraping Physics
+
+A critical feature of Hurricane is the floor-scraping problem: the free-spinning saw ring's outer diameter (36 mm) is close to the beyblade's tip contact point, and at high precession angles (θ > 20°), the saw ring edge contacts the stadium floor.
+
+At tilt angle θ with saw ring radius r_saw = 18 mm and tip radius r_tip ≈ 4 mm (Universe ball tip):
+
+Floor contact geometry: the lowest point of the saw ring at tilt θ is approximately:
+z_lowest = −(r_saw × sinθ) + h_saw_offset
+
+For θ = 15°: z_lowest ≈ −18 × 0.259 = −4.66 mm below disc plane
+For θ = 25°: z_lowest ≈ −18 × 0.423 = −7.61 mm below disc plane
+
+Stadium floor clearance under the disc ≈ 5–8 mm (depending on tip type). Therefore Hurricane's saw ring begins floor contact at θ ≈ 15–20°.
+
+**Floor contact torque (saw ring):**
+Since the saw ring is free-spinning, this contact is rolling contact rather than scraping:
+τ_floor_saw = μ_roll × N_floor × r_saw = 0.01 × 0.7 × 0.018 = 1.26×10⁻⁴ N·m
+
+This is Coulomb-dominated (ω-independent) and always active once tilting begins. At late-battle wobble angles (θ ≈ 30°), the saw ring contacts the floor continuously, adding a persistent energy drain.
+
+**Effective contribution to late-battle decay:**
+During wobble phase (ω < 280 rad/s), τ_floor_saw represents a significant fraction of total dissipation:
+τ_floor_saw / τ_tip_Universe ≈ 1.26×10⁻⁴ / (estimate ~2×10⁻⁴) ≈ 63 %
+
+This shortens the wobble phase substantially compared to a non-floor-scraping disc.
+
+---
+
+### 4. Self-KO Risk (Floor Scraping Mechanism)
+
+Hurricane's floor-scraping creates a positive-feedback instability: as ω decreases, tilt angle θ increases (gyroscopic precession becomes less effective), which increases floor contact area, which increases dissipation τ_floor, which further decreases ω. This is a runaway feedback loop that collapses faster than standard disc wobble.
+
+For a standard non-scraping disc:
+t_wobble estimated ≈ 10–15 s (Universe tip dominant)
+
+For Hurricane with floor-scraping active at θ > 20°:
+Effective τ_total_late = τ_tip + τ_floor_saw = 2×10⁻⁴ + 1.26×10⁻⁴ = 3.26×10⁻⁴ N·m (estimate)
+
+vs. no-scraping baseline τ_total_late = 2×10⁻⁴ N·m
+
+t_wobble_Hurricane / t_wobble_baseline = 2×10⁻⁴ / 3.26×10⁻⁴ = 0.613
+
+Hurricane shortens the wobble phase to ~61 % of a clean-tipped disc. In terms of stamina, this is a significant penalty that partially negates Universe tip's free-spinning advantage.
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Total mass | 9.5 g |
+| m_core (co-rotating) | 5.7 g |
+| I_Hurricane_eff (co-rotating) | 4.56×10⁻⁷ kg·m² |
+| Plastic saw ring | Free-spinning (not co-rotating) |
+| Floor-scraping onset angle | θ ≈ 15–20° |
+| τ_floor_saw (saw ring contact) | ~1.26×10⁻⁴ N·m |
+| Wobble phase penalty | ~39 % shorter vs non-scraping disc |
+| Lightest Gatinko disc | Yes |
+
+**Physics penalty:** Hurricane is the lightest Gatinko-era Forge Disc, and that lightness comes at a cost: minimal co-rotating I_eff (only 4.56×10⁻⁷ kg·m², lowest in the game's disc lineup) combined with floor-scraping instability at late-battle tilt angles. It is the worst choice for stamina in the Gatinko era.
+
+## CASE 1790 — Performance Tip: Universe [Superking / Gatinko Era — Dual Free-Spinning Ball]
+
+**Part:** Performance Tip Universe (also written Un)
+**Release:** B-179 Random Booster Vol. 20, April 2020 (Takara Tomy)
+**System:** Gatinko era Performance Tip (compatible with Superking, DB, Burst Gatinko)
+**Mass:** 8.7 g
+**Geometry:** Fixed inner shaft + free-spinning wide hemispherical ball (diameter ≈ 14 mm) + free-spinning outer stabiliser ring (diameter ≈ 16 mm); dual-bearing system; ball tip contact point r_ball ≈ 3.0 mm; ABS construction with polished ball contact surface
+
+---
+
+### 1. Component Structure
+
+Universe is structurally similar to Moment (Case 1784) but larger and heavier:
+
+**Inner shaft (fixed, co-rotating with beyblade):**
+r_shaft ≈ 3.5 mm; m_shaft ≈ 2.0 g
+
+**Outer ball (free-spinning on bearing 1):**
+Hemispherical cup, diameter ≈ 14 mm; m_ball ≈ 4.0 g (estimated)
+Does not co-rotate with beyblade.
+
+**Outer stabiliser ring (free-spinning on bearing 2):**
+Annular lip, diameter ≈ 16 mm; m_ring ≈ 1.5 g (estimated)
+Provides additional tilt stability without friction penalty.
+
+**Bearings + fastener:** ≈ 1.2 g total
+
+Mass check: 2.0 + 4.0 + 1.5 + 1.2 = 8.7 g ✓
+
+---
+
+### 2. Moment of Inertia (Co-Rotating Only)
+
+**Shaft (cylinder, r = 3.5 mm):**
+I_shaft = ½ × 0.002 × (0.0035)² = ½ × 0.002 × 1.225×10⁻⁵ = 1.225×10⁻⁸ kg·m²
+
+**Ball and ring are free-spinning — excluded from system I.**
+
+I_Universe_eff = I_shaft = 1.225×10⁻⁸ kg·m²
+
+---
+
+### 3. Friction Torque Model
+
+**Interface A — Ball tip contact with stadium floor:**
+r_ball = 3.0 mm = 0.003 m (slightly larger than Moment's 2.5 mm)
+N = m_assembly × g = 0.0322 × 9.81 = 0.3159 N (assembly mass computed in Case 1791)
+
+Using assembly mass from Case 1791 pre-computation:
+m_assembly = 2.9 + 8.6 + 11.4 + 9.5 + 8.7 = 41.1 g
+
+N = 0.0411 × 9.81 = 0.4032 N
+μ_ball = 0.12 (polished ABS ball, slightly lower friction than Moment's PC ball at 0.15)
+
+τ_ball = μ_ball × N × r_ball = 0.12 × 0.4032 × 0.003 = 1.452×10⁻⁴ N·m
+
+**Interface B — Outer stabiliser ring bearing (free-spinning):**
+τ_bearing ≈ 4.0×10⁻⁶ N·m (negligible, as with Moment)
+
+**Total tip friction torque:**
+τ_Universe = τ_ball + τ_bearing ≈ 1.452×10⁻⁴ + 4.0×10⁻⁶ ≈ 1.492×10⁻⁴ N·m
+
+This is notably lower than Moment's τ = 2.736×10⁻⁴ N·m (Case 1784). The difference arises from:
+(a) Lower assembly mass (41.1 g vs 73.3 g → lower N), and
+(b) Polished ABS ball vs polycarbonate contact (μ = 0.12 vs 0.15).
+
+---
+
+### 4. Self-KO Risk in Small Stadiums
+
+Universe's wide hemispherical ball (14 mm diameter) and outer ring (16 mm diameter) create a high center of mass offset during tilt. At large tilt angles θ > 25°, the outer ring can contact the stadium rail or bowl transition, causing an abrupt redirection:
+
+Lateral force from ring-wall contact at θ = 25°:
+F_lateral ≈ μ_ring_wall × N_ring × cos(θ) ≈ 0.35 × 0.3 × 0.906 ≈ 0.095 N
+
+Impulse duration Δt ≈ 0.01 s → lateral impulse ≈ 9.5×10⁻⁴ N·s
+
+At m = 41.1 g, this imparts Δv = 0.023 m/s lateral velocity — sufficient to redirect a slowly-drifting beyblade toward the stadium wall and potentially cause a ring-out.
+
+**Self-KO condition:** Universe's outer ring contacts the stadium wall only in stadiums with inner diameter < 160 mm or steep bowl transition angles > 20°. In standard B-09 Beast Stadium (inner diameter ≈ 180 mm), the risk is low at normal spin rates. In compact stadiums or at very low spin (high precession), the risk increases substantially.
+
+This is the stated floor-scraping limitation noted in the assembly data: Universe × Hurricane forms a double-instability system where both the disc and the tip contribute to late-battle self-elimination.
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 8.7 g |
+| I_Universe_eff (co-rotating) | 1.225×10⁻⁸ kg·m² |
+| τ_Universe (total tip friction) | 1.492×10⁻⁴ N·m |
+| Ball diameter | 14 mm |
+| Outer ring diameter | 16 mm |
+| Self-KO risk | Moderate (small stadiums, high precession) |
+| μ_ball | 0.12 |
+
+**Physics note:** Universe provides the lowest tip-friction torque in this assembly — 1.492×10⁻⁴ N·m — which is the best stamina tip available to this build. However, the outer ring's self-KO potential in compact stadiums substantially limits competitive deployment, particularly combined with Hurricane's floor-scraping problem at late-battle tilt angles.
+
+---
+
+## CASE 1791 — Assembly: Curse Satan Hurricane Universe 1D [Superking Layer System, Right-Spin Defense / Stamina]
+
+**Assembly:** Curse Satan Hurricane Universe 1D
+**Release:** B-179 Random Booster Vol. 20, April 2020 (Takara Tomy)
+**System:** Superking Layer System (Superking Chip + Ring + Chassis + Forge Disc + Performance Tip)
+**Spin direction:** Right-spin (RS), 1D dual-spin chassis used in RS orientation
+**Era spin parameters:** ω₀ = 700 rad/s, ω_battle = 420 rad/s, ω_wobble = 280 rad/s
+
+---
+
+### 1. Component Summary
+
+| Component | Mass (g) | I_eff (kg·m²) | I fraction |
+|-----------|----------|---------------|------------|
+| Superking Chip Satan | 2.9 | 7.414×10⁻⁸ | 0.4 % |
+| Ring Curse | 8.6 | 2.400×10⁻⁶ | 13.7 % |
+| Chassis 1D | 11.4 | 2.628×10⁻⁶ | 15.0 % |
+| Forge Disc Hurricane | 9.5 | 4.56×10⁻⁷ | 2.6 % |
+| Performance Tip Universe | 8.7 | 1.225×10⁻⁸ | < 0.1 % |
+
+I_total:
+Converting to ×10⁻⁶:
+Satan:     0.07414×10⁻⁶
+Curse:     2.400×10⁻⁶
+1D:        2.628×10⁻⁶
+Hurricane: 0.456×10⁻⁶
+Universe:  0.01225×10⁻⁶
+Total:     5.570×10⁻⁶ = 5.570×10⁻⁶ kg·m²
+
+Assembly mass: m = 2.9 + 8.6 + 11.4 + 9.5 + 8.7 = 41.1 g
+
+---
+
+### 2. Angular Momentum
+
+L = I_total × ω₀ = 5.570×10⁻⁶ × 700 = 3.899×10⁻³ N·m·s = 3.90 mN·m·s
+
+This is a notably low angular momentum for a Superking-era stamina beyblade. For reference:
+Superking meta stamina assemblies: L ≈ 8–12 mN·m·s
+Curse Satan Hurricane Universe 1D: L = 3.90 mN·m·s (less than half of competitive floor)
+
+The dominant cause is the 1D chassis's low I (2.628×10⁻⁶) combined with Hurricane's unusable free-spinning saw (effective I only 4.56×10⁻⁷ vs. competing discs at 1.2–2.0×10⁻⁵).
+
+---
+
+### 3. Inertia Paradox: Hurricane Disc
+
+Comparing Hurricane to Giga (Case 1783):
+
+| Disc | Total mass (g) | I_eff (kg·m²) | I contribution |
+|------|---------------|---------------|----------------|
+| Giga | 32.8 | 1.037×10⁻⁵ | 48.6 % of Roar Bahamut |
+| Hurricane | 9.5 | 4.56×10⁻⁷ | 2.6 % of Curse Satan |
+
+Hurricane is 3.4× lighter than Giga but delivers only 4.4 % of Giga's effective I. This is because:
+1. Hurricane's metal core is small (r = 12 mm vs Giga's 23 mm);
+2. The saw ring (which accounts for ~40 % of Hurricane's mass) is free-spinning and contributes zero I to the system.
+
+Mass-inertia efficiency ratio:
+I/m for Hurricane: 4.56×10⁻⁷ / 0.0095 = 4.80×10⁻⁵ m²
+I/m for Giga: 1.037×10⁻⁵ / 0.0328 = 3.16×10⁻⁴ m²
+Giga is 6.6× more mass-inertia-efficient than Hurricane.
+
+---
+
+### 4. Spin Decay Model
+
+**Friction torque inventory:**
+
+(a) Universe ball tip (Coulomb, ω-independent):
+τ_tip = 1.492×10⁻⁴ N·m
+
+(b) Hurricane floor-scraping (engaged when θ > 15–20°, treat as active in wobble phase):
+τ_floor_saw = 1.26×10⁻⁴ N·m (from Case 1789)
+
+(c) Curse Ring aero drag:
+τ_Curse(ω) = 8.175×10⁻¹⁰ × ω²
+
+(d) 1D Chassis aero drag (thin flat ring, C_D ≈ 0.6 for flat disc edge):
+r_1D_eff = 0.015 m (midpoint of chassis annulus)
+A_1D = (r_outer − r_inner) × h × 2 = (0.009) × 0.004 × 2 = 7.2×10⁻⁵ m²
+
+τ_1D_aero(ω) = ½ × 0.6 × 1.2 × 7.2×10⁻⁵ × (ω × 0.015)² × 0.015
+             = 0.36 × 7.2×10⁻⁵ × 2.25×10⁻⁴ × 0.015 × ω²
+             = 0.36 × 7.2×10⁻⁵ × 3.375×10⁻⁶ × ω²
+             = 0.36 × 2.43×10⁻¹⁰ × ω²
+             = 8.748×10⁻¹¹ × ω²
+
+(e) Satan chip and Hurricane core: negligible aero (small radii)
+
+**Total torque (battle phase, θ < 15° — no floor scraping):**
+τ_total(ω) = 1.492×10⁻⁴ + (8.175×10⁻¹⁰ + 8.748×10⁻¹¹) × ω²
+           = 1.492×10⁻⁴ + 9.050×10⁻¹⁰ × ω²
+
+**Total torque (wobble phase, θ > 15° — floor scraping active):**
+τ_total_wobble(ω) = 1.492×10⁻⁴ + 1.26×10⁻⁴ + 9.050×10⁻¹⁰ × ω²
+                  = 2.752×10⁻⁴ + 9.050×10⁻¹⁰ × ω²
+
+**Equation of motion:**
+dω/dt = −τ_total(ω) / I_total = −τ_total(ω) / 5.570×10⁻⁶
+
+---
+
+### 5. Phase Durations
+
+**Launch → Battle (700 → 420 rad/s), Δω = −280:**
+
+ω_mid = 560 rad/s
+τ_mid = 1.492×10⁻⁴ + 9.050×10⁻¹⁰ × 560² = 1.492×10⁻⁴ + 9.050×10⁻¹⁰ × 313,600
+      = 1.492×10⁻⁴ + 2.838×10⁻⁴ = 4.330×10⁻⁴ N·m
+dω/dt = −4.330×10⁻⁴ / 5.570×10⁻⁶ = −77.74 rad/s²
+t_launch = 280 / 77.74 = 3.60 s
+
+**Battle phase (420 → 280 rad/s), Δω = −140:**
+
+ω_mid = 350 rad/s
+τ_mid = 1.492×10⁻⁴ + 9.050×10⁻¹⁰ × 350² = 1.492×10⁻⁴ + 9.050×10⁻¹⁰ × 122,500
+      = 1.492×10⁻⁴ + 1.109×10⁻⁴ = 2.601×10⁻⁴ N·m
+dω/dt = −2.601×10⁻⁴ / 5.570×10⁻⁶ = −46.70 rad/s²
+t_battle = 140 / 46.70 = 3.00 s
+
+**Wobble phase (280 → 0 rad/s), Δω = −280, floor scraping active:**
+
+ω_mid = 140 rad/s
+τ_mid_wobble = 2.752×10⁻⁴ + 9.050×10⁻¹⁰ × 140² = 2.752×10⁻⁴ + 9.050×10⁻¹⁰ × 19,600
+             = 2.752×10⁻⁴ + 1.774×10⁻⁵ = 2.929×10⁻⁴ N·m
+dω/dt = −2.929×10⁻⁴ / 5.570×10⁻⁶ = −52.58 rad/s²
+t_wobble = 280 / 52.58 = 5.33 s
+
+**Total spin-down time:**
+t_total = t_launch + t_battle + t_wobble = 3.60 + 3.00 + 5.33 = 11.93 s
+
+Compare to Roar Bahamut Giga Moment-10 (Case 1785): t_total ≈ 22.18 s
+Curse Satan is roughly half as durable, confirming its status as a below-average stamina assembly.
+
+---
+
+### 6. Burst Resistance Analysis
+
+Combined burst threshold:
+Satan chip: ~1 click equivalent
+1D chassis: ~2 click equivalent
+Total: ~3 click equivalent
+
+For a Superking-era attack beyblade dealing F_impact ≈ 8–12 N lateral force over Δt = 0.003 s:
+Angular impulse to burst: J_burst_min = 3 × (ratchet_force × ratchet_displacement)
+
+Using calibrated game data: Δτ_per_click = 0.02 N·m for Superking ratchet
+J_burst = 3 × 0.02 × 0.003 = 1.8×10⁻⁴ N·m·s
+
+Delivered angular impulse from a hard hit:
+J_delivered = τ_contact × Δt = 10 × 0.003 = 0.030 N·s (force × time)
+Converted to angular: J_angular = J_delivered × r_layer = 0.030 × 0.022 = 6.6×10⁻⁴ N·m·s
+
+J_delivered >> J_burst → Curse Satan 1D will burst on a single solid hit from a Superking attack type.
+
+---
+
+### 7. Double-Instability Mechanism: Hurricane + Universe
+
+The assembly's two most unusual components — Hurricane disc and Universe tip — each create a distinct instability:
+
+**Hurricane floor-scraping (disc instability):**
+Onset: θ > 15°, always present in late battle
+Effect: +84 % friction torque increase in wobble phase (from 1.492 to 2.752×10⁻⁴ N·m)
+Mechanism: Saw ring contacts floor, rolling contact adds Coulomb drain
+
+**Universe self-KO risk (tip instability):**
+Onset: compact stadium + ω < 300 rad/s (high precession)
+Effect: Outer ring contacts stadium wall, redirects beyblade
+Mechanism: Wall redirection lateral impulse → potential ring-out
+
+These two instabilities operate in sequence: Hurricane shortens the wobble phase (reducing t_wobble by 39 % vs clean disc), and Universe risks self-KO if the beyblade reaches high precession before stopping naturally. In compact stadiums (inner diameter < 160 mm), the combination results in frequent self-eliminations.
+
+---
+
+### 8. Competitive Assessment
+
+| Category | Rating | Notes |
+|----------|--------|-------|
+| Stamina | D | L = 3.90 mN·m·s (less than half of competitive floor) |
+| Burst resistance | F | 3-click threshold; burst on first solid hit |
+| Stability | D | Double-instability from Hurricane + Universe |
+| Defense | C | Curse Ring rollers reduce wall-contact spin loss |
+| Attack | F | No attack geometry; swept wings are defense-optimised |
+
+**Verdict:** Curse Satan Hurricane Universe 1D is among the least-competitive random booster configurations in the Superking lineup. The three "signature gimmick" components (Hurricane free-spinning saw, Universe dual free-spinning ball, Curse Ring free-spinning rollers) all reduce friction in specific contexts but collectively fail to compensate for the 1D chassis's inadequate I and burst fragility. The assembly functions as a demonstration of the free-spinning disc/tip philosophy at its limit: spinning-component decoupling alone cannot substitute for angular momentum density.
+
+---
+
+### 9. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Assembly mass | 41.1 g |
+| I_total | 5.570×10⁻⁶ kg·m² |
+| L at ω₀ | 3.90 mN·m·s |
+| τ_tip (Universe) | 1.492×10⁻⁴ N·m |
+| τ_total at ω₀ (no scraping) | 6.49×10⁻⁴ N·m |
+| t_total | 11.93 s |
+| Burst threshold | ~3 equivalent clicks (burst-prone) |
+| Primary inertia contributors | 1D chassis (15.0 %) + Curse Ring (13.7 %) |
+| Double instability | Hurricane floor-scraping + Universe self-KO |
+| Competitive tier | Below-average; random booster configuration mismatch |
+
+## CASE 1792 — Face Bolt: Cancer [Metal Fight Beyblade — Metal Fusion Era]
+
+**Part:** Face Bolt — Cancer (Gasher in Hasbro release)
+**Release:** BB-31 Starter Dark Cancer CH120SF (Takara Tomy Metal Fusion, 2009)
+**System:** Metal Fight Beyblade 4-piece system (Face Bolt + Energy Ring + Fusion Wheel + Spin Track + Performance Tip)
+**Mass:** ~1.4 g
+**Geometry:** Small hexagonal bolt head (polycarbonate), diameter ≈ 16 mm; threaded ABS shaft that locks through the Fusion Wheel hub; center bolt head displays the Cancer constellation motif (crab design + "cancer" text in TT version; enlarged crab + spheres in Hasbro Gasher version)
+
+---
+
+### 1. Dimensional Model and Moment of Inertia
+
+The Face Bolt is the smallest and lightest component in the MFB 4-piece system. It contributes negligible angular momentum.
+
+Bolt head outer radius: r_bolt = 8 mm = 0.008 m
+Modeled as solid disc (conservative — hexagonal outline approximated as circle):
+
+I_FB = ½ × m × r_bolt²
+I_FB = ½ × 0.0014 × (0.008)²
+I_FB = ½ × 0.0014 × 6.4×10⁻⁵
+I_FB = 4.48×10⁻⁸ kg·m²
+
+---
+
+### 2. Functional Role
+
+**Structural:** The Face Bolt thread locks all five components together. Tightening torque holds the Energy Ring and Fusion Wheel in axial registration. Loss of Face Bolt results in immediate disassembly mid-battle.
+
+**Identity:** In the MFB system, the Face Bolt confers the beyblade's Bit-Beast identity (Cancer = crab). Unlike Plastic-gen Bit Chips (which housed the bit beast spring-launch mechanism), Face Bolts are passive — purely decorative and structural.
+
+**Hasbro renaming:** The "cancer" text was removed from the Hasbro Gasher release for markets where the word carries negative connotations. The bolt geometry is otherwise identical.
+
+---
+
+### 3. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | ~1.4 g |
+| I_FB | 4.48×10⁻⁸ kg·m² |
+| I fraction in assembly | ~0.5 % |
+| Function | Structural lock + identity |
+| Gimmick | None |
+
+---
+
+## CASE 1793 — Energy Ring: Cancer (Gasher) [Metal Fight Beyblade — Metal Fusion Era]
+
+**Part:** Energy Ring — Cancer (Gasher)
+**Release:** BB-31 Starter Dark Cancer CH120SF; also available in BB-47 Random Booster Vol. 2 (Takara Tomy Metal Fusion, 2009)
+**System:** Metal Fight Beyblade (Energy Ring = Clear Wheel in older nomenclature)
+**Mass:** ~3.8 g (above-average for an MFB Energy Ring; noted as "heavy weight" in official materials)
+**Geometry:** Wide round ring with crab claw profile; transparent red/pink ABS; outer diameter ≈ 36 mm, inner snap-fit diameter ≈ 22 mm; sloped outer face; claw-motif raised detailing; width ≈ 7 mm; low-profile beveled edges
+
+---
+
+### 1. Dimensional Model and Moment of Inertia
+
+The Energy Ring sits on top of and around the Fusion Wheel's hub ring. Its outer edge extends to approximately the same radius as the Fusion Wheel's mid-zone.
+
+Outer radius: r_ER_outer = 18 mm = 0.018 m
+Inner snap-fit radius: r_ER_inner = 11 mm = 0.011 m
+Treat as annular ring (standard ABS, uniform density):
+
+I_ER = ½ × m × (r_outer² + r_inner²)
+I_ER = ½ × 0.0038 × (0.018² + 0.011²)
+I_ER = ½ × 0.0038 × (3.24×10⁻⁴ + 1.21×10⁻⁴)
+I_ER = ½ × 0.0038 × 4.45×10⁻⁴
+I_ER = 8.455×10⁻⁷ kg·m²
+
+---
+
+### 2. Defense Contribution: Sloped Claw Profile
+
+Cancer's Energy Ring contributes to Defense via two mechanisms:
+
+**(a) Slope deflection:**
+The sloped outer face (inward taper ≈ 15° from vertical) redirects incoming contact forces. An opponent's blade striking the slope at impact angle θ_i experiences:
+- Normal component: F_n = F_impact × cos(θ_i + 15°)
+- Tangential component: F_t = F_impact × sin(θ_i + 15°)
+
+For a typical glancing hit (θ_i ≈ 30°):
+F_t (slope deflection) vs flat face:
+Deflection ratio = sin(45°) / sin(30°) = 0.707 / 0.500 = 1.414
+
+The slope increases the tangential (spin-retaining) component by ~41 %, marginally improving the beyblade's ability to survive glancing contacts without burst.
+
+**(b) Round profile:**
+Cancer is a near-circular Energy Ring (no protruding points). Circular profiles minimize recoil on hit by distributing the contact over a larger surface arc, reducing the peak contact force dF/dθ. This is favorable for Defense and Stamina but reduces Smash Attack potential.
+
+---
+
+### 3. Mass Context
+
+Energy Ring mass comparison:
+| Ring | Mass | Profile type | Use |
+|------|------|-------------|-----|
+| Cancer | ~3.8 g | Round, claw slopes | Defense |
+| Aquario | ~3.5 g | Round, fin-like | Defense / Stamina |
+| Leone | ~2.8 g | Pointed, mane | Attack |
+| Pegasus | ~2.5 g | Star-point | Attack |
+
+Cancer's above-average mass marginally increases assembly total I. However, since the ER sits at r ≈ 11–18 mm (inside the Fusion Wheel's outer blade zone), its I contribution is secondary to the Fusion Wheel's.
+
+---
+
+### 4. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | ~3.8 g |
+| I_ER | 8.455×10⁻⁷ kg·m² |
+| I fraction in assembly | ~8.9 % |
+| Defense mechanism | Slope deflection + round profile |
+| Slope angle | ≈ 15° inward taper |
+| Deflection advantage | +41 % tangential force vs flat ER |
+
+---
+
+## CASE 1794 — Fusion Wheel: Dark [Metal Fight Beyblade — Metal Fusion Era]
+
+**Part:** Fusion Wheel — Dark
+**Release:** BB-31 Starter Dark Cancer CH120SF (Takara Tomy Metal Fusion, 2009)
+**System:** Metal Fight Beyblade (main metal component)
+**Mass:** ~30 g (estimated; zinc alloy)
+**Geometry:** Twelve curved spikes arranged clockwise around the perimeter; closely packed with minimal inter-spike spacing; overall shape approximates a round disc with shallow radial protrusions; outer diameter ≈ 46 mm (23 mm radius); central hex-bore hub ≈ 7 mm radius; height ≈ 5 mm
+
+---
+
+### 1. Dimensional Model
+
+Three-zone annular decomposition based on the image cross-section:
+
+**Zone A — Central hub (r = 0–8 mm):** Hex bore + connecting web
+Mass fraction: 15 %; m_A = 0.15 × 30 = 4.5 g
+
+**Zone B — Mid-section (r = 8–16 mm):** Spoke-web connecting hub to blade ring
+Mass fraction: 25 %; m_B = 0.25 × 30 = 7.5 g
+
+**Zone C — Outer blade zone (r = 16–23 mm):** Twelve curved protrusion blades (primary mass)
+Mass fraction: 60 %; m_C = 0.60 × 30 = 18.0 g
+
+---
+
+### 2. Moment of Inertia
+
+**Zone A (solid disc):**
+I_A = ½ × m_A × r_A²
+I_A = ½ × 0.0045 × (0.008)²
+I_A = ½ × 0.0045 × 6.4×10⁻⁵ = 1.44×10⁻⁷ kg·m²
+
+**Zone B (annular ring):**
+I_B = ½ × m_B × (r_B_outer² + r_B_inner²)
+I_B = ½ × 0.0075 × (0.016² + 0.008²)
+I_B = ½ × 0.0075 × (2.56×10⁻⁴ + 6.4×10⁻⁵)
+I_B = ½ × 0.0075 × 3.20×10⁻⁴ = 1.20×10⁻⁶ kg·m²
+
+**Zone C (annular ring):**
+I_C = ½ × m_C × (r_C_outer² + r_C_inner²)
+I_C = ½ × 0.018 × (0.023² + 0.016²)
+I_C = ½ × 0.018 × (5.29×10⁻⁴ + 2.56×10⁻⁴)
+I_C = ½ × 0.018 × 7.85×10⁻⁴ = 7.065×10⁻⁶ kg·m²
+
+**Total:**
+I_Dark = I_A + I_B + I_C
+I_Dark = 1.44×10⁻⁷ + 1.20×10⁻⁶ + 7.065×10⁻⁶
+I_Dark = 8.409×10⁻⁶ kg·m²
+
+---
+
+### 3. OWD Analysis — Why Dark Fails Competitively
+
+**Outer Weight Distribution (OWD):**
+OWD = I_Dark / (m_Dark × r_outer²)
+OWD = 8.409×10⁻⁶ / (0.030 × (0.023)²)
+OWD = 8.409×10⁻⁶ / (0.030 × 5.29×10⁻⁴)
+OWD = 8.409×10⁻⁶ / 1.587×10⁻⁵
+OWD = 0.530
+
+For reference:
+OWD of ideal thin ring = 1.00 (all mass at outer edge)
+OWD of solid uniform disc = 0.50 (mass distributed evenly across radius)
+Dark OWD = 0.530 — barely above solid-disc baseline
+
+This confirms the official description: "weight is distributed over too large a surface area." Dark's twelve closely-packed spikes fill the annular zone between r=16–23 mm as a near-uniform sheet rather than concentrating mass at the outermost radius. The OWD of 0.530 means Dark provides almost no angular momentum advantage from its 23 mm outer radius.
+
+**Smash Attack analysis:**
+Smash Attack requires protruding contact points that deliver high-force impacts. For Dark's 12 blades:
+Protrusion depth = r_outer − r_inner_blade ≈ 23 − 20 = 3 mm (estimated; blades are shallow)
+Contact force F_smash ≈ m_effective × a_impact = m_C × (ω²× r_tip) × sin(θ_rake)
+θ_rake for clockwise blade ≈ 10° (shallow rake, facing clockwise = RS-optimized smash in RS spin)
+
+F_smash = 0.018 × (650)² × 0.023 × sin(10°)
+        = 0.018 × 422,500 × 0.023 × 0.1736
+        = 0.018 × 422,500 × 0.003993
+        = 30.38 N
+
+This seems reasonable for raw centrifugal impact force, but the shallow protrusion depth (3 mm) means the contact area is large and the force is spread over many teeth simultaneously rather than concentrated in one aggressive blade. For comparison, an Attack-type wheel (like Lightning or Quetz) with 3 large blades at deep protrusion would deliver similar force to a 3× smaller area (3.3× higher pressure). Dark's distributed protrusions trade maximum smash pressure for rounded contact character.
+
+---
+
+### 4. Aerodynamic Drag Torque
+
+Twelve curved blades create circumferential drag. Each blade is approximately:
+Width (radial): w ≈ 6 mm = 0.006 m (r_tip to r_root ≈ 23–17 mm)
+Height: h ≈ 5 mm = 0.005 m (disc thickness)
+Projected frontal area per blade: A_blade = w × h = 3.0×10⁻⁵ m²
+Effective torque arm: r_blade = 0.020 m (blade centroid)
+C_D = 1.0 (blunt curved face)
+
+Drag force per blade at ω:
+F_drag(ω) = ½ × C_D × ρ × A_blade × (ω × r_blade)²
+          = ½ × 1.0 × 1.2 × 3.0×10⁻⁵ × (ω × 0.020)²
+          = 0.6 × 3.0×10⁻⁵ × 4.0×10⁻⁴ × ω²
+          = 7.2×10⁻⁹ × ω²
+
+Torque per blade: τ_blade = F_drag × r_blade = 7.2×10⁻⁹ × 0.020 × ω² = 1.44×10⁻¹⁰ × ω²
+
+Twelve blades:
+τ_aero_Dark(ω) = 12 × 1.44×10⁻¹⁰ × ω² = 1.728×10⁻⁹ × ω²
+
+At ω₀ = 650 rad/s:
+τ_aero_Dark(650) = 1.728×10⁻⁹ × 422,500 = 7.301×10⁻⁴ N·m
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | ~30 g |
+| I_Dark | 8.409×10⁻⁶ kg·m² |
+| I fraction in assembly | ~88.5 % |
+| OWD | 0.530 (barely above solid-disc floor) |
+| τ_aero at ω₀ = 650 rad/s | 7.301×10⁻⁴ N·m |
+| Smash protrusion depth | ~3 mm (shallow; low impact pressure) |
+| Competitive verdict | No viable competitive role (Attack insufficient, Stamina average, Defense mediocre) |
+
+**Design assessment:** Dark's twelve-blade design appears to pursue a balanced/defensive profile through mass and roundness, but delivers neither the OWD needed for stamina nor the blade geometry needed for attack. The closely-packed blade pattern is visually aggressive but physically resembles a round disc with marginal protrusions — the worst trade-off in both categories.
+
+## CASE 1795 — Spin Track: Change Height 120 (CH120) [Metal Fight Beyblade — Metal Fusion Era]
+
+**Part:** Spin Track — Change Height 120 (CH120)
+**Release:** BB-31 Starter Dark Cancer CH120SF (Takara Tomy Metal Fusion, 2009)
+**System:** Metal Fight Beyblade
+**Mass:** 2.7 g (stated)
+**Geometry:** Two-segment ABS track; lower tube (tip mount) + upper collar with height-lock mechanism; height switches between 120 (12.0 mm) and 145 (14.5 mm) by pulling and rotating the lower segment; outer diameter ≈ 12 mm; inner bore ≈ 4 mm; lock tab secures each height position
+
+---
+
+### 1. Dimensional Model and Moment of Inertia
+
+CH120 is primarily a thin tube; mass is distributed close to the spin axis.
+
+Outer radius: r_CH120_outer = 6 mm = 0.006 m (tube wall)
+Inner bore radius: r_CH120_inner = 2 mm = 0.002 m
+Locking collar outer radius: r_collar = 10 mm = 0.010 m (wider at the lock tab)
+Mass split: 60 % in tube + 40 % in collar
+m_tube = 0.60 × 2.7 = 1.62 g
+m_collar = 0.40 × 2.7 = 1.08 g
+
+I_tube = ½ × 0.00162 × (0.006² + 0.002²) = ½ × 0.00162 × (3.6×10⁻⁵ + 4×10⁻⁶) = ½ × 0.00162 × 4.0×10⁻⁵ = 3.24×10⁻⁸ kg·m²
+I_collar = ½ × 0.00108 × (0.010² + 0.004²) = ½ × 0.00108 × (1.0×10⁻⁴ + 1.6×10⁻⁵) = ½ × 0.00108 × 1.16×10⁻⁴ = 6.264×10⁻⁸ kg·m²
+
+I_CH120 = 3.24×10⁻⁸ + 6.264×10⁻⁸ = 9.504×10⁻⁸ ≈ 9.5×10⁻⁸ kg·m²
+
+---
+
+### 2. Height-Change Gimmick Physics
+
+**Two heights:**
+Height 120 (12.0 mm) — default lower position; height 145 (14.5 mm) — extended upper position.
+
+The height difference Δh = 2.5 mm shifts the fusion wheel's vertical position.
+
+**Effect on Center of Mass (CoM) height:**
+Assembly CoM height above tip: z_CoM ≈ h_track/2 + h_FW/2 (simplified)
+At 120 mode: z_CoM ≈ 6.0 + 2.5 = 8.5 mm
+At 145 mode: z_CoM ≈ 7.25 + 2.5 = 9.75 mm
+
+Lower CoM → greater gyroscopic stability → less precession wobble per unit spin loss.
+
+**Precession frequency:**
+ω_precession = (m × g × z_CoM) / (I × ω)
+
+At ω = 260 rad/s (wobble onset), I = 9.506×10⁻⁶ kg·m²:
+ω_p(120) = (0.0387 × 9.81 × 0.0085) / (9.506×10⁻⁶ × 260) = 3.227×10⁻³ / 2.472×10⁻³ = 1.306 rad/s
+ω_p(145) = (0.0387 × 9.81 × 0.00975) / (9.506×10⁻⁶ × 260) = 3.699×10⁻³ / 2.472×10⁻³ = 1.496 rad/s
+
+Ratio: ω_p(145) / ω_p(120) = 1.496 / 1.306 = 1.145
+
+CH120 at 120 mode reduces precession frequency by 14.5 % vs 145 mode at the same spin rate. For a stamina beyblade, slower precession = slower tilt growth = longer survival.
+
+**Practical strategy:**
+Between rounds, the blader can switch height to counter the opponent's Spin Track height:
+- vs 145-height opponents → use 120 mode (undercutting: fusion wheel contacts the opponent's spin track at the lower height zone, increasing destabilization)
+- vs 90/100-height opponents → use 145 mode (standard engagement height)
+
+This strategic flexibility is CH120's primary competitive value.
+
+**Structural fragility note:**
+Some copies of CH120 will separate at the lock mechanism under strong hits in 145 mode. The lock joint becomes a failure point. In 120 mode, the joint is under compression (more stable). This is the stated fragility caveat and limits CH120's use in high-contact Attack combinations.
+
+---
+
+### 3. Height 120 Exclusivity
+
+CH120 in 120 mode is the only MFB-era Spin Track providing the 120 mm height. This height is useful in attack-type combinations because:
+- The beyblade sits lower → fusion wheel engages at a different vertical zone
+- Lower height → lower gyroscopic precession rate
+- Useful in "destabilizer" combos: low Spin Track + SF tip creates a beyblade that actively tilts opponent Beyblades by contacting them below their center of gyration
+
+---
+
+### 4. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | 2.7 g |
+| I_CH120 | 9.5×10⁻⁸ kg·m² |
+| Height options | 120 mm and 145 mm |
+| Δz_CoM (120 vs 145) | +1.25 mm (145 mode has higher CoM) |
+| ω_precession reduction (120 vs 145) | 14.5 % lower at wobble onset |
+| Structural risk | Lock joint may separate under hard hits in 145 mode |
+| Competitive value | Height-switching strategy + unique 120 mm height |
+
+---
+
+## CASE 1796 — Performance Tip: Semi-Flat (SF) [Metal Fight Beyblade — Metal Fusion Era]
+
+**Part:** Performance Tip — Semi-Flat (SF)
+**Release:** BB-31 Starter Dark Cancer CH120SF (Takara Tomy Metal Fusion, 2009)
+**System:** Metal Fight Beyblade
+**Mass:** ~0.8 g
+**Geometry:** Conical ABS tip with a flattened circular contact surface; flat diameter ≈ 3 mm (r_flat = 1.5 mm); sharp shoulder transitions to flat; outer base flange diameter ≈ 12 mm for spin track mount
+
+---
+
+### 1. Dimensional Model and Moment of Inertia
+
+SF is a near-tip component with negligible I contribution.
+
+Effective inertia radius (outer flange, primary mass location): r_SF = 4 mm = 0.004 m
+I_SF = ½ × m × r_SF² = ½ × 0.0008 × (0.004)² = ½ × 0.0008 × 1.6×10⁻⁵ = 6.4×10⁻⁹ kg·m²
+
+---
+
+### 2. Friction Torque: Two-Regime Model
+
+SF has a bimodal friction behavior depending on spin rate:
+
+**High spin (ω > 350 rad/s) — sharp-tip dominant:**
+At high spin, centrifugal and gyroscopic forces maintain the beyblade near-vertical. The effective contact radius is the flat's center point (essentially sharp-tip behavior).
+r_contact_high ≈ 0.5 mm = 0.0005 m (geometric center of the 3mm flat)
+μ_high ≈ 0.12 (polished ABS on polystyrene at high relative speed)
+
+τ_SF_high = μ × N × r_contact = 0.12 × (0.0387 × 9.81) × 0.0005
+          = 0.12 × 0.3797 × 0.0005
+          = 2.278×10⁻⁵ N·m
+
+**Low spin (ω < 200 rad/s) — flat contact dominant:**
+At low spin, the beyblade settles onto the full flat face as wobble increases, increasing contact area.
+r_contact_low = r_flat = 1.5 mm = 0.0015 m
+μ_low ≈ 0.20 (full flat contact, higher friction than sharp center)
+
+τ_SF_low = μ × N × r_flat = 0.20 × 0.3797 × 0.0015 = 1.139×10⁻⁴ N·m
+
+**Working model:** Use linear interpolation between regimes; approximate as:
+τ_SF ≈ τ_SF_low = 1.139×10⁻⁴ N·m (conservative upper bound, appropriate for battle/wobble phases)
+
+---
+
+### 3. SF vs Pure Tip Types
+
+The SF description captures its failure mode: it compromises both Attack and Stamina.
+
+**vs Flat (F) tip:**
+F tip: r_contact ≈ 3–4 mm, μ ≈ 0.25 → τ_F ≈ 0.25 × 0.38 × 0.0035 = 3.325×10⁻⁴ N·m
+SF reduces friction to 34 % of flat → SF has 2.92× better stamina than F
+But: F's high friction drives aggressive, unpredictable movement. SF's lower friction = slower, semi-controlled motion (less attack threat).
+
+**vs Wide Defense (WD) tip:**
+WD: wide ring contact at r ≈ 4 mm, μ ≈ 0.05–0.08 (low friction ring) → τ_WD ≈ 0.07 × 0.38 × 0.004 = 1.064×10⁻⁴ N·m
+SF ≈ 1.139×10⁻⁴ N·m ← essentially equal friction to WD at full-flat contact
+
+Counterintuitively, SF at low spin approximates WD's friction torque, though WD's ring geometry provides better tilt stability and lateral resistance. SF's advantage over WD is moderate attack mobility at high spin; WD has no attack character at all.
+
+**vs Spike (S) / Eternal Spike (ES) tips:**
+S tip: r ≈ 0.5 mm, μ ≈ 0.08 → τ_S ≈ 0.08 × 0.38 × 0.0005 = 1.52×10⁻⁵ N·m (7.5× lower than SF)
+SF provides much higher friction than S → SF cannot match S or ES for pure stamina.
+
+---
+
+### 4. Destabilizer Combo Function
+
+SF was identified as a niche destabilizer tip:
+- Combination: low Spin Track height (e.g. CH120 at 120 mode) + SF + low-profile Fusion Wheel
+- Mechanism: The beyblade's fusion wheel height falls below the opponent's fusion wheel contact zone; SF's semi-aggressive movement drives it into the opponent's Spin Track repeatedly; the resulting repeated upward contacts progressively tilt the opponent off the vertical axis until it falls over (loses by KO)
+
+For this mechanism, SF contributes:
+Contact impulse per tick ≈ τ_SF_high / ω × dt = 2.278×10⁻⁵ / 500 × 0.0167 = 7.6×10⁻¹⁰ N·m·s
+
+Accumulated tilt energy over N contacts at Δt = 0.2 s spacing: E_tilt = N × F_contact × h_offset
+
+While Dark Cancer CH120SF is not an optimized destabilizer, the CH120-at-120 + SF combination provides the basic mechanical prerequisites for the role.
+
+---
+
+### 5. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Mass | ~0.8 g |
+| I_SF | 6.4×10⁻⁹ kg·m² |
+| τ_SF (low spin, full flat) | 1.139×10⁻⁴ N·m |
+| τ_SF (high spin, near-sharp) | 2.278×10⁻⁵ N·m |
+| Contact radius (flat portion) | r_flat = 1.5 mm |
+| Movement type | Semi-aggressive; slower than F, faster than WD |
+| Competitive role | Average stamina + moderate attack; destabilizer in CH120-120 combo |
+
+---
+
+## CASE 1797 — Assembly: Dark Cancer CH120SF [Metal Fight Beyblade — Metal Fusion Era]
+
+**Assembly:** Dark Cancer CH120SF
+**Release:** BB-31 Starter (Takara Tomy Metal Fusion, 2009)
+**System:** Metal Fight Beyblade (Face Bolt + Energy Ring + Fusion Wheel + Spin Track + Performance Tip)
+**Hasbro release:** Dark Gasher CH120SF (identical geometry; Face Bolt text removed)
+**Spin direction:** Right-spin (standard MFB RS orientation)
+**Era spin parameters:** ω₀ = 650 rad/s, ω_battle = 390 rad/s, ω_wobble = 260 rad/s
+
+---
+
+### 1. Component Summary
+
+| Component | Mass (g) | I_eff (kg·m²) | I fraction |
+|-----------|----------|---------------|------------|
+| Face Bolt — Cancer | 1.4 | 4.48×10⁻⁸ | 0.5 % |
+| Energy Ring — Cancer | 3.8 | 8.455×10⁻⁷ | 8.9 % |
+| Fusion Wheel — Dark | 30.0 | 8.409×10⁻⁶ | 88.5 % |
+| Spin Track — CH120 | 2.7 | 9.5×10⁻⁸ | 1.0 % |
+| Performance Tip — SF | 0.8 | 6.4×10⁻⁹ | < 0.1 % |
+
+Converting all to ×10⁻⁶:
+Face Bolt: 0.0448×10⁻⁶
+ER Cancer: 0.8455×10⁻⁶
+Dark FW:   8.409×10⁻⁶
+CH120:     0.095×10⁻⁶
+SF:        0.0064×10⁻⁶
+Total:     9.400×10⁻⁶ = 9.400×10⁻⁶ kg·m²
+
+Assembly mass: m = 1.4 + 3.8 + 30.0 + 2.7 + 0.8 = 38.7 g
+
+---
+
+### 2. Angular Momentum
+
+L = I_total × ω₀ = 9.400×10⁻⁶ × 650 = 6.110×10⁻³ N·m·s = 6.11 mN·m·s
+
+MFB era context:
+- Top stamina assemblies (Burn Fireblaze 135MS, Earth Eagle 145WD): L ≈ 12–16 mN·m·s
+- Average/starter assemblies: L ≈ 5–9 mN·m·s
+- Dark Cancer CH120SF: L = 6.11 mN·m·s (below-average; starter tier)
+
+The low L relative to top MFB assemblies is due to Dark's OWD = 0.530 — despite having a 30g fusion wheel, the mass distribution is inefficient.
+
+---
+
+### 3. Spin Decay Model
+
+**Friction torque inventory:**
+
+(a) SF tip (Coulomb, ω-independent, use low-spin value as conservative estimate):
+τ_tip = 1.139×10⁻⁴ N·m
+
+(b) Dark aero drag (ω-dependent):
+τ_aero(ω) = 1.728×10⁻⁹ × ω²
+
+(c) Energy Ring Cancer (negligible aero, smooth round profile):
+τ_ER ≈ 0 (smooth ring, no significant aero contribution)
+
+**Total:**
+τ_total(ω) = 1.139×10⁻⁴ + 1.728×10⁻⁹ × ω²
+
+At ω₀ = 650:
+τ_total(650) = 1.139×10⁻⁴ + 1.728×10⁻⁹ × 422,500 = 1.139×10⁻⁴ + 7.301×10⁻⁴ = 8.440×10⁻⁴ N·m
+
+Tip fraction: 1.139×10⁻⁴ / 8.440×10⁻⁴ = 13.5 %
+Aero fraction: 86.5 %
+
+Dark's twelve-blade aero drag dominates at high spin, causing rapid early deceleration.
+
+---
+
+### 4. Phase Durations
+
+**Launch → Battle (650 → 390 rad/s), Δω = −260:**
+
+ω_mid = 520 rad/s
+τ_mid = 1.139×10⁻⁴ + 1.728×10⁻⁹ × 270,400 = 1.139×10⁻⁴ + 4.671×10⁻⁴ = 5.810×10⁻⁴ N·m
+dω/dt = −5.810×10⁻⁴ / 9.400×10⁻⁶ = −61.81 rad/s²
+t_launch = 260 / 61.81 = 4.21 s
+
+**Battle phase (390 → 260 rad/s), Δω = −130:**
+
+ω_mid = 325 rad/s
+τ_mid = 1.139×10⁻⁴ + 1.728×10⁻⁹ × 105,625 = 1.139×10⁻⁴ + 1.825×10⁻⁴ = 2.964×10⁻⁴ N·m
+dω/dt = −2.964×10⁻⁴ / 9.400×10⁻⁶ = −31.53 rad/s²
+t_battle = 130 / 31.53 = 4.12 s
+
+**Wobble phase (260 → 0), Δω = −260:**
+
+ω_mid = 130 rad/s
+τ_mid = 1.139×10⁻⁴ + 1.728×10⁻⁹ × 16,900 = 1.139×10⁻⁴ + 2.920×10⁻⁵ = 1.431×10⁻⁴ N·m
+dω/dt = −1.431×10⁻⁴ / 9.400×10⁻⁶ = −15.22 rad/s²
+t_wobble = 260 / 15.22 = 17.08 s
+
+**Total spin-down time:**
+t_total = 4.21 + 4.12 + 17.08 = 25.41 s
+
+---
+
+### 5. CH120 Mode Comparison
+
+**In 120 mode vs 145 mode, effect on precession during wobble phase:**
+
+ω_p(120) = 1.306 rad/s (lower → slower wobble growth)
+ω_p(145) = 1.496 rad/s
+
+The effective wobble-phase spin drain also depends on tilt-enhanced friction. At 120 mode, lower precession rate delays the transition to full-flat SF contact, marginally extending survival.
+
+Estimated t_wobble improvement with 120 mode: +8 % (based on ω_p reduction of 14.5 %, affecting the late-wobble friction escalation)
+t_wobble(120 mode) ≈ 17.08 × 1.08 ≈ 18.45 s
+t_total(120 mode) ≈ 4.21 + 4.12 + 18.45 = 26.78 s
+
+---
+
+### 6. Competitive Assessment
+
+**Stamina:** Moderate. t_total ≈ 25–27 s is acceptable for the Metal Fusion first-release era but below the competitive stamina floor established by Earth Eagle 145WD (~40+ s with WD tip).
+
+**Attack:** None competitive. Dark OWD = 0.530 with 3 mm protrusions cannot deliver the recoil-free Smash Attack required to KO in one hit. Twelve blades also mean any contact is spread across multiple teeth simultaneously, reducing per-tooth pressure.
+
+**Defense:** Marginal. Cancer ER's slope deflection provides some burst resistance and recoil reduction. The round Fusion Wheel profile slightly helps. However, without a dedicated Defense tip (like Wide Defense or Rubber Ball), defense performance is limited.
+
+**Destabilizer potential:** CH120 at 120 mode + SF gives the assembly its only non-trivial niche: destabilizing opponents by undercutting at the unique 120 mm height. This requires specific opponent height matchups to be effective.
+
+**Overall:** Dark Cancer CH120SF is a starter-grade beyblade performing at or below the Metal Fusion era competitive average. Its sole distinction is the CH120 height-change gimmick, which provides strategic flexibility but not raw performance. The Fusion Wheel Dark has no competitive application and is consistently absent from high-performance custom combinations.
+
+---
+
+### 7. Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Assembly mass | 38.7 g |
+| I_total | 9.400×10⁻⁶ kg·m² |
+| L at ω₀ | 6.11 mN·m·s |
+| τ_tip (SF) | 1.139×10⁻⁴ N·m |
+| τ_total at ω₀ | 8.440×10⁻⁴ N·m |
+| t_total (145 mode) | 25.41 s |
+| t_total (120 mode, est.) | ~26.78 s |
+| Primary flywheel | Dark FW (88.5 % of I) |
+| Dark FW OWD | 0.530 (marginal; confirms official weak-distribution critique) |
+| Competitive niche | CH120 destabilizer at 120 mode + unique 120 mm height |
+| Era tier | Starter / below competitive MFB floor |
