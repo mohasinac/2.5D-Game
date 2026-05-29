@@ -87,6 +87,7 @@
     "seed:ai-bey-personalities": "node scripts/seed-all.js --only ai-bey-personalities",
     "seed:ai-difficulty-profiles": "node scripts/seed-all.js --only ai-difficulty-profiles",
     "seed:story-mode": "node scripts/seed-all.js --only story-mode",
+    "seed:second-player": "node scripts/seed-second-player.js",
     "clear": "node scripts/seed-all.js --clear",
     "clear:all": "node scripts/seed-all.js --clear",
     "reseed": "node scripts/seed-all.js --reseed",

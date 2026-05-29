@@ -41497,3 +41497,1499 @@ function bearingCore2SpinTime(
 // bearingCore2SpinTime(40, 1.236e-5, 620, "worn") -> mu:0.82, rTip:5.0mm, tau:1.61e-3, tSpin:4.8s
 // bearingCore2SpinTime(40, 1.44e-5, 620, "mint")  -> mu:0.70, rTip:1.5mm, tau:4.12e-4, tSpin:21.7s
 ```
+
+---
+
+## CASE XXXX — MA-14 Advance Eterner: Bit Protector (Small Type, note on production variation)
+
+**Part:** Bit Protector, Small Type (initial release)
+**Assembly:** MA-14 Advance Eterner (Takara HMS, Summer 2004)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP on the initial Starter release (red). Important caveat noted by user: BP Size Type is not consistent across every production cycle or re-release. A subsequent year's re-release may ship with a different BP Size Type. This applies to all HMS beys that were re-released across multiple runs (Hasbro, Random Booster, Chinese SH-01/02 exclusives). Verify BP type of any specific specimen individually — do not assume re-release matches initial release BP.
+
+No performance role. Cross-reference CASE XXXX — Dragoon MS Bit Protector for Small vs Large Type dimensional comparison.
+
+**Releases of Advance Eterner:**
+- Initial: MA-14 Starter, Summer 2004 (Red) [FACT]
+- Hasbro Advance Eterner Starter (Red) [FACT]
+- Random Booster ACT 4 (Dark Green, Blue) [FACT]
+- SH-01/02 Chinese Exclusive "Liu Bei" / "Cao Cao" (White, Red) [FACT]
+
+---
+
+## CASE XXXX — MA-14 Advance Eterner: Advance Survivor AR (~18 g, circular profile, high recoil, spin-steal geometry)
+
+**Part:** Attack Ring, Advance Survivor
+**Assembly:** MA-14 Advance Eterner (Takara HMS, Summer 2004)
+**Weight:** ~18 g [FACT: confirmed by user]
+**Material:** ABS plastic [FACT: observed from photos — red ABS, no metal component visible]
+**Spin compatibility:** Either spin (intended); opposite spin required for competitive use [FACT: see below]
+**Profile:** Near-circular with 4 very subtle rounded protrusions at ~90 deg spacing (squircle / rounded-square outline from top) [FACT: observed from photos]
+**r_inner ~5 mm, r_outer ~28 mm, r_ref = 23 mm** [INFERENCE]
+
+**Thesis:** Advance Survivor's nearly circular ABS outer profile is geometrically deceptive — it appears to be a smooth, low-aggression design suited to stamina, and in casual use it is labeled and sold as stamina-type, but the circular profile creates the worst possible condition for a same-spin stamina battle: because the contact normal at any point on a circle's circumference points directly toward the center (radially inward), any collision with an opponent transmits the full reaction force along that radial direction, pushing the Advance Survivor bey directly away from the contact point — this is maximum recoil and zero smash delivery; the bey cannot convert contact energy into forward spin torque against the opponent, and instead receives the entire impulse as a ring-out vector; launching at power against any AR with even moderate smash geometry will cause Advance Survivor to be knocked out, because its own recoil works against it; however, in opposite-spin, the identical circular geometry that makes it a liability in same-spin becomes an asset for spin-stealing: the smooth continuous rim maximises sliding contact arc length per collision, maximising spin transfer per contact event, and with a weak-launching technique the lower angular velocity reduces the magnitude of recoil impulses (F_recoil = m * v_relative * dt, smaller v_tip at low spin) while the friction-based spin steal mechanism remains geometrically unchanged.
+
+**Moment of inertia:**
+
+I_AS = 1/2 * m * (r_i^2 + r_o^2)
+     = 1/2 * 0.018 * ((5.0e-3)^2 + (28.0e-3)^2)
+     = 1/2 * 0.018 * (2.5e-5 + 7.84e-4)
+     = 1/2 * 0.018 * 8.09e-4
+     = 7.281e-6 kg*m^2  [INFERENCE]
+
+OWD = I / (m * r_ref^2)
+    = 7.281e-6 / (0.018 * (23.0e-3)^2)
+    = 7.281e-6 / 9.522e-6
+    = 0.765  [INFERENCE]
+
+OWD = 0.765. Moderate-high — comparable to Jiraiya Blade (0.775) and well above Metal Attacker (0.540). The circular rim distributes mass efficiently despite being all-ABS (no metal component). This is the highest OWD value for a pure-ABS HMS AR analyzed to date.
+
+**Recoil physics — why circular = maximum recoil:**
+
+```
+Top-down contact geometry:
+
+   Contact normal on a circular AR at any contact point P:
+
+      ──────────────────────────→  Attacker approach direction
+                                 |
+              ╭───────╮          |
+            ╱           ╲       ↙  contact at P
+           │      CoM     │──── P
+            ╲           ╱  ↑
+              ╰───────╯   normal at P = radial inward (toward CoM)
+
+   Reaction force on Advance Survivor at P:
+   F_reaction = F_impact * n_hat  (n_hat = unit radial inward)
+
+   Components:
+     Radial (recoil, pushes bey away from contact): F_impact * cos(0) = F_impact  (100%)
+     Tangential (smash, pushes opponent):             F_impact * sin(0) = 0          (0%)
+
+   Compare to 20-degree smash AR (e.g. Jiraiya Blade):
+     Radial (recoil):    F_impact * cos(20) = 0.940 * F_impact
+     Tangential (smash): F_impact * sin(20) = 0.342 * F_impact
+
+   A circular AR delivers 100% of impact as self-recoil, 0% as opponent smash.
+   A 20-deg smash AR delivers 94% self-recoil but 34% opponent smash.
+   The circular profile is strictly worse for same-spin combat.
+```
+
+**Spin-steal physics (opposite spin, weak launch):**
+
+In opposite-spin contact, the rim of Advance Survivor and the opponent's AR move in opposite tangential directions at the contact point. Friction force F_friction = mu * F_normal acts to equalise surface speeds. Over the contact arc length, the friction force transfers angular momentum from the faster-spinning bey (typically the fresh-launched opponent) to the slower-spinning Advance Survivor. Circular rim: maximises contact arc length per collision (no gaps from protrusion edges interrupting the arc). Smooth ABS surface: consistent mu across the entire rim, no variation from texture features. Result: highest spin-steal rate per collision of any HMS AR that can achieve opposite-spin contact.
+
+Weak-launch technique reduces v_tip at contact, reducing the recoil impulse (F_recoil = delta_p / delta_t; smaller v reduces delta_p). The spin-steal mechanism is friction-based and does not scale as sharply with v_tip — so weak launch improves the ratio of spin-steal to self-recoil. This is the fundamental technique dependency of Advance Survivor: it requires both opposite spin AND weak launch to be functional.
+
+**AR comparison in spin-steal context:**
+
+Advance Survivor is "a fairly decent spin-stealer" within a small subcategory. Circle Upper (MFB) and some WD-edge spin-stealing strategies outperform it in different formats, but within HMS, Advance Survivor is among the best available options for this role precisely because the subcategory is so limited — most HMS ARs are designed for smash or are neutral, leaving Advance Survivor as the closest thing to a dedicated spin-stealer AR.
+
+**Best combos:**
+- Advance Survivor (opposite spin) / Circle Wide / Bearing Core — definitive spin-steal platform; weak-launch technique mandatory
+- Advance Survivor (opposite spin) / Circle Wide / Bearing Core 2 (mint) — alternate spin-steal with slightly more floor friction
+- (same-spin setups not recommended — high recoil near-guarantees KO against any competent AR)
+
+---
+
+## CASE XXXX — MA-14 Advance Eterner: Circle Wide WD (cross-reference)
+
+**Part:** Weight Disk, Circle Wide
+**Assembly:** MA-14 Advance Eterner (Takara HMS, Summer 2004)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Wide (~14 g, standalone reference) for full analysis.
+
+Circle Wide is the correct pairing for any Advance Survivor spin-steal combo. Its wide outer rim (r_outer ~32 mm) provides the best LAD of the three starter WDs, extending spin time in the dying phase and maximising time available for spin-steal contacts. The high absolute I (~4.2e-6 kg*m^2) supplements the AR's already high I_AS (7.28e-6), giving the assembly a respectable L0 despite the ABS-only AR.
+
+---
+
+## CASE XXXX — MA-14 Advance Eterner: Metal Sharp Core RC (~4 g, metal sharp tip, severe imbalance)
+
+**Part:** Running Core, Metal Sharp Core
+**Assembly:** MA-14 Advance Eterner (Takara HMS, Summer 2004) [re-release; originally Wyvern DJ]
+**Weight:** ~4 g [FACT: confirmed by user]
+**Material:** ABS outer body (red); metal sharp tip (silver) [FACT: observed from photos]
+**Tip geometry:** Metal sharp, r_tip ~0.5–1.0 mm (very fine point) [INFERENCE]
+**mu_metal_ABS ~0.15–0.25** (metal-on-ABS stadium surface; lower than plastic-on-ABS due to harder, smoother metal surface) [INFERENCE]
+**Height:** Tall RC — visibly taller than GFC, GFCUV, Bearing Core [FACT: observed from photos]
+**Imbalance:** Severe; described as the least redeeming RC in the HMS lineup [FACT: user assessment]
+
+**Thesis:** Metal Sharp Core is a tall ABS-bodied RC with a metal sharp tip, combining two properties that should theoretically produce competitive performance — metal (low-friction) and sharp (small contact radius, near-stationary) — but is nullified entirely by severe manufacturing or design imbalance that causes constant nutating wobble; the imbalance creates an eccentricity e in the mass distribution relative to the spin axis, generating a centrifugal force F_imbalance = m * e * omega^2 that grows quadratically with spin speed; at launch (omega_0 = 620 rad/s), F_imbalance can be large enough to force the tip to trace a small circle rather than remaining stationary, effectively increasing the friction radius from r_tip ~0.75 mm to r_effective > r_tip, and simultaneously creating rattling vibration (audible) that couples into the WD interface, creating micro-impacts between WD and RC that waste angular momentum as heat and sound; the result is a RC that spins down faster than its tip geometry predicts, vibrates visibly during play, and cannot reliably maintain a stable tip-on-ground contact — disqualifying it from stamina, defense, or attack roles.
+
+**Friction torque (theoretical, no imbalance — lower bound):**
+
+tau_MSC_ideal = mu * m_assembly * g * r_tip
+              = 0.20 * 0.037 * 9.81 * 7.5e-4
+              = 5.44e-5 N*m  [INFERENCE]
+
+This is the theoretical lower bound assuming perfect balance and single-point tip contact. Actual tau is higher due to imbalance.
+
+**Imbalance model:**
+
+Eccentricity e (distance from mass center to spin axis) estimated ~0.3–0.8 mm based on visible rattle severity [INFERENCE].
+
+F_imbalance(omega_0) = m_RC * e * omega_0^2
+                     = 0.004 * 5e-4 * (620)^2  (using e ~0.5 mm)
+                     = 0.004 * 5e-4 * 3.844e5
+                     = 0.769 N  [INFERENCE]
+
+This horizontal imbalance force at launch is transmitted through the tip to the stadium floor. At r_effective increased to ~3 mm (tip tracing a small orbit):
+
+tau_MSC_imbalanced = mu * (F_normal_effective) * r_effective
+                   ~0.20 * (m_assembly * g + F_imbalance_vertical_component) * 3.0e-3
+                   ~ significantly higher than ideal [INFERENCE: order-of-magnitude increase]
+
+**Theoretical spin time (ideal, no imbalance):**
+
+I_total = I_AS + I_CW + I_RC ~7.28e-6 + 4.2e-6 + 0.08e-6 = 11.56e-6 kg*m^2  [INFERENCE]
+L0     = 11.56e-6 * 620 = 7.167e-3 N*m*s
+t_spin_ideal = 7.167e-3 / 5.44e-5 ~132 s  [INFERENCE: ideal, not achievable]
+
+Real performance is a fraction of this. Imbalance likely reduces effective spin time to well under 30 s based on user assessment ("constantly shaking"). Metal Sharp Core's practical t_spin is less competitive than even GFC (~3–5 s range) because the vibration energy loss dominates.
+
+**Missed potential:** If balance were correctable, a Metal Sharp Core + Turtle Crusher AR setup could theoretically leverage the near-stationary tip combined with Turtle Crusher's spin-stealing AR to generate a destabilization-based combo (FACB-style, named after Plastics-era Fighting Attacker / Customize Bearing Base setups). The concept: spin slowly in center with near-zero tip friction, allow opponent to destabilize by contact with Turtle Crusher's geometry, and outlast via spin-steal. This niche is rendered inaccessible by the imbalance — a destabilization-build RC cannot itself be destabilized before the opponent.
+
+**Best potential combos (despite imbalance):**
+- Circle Upper / Circle Heavy / Metal Sharp Core — strictly reliant on Circle Upper AR to ring out opponent before imbalance matters
+- Circle Upper / Circle Wide / Metal Sharp Core — alternate (Circle Wide if match extends)
+- CWD God Ring variants / Metal Sharp Core — CWD's additional mass may damp some wobble [INFERENCE]; marginal benefit
+
+---
+
+## CASE XXXX — MA-14 Advance Eterner: Full Assembly (~37 g, ABS spin-stealer, metal sharp liability)
+
+**Bey:** MA-14 Advance Eterner
+**Parts:** BP Small Type (~1 g) + Advance Survivor AR (~18 g) + Circle Wide WD (~14 g) + Metal Sharp Core RC (~4 g)
+**Total mass:** ~37 g [INFERENCE: 1+18+14+4; verify with scale]
+**Type (stock):** Stamina nominal; Spin-Steal functional (opposite spin, weak launch) [FACT]
+**Type (competitive):** Attack (swap to Circle Upper / Circle Heavy for Circle Upper combo) [INFERENCE]
+
+**Assembly I_total:**
+
+I_AR_AS  = 7.281e-6 kg*m^2  (Advance Survivor) [INFERENCE]
+I_WD_CW  = 4.200e-6 kg*m^2  (Circle Wide) [INFERENCE]
+I_RC_MSC ~0.080e-6 kg*m^2  (Metal Sharp Core hub) [INFERENCE]
+I_total  ~11.56e-6 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch:**
+
+L0 = 11.56e-6 * 620 = 7.167e-3 N*m*s ~7.17 mN*m*s  [INFERENCE]
+
+**Competitive summary by configuration:**
+
+| Config | RC | Spin direction | Launch | Effective role | Viability |
+|--------|----|---------------|--------|----------------|-----------|
+| Stock (as released) | Metal Sharp Core | Same spin | Full | Stamina (nominal) | Uncompetitive |
+| Optimal spin-steal | Bearing Core | Opposite spin | Weak | Spin-steal | Viable vs Defense/Stamina |
+| Attack redirect | (swap AR) Circle Upper + Circle Heavy | — | Full | Attack | Depends on Circle Upper |
+
+[Viability ratings INFERENCE from user competitive assessment]
+
+**Advance Eterner as a platform:** The bey is essentially a showcase of Advance Survivor in a spin-steal role; the stock RC (Metal Sharp Core) is the worst RC in the HMS lineup by user assessment and should be replaced immediately. Circle Wide is the correct WD for the spin-steal role. No other part in the stock assembly needs to change for the spin-steal combo — only the RC slot requires upgrading to Bearing Core.
+
+**Game plan (optimal spin-steal combo):** Opposite-spin launch, weak power (~20–30% of maximum pull force). Position near the opponent and allow contact; the smooth rim and opposite spin do the work. Viable against Defense and Stamina types in TBTS/standard stadiums. Against Attack types: weak launch means reduced self-recoil on hit, but Advance Survivor still cannot reliably avoid being knocked out — "launch at full power and test your luck" (user assessment). The strategy has a structural weakness against attack-type opponents that no technique adjustment can eliminate.
+
+**Historical context:** Advance Eterner's release in Summer 2004 introduces the spin-steal archetype to HMS competitive play, filling a role that had no prior HMS representative. The ABS-only construction of Advance Survivor is unusual for a late-HMS AR (most competitive ARs are all-metal or metal-insert); the all-ABS build keeps weight low (~18 g vs ~20–22 g for Wolf Crusher / Jiraiya Blade), resulting in a lower I_total than Wolborg MS or Jiraiya MS assemblies, but the functional spin-steal mechanism is independent of high I — it depends on circular geometry, opposite spin, and technique.
+
+**Best combos:**
+- Advance Survivor (opposite spin) / Circle Wide / Bearing Core — best Advance Eterner setup; spin-steal platform
+- Advance Survivor (opposite spin) / Circle Wide / Bearing Core 2 (mint) — stamina-defense alternative
+- Circle Upper / Circle Heavy / Metal Sharp Core — only use case for stock RC; relies entirely on Circle Upper
+
+```typescript
+function spinStealContactArc(
+  rOuterMm: number,
+  contactAngleDeg: number
+): { arcLengthMm: number; spinTransferFactor: number } {
+  const arcLength = (2 * Math.PI * rOuterMm) * (contactAngleDeg / 360);
+  // Longer arc = more sliding surface = more spin transfer per contact
+  // Circular AR maximises arc for given r_outer (no gaps from protrusions)
+  return {
+    arcLengthMm: arcLength,
+    spinTransferFactor: arcLength / (2 * Math.PI * rOuterMm)  // fraction of full circumference engaged
+  };
+}
+// spinStealContactArc(28, 30) -> { arc:14.7mm, factor:0.083 }  — Advance Survivor, 30-deg contact sweep
+// spinStealContactArc(28, 15) -> { arc:7.3mm, factor:0.042 }   — same, shorter contact
+// spinStealContactArc(22, 30) -> { arc:11.5mm, factor:0.083 }  — smaller AR, same angle: less arc length
+
+function circularARRecoilFraction(contactAngleDegFromRadial: number): {
+  recoilFraction: number;
+  smashFraction: number;
+} {
+  const phi = (contactAngleDegFromRadial * Math.PI) / 180;
+  return {
+    recoilFraction: Math.cos(phi),
+    smashFraction:  Math.sin(phi)
+  };
+}
+// circularARRecoilFraction(0)  -> { recoil:1.000, smash:0.000 }  — perfectly circular AR: all recoil
+// circularARRecoilFraction(20) -> { recoil:0.940, smash:0.342 }  — 20-deg smash AR (e.g. Jiraiya Blade)
+// circularARRecoilFraction(45) -> { recoil:0.707, smash:0.707 }  — 45-deg: equal recoil and smash
+```
+
+---
+
+## CASE XXXX — MA-12 Advance Striker: Bit Protector (Small Type, note on production variation)
+
+**Part:** Bit Protector, Small Type (initial release)
+**Assembly:** MA-12 Advance Striker (Takara HMS, Late Spring 2004)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP on initial release (black). Same production variation caveat as Advance Eterner: BP Size Type is not guaranteed across re-releases — a subsequent production cycle may ship with a different BP Size Type. Verify per specimen.
+
+**Releases of Advance Striker:**
+- Initial: MA-12 Starter, Late Spring 2004 (Black) [FACT]
+- Hasbro Advance Striker Starter (Black) [FACT]
+- Random Booster ACT 3 (Dark Blue, Green) [FACT]
+- SH-07/08 Chinese Exclusive "Lu Bu" / "Ma Chao" (Black, Yellow) [FACT]
+
+No performance role. Cross-reference CASE XXXX — Dragoon MS Bit Protector for Small vs Large Type dimensional comparison.
+
+---
+
+## CASE XXXX — MA-12 Advance Striker: Advance Attacker AR (~21 g, Upper Mode / Force Smash Mode, "The Big Three" second inductee)
+
+**Part:** Attack Ring, Advance Attacker
+**Assembly:** MA-12 Advance Striker (Takara HMS, Late Spring 2004)
+**Weight:** ~21 g [FACT: confirmed by user]
+**Material:** Green ABS inner hub/ring + die-cast zinc alloy metal frames (3 reversible metal frames) [FACT: observed from photos]
+**Symmetry:** C3 — 3 wings at 120 deg spacing [FACT: observed from photos]
+**Spin compatibility:** Either spin [FACT: user confirmed]
+**Mode gimmick:** Reversible Metal Frame — Upper Mode (recommended) vs Force Smash Mode (niche) [FACT: user confirmed]
+**r_inner ~8 mm (ABS hub), r_outer ~30 mm (metal frame tips), r_ref = 23 mm** [INFERENCE]
+
+**Thesis:** Advance Attacker is the most underrated Attack Ring in the HMS format (user assessment) and the second inductee into the "Big Three" of HMS Attack ARs alongside Circle Upper and Samurai Upper; at ~21 g with three large reversed-geometry die-cast metal frames extending to r_outer ~30 mm, it achieves an OWD of ~0.911 — the highest of any attack-type HMS AR analyzed, exceeding Wolf Crusher (0.874), Jiraiya Blade (0.775), and Metal Attacker (0.540) — meaning 91% of its mass-weighted inertia lies at or beyond r_ref = 23 mm; the three metal frames are the primary contact surface and in Upper Mode present an upward-angled leading edge that delivers both horizontal smash force and a vertical upper-cutting component (angled contact normal has both lateral and upward components), destabilizing opponents by tipping them while simultaneously impacting them laterally; the C3 symmetry produces three contact events per revolution, each with the full angular momentum backing of the assembly; either-spin compatibility means Advance Attacker functions identically CW and CCW, a geometry property confirmed by the symmetric C3 metal frame arrangement that presents the same leading-edge profile in both directions.
+
+**Moment of inertia:**
+
+I_AA = 1/2 * m * (r_i^2 + r_o^2)
+     = 1/2 * 0.021 * ((8.0e-3)^2 + (30.0e-3)^2)
+     = 1/2 * 0.021 * (6.4e-5 + 9.0e-4)
+     = 1/2 * 0.021 * 9.64e-4
+     = 1.012e-5 kg*m^2  [INFERENCE]
+
+OWD = I / (m * r_ref^2)
+    = 1.012e-5 / (0.021 * (23.0e-3)^2)
+    = 1.012e-5 / (0.021 * 5.29e-4)
+    = 1.012e-5 / 1.111e-5
+    = 0.911  [INFERENCE]
+
+OWD = 0.911: highest attack AR OWD in the HMS format analyzed to date. Despite Wolf Crusher being the heaviest AR, Advance Attacker achieves a higher OWD because its metal frames — despite being on a lighter AR body — have a larger effective r_outer (~30 mm vs ~30 mm Wolf Crusher, but Advance Attacker distributes more mass at the very tip of each frame rather than in curved arc transitions).
+
+**HMS AR OWD ranking (all analyzed):**
+
+| AR | Mass (g) | OWD | Role |
+|----|----------|-----|------|
+| Wolf Crusher | ~20 | 0.874 | Stamina (curved face) |
+| Advance Attacker | ~21 | 0.911 [INFERENCE] | Attack (Upper Mode) |
+| Jiraiya Blade | ~22 | 0.775 [INFERENCE] | Attack (rotational smash) |
+| Advance Survivor | ~18 | 0.765 [INFERENCE] | Spin-steal (circular) |
+| Metal Attacker | ~14 | 0.540 [INFERENCE] | Attack (standard) |
+
+[All OWD values INFERENCE]
+
+**Mode gimmick — Upper Mode vs Force Smash Mode:**
+
+```
+Side view — Advance Attacker Metal Frame (single wing, C3 x3):
+
+Upper Mode (recommended):
+  direction of spin →
+  ┌──────────────────┐  ← metal frame, r_tip ~30 mm
+  │    upper edge    │   angled ~15-25 deg upward from horizontal [INFERENCE]
+  │    (leading)     │
+  └──────────────────┘  ← lower edge
+            │
+            ABS root (r ~8 mm)
+
+  Contact normal: has both lateral (smash) and upward (upper) components.
+  Lateral: cos(phi) * F_impact   → ring-out force
+  Upward:  sin(phi) * F_impact   → tipping/destabilization force
+
+Force Smash Mode (flip frame 180 deg):
+  direction of spin →
+  ┌──────────────────┐  ← same metal frame, now lower edge leads
+  │    lower edge    │   contact angle is more horizontal
+  │    (leading)     │
+  └──────────────────┘
+  Contact normal: predominantly lateral, reduced upper component.
+  Higher raw horizontal smash fraction; less tipping action.
+  Niche: against opponents with very low CoM (hard to upper-cut).
+```
+
+**Why Force Smash Mode is niche:** Upper Mode's angled attack delivers both ring-out (lateral) and destabilization (vertical tipping) per hit. Most opponents are destabilized by the upper component before they accumulate enough angular momentum to absorb the hits — this is a multiplicative effect. Force Smash Mode trades the destabilization component for marginal lateral smash increase. Against opponents with very low CoM (flat, wide assemblies where the upper-cut targets only the AR rim), Force Smash Mode avoids wasted vertical force; this is the narrow niche. Default: always Upper Mode.
+
+**RC compatibility breadth:** User assessment: "just like the aforementioned ARs [Circle Upper, Samurai Upper], make a variety of RCs beyond GFC and GFCUV viable due to its strength alone." This is the defining property of a "Big Three" AR: the AR's own contact geometry is strong enough that even lower-friction RCs (Metal Flat Core, Metal Change Core) can land meaningful attacks. The AR carries the RC rather than the RC carrying the AR.
+
+**Best combos:**
+- Advance Attacker (Either Spin) / CWD Defense Ring (Metal CWD, RBA2) / GFC (Ultimate Mode) — peak performance
+- Advance Attacker (Either Spin) / Circle Wide / GFC (Upper Mode) — accessible alternative
+- Advance Attacker (Either Spin) / Circle Heavy / Metal Flat Core — stock circle alternative
+- Advance Attacker (Either Spin) / CWD Defense Ring / Metal Flat Core — viable non-rubber setup
+
+---
+
+## CASE XXXX — MA-12 Advance Striker: Circle Heavy WD (cross-reference)
+
+**Part:** Weight Disk, Circle Heavy
+**Assembly:** MA-12 Advance Striker (Takara HMS, Late Spring 2004)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Heavy (~16 g) for full I, OWD, and competitive role analysis.
+
+In Advance Striker stock, Circle Heavy is the correct WD pairing for the attack role: its compact outer radius exposes Advance Attacker's metal frame tips fully (no WD rim overlap occluding contact geometry), and its concentrated mass at r_outer ~20 mm keeps the assembly mass forward of the AR rather than competing with it radially. Circle Heavy contributes I ~3.59e-6 kg*m^2 [INFERENCE] to an assembly dominated by I_AA ~1.012e-5.
+
+Note from user: "Circle Heavy is a fine alternative for Defense Ring" — meaning CWD Defense Ring is preferred when available, but Circle Heavy in stock is not a meaningful downgrade for attack builds.
+
+---
+
+## CASE XXXX — MA-12 Advance Striker: Metal Flat Core RC (~3 g, metal flat tip, flower-pattern capable, premier non-rubber attack RC)
+
+**Part:** Running Core, Metal Flat Core
+**Assembly:** MA-12 Advance Striker (Takara HMS, Late Spring 2004)
+**Weight:** ~3 g [FACT: confirmed by user]
+**Material:** Green ABS outer body; metal flat tip (silver) [FACT: observed from photos]
+**Tip geometry:** Metal flat disc, r_tip ~3.5 mm (flat, wider than metal sharp) [INFERENCE]
+**mu_metal_flat ~0.20–0.30** (metal-on-ABS; harder than rubber, intermediate between rubber and metal sharp) [INFERENCE]
+**Height:** Slightly taller than GFC and GFCUV [FACT: user confirmed]
+**Wear:** Does not wear down like rubber — consistent performance over time [FACT: user confirmed]
+
+**Thesis:** Metal Flat Core is the premier non-rubber Attack Running Core in HMS; where GFC and GFCUV rely on high-μ rubber contact (μ ~0.75–0.95) to generate a reliable flower pattern trajectory, Metal Flat Core achieves a functional — if less consistent — flower pattern via its wider metal flat tip (r_tip ~3.5 mm vs GFC's ~3 mm rubber dome); the flat metal tip produces the same precession-outward tendency as any flat-tipped RC (the bey's gyroscopic precession on a flat tip causes outward drift under spin, creating the petal orbit), but the lower μ metal surface means the pattern breaks down faster under perturbation and requires a stronger AR to compensate — exactly what Advance Attacker, Circle Upper, and Samurai Upper provide; crucially, Metal Flat Core does not degrade: rubber RCs lose grip as the rubber wears flat or hardens with age, while Metal Flat Core's steel tip maintains the same μ and r_tip over the entire lifespan of the part, providing consistent results match after match, tournament after tournament.
+
+**Friction torque (Advance Striker stock assembly, ~41 g):**
+
+tau_MFC = mu * m_assembly * g * r_tip
+        = 0.25 * 0.041 * 9.81 * 3.5e-3
+        = 3.517e-4 N*m  [INFERENCE]
+
+**Spin time:**
+
+I_total = I_AA + I_CH + I_RC
+        = 1.012e-5 + 3.59e-6 + 0.08e-6
+        = 1.460e-5 kg*m^2  [INFERENCE]
+
+L0     = 1.460e-5 * 620 = 9.052e-3 N*m*s
+
+t_spin = 9.052e-3 / 3.517e-4 ~25.7 s  [INFERENCE]
+
+~25.7 s of theoretical spin time — significantly less than Bearing Core (~505 s) or even GFC (~3.3 s...) wait: GFC t_spin was ~3.3 s for Dragoon MS at 30 g. For Advance Striker at 41 g, tau_GFC = 0.75 * 0.041 * 9.81 * 3.0e-3 = 9.04e-4 N*m, t_spin = 9.052e-3 / 9.04e-4 ~10.0 s [INFERENCE]. Metal Flat Core (~25.7 s) actually has ~2.6x longer theoretical spin time than GFC in this assembly because metal's lower μ outweighs the slightly wider tip radius. This is consistent with attack-type behavior: Metal Flat Core spins long enough to land meaningful hits while maintaining more aggressive floor grip than a sharp tip.
+
+**Flower pattern physics (metal flat tip):**
+
+A flat tip generates outward precession drift because: with a flat contact surface, the gyroscopic restoring torque (which keeps the bey upright) is reduced compared to a sharp tip centered on the spin axis. The spin axis tilts slightly under precession, and the flat tip slides outward. At higher μ (rubber), this drift is stronger and self-corrects into a tight flower orbit (rubber grip snaps the tip back). At lower μ (metal), the drift is slower and less self-correcting — the orbit is wider, less controlled, and breaks down under perturbation. On a strong attack AR, "breaking pattern" is acceptable because even a non-flower approach trajectory delivers high-impact collisions; the pattern establishes early momentum advantage, and even a degraded orbit continues to press the opponent against the wall.
+
+**Comparison to MCC (Metal Change Core):**
+
+Both MCC and MFC are non-rubber attack RCs. User assessment: MFC is "more aggressive" than MCC. MCC's change mechanism (retractable tip on impact) reduces the effective tip contact during hits, briefly lowering τ and allowing the bey to slide past rather than absorb the full recoil. MFC lacks this mechanism — the fixed flat metal tip transmits full impact, which means more recoil per hit but also more consistent forward aggression. On "The Big Three" ARs, the stronger AR geometry absorbs MFC's higher recoil more effectively than it does with weaker ARs.
+
+**MFC on non-elite ARs:** User caveat: MFC's shortcomings (lower μ, pattern breaks faster) are only "carried" by the three elite attack ARs. On weaker ARs (Metal Attacker, Jiraiya Blade in attack mode), MFC's reduced grip is not compensated by the AR's contact geometry — the combo underperforms compared to GFC on the same AR.
+
+**Best combos:**
+- Samurai Upper (Right Spin) / CWD Defense Ring (Metal CWD) / Metal Flat Core — best MFC combo overall
+- Advance Attacker (Either Spin) / CWD Defense Ring (Metal CWD) / Metal Flat Core — equally viable
+- Circle Upper / CWD Defense Ring / Metal Flat Core — third option
+- Advance Attacker / Circle Heavy / Metal Flat Core — accessible (no CWD required); stock Advance Striker is this combo
+
+---
+
+## CASE XXXX — MA-12 Advance Striker: Full Assembly (~41 g, highest L0 of any HMS starter, "Big Three" AR stock debut)
+
+**Bey:** MA-12 Advance Striker
+**Parts:** BP Small Type (~1 g) + Advance Attacker AR (~21 g) + Circle Heavy WD (~16 g) + Metal Flat Core RC (~3 g)
+**Total mass:** ~41 g [INFERENCE: 1+21+16+3; verify with scale]
+**Type:** Attack [FACT]
+
+**Assembly I_total:**
+
+I_AR_AA  = 1.012e-5 kg*m^2  (Advance Attacker) [INFERENCE]
+I_WD_CH  = 3.590e-6 kg*m^2  (Circle Heavy) [INFERENCE]
+I_RC_MFC ~0.080e-6 kg*m^2  (Metal Flat Core hub) [INFERENCE]
+I_total  ~1.460e-5 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch (omega_0 = 620 rad/s):**
+
+L0 = 1.460e-5 * 620 = 9.052e-3 N*m*s ~9.05 mN*m*s  [INFERENCE]
+
+L0 = 9.05 mN*m*s is the highest angular momentum of any HMS starter assembly analyzed, exceeding Wolborg MS (8.4–8.9 mN*m*s). The combination of the heaviest attack AR (~21 g, r_outer ~30 mm) with Circle Heavy provides maximum L0 while the compact WD preserves the AR's contact geometry clearance.
+
+**HMS starter L0 comparison:**
+
+| Assembly | Mass (g) | I_total (kg*m^2) | L0 (mN*m*s) | RC role |
+|----------|----------|-----------------|-------------|---------|
+| Dragoon MS / GFC | ~30 | ~8.2e-6 | ~5.1 | Attack (rubber) |
+| Dragoon MSUV / GFCUV | ~30 | ~8.2e-6 | ~5.1 | Attack (rubber) |
+| Wolborg MS / Bearing Core | ~40 | ~1.36–1.44e-5 | ~8.4–8.9 | Stamina |
+| Jiraiya MS / BC2 mint | ~40 | ~1.24e-5 | ~7.66 | Defense/Stamina |
+| Advance Eterner / MSC | ~37 | ~1.16e-5 | ~7.17 | (nonfunctional) |
+| Advance Striker / MFC | ~41 | ~1.46e-5 | ~9.05 | Attack (metal flat) |
+
+[All INFERENCE except mass values]
+
+**Competitive assessment:** Advance Striker is the rarest of things in HMS and in Beyblade generally: a starter that is competitive out of the box. Metal Flat Core is a legitimate attack RC that generates a flower pattern on the elite attack ARs, and Advance Attacker is a Big Three AR. The stock combination is not optimal (CWD Defense Ring outperforms Circle Heavy as a WD, and GFC/GFCUV outperform MFC when available), but it wins matches against most combinations and requires no customization to be competitive. This distinguishes Advance Striker from every other HMS starter, where the stock RC is the primary bottleneck (MSC on Jiraiya MS, Spring Core variants, etc.).
+
+**Historical context:** Advance Striker's Late Spring 2004 release, alongside the concurrent development of the HMS competitive scene, introduced a publicly accessible competitive combo — anyone purchasing the starter had an immediately usable attack bey. This had implications for the grassroots HMS scene: new players could compete without needing to source Bearing Core (limited to RBA sets) or specific GFC variants, lowering the barrier to entry for attack-type play.
+
+**Best combos:**
+- Advance Attacker (Either Spin) / CWD Defense Ring (Metal CWD) / GFC (Ultimate Mode) — AR's peak
+- Advance Attacker (Either Spin) / Circle Wide / GFC (Upper Mode) — accessible best-combo without CWD
+- Advance Attacker (Either Spin) / Circle Heavy / Metal Flat Core — stock; competitive as-released
+- Advance Attacker (Either Spin) / CWD Defense Ring / Metal Flat Core — non-rubber peak combo
+
+```typescript
+function metalFlatCoreTipPhysics(
+  assemblyMassG: number,
+  iTotalKgm2: number,
+  omegaRads: number,
+  muMetal: number,
+  rTipMm: number
+): {
+  torqueNm: number;
+  tSpinS: number;
+  flowerPatternViable: boolean;
+  patternStability: string;
+} {
+  const tau  = muMetal * (assemblyMassG / 1000) * 9.81 * (rTipMm / 1000);
+  const L0   = iTotalKgm2 * omegaRads;
+  const tSpin = L0 / tau;
+  // Flower pattern requires flat tip + sufficient mu + strong AR to absorb recoil
+  const flowerViable = muMetal >= 0.20 && rTipMm >= 3.0;
+  const stability = muMetal >= 0.60 ? "high" : muMetal >= 0.30 ? "moderate" : "low (breaks fast)";
+  return { torqueNm: tau, tSpinS: tSpin, flowerPatternViable: flowerViable, patternStability: stability };
+}
+// metalFlatCoreTipPhysics(41, 1.460e-5, 620, 0.25, 3.5)
+//   -> { tau:3.52e-4, tSpin:25.7s, flowerViable:true, stability:"low (breaks fast)" }
+// metalFlatCoreTipPhysics(41, 1.460e-5, 620, 0.80, 3.0)  // GFC comparison
+//   -> { tau:9.65e-4, tSpin:9.4s, flowerViable:true, stability:"high" }
+// metalFlatCoreTipPhysics(30, 8.2e-6,  620, 0.25, 3.5)  // MFC on lighter assembly
+//   -> { tau:2.57e-4, tSpin:19.8s, flowerViable:true, stability:"low (breaks fast)" }
+
+function advanceAttackerUpperModeForce(
+  omegaRads: number,
+  rOuterMm: number,
+  contactAngleDeg: number,
+  upperAngleDeg: number
+): {
+  vTipMs: number;
+  smashFraction: number;
+  upperFraction: number;
+  recoilFraction: number;
+} {
+  const v     = omegaRads * (rOuterMm / 1000);
+  const phi   = (contactAngleDeg * Math.PI) / 180;
+  const theta = (upperAngleDeg   * Math.PI) / 180;
+  // Contact normal has both lateral (smash/recoil) and vertical (upper) components
+  return {
+    vTipMs:        v,
+    smashFraction:  Math.cos(phi) * Math.cos(theta),
+    upperFraction:  Math.sin(theta),
+    recoilFraction: Math.cos(phi) * Math.cos(theta)  // reaction on self
+  };
+}
+// advanceAttackerUpperModeForce(620, 30, 10, 20)
+//   -> { v:18.6 m/s, smash:0.924, upper:0.342, recoil:0.924 }
+// advanceAttackerUpperModeForce(620, 30, 10, 0)   // Force Smash Mode (theta=0)
+//   -> { v:18.6 m/s, smash:0.985, upper:0.000, recoil:0.985 }
+```
+
+---
+
+## CASE XXXX — MA-11 Advance Guardian: Bit Protector (Small Type, note on production variation)
+
+**Part:** Bit Protector, Small Type (initial release)
+**Assembly:** MA-11 Advance Guardian (Takara HMS, Spring 2004)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP on initial release (green). Same production variation caveat as Advance Eterner and Advance Striker: BP Size Type is not guaranteed consistent across re-releases. Verify per specimen.
+
+**Releases of Advance Guardian:**
+- Initial: MA-11 Starter, Spring 2004 (Green) [FACT]
+- Hasbro Advance Guardian Starter (Green) [FACT]
+- Random Booster ACT 4 (Dark Green, Light Brown) [FACT]
+
+No performance role.
+
+---
+
+## CASE XXXX — MA-11 Advance Guardian: Advance Defenser AR (~18 g, C3 metal roller contacts, high recoil, wall-defense ceiling)
+
+**Part:** Attack Ring, Advance Defenser
+**Assembly:** MA-11 Advance Guardian (Takara HMS, Spring 2004)
+**Weight:** ~18 g [FACT: confirmed by user]
+**Material:** Green ABS inner ring + die-cast zinc alloy contact sections + metal roller elements at contact points [FACT: observed from photos]
+**Symmetry:** C3 — 3 contact sections at 120 deg spacing [FACT: observed from photos]
+**Design inspiration:** Roller Defenser (Plastics era) — rolling contact mechanism at primary impact points [FACT: user confirmed]
+**r_inner ~7 mm, r_outer ~26 mm, r_ref = 23 mm** [INFERENCE: compact design, smaller r_outer than attack ARs]
+
+**Thesis:** Advance Defenser is a C3-symmetry HMS AR with metal roller elements at each primary contact point, intended to reduce smash impact via rolling contact rather than direct face-on-face transmission; the roller mechanism allows the metal contact element to rotate about its own axis when struck, converting part of the lateral impact impulse into axial roller spin rather than full linear recoil — analogous to Plastics-era Roller Defenser's design philosophy; however, the mechanism fails to deliver competitive defense because: (1) the rollers are metal, not rubber-coated, meaning rolling resistance is near-zero (mu_rolling_metal ~0.005–0.015) and almost none of the incoming kinetic energy is absorbed — it is simply redirected, not damped; (2) at ~18 g the AR is too light to act as a wall-style defense mass (Metal Ape, the reference wall-defense AR, achieves this role with higher mass and appropriate geometry); (3) the recoil in both spin directions remains "fairly high" — the roller deflects but does not eliminate the reaction force; the practical ceiling for Advance Defenser is a CWD-mediated wall-defense combo where the wide CWD makes most contact, reducing the number of direct AR-level hits the defenser must absorb.
+
+**Moment of inertia:**
+
+I_AD = 1/2 * m * (r_i^2 + r_o^2)
+     = 1/2 * 0.018 * ((7.0e-3)^2 + (26.0e-3)^2)
+     = 1/2 * 0.018 * (4.9e-5 + 6.76e-4)
+     = 1/2 * 0.018 * 7.25e-4
+     = 6.525e-6 kg*m^2  [INFERENCE]
+
+OWD = I / (m * r_ref^2)
+    = 6.525e-6 / (0.018 * (23.0e-3)^2)
+    = 6.525e-6 / 9.522e-6
+    = 0.685  [INFERENCE]
+
+OWD = 0.685. Moderate — below Advance Attacker (0.911) and Advance Survivor (0.765), above Metal Attacker (0.540). The compact design (r_outer ~26 mm) limits absolute I despite the all-metal contact sections.
+
+**Roller contact mechanism physics:**
+
+```
+Side view — single roller contact point (3x at 120 deg):
+
+  direction of spin →
+       ┌──────────────────┐
+       │  metal wing (L)  │         ← die-cast metal
+       ╠═══════╦══════════╣
+       │       ║ roller   ║  ← cylindrical metal roller
+       │ ABS   ║ (rotates ║    at r_outer contact face
+       │ ring  ║ on axis) ║
+       ╠═══════╩══════════╣
+       │  metal wing (R)  │
+       └──────────────────┘
+
+  On impact by attacker:
+  F_impact (lateral) → roller spins on its axis
+  Energy absorbed by rolling resistance: E_roll = F * d * mu_rolling_metal
+                                                 ~F * d * 0.010  (very small)
+  Remaining reaction force transmitted to bey: ~0.99 * F_impact (still high recoil)
+```
+
+The roller reduces sliding friction at the contact point but barely absorbs energy. The high recoil remains because rolling contact is near-elastic — the force transmission coefficient is almost 1.0. Rubber rollers (like in some Plastics-era designs) would absorb significantly more energy via rubber deformation, but metal-on-metal rolling is effectively conservative.
+
+**CWD mitigation strategy:** With a wide CWD (CWD God Ring, r_outer_CWD ~34–36 mm), the CWD rim makes most contact before the AR's metal roller protrusions engage. The CWD's smooth outer face deflects incoming attacks with lower recoil than the AR's roller sections. This reduces (but does not eliminate) the AR's recoil problem. The strategy: use the CWD as a "bumper" to shield the problematic AR geometry. Effective enough to produce a "not particularly bad" defense combo relative to other weak-defense ARs, but not competitive against Metal Ape-tier wall defense.
+
+**Best combos:**
+- Advance Defenser / CWD God Ring (Metal CWD, RBA2) / Bearing Core 2 — best wall-defense platform; CWD does most of the deflecting
+- Advance Defenser / CWD Defense Ring (Metal CWD, RBA2) / Bearing Core 2 — alternate CWD; similar function
+- (Attack setups not recommended — high recoil and lack of KO power disqualify both spin directions for competitive attack)
+
+---
+
+## CASE XXXX — MA-11 Advance Guardian: Circle Heavy WD (cross-reference)
+
+**Part:** Weight Disk, Circle Heavy
+**Assembly:** MA-11 Advance Guardian (Takara HMS, Spring 2004)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Heavy (~16 g) for full analysis.
+
+In stock Advance Guardian configuration, Circle Heavy pairs with Advance Defenser and Grip Sharp Core. It contributes I ~3.59e-6 kg*m^2 [INFERENCE] to the assembly. Note: for the best defense combo, a wide CWD (CWD God Ring) replaces Circle Heavy entirely — the CWD adds mass at a larger radius while also serving the contact-deflection function.
+
+---
+
+## CASE XXXX — MA-11 Advance Guardian: Grip Sharp Core RC (~3 g, rubber sharp tip, insufficient tip radius, dual-spin vulnerability)
+
+**Part:** Running Core, Grip Sharp Core
+**Assembly:** MA-11 Advance Guardian (Takara HMS, Spring 2004)
+**Weight:** ~3 g [FACT: confirmed by user]
+**Material:** ABS outer body (green); rubber sharp tip (pink/salmon) [FACT: observed from photos]
+**Tip geometry:** Rubber sharp — very small pointed tip, r_tip ~0.8–1.0 mm [INFERENCE: "far too pointed to get adequate grip" confirms minimal contact radius]
+**mu_rubber_sharp ~0.40–0.55** (rubber material but near-zero deformation contact = limited effective grip) [INFERENCE]
+**Reference comparison:** MFB RS (Rubber Sharp) Performance Tip — user identifies RS as what this type of RC "is capable of" done correctly; HMS GSC is described as "not an accurate representation" of that capability [FACT: user assessment]
+
+**Thesis:** Grip Sharp Core is a rubber-tipped RC that fails to deliver competitive defense behavior because the rubber tip is too geometrically pointed; rubber grip effectiveness scales with contact deformation — a wider rubber dome (GFC, GFCUV, Bearing Core 2 worn) deforms laterally on contact, increasing real contact area and generating high friction torque; a pointed rubber tip barely deforms, maintaining a tiny contact area (r_tip ~1 mm) that produces a friction torque (tau = mu * m * g * r_tip) far too low to resist lateral displacement; the bey is easily knocked around by any attack type because the tip's lateral restoring force (F_restore = tau / r_body, effective resistance to sideways push) is approximately 5–8x lower than GFC in the same assembly; additionally, HMS's universal dual-spin capability means attack types can always match spin direction, denying the defense-type any spin-direction advantage — if GSC were a better grip RC, attack types could still out-spin it by launching same-direction, something impossible in Plastics-era where AR spin lock prevented it.
+
+**Friction torque (~38 g assembly):**
+
+tau_GSC = mu * m_assembly * g * r_tip
+        = 0.45 * 0.038 * 9.81 * 1.0e-3
+        = 1.677e-4 N*m  [INFERENCE]
+
+**Comparison to GFC (30 g assembly):**
+
+tau_GFC  = 0.75 * 0.030 * 9.81 * 3.0e-3 = 6.62e-4 N*m
+tau_ratio = tau_GFC / tau_GSC = 6.62e-4 / 1.677e-4 = 3.95x
+
+GFC generates ~4x the friction torque of GSC despite being a smaller assembly. This is almost entirely due to r_tip: GFC r_tip ~3 mm vs GSC r_tip ~1 mm (3x difference) compounded by mu_GFC ~0.75 vs mu_GSC ~0.45 (~1.67x difference). Product: ~5x torque ratio. The wider rubber dome is what makes GFC a competitive defense/attack RC; the pointed rubber of GSC provides neither the attack trajectory (too small for flower orbit) nor the defense resistance (too little lateral restoring force).
+
+**Theoretical spin time (~38 g assembly, I_total ~1.019e-5 kg*m^2):**
+
+L0     = 1.019e-5 * 620 = 6.316e-3 N*m*s
+t_spin = 6.316e-3 / 1.677e-4 ~37.7 s  [INFERENCE]
+
+Theoretical spin time is decent (~37.7 s, better than GFC's ~3–10 s range) because the low tau from the sharp tip conserves angular momentum — but this is illusory in practice: the bey is knocked out of the stadium before spin time matters, because the very low tau that extends theoretical spin time is also what makes the bey unable to resist lateral displacement. A sharp-tip RC exists in a performance paradox: long spin time only if never struck meaningfully.
+
+**Dual-spin vulnerability (HMS format specific):**
+
+In HMS, every assembly can launch CW or CCW. Unlike Plastics era where AR geometry locked spin direction (one-way blade shapes prevented effective reverse-spin attack), HMS ARs are either-spin compatible. Consequence for defense-type RCs: an attack type using a rubber flat RC (GFC, GFCUV) can always launch same-spin as the defense bey. Same-spin contact: friction force assists the attacker's spin momentum transfer (or at minimum does not spin-steal), meaning the defense bey loses spin over time from attrition even if not knocked out. GSC's already-weak lateral restoring force is then compounded by same-spin energy drain → the defense bey cannot outlast aggressive attack types even if it survives the initial hits.
+
+**Best potential combos (despite limitations):**
+- Circle Upper (Either Mold, Same Spin) / CWD Free Defense Ring (Metal CWD) / Grip Sharp Core — best GSC combo; AR does the work
+- Circle Upper / Circle Wide / Grip Sharp Core — accessible alternative without CWD
+
+---
+
+## CASE XXXX — MA-11 Advance Guardian: Full Assembly (~38 g, wall-defense ceiling limited by AR mass and RC tip radius)
+
+**Bey:** MA-11 Advance Guardian
+**Parts:** BP Small Type (~1 g) + Advance Defenser AR (~18 g) + Circle Heavy WD (~16 g) + Grip Sharp Core RC (~3 g)
+**Total mass:** ~38 g [INFERENCE: 1+18+16+3; verify with scale]
+**Type:** Defense (nominal); limited competitive viability [FACT: user assessment]
+
+**Assembly I_total:**
+
+I_AR_AD  = 6.525e-6 kg*m^2  (Advance Defenser) [INFERENCE]
+I_WD_CH  = 3.590e-6 kg*m^2  (Circle Heavy) [INFERENCE]
+I_RC_GSC ~0.070e-6 kg*m^2  (Grip Sharp Core hub) [INFERENCE]
+I_total  ~1.019e-5 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch:**
+
+L0 = 1.019e-5 * 620 = 6.316e-3 N*m*s ~6.32 mN*m*s  [INFERENCE]
+
+**HMS starter L0 in context:**
+
+| Assembly | L0 (mN*m*s) | Primary role |
+|----------|-------------|-------------|
+| Advance Striker / MFC | ~9.05 | Attack |
+| Wolborg MS / Bearing Core | ~8.4–8.9 | Stamina |
+| Jiraiya MS / BC2 mint | ~7.66 | Defense/Stamina |
+| Advance Guardian / GSC | ~6.32 | Defense (limited) |
+| Dragoon MS / GFC | ~5.1 | Attack (rubber) |
+
+[All INFERENCE]
+
+**Competitive assessment:** Advance Guardian stock is the weakest of the HMS starter assemblies analyzed. Advance Defenser's roller-contact mechanism does not effectively reduce recoil, and at ~18 g lacks the mass for wall-style defense; Grip Sharp Core's pointed rubber tip generates insufficient lateral restoring force to resist knock-out from attack types. The stock combo is outperformed at its intended defense role by Bearing Core 2 (worn) on any heavier AR, and at its ceiling CWD combo it still falls below Metal Ape-tier wall defense.
+
+**What the CWD God Ring combo achieves (best possible):**
+
+AR: Advance Defenser | CWD: CWD God Ring (Metal CWD) | RC: Bearing Core 2
+
+- CWD God Ring outer rim (r_outer_CWD ~34–36 mm) makes primary contact, shielding Advance Defenser's roller protrusions
+- CWD's smooth or lightly-profiled metal outer face deflects incoming attacks with lower recoil than direct AR contact
+- Bearing Core 2 (worn) provides slow-wander defense mobility (r_tip_worn ~5 mm, mu ~0.82)
+- Survivability is "just high enough to out-spin rubber-based RCs" in some scenarios [FACT: user assessment]
+- Cannot match Metal Ape (the reference wall-defense AR) because Metal Ape provides both the CWD-shielding benefit AND heavier AR mass for added inertia resistance
+
+**Best combos:**
+- Advance Defenser / CWD God Ring (Metal CWD) / Bearing Core 2 (worn) — best defense; CWD does most deflecting
+- Advance Defenser / CWD Defense Ring (Metal CWD) / Bearing Core 2 (worn) — alternate CWD defense
+- Circle Upper (Either Mold) / CWD Free Defense Ring (Metal CWD) / Grip Sharp Core — only use for GSC: AR carries the combo
+
+```typescript
+function gripSharpCoreLateralResistance(
+  assemblyMassG: number,
+  rTipMm: number,
+  muRubber: number,
+  rBodyMm: number
+): {
+  torqueNm: number;
+  lateralRestoreN: number;
+  knockoutResistanceRating: string;
+} {
+  const tau         = muRubber * (assemblyMassG / 1000) * 9.81 * (rTipMm / 1000);
+  const F_restore   = tau / (rBodyMm / 1000);  // lateral force at bey rim resisting push
+  const rating      = F_restore > 0.5 ? "high" : F_restore > 0.2 ? "moderate" : "low";
+  return { torqueNm: tau, lateralRestoreN: F_restore, knockoutResistanceRating: rating };
+}
+// gripSharpCoreLateralResistance(38, 1.0, 0.45, 26)
+//   -> { tau:1.677e-4, F_restore:0.0065 N, rating:"low" }  — GSC stock: very low resist
+// gripSharpCoreLateralResistance(38, 3.0, 0.75, 26)
+//   -> { tau:8.37e-4, F_restore:0.0322 N, rating:"low" }   — GFC equivalent: ~5x better
+// gripSharpCoreLateralResistance(38, 5.0, 0.82, 26)
+//   -> { tau:1.53e-3, F_restore:0.0588 N, rating:"moderate" }  — BC2 worn: defense-viable
+
+function rollerContactEnergyAbsorption(
+  fImpactN: number,
+  muRolling: number,
+  contactDistanceMm: number
+): { energyAbsorbedJ: number; recoilFraction: number } {
+  const E_absorbed = fImpactN * (contactDistanceMm / 1000) * muRolling;
+  // Remaining force fraction (near 1.0 for metal rollers)
+  const recoilFrac = 1 - (E_absorbed / (fImpactN * contactDistanceMm / 1000 + 1e-9));
+  return { energyAbsorbedJ: E_absorbed, recoilFraction: Math.min(recoilFrac, 1.0) };
+}
+// rollerContactEnergyAbsorption(10, 0.010, 5)  — metal roller: absorbs almost nothing
+//   -> { E_abs:5e-4 J, recoilFraction:~0.99 }
+// rollerContactEnergyAbsorption(10, 0.600, 5)  — rubber pad equivalent: significant absorption
+//   -> { E_abs:3.0e-2 J, recoilFraction:~0.40 }
+```
+
+---
+
+## CASE XXXX — MA-04 Death Gargoyle MS: Bit Protector (Small Type, note on production variation)
+
+**Part:** Bit Protector, Small Type (initial release)
+**Assembly:** MA-04 Death Gargoyle MS (Takara HMS Booster, Mid-Winter 2004)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP on initial Booster release (orange). Same production variation caveat as Advance series: BP Size Type not guaranteed across re-releases. Hasbro release sold as "Dark Effigy" starter — note name difference from Japanese release.
+
+**Releases of Death Gargoyle MS / Dark Effigy:**
+- Initial: MA-04 Booster, Mid-Winter 2004 (Orange) [FACT]
+- Hasbro "Dark Effigy" Starter (Orange) [FACT]
+- Random Booster ACT 2 (Red) [FACT]
+- Random Booster ACT 3 (Purple, Light Blue) [FACT]
+- SH-03/04 Chinese Exclusive "Zhuge Liang" / "Zhou Yu" (Light Blue, Orange) [FACT]
+
+No performance role.
+
+---
+
+## CASE XXXX — MA-04 Death Gargoyle MS: Circle Upper AR (~20.5 g representative, OWD > 1.0, two molds, multi-role dominance)
+
+**Part:** Attack Ring, Circle Upper
+**Assembly:** MA-04 Death Gargoyle MS (Takara HMS Booster, Mid-Winter 2004)
+**Weight:** ~20.5 g representative (Mold 1: mid-19g range; Mold 2: upper-20g range) [FACT: user confirmed; "classically considered 20g" but bimodal distribution]
+**Material:** Die-cast zinc alloy outer ring (near-complete circle) + ABS inner wing structure [FACT: observed from photos]
+**Symmetry:** C3 — 3 gaps in outer ring at 120 deg spacing [FACT: observed from photos]
+**Shared metal frame:** Same metal frame casting as Samurai Changer MS' Samurai Upper [FACT: user confirmed]
+**Spin compatibility:** Either spin; spin direction changes attack type composition [FACT: user confirmed]
+**Two molds:** Mold 1: metal frame 2.9 mm thick; Mold 2: metal frame 3.6 mm thick [FACT]
+**r_inner_ring ~22 mm, r_outer_ring ~30 mm, r_ref = 23 mm** [INFERENCE]
+
+**Thesis:** Circle Upper is the definitive HMS Attack Ring — "The Mack Daddy of HMS" and first inductee into "The Big Three" — whose near-complete metallic outer ring (zinc die-cast, ~290 degrees of continuous metal interrupted only by three small AR gaps) places virtually all of its mass in an annular band at r_inner ~22 mm to r_outer ~30 mm, producing an OWD of ~1.209 [INFERENCE], the first and only HMS AR analyzed to achieve OWD > 1.0; OWD exceeding unity means the AR's mass-weighted average squared radius exceeds r_ref^2 = (23 mm)^2, confirming that nearly all metal mass sits outside or at the boundary of r_ref — explaining simultaneously why Circle Upper excels as an Attack ring (high I per kg → more angular momentum per mass unit than any other AR), as a Stamina AR (continuous metal outer rim provides spin-steal surface and high LAD, functioning like a built-in mini-WD), and as a Defense AR (outer ring mass provides inertia resistance to displacement while smooth portions of the ring deflect rather than absorb smash attack); the gimmick of spin-direction-dependent attack type is structurally built into the three-gap geometry: in right-spin (CW), the leading edge of each gap presents an angled upper-attack ramp (ABS inner wing tilted upward), producing Upper Smash, Upper Attack, and Smash Attack in combination depending on height and angle of contact; in left-spin (CCW), the metal ring's trailing-edge tangential face contacts opponents first, delivering predominantly flat horizontal Smash Attack — "monstrous" in user assessment — with no upper component.
+
+**Moment of inertia (representative ~20.5 g, ring model):**
+
+m_ring ~18 g (metal outer ring), m_ABS ~2.5 g (inner wing structure) [INFERENCE]
+
+I_ring = 1/2 * m_ring * (r_i_ring^2 + r_o_ring^2)
+       = 1/2 * 0.018 * ((22.0e-3)^2 + (30.0e-3)^2)
+       = 1/2 * 0.018 * (4.84e-4 + 9.00e-4)
+       = 1/2 * 0.018 * 1.384e-3
+       = 1.246e-5 kg*m^2  [INFERENCE]
+
+I_ABS = 1/2 * 0.0025 * ((6.0e-3)^2 + (22.0e-3)^2)
+      = 1/2 * 0.0025 * (3.6e-5 + 4.84e-4)
+      = 6.5e-7 kg*m^2  [INFERENCE]
+
+I_CU = I_ring + I_ABS = 1.246e-5 + 6.5e-7 = 1.311e-5 kg*m^2  [INFERENCE]
+
+OWD = I / (m * r_ref^2)
+    = 1.311e-5 / (0.0205 * (23.0e-3)^2)
+    = 1.311e-5 / 1.084e-5
+    = 1.209  [INFERENCE]
+
+OWD = 1.209: first OWD exceeding 1.0 in HMS analysis. Physical interpretation: the effective distribution radius r_eff = sqrt(I/m) = sqrt(1.311e-5/0.0205) = 25.3 mm > r_ref = 23 mm. Most AR mass is concentrated at r ~26 mm (midpoint of ring: (22+30)/2 = 26 mm), which is 13% beyond r_ref.
+
+**Mold comparison:**
+
+| Mold | Frame thickness | Mass range | I_CU (est.) | OWD (est.) |
+|------|----------------|-----------|-------------|------------|
+| Mold 1 | 2.9 mm | ~mid-19g | ~1.24e-5 kg*m^2 | ~1.145 |
+| Mold 2 | 3.6 mm | ~upper-20g | ~1.31e-5 kg*m^2 | ~1.209 |
+
+[All INFERENCE; Mold 2 preferred for maximum I and OWD]
+
+Mold 2 is preferred: thicker metal frame = higher mass at large radius = higher I and OWD. In attack applications, Mold 2 delivers marginally more angular momentum per contact; in stamina/defense applications, the heavier outer ring provides more spin persistence and lateral resistance. Mold 2 is recommended in all roles.
+
+**Spin-direction attack type geometry:**
+
+```
+Top-down — Circle Upper (C3, one gap shown):
+
+Right-spin (CW):
+  direction of spin →
+      [metal ring]──────[GAP]──────[metal ring]
+                          ↑
+                   ABS upper-attack wing
+                   (angled upward ~10-20 deg)
+                   Leading edge: upper ramp face
+
+  Contact: upper ramp face → Upper Smash / Upper Attack / Smash Attack
+  Vertical component present → tipping/destabilization of opponent
+
+Left-spin (CCW):
+  direction of spin ←
+      [metal ring]──────[GAP]──────[metal ring]
+                          ↑
+                   ABS inner wing (now trailing edge)
+                   Leading contact: metal ring tangential face
+
+  Contact: near-perpendicular metal ring face → pure Smash Attack
+  No vertical component → maximum horizontal smash force
+  "Monstrous Smash Attack" — highest raw lateral force of the two directions
+```
+
+**Multi-role capability:**
+
+The outer ring serves three simultaneous functions:
+1. **Attack:** Metal frame provides hard contact at r_outer ~30 mm with high v_tip = 620 * 30e-3 = 18.6 m/s at launch
+2. **Stamina:** Smooth outer ring acts as spin-steal surface (same geometric principle as Circle Wide's metal rim for LAD); continuous contact arc per collision = high spin transfer; high I_CU = large angular momentum reservoir
+3. **Defense:** High mass at large radius (I_CU ~1.31e-5) resists displacement under lateral force; ring's curved/smooth sections deflect attacks tangentially (similar to circular AR deflection physics, but here with metal mass backing)
+
+"There isn't a combo it won't dramatically improve, regardless of win condition." — quantitatively supported: at OWD ~1.21, no other HMS AR approaches Circle Upper's mass efficiency at large radius, which benefits every competitive metric simultaneously.
+
+**Best combos:**
+- Circle Upper (Mold 2, Either Spin) / CWD God Ring (Metal CWD) / Bearing Core 2 (aggressive worn) — best overall combo; jack-of-all-trades master
+- Circle Upper (Mold 2, Right Spin) / CWD Defense Ring / GFCUV — peak attack; upper smash + flower pattern
+- Circle Upper (Mold 2, Left Spin) / Circle Wide / Bearing Core — stamina/defense (max smash deterrent)
+- Circle Upper (Either Mold, Either Spin) / Circle Heavy / Metal Change Core — stock Death Gargoyle MS; competitive out of box
+
+---
+
+## CASE XXXX — MA-04 Death Gargoyle MS: Circle Heavy WD (cross-reference)
+
+**Part:** Weight Disk, Circle Heavy
+**Assembly:** MA-04 Death Gargoyle MS (Takara HMS Booster, Mid-Winter 2004)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Heavy (~16 g) for full analysis.
+
+In stock Death Gargoyle MS, Circle Heavy pairs with Circle Upper and Metal Change Core. I ~3.59e-6 kg*m^2 [INFERENCE]. For best combos, CWD God Ring replaces Circle Heavy — the CWD's wide outer rim supplements Circle Upper's own perimeter mass and provides additional contact deflection.
+
+---
+
+## CASE XXXX — MA-04 Death Gargoyle MS: Metal Change Core RC (~3 g, spring-retract tip, variable behavior, Compact-style viability)
+
+**Part:** Running Core, Metal Change Core
+**Assembly:** MA-04 Death Gargoyle MS (Takara HMS Booster, Mid-Winter 2004)
+**Weight:** ~3 g [FACT: confirmed by user]
+**Material:** ABS outer body (orange/amber); spring mechanism; metal tip (silver) [FACT: observed from photos]
+**Tip geometry:** Metal flat/semi-flat tip, r_tip ~2.0–2.5 mm (extended state) [INFERENCE]
+**mu_metal_flat ~0.20–0.25** (metal-on-ABS, extended tip normal operation) [INFERENCE]
+**Change mechanism:** Spring-loaded tip retracts ~1–2 mm on heavy impact; ABS lower body briefly contacts floor; tip re-extends [FACT: established from Driger S Metal Change Base analogue; user confirms reference]
+**mu_ABS_retracted ~0.35–0.50** (ABS lower body contact during retraction event) [INFERENCE]
+
+**Thesis:** Metal Change Core's spring-loaded metal tip is the defining feature: in normal spinning operation the metal tip contacts the floor with low friction (mu ~0.22, flat metal) producing a moderately slow, slightly wandering trajectory; on heavy impact with the stadium wall or opponent, the spring compresses, the tip retracts 1–2 mm, and the wider ABS lower body briefly contacts the floor — instantly increasing friction and generating a sudden outward movement impulse (the "change" event); this impulse can read as an aggressive burst of movement, temporarily mimicking the flower pattern behavior of rubber RCs for one or two steps before the tip re-extends and behavior returns to docile; the result is a RC that is "capable of being aggressive, docile, or both in the span of a few seconds" — the unpredictability is a genuine mechanical property of the spring-retraction cycle, not a user technique dependent artifact; the spring retraction on impact also dissipates some incoming kinetic energy (spring stores energy during compression, releases as tip-extension velocity rather than full recoil back to the bey body), marginally reducing self-recoil on heavy hits.
+
+**Friction torque (Death Gargoyle MS assembly, ~40.5 g):**
+
+Normal operation (extended tip, r_tip ~2.5 mm, mu ~0.22):
+  tau_MCC_normal = 0.22 * 0.0405 * 9.81 * 2.5e-3 = 2.188e-4 N*m  [INFERENCE]
+
+Change event (ABS contact, r_effective ~6-8 mm, mu ~0.42):
+  tau_MCC_change = 0.42 * 0.0405 * 9.81 * 7.0e-3 = 1.167e-3 N*m  [INFERENCE]
+  (briefly ~5.3x normal torque during change event, duration ~0.05-0.1 s) [INFERENCE]
+
+**Spin time (normal extended operation):**
+
+L0    = I_total * omega_0 = 1.698e-5 * 620 = 1.053e-2 N*m*s
+t_spin = L0 / tau_MCC_normal = 1.053e-2 / 2.188e-4 ~48.1 s  [INFERENCE]
+
+~48s theoretical spin time (upper bound). Longer than MFC (~25.7 s) because MCC's smaller r_tip (2.5 mm vs MFC's 3.5 mm) reduces tau. In practice: the change events reduce effective spin time but the rest of the physics holds.
+
+**Self-KO prevention:** The user notes MCC "simply cannot mess up or self-KO in the same way you can with faster RCs." Physics reason: the normal-state low-friction metal tip produces a slow, near-stationary trajectory between change events. Without sustained high-mu floor contact (as in GFC/GFCUV), the bey does not accelerate toward the wall between contacts. A poorly-timed GFC launch can send the bey into a spiral that self-rings-out; MCC's default slow trajectory means even an imperfect launch settles back to near-center rather than accelerating to the wall.
+
+**MCC vs MFC:**
+
+| Metric | MCC | MFC |
+|--------|-----|-----|
+| r_tip (normal) | ~2.5 mm | ~3.5 mm |
+| mu (normal) | ~0.22 | ~0.25 |
+| tau_normal (40g assy) | ~2.19e-4 N*m | ~3.52e-4 N*m |
+| t_spin (40g assy) | ~48 s | ~26 s |
+| Flower pattern | Change-event only; brief | Continuous; consistent |
+| Pattern stability | Low (breaks immediately post-change) | Low (breaks over time) |
+| Self-KO risk | Very low | Moderate |
+| AR dependency | Moderate (strong AR needed for KOs) | High (Big Three AR required) |
+
+[All INFERENCE]
+
+MCC is more conservative than MFC: less consistent flower pattern, but lower self-KO risk. On Circle Upper specifically, the AR's strength compensates for MCC's lower trajectory aggression — change-event bursts land on opponents who have already been positioned by Circle Upper's prior contacts.
+
+**Compact-style combo (Metal Ape / CWD God Ring / MCC):**
+
+User highlights this as the premier MCC combo — NOT Circle Upper. "Compact-style" combo in HMS context: a bey that stays near center, generates consistent flower-orbit attacks, and has enough mass/friction to handle any matchup without specializing. Metal Ape provides the wall-defense AR mass; CWD God Ring provides wide-radius mass and contact deflection; MCC provides the variable trajectory. The combo attempts to Tornado Stall stamina opponents, flower-pattern attack opponents, and wall-out defense opponents — all from a single configuration.
+
+**Best combos:**
+- Metal Ape (Either Spin) / CWD God Ring (Metal CWD) / Metal Change Core — MCC peak combo; Compact-style
+- Circle Upper (Either Spin) / Circle Heavy / Metal Change Core — stock Death Gargoyle MS; competitive as-released
+- Circle Upper (Either Spin) / CWD God Ring / Metal Change Core — upgraded stock combo
+- Samurai Upper (Right Spin) / CWD Defense Ring / Metal Change Core — Big Three AR + MCC alternate
+
+---
+
+## CASE XXXX — MA-04 Death Gargoyle MS: Full Assembly (~40.5 g, highest L0 in HMS analysis, multi-role AR debut)
+
+**Bey:** MA-04 Death Gargoyle MS
+**Parts:** BP Small Type (~1 g) + Circle Upper AR (~20.5 g) + Circle Heavy WD (~16 g) + Metal Change Core RC (~3 g)
+**Total mass:** ~40.5 g [INFERENCE: 1+20.5+16+3; verify with scale; Mold 1 assembly ~39.3 g]
+**Type:** Attack (primary); Stamina / Defense capable via customization [FACT]
+
+**Assembly I_total (Mold 2, ~20.5 g Circle Upper):**
+
+I_AR_CU  = 1.311e-5 kg*m^2  (Circle Upper Mold 2) [INFERENCE]
+I_WD_CH  = 3.590e-6 kg*m^2  (Circle Heavy) [INFERENCE]
+I_RC_MCC ~0.080e-6 kg*m^2  (MCC hub) [INFERENCE]
+I_total  ~1.698e-5 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch:**
+
+L0 = 1.698e-5 * 620 = 1.053e-2 N*m*s ~10.53 mN*m*s  [INFERENCE]
+
+L0 = 10.53 mN*m*s is the highest angular momentum of any HMS assembly analyzed, exceeding Advance Striker (9.05), Wolborg MS (8.4-8.9), and all prior assemblies. Circle Upper's OWD > 1.0 is the single cause: an AR whose mass is more efficiently concentrated at large radius than any other part in the format.
+
+**Complete HMS starter and booster L0 table:**
+
+| Assembly | Mass (g) | I_total (kg*m^2) | L0 (mN*m*s) |
+|----------|----------|-----------------|-------------|
+| Death Gargoyle MS / MCC | ~40.5 | ~1.698e-5 | ~10.53 |
+| Advance Striker / MFC | ~41 | ~1.460e-5 | ~9.05 |
+| Wolborg MS / Bearing Core | ~40 | ~1.36-1.44e-5 | ~8.4-8.9 |
+| Jiraiya MS / BC2 mint | ~40 | ~1.24e-5 | ~7.66 |
+| Advance Guardian / GSC | ~38 | ~1.019e-5 | ~6.32 |
+| Dragoon MS / GFC | ~30 | ~8.2e-6 | ~5.1 |
+
+[All I_total and L0 values INFERENCE]
+
+**Competitive assessment:** Death Gargoyle MS / Circle Upper is the benchmark HMS booster. Circle Upper's multi-role capability means the stock combo (Circle Upper / Circle Heavy / MCC) is competitive as released — not as dramatically as Advance Striker (which benefits from MFC's consistent flower pattern), but functional across all matchup types. The best-possible combo (Circle Upper / CWD God Ring / BC2 aggressive worn) is considered by the user as "a jack of all trades that also decided it could master each trade," requiring only launch skill (Slide/Catapult/Banking techniques on BC2) to unlock. This is the highest ceiling available on any single HMS combo.
+
+**Mold 1 vs Mold 2 in competition:** Mold 2 is preferred in all roles. The 3.6 mm vs 2.9 mm frame thickness adds ~1–1.5 g to the metal ring, all at r_ring ~26 mm mean radius — the maximum possible location for I contribution. Mold 2 advantage in I: approximately +5–6% more I_CU vs Mold 1. In practice, this difference is noticeable in close stamina matchups and in the number of hits deliverable before spin decay.
+
+**Best combos:**
+- Circle Upper (Mold 2, Either Spin) / CWD God Ring (Metal CWD) / Bearing Core 2 (aggressive worn) — peak performance; multi-role
+- Circle Upper (Mold 2, Right Spin) / CWD Defense Ring / GFCUV — peak attack
+- Circle Upper (Mold 2, Left Spin) / Circle Wide / Bearing Core — stamina/defense (max smash deterrent)
+- Circle Upper (Either Spin) / Circle Heavy / Metal Change Core — stock; competitive
+
+```typescript
+function circleUpperOWD(
+  mRingG: number,
+  mAbsG: number,
+  rInnerRingMm: number,
+  rOuterRingMm: number,
+  rAbsHubMm: number,
+  rRefMm: number
+): { iRing: number; iAbs: number; iTotal: number; owd: number; rEff: number } {
+  const mR = mRingG / 1000;
+  const mA = mAbsG  / 1000;
+  const iRing = 0.5 * mR * ((rInnerRingMm/1000)**2 + (rOuterRingMm/1000)**2);
+  const iAbs  = 0.5 * mA * ((rAbsHubMm/1000)**2  + (rInnerRingMm/1000)**2);
+  const iTotal = iRing + iAbs;
+  const m = mR + mA;
+  const owd  = iTotal / (m * (rRefMm/1000)**2);
+  const rEff = Math.sqrt(iTotal / m) * 1000;  // in mm
+  return { iRing, iAbs, iTotal, owd, rEff };
+}
+// circleUpperOWD(18, 2.5, 22, 30, 6, 23)
+//   -> { iRing:1.246e-5, iAbs:6.5e-7, iTotal:1.311e-5, owd:1.209, rEff:25.3mm }
+// circleUpperOWD(16.5, 2.5, 22, 30, 6, 23)  // Mold 1 lighter ring
+//   -> { owd:~1.142, rEff:~24.8mm }
+// circleUpperOWD(18, 2.5, 22, 32, 6, 23)    // hypothetical wider ring
+//   -> { owd:~1.356, rEff:~26.9mm }
+
+function metalChangeCoreEvent(
+  assemblyMassG: number,
+  springDeltaMm: number,
+  kNpm: number,
+  rTipNormalMm: number,
+  rAbsEffMm: number,
+  muMetal: number,
+  muAbs: number
+): {
+  springEnergyJ:    number;
+  tauNormal:        number;
+  tauChange:        number;
+  tauRatio:         number;
+  recoilReduction:  number;
+} {
+  const m = assemblyMassG / 1000;
+  const E_spring = 0.5 * kNpm * (springDeltaMm / 1000)**2;
+  const tNorm  = muMetal * m * 9.81 * (rTipNormalMm / 1000);
+  const tChg   = muAbs   * m * 9.81 * (rAbsEffMm   / 1000);
+  const recoilRed = E_spring / (0.5 * m * (10)**2);  // fraction of 10 N*m/s impact absorbed
+  return {
+    springEnergyJ:   E_spring,
+    tauNormal:       tNorm,
+    tauChange:       tChg,
+    tauRatio:        tChg / tNorm,
+    recoilReduction: recoilRed
+  };
+}
+// metalChangeCoreEvent(40.5, 1.5, 300, 2.5, 7.0, 0.22, 0.42)
+//   -> { Espring:3.375e-4J, tauNorm:2.19e-4, tauChange:1.17e-3, ratio:5.3x, recoilRed:~0.068% }
+```
+
+---
+
+## CASE XXXX — MA-09 Advancer Averazer: Bit Protector (Small Type, note on production variation)
+
+**Part:** Bit Protector, Small Type (initial release)
+**Assembly:** MA-09 Advancer Averazer (Takara HMS Starter, Spring 2004)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP on initial release (blue). Same production variation caveat as Advance series. Note: Hasbro release is named "Advance Averager" (different from Takara name "Advancer Averazer").
+
+**Releases of Advancer Averazer / Advance Averager:**
+- Initial: MA-09 Starter, Spring 2004 (Blue) [FACT]
+- Hasbro "Advance Averager" Starter (Blue) [FACT]
+- MA-10 Custom Try Set (White) [FACT]
+- Random Booster ACT 3 (Purple, Light Blue) [FACT]
+- SH-05/06 Chinese Exclusive "Zhao Yun" / "Guan Yu" (Dark Blue, Red) [FACT]
+
+No performance role. MA-10 Custom Try Set inclusion suggests Advance Balancer/MSF Core were considered customization building blocks — noteworthy for a weaker starter.
+
+---
+
+## CASE XXXX — MA-09 Advancer Averazer: Advance Balancer AR (~15 g, gear-tooth outer ring, Dragon Saucer revision, opposite-spin only viable)
+
+**Part:** Attack Ring, Advance Balancer
+**Assembly:** MA-09 Advancer Averazer (Takara HMS Starter, Spring 2004)
+**Weight:** ~15 g [FACT: confirmed by user]
+**Material:** ABS inner ring + wing guard (white/cream) + die-cast metal outer gear-tooth ring (grey) [FACT: observed from photos]
+**Symmetry:** C3 — 3 ABS wing protrusions at 120 deg spacing [FACT: observed from photos]
+**Design lineage:** Updated Dragon Saucer — "slightly updated version" with different and larger removable plastic guard [FACT: user confirmed]
+**Spin compatibility:** Either spin; opposite spin only viable competitively [FACT: user confirmed]
+**r_inner ~6 mm, r_outer ~28 mm (gear tooth tips), r_ref = 23 mm** [INFERENCE]
+
+**Thesis:** Advance Balancer is a revised Dragon Saucer with two structural changes — a larger removable ABS plastic guard (the 3-wing inner ring that extends to make opponent contact) and a fix to Dragon Saucer's rattling issue (improved fitment stability); the defining visual feature is the continuous gear-tooth outer metal ring whose sawtooth perimeter encircles the entire AR circumference; despite these updates, "it still performs just as poorly in all matchups" (user assessment) because the fundamental geometric problem of Dragon Saucer remains: the circular/near-circular outer profile presents a near-radial contact normal at each tooth tip, directing almost all impact force back toward the bey's own axis (self-recoil), identical in kind to Advance Survivor's smooth circular AR recoil (CASE XXXX); the gear tooth profile creates many sequential small-recoil events per revolution rather than one large one, but the net angular recoil per match is equivalent; additionally at ~15 g Advance Balancer is the third-lightest HMS AR analyzed, limiting I_total and angular momentum, and compounding the recoil problem with insufficient mass to resist lateral displacement.
+
+**Moment of inertia:**
+
+I_AB = 1/2 * m * (r_i^2 + r_o^2)
+     = 1/2 * 0.015 * ((6.0e-3)^2 + (28.0e-3)^2)
+     = 1/2 * 0.015 * (3.6e-5 + 7.84e-4)
+     = 1/2 * 0.015 * 8.20e-4
+     = 6.15e-6 kg*m^2  [INFERENCE]
+
+OWD = I / (m * r_ref^2)
+    = 6.15e-6 / (0.015 * (23.0e-3)^2)
+    = 6.15e-6 / 8.18e-6
+    = 0.752  [INFERENCE]
+
+OWD = 0.752 — moderate, similar to Advance Survivor (0.765). Like Advance Survivor, the circular outer profile distributes mass efficiently at large radius for its weight class, but the all-ABS/thin-metal construction limits absolute I compared to heavier all-metal ARs.
+
+**Gear tooth contact geometry:**
+
+```
+Outer ring profile — gear-tooth perimeter (top-down, one tooth shown):
+
+  ← direction of spin
+  ───┐     ┌───
+     │ tip │     ← individual gear tooth tip
+     │     │       contact normal ≈ radial (toward CoM)
+  ───┘     └───
+       r_outer ≈ 28 mm
+
+  Many teeth (~20-30 total) spaced ~0.9 deg each [INFERENCE]
+  Each tooth: same recoil geometry as smooth circular AR
+  Net per revolution: same total recoil as Advance Survivor
+  Effect: many small recoil events vs one large (no net improvement)
+```
+
+**Rattle fix (Dragon Saucer comparison):** Dragon Saucer was prone to rattling — looseness between the removable guard and the base ring created unbalanced mass distribution during spin, generating vibration analogous to Metal Sharp Core's imbalance problem (see CASE XXXX) but less severe. Advance Balancer tightens this fitment, reducing rattle and improving balance: "probably better in a technical sense" — this translates to a small reduction in wobble-induced spin drain, marginally improving actual vs theoretical spin time. The guard is now "larger" — larger contact surface for the ABS wing-to-opponent interactions, useful for opposite-spin spin-steal contacts (more arc length per contact event).
+
+**Spin-steal mechanism (opposite spin):** Same principle as Advance Survivor (CASE XXXX), but with ABS contact surface instead of smooth metal ring. ABS has higher mu (~0.40-0.55) than a smooth metal ring (~0.10-0.15), so the spin-steal friction force per contact is higher — but ABS also generates more recoil than smooth metal (less tangential sliding, more normal bounce). Net effect: Advance Balancer's spin-steal contact events are more powerful per collision but also more destabilizing to itself than Advance Survivor in same conditions. Weak-launch + opposite spin remains the only viable strategy.
+
+**Best combos:**
+- Advance Balancer (Opposite Spin) / Circle Wide / Bearing Core — best spin-steal; wide outer WD extends LAD, Bearing Core minimises spin drain between contacts
+- Advance Balancer (Opposite Spin) / Circle Wide / Bearing Core 2 (mint) — alternate; acceptable substitution
+- (Same-spin setups not recommended — high recoil ensures consistent self-disadvantage)
+
+---
+
+## CASE XXXX — MA-09 Advancer Averazer: Circle Balance WD (cross-reference)
+
+**Part:** Weight Disk, Circle Balance
+**Assembly:** MA-09 Advancer Averazer (Takara HMS Starter, Spring 2004)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Balance (~15 g) for full I, OWD, and competitive role analysis.
+
+Circle Balance contributes I ~3.539e-6 kg*m^2 [derived] to this assembly. For the recommended spin-steal combo, Circle Wide replaces Circle Balance — Circle Wide's wider outer rim (r_outer ~32 mm vs Circle Balance's smaller effective rim) provides better LAD and higher I for the spin-steal platform. Circle Balance in stock is the WD penalty; Circle Wide corrects it.
+
+---
+
+## CASE XXXX — MA-09 Advancer Averazer: Metal Semi-Flat Core RC (~3 g, wider metal semi-flat tip, no change event, Compact-only viable)
+
+**Part:** Running Core, Metal Semi-Flat Core
+**Assembly:** MA-09 Advancer Averazer (Takara HMS Starter, Spring 2004)
+**Weight:** ~3 g [FACT: confirmed by user]
+**Material:** ABS outer body (white/cream); metal semi-flat tip (silver) [FACT: observed from photos]
+**Tip geometry:** Metal semi-flat, r_tip ~3.5–4.5 mm — wider than MCC (~2.5 mm) and wider than original SF Core (Driger MS) [FACT: user confirmed width comparison; r_tip range INFERENCE]
+**mu_metal_semiFit ~0.20–0.25** (metal-on-ABS) [INFERENCE]
+**Height:** Taller than MCC [FACT: user confirmed]
+**Change mechanism:** None — no spring retraction; tip contact is fixed at all times [FACT: user confirmed; absence of change event is defining characteristic]
+
+**Thesis:** Metal Semi-Flat Core is to Metal Change Core what a direct-current motor is to a switched one: it delivers consistent floor contact with a wider metal semi-flat tip (r_tip ~4 mm vs MCC's ~2.5 mm) at all spin speeds and impact magnitudes, producing a predictable, docile trajectory that never exhibits the brief aggressive bursts characteristic of MCC's spring-retraction change events; this predictability is simultaneously MSF Core's greatest strength (in a Compact-style combo where trajectory stability is paramount) and greatest limitation (against attack types who can read and exploit its behavior); user assessment: "a consistently docile metal SF RC" — the emphasis on consistency is the key; the wider semi-flat tip versus the original SF Core (Driger MS) provides a wider contact area, theoretically increasing tau relative to a pure sharp tip, but the metal mu (~0.22) keeps absolute tau low regardless; the result is a RC that suits slow, center-camping Compact combos (like Metal Ape / CWD God Ring) but cannot carry attack or stamina builds because it lacks both the flower-pattern aggression of rubber RCs and the change-event surprise of MCC.
+
+**Friction torque (~34 g Averazer stock assembly):**
+
+tau_MSF = mu * m_assembly * g * r_tip
+        = 0.22 * 0.034 * 9.81 * 4.0e-3
+        = 2.933e-4 N*m  [INFERENCE]
+
+**Spin time:**
+
+I_total = I_AB + I_CB + I_RC
+        = 6.15e-6 + 3.539e-6 + 0.07e-6
+        = 9.759e-6 kg*m^2  [INFERENCE]
+
+L0     = 9.759e-6 * 620 = 6.051e-3 N*m*s
+t_spin = 6.051e-3 / 2.933e-4 ~20.6 s  [INFERENCE]
+
+~20.6 s theoretical spin time — shorter than MCC on a heavier assembly (MCC: ~48 s on 40.5 g) primarily because MSF's r_tip is wider. MSF's spin time is shorter than MCC's but longer than MFC's (~25.7 s on 41 g); in absolute terms MSF Core produces the shortest spin time among the metal RCs analyzed, driven by the combination of moderate r_tip and lower assembly mass.
+
+**MSF vs MCC comparison:**
+
+| Metric | MSF Core | MCC |
+|--------|----------|-----|
+| r_tip | ~4.0 mm | ~2.5 mm |
+| mu | ~0.22 | ~0.22 |
+| Change event | None | Yes (spring retract) |
+| tau (34g assy) | ~2.93e-4 N*m | ~2.19e-4 N*m (at 40.5g = different assy) |
+| Trajectory | Always docile | Docile + burst events |
+| Self-KO risk | Very low | Very low |
+| Attack viability | Compact only | Compact + some attack |
+| Pattern | None (no flower) | Change-event flower bursts |
+
+[All INFERENCE]
+
+MSF Core is strictly inferior to MCC in all applications: MCC has the same docile baseline but adds change-event surprise for attack utility; MSF Core has only the docile baseline. The wider tip produces marginally higher tau than MCC in equivalent assemblies, making MSF Core even less suitable for stamina builds than MCC. The only scenario where MSF Core is preferred is a Compact-style combo where the operator wants zero behavior variability — pure predictable center-camping — and does not want the change-event's occasional aggressive burst to disrupt position.
+
+**Compact-style combo (Metal Ape / CWD God Ring / MSF Core):**
+
+User highlights this as the only worthwhile MSF Core combo. Strategy: launch powerfully to center, rely on Metal Ape's mass and CWD God Ring's wide deflection profile to survive incoming attacks, and accept that scoring KOs requires landing a direct hit during the brief window of contact. Unlike MCC's Compact combo (where change events can generate impromptu flower orbits), MSF Core's combo cannot generate flower patterns — it stays at center and waits. The user note: "hope you meet the opposing Beyblade to 50-50 a knockout" — explicitly acknowledging this is a passive, luck-dependent strategy for KOs. Out-spinning non-Bearing-Core stamina opponents remains possible.
+
+**Best combos:**
+- Metal Ape (Either Spin) / CWD God Ring (Metal CWD) / Metal Semi-Flat Core — only recommended MSF combo; Compact-style
+- (Attack builds: MCC or MFC strictly preferred)
+- (Stamina builds: Bearing Core or Bearing Core 2 strictly preferred)
+
+---
+
+## CASE XXXX — MA-09 Advancer Averazer: Full Assembly (~34 g, weakest HMS starter in L0, stock limits from all three parts)
+
+**Bey:** MA-09 Advancer Averazer
+**Parts:** BP Small Type (~1 g) + Advance Balancer AR (~15 g) + Circle Balance WD (~15 g) + Metal Semi-Flat Core RC (~3 g)
+**Total mass:** ~34 g [INFERENCE: 1+15+15+3; verify with scale]
+**Type:** Balance (nominal); effective only in opposite-spin spin-steal with part swaps [FACT: user assessment]
+
+**Assembly I_total:**
+
+I_AR_AB  = 6.150e-6 kg*m^2  (Advance Balancer) [INFERENCE]
+I_WD_CB  = 3.539e-6 kg*m^2  (Circle Balance) [derived]
+I_RC_MSF ~0.070e-6 kg*m^2  (MSF Core hub) [INFERENCE]
+I_total  ~9.759e-6 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch:**
+
+L0 = 9.759e-6 * 620 = 6.051e-3 N*m*s ~6.05 mN*m*s  [INFERENCE]
+
+L0 = 6.05 mN*m*s — lowest of any HMS starter analyzed. Advance Guardian stock produced ~6.32 mN*m*s; Advancer Averazer stock is lower still, due to the lightest WD (Circle Balance, I ~3.54e-6) paired with a lightweight AR (Advance Balancer, I ~6.15e-6) and a docile RC with no trajectory advantage.
+
+**HMS starter full ranking by L0:**
+
+| Assembly | Mass (g) | I_total (kg*m^2) | L0 (mN*m*s) | Competitive tier |
+|----------|----------|-----------------|-------------|-----------------|
+| Death Gargoyle MS / MCC | ~40.5 | ~1.698e-5 | ~10.53 | Top |
+| Advance Striker / MFC | ~41 | ~1.460e-5 | ~9.05 | Top |
+| Wolborg MS / Bearing Core | ~40 | ~1.36-1.44e-5 | ~8.4-8.9 | Top (stamina) |
+| Jiraiya MS / BC2 mint | ~40 | ~1.24e-5 | ~7.66 | Mid |
+| Advance Guardian / GSC | ~38 | ~1.019e-5 | ~6.32 | Low |
+| Advancer Averazer / MSF | ~34 | ~9.76e-6 | ~6.05 | Low |
+| Dragoon MS / GFC | ~30 | ~8.2e-6 | ~5.1 | Top (attack; low mass) |
+
+[All I_total and L0 values INFERENCE]
+
+Note: low L0 ≠ uncompetitive (GFC has low L0 but is top-tier attack due to high tau). Averazer's problem is low L0 compounded by a high-recoil AR and no RC advantage — the assembly has no offsetting mechanic to compensate.
+
+**Why all three stock parts compound the problem:**
+
+1. **Advance Balancer:** High recoil in same spin → KO risk. Low mass (15 g) relative to other HMS ARs → low absolute I contribution.
+2. **Circle Balance:** No unique niche — worse than Circle Wide in stamina, worse than Circle Heavy in attack (CASE XXXX). Neutral WD that helps nothing.
+3. **MSF Core:** No change events, no flower pattern, no stamina advantage over rubber tips. Passive, predictable — attack types can ignore or exploit it.
+
+None of the three stock parts counter the others' weaknesses; all three pull in the same direction (passive, low-threat). The result is the only HMS starter where the out-of-box experience is weak across all matchup types simultaneously.
+
+**Improvement path:** Opposite-spin spin-steal is the only competitive role, requiring both WD swap (Circle Balance → Circle Wide) and RC swap (MSF Core → Bearing Core). Both swaps are part-dependent on external sources; neither is available in the Averazer's own package. The stock combo has no immediately accessible competitive upgrade path.
+
+**Best combos:**
+- Advance Balancer (Opposite Spin) / Circle Wide / Bearing Core — only competitive use case; requires external parts
+- Advance Balancer (Opposite Spin) / Circle Wide / Bearing Core 2 (mint) — accessible alternative
+- Metal Ape / CWD God Ring / Metal Semi-Flat Core — only worthwhile MSF Core combo; does not require Advance Balancer
+
+```typescript
+function metalSemiFlatCoreVsMCC(
+  assemblyMassG: number,
+  iTotalKgm2: number,
+  omegaRads: number
+): {
+  msfTau: number; msfTSpin: number; msfHasChangeEvent: boolean;
+  mccTau: number; mccTSpin: number; mccHasChangeEvent: boolean;
+} {
+  const m = assemblyMassG / 1000;
+  const L0 = iTotalKgm2 * omegaRads;
+  const msfTau = 0.22 * m * 9.81 * 4.0e-3;
+  const mccTau = 0.22 * m * 9.81 * 2.5e-3;
+  return {
+    msfTau, msfTSpin: L0 / msfTau, msfHasChangeEvent: false,
+    mccTau, mccTSpin: L0 / mccTau, mccHasChangeEvent: true
+  };
+}
+// metalSemiFlatCoreVsMCC(34, 9.76e-6, 620)
+//   MSF: tau:2.93e-4, tSpin:20.6s, changeEvent:false
+//   MCC: tau:1.83e-4, tSpin:33.0s, changeEvent:true  — MCC strictly better on same assembly
+
+function advanceBalancerSpinStealRate(
+  vTipMs: number,
+  contactArcMm: number,
+  muAbs: number,
+  fNormalN: number
+): { frictionForceN: number; energyTransferJ: number; spinTransferFactor: number } {
+  const arcM  = contactArcMm / 1000;
+  const F_fric = muAbs * fNormalN;
+  const E_xfer = F_fric * arcM;  // energy transferred per contact
+  const totalCirc = 2 * Math.PI * 28e-3;  // r_outer of Advance Balancer
+  return {
+    frictionForceN:   F_fric,
+    energyTransferJ:  E_xfer,
+    spinTransferFactor: arcM / totalCirc
+  };
+}
+// advanceBalancerSpinStealRate(17.4, 20, 0.45, 5)
+//   -> { F_fric:2.25N, E_xfer:4.5e-2J, spinFactor:0.114 }  — ABS guard, 20mm arc
+// advanceBalancerSpinStealRate(17.4, 20, 0.12, 5)           — smooth metal rim equivalent
+//   -> { F_fric:0.60N, E_xfer:1.2e-2J, spinFactor:0.114 }  — 3.75x less per contact
+```
+
+---
+
+## CASE XXXX — A-123 Gaia Dragoon MS: Bit Protector (Small Type, note on production variation)
+
+**Part:** Bit Protector, Small Type (initial release)
+**Assembly:** A-123 Gaia Dragoon MS (Takara HMS Starter, Summer 2003)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP on initial release (purple). Same production variation caveat as all HMS beys: BP Size Type not guaranteed across re-releases.
+
+Gaia Dragoon MS has the most extensive release history of any HMS bey analyzed to date — indicating its cultural prominence in the HMS lineup despite the parts' competitive limitations:
+
+**Releases of Gaia Dragoon MS / Strata Dragoon MS:**
+- Initial: A-123 Starter, Summer 2003 (Purple) [FACT]
+- Hasbro "Strata Dragoon MS" Starter (Purple) [FACT]
+- Sonokong Double Power Plus Set Starter (Purple) [FACT]
+- A-130 Double Shooter Set (Yellow) [FACT]
+- 5 Saint Beasts Booster (Proto-Grey) [FACT]
+- Fukubako 2004 (Black) [FACT]
+- Tournament Limited Recolours (White, Silver, Gold, Blue) [FACT]
+- Event Limited (White) [FACT]
+- W Master Campaign Limited (Silver, Pearl-White) [FACT]
+
+The Tournament Limited, Event Limited, and W Master Campaign colourways confirm Gaia Dragoon MS was used as a prestige/promotional item in Japanese competitive events — unusual for a bey whose stock parts have limited competitive utility.
+
+---
+
+## CASE XXXX — A-123 Gaia Dragoon MS: Metal Saucer AR (~15 g, gear-tooth frame, original Dragon Saucer lineage, prone to rattle)
+
+**Part:** Attack Ring, Metal Saucer
+**Assembly:** A-123 Gaia Dragoon MS (Takara HMS Starter, Summer 2003)
+**Weight:** ~15 g [FACT: confirmed by user]
+**Material:** Die-cast zinc alloy gear-tooth outer ring + ABS inner guard (blue/purple) [FACT: observed from photos]
+**Symmetry:** Near-circular gear-tooth perimeter (continuous, ~20-30 teeth) [FACT: observed from photos]
+**Shared Metal Frame:** Same gear-tooth metal ring as Advance Balancer (Advancer Averazer) [FACT: user confirmed]
+**Design lineage:** Original; Advance Balancer is the 2004 revision with a larger ABS guard and corrected rattle [FACT]
+**Spin compatibility:** Either spin; opposite spin only viable [FACT]
+**r_inner ~6 mm, r_outer ~28 mm (tooth tips), r_ref = 23 mm** [INFERENCE]
+**"G BLADE MS" / "METAL SAUCER RING" / "GA" sticker labels** [FACT: observed from photos]
+
+**Thesis:** Metal Saucer is the original iteration of the Dragon Saucer lineage — gear-tooth metal ring AR design, Summer 2003 — and represents the first HMS attempt at a spin-stealing AR architecture; the gear-tooth metal frame (shared with Advance Balancer's 2004 revision) creates many small sequential contact events per revolution in opposite-spin matchups, each tooth tip engaging the opponent's AR briefly to transfer friction-based spin energy; however, the same circular geometry that makes Metal Saucer theoretically suited to spin-steal (continuous perimeter, near-radial contact normals) produces high recoil in same-spin contact and limits KO power, because each tooth tip's contact normal points nearly radially toward the bey's own axis — maximum self-recoil, zero forward smash delivery; additionally, Metal Saucer is "quite light" (15 g, tied for third-lightest HMS AR analyzed) and suffers from rattle — looseness between the ABS inner guard and the metal frame creates rotational imbalance during spin, generating vibration that increases effective friction and drains angular momentum faster than the theoretical prediction; Advance Balancer (2004) corrects the rattle but does not overcome the fundamental recoil geometry, meaning both ARs perform equivalently poorly despite the fitment improvement.
+
+**Moment of inertia:**
+
+Identical metal frame to Advance Balancer (CASE XXXX):
+I_MS = 1/2 * 0.015 * ((6.0e-3)^2 + (28.0e-3)^2)
+     = 6.15e-6 kg*m^2  [INFERENCE]
+
+OWD = 6.15e-6 / (0.015 * (23.0e-3)^2) = 0.752  [INFERENCE]
+
+**Rattle physics:** Guard-to-frame looseness creates eccentricity e_rattle ~0.2–0.5 mm (smaller than Metal Sharp Core's imbalance; less severe). F_imbalance at launch = m_MS * e * omega_0^2 = 0.015 * 3e-4 * (620)^2 ~1.73 N [INFERENCE]. This lateral force causes nutation wobble that increases effective tau above the point-tip theoretical value — practical spin time is reduced by rattle, but less dramatically than Metal Sharp Core's severe imbalance.
+
+**Competitive comparison vs Advance Balancer:**
+
+| Metric | Metal Saucer (2003) | Advance Balancer (2004) |
+|--------|-------------------|------------------------|
+| Mass | ~15 g | ~15 g |
+| Metal frame | Identical | Identical (shared) |
+| ABS guard | Smaller, original | Larger, revised |
+| Rattle | Present | Fixed |
+| Recoil | High | High (same frame) |
+| Spin-steal | Same geometry | Same + slightly better arc contact (larger guard) |
+| Practical spin time | Slightly shorter (rattle) | Marginally longer |
+
+[All comparative ratings INFERENCE from user description and shared frame geometry]
+
+**Early HMS context:** Metal Saucer's Summer 2003 release predates all MA-series ARs by approximately 9 months. Its limitations reflect early HMS design philosophy — the gear-tooth ring was intended to deliver spin-stealing functionality that was well-established in Plastics-era meta (Dragon Saucer existed in Plastics), but the HMS scale and all-metal construction produced unexpected high-recoil behavior that was not corrected until the AR was redesigned for Advance Balancer.
+
+**Best combos:**
+- Metal Saucer (Opposite Spin) / Circle Wide / Bearing Core — only viable use; spin-steal platform
+- Metal Saucer (Opposite Spin) / Circle Wide / Bearing Core 2 (mint) — alternate
+- (Same-spin or attack builds: not recommended; recoil too high, KO power insufficient)
+
+---
+
+## CASE XXXX — A-123 Gaia Dragoon MS: Circle Heavy WD (cross-reference)
+
+**Part:** Weight Disk, Circle Heavy
+**Assembly:** A-123 Gaia Dragoon MS (Takara HMS Starter, Summer 2003)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Heavy (~16 g) for full analysis.
+
+In stock Gaia Dragoon MS, Circle Heavy contributes I ~3.59e-6 kg*m^2 [INFERENCE]. For the recommended spin-steal combo, Circle Wide replaces Circle Heavy — same swap as recommended for Advance Balancer/Advance Survivor.
+
+---
+
+## CASE XXXX — A-123 Gaia Dragoon MS: Flat Core RC (~1.5 g, all-ABS flat tip, tornado stall capable, original HMS attack RC)
+
+**Part:** Running Core, Flat Core
+**Assembly:** A-123 Gaia Dragoon MS (Takara HMS Starter, Summer 2003)
+**Weight:** ~1.5 g [FACT: confirmed by user]
+**Material:** ABS plastic throughout — body and tip [FACT: observed from photos; no metal or rubber component]
+**Tip geometry:** Completely flat ABS disc, r_face ~1.0–1.5 mm (small flat face) [INFERENCE]
+**mu_ABS_flat ~0.35–0.45** (ABS-on-ABS stadium surface, moderate) [INFERENCE]
+**Height:** Slightly taller than ideal for attack types [FACT: user confirmed]
+**Design context:** "Iconic to first series releases" — original HMS attack RC; predates GFC, GFCUV, MFC, MCC [FACT]
+
+**Thesis:** Flat Core is the founding HMS Running Core, a completely all-plastic design whose flat-bottomed ABS tip generates outward precession drift (flower pattern or Tornado Stall trajectory) via the same gyroscopic mechanism as any flat-tipped RC, but with lower grip (mu_ABS ~0.40 vs mu_rubber ~0.75–0.95) than the rubber RCs that supersede it and without the metal durability of MFC or MCC; the flat ABS disc contact creates a disc friction interface rather than a point contact, meaning torque is computed using the disc contact formula tau = (2/3) * mu * N * r_face rather than the point-contact tau = mu * N * r_tip — giving marginally higher torque than a sharp tip of the same radius but lower than a wide rubber dome; its critical niche is Tornado Stalling: by launching at sufficient force to reach the Tornado Ridge (a raised circular feature in standard HMS and some Burst stadiums), the bey can maintain a high-radius orbit along the ridge, exploiting the ridge geometry to avoid floor-level contact with opponents; however, Tornado Stalling requires precise calibration of launch force to the specific stadium (ridge height and surface texture vary: BB-10 Attack Type and B-09 Burst Standard are specifically noted as lower/slipperier ridges requiring reduced launch force to avoid self-KO), and even a successful stall can be overcome by aggressive opponents who force contact before the opponent spins down.
+
+**Friction torque (~33.5 g Gaia Dragoon MS stock assembly, disc contact):**
+
+tau_FC = (2/3) * mu * m_assembly * g * r_face
+       = (2/3) * 0.40 * 0.0335 * 9.81 * 1.5e-3
+       = (2/3) * 1.974e-4
+       = 1.316e-4 N*m  [INFERENCE; disc contact model]
+
+tau_FC_rim = mu * m_assembly * g * r_face  (rim/edge contact during tilt)
+           = 0.40 * 0.0335 * 9.81 * 1.5e-3
+           = 1.974e-4 N*m  [INFERENCE; upper bound]
+
+Practical tau range: 1.3–2.0e-4 N*m depending on tip orientation [INFERENCE].
+
+**Theoretical spin time:**
+
+I_total ~9.79e-6 kg*m^2  [INFERENCE]
+L0     = 9.79e-6 * 620 = 6.07e-3 N*m*s
+
+t_spin_central = L0 / tau_FC_disc = 6.07e-3 / 1.316e-4 ~46.1 s  [INFERENCE: central disc contact]
+t_spin_rim     = L0 / tau_FC_rim  = 6.07e-3 / 1.974e-4 ~30.8 s  [INFERENCE: rim contact upper bound]
+
+~31–46 s theoretical range. Higher than GFC's ~10 s on a heavier assembly, but the flower orbit during aggressive play burns angular momentum much faster — the bey is continuously moving (not near-stationary), adding lateral tip displacement to rotational torque, raising effective tau significantly above the static-tip calculation. Real-world spin time in active orbit is substantially shorter than theoretical.
+
+**Tornado Stall physics:**
+
+```
+Side view — Tornado Stall on HMS stadium:
+
+  Tornado Ridge (raised circular feature, h_ridge ~3-5 mm)
+              ___
+  ─────────/ │ \─────  ← wall
+           │ │ │
+           │ │ │  ← bey rides ridge at r_ridge > r_center
+           │_│_│
+  ─────────────────    ← floor (below ridge level)
+
+  At stadium center: full floor contact → tau = mu * m * g * r_face
+  On ridge: reduced floor friction, outward centrifugal force balanced
+            by ridge wall → bey orbits ridge, avoids center contact
+
+  Required launch speed: omega_ridge such that centrifugal force
+  F_c = m * omega_ridge^2 * r_ridge exceeds friction component pulling
+  bey back to center.
+
+  Launch too weak: bey falls to center, normal flower pattern
+  Launch too strong: bey overshoots ridge, hits wall, self-KO
+```
+
+**Stadium-specific calibration (user noted):**
+
+| Stadium | Ridge type | Recommended adjustment |
+|---------|-----------|----------------------|
+| Standard HMS Stadium | Medium ridge, textured | Moderate force; consistent Tornado Stall |
+| BB-10 Attack Type | Less pronounced ridge | Reduce launch force; easier to overshoot |
+| B-09 Burst Standard | Slippery ridge surface | Reduce launch force; less grip on ridge |
+
+[Stadium calibration details FACT: user specified BB-10 and B-09; adjustments INFERENCE]
+
+**Height penalty:** Flat Core sits "slightly taller than ideal" — the RC body is marginally taller than GFC/GFCUV, raising the bey's CoM and the AR's floor contact height. For attack ARs that deliver optimal smash at a specific opponent height, this shifts contact angle upward. On upper-attack ARs (Circle Upper, Samurai Upper) this may inadvertently improve upper attack geometry; on pure smash ARs it reduces contact efficiency slightly.
+
+**Historical context:** Flat Core predates GFC by approximately 6 months (GFC appears in later 2003 HMS boosters). In the period between Gaia Dragoon MS's release and the arrival of GFC/GFCUV, Flat Core was the HMS attack RC. It established the tornado stall concept in HMS before rubber RCs made standard flower orbits more accessible. In 2003 competitive HMS (pre-GFC), Flat Core was used with Circle Upper or equivalent ARs as the only available attack strategy.
+
+**Best combos:**
+- Samurai Upper (Right Spin) / CWD God Ring (Metal CWD) / Flat Core — peak combo for Flat Core; Tornado Stall platform
+- Circle Upper (Either Spin) / CWD God Ring / Flat Core — alternate Big Three AR with Tornado Stall
+- Advance Attacker (Either Spin) / CWD Defense Ring / Flat Core — third Big Three option
+- (Stamina builds: Bearing Core or rubber RCs strictly preferred; Flat Core cannot compete on spin time under pressure)
+
+---
+
+## CASE XXXX — A-123 Gaia Dragoon MS: Full Assembly (~33.5 g, lightest HMS starter analyzed, iconic early release)
+
+**Bey:** A-123 Gaia Dragoon MS
+**Parts:** BP Small Type (~1 g) + Metal Saucer AR (~15 g) + Circle Heavy WD (~16 g) + Flat Core RC (~1.5 g)
+**Total mass:** ~33.5 g [INFERENCE: 1+15+16+1.5; verify with scale]
+**Type:** Attack (nominal via Flat Core); spin-steal only viable path [FACT]
+
+**Assembly I_total:**
+
+I_AR_MS  = 6.150e-6 kg*m^2  (Metal Saucer) [INFERENCE]
+I_WD_CH  = 3.590e-6 kg*m^2  (Circle Heavy) [INFERENCE]
+I_RC_FC ~0.050e-6 kg*m^2  (Flat Core; very light hub) [INFERENCE]
+I_total  ~9.790e-6 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch:**
+
+L0 = 9.790e-6 * 620 = 6.070e-3 N*m*s ~6.07 mN*m*s  [INFERENCE]
+
+Lightest assembly in the HMS analysis at ~33.5 g, producing the second-lowest L0 (~6.07 mN*m*s) just above Advancer Averazer stock (~6.05 mN*m*s). Both are early/weak HMS starters; both rely on opposite-spin spin-steal as their only viable competitive path.
+
+**Updated HMS starter full ranking by L0 (all analyzed):**
+
+| Assembly | Mass (g) | I_total (kg*m^2) | L0 (mN*m*s) |
+|----------|----------|-----------------|-------------|
+| Death Gargoyle MS / MCC | ~40.5 | ~1.698e-5 | ~10.53 |
+| Advance Striker / MFC | ~41 | ~1.460e-5 | ~9.05 |
+| Wolborg MS / Bearing Core | ~40 | ~1.36-1.44e-5 | ~8.4-8.9 |
+| Jiraiya MS / BC2 mint | ~40 | ~1.24e-5 | ~7.66 |
+| Advance Guardian / GSC | ~38 | ~1.019e-5 | ~6.32 |
+| Advancer Averazer / MSF | ~34 | ~9.76e-6 | ~6.05 |
+| Gaia Dragoon MS / Flat Core | ~33.5 | ~9.79e-6 | ~6.07 |
+| Dragoon MS / GFC | ~30 | ~8.2e-6 | ~5.1 |
+
+[All INFERENCE; Dragoon MS included for reference even though GFC is attack-optimised at low mass]
+
+**Competitive assessment:** Gaia Dragoon MS is the first HMS release analyzed and its stock parts reflect early 2003 design — before rubber RCs (GFC, GFCUV) established the competitive meta. Metal Saucer's rattle and recoil problems, combined with Flat Core's lower grip than GFC, make the stock assembly weak by the standards of 2004 HMS competitive play. Its prominence through Tournament Limited and campaign releases reflects the bey's collector/promotional value and its status as an HMS "flagship" design (Gaia Dragoon is a mainline Beyblade character), not its competitive merit.
+
+**Best combos:**
+- Metal Saucer (Opposite Spin) / Circle Wide / Bearing Core — only competitive use; same as Advance Balancer recommendation
+- Samurai Upper / CWD God Ring / Flat Core — only worthwhile Flat Core combo; Tornado Stall
+- Circle Upper (Either Spin) / Circle Heavy / Metal Change Core — use Death Gargoyle MS parts with this shell
+
+```typescript
+function flatCoreTorque(
+  assemblyMassG: number,
+  muAbs: number,
+  rFaceMm: number,
+  contactModel: "disc" | "rim"
+): { torqueNm: number; contactModel: string } {
+  const m = assemblyMassG / 1000;
+  const N = m * 9.81;
+  const r = rFaceMm / 1000;
+  const tau = contactModel === "disc"
+    ? (2/3) * muAbs * N * r  // uniform disc contact
+    : muAbs * N * r;          // rim/edge contact (tilted bey)
+  return { torqueNm: tau, contactModel };
+}
+// flatCoreTorque(33.5, 0.40, 1.5, "disc") -> { tau:1.316e-4, model:"disc" }
+// flatCoreTorque(33.5, 0.40, 1.5, "rim")  -> { tau:1.974e-4, model:"rim" }
+// flatCoreTorque(40.0, 0.40, 1.5, "disc") -> { tau:1.570e-4, model:"disc" }  — heavier assembly
+
+function tornadoStallLaunchWindow(
+  assemblyMassG: number,
+  rRidgeMm: number,
+  muFloor: number,
+  muRidge: number
+): { omegaMinRads: number; omegaMaxRads: number; windowRatio: number } {
+  const m = assemblyMassG / 1000;
+  const r = rRidgeMm / 1000;
+  // Min omega: centrifugal force must overcome floor friction pulling back to center
+  const omegaMin = Math.sqrt(muFloor * 9.81 / r);
+  // Max omega: centrifugal force must not exceed wall normal force at ridge (approx)
+  const omegaMax = Math.sqrt((muFloor + muRidge) * 9.81 / r * 1.5);  // heuristic
+  return { omegaMinRads: omegaMin, omegaMaxRads: omegaMax, windowRatio: omegaMax / omegaMin };
+}
+// tornadoStallLaunchWindow(33.5, 80, 0.35, 0.25)
+//   -> { omegaMin:~6.6 rad/s, omegaMax:~8.1 rad/s, window:1.23 }  — narrow window
+// Note: actual launch omega is ~620 rad/s; the ridge self-selects by centrifugal dynamics
+```
