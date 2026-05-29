@@ -41139,3 +41139,361 @@ For full zone breakdown and I table see CASE XXXX — WD Circle Wide (Draciel MS
 - Advance Attacker / Circle Wide / Grip Flat Core — attack with wide OWD
 - Any stamina AR / Circle Wide (heavy Draciel) / Bearing Core 2 — preferred stamina build
 
+
+---
+
+## CASE XXXX — MA-08 Wolborg MS: Bit Protector (Small Type)
+
+**Part:** Bit Protector, Small Type
+**Assembly:** MA-08 Wolborg MS (Takara HMS, 2003)
+**Weight:** ~1 g [INFERENCE: standard Small Type BP]
+**Material:** ABS plastic
+
+Small Type BP identical in geometry and function to those on Dragoon MS and Draciel MS. Protects the RC tip from launch-rail damage. No performance role; swap freely between assemblies.
+
+**Best combos:**
+- Any HMS stamina build / Small Type BP — BP does not affect physics
+
+---
+
+## CASE XXXX — MA-08 Wolborg MS: Wolf Crusher AR (~20 g, extreme OWD, C4 symmetry)
+
+**Part:** Attack Ring, Wolf Crusher
+**Assembly:** MA-08 Wolborg MS (Takara HMS, 2003)
+**Weight:** ~20 g [FACT: confirmed by user]
+**Material:** Die-cast zinc alloy (full metal) [INFERENCE: consistent with HMS all-metal AR convention and mass]
+**Spin compatibility:** Either spin [INFERENCE: symmetric C4 design]
+**r_inner ~5 mm, r_outer ~30 mm, r_ref = 23 mm** [INFERENCE]
+
+**Thesis:** Wolf Crusher is the heaviest HMS Attack Ring at ~20 g — 43% heavier than Metal Attacker (~14 g) — and achieves an OWD of ~0.874, among the highest in the HMS AR catalog, because virtually all of its zinc mass is concentrated at or beyond r_ref = 23 mm; this extreme rim-loading maximises I_total in any assembly, giving Wolborg MS the highest angular momentum at launch of any HMS starter (L0 ~8.4–8.9 mN*m*s); yet the contact geometry is primarily curved, low-angle arcs rather than sharp smash faces, meaning Wolf Crusher trades peak attack power for sustained spin time — it is a stamina-type AR wearing the mass of an attack ring.
+
+**Moment of inertia:**
+
+I_WC = 1/2 * m * (r_i^2 + r_o^2)
+     = 1/2 * 0.020 * ((5.0e-3)^2 + (30.0e-3)^2)
+     = 1/2 * 0.020 * (2.5e-5 + 9.0e-4)
+     = 1/2 * 0.020 * 9.25e-4
+     = 9.25e-6 kg*m^2  [INFERENCE]
+
+OWD = I / (m * r_ref^2)
+    = 9.25e-6 / (0.020 * (23.0e-3)^2)
+    = 9.25e-6 / 1.058e-5
+    = 0.874  [INFERENCE]
+
+OWD = 0.874: 87.4% of mass-weighted inertia lies at or beyond r_ref. Highest HMS AR OWD analyzed.
+
+**Contact geometry:** Four symmetric curved arc protrusions at 90 degree spacing. Curved faces redirect incoming force tangentially rather than transmitting shock — low recoil. Stamina-support AR with recoil resistance.
+
+**Best combos:**
+- Wolf Crusher / Circle Wide / Bearing Core — flagship HMS stamina (highest L0)
+- Wolf Crusher / Circle Wide / Bearing Core 2 (mint) — competitive alternative
+- Wolf Crusher / Circle Wide / Metal Change Core — mid-tier stamina fallback
+
+---
+
+## CASE XXXX — MA-08 Wolborg MS: Circle Wide WD (cross-reference)
+
+**Part:** Weight Disk, Circle Wide
+**Assembly:** MA-08 Wolborg MS (Takara HMS, 2003)
+
+Cross-reference only. See CASE XXXX — Common WD: Circle Wide (~14 g, standalone reference) for full I, OWD, LAD, and production variation analysis.
+
+In Wolborg MS this is the standard pairing. Circle Wide contributes I ~4.2e-6 kg*m^2 [INFERENCE] to an assembly dominated by the 9.25e-6 Wolf Crusher, resulting in a combined AR+WD I ~1.345e-5 kg*m^2 before the RC is added.
+
+---
+
+## CASE XXXX — MA-08 Wolborg MS: Bearing Core RC (~5 g, ball bearing decoupling, near-zero friction torque)
+
+**Part:** Running Core, Bearing Core
+**Assembly:** MA-08 Wolborg MS (Takara HMS, 2003)
+**Weight:** ~5 g [FACT: confirmed by user]
+**Material:** ABS outer body; steel ball bearings; steel shaft; plastic tip [INFERENCE]
+**Tip geometry:** Plastic pointed tip, r_tip ~1.5 mm [INFERENCE]
+**mu_eff ~0.03** (ball bearing decoupled — rolling friction replaces sliding friction) [INFERENCE]
+
+**Thesis:** Bearing Core achieves near-elimination of spin-to-floor friction torque by interposing a ball bearing assembly between the spinning top body and the stationary floor-contact tip; the tip does not rotate with the bey — it rolls in place — reducing effective mu from ~0.65–0.75 (sliding ABS tip, GFC) to ~0.03 (rolling bearings), a reduction of approximately 22–25x; this single mechanical substitution converts Wolborg MS from a well-engineered stamina build into the definitive HMS stamina reference.
+
+**Friction torque (40 g assembly):**
+
+tau_BC = mu_eff * m_assembly * g * r_tip
+       = 0.03 * 0.040 * 9.81 * 1.5e-3
+       = 1.766e-5 N*m  [INFERENCE]
+
+**Comparison to GFC (Dragoon MS):**
+
+tau_GFC  = 0.75 * 0.030 * 9.81 * 3.0e-3 = 6.62e-4 N*m
+tau_ratio = tau_GFC / tau_BC = 6.62e-4 / 1.766e-5 ~37.5x
+
+Bearing Core produces ~37x less friction torque than GFC in their respective assemblies.
+
+**Theoretical spin time (Wolborg MS stock, I_total ~1.44e-5 kg*m^2):**
+
+L0     = I_total * omega_0 = 1.44e-5 * 620 = 8.928e-3 N*m*s
+t_spin = L0 / tau_BC = 8.928e-3 / 1.766e-5 ~505 s  [INFERENCE]
+
+505 seconds (~8 min 25 s). Upper bound; real-world times shorter due to air drag, nutation, bearing preload, progressive tilt. No other HMS Running Core approaches this figure.
+
+**Historical context — TBTS (Takara BeyStadium):** Wolborg MS dominated TBTS format because the Bearing Core's near-zero friction torque converted every match into a pure stamina race. The TBTS shallow, smooth bowl reduced ring-out risk and eliminated attack-type windows. Frequently banned or restricted in TBTS tournaments.
+
+**Best combos:**
+- Wolf Crusher / Circle Wide / Bearing Core — stamina reference; highest t_spin in HMS
+- Any stamina AR / Circle Wide / Bearing Core — universally upgrades any stamina build
+
+---
+
+## CASE XXXX — MA-08 Wolborg MS: Full Assembly (~40 g, highest L0 in HMS starter lineup)
+
+**Bey:** MA-08 Wolborg MS
+**Parts:** BP Small Type (~1 g) + Wolf Crusher AR (~20 g) + Circle Wide WD (~14 g) + Bearing Core RC (~5 g)
+**Total mass:** ~40 g [FACT: confirmed by user]
+**Type:** Stamina (Defense secondary) [FACT]
+
+**Assembly I_total:**
+
+I_AR  = 9.25e-6 kg*m^2  (Wolf Crusher) [INFERENCE]
+I_WD  = 4.20e-6 kg*m^2  (Circle Wide)  [INFERENCE]
+I_RC  ~0.10e-6 kg*m^2  (Bearing Core hub) [INFERENCE]
+I_total ~13.55e-6 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch (omega_0 = 620 rad/s):**
+
+L0 = 1.355e-5 * 620 = 8.401e-3 N*m*s ~8.40 mN*m*s  [INFERENCE]
+
+Note: Prior analysis stated I_total ~1.44e-5; range is 1.35–1.44e-5 kg*m^2 depending on zone estimates. L0 range: 8.4–8.9 mN*m*s. Wolborg MS is unambiguously the highest-L0 HMS starter.
+
+**Comparison table (HMS starters):**
+
+| Assembly | Mass (g) | I_total (kg*m^2) | L0 (mN*m*s) | t_spin (s) |
+|----------|----------|-----------------|-------------|------------|
+| Dragoon MS (GFC) | ~30 | ~8.2e-6 | ~5.1 | ~3.3 |
+| Dragoon MSUV (GFCUV) | ~30 | ~8.2e-6 | ~5.1 | ~2.7 |
+| Wolborg MS (Bearing Core) | ~40 | ~1.36–1.44e-5 | ~8.4–8.9 | ~505 |
+
+[All I_total and t_spin values INFERENCE]
+
+**Competitive assessment:** Wolborg MS is the definitive HMS stamina bey. No other standard HMS combination matches its combination of high angular momentum (heaviest AR in the format) and near-zero floor friction (Bearing Core). Weaknesses: (1) low attack power — Wolf Crusher's curved faces do not deliver smash; (2) limited mobility — Bearing Core does not self-stabilize trajectory; (3) susceptibility to upper-attack or destabilization if opponent carries sufficient angular momentum to tip the assembly.
+
+**Best combos:**
+- Wolf Crusher / Circle Wide / Bearing Core — stock is already the optimal combination
+- Wolf Crusher / Circle Wide (Draciel heavy ~14.6 g) / Bearing Core — marginal upgrade via heavier WD
+
+```typescript
+function bearingCoreSpinTime(
+  assemblyMassG: number,
+  iTotalKgm2: number,
+  omegaRads: number,
+  muEff: number,
+  rTipMm: number
+): { torqueNm: number; angMomNms: number; tSpinS: number } {
+  const tau = muEff * (assemblyMassG / 1000) * 9.81 * (rTipMm / 1000);
+  const L0  = iTotalKgm2 * omegaRads;
+  return { torqueNm: tau, angMomNms: L0, tSpinS: L0 / tau };
+}
+// bearingCoreSpinTime(40, 1.44e-5, 620, 0.03, 1.5) -> tau:1.766e-5, L0:8.928e-3, tSpin:505s
+// bearingCoreSpinTime(30, 8.2e-6, 620, 0.75, 3.0)  -> tau:6.62e-4, L0:5.08e-3, tSpin:7.7s
+```
+
+---
+
+## CASE XXXX — MA-22 Jiraiya MS: Bit Protector (Large Type)
+
+**Part:** Bit Protector, Large Type
+**Assembly:** MA-22 Jiraiya MS (Takara HMS, 2003)
+**Weight:** ~2 g [INFERENCE: Large Type BP]
+**Material:** ABS plastic
+
+Large Type BP; larger footprint than Small Type. Same protective function. No performance impact.
+
+---
+
+## CASE XXXX — MA-22 Jiraiya MS: Jiraiya Blade AR (~22 g, heaviest HMS attack AR, rotational smash)
+
+**Part:** Attack Ring, Jiraiya Blade
+**Assembly:** MA-22 Jiraiya MS (Takara HMS, 2003)
+**Weight:** ~22 g [FACT: confirmed by user]
+**Material:** Inner hub ABS (black); 6 blade tabs die-cast metal (grey) [FACT: observed from photos]
+**Spin compatibility:** Either spin [INFERENCE: C3 pair symmetry — mirrored tab arrangement]
+**Symmetry:** 6 blade tabs in 3 opposing pairs (C3 pair symmetry) [FACT: observed from photos]
+**Kanji sticker:** "shinobi/ninja" character [FACT: observed from photos]
+**r_inner ~6 mm, r_outer ~28 mm, r_ref = 23 mm** [INFERENCE]
+
+**Thesis:** Jiraiya Blade is the heaviest Attack Ring in the HMS format at ~22 g — 10% heavier than Wolf Crusher (~20 g) and 57% heavier than Metal Attacker (~14 g) — and its 6 blade tabs arranged in 3 opposing pairs deliver a rotational smash attack pattern in which the narrow metal tab edge contacts the opponent at v_tip = 620 * 0.028 ~17.4 m/s at launch; the narrow edge geometry concentrates impact force over a small contact area (higher pressure per unit area than rounded-face ARs like Wolf Crusher), producing sharp smash-type collisions; however, the same narrow-edge geometry limits sustained contact time per impact compared to wide-face smash ARs, placing Jiraiya Blade in the high-peak-force, short-contact-time regime — rotational smash archetype.
+
+**Moment of inertia:**
+
+I_JB = 1/2 * 0.022 * ((6.0e-3)^2 + (28.0e-3)^2)
+     = 1/2 * 0.022 * (3.6e-5 + 7.84e-4)
+     = 1/2 * 0.022 * 8.20e-4
+     = 9.02e-6 kg*m^2  [INFERENCE]
+
+OWD = 9.02e-6 / (0.022 * (23.0e-3)^2)
+    = 9.02e-6 / 1.164e-5
+    = 0.775  [INFERENCE]
+
+OWD = 0.775. Below Wolf Crusher (0.874) because blade tabs have more hub mass relative to rim area, but still well above Metal Attacker (0.540).
+
+**RC synergy:**
+- GFCUV: Flower-pattern trajectory drives Jiraiya Blade into repeated glancing contacts. High mu_rubber (0.90–0.95) amplifies destabilization per hit. Best attack combo. [INFERENCE]
+- GFC: Functional. Lower mu (0.75) means smaller trajectory radius; worn GFC penalty reduces contact frequency. [INFERENCE]
+- Bearing Core: Not recommended — near-stationary trajectory means blade tabs rarely achieve optimal contact angle. [INFERENCE]
+
+**Competitive role:** Top-tier attack ring. In competitive 2003 HMS play, Jiraiya MS vs Wolborg MS was the defining rivalry: rotational smash attack vs Bearing Core stamina.
+
+**Best combos:**
+- Jiraiya Blade / CWD Free Cross / GFCUV — primary attack build
+- Jiraiya Blade / Circle Wide / GFCUV — alternate (better LAD)
+- Jiraiya Blade / CWD Free Cross / GFC — budget attack option
+
+---
+
+## CASE XXXX — MA-22 Jiraiya MS: CWD Free Cross WD (~17 g, compact metal disc + ABS frame)
+
+**Part:** Weight Disk, CWD Free Cross (Custom Weight Disk)
+**Assembly:** MA-22 Jiraiya MS (Takara HMS, 2003)
+**Weight:** ~17 g total [FACT: confirmed by user]
+**Components:** Metal inner disc ~15 g + ABS outer frame ~2 g [INFERENCE: CWD construction convention]
+**Outer frame shape:** Square with 4 rounded corners ("Free Cross") [FACT: observed from photos]
+**Inner disc:** Circular metal hub with 4 curved arc recesses and cross-shaped center hole [FACT: observed from photos]
+**r_inner ~5 mm (center hole), r_outer_metal ~18 mm (metal disc), r_outer_plastic ~24 mm (ABS corners)** [INFERENCE]
+
+**Thesis:** CWD Free Cross is a two-piece WD where a lightweight ABS frame is combined with a concentrated metal inner disc (~15 g); unlike Circle Wide where metal mass is distributed across the full outer rim (r_outer ~32 mm), the CWD's metal disc is compact (r_outer_metal ~18 mm), keeping most metal mass close to center; despite being ~3 g heavier than Circle Wide (17 g vs 14 g), CWD Free Cross has lower I and lower OWD because mass at smaller radii contributes disproportionately less to I = m * r^2.
+
+**Moment of inertia:**
+
+I_metal = 1/2 * 0.015 * ((5.0e-3)^2 + (18.0e-3)^2)
+        = 1/2 * 0.015 * (2.5e-5 + 3.24e-4)
+        = 1/2 * 0.015 * 3.49e-4
+        = 2.618e-6 kg*m^2  [INFERENCE]
+
+I_plastic = 1/2 * 0.002 * ((5.0e-3)^2 + (24.0e-3)^2)
+          = 1/2 * 0.002 * (2.5e-5 + 5.76e-4)
+          = 1/2 * 0.002 * 6.01e-4
+          = 6.010e-7 kg*m^2  [INFERENCE]
+
+I_CWD_FC = 2.618e-6 + 0.601e-6 = 3.219e-6 kg*m^2  [INFERENCE]
+
+OWD = 3.219e-6 / (0.017 * (23.0e-3)^2)
+    = 3.219e-6 / 8.993e-6
+    = 0.358  [INFERENCE]
+
+OWD = 0.358 — lowest of any HMS WD analyzed. Despite being the heaviest WD at ~17 g, CWD Free Cross has lower OWD than Circle Heavy (0.424), Circle Balance (0.446), or Circle Wide (0.515).
+
+**WD comparison (all HMS WDs analyzed):**
+
+| WD | Mass (g) | I (kg*m^2) | OWD | LAD |
+|----|----------|-----------|-----|-----|
+| CWD Free Cross | ~17 | ~3.22e-6 [INFERENCE] | 0.358 [INFERENCE] | Poor |
+| Circle Heavy | ~16 | ~3.59e-6 [INFERENCE] | 0.424 [INFERENCE] | Worst of circles |
+| Circle Balance | ~15 | ~3.54e-6 [derived] | 0.446 [INFERENCE] | Intermediate |
+| Circle Wide | ~14 | ~4.2e-6 [INFERENCE] | 0.515 | Best |
+
+CWD Free Cross has no compelling advantage over Circle Wide for any role. Circle Wide outperforms it in both I and OWD despite being 3 g lighter.
+
+**LAD:** Poor. ABS plastic corners (~2 g at r ~24 mm) do not provide the smooth metal rim contact of Circle Wide. Higher mu ABS drains residual spin faster during dying wobble.
+
+**Best combos (CWD Free Cross):**
+- Jiraiya Blade / CWD Free Cross / GFCUV — stock attack; CWD Free Cross acceptable here
+- (Not recommended for stamina — Circle Wide strictly preferred)
+
+---
+
+## CASE XXXX — MA-22 Jiraiya MS: Bearing Core 2 RC (~4 g, rubber tip, wear-state physics, Defense archetype)
+
+**Part:** Running Core, Bearing Core 2
+**Assembly:** MA-22 Jiraiya MS (Takara HMS, 2003)
+**Weight:** ~4 g [FACT: confirmed by user]
+**Material:** ABS outer body (black); steel ball bearings; blue rubber dome tip [FACT: observed from photos]
+**Tip:** Rubber dome, wider/taller than original Bearing Core plastic tip [FACT: observed from photos]
+**r_tip_mint ~1.5 mm (pointed rubber dome)** [INFERENCE]
+**r_tip_worn ~4–6 mm (flat-worn rubber surface)** [INFERENCE]
+**mu_rubber_mint ~0.65–0.75** [INFERENCE]
+**mu_rubber_worn ~0.75–0.90** [INFERENCE]
+
+**Thesis:** Bearing Core 2 substitutes the plastic tip of original Bearing Core for a blue rubber dome tip, creating a dual wear-state system: mint condition presents a small pointed contact area (r_tip ~1.5 mm) with moderate friction — near-stationary stamina behavior similar to but slightly more aggressive than original Bearing Core; as the rubber tip wears flat, effective contact radius grows (r_tip_worn ~4–6 mm) and higher rubber mu generates friction torque 4–9x higher than mint state, causing slow wandering movement (defense-type ball tip behavior). Bearing Core 2 is the HMS meta's first Defense-type running core, a direct response to the Wolborg MS / Bearing Core stamina dominance.
+
+**Friction torque (Jiraiya MS assembly ~40 g):**
+
+Mint state (r_tip ~1.5 mm, mu ~0.70):
+  tau_mint = 0.70 * 0.040 * 9.81 * 1.5e-3 = 4.12e-4 N*m  [INFERENCE]
+
+Worn state (r_tip ~5 mm, mu ~0.82):
+  tau_worn = 0.82 * 0.040 * 9.81 * 5.0e-3 = 1.607e-3 N*m  [INFERENCE]
+
+**Spin time (Jiraiya MS assembly, I_total ~1.25e-5 kg*m^2):**
+
+L0 = 1.25e-5 * 620 = 7.75e-3 N*m*s
+
+t_spin_mint = 7.75e-3 / 4.12e-4 ~18.8 s  [INFERENCE]
+t_spin_worn = 7.75e-3 / 1.607e-3 ~4.8 s   [INFERENCE]
+
+| Wear State | r_tip (mm) | mu | tau (N*m) | t_spin (s) | Movement | Role |
+|------------|-----------|---|---------|-----------|---------|------|
+| Mint (new) | ~1.5 | ~0.70 | ~4.12e-4 | ~18.8 | Near-stationary | Stamina-Defense |
+| Worn (flat) | ~5.0 | ~0.82 | ~1.61e-3 | ~4.8 | Slow wander | Defense |
+
+[All values INFERENCE]
+
+**Defense role introduction:** Bearing Core 2 is the first HMS Running Core supporting a Defense archetype. The rubber dome tip provides: (1) impact cushion — rubber deforms ~0.3–0.5 mm on lateral hit, absorbing a fraction of incoming kinetic energy (~15–25% recoil reduction); [INFERENCE] (2) grip retention — higher mu rubber resists lateral displacement; (3) self-centering in worn state — flat rubber tip wanders toward stadium center (classic defense behavior).
+
+**Best combos:**
+- Jiraiya Blade / CWD Free Cross / Bearing Core 2 (worn) — stock Defense build
+- Wolf Crusher / Circle Wide / Bearing Core 2 (mint) — stamina-defense hybrid
+- Jiraiya Blade / Circle Wide / Bearing Core 2 (worn) — optimised Defense (better LAD from Circle Wide)
+
+---
+
+## CASE XXXX — MA-22 Jiraiya MS: Full Assembly (~40 g, rotational smash attack, first HMS Defense archetype)
+
+**Bey:** MA-22 Jiraiya MS
+**Parts:** BP Large Type (~2 g) + Jiraiya Blade AR (~22 g) + CWD Free Cross WD (~17 g) + Bearing Core 2 RC (~4 g)
+**Total mass:** ~40 g [FACT: user confirmed ~40 g; note BP+AR+WD+RC sums to ~45 g — exact part masses may differ slightly; weigh individually to confirm] [UNKNOWN: resolve discrepancy]
+**Type (stock):** Defense (BC2 worn) or Stamina-Defense (BC2 mint) [INFERENCE]
+**Type (custom GFCUV):** Attack [INFERENCE]
+
+**Assembly I_total:**
+
+I_AR_JB  = 9.02e-6 kg*m^2  (Jiraiya Blade) [INFERENCE]
+I_WD_FC  = 3.22e-6 kg*m^2  (CWD Free Cross) [INFERENCE]
+I_RC_BC2 ~0.12e-6 kg*m^2  (Bearing Core 2 hub) [INFERENCE]
+I_total  ~12.36e-6 kg*m^2  [INFERENCE]
+
+**Angular momentum at launch:**
+
+L0 = 1.236e-5 * 620 = 7.663e-3 N*m*s ~7.66 mN*m*s  [INFERENCE]
+
+**Config summary:**
+
+| Config | tau (N*m) | t_spin (s) | Movement | Role |
+|--------|---------|-----------|---------|-------------|
+| Stock / BC2 mint | ~4.12e-4 | ~18.6 | Near-stationary | Stamina-Defense |
+| Stock / BC2 worn | ~1.61e-3 | ~4.8 | Slow wander | Defense |
+| Custom / GFCUV | ~1.895e-3 | ~4.0 | Flower pattern | Attack |
+| Custom / GFC | ~1.544e-3 | ~5.0 | Flower pattern | Attack |
+
+[All tau and t_spin INFERENCE]
+
+**Historical significance:** Jiraiya MS closes the 2003 HMS starter lineup and introduces two concepts: (1) the heaviest attack ring (Jiraiya Blade at ~22 g), setting a new HMS smash power benchmark; (2) the first Defense-type Running Core (Bearing Core 2), creating the three-way HMS archetype structure (Attack: GFC/GFCUV; Stamina: Bearing Core; Defense: Bearing Core 2 worn) matching the official Beyblade type system.
+
+**Best combos:**
+- Jiraiya Blade / Circle Wide / GFCUV — maximum attack (swap CWD Free Cross for Circle Wide)
+- Jiraiya Blade / Circle Wide / Bearing Core 2 (worn) — best Defense build from stock parts
+- Wolf Crusher / Circle Wide / Bearing Core 2 (mint) — alternate stamina-defense using Wolborg MS AR
+
+```typescript
+function bearingCore2SpinTime(
+  assemblyMassG: number,
+  iTotalKgm2: number,
+  omegaRads: number,
+  wearState: "mint" | "worn"
+): { muEff: number; rTipMm: number; torqueNm: number; tSpinS: number } {
+  const params = wearState === "mint"
+    ? { muEff: 0.70, rTipMm: 1.5 }
+    : { muEff: 0.82, rTipMm: 5.0 };
+  const tau = params.muEff * (assemblyMassG / 1000) * 9.81 * (params.rTipMm / 1000);
+  const L0  = iTotalKgm2 * omegaRads;
+  return { ...params, torqueNm: tau, tSpinS: L0 / tau };
+}
+// bearingCore2SpinTime(40, 1.236e-5, 620, "mint") -> mu:0.70, rTip:1.5mm, tau:4.12e-4, tSpin:18.6s
+// bearingCore2SpinTime(40, 1.236e-5, 620, "worn") -> mu:0.82, rTip:5.0mm, tau:1.61e-3, tSpin:4.8s
+// bearingCore2SpinTime(40, 1.44e-5, 620, "mint")  -> mu:0.70, rTip:1.5mm, tau:4.12e-4, tSpin:21.7s
+```
