@@ -43441,3 +43441,396 @@ const madCancerCH120FS = {
   },
 };
 ```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Face Bolt — Lynx (1.0 g, constellation motif, dual sticker design)
+
+**Thesis:** The Lynx Face Bolt depicts the head of a lynx — a feline constellation, one of the 88 constellations in space — on a translucent amber PC disc. Two sticker types accompany this Face Bolt: the primary face sticker showing the lynx-head motif, and spot-pattern stickers that echo the spotted coat of a lynx and coordinate visually with the Lynx Energy Ring's iron-powder amber surface. At 1.0 g [FACT], the Lynx Face Bolt is at the bottom of the MFB Face Bolt mass range. Its moment of inertia is approximately 8.0×10⁻⁹ kg·m² [INFERENCE], below 0.1% of the full assembly budget, and contributes no measurable performance differential. The Face Bolt's roles are cosmetic identification and assembly keying.
+
+**Moment of Inertia:**
+```
+I_FB = ½ × m × r²
+m_FB = 0.001 kg  [FACT]
+r ≈ 0.004 m  [INFERENCE]
+I_FB = ½ × 0.001 × (0.004)² = 8.0×10⁻⁹ kg·m²  [INFERENCE]
+Share of assembly I: < 0.1%  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const lynxFaceBolt = {
+  id: "face_bolt_lynx", name: "Lynx", generation: "mfb_4d",
+  shape: "hexagonal_nut", mass_g: 1.0,  // [FACT]
+  r_outer_mm: 4, I_kgm2: 8.0e-9,       // [INFERENCE]
+  stickerTypes: ["face_motif", "spot_pattern"], competitive_value: "cosmetic_only",
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Energy Ring — Lynx (3.0 g, iron-powder 4D Clear Wheel, C₂ two-sided paw profile)
+
+**Thesis:** The Lynx Energy Ring is a 4D Clear Wheel (iron-powder-loaded polycarbonate) with a two-sided C₂-symmetric design whose outer surface sculpts two pairs of curved lobes representing lynx paws, with two inward-curved notches separating the sides. The iron powder additive blends iron powder (density ~7,874 kg/m³) into the polycarbonate matrix (density ~1,200 kg/m³), raising the composite density well above pure PC. At 3.0 g [FACT], the stated mass reflects this enhancement; an equivalent pure-PC ER volume would weigh approximately 2.4 g [INFERENCE], placing the iron powder contribution at ~0.6 g [INFERENCE] and implying a volume iron fraction of approximately 4–5% [INFERENCE from density mixing rule]. The C₂ two-sided symmetry is the critical geometric compatibility criterion: the product description explicitly states Lynx "is better used in tandem with two-sided Fusion Wheels such as Beat for improved weight distribution" [FACT]. In Attack Mode, Beat's two protruding contact arms align angularly with Lynx's two paw lobes, ensuring diametrically balanced mass distribution and minimising eccentric wobble under precession. The paw-lobe outer profile is moderately convex, giving contact face angle φ ≈ 72° [INFERENCE], producing mostly recoil on inter-ER contact — consistent with the description of the ER contributing slope-deflection geometry rather than smash.
+
+**Moment of Inertia — Lynx ER:**
+```
+I_ER = ½ × m × (r_i² + r_o²)
+m_ER = 0.003 kg  [FACT]
+r_i ≈ 0.007 m,  r_o ≈ 0.011 m  [INFERENCE]
+
+I_ER = ½ × 0.003 × (4.90×10⁻⁵ + 1.210×10⁻⁴)
+     = ½ × 0.003 × 1.700×10⁻⁴ = 2.55×10⁻⁷ kg·m²  [INFERENCE]
+
+OWD = 2.55×10⁻⁷ / (0.003 × 0.023²) = 0.161  [INFERENCE]
+Assembly share: 2.1%  [INFERENCE]
+```
+
+**Iron Powder Density Estimate:**
+```
+ρ_actual ≈ 3.0 g / (2.4 g / 1200 kg/m³) = 1500 kg/m³  [INFERENCE]
+x_iron: 1500 = x × 7874 + (1−x) × 1200  →  x ≈ 0.045 (4.5% by volume)  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const lynxER = {
+  id: "er_lynx", name: "Lynx", generation: "mfb_4d", type: "4d_clear_wheel",
+  mass_g: 3.0,                // [FACT]
+  r_inner_mm: 7, r_outer_mm: 11, I_kgm2: 2.55e-7, OWD: 0.161, // [INFERENCE]
+  symmetry: "C2",             // [FACT]
+  ironPowder: true,           // [FACT]
+  ironVolumeFraction: 0.045,  // [INFERENCE]
+  profile: "curved_paw_lobe",
+  contactAngle_deg: 72,       // [INFERENCE]
+  bestWith: ["beat", "other_c2_wheels"], // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Fusion Wheel PC Frame — Beat (~8.0 g, polycarbonate cat-ear C₂ mass concentrations, mode-change carrier)
+
+**Thesis:** The Beat PC Frame is the polycarbonate outer ring that interfaces between the Metal Core and the Energy Ring, and physically implements the mode-change by rotating 90° relative to the Core between rounds. Its outer profile features two triangular protrusions styled as cat ears, positioned 180° apart in C₂ symmetry. The product description confirms "the weight is mainly focused on these opposite ends of the Frame" [FACT]. In Attack Mode the ears are aligned with the Core's protrusion arms, extending peripheral mass and leaving contact faces exposed; in Defense Mode they rotate over the protrusion faces, forming a near-circular defensive wall. As polycarbonate (density ~1,200 kg/m³ vs zinc alloy ~6,600 kg/m³), the Frame at ~8 g [INFERENCE] contributes roughly 25% of the combined Beat FW inertia (3.043×10⁻⁶ kg·m²) against the Core's 75% (8.994×10⁻⁶ kg·m²). The Frame's OWD of 0.719 [INFERENCE] exceeds the Core's OWD of 0.555 [INFERENCE] because the ear masses are concentrated further out (r ≈ 22 mm) relative to the Core's distributed spoke/arc structure.
+
+**Moment of Inertia — Beat PC Frame (two-component model):**
+```
+m_Frame ≈ 0.008 kg  [INFERENCE — 38.6 g total − estimated 30.6 g Core]
+
+Cat ears (60% of frame mass at r = 22 mm):
+  I_ears = 0.0048 × (0.022)² = 2.323×10⁻⁶ kg·m²
+
+Connecting bridges (40% at r = 15 mm):
+  I_bridges = 0.0032 × (0.015)² = 7.20×10⁻⁷ kg·m²
+
+I_Frame = 2.323×10⁻⁶ + 7.20×10⁻⁷ = 3.043×10⁻⁶ kg·m²  [INFERENCE]
+
+OWD_Frame = 3.043×10⁻⁶ / (0.008 × 0.023²) = 0.719  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const beatPCFrame = {
+  id: "beat_pc_frame", name: "Beat PC Frame", generation: "mfb_4d",
+  material: "polycarbonate", mass_g: 8.0,       // [INFERENCE]
+  r_ears_mm: 22, r_bridges_mm: 15,              // [INFERENCE]
+  earMassFraction: 0.60, I_kgm2: 3.043e-6, OWD: 0.719,  // [INFERENCE]
+  symmetry: "C2",                               // [FACT]
+  modes: ["attack", "defense"], modeChangeRequiresDisassembly: true,
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Fusion Wheel Metal Core — Beat (~30.6 g, zinc alloy, C₂ two-arm smash protrusions, diamond interior)
+
+**Thesis:** The Beat Metal Core is the primary structural and inertia-bearing component of the Beat 4D Metal Wheel, cast zinc alloy, carrying two large curved C-arc protrusion arms that provide the primary smash attack contacts. The interior features "diamond-shaped designs lining the inside" leading toward the two main protruding contact points [FACT] — spoke stiffeners that double as the lynx-snout motif, working in concert with the Lynx Clear Wheel as the lynx's ears. The protrusion faces produce "ferocious Smash Attack, but unfortunately also create Recoil" [FACT], and the design is compared explicitly to Vulcan and Quetzalcoatl [FACT] — both C₂ attack wheels with angled protrusion faces at φ ≈ 25–35°. Taking φ ≈ 30° [INFERENCE from this comparison], smash fraction = cos(30°) ≈ 0.866 and recoil fraction = sin(30°) = 0.500 [INFERENCE]. At an estimated 30.6 g [INFERENCE], the Core contributes 74.7% of the combined Beat FW inertia. The mass distribution follows a three-component model: central hub and cross (35% of Core at r ≈ 10 mm), spoke-to-arc transition (15% at r ≈ 16 mm), and the two outer C-arc protrusion arms (50% at r ≈ 21 mm). This distribution reflects the large cutouts visible between the spokes and the outer arcs — the Core is not a solid disc, and the simple annular formula significantly overestimates I. The three-component model gives I_Core = 8.994×10⁻⁶ kg·m² [INFERENCE].
+
+**Moment of Inertia — Beat Metal Core (three-component model):**
+```
+m_Core ≈ 0.0306 kg  [INFERENCE]
+
+Hub + cross (35% at r_eff = 10 mm):
+  I₁ = 0.01071 × (0.010)² = 1.071×10⁻⁶ kg·m²
+
+Transition (15% at r_eff = 16 mm):
+  I₂ = 0.00459 × (0.016)² = 1.175×10⁻⁶ kg·m²
+
+Outer C-arc protrusions (50% at r_eff = 21 mm):
+  I₃ = 0.01530 × (0.021)² = 6.748×10⁻⁶ kg·m²
+
+I_Core = 8.994×10⁻⁶ kg·m²  [INFERENCE]
+OWD_Core = 8.994×10⁻⁶ / (0.0306 × 0.023²) = 0.555  [INFERENCE]
+```
+
+**Contact Geometry — Attack Mode:**
+```
+ASCII: Beat Core — plan view of one C-arc protrusion arm
+
+   ←—— arc outer surface (attack contact face, φ≈30° from radial) ——→
+  /  face tilts forward relative to pure radial = smash + recoil mix  \
+ |   diamond spokes visible on under-face                              |
+  \                    hub cross (centre)                             /
+   ——————————————————————————————————————————————————————————————————
+
+φ ≈ 30°  [INFERENCE — Vulcan/Quetzalcoatl comparison]
+Smash fraction: cos(30°) = 0.866  [INFERENCE]
+Recoil fraction: sin(30°) = 0.500  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const beatMetalCore = {
+  id: "beat_metal_core", name: "Beat Core", generation: "mfb_4d",
+  material: "zinc_alloy", mass_g: 30.6,      // [INFERENCE]
+  massDistribution: [0.35, 0.15, 0.50],      // hub / transition / arc [INFERENCE]
+  r_eff: [10, 16, 21],                       // mm [INFERENCE]
+  I_kgm2: 8.994e-6, OWD: 0.555,             // [INFERENCE]
+  symmetry: "C2",                            // [FACT]
+  contactAngle_deg: 30, smashFraction: 0.866, recoilFraction: 0.500, // [INFERENCE]
+  interiorMotif: "diamond_lynx_snout",       // [FACT]
+  comparableTo: ["vulcan_fw", "quetzalcoatl_fw"], // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Fusion Wheel Beat — Attack Mode (38.6 g, C₂ protrusions exposed, top-tier right-spin Attack Wheel)
+
+**Thesis:** In Attack Mode the Beat PC Frame's cat-ear masses are angularly aligned with the Metal Core's C-arc protrusion arms: the ears sit outboard of the arms, extending peripheral mass and leaving the contact faces fully exposed at the wheel perimeter. The product description rates Beat in Attack Mode as "arguably one of the best right-spin Attack Wheels" in MFB [FACT], with best use "in mid- and low-height Attack customizations, with mid-height being the most preferred" [FACT]. The combined FW inertia is 12.037×10⁻⁶ kg·m² [INFERENCE], OWD = 0.589 at r_ref = 23 mm [INFERENCE]. The C₂ geometry creates single-arm contacts: when one protrusion arm engages an opponent, the diametrically opposite arm is in free air, delivering a full-energy undiluted smash (no simultaneous contact from a second protrusion absorbing part of the energy). Beat is explicitly stated to work best with C₂ two-sided Clear Wheels such as Lynx [FACT], as angular mass symmetry is required to prevent eccentricity-driven wobble when a non-C₂ ER upsets radial mass balance. The stock combo pairs Beat (ideal at 125–145 height) with TH170 (minimum 170 height) — this height mismatch is the primary stock sub-optimality.
+
+**Combined Beat FW — Attack Mode Inertia:**
+```
+I_Beat_attack = I_Core + I_Frame = 8.994×10⁻⁶ + 3.043×10⁻⁶ = 12.037×10⁻⁶ kg·m²  [INFERENCE]
+
+OWD_Beat_attack = 12.037×10⁻⁶ / (0.0386 × 0.023²) = 0.589  [INFERENCE]
+PC Frame share: 25.3%  [INFERENCE]
+Metal Core share: 74.7%  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const beatFWAttackMode = {
+  id: "beat_fw_attack_mode", name: "Beat (Attack Mode)",
+  generation: "mfb_4d", totalMass_g: 38.6,  // [FACT]
+  I_kgm2: 12.037e-6, OWD: 0.589,            // [INFERENCE]
+  mode: "attack", contactAngle_deg: 30,
+  smashFraction: 0.866, recoilFraction: 0.500, // [INFERENCE]
+  protrusions: 2,                            // C₂ [FACT]
+  competitiveRating: "top_tier_attack",      // [FACT]
+  bestHeights: ["125", "145"],              // [FACT]
+  bestTips: ["RF", "R2F", "LRF"], bestER: ["lynx", "other_c2_ers"], // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Fusion Wheel Beat — Defense Mode (38.6 g, PC Frame rotated 90°, partial protrusion exposure, outclassed by Basalt)
+
+**Thesis:** In Defense Mode the Beat PC Frame is rotated 90° relative to the Core, repositioning the cat-ear masses over the two C-arc protrusion contact points and forming a near-circular outer perimeter wall. Two explicit deficiencies are stated [FACT]: the PC Frame "leaves a small portion of the protruding contact points exposed" (imperfect protrusion coverage), and "even if they were covered completely, much heavier Wheels such as Basalt would still outclass it" (mass-inertia deficit). The inertia is unchanged from Attack Mode — rotating the Frame does not alter any mass distance from the spin axis — so I_Beat_defense = 12.037×10⁻⁶ kg·m² [INFERENCE] and OWD = 0.589 [INFERENCE]. What changes is the contact face geometry: the near-circular outer profile in Defense Mode gives φ_defense ≈ 72° [INFERENCE from "small portion" residual protrusion], smash fraction cos(72°) ≈ 0.309, recoil fraction sin(72°) ≈ 0.951 [INFERENCE]. This high-recoil, low-smash profile is a near-tangential deflector, not a mass-inertia absorber. Basalt at ~46 g and OWD ≈ 0.85 [INFERENCE] carries approximately 2.1× Beat's angular momentum — it outlasts Beat's Defense Mode in any spin-out contest while simultaneously resisting lateral destabilisation through its near-complete outer ring geometry. Beat Defense Mode has no competitive application.
+
+**Mode Geometry Change:**
+```
+Attack Mode: φ ≈ 30° → smash 0.866, recoil 0.500  [INFERENCE]
+Defense Mode: φ ≈ 72° → smash 0.309, recoil 0.951  [INFERENCE]
+Inertia: unchanged in both modes = 12.037×10⁻⁶ kg·m²  [INFERENCE]
+
+Basalt comparison [INFERENCE]:
+  I_Basalt ≈ 0.85 × 0.046 × (0.023)² = 2.07×10⁻⁵ kg·m²
+  L₀ ratio (Basalt / Beat): 2.07 / 1.20 ≈ 1.72 — Basalt holds 72% more L₀
+```
+
+**TypeScript model:**
+```typescript
+const beatFWDefenseMode = {
+  id: "beat_fw_defense_mode", name: "Beat (Defense Mode)",
+  generation: "mfb_4d", totalMass_g: 38.6,   // [FACT]
+  I_kgm2: 12.037e-6, OWD: 0.589,             // [INFERENCE — same as Attack Mode]
+  mode: "defense", contactAngle_deg: 72,
+  smashFraction: 0.309, recoilFraction: 0.951, // [INFERENCE]
+  protrusions_exposed: "partial",              // [FACT]
+  competitive_vs_basalt: false,               // [FACT]
+  competitive_value: "none",
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Spin Track — TH170 (4.4 g, Triple Height 170, three-height gimmick, no mid-battle collapse)
+
+**Thesis:** Triple Height 170 (TH170) is a Spin Track providing three height settings — 170 (17.0 mm), 195 (19.5 mm), and 220 (22.0 mm) — adjustable between rounds without part-swapping [FACT], at a stated mass of 4.4 g [FACT]. The product description contrasts TH170 with two high-height alternatives: unlike CH120, "TH170 has no mechanical problems that cause it to change height mid-battle" [FACT] — the three-way lock mechanism is more robust than CH120's push-pull collar; unlike 230, TH170 provides greater versatility through its three heights but "is not as funnel-like and smooth as 230's is" due to the height-change mechanism adding stepped ridges to the barrel [FACT]. These steps create catch-points that allow low-track attackers to occasionally "garner more success against TH170 at the 220-height than they would against 230" [FACT]. Height-mode physics: at 170 and 195, the Fusion Wheel layer sits lower, making it harder for 145-height attackers to reach under the wheel; at 220, the bey height matches 230-height stamina customs for top-spin outspinning battles. The between-round height adjustment is a genuine strategic asset in best-of-three formats — a Blader who loses at 220 to a low-track attacker can switch to 170 for the next round, forcing the attacker to contend with a lower wheel profile. TH170's moment of inertia is approximately 9.90×10⁻⁸ kg·m² [INFERENCE], contributing 0.8% of assembly inertia — mechanically significant for height strategy but inertia-negligible.
+
+**Moment of Inertia — TH170:**
+```
+I_TH170 = ½ × m × (r_i² + r_o²)
+m = 0.0044 kg  [FACT],  r_i ≈ 0.003 m,  r_o ≈ 0.006 m  [INFERENCE]
+
+I_TH170 = ½ × 0.0044 × (9×10⁻⁶ + 3.6×10⁻⁵) = 9.90×10⁻⁸ kg·m²  [INFERENCE]
+Assembly share: 0.8%  [INFERENCE]
+```
+
+**Height Mode Physics:**
+```
+Mode   Height     Primary counter-matchup
+────────────────────────────────────────────────────────────────────
+170    17.0 mm   145-height Attack + Stamina combinations  [FACT]
+195    19.5 mm   General mid-height defense/stamina         [FACT]
+220    22.0 mm   230-height Stamina customs; low-track combos [FACT]
+
+TH170 vs 230: TH170 more versatile (3 heights); 230 has smoother funnel profile.
+At 220: low-track attackers find more purchase on stepped TH170 than smooth 230.  [FACT]
+```
+
+**Competitive Recipes (from product description):**
+- Defense: MF-H / Basalt / Aquario / TH170 / RDF [FACT]
+- Stamina: Phantom Cancer/Cygnus / TH170 / D [FACT]
+- Balance: MF(MF-H) / Basalt / Kerbecs / TH170 / WF [FACT]
+
+**TypeScript model:**
+```typescript
+const th170SpinTrack = {
+  id: "st_th170", name: "Triple Height 170", abbreviation: "TH170",
+  generation: "mfb_4d", mass_g: 4.4,          // [FACT]
+  r_inner_mm: 3, r_outer_mm: 6, I_kgm2: 9.90e-8, // [INFERENCE]
+  heights_mm: [17.0, 19.5, 22.0],              // [FACT]
+  mechanism: "three_position_lock",
+  betweenRoundAdjustable: true, midBattleCollapse: false, // [FACT]
+  profileVs230: "stepped_not_funnel",          // [FACT]
+  competitive: {
+    defense: "MF-H_Basalt_Aquario_TH170_RDF",
+    stamina: "Phantom_Cancer_TH170_D",
+    balance: "MF_Basalt_Kerbecs_TH170_WF",
+  },
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Performance Tip — Wide Defense (0.8 g, wide disc + central sharp tip, balance-recovery trade-off, fast-movement phenomenon)
+
+**Thesis:** Wide Defense (WD) is a Performance Tip at 0.8 g [FACT] featuring a wider-than-D flat disc with a central sharp tip and two curved holes from the D design in a thinner, smaller form. Two distinct contact regimes govern WD's behaviour: upright spin on the sharp central tip (r_tip ≈ 0.3 mm [INFERENCE]) gives near-stationary stamina with τ_tip ≈ 2.39×10⁻⁵ N·m [INFERENCE] for the 47.8 g assembly; tilted spin on the wide outer disc (r_disc ≈ 4.5 mm [INFERENCE]) gives τ_disc ≈ 3.59×10⁻⁴ N·m [INFERENCE] — a 15× friction increase. Width advantage vs D: WD "conserve[s] better Stamina than D and SD" by sustaining tip contact at lower spin rates before disc engagement occurs [FACT]. Width disadvantage vs D: WD "has a harder time to regain its balance" because the larger disc opposes the restoring pendulum force more strongly [FACT] — at heights like TH170 220 or 230 where CoM is high, balance recovery after a hit is critical and D would be preferable [FACT]. Fast-movement phenomenon: "some Bladers experience a fast movement from Wide Defense" [FACT] when the disc engages, enabling WD to function as an attack-mode tip when paired with high-recoil Fusion Wheels (Beat, Vulcan, Fang, Spiral, Flash, Variares) [FACT], or as a counter-attacking defense tip with low-recoil wheels (Bakushin, Duo, Gravity-stamina, Fusion, Wing, Death) [FACT]. At the time of Beat Lynx's 2011 release, WD was already being superseded by EWD (bearing-equipped, better balance recovery) and B:D (Bearing Drive, near-zero friction) [FACT] but remained competitive in its paired wheel combinations.
+
+**Friction Torque — Two Contact Modes (47.8 g assembly):**
+```
+N = m × g = 0.0478 × 9.81 = 0.469 N  [FACT-derived]
+μ_hard = 0.17
+
+Mode 1 — Sharp tip (r_tip = 0.3 mm, upright):
+  τ_tip  = 0.17 × 0.469 × 0.0003 = 2.39×10⁻⁵ N·m  [INFERENCE]
+  t_spin = L₀ / τ = 7.43×10⁻³ / 2.39×10⁻⁵ ≈ 311 s  [INFERENCE]
+
+Mode 2 — Disc centred (r_disc = 4.5 mm, moderate tilt):
+  τ_c    = (2/3) × 0.17 × 0.469 × 0.0045 = 2.39×10⁻⁴ N·m  [INFERENCE]
+  t_spin = 7.43×10⁻³ / 2.39×10⁻⁴ ≈ 31 s  [INFERENCE]
+
+Mode 3 — Disc rim (r_disc = 4.5 mm, full tilt):
+  τ_rim  = 0.17 × 0.469 × 0.0045 = 3.59×10⁻⁴ N·m  [INFERENCE]
+  t_spin = 7.43×10⁻³ / 3.59×10⁻⁴ ≈ 21 s  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const wideDefenseTip = {
+  id: "pt_wd", name: "Wide Defense", abbreviation: "WD",
+  generation: "mfb_standard", mass_g: 0.8,  // [FACT]
+  r_tip_mm: 0.3, r_disc_mm: 4.5,             // [INFERENCE]
+  I_kgm2: 8.10e-9,                           // [INFERENCE]
+  mu_k: 0.17,
+  tau_tip_Nm: 2.39e-5, tau_disc_centred_Nm: 2.39e-4, tau_disc_rim_Nm: 3.59e-4, // 47.8g [INFERENCE]
+  tSpinTip_s: 311, tSpinDiscCentred_s: 31, tSpinDiscRim_s: 21, // [INFERENCE]
+  betterThanD_stamina: true, worseRecoveryThanD: true, // [FACT]
+  fastMovementPhenomenon: true, // [FACT]
+  attackPairing:  ["beat", "vulcan", "fang", "spiral", "flash", "variares"], // [FACT]
+  defensePairing: ["bakushin", "duo", "gravity", "fusion", "wing", "death"], // [FACT]
+  supersededBy: ["EWD", "B:D"],  // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Beat Lynx TH170WD: Full Assembly (47.8 g [FACT], highest L₀ in current MFB analysis, top-tier parts source for Attack and Stamina customs)
+
+**Thesis:** Beat Lynx TH170WD is a 47.8 g [FACT: 1.0 + 3.0 + 38.6 + 4.4 + 0.8 = 47.8 g] Balance Type assembly released in Random Booster Vol. 7 on 2011-04-23 [FACT], owned by Johannes in the Metal Fury anime. All five component masses are confirmed facts, making the total assembly mass the only confirmed-FACT mass figure in the current MFB Standard+4D analysis set. The full assembly moment of inertia of approximately 12.376×10⁻⁶ kg·m² [INFERENCE] yields L₀ = 7.43×10⁻³ kg·m²/s [INFERENCE] at ω₀ = 600 rad/s — the highest angular momentum of any bey in the current analysis, approximately 7.7× greater than Mad Cancer CH120FS (L₀ ≈ 9.6×10⁻⁴ kg·m²/s) and roughly equal to Basalt-class stamina combos. The Beat FW alone contributes 97.2% of total inertia at I = 12.037×10⁻⁶ kg·m² [INFERENCE]; all other parts combined contribute less than 3%. The stock configuration is sub-optimal: Beat Attack Mode is best at 125–145 height with RF/R²F, but TH170's minimum height is 170 and WD is a stamina tip rather than an attack tip [FACT]. The stock combo is therefore a height-and-tip mismatch that prevents Beat from achieving its designed attack trajectory. Competitive use of Beat Lynx TH170WD is correctly understood as a **parts extraction** scenario — Beat for Attack customs, TH170 for Stamina/Defense customs, Lynx ER with Beat in C₂-matched attack builds, WD for its own stamina/balance builds.
+
+**Full Assembly Inertia Budget:**
+```
+Part                  Mass (g)   I (kg·m²)         Share
+────────────────────────────────────────────────────────────
+Face Bolt (Lynx)       1.0 [F]   8.0×10⁻⁹          <0.1%
+Energy Ring (Lynx)     3.0 [F]   2.55×10⁻⁷           2.1%
+Beat FW (combined)    38.6 [F]   12.037×10⁻⁶        97.2%
+  └─ Metal Core       ~30.6 [I]   8.994×10⁻⁶        (72.6%)
+  └─ PC Frame          ~8.0 [I]   3.043×10⁻⁶        (24.6%)
+TH170                  4.4 [F]   9.90×10⁻⁸           0.8%
+WD                     0.8 [F]   8.10×10⁻⁹          <0.1%
+────────────────────────────────────────────────────────────
+Total                 47.8 [F]   12.376×10⁻⁶  [I]
+[F]=FACT  [I]=INFERENCE
+```
+
+**Angular Momentum and Spin-Time Envelope:**
+```
+L₀ = 12.376×10⁻⁶ × 600 = 7.43×10⁻³ kg·m²/s  [INFERENCE]
+
+L₀ comparisons  [INFERENCE]:
+  Mad Cancer CH120FS (~16 g):     L₀ ≈ 9.6×10⁻⁴  →   13% of Beat Lynx
+  Mid-FW assembly (~30 g):        L₀ ≈ 3.0×10⁻³  →   40% of Beat Lynx
+  Beat Lynx TH170WD (47.8 g):    L₀ = 7.43×10⁻³  → baseline
+
+Spin-time (WD tip, 47.8 g):
+  Sharp tip (theoretical):        τ = 2.39×10⁻⁵ N·m  →  t ≈ 311 s  [INFERENCE]
+  Disc centred:                   τ = 2.39×10⁻⁴ N·m  →  t ≈ 31 s   [INFERENCE]
+  Disc rim:                       τ = 3.59×10⁻⁴ N·m  →  t ≈ 21 s   [INFERENCE]
+  Practical (stamina battle):     estimated 2.5–4.5 min              [INFERENCE]
+
+OWD_assembly = 12.376×10⁻⁶ / (0.0478 × 0.023²) = 0.489  [INFERENCE]
+Note: assembly OWD lower than Beat FW OWD (0.589) because 9.2 g of non-FW
+parts sit at small radii, diluting the peripheral mass fraction.
+```
+
+**Competitive Part Extraction:**
+```
+Part          Stock role             Best custom use
+──────────────────────────────────────────────────────────────────────────
+Beat FW Atk   Height/tip mismatch   Mid/low attack: 125–145 + RF/R²F  [FACT]
+TH170         Track for Beat        Stamina/defense: Basalt/Phantom + D [FACT]
+Lynx ER       Stays with Beat       C₂-matched attack ER for Beat builds
+WD            Stamina tip (decent)  Any stamina/balance build with heavy FW
+```
+
+**TypeScript model:**
+```typescript
+const beatLynxTH170WD = {
+  id: "beat_lynx_th170wd", nameTTJP: "Beat Lynx TH170WD",
+  blader: "Johannes", releaseCode: "Random_Booster_Vol7_Beat_Lynx",
+  releaseDate: "2011-04-23",   // [FACT]
+  generation: "mfb_4d", series: "metal_fury", type: "balance",
+
+  parts: {
+    faceBolt:     { id: "face_bolt_lynx",      mass_g: 1.0  }, // [FACT]
+    energyRing:   { id: "er_lynx",             mass_g: 3.0  }, // [FACT]
+    fusionWheel:  { id: "beat_fw_attack_mode", mass_g: 38.6 }, // [FACT]
+    spinTrack:    { id: "st_th170",            mass_g: 4.4  }, // [FACT]
+    performanceTip:{ id: "pt_wd",              mass_g: 0.8  }, // [FACT]
+  },
+
+  assembly: {
+    totalMass_g:     47.8,          // [FACT — all component masses confirmed]
+    I_total_kgm2:    12.376e-6,     // [INFERENCE]
+    OWD_assembly:    0.489,         // [INFERENCE]
+    omega0_rads:     600,           // [INFERENCE]
+    L0_kgm2s:        7.43e-3,       // [INFERENCE]
+    tSpinTip_s:      311,           // theoretical [INFERENCE]
+    tSpinPractical_min: [2.5, 4.5], // [INFERENCE]
+    dominantPart:    "beat_fw",     // 97.2% of I_total [INFERENCE]
+  },
+
+  competitiveRating: {
+    stock:          "sub_optimal_height_tip_mismatch",
+    beatFW_attack:  "top_tier_attack_wheel",    // [FACT]
+    th170:          "top_tier_stamina_defense_track",
+    lynxER:         "solid_c2_attack_er",
+    wd:             "stamina_tip_superseded_by_EWD_BD",
+  },
+};
+```

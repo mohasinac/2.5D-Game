@@ -12126,7 +12126,233 @@ function sharkTriangleCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +3 rad/s (minimal) | ✓ |
 
-*Cases continue from Case 1958 as further franchise moves are provided.*
+
+
+---
+
+## Case 1958 — GIMMICK: Mad Gasher CH120FS — CH Track Height-Change Mechanism
+
+**Beyblade:** Mad Gasher CH120FS (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Blader:** Tetsuya Watarigani | **Series:** Beyblade Metal Fusion
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt | 1.0 | 0.0 |
+| Energy Ring | Gasher (crab-claw protrusions) | 7.0 | 33.0 |
+| Fusion Wheel | Mad (wide, flat-face heavy wheel) | 29.0 | 29.0 |
+| Spin Track | CH120 (Change Height 120 — telescoping) | 5.0 | 15.0 |
+| Performance Tip | FS (Flat Sharp — flat dominant at high spin) | 3.5 | 1.5 |
+| **Total** | | **45.5** | |
+
+(MFB 5-part system. CH120 is one of only two known MFB height-change tracks — the other is TH170 on Beat Lynceus. The Dimension Driver in Burst generation is the only known height-change tip from that era. In IRL play both CH120 and TH170 require physical mode-change assembly; in-game, Track Change activates the height switch instantaneously mid-battle.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 29.0×10⁻³ × 0.029² + 5.0×10⁻³ × 0.015² + 3.5×10⁻³ × 0.0015²
+           = 0 + 7.623×10⁻⁶ + 2.439×10⁻⁵ + 1.125×10⁻⁶ + 7.875×10⁻⁹
+           = **3.315×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.315×10⁻⁵ × 580 = **1.923×10⁻² kg·m²/s**
+
+---
+
+### 1. CH120 Track — Telescoping Height Mechanism
+
+CH120 (Change Height 120) is a telescoping Spin Track that locks at either 120 mm or 145 mm above the arena floor. The track has two stable positions separated by 25 mm. Each position is mechanically locked by a snap-detent:
+
+```
+h_low  = 120 mm  (retracted — compact, low CoM, aggressive blade-contact height)
+h_high = 145 mm  (extended — raised CoM, wider orbital stance, under-contact reach)
+Δh     = 25 mm = 0.025 m
+
+Gravitational PE released when switching from high → low (bey body drops):
+  ΔPE_height = m × g × Δh = 0.0455 × 9.81 × 0.025 = 1.116×10⁻² J
+
+Equivalent drop velocity (converts ΔPE to translational KE):
+  v_drop = √(2 × ΔPE / m) = √(2 × 1.116×10⁻² / 0.0455) = √0.4907 = 0.700 m/s
+```
+
+When Track Change fires mid-spin, the bey descends 25 mm while the opponent remains at fixed height — the drop velocity adds directly to the contact velocity at the moment of blade engagement.
+
+---
+
+### 2. FS Tip — Dual-Mode Ground Contact
+
+The FS (Flat Sharp) tip presents a wide flat face at high spin and transitions to a narrow sharp-point contact at lower spin:
+
+```
+High spin (ω > 300 rad/s):  μ_FS_flat = 0.50, r_contact = 1.5 mm
+  → aggressive flat wandering; high translational velocity; attack mode
+  τ_flat = 0.50 × 0.0455 × 9.81 × 0.0015 = 3.347×10⁻⁴ N·m
+  t_spin = L₀ / τ_flat = 1.923×10⁻² / 3.347×10⁻⁴ = 57.4 s
+
+Low spin (ω < 300 rad/s):  μ_FS_sharp = 0.05, r_contact = 1.5 mm
+  → sharp-point contact; near-zero friction; spin extension phase
+```
+
+---
+
+### 3. Blade Contact Height — 120mm vs 145mm Mode
+
+```
+At CH120 (low mode): Mad Fusion Wheel contacts opponent at attack height h_blade = 80 mm
+At CH145 (high mode): Mad Fusion Wheel contact shifts to h_blade = 105 mm
+  → at 105 mm height, the wide flat face of the Mad Wheel strikes the opponent
+     below the opponent's blade midplane, delivering a downward-press flat smash
+
+Contact angle shift φ (between attack heights):
+  φ = arctan(Δh / r_Mad) = arctan(0.025 / 0.029) = arctan(0.862) = 40.7°
+  v_vertical = v_drop × sin(φ) = 0.700 × sin(40.7°) = 0.700 × 0.653 = 0.457 m/s
+  v_lateral   = v_drop × cos(φ) = 0.700 × cos(40.7°) = 0.700 × 0.758 = 0.531 m/s
+  (lateral component adds to blade contact velocity; vertical component adds ring-out push)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 45.5 g |
+| I_total | 3.315×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.923×10⁻² kg·m²/s |
+| Δh (CH120→145) | 25 mm |
+| ΔPE_height | 1.116×10⁻² J |
+| v_drop | 0.700 m/s |
+| v_lateral | 0.531 m/s |
+| t_spin (flat mode) | 57.4 s |
+| Height-change tracks | CH120 (Mad Gasher), TH170 (Beat Lynceus), Dimension (Burst) |
+
+---
+
+## Case 1959 — SPECIAL: Track Change (Track Change) — Tetsuya Watarigani / Mad Gasher CH120FS
+
+**Blader:** Tetsuya Watarigani | **Beyblade:** Mad Gasher CH120FS | **Type:** attack
+
+### Description
+
+Track Change (トラックチェンジ Track Change) is a Special Move used by Tetsuya Watarigani and his Mad Gasher CH120FS. This move allows Mad Gasher's CH120 spin track to change its height from 120 mm to 145 mm instantaneously mid-battle. As the track snaps to its extended position, Mad Gasher's entire body drops 25 mm while still spinning at full speed — the drop velocity stacks directly onto the existing blade contact velocity, and the Mad Fusion Wheel's wide flat face crashes into the opponent at a new, lower angle. Tetsuya used Track Change against Gingka and again while fighting Kyoya.
+
+### Stage — Instantaneous Height-Drop Contact Strike
+
+From Case 1958: v_drop = 0.700 m/s, v_lateral = 0.531 m/s.
+
+```
+v_tip_Mad    = ω₀ × r_contact = 580 × 0.033 = 19.14 m/s
+v_opp_contact = ω_opp × r_opp = 570 × 0.030 = 17.10 m/s
+v_rel_base   = v_tip_Mad − v_opp_contact = 19.14 − 17.10 = 2.04 m/s
+
+Track Change total contact velocity:
+v_contact_TC = v_rel_base + v_lateral = 2.04 + 0.531 = 2.571 m/s
+(v_drop lateral component 0.531 m/s adds to relative blade contact; vertical 0.457 m/s adds ring-out)
+
+m_eff = (m_MG × m_opp) / (m_MG + m_opp) = (0.0455 × 0.040) / (0.0455 + 0.040)
+      = 1.820×10⁻³ / 0.0855 = 2.129×10⁻² kg
+
+e = 0.60 (Mad Fusion Wheel — wide flat face, moderate restitution)
+
+J_TC = m_eff × (1 + e) × v_contact_TC = 2.129×10⁻² × 1.60 × 2.571
+     = 2.129×10⁻² × 4.114 = 8.759×10⁻² N·s
+
+Δv_opp = J_TC / m_opp = 8.759×10⁻² / 0.040 = 2.190 m/s
+(+ vertical component Δv_opp_vert = 0.457 m/s upward ring-out force)
+```
+
+**Effect on Mad Gasher (spin drain from height-drop contact):**
+
+```
+Δω_MG = J_TC × r_contact / I_MG = 8.759×10⁻² × 0.033 / 3.315×10⁻⁵ = 87.1 rad/s
+ω_remain = 580 − 87.1 = 492.9 rad/s  (85.0% retained)
+(Mad Fusion Wheel high I_total = 3.315×10⁻⁵ gives good spin retention against large flat-face drain)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tetsuya's crab spirit surges through the Claw Gasher — the CH120 track snaps to extended with a thunderous CRACK as the Mad Wheel descends like a crashing claw from above, the entire bey transforming into a massive red crab hammering the opponent straight into the ground and out of the stadium.
+
+[M] factor = **6.0 ×** (Tetsuya Watarigani — recurring crab-antagonist, Metal Fusion / Masters)
+[M] Δv = 2.190 × 6.0 = **13.1 m/s** (height-drop claw crash ring-out)
+
+> **Note:** Physical values describe CH120→145 height drop: ΔPE=1.116×10⁻² J, v_drop=0.700 m/s (φ=40.7°: v_lat=0.531+v_vert=0.457); v_contact=2.571 m/s; J=8.759×10⁻² N·s; Δv=2.190 m/s; Δω=87.1 rad/s. In-game Track Change fires instantaneously (IRL requires manual assembly mode change — this is the only known height-change move in Metal Fusion alongside TH170/Beat Lynceus; Dimension Driver is the Burst-era equivalent). [M] values represent Tetsuya's crab spirit hammering the drop-crash. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function trackChangeSpecial(bey: Beyblade, target: Beyblade): void {
+  // CH120→145: ΔPE=1.116×10⁻²J, v_drop=0.700m/s(φ=40.7°), v_contact=2.571m/s; J=8.759×10⁻²N·s; [M] 6.0×
+  const J_phys = 0.08759;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 6.0; // [M] BeySpirit 6.0× (Tetsuya crab height-drop spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using a height-change Spin Track (CH120, CH145, or TH170) capable of instantaneous mid-battle height-level transition, combined with a wide-face Fusion Wheel (r_FW ≥ 26 mm, e ≥ 0.50) so that the 25mm height drop delivers meaningful additional contact velocity (v_drop ≥ 0.60 m/s). Known instances: Mad Gasher CH120FS (Tetsuya Watarigani, Metal Fusion) and Beat Lynceus TH170 (Ryuga-era battle, Metal Fury). Burst-era Dimension Driver provides equivalent height-mode switching functionality in that generation.
+
+---
+
+## Case 1960 — COMBO: Track Drop — Mad Gasher CH120FS
+
+**Sequence:** ↓ A ↓ (moveDown · attack · moveDown)
+**Cost:** 15 | **Type:** attack | **Blader:** Tetsuya Watarigani
+
+### Physics Justification
+
+The first moveDown (↓) triggers the CH120 extension — the track snaps from 120mm to 145mm, initiating the height-drop descent (25mm drop begins). The attack (A) fires the Mad Wheel flat-face strike at the mid-drop moment, delivering the enhanced contact while the drop velocity is at peak. The second moveDown (↓) retracts the track back to 120mm — the CH mechanism spring-snaps back, converting the retraction spring energy to spin:
+
+```
+v_drop_combo = v_drop × 0.65 = 0.700 × 0.65 = 0.455 m/s  (partial drop at mid-point)
+v_contact_combo = v_rel_base + v_drop_combo × cos(φ) = 2.04 + 0.455 × 0.758 = 2.04 + 0.345 = 2.385 m/s
+
+J_drop = m_eff × (1 + e) × v_contact_combo = 2.129×10⁻² × 1.60 × 2.385
+       = 2.129×10⁻² × 3.816 = 8.124×10⁻² N·s
+```
+
+CH retraction spring-back converts height PE to spin on the second ↓ (η_CH = 0.10 — track snap-latch returns stored spring PE):
+
+```
+Δω = η_CH × J_drop × r_contact / I_MG
+   = 0.10 × 8.124×10⁻² × 0.033 / 3.315×10⁻⁵
+   = 0.10 × 80.88
+   = +8.1 rad/s  ≈ +8 rad/s
+```
+
+(η_CH = 0.10: CH snap-latch retracts the track and converts stored spring energy to rotational momentum.) Height-drop combo gives damageMultiplier **1.25×**. lockMs = 50 (CH track dwell at extended height before A fires).
+
+**Parameters:**
+- spinGain: +8 rad/s (CH spring-back retraction η = 0.10)
+- damageMultiplier: 1.25 (mid-drop flat-face crash)
+- lockMs: 50 (CH extended-height dwell)
+
+### TypeScript
+
+```typescript
+function trackDropCombo(bey: Beyblade, target: Beyblade): void {
+  // CH retraction spinback: Δω ≈ +8 rad/s (η=0.10, v_combo=2.385m/s, J=8.124×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Mid-drop flat-face crash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1961 as further franchise moves are provided.*
 
 
 
@@ -23067,4 +23293,230 @@ function sharkTriangleCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +3 rad/s (minimal) | ✓ |
 
-*Cases continue from Case 1958 as further franchise moves are provided.*
+
+
+---
+
+## Case 1958 — GIMMICK: Mad Gasher CH120FS — CH Track Height-Change Mechanism
+
+**Beyblade:** Mad Gasher CH120FS (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Blader:** Tetsuya Watarigani | **Series:** Beyblade Metal Fusion
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt | 1.0 | 0.0 |
+| Energy Ring | Gasher (crab-claw protrusions) | 7.0 | 33.0 |
+| Fusion Wheel | Mad (wide, flat-face heavy wheel) | 29.0 | 29.0 |
+| Spin Track | CH120 (Change Height 120 — telescoping) | 5.0 | 15.0 |
+| Performance Tip | FS (Flat Sharp — flat dominant at high spin) | 3.5 | 1.5 |
+| **Total** | | **45.5** | |
+
+(MFB 5-part system. CH120 is one of only two known MFB height-change tracks — the other is TH170 on Beat Lynceus. The Dimension Driver in Burst generation is the only known height-change tip from that era. In IRL play both CH120 and TH170 require physical mode-change assembly; in-game, Track Change activates the height switch instantaneously mid-battle.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 29.0×10⁻³ × 0.029² + 5.0×10⁻³ × 0.015² + 3.5×10⁻³ × 0.0015²
+           = 0 + 7.623×10⁻⁶ + 2.439×10⁻⁵ + 1.125×10⁻⁶ + 7.875×10⁻⁹
+           = **3.315×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.315×10⁻⁵ × 580 = **1.923×10⁻² kg·m²/s**
+
+---
+
+### 1. CH120 Track — Telescoping Height Mechanism
+
+CH120 (Change Height 120) is a telescoping Spin Track that locks at either 120 mm or 145 mm above the arena floor. The track has two stable positions separated by 25 mm. Each position is mechanically locked by a snap-detent:
+
+```
+h_low  = 120 mm  (retracted — compact, low CoM, aggressive blade-contact height)
+h_high = 145 mm  (extended — raised CoM, wider orbital stance, under-contact reach)
+Δh     = 25 mm = 0.025 m
+
+Gravitational PE released when switching from high → low (bey body drops):
+  ΔPE_height = m × g × Δh = 0.0455 × 9.81 × 0.025 = 1.116×10⁻² J
+
+Equivalent drop velocity (converts ΔPE to translational KE):
+  v_drop = √(2 × ΔPE / m) = √(2 × 1.116×10⁻² / 0.0455) = √0.4907 = 0.700 m/s
+```
+
+When Track Change fires mid-spin, the bey descends 25 mm while the opponent remains at fixed height — the drop velocity adds directly to the contact velocity at the moment of blade engagement.
+
+---
+
+### 2. FS Tip — Dual-Mode Ground Contact
+
+The FS (Flat Sharp) tip presents a wide flat face at high spin and transitions to a narrow sharp-point contact at lower spin:
+
+```
+High spin (ω > 300 rad/s):  μ_FS_flat = 0.50, r_contact = 1.5 mm
+  → aggressive flat wandering; high translational velocity; attack mode
+  τ_flat = 0.50 × 0.0455 × 9.81 × 0.0015 = 3.347×10⁻⁴ N·m
+  t_spin = L₀ / τ_flat = 1.923×10⁻² / 3.347×10⁻⁴ = 57.4 s
+
+Low spin (ω < 300 rad/s):  μ_FS_sharp = 0.05, r_contact = 1.5 mm
+  → sharp-point contact; near-zero friction; spin extension phase
+```
+
+---
+
+### 3. Blade Contact Height — 120mm vs 145mm Mode
+
+```
+At CH120 (low mode): Mad Fusion Wheel contacts opponent at attack height h_blade = 80 mm
+At CH145 (high mode): Mad Fusion Wheel contact shifts to h_blade = 105 mm
+  → at 105 mm height, the wide flat face of the Mad Wheel strikes the opponent
+     below the opponent's blade midplane, delivering a downward-press flat smash
+
+Contact angle shift φ (between attack heights):
+  φ = arctan(Δh / r_Mad) = arctan(0.025 / 0.029) = arctan(0.862) = 40.7°
+  v_vertical = v_drop × sin(φ) = 0.700 × sin(40.7°) = 0.700 × 0.653 = 0.457 m/s
+  v_lateral   = v_drop × cos(φ) = 0.700 × cos(40.7°) = 0.700 × 0.758 = 0.531 m/s
+  (lateral component adds to blade contact velocity; vertical component adds ring-out push)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 45.5 g |
+| I_total | 3.315×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.923×10⁻² kg·m²/s |
+| Δh (CH120→145) | 25 mm |
+| ΔPE_height | 1.116×10⁻² J |
+| v_drop | 0.700 m/s |
+| v_lateral | 0.531 m/s |
+| t_spin (flat mode) | 57.4 s |
+| Height-change tracks | CH120 (Mad Gasher), TH170 (Beat Lynceus), Dimension (Burst) |
+
+---
+
+## Case 1959 — SPECIAL: Track Change (Track Change) — Tetsuya Watarigani / Mad Gasher CH120FS
+
+**Blader:** Tetsuya Watarigani | **Beyblade:** Mad Gasher CH120FS | **Type:** attack
+
+### Description
+
+Track Change (トラックチェンジ Track Change) is a Special Move used by Tetsuya Watarigani and his Mad Gasher CH120FS. This move allows Mad Gasher's CH120 spin track to change its height from 120 mm to 145 mm instantaneously mid-battle. As the track snaps to its extended position, Mad Gasher's entire body drops 25 mm while still spinning at full speed — the drop velocity stacks directly onto the existing blade contact velocity, and the Mad Fusion Wheel's wide flat face crashes into the opponent at a new, lower angle. Tetsuya used Track Change against Gingka and again while fighting Kyoya.
+
+### Stage — Instantaneous Height-Drop Contact Strike
+
+From Case 1958: v_drop = 0.700 m/s, v_lateral = 0.531 m/s.
+
+```
+v_tip_Mad    = ω₀ × r_contact = 580 × 0.033 = 19.14 m/s
+v_opp_contact = ω_opp × r_opp = 570 × 0.030 = 17.10 m/s
+v_rel_base   = v_tip_Mad − v_opp_contact = 19.14 − 17.10 = 2.04 m/s
+
+Track Change total contact velocity:
+v_contact_TC = v_rel_base + v_lateral = 2.04 + 0.531 = 2.571 m/s
+(v_drop lateral component 0.531 m/s adds to relative blade contact; vertical 0.457 m/s adds ring-out)
+
+m_eff = (m_MG × m_opp) / (m_MG + m_opp) = (0.0455 × 0.040) / (0.0455 + 0.040)
+      = 1.820×10⁻³ / 0.0855 = 2.129×10⁻² kg
+
+e = 0.60 (Mad Fusion Wheel — wide flat face, moderate restitution)
+
+J_TC = m_eff × (1 + e) × v_contact_TC = 2.129×10⁻² × 1.60 × 2.571
+     = 2.129×10⁻² × 4.114 = 8.759×10⁻² N·s
+
+Δv_opp = J_TC / m_opp = 8.759×10⁻² / 0.040 = 2.190 m/s
+(+ vertical component Δv_opp_vert = 0.457 m/s upward ring-out force)
+```
+
+**Effect on Mad Gasher (spin drain from height-drop contact):**
+
+```
+Δω_MG = J_TC × r_contact / I_MG = 8.759×10⁻² × 0.033 / 3.315×10⁻⁵ = 87.1 rad/s
+ω_remain = 580 − 87.1 = 492.9 rad/s  (85.0% retained)
+(Mad Fusion Wheel high I_total = 3.315×10⁻⁵ gives good spin retention against large flat-face drain)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tetsuya's crab spirit surges through the Claw Gasher — the CH120 track snaps to extended with a thunderous CRACK as the Mad Wheel descends like a crashing claw from above, the entire bey transforming into a massive red crab hammering the opponent straight into the ground and out of the stadium.
+
+[M] factor = **6.0 ×** (Tetsuya Watarigani — recurring crab-antagonist, Metal Fusion / Masters)
+[M] Δv = 2.190 × 6.0 = **13.1 m/s** (height-drop claw crash ring-out)
+
+> **Note:** Physical values describe CH120→145 height drop: ΔPE=1.116×10⁻² J, v_drop=0.700 m/s (φ=40.7°: v_lat=0.531+v_vert=0.457); v_contact=2.571 m/s; J=8.759×10⁻² N·s; Δv=2.190 m/s; Δω=87.1 rad/s. In-game Track Change fires instantaneously (IRL requires manual assembly mode change — this is the only known height-change move in Metal Fusion alongside TH170/Beat Lynceus; Dimension Driver is the Burst-era equivalent). [M] values represent Tetsuya's crab spirit hammering the drop-crash. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function trackChangeSpecial(bey: Beyblade, target: Beyblade): void {
+  // CH120→145: ΔPE=1.116×10⁻²J, v_drop=0.700m/s(φ=40.7°), v_contact=2.571m/s; J=8.759×10⁻²N·s; [M] 6.0×
+  const J_phys = 0.08759;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 6.0; // [M] BeySpirit 6.0× (Tetsuya crab height-drop spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using a height-change Spin Track (CH120, CH145, or TH170) capable of instantaneous mid-battle height-level transition, combined with a wide-face Fusion Wheel (r_FW ≥ 26 mm, e ≥ 0.50) so that the 25mm height drop delivers meaningful additional contact velocity (v_drop ≥ 0.60 m/s). Known instances: Mad Gasher CH120FS (Tetsuya Watarigani, Metal Fusion) and Beat Lynceus TH170 (Ryuga-era battle, Metal Fury). Burst-era Dimension Driver provides equivalent height-mode switching functionality in that generation.
+
+---
+
+## Case 1960 — COMBO: Track Drop — Mad Gasher CH120FS
+
+**Sequence:** ↓ A ↓ (moveDown · attack · moveDown)
+**Cost:** 15 | **Type:** attack | **Blader:** Tetsuya Watarigani
+
+### Physics Justification
+
+The first moveDown (↓) triggers the CH120 extension — the track snaps from 120mm to 145mm, initiating the height-drop descent (25mm drop begins). The attack (A) fires the Mad Wheel flat-face strike at the mid-drop moment, delivering the enhanced contact while the drop velocity is at peak. The second moveDown (↓) retracts the track back to 120mm — the CH mechanism spring-snaps back, converting the retraction spring energy to spin:
+
+```
+v_drop_combo = v_drop × 0.65 = 0.700 × 0.65 = 0.455 m/s  (partial drop at mid-point)
+v_contact_combo = v_rel_base + v_drop_combo × cos(φ) = 2.04 + 0.455 × 0.758 = 2.04 + 0.345 = 2.385 m/s
+
+J_drop = m_eff × (1 + e) × v_contact_combo = 2.129×10⁻² × 1.60 × 2.385
+       = 2.129×10⁻² × 3.816 = 8.124×10⁻² N·s
+```
+
+CH retraction spring-back converts height PE to spin on the second ↓ (η_CH = 0.10 — track snap-latch returns stored spring PE):
+
+```
+Δω = η_CH × J_drop × r_contact / I_MG
+   = 0.10 × 8.124×10⁻² × 0.033 / 3.315×10⁻⁵
+   = 0.10 × 80.88
+   = +8.1 rad/s  ≈ +8 rad/s
+```
+
+(η_CH = 0.10: CH snap-latch retracts the track and converts stored spring energy to rotational momentum.) Height-drop combo gives damageMultiplier **1.25×**. lockMs = 50 (CH track dwell at extended height before A fires).
+
+**Parameters:**
+- spinGain: +8 rad/s (CH spring-back retraction η = 0.10)
+- damageMultiplier: 1.25 (mid-drop flat-face crash)
+- lockMs: 50 (CH extended-height dwell)
+
+### TypeScript
+
+```typescript
+function trackDropCombo(bey: Beyblade, target: Beyblade): void {
+  // CH retraction spinback: Δω ≈ +8 rad/s (η=0.10, v_combo=2.385m/s, J=8.124×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Mid-drop flat-face crash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1961 as further franchise moves are provided.*
