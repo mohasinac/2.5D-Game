@@ -280,9 +280,10 @@ export function BattleLobbyPage() {
     }
   }, [connectionState, phase]);
 
-  // Navigate to game room when match starts
+  // Navigate to game room when server starts warmup (or later), not just in-progress.
+  // This ensures both players leave the lobby as soon as the server begins the match.
   useEffect(() => {
-    if (gameState?.status === 'in-progress' && room) {
+    if (room && (gameState?.status === 'warmup' || gameState?.status === 'launching' || gameState?.status === 'in-progress')) {
       navigate('/game/room', { replace: true, state: {
         config: {
           roomType: lobbyMode === 'pvp' ? 'pvp' : lobbyMode === 'royale' ? 'royale' : 'tournament',
@@ -307,7 +308,12 @@ export function BattleLobbyPage() {
 
   const playerList = Array.from(beyblades.values());
   const myUserId   = settings.userId;
-  const isHost     = playerList.length > 0 && playerList[0].userId === myUserId;
+  // isHost: server syncs hostId (= first joiner's sessionId). Match against our own sessionId.
+  // Fallback for rooms that pre-date the hostId field: first in playerList whose userId matches.
+  const mySessionId = room?.sessionId;
+  const isHost = (mySessionId && gameState?.hostId)
+    ? gameState.hostId === mySessionId
+    : (playerList.length > 0 && playerList[0].userId === myUserId);
   const canStart   = playerList.length >= 2 && isHost;
 
   const handleLeave = useCallback(() => {
@@ -834,7 +840,9 @@ export function BattleLobbyPage() {
             ? 'Up to 12 players · Last bey standing wins · Bots fill remaining slots after 60s'
             : lobbyMode === 'tournament'
             ? 'Unfilled slots become AI bots · Best-of configurable by host'
-            : '2–4 players · Last beyblade standing wins'}
+            : matchSize === 'ffa'
+            ? 'Free-for-all up to 4 players · Last beyblade standing wins'
+            : '1v1 · Last beyblade standing wins'}
         </p>
       </div>
     </div>

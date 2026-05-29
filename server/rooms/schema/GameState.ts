@@ -747,6 +747,9 @@ export class GameState extends Schema {
   // Spectator tracking
   @type("uint16") spectatorCount: number = 0;
 
+  // Host session ID — synced so clients know who controls lobby start
+  @type("string") hostId: string = "";
+
   // Series format (BO1 / BO3 / BO5) — used by all room types
   @type("uint8") currentGame: number = 1;
   @type("uint8") targetWins: number = 1;   // 1=BO1, 2=BO3, 3=BO5

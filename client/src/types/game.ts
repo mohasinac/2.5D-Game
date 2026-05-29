@@ -358,6 +358,8 @@ export interface ServerGameState {
   tournamentMatchId?: string;
   // Spectator tracking
   spectatorCount?: number;
+  // Host session ID — set by server on first player join
+  hostId?: string;
   // Series format (BO1 / BO3 / BO5)
   currentGame?: number;
   targetWins?: number;

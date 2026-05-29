@@ -436,14 +436,42 @@ export function useColyseus({
       const spectate = Boolean((options as any).spectate);
       setIsSpectating(spectate);
 
-      // State change listeners — sync Colyseus state to React
-      connectedRoom.onStateChange((state: any) => {
-        const nextBeyblades = new Map<string, ServerBeyblade>();
-        if (state.beyblades) {
+      // Helper: snapshot beyblades from current Colyseus state into a plain Map
+      const snapshotBeyblades = (state: any): Map<string, ServerBeyblade> => {
+        const m = new Map<string, ServerBeyblade>();
+        if (state?.beyblades) {
           state.beyblades.forEach((b: any, id: string) => {
-            nextBeyblades.set(id, { ...b });
+            // Colyseus schema objects expose properties via getters — spread copies enumerable ones.
+            // If spread returns empty (non-enumerable props), fall back to explicit key copy.
+            const copy: any = { ...b };
+            if (!copy.id && b.id != null) {
+              // Non-enumerable schema — copy known lobby fields explicitly
+              copy.id        = b.id;
+              copy.userId    = b.userId;
+              copy.username  = b.username;
+              copy.beybladeId = b.beybladeId;
+              copy.type      = b.type;
+              copy.imageUrl  = b.imageUrl;
+              copy.isAI      = b.isAI;
+              copy.isActive  = b.isActive;
+              copy.x         = b.x;
+              copy.y         = b.y;
+              copy.spin      = b.spin;
+              copy.maxSpin   = b.maxSpin;
+              copy.health    = b.health;
+              copy.maxHealth = b.maxHealth;
+              copy.velocityX = b.velocityX;
+              copy.velocityY = b.velocityY;
+            }
+            m.set(id, copy as ServerBeyblade);
           });
         }
+        return m;
+      };
+
+      // State change listeners — sync Colyseus state to React
+      connectedRoom.onStateChange((state: any) => {
+        const nextBeyblades = snapshotBeyblades(state);
         setBeyblades(nextBeyblades);
 
         const myB = spectate ? null : nextBeyblades.get(connectedRoom.sessionId) ?? null;
@@ -540,6 +568,8 @@ export function useColyseus({
           tournamentMatchId: state.tournamentMatchId ?? "",
           // Spectator
           spectatorCount: state.spectatorCount ?? 0,
+          // Host
+          hostId: state.hostId ?? "",
           // Series
           currentGame: state.currentGame ?? 1,
           targetWins: state.targetWins ?? 1,
@@ -549,6 +579,13 @@ export function useColyseus({
           launchTimer: state.launchTimer ?? 5,
         } as ServerGameState);
       });
+
+      // Eagerly sync from the initial state delivered at join time (avoids lobby
+      // showing empty player list until the first server-side state change fires).
+      if (connectedRoom.state) {
+        const initBeyblades = snapshotBeyblades(connectedRoom.state);
+        if (initBeyblades.size > 0) setBeyblades(initBeyblades);
+      }
 
       connectedRoom.onMessage("game-end", (data: any) => {
         // Server sends winner as { id, userId, username } object; normalize to userId string

@@ -363,6 +363,14 @@ export class BattleRoom extends BaseRoom<GameState> {
       console.log(`Client ${client.sessionId} is ready`);
     });
 
+    // Host explicitly starts the match (private Friends Rooms only)
+    this.onMessage("start-game", (client, _options: any) => {
+      if (!this.isPrivateRoom) return; // public rooms auto-start
+      if (client.sessionId !== this.state.hostId) return; // only host
+      if (this.playerSessions.size < 2) return; // need ≥2 players
+      this.startWarmup();
+    });
+
     this.registerLaunchInputHandler(this.spectatorSessions);
 
     // K10: possession-request — player swaps control to a nearby arena-spawned friendly bey
@@ -659,13 +667,26 @@ export class BattleRoom extends BaseRoom<GameState> {
       this.accessoryCache.set(client.sessionId, null);
     }
 
-    if (!this.matchStarted) {
-      this.matchStarted = true;
-      this.state.status = "warmup";
-      this.lastInputTime = Date.now();
-      this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
-      this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
+    // Assign host to first non-spectator player
+    if (this.playerSessions.size === 1) {
+      this.state.hostId = client.sessionId;
     }
+
+    // Auto-start warmup:
+    //   - Public/random rooms: start as soon as 2 players have joined (no host button needed)
+    //   - Private rooms: wait for explicit "start-game" message from host
+    if (!this.matchStarted && !this.isPrivateRoom && this.playerSessions.size >= 2) {
+      this.startWarmup();
+    }
+  }
+
+  private startWarmup() {
+    if (this.matchStarted) return;
+    this.matchStarted = true;
+    this.state.status = "warmup";
+    this.lastInputTime = Date.now();
+    this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
   }
 
   onLeave(client: Client, consented: boolean) {
