@@ -76,6 +76,9 @@ export interface SimSnapshot {
   status: SimStatus;
   countdown: number;
   launchTimer: number;
+  launchTilt: number;
+  launchPosition: number;
+  launchPower: number;
   loadingError: string | null;
 }
 
@@ -482,6 +485,9 @@ export class LocalGameSimulation {
       status: this.status,
       countdown: this.countdown,
       launchTimer: this.launchTimer,
+      launchTilt: this.launchTilt,
+      launchPosition: this.launchPosition,
+      launchPower: this.launchPower,
       loadingError: error,
     });
   }

@@ -280,14 +280,14 @@ export function GameRoomPage() {
         )}
 
         {/* Launch phase */}
-        {gameState.status === 'launching' && !local && (
+        {gameState.status === 'launching' && (
           <LaunchPhase
-            launchTimer={gameState.launchTimer ?? LAUNCH_DURATION_S}
-            launchTilt={launchState.tilt}
-            launchPosition={launchState.position}
-            launchPower={launchState.power}
-            chargingStarted={launchState.chargingStarted}
-            launched={launchState.launched}
+            launchTimer={gameState.launchTimer ?? (simSnap?.launchTimer ?? LAUNCH_DURATION_S)}
+            launchTilt={local ? (simSnap?.launchTilt ?? 0) : launchState.tilt}
+            launchPosition={local ? (simSnap?.launchPosition ?? 0.5) : launchState.position}
+            launchPower={local ? (simSnap?.launchPower ?? 0) : launchState.power}
+            chargingStarted={local ? ((simSnap?.launchPower ?? 0) > 0) : launchState.chargingStarted}
+            launched={local ? false : launchState.launched}
             failed={myBeyblade ? !!(myBeyblade as unknown as Record<string, boolean>)['launchFailed'] : false}
             myBeyId={myBeyblade?.id}
             beyblades={beyblades}
@@ -327,7 +327,7 @@ export function GameRoomPage() {
         {/* Launch cinematic */}
         <LaunchCinematic
           active={gameState.status === 'launching'}
-          power={myBeyblade ? (myBeyblade as unknown as Record<string, number>)['launchPower'] ?? launchState.power : launchState.power}
+          power={local ? (simSnap?.launchPower ?? 0) : (myBeyblade ? (myBeyblade as unknown as Record<string, number>)['launchPower'] ?? launchState.power : launchState.power)}
         />
 
         {/* QTE — transform wrapper constrains `position:fixed` children to this viewport */}

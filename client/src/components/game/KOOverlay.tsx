@@ -60,7 +60,7 @@ export default function KOOverlay({
         : "rgba(245, 158, 11, 0.5)";
 
   return (
-    <div className="fixed inset-0 z-[80] pointer-events-none overflow-hidden flex items-center justify-center">
+    <div className="absolute inset-0 z-[80] pointer-events-none overflow-hidden flex items-center justify-center">
       <style>{`
         @keyframes ko-flash {
           0% { opacity: 0.8; }

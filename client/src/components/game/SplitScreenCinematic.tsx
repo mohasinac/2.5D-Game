@@ -54,7 +54,7 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
 
   return (
     <div
-      className="fixed inset-0 grid pointer-events-none z-[900] [transition:opacity_0.3s_ease-in]"
+      className="absolute inset-0 grid pointer-events-none z-[900] [transition:opacity_0.3s_ease-in]"
       style={{ "--gcols": `repeat(${cols}, 1fr)`, "--grows": `repeat(${rows}, 1fr)`, gridTemplateColumns: "var(--gcols)", gridTemplateRows: "var(--grows)", opacity: visible ? 1 : 0 } as React.CSSProperties}
     >
       {participants.map(p => {

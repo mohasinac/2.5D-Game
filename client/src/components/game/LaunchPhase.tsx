@@ -105,13 +105,13 @@ function LetItRipBanner() {
           className="absolute inset-0 pointer-events-none opacity-60 [background-image:repeating-linear-gradient(90deg,transparent_0%,transparent_45%,rgba(255,255,255,0.12)_46%,rgba(255,255,255,0.12)_54%,transparent_55%)]"
         />
         <div className="relative flex items-center justify-center gap-3">
-          <span className="lir-word text-white font-black italic text-[clamp(2rem,6vw,4rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0s_both]">
+          <span className="lir-word text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0s_both]">
             LET
           </span>
-          <span className="lir-word text-white font-black italic text-[clamp(2rem,6vw,4rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0.15s_both]">
+          <span className="lir-word text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0.15s_both]">
             IT
           </span>
-          <span className="lir-word text-white font-black italic text-[clamp(2rem,6vw,4rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0.3s_both]">
+          <span className="lir-word text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0.3s_both]">
             RIP!
           </span>
         </div>
@@ -327,7 +327,7 @@ function RipcordLauncherUI({
       {/* Countdown */}
       <div className="w-full text-center">
         <div
-          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-[clamp(2rem,6vw,4rem)] text-[color:var(--tc)] [text-shadow:0_0_20px_var(--tc88)]"
+          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-[clamp(1rem,3vw,1.8rem)] text-[color:var(--tc)] [text-shadow:0_0_20px_var(--tc88)]"
           style={{ "--tc": timerColor, "--tc88": `${timerColor}88` } as React.CSSProperties}
         >
           {Math.ceil(Math.max(0, launchTimer))}s
@@ -558,7 +558,7 @@ export function LaunchPhase({
   return (
     <div
       data-testid="launch-phase-overlay"
-      className="fixed inset-0 z-[80] flex flex-col items-center justify-center pointer-events-none select-none"
+      className="absolute inset-0 z-[80] flex flex-col items-center justify-center pointer-events-none select-none"
     >
       {/* World background */}
       {hasWorldBg && (

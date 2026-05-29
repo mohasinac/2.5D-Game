@@ -52,7 +52,7 @@ export function BitBeastCinematic({ imageUrl, moveName, visible }: Props) {
 
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[195] pointer-events-none"
+        className="absolute inset-0 z-[195] pointer-events-none"
         style={{
           background: "radial-gradient(ellipse at center, rgba(60,30,100,0.9) 0%, rgba(0,0,0,0.82) 70%)",
           animation: "bb-bg-pulse 0.9s ease-in-out infinite",
@@ -63,7 +63,7 @@ export function BitBeastCinematic({ imageUrl, moveName, visible }: Props) {
 
       {/* Beast image + move name */}
       <div
-        className="fixed inset-0 z-[196] pointer-events-none flex flex-col items-center justify-center gap-4"
+        className="absolute inset-0 z-[196] pointer-events-none flex flex-col items-center justify-center gap-4"
         style={{ opacity: fading ? 0 : 1, transition: fading ? "opacity 0.35s ease-out" : "none" }}
       >
         {/* Glow ring behind image */}

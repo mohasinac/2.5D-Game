@@ -31,7 +31,7 @@ export default function LaunchCinematic({
 
   return (
     <div
-      className="fixed inset-0 z-[80] pointer-events-none overflow-hidden flex items-center justify-center"
+      className="absolute inset-0 z-[80] pointer-events-none overflow-hidden flex items-center justify-center"
       style={{
         opacity: fadeOut ? 0 : 1,
         transition: "opacity 500ms ease-out",
@@ -105,7 +105,7 @@ export default function LaunchCinematic({
 
       {/* LET IT RIP text */}
       <div
-        className="text-6xl sm:text-7xl md:text-8xl font-black uppercase tracking-wider select-none"
+        className="text-3xl sm:text-4xl font-black uppercase tracking-wider select-none"
         style={{
           color: isHighPower ? "#fbbf24" : "#ffffff",
           textShadow: isHighPower
