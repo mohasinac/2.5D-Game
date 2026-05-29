@@ -8024,7 +8024,1389 @@ function sniperChargeCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +7 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1901 as further franchise moves are provided.*
+
+
+---
+
+## Case 1901 — GIMMICK: Flame Libra T125ES — T125 Arena Vibration & ES Sustained Acoustic Vortex
+
+**Beyblade:** Flame Libra T125ES (TT JP: フレイムリブラT125ES; Hasbro EN: Flame Libra T125ES)
+**Blader:** Yu Tendo | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Libra | 4.2 | 24.0 |
+| Fusion Wheel | Flame | 27.0 | 27.0 |
+| Spin Track | T125 (Triangle 125) | 1.7 | 6.0 |
+| Performance Tip | ES (Eternal Sharp) | 1.5 | 1.5 |
+| **Total** | | **34.4** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention. This case covers Sonic Buster's vibration-and-vortex mechanism; Sonic Wave's resonance-amplified variant is covered in Cases 1904–1906.)
+
+**I_total** = 27.0×10⁻³ × 0.027² + 4.2×10⁻³ × 0.024² + 1.7×10⁻³ × 0.006² + 1.5×10⁻³ × 0.0015²
+           = 1.968×10⁻⁵ + 2.419×10⁻⁶ + 6.12×10⁻⁸ + 3.375×10⁻⁹
+           = **2.217×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.217×10⁻⁵ × 650 = **1.441×10⁻² kg·m²/s**
+
+---
+
+### 1. T125 Triangular Fins — Arena Vibration Frequency & Sand Destabilization
+
+The T125 (Triangle 125) Spin Track carries 3 triangular protrusions. As Libra spins, each fin delivers a periodic pressure impulse to the arena floor:
+
+```
+f_vib = N_fins × ω₀ / (2π) = 3 × 650 / (2π) = 310.4 Hz
+
+F_cent = m_T125 × ω₀² × r_T125 = 1.7×10⁻³ × 650² × 0.006 = 4.310 N  (per fin, centrifugal)
+
+Contact displacement amplitude (compacted arena: k_arena = 2×10⁶ N/m):
+A_vib = F_cent / k_arena = 4.310 / 2×10⁶ = 2.155×10⁻⁶ m = 2.155 μm  (per fin pass)
+```
+
+At 310.4 Hz the micro-displacement (2.155 μm) repeatedly breaks inter-particle compaction bonds in the granular arena substrate, converting the compacted surface into loose sand within the vibration radius. Opponent μ_sand = 0.45 vs normal μ_normal = 0.30 → Δμ = +0.15:
+
+```
+τ_sand_drain = Δμ × m_opp × g × r_tip_opp = 0.15 × 0.038 × 9.81 × 0.005 = 2.796×10⁻⁴ N·m
+(additional spin drain torque on opponent in sand zone)
+```
+
+---
+
+### 2. ES Bearing Tip & Flame FW — Sustained Acoustic Vortex
+
+The ES (Eternal Sharp) bearing tip enables long-duration spin, sustaining both the T125 vibration and the Flame FW acoustic vortex output:
+
+```
+τ_ES    = μ_ES × m × g × r_ES = 0.04 × 0.0344 × 9.81 × 0.0015 = 2.024×10⁻⁵ N·m
+t_spin  = L₀ / τ_ES = 1.441×10⁻² / 2.024×10⁻⁵ = 712 s  (≈ 11.9 min sustained vibration)
+```
+
+The Flame FW at v_tip generates a Rankine acoustic vortex — the characteristic "terrible shrieking noise":
+
+```
+v_tip  = ω₀ × r_FW = 650 × 0.027 = 17.55 m/s
+
+Γ_L    = 2π × v_tip × r_FW = 2π × 17.55 × 0.027 = 2.977 m²/s
+
+At r_opp = 50 mm:
+v_L    = Γ_L / (2π × r_opp) = 2.977 / (2π × 0.050) = 9.477 m/s
+q_L    = ½ × ρ_air × v_L² = ½ × 1.225 × 9.477² = 55.01 Pa
+F_sonic = q_L × A_opp = 55.01 × π × 0.020² = 55.01 × 1.257×10⁻³ = 0.06913 N  (outward)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 34.4 g |
+| I_total | 2.217×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.441×10⁻² kg·m²/s |
+| v_tip | 17.55 m/s |
+| f_vib (T125 3-fin) | 310.4 Hz |
+| A_vib | 2.155 μm |
+| τ_sand_drain | 2.796×10⁻⁴ N·m |
+| Γ_L | 2.977 m²/s |
+| F_sonic (r=50mm) | 0.06913 N |
+| τ_ES | 2.024×10⁻⁵ N·m |
+| t_spin | 712 s |
+
+---
+
+## Case 1902 — SPECIAL: Sonic Buster — Yu Tendo / Flame Libra T125ES
+
+**Blader:** Yu Tendo | **Beyblade:** Flame Libra T125ES | **Type:** attack
+
+### Description
+
+Sonic Buster (originally referred to as "Sonic Wave") is the first special move used by Yu Tendo and his Flame Libra T125ES. Libra vibrates extremely fast, turning the field around it into vulnerable sand. Libra then makes a terrible shrieking noise that pierces the ears of the opponent, delivering an acoustic pressure impulse that disrupts their balance.
+
+### Stage 1 — Arena Sand Destabilization (T125 Vibration Zone)
+
+From Case 1901: f_vib = 310.4 Hz, A_vib = 2.155 μm → arena sand mode within vibration radius.
+
+Sand zone effect on opponent (t_sand = 0.5 s duration):
+
+```
+Additional spin drain torque: τ_sand_drain = 2.796×10⁻⁴ N·m
+Δω_opp_drain ≈ τ_sand_drain × t_sand / I_opp_est (continuous opponent spin reduction from sand friction)
+```
+
+### Stage 2 — Sonic Wave (Acoustic Vortex Impulse, t_wave = 0.5 s)
+
+From Case 1901: F_sonic = 0.06913 N at r_opp = 50 mm.
+
+```
+J_sonic = F_sonic × t_wave = 0.06913 × 0.5 = 3.457×10⁻² N·s
+
+Δv_opp = J_sonic / m_opp = 3.457×10⁻² / 0.038 = 0.910 m/s
+```
+
+**Effect on Flame Libra (spin drain):**
+
+```
+Δω_L    = J_sonic × r_contact / I_L = 3.457×10⁻² × 0.025 / 2.217×10⁻⁵ = 39.0 rad/s
+ω_remain = 650 − 39.0 = 611.0 rad/s  (94.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Yu's Libra bit-beast fully manifests as a green-glowing winged spirit — the T125 vibration amplifies into a true arena-wide sonic collapse that physically disintegrates the opponent's stability while the shrieking shockwave crushes them from all directions.
+
+[M] factor = **7.0 ×** (Yu's Libra sonic spirit)
+[M] Δv = 0.910 × 7.0 = **6.4 m/s** (sonic ring-out)
+
+> **Note:** Physical values describe T125 3-fin vibration at 310.4 Hz (A_vib=2.155 μm) converting arena to sand (Δμ=+0.15, τ_drain=2.796×10⁻⁴ N·m on opponent), acoustic vortex F=0.06913 N sustained 0.5s → J=3.457×10⁻² N·s, Δv=0.910 m/s. [M] values represent Yu's Libra spirit amplifying the vibration into a true arena-collapse shockwave. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sonicBusterSpecial(bey: Beyblade, target: Beyblade): void {
+  // T125 310.4Hz vibration→sand (A_vib=2.155μm, τ_drain=2.796×10⁻⁴N·m); F_sonic=0.06913N×0.5s→J=3.457×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.03457;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Yu Libra sonic spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a multi-fin Spin Track (3+ fins at r ≥ 5 mm, generating floor-contact vibration at f ≥ 300 Hz) combined with a smooth Fusion Wheel (r_FW ≥ 25 mm, generating Rankine vortex F ≥ 0.05 N at r=50 mm) and a low-friction bearing tip (μ ≤ 0.05, t_spin ≥ 600 s) for sustained vibration and acoustic output. Standard game instance: Flame Libra T125ES (Yu Tendo, Metal Fusion).
+
+---
+
+## Case 1903 — COMBO: Sound Burst — Flame Libra
+
+**Sequence:** A ↑ A (attack · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Yu Tendo
+
+### Physics Justification
+
+The first attack (A) fires a partial sonic wave burst (t_wave1 = 0.20 s):
+
+```
+J_wave1 = F_sonic × t_wave1 = 0.06913 × 0.20 = 1.383×10⁻² N·s
+```
+
+The moveUp (↑) elevates Flame Libra using T125's 125 mm height, raising the vortex output axis for a top-down wave propagation. The higher launch angle concentrates the wave energy on the second attack (T125 height factor: 1.25×):
+
+The second attack (A) fires at T125-height-enhanced amplitude:
+
+```
+J_wave2 = J_wave1 × 1.25 = 1.383×10⁻² × 1.25 = 1.729×10⁻² N·s
+```
+
+The ES bearing free-spin mechanism reconverts the wave recoil impulse back to spin on the bearing inner race rebound:
+
+```
+Δω = η_ES × (J_wave1 + J_wave2) × r_contact / I_L
+   = 0.35 × (1.383×10⁻² + 1.729×10⁻²) × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 3.112×10⁻² × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 35.09
+   = +12.3 rad/s  ≈ +12 rad/s
+```
+
+(η_ES = 0.35: ES bearing free-spin recoil reconversion — near-frictionless inner race returns more energy than rubber.) Double partial wave with T125 elevation boost gives damageMultiplier **1.20×**. lockMs = 0 (pure wave attack, no dwell).
+
+**Parameters:**
+- spinGain: +12 rad/s (ES bearing free-spin recoil η = 0.35)
+- damageMultiplier: 1.20 (double partial sonic wave, T125 height boost ×1.25)
+- lockMs: 0 (pure attack)
+
+### TypeScript
+
+```typescript
+function soundBurstCombo(bey: Beyblade, target: Beyblade): void {
+  // ES bearing recoil: Δω ≈ +12 rad/s (η=0.35; J1=1.383×10⁻²+J2=1.729×10⁻²; T125 ×1.25)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Double partial wave + T125 height: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1904 — GIMMICK: Flame Libra T125ES — Resonance Amplification & Arena-Wide Sonic Collapse
+
+**Beyblade:** Flame Libra T125ES (TT JP: フレイムリブラT125ES; Hasbro EN: Flame Libra T125ES)
+**Blader:** Yu Tendo | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+(Same as Case 1901. Repeated for reference.)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Libra | 4.2 | 24.0 |
+| Fusion Wheel | Flame | 27.0 | 27.0 |
+| Spin Track | T125 (Triangle 125) | 1.7 | 6.0 |
+| Performance Tip | ES (Eternal Sharp) | 1.5 | 1.5 |
+| **Total** | | **34.4** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention. This case covers Sonic Wave's resonance-amplified collapse mechanism; the baseline Sonic Buster vibration is covered in Cases 1901–1903.)
+
+**I_total** = 2.217×10⁻⁵ kg·m²  (same as Case 1901)
+ω₀ = 650 rad/s | L₀ = 1.441×10⁻² kg·m²/s
+
+---
+
+### 1. T125 Resonance Amplification (Q-factor = 10)
+
+Sonic Wave sustains the T125 vibration long enough for the arena to reach structural resonance — the substrate oscillation frequency (310.4 Hz) couples with the arena bowl's natural frequency. The Q (quality) factor of a rigid-walled stadium arena ≈ 10:
+
+```
+A_vib_base    = 2.155×10⁻⁶ m  (per Case 1901: per-fin micro-displacement)
+
+A_resonance   = Q_factor × A_vib_base = 10 × 2.155×10⁻⁶ = 2.155×10⁻⁵ m = 21.55 μm
+```
+
+At 21.55 μm amplitude the entire arena substrate (sand/compacted granular fill) transitions to full fluidisation — all inter-particle contact bonds broken over the complete arena floor:
+
+```
+r_wave = arena radius = 150 mm  (full arena coverage at resonance)
+τ_sand_wave = Δμ × m_opp × g × r_tip_opp = 0.15 × 0.038 × 9.81 × 0.005 = 2.796×10⁻⁴ N·m
+(same Δμ = +0.15; full-arena coverage vs. local zone in Sonic Buster)
+```
+
+---
+
+### 2. Structural Cyclic Stress — Critical Spin Threshold
+
+The amplified vibration subjects the Flame FW to cyclic bending stress at each oscillation:
+
+```
+σ_cyclic = E_ABS × A_resonance / r_FW
+         = 2.0×10⁹ × 2.155×10⁻⁵ / 0.027
+         = 1.596×10⁶ Pa = 1.596 MPa
+
+Safety factor at full spin:
+SF = σ_y_ABS / σ_cyclic = 55×10⁶ / 1.596×10⁶ = 34.5  (safe at ω₀)
+
+Safety factor at 40% spin (ω = 260 rad/s):
+A_resonance_low = (260/650)² × 2.155×10⁻⁵ = 0.16 × 2.155×10⁻⁵ = 3.448×10⁻⁶ m
+σ_cyclic_low = 2.0×10⁹ × 3.448×10⁻⁶ / 0.027 = 0.2554 MPa  (SF = 215 — safe)
+```
+
+The vibration amplitude scales with ω², keeping the bey safe at any spin. The risk is pure spin drain from the extended acoustic output.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 34.4 g |
+| I_total | 2.217×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.441×10⁻² kg·m²/s |
+| Q_factor | 10 |
+| A_vib_base | 2.155 μm |
+| A_resonance | 21.55 μm |
+| r_wave | 150 mm (full arena) |
+| τ_sand_wave | 2.796×10⁻⁴ N·m |
+| σ_cyclic (full spin) | 1.596 MPa |
+| SF (full spin) | 34.5 |
+| τ_ES | 2.024×10⁻⁵ N·m |
+| t_spin | 712 s |
+
+---
+
+## Case 1905 — SPECIAL: Sonic Wave — Yu Tendo / Flame Libra T125ES
+
+**Blader:** Yu Tendo | **Beyblade:** Flame Libra T125ES | **Type:** attack
+
+### Description
+
+Sonic Wave is the second and more powerful special move used by Yu Tendo and his Flame Libra T125ES. In this move, Libra creates a massive sonic vortex that expands outward from the arena centre, converting the entire stadium floor into a fluidised sand field. The shrieking sound wave is orders of magnitude more powerful than Sonic Buster — it engulfs the whole arena and has been shown to crack stadium walls and send opponents flying in all directions. Yu first used Sonic Wave during his second battle against Gingka in Metal Fusion.
+
+### Stage 1 — Full-Arena Resonance Sand Collapse (t_sand = 1.0 s)
+
+From Case 1904: A_resonance = 21.55 μm, r_wave = 150 mm (full arena). Opponent fully immersed in fluidised zone for entire move duration.
+
+```
+Additional spin drain on opponent during t_sand:
+τ_sand_wave = 2.796×10⁻⁴ N·m  (full arena sand mode, same Δμ per Case 1901)
+```
+
+### Stage 2 — Extended Sonic Vortex (t_wave = 1.0 s)
+
+From Case 1901: F_sonic = 0.06913 N (Rankine vortex at r_opp = 50 mm). Sustained full second at resonance amplitude:
+
+```
+J_sonic_wave = F_sonic × t_wave = 0.06913 × 1.0 = 6.913×10⁻² N·s
+
+Δv_opp = J_sonic_wave / m_opp = 6.913×10⁻² / 0.038 = 1.819 m/s
+```
+
+**Effect on Flame Libra (spin drain — extended resonance output):**
+
+```
+Δω_L    = J_sonic_wave × r_contact / I_L = 6.913×10⁻² × 0.025 / 2.217×10⁻⁵ = 78.0 rad/s
+ω_remain = 650 − 78.0 = 572.0 rad/s  (88.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Yu's Libra spirit fully manifests in Sonic Wave — the entire arena becomes a resonating instrument of Libra's will, the fluidised sand rises in a column of sound and the shrieking shockwave expands until the stadium walls themselves begin to fracture.
+
+[M] factor = **7.0 ×** (Yu's Libra sonic resonance spirit)
+[M] Δv = 1.819 × 7.0 = **12.7 m/s** (arena-wide sonic ring-out)
+
+> **Note:** Physical values describe T125 resonance amplification Q=10, A_resonance=21.55 μm → full-arena sand (r=150mm, τ_drain=2.796×10⁻⁴ N·m on opponent), extended Rankine vortex F=0.06913 N × 1.0s → J=6.913×10⁻² N·s, Δv=1.819 m/s; Libra self-drain Δω=78.0 rad/s. [M] values represent Yu's Libra spirit amplifying the resonance into a true arena-collapse sonic catastrophe. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sonicWaveSpecial(bey: Beyblade, target: Beyblade): void {
+  // Q=10 resonance: A_resonance=21.55μm→full-arena sand; F_sonic=0.06913N×1.0s→J=6.913×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.06913;
+  const primeThreshold = bey.maxSpin * 0.40;
+  const selfDrain = bey.spin < primeThreshold ? 156.0 : 78.0; // doubled if below 40% (resonance overload)
+  bey.spin = Math.max(0, bey.spin - selfDrain);
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Yu Libra arena-resonance spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a multi-fin Spin Track (3+ fins at r ≥ 5 mm, vibration ≥ 300 Hz) combined with a smooth Fusion Wheel generating Rankine vortex F ≥ 0.05 N at r=50 mm and a bearing tip (μ ≤ 0.05, t_spin ≥ 600 s) — with enough sustained spin for resonance to develop (ω₀ ≥ 600 rad/s and t_active ≥ 1.0 s). Standard game instance: Flame Libra T125ES (Yu Tendo, Metal Fusion).
+
+---
+
+## Case 1906 — COMBO: Resonant Strike — Flame Libra
+
+**Sequence:** K A A (defense · attack · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Yu Tendo
+
+### Physics Justification
+
+The defense input (K) represents Libra sinking into a resonance-prime stance — the ES bearing locks into a rigid-contact mode for one tick, coupling the T125 vibration more efficiently into the floor. This primes the Q-factor from a baseline of Q=3 to Q=6 (doubled resonance depth):
+
+```
+A_prime = 6 × 2.155×10⁻⁶ = 1.293×10⁻⁵ m = 12.93 μm  (partial resonance)
+```
+
+The first attack (A) fires the primed partial resonance wave (t_wave1 = 0.15 s):
+
+```
+J_wave1 = F_sonic × t_wave1 × (A_prime / A_vib_base)_scale
+        ≈ 0.06913 × 0.15 × 1.0  (scaled to base F_sonic; partial resonance captured in timing)
+        = 1.037×10⁻² N·s
+```
+
+The second attack (A) fires a full resonance-boosted wave (t_wave2 = 0.15 s, amplitude gain ×1.5 over first attack from resonance buildup):
+
+```
+J_wave2 = J_wave1 × 1.50 = 1.037×10⁻² × 1.50 = 1.556×10⁻² N·s
+```
+
+The ES bearing rebound reconverts the resonance wave recoil to spin (η_ES = 0.35):
+
+```
+Δω = η_ES × (J_wave1 + J_wave2) × r_contact / I_L
+   = 0.35 × (1.037×10⁻² + 1.556×10⁻²) × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 2.593×10⁻² × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 29.24
+   = +10.2 rad/s  ≈ +10 rad/s
+```
+
+(η_ES = 0.35: ES bearing near-frictionless inner race rebound.) The resonance-primed double wave gives damageMultiplier **1.20×**. lockMs = 150 (brief resonance dwell — priming cycle holds contact).
+
+**Parameters:**
+- spinGain: +10 rad/s (ES bearing resonance recoil η = 0.35)
+- damageMultiplier: 1.20 (resonance-primed double partial sonic wave)
+- lockMs: 150 (priming stance dwell)
+
+### TypeScript
+
+```typescript
+function resonantStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // ES resonance recoil: Δω ≈ +10 rad/s (η=0.35; J1=1.037×10⁻²+J2=1.556×10⁻²; ×1.5 buildup)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Resonance-primed double partial wave: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1907 — GIMMICK: Vortex Ape (Bakuten Shoot) — Flat Tip Charge Sprint & Triboelectric Spark Shield
+
+**Beyblade:** Vortex Ape (Bakuten Shoot: Beyblade)
+**Blader:** Dunga | **Series:** Beyblade (Bakuten Shoot, plastic generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Vortex Ape AR | 15.0 | 32.0 |
+| Weight Disk | 10-Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | Flat Base (BB) | 2.0 | 3.0 |
+| **Total** | | **38.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention; contributes negligible I at r ≈ 0.)
+
+**I_total** = 15.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.536×10⁻⁵ + 2.205×10⁻⁵ + 3.500×10⁻⁶ + 1.80×10⁻⁸
+           = **4.093×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (plastic-gen Bakuten Shoot standard launch)
+L₀ = I × ω₀ = 4.093×10⁻⁵ × 700 = **2.865×10⁻² kg·m²/s**
+
+---
+
+### 1. Flat Blade Base — Charge Sprint (Friction-Driven Run)
+
+The Flat Blade Base has high rubber-contact friction (μ_flat = 0.35) that drives aggressive orbital motion. On the smooth stadium bowl Dunga commands a straight-line charge sprint toward the opponent — friction accelerates the bey from its orbital path into a direct dash:
+
+```
+a_flat = μ_flat × g = 0.35 × 9.81 = 3.434 m/s²  (sprint acceleration)
+
+Over sprint distance r_sprint = 0.15 m (half-arena radius):
+v_charge = √(2 × a_flat × r_sprint) = √(2 × 3.434 × 0.15) = √(1.030) = 1.015 m/s
+```
+
+Flat tip orbital speed and spin decay:
+
+```
+v_orbital_flat = μ_flat × ω₀ × r_BB = 0.35 × 700 × 0.003 = 0.735 m/s
+τ_flat  = μ_flat × m × g × r_BB = 0.35 × 0.0385 × 9.81 × 0.003 = 3.980×10⁻⁴ N·m
+t_spin  = L₀ / τ_flat = 2.865×10⁻² / 3.980×10⁻⁴ = 72.0 s
+```
+
+---
+
+### 2. AR Vortex Ape — Triboelectric Spark Shield
+
+The Vortex Ape AR carries wide swept protrusions at r_AR = 32 mm. At ω₀ = 700 rad/s, the blade tips charge triboelectrically by air friction (ABS on air):
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+
+σ_e = ε₀ × E_breakdown × (v_tip / v_ref)
+    = 8.854×10⁻¹² × 3×10⁶ × (22.40 / 343)
+    = 2.657×10⁻⁵ × 0.06531
+    = 1.735×10⁻⁶ C/m²
+
+Contact arc area per blade tip (t_c = 0.5 ms contact, arc width ≈ 5 mm):
+A_arc = v_tip × t_c × w_blade = 22.40 × 5×10⁻⁴ × 0.005 = 5.600×10⁻⁵ m²
+
+Q_total = σ_e × A_arc × N_blades  [N_blades = 6 Vortex Ape protrusions]
+        = 1.735×10⁻⁶ × 5.600×10⁻⁵ × 6 = 5.830×10⁻¹⁰ C
+
+Gap capacitance at d = 1 mm:
+C_gap = ε₀ × A_arc / d = 8.854×10⁻¹² × 5.600×10⁻⁵ / 1×10⁻³ = 4.959×10⁻¹³ F
+V_spark = Q_total / C_gap = 5.830×10⁻¹⁰ / 4.959×10⁻¹³ = 1175 V  (> 300 V breakdown → spark)
+E_spark = ½ × C_gap × V_spark² = ½ × 4.959×10⁻¹³ × 1175² = 3.424×10⁻⁷ J
+```
+
+The spark discharge slightly increases the effective coefficient of restitution at blade contact (electrostatic repulsion adds to mechanical rebound): e_base = 0.65 → e_eff = 0.65 × 1.20 = **0.78** (+20% spark restitution boost).
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 38.5 g |
+| I_total | 4.093×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.865×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| a_flat | 3.434 m/s² |
+| v_charge | 1.015 m/s |
+| v_orbital_flat | 0.735 m/s |
+| σ_e | 1.735×10⁻⁶ C/m² |
+| V_spark | 1175 V |
+| E_spark | 3.424×10⁻⁷ J |
+| e_eff (with spark) | 0.78 |
+| τ_flat | 3.980×10⁻⁴ N·m |
+| t_spin | 72.0 s |
+
+---
+
+## Case 1908 — SPECIAL: Spark Hammer — Dunga / Vortex Ape
+
+**Blader:** Dunga | **Beyblade:** Vortex Ape | **Type:** attack
+
+### Description
+
+Spark Hammer (Japanese: スパークハンマー) is a Special Move used by Dunga and his Vortex Ape Beyblade. Dunga commands Vortex Ape to charge in a straight line across the arena at maximum flat-tip speed. As Vortex Ape's AR protrusions charge with static electricity from the high-speed air friction, a ring of sparks surrounds the blade like a shield — the "Spark Hammer" effect. The electrified AR then delivers a hammer-blow collision that sends the opponent flying with extra force from the spark discharge.
+
+### Stage — Flat Tip Sprint + Spark-Enhanced AR Smash
+
+From Case 1907: v_charge = 1.015 m/s, e_eff = 0.78 (spark-boosted restitution).
+
+```
+m_eff = (m_VA × m_opp) / (m_VA + m_opp) = (0.0385 × 0.038) / (0.0385 + 0.038)
+      = 1.4630×10⁻³ / 0.0765 = 1.912×10⁻² kg
+
+J_spark = m_eff × (1 + e_eff) × v_charge
+        = 1.912×10⁻² × 1.78 × 1.015
+        = 1.912×10⁻² × 1.8067 = 3.456×10⁻² N·s
+
+Δv_opp = J_spark / m_opp = 3.456×10⁻² / 0.038 = 0.909 m/s
+```
+
+**Effect on Vortex Ape (spin drain):**
+
+```
+Δω_VA    = J_spark × r_contact / I_VA = 3.456×10⁻² × 0.030 / 4.093×10⁻⁵ = 25.3 rad/s
+ω_remain = 700 − 25.3 = 674.7 rad/s  (96.4% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dunga's Ape Bit-Beast fully charges the Vortex Ape AR into a crackling ball of lightning — the spark shield becomes a true electrical storm that hammers the opponent with both physical smash force and a full electrostatic discharge blast.
+
+[M] factor = **7.0 ×** (Dunga Ape spirit electric storm)
+[M] Δv = 0.909 × 7.0 = **6.4 m/s** (spark hammer ring-out)
+
+> **Note:** Physical values describe flat-tip sprint a=3.434 m/s² over 0.15m → v_charge=1.015 m/s, triboelectric spark e_boost=+20% (e_eff=0.78), J=3.456×10⁻² N·s, Δv=0.909 m/s. [M] values represent Dunga's Ape spirit igniting the full Spark Hammer lightning blast. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sparkHammerSpecial(bey: Beyblade, target: Beyblade): void {
+  // Flat sprint a=3.434m/s²×0.15m→v=1.015m/s; spark e_eff=0.78 (+20%); J=3.456×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.03456;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Dunga Ape electric storm)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a Flat Blade Base (or equivalent flat-contact tip, μ ≥ 0.30) combined with an Attack Ring carrying 6+ swept protrusions at r_AR ≥ 30 mm (generating triboelectric spark at v_tip ≥ 20 m/s, V_spark ≥ 300 V). The flat tip drives the charge sprint; AR spark discharges at contact for +20% restitution. Standard game instance: Vortex Ape (Dunga, Bakuten Shoot Beyblade).
+
+---
+
+## Case 1909 — COMBO: Electric Charge — Vortex Ape
+
+**Sequence:** → J A (moveRight · jump · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Dunga
+
+### Physics Justification
+
+The moveRight (→) begins the flat-tip sprint across the arena (partial charge, r_partial = 0.075 m — half the full sprint distance):
+
+```
+v_partial = √(2 × a_flat × r_partial) = √(2 × 3.434 × 0.075) = √(0.5151) = 0.7177 m/s
+```
+
+The jump (J) is a short hop — the flat base bounces off the arena floor (elastic contact, e_hop = 0.40):
+
+```
+v_hop = e_hop × v_orbital_flat = 0.40 × 0.735 = 0.294 m/s  (upward)
+h_hop = v_hop² / (2g) = 0.294² / 19.62 = 4.4 mm
+```
+
+The attack (A) fires at landing from the hop, combining the sprint approach velocity with the descent re-entry speed:
+
+```
+v_impact = √(v_partial² + 2g × h_hop)
+         = √(0.7177² + 2 × 9.81 × 0.0044)
+         = √(0.5151 + 0.08632)
+         = √0.6014 = 0.7755 m/s
+
+J_elec = m_eff × (1 + e_eff) × v_impact = 1.912×10⁻² × 1.78 × 0.7755
+       = 1.912×10⁻² × 1.3804 = 2.640×10⁻² N·s
+```
+
+The flat base friction rebound on landing reconverts contact impulse to spin:
+
+```
+Δω = η_flat × J_elec × r_contact / I_VA
+   = 0.28 × 2.640×10⁻² × 0.030 / 4.093×10⁻⁵
+   = 0.28 × 7.920×10⁻⁴ / 4.093×10⁻⁵
+   = 0.28 × 19.35
+   = +5.4 rad/s  ≈ +5 rad/s
+```
+
+(η_flat = 0.28: flat tip moderate-rebound recoil reconversion.) The sprint-hop-smash AR contact gives damageMultiplier **1.25×**. lockMs = 0 (pure attack dash, no dwell).
+
+**Parameters:**
+- spinGain: +5 rad/s (flat base hop rebound η = 0.28)
+- damageMultiplier: 1.25 (sprint-hop spark AR smash)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function electricChargeCombo(bey: Beyblade, target: Beyblade): void {
+  // Flat hop rebound: Δω ≈ +5 rad/s (η=0.28, h_hop=4.4mm, v_impact=0.7755m/s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 5);
+  // Sprint-hop spark AR smash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +5 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1910 — GIMMICK: Dranzer F (Bakuten Shoot) — Wing AR Lift & Aerial Overhead Descent Strike
+
+**Beyblade:** Dranzer F (Bakuten Shoot: Beyblade)
+**Blader:** Kai Hiwatari | **Series:** Beyblade (Bakuten Shoot, plastic generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Dranzer (4-wing phoenix) | 14.0 | 32.0 |
+| Weight Disk | Circle Balance | 14.0 | 34.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | Flat Base (BB) | 2.0 | 3.0 |
+| **Total** | | **33.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 14.0×10⁻³ × 0.034² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.434×10⁻⁵ + 1.619×10⁻⁵ + 3.500×10⁻⁶ + 1.80×10⁻⁸
+           = **3.405×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 3.405×10⁻⁵ × 700 = **2.384×10⁻² kg·m²/s**
+
+---
+
+### 1. Dranzer AR — Four-Wing Lift Force
+
+The Dranzer Attack Ring carries four swept phoenix-wing protrusions designed to generate aerodynamic lift at high spin. Each wing is modelled as a flat-plate aerofoil (C_L = 0.6, A_wing = 1.2×10⁻⁴ m² per wing):
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+
+F_lift_total = N_wings × ½ × ρ_air × v_tip² × C_L × A_wing
+             = 4 × ½ × 1.225 × 22.40² × 0.6 × 1.2×10⁻⁴
+             = 4 × ½ × 1.225 × 501.76 × 7.2×10⁻⁵
+             = 4 × 2.218×10⁻² = 8.871×10⁻² N
+
+Weight: W = m × g = 0.0335 × 9.81 = 0.3286 N
+
+Lift fraction: F_lift / W = 8.871×10⁻² / 0.3286 = 26.99%  ≈ 27%
+```
+
+Effective gravity during upward flight (lift partially opposes gravity):
+
+```
+g_eff = g × (1 − F_lift / W) = 9.81 × (1 − 0.2699) = 9.81 × 0.7301 = 7.165 m/s²
+```
+
+---
+
+### 2. Bowl-Exit Trajectory — Apex Height & Descent Strike
+
+Dranzer F uses the bowl wall to redirect from horizontal orbit into a vertical launch (bowl wall angle θ = 60°):
+
+```
+v_orbital = μ_flat × ω₀ × r_BB = 0.35 × 700 × 0.003 = 0.735 m/s
+
+v_z (upward at bowl exit) = v_orbital × tan(60°) = 0.735 × 1.732 = 1.273 m/s
+
+Apex height (under g_eff — lift active during ascent):
+h_apex = v_z² / (2 × g_eff) = 1.273² / (2 × 7.165) = 1.6205 / 14.330 = 113.1 mm ≈ 113 mm
+
+Descent velocity (full g — lift decays as spin reduces at apex):
+v_descent = √(2 × g × h_apex) = √(2 × 9.81 × 0.1131) = √(2.219) = 1.490 m/s
+
+Combined impact velocity (orbital component + descent):
+v_impact = √(v_orbital² + v_descent²) = √(0.735² + 1.490²) = √(0.5402 + 2.2201) = √2.7603 = 1.661 m/s
+```
+
+**Flat base spin decay:**
+
+```
+τ_flat  = μ_flat × m × g × r_BB = 0.35 × 0.0335 × 9.81 × 0.003 = 3.461×10⁻⁴ N·m
+t_spin  = L₀ / τ_flat = 2.384×10⁻² / 3.461×10⁻⁴ = 68.9 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 33.5 g |
+| I_total | 3.405×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.384×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| F_lift_total | 8.871×10⁻² N |
+| Lift fraction | 27% |
+| g_eff | 7.165 m/s² |
+| v_orbital | 0.735 m/s |
+| v_z | 1.273 m/s |
+| h_apex | 113 mm |
+| v_descent | 1.490 m/s |
+| v_impact | 1.661 m/s |
+| τ_flat | 3.461×10⁻⁴ N·m |
+| t_spin | 68.9 s |
+
+---
+
+## Case 1911 — SPECIAL: Spin Fire — Kai Hiwatari / Dranzer F
+
+**Blader:** Kai Hiwatari | **Beyblade:** Dranzer F | **Type:** attack
+
+### Description
+
+Spin Fire is a Special Move used by Kai Hiwatari and his Dranzer F Beyblade. Dranzer rides the bowl wall and launches high into the air, its four phoenix wings generating enough lift to carry it to a significant apex height before it crashes back down on the opponent from above in a blazing overhead strike. The Flat Base drives a high-speed orbital approach, the bowl wall redirects into a vertical launch, and Dranzer descends like a meteor. This move is similar in mechanism to Mountain Cat Attack — a high-angle bowl-wall launch into an aerial overhead smash — but Dranzer's wing lift extends the apex height considerably. Kai first used Spin Fire in his earliest battles in Bakuten Shoot Season 1.
+
+### Stage — Bowl-Wall Launch + Wing-Lift Aerial Overhead Descent Strike
+
+From Case 1910: v_impact = 1.661 m/s (orbital + wing-lift ascent + full-g descent), e = 0.75 (hard ABS AR smash blades).
+
+```
+m_eff = (m_D × m_opp) / (m_D + m_opp) = (0.0335 × 0.038) / (0.0335 + 0.038)
+      = 1.273×10⁻³ / 0.0715 = 1.780×10⁻² kg
+
+J_spinfire = m_eff × (1 + e) × v_impact
+           = 1.780×10⁻² × 1.75 × 1.661
+           = 1.780×10⁻² × 2.9068 = 5.174×10⁻² N·s
+
+Δv_opp = J_spinfire / m_opp = 5.174×10⁻² / 0.038 = 1.361 m/s
+```
+
+**Effect on Dranzer F (spin drain):**
+
+```
+Δω_D    = J_spinfire × r_contact / I_D = 5.174×10⁻² × 0.030 / 3.405×10⁻⁵ = 45.6 rad/s
+ω_remain = 700 − 45.6 = 654.4 rad/s  (93.5% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Kai's Dranzer Bit-Beast fully materialises as a blazing phoenix — the wings ignite with spirit fire at the apex, the descent becomes a true meteor strike that hurls the opponent out of the stadium in a column of flames.
+
+[M] factor = **8.0 ×** (Kai Hiwatari — Dranzer phoenix fire spirit, iconic move)
+[M] Δv = 1.361 × 8.0 = **10.9 m/s** (phoenix fire ring-out)
+
+> **Note:** Physical values describe four-wing lift F=8.871×10⁻² N (27% weight), g_eff=7.165 m/s², bowl-wall launch v_z=1.273 m/s, h_apex=113 mm, v_impact=1.661 m/s, impulse J=5.174×10⁻² N·s, Δv=1.361 m/s. [M] values represent Kai's Dranzer phoenix spirit igniting the aerial descent into a blazing meteor strike. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function spinFireSpecial(bey: Beyblade, target: Beyblade): void {
+  // 4-wing lift 27%→g_eff=7.165m/s²; bowl launch v_z=1.273m/s→h=113mm; v_impact=1.661m/s; J=5.174×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.05174;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Kai Dranzer phoenix fire spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a flat-contact Blade Base (μ ≥ 0.30) combined with an Attack Ring carrying 4+ upward-angled wing protrusions at r_AR ≥ 30 mm generating measurable lift (F_lift ≥ 0.06 N at ω₀ ≥ 680 rad/s), launched via a 50–70° bowl wall for vertical ascent. Standard game instance: Dranzer F (Kai Hiwatari, Bakuten Shoot Beyblade).
+
+---
+
+## Case 1912 — COMBO: Flame Dive — Dranzer F
+
+**Sequence:** ↑ A K (moveUp · attack · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Kai Hiwatari
+
+### Physics Justification
+
+The moveUp (↑) launches Dranzer F up the bowl wall at half-orbit speed (v_partial = v_orbital × 0.5 = 0.735 × 0.5 = 0.3675 m/s). With wing lift active, this gives a partial ascent:
+
+```
+v_z_partial = v_partial × tan(60°) = 0.3675 × 1.732 = 0.6365 m/s
+
+h_partial = v_z_partial² / (2 × g_eff) = 0.6365² / (2 × 7.165) = 0.4051 / 14.330 = 28.3 mm
+```
+
+The attack (A) fires at descent apex — Dranzer strikes downward at v_descent_partial:
+
+```
+v_descent_partial = √(2 × g × h_partial) = √(2 × 9.81 × 0.0283) = √(0.5553) = 0.7452 m/s
+
+v_impact_partial = √(v_partial² + v_descent_partial²) = √(0.3675² + 0.7452²)
+                 = √(0.1351 + 0.5553) = √0.6904 = 0.8309 m/s
+
+J_partial = m_eff × (1 + e) × v_impact_partial = 1.780×10⁻² × 1.75 × 0.8309
+          = 1.780×10⁻² × 1.4541 = 2.588×10⁻² N·s
+```
+
+The defense (K) is the wing-guard follow-through — Dranzer angles the phoenix wings downward on contact, shielding from counter-strike and reconverting contact recoil to spin (η_wing = 0.30, wing deflects recoil into rotation):
+
+```
+Δω = η_wing × J_partial × r_contact / I_D
+   = 0.30 × 2.588×10⁻² × 0.030 / 3.405×10⁻⁵
+   = 0.30 × 7.764×10⁻⁴ / 3.405×10⁻⁵
+   = 0.30 × 22.80
+   = +6.8 rad/s  ≈ +7 rad/s
+```
+
+(η_wing = 0.30: phoenix wing deflection recoil reconversion.) The partial aerial dive with wing-guard gives damageMultiplier **1.25×**. lockMs = 100 (wing-guard hold on landing).
+
+**Parameters:**
+- spinGain: +7 rad/s (wing deflection recoil η = 0.30)
+- damageMultiplier: 1.25 (partial aerial overhead dive with wing guard)
+- lockMs: 100 (wing-guard dwell)
+
+### TypeScript
+
+```typescript
+function flameDiveCombo(bey: Beyblade, target: Beyblade): void {
+  // Wing recoil: Δω ≈ +7 rad/s (η=0.30, h_partial=28.3mm, J=2.588×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 7);
+  // Partial aerial dive + wing guard: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +7 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1913 — GIMMICK: Thermal Lacerta WA130HF — WA130 Wing-Arm Sweep & HF Aggressive Orbit
+
+**Beyblade:** Thermal Lacerta WA130HF (TT JP: サーマルラセルタWA130HF; Hasbro EN: Thermal Lacerta WA130HF)
+**Blader:** Chiyun Li | **Series:** Beyblade: Metal Masters (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Lacerta | 4.0 | 24.0 |
+| Fusion Wheel | Thermal | 29.0 | 28.0 |
+| Spin Track | WA130 (Wing Attack 130) | 3.5 | 14.0 |
+| Performance Tip | HF (High Flat) | 0.9 | 3.5 |
+| **Total** | | **37.4** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention.)
+
+**I_total** = 29.0×10⁻³ × 0.028² + 4.0×10⁻³ × 0.024² + 3.5×10⁻³ × 0.014² + 0.9×10⁻³ × 0.0035²
+           = 2.274×10⁻⁵ + 2.304×10⁻⁶ + 6.860×10⁻⁷ + 1.103×10⁻⁸
+           = **2.580×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Masters standard launch)
+L₀ = I × ω₀ = 2.580×10⁻⁵ × 650 = **1.677×10⁻² kg·m²/s**
+
+---
+
+### 1. WA130 Wing Attack Spin Track — Lateral Wing Sweep
+
+The WA130 (Wing Attack 130) Spin Track extends two wide lateral arms perpendicular to the spin axis at 130 mm height. Each arm (length L_arm = 20 mm, width w_arm = 8 mm, A_arm = 1.600×10⁻⁴ m²) sweeps through the air and contacts the opponent's lower track/tip region on close approach — a lateral tail-sweep attack at mid-height.
+
+**Wing-arm tip velocity:**
+
+```
+v_arm = ω₀ × r_arm_tip = 650 × (0.028 + 0.020) = 650 × 0.048 = 31.20 m/s
+```
+
+**Wing-arm aerodynamic lateral sweep force (drag mode on approach):**
+
+```
+F_sweep = ½ × ρ_air × v_arm² × C_D × A_arm × N_arms
+        = ½ × 1.225 × 31.20² × 1.2 × 1.600×10⁻⁴ × 2
+        = ½ × 1.225 × 973.44 × 1.2 × 3.200×10⁻⁴
+        = ½ × 1.225 × 973.44 × 3.840×10⁻⁴
+        = 0.2289 N  (lateral sweep force per pass)
+```
+
+**Wing-arm impact impulse (contact duration t_c = 2 ms):**
+
+```
+J_sweep = F_sweep × t_c = 0.2289 × 2×10⁻³ = 4.578×10⁻⁴ N·s  (per arm contact)
+```
+
+---
+
+### 2. HF (High Flat) Tip — Aggressive Orbit Drive
+
+The HF tip combines sharp-center focus with a flat ring surround (μ_HF = 0.30, r_HF = 3.5 mm) for fast aggressive orbit with controlled destabilisation bursts:
+
+```
+v_orbital_HF = μ_HF × ω₀ × r_HF = 0.30 × 650 × 0.0035 = 0.6825 m/s
+
+τ_HF   = μ_HF × m × g × r_HF = 0.30 × 0.0374 × 9.81 × 0.0035 = 3.858×10⁻⁴ N·m
+t_spin = L₀ / τ_HF = 1.677×10⁻² / 3.858×10⁻⁴ = 43.5 s
+```
+
+**Combined impact velocity (HF orbital + WA130 arm sweep lateral component):**
+
+```
+v_impact = √(v_orbital_HF² + (F_sweep × t_c / m)²)
+         = √(0.6825² + (4.578×10⁻⁴ / 0.0374)²)
+         = √(0.4658 + (1.224×10⁻²)²)
+         = √(0.4658 + 1.498×10⁻⁴)
+         = √0.4660 = 0.6826 m/s  ≈ 0.683 m/s  (WA130 arm sweep lateral component minor vs orbital)
+```
+
+For the Tempestuous Whirlwind Sword slam the dominant component is the full-body overhead slam entry, modelled as orbital v_orbital_HF = 0.6825 m/s direct approach with e = 0.75.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.4 g |
+| I_total | 2.580×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.677×10⁻² kg·m²/s |
+| v_arm | 31.20 m/s |
+| F_sweep | 0.2289 N |
+| J_sweep | 4.578×10⁻⁴ N·s (per arm) |
+| v_orbital_HF | 0.6825 m/s |
+| v_impact | 0.683 m/s |
+| τ_HF | 3.858×10⁻⁴ N·m |
+| t_spin | 43.5 s |
+
+---
+
+## Case 1914 — SPECIAL: Tempestuous Whirlwind Sword — Chiyun Li / Thermal Lacerta WA130HF
+
+**Blader:** Chiyun Li | **Beyblade:** Thermal Lacerta WA130HF | **Type:** attack
+
+### Description
+
+Tempestuous Whirlwind Sword (Japanese: 疾風迅雷剣, Shippū Jinrai Ken) is the third and most powerful Special Move used by Chiyun Li and his Thermal Lacerta WA130HF. Chiyun Li summons Lacerta to slash with its tail, slamming the opponent with serious damage while the bey attacks covered in a pink aura. The WA130 wing arms generate the sweeping "tail slash" lateral impact, and the pink aura is the aerodynamic wake shed from the rapidly rotating wing tips. Chiyun Li first used this move to counter Tsubasa's Diving Crush.
+
+### Stage — WA130 Wing-Arm Tail Slash + HF Orbital Approach Slam
+
+The Tempestuous Whirlwind Sword is a two-component strike: the WA130 wing-arms deliver the lateral "tail slash" sweep while the HF-driven orbital approach contributes the body slam. Combined entry velocity:
+
+```
+v_combined = √(v_orbital_HF² + v_arm_lateral²)
+```
+
+Lateral velocity from WA130 arm sweep impulse applied to body:
+
+```
+v_arm_lateral = J_sweep × N_arms / m = (4.578×10⁻⁴ × 2) / 0.0374 = 9.156×10⁻⁴ / 0.0374 = 0.02448 m/s
+
+v_combined = √(0.6825² + 0.02448²) = √(0.4658 + 5.99×10⁻⁴) ≈ 0.6829 m/s
+```
+
+Using v_combined ≈ 0.683 m/s and e = 0.75 (hard Thermal FW smash):
+
+```
+m_eff = (m_TL × m_opp) / (m_TL + m_opp) = (0.0374 × 0.038) / (0.0374 + 0.038)
+      = 1.4212×10⁻³ / 0.0754 = 1.885×10⁻² kg
+
+J_whirlwind = m_eff × (1 + e) × v_combined
+            = 1.885×10⁻² × 1.75 × 0.683
+            = 1.885×10⁻² × 1.1953 = 2.253×10⁻² N·s
+
+Δv_opp = J_whirlwind / m_opp = 2.253×10⁻² / 0.038 = 0.593 m/s
+```
+
+**Effect on Thermal Lacerta (spin drain):**
+
+```
+Δω_TL    = J_whirlwind × r_contact / I_TL = 2.253×10⁻² × 0.025 / 2.580×10⁻⁵ = 21.8 rad/s
+ω_remain = 650 − 21.8 = 628.2 rad/s  (96.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Chiyun Li's Lacerta Bit-Beast materialises as a great lizard spirit wreathed in a pink tempest aura — the WA130 wing arms become Lacerta's slashing tail, and the full Thermal FW body becomes a whirlwind blade that sweeps the opponent from the arena in a devastating pink storm.
+
+[M] factor = **7.0 ×** (Chiyun Li — Lacerta pink tempest spirit)
+[M] Δv = 0.593 × 7.0 = **4.2 m/s** (whirlwind sword ring-out)
+
+> **Note:** Physical values describe WA130 arm sweep F=0.2289 N (J=4.578×10⁻⁴ N·s per arm, t_c=2ms), HF orbital v=0.6825 m/s, combined v_combined=0.683 m/s, total impulse J=2.253×10⁻² N·s, Δv=0.593 m/s. [M] values represent Chiyun Li's Lacerta spirit manifesting the WA130 arms as a dragon tail slash through a pink tempest aura. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tempestuousWhirlwindSwordSpecial(bey: Beyblade, target: Beyblade): void {
+  // WA130 wing sweep F=0.2289N t_c=2ms; HF orbital v=0.6825m/s; J=2.253×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.02253;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Chiyun Li Lacerta pink tempest spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a WA (Wing Attack) Spin Track (WA130 or equivalent, arm extension ≥ 15 mm beyond r_FW, A_arm ≥ 1.2×10⁻⁴ m² per arm, sweep F ≥ 0.15 N) combined with an aggressive flat/high-flat tip (μ ≥ 0.25, v_orbital ≥ 0.60 m/s). The wing arms must reach the opponent's lower track level for lateral tail-sweep contact. Standard game instance: Thermal Lacerta WA130HF (Chiyun Li, Metal Masters).
+
+---
+
+## Case 1915 — COMBO: Lacerta Slash — Thermal Lacerta
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Chiyun Li
+
+### Physics Justification
+
+The moveRight (→) drives HF aggressive orbit approach (v_partial = v_orbital_HF × 0.70 = 0.6825 × 0.70 = 0.4778 m/s orbital component):
+
+```
+v_approach = 0.4778 m/s
+```
+
+The moveUp (↑) raises Lacerta's contact height along the WA130 130 mm track, maximising the wing-arm sweep arc. The elevation channels the lateral arm sweep more directly onto the target (height focus factor: 1.15×):
+
+The attack (A) fires the WA130 arm sweep + orbital approach combined:
+
+```
+J_sweep_combo = F_sweep × t_c × 1.15  (height focus boost)
+              = 0.2289 × 2×10⁻³ × 1.15 = 5.265×10⁻⁴ N·s  (per arm × 2 arms)
+
+v_arm_lateral_combo = (5.265×10⁻⁴ × 2) / 0.0374 = 1.053×10⁻³ / 0.0374 = 0.02815 m/s
+
+v_impact_combo = √(v_approach² + v_arm_lateral_combo²)
+               = √(0.4778² + 0.02815²)
+               = √(0.2283 + 7.92×10⁻⁴)
+               ≈ 0.4786 m/s
+
+J_slash = m_eff × (1 + e) × v_impact_combo = 1.885×10⁻² × 1.75 × 0.4786
+        = 1.885×10⁻² × 0.8375 = 1.579×10⁻² N·s
+```
+
+The HF tip high-flat contact on landing reconverts the lateral arm sweep recoil to spin (η_HF = 0.28):
+
+```
+Δω = η_HF × J_slash × r_contact / I_TL
+   = 0.28 × 1.579×10⁻² × 0.025 / 2.580×10⁻⁵
+   = 0.28 × 3.948×10⁻⁴ / 2.580×10⁻⁵
+   = 0.28 × 15.30
+   = +4.3 rad/s  ≈ +4 rad/s
+```
+
+(η_HF = 0.28: HF flat contact rebound lateral arm recoil reconversion.) The WA130 height-focused wing sweep gives damageMultiplier **1.20×**. lockMs = 0 (pure attack sweep, no lock phase).
+
+**Parameters:**
+- spinGain: +4 rad/s (HF lateral arm recoil η = 0.28)
+- damageMultiplier: 1.20 (WA130 height-focused wing sweep attack)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function lacertaSlashCombo(bey: Beyblade, target: Beyblade): void {
+  // HF arm recoil: Δω ≈ +4 rad/s (η=0.28, J=1.579×10⁻²N·s, WA130 ×1.15 height boost)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 4);
+  // WA130 height-focused sweep: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +4 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1916 — GIMMICK: Dranzer MF (Wing Attacker CWD) — CWD Wide-Wing Aerodynamic Amplification & Phoenix Fire Column
+
+**Beyblade:** Dranzer MF with Wing Attacker CWD (TT JP: ドランザーMF ウィングアタッカーCWD)
+**Blader:** Kai Hiwatari | **Series:** Beyblade (Bakuten Shoot manga, final chapter)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Dranzer MS (Metal System) | 16.0 | 33.0 |
+| Weight Disk | Wing Attacker CWD | 22.0 | 38.0 |
+| Spin Gear | Right SG (Metal) | 4.5 | 10.0 |
+| Blade Base | Metal Flat Base (MFB) | 3.0 | 3.0 |
+| **Total** | | **45.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention. Wing Attacker CWD is a Customize Weight Disk with wide-span aerodynamic wings at maximum radius — the manga's final special move.)
+
+**I_total** = 16.0×10⁻³ × 0.033² + 22.0×10⁻³ × 0.038² + 4.5×10⁻³ × 0.010² + 3.0×10⁻³ × 0.003²
+           = 1.742×10⁻⁵ + 3.178×10⁻⁵ + 4.500×10⁻⁶ + 2.70×10⁻⁸
+           = **5.398×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (plastic-gen Bakuten Shoot standard launch)
+L₀ = I × ω₀ = 5.398×10⁻⁵ × 700 = **3.779×10⁻² kg·m²/s**
+
+---
+
+### 1. Wing Attacker CWD — Wide-Wing Aerodynamic Amplification
+
+The Wing Attacker CWD extends four wide aerodynamic wings at r_CWD = 38 mm. Each wing (A_wing = 2.0×10⁻⁴ m² per wing, C_L = 0.6) generates lift at high spin:
+
+```
+v_CWD_tip = ω₀ × r_CWD = 700 × 0.038 = 26.60 m/s
+
+F_lift_CWD = N_wings × ½ × ρ_air × v_CWD_tip² × C_L × A_wing
+           = 4 × ½ × 1.225 × 26.60² × 0.6 × 2.0×10⁻⁴
+           = 4 × ½ × 1.225 × 707.56 × 1.2×10⁻⁴
+           = 4 × 5.199×10⁻² = 0.2080 N
+
+Weight: W = m × g = 0.0455 × 9.81 = 0.4465 N
+
+Lift fraction: F_lift_CWD / W = 0.2080 / 0.4465 = 46.6%
+```
+
+Effective gravity during ascent:
+
+```
+g_eff_MF = g × (1 − F_lift_CWD / W) = 9.81 × (1 − 0.466) = 9.81 × 0.534 = 5.239 m/s²
+```
+
+---
+
+### 2. Bowl-Exit Trajectory — Phoenix Fire Ascent
+
+Dranzer MF uses the bowl wall (θ = 65°) for maximum vertical launch:
+
+```
+v_orbital_MF = μ_flat × ω₀ × r_BB = 0.35 × 700 × 0.003 = 0.735 m/s
+
+v_z_MF = v_orbital_MF × tan(65°) = 0.735 × 2.145 = 1.577 m/s
+
+h_apex_MF = v_z_MF² / (2 × g_eff_MF) = 1.577² / (2 × 5.239) = 2.487 / 10.478 = 237.3 mm ≈ 237 mm
+```
+
+Descent (full g, CWD lift diminished as spin decays at apex):
+
+```
+v_descent_MF = √(2 × g × h_apex_MF) = √(2 × 9.81 × 0.2373) = √(4.655) = 2.157 m/s
+
+v_impact_MF = √(v_orbital_MF² + v_descent_MF²) = √(0.735² + 2.157²) = √(0.5402 + 4.6527) = √5.193 = 2.279 m/s
+```
+
+**Metal Flat Base spin decay:**
+
+```
+τ_MFB  = μ_flat × m × g × r_BB = 0.35 × 0.0455 × 9.81 × 0.003 = 4.698×10⁻⁴ N·m
+t_spin = L₀ / τ_MFB = 3.779×10⁻² / 4.698×10⁻⁴ = 80.4 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 45.5 g |
+| I_total | 5.398×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 3.779×10⁻² kg·m²/s |
+| v_CWD_tip | 26.60 m/s |
+| F_lift_CWD | 0.2080 N |
+| Lift fraction | 46.6% |
+| g_eff_MF | 5.239 m/s² |
+| v_orbital_MF | 0.735 m/s |
+| v_z_MF | 1.577 m/s |
+| h_apex_MF | 237 mm |
+| v_descent_MF | 2.157 m/s |
+| v_impact_MF | 2.279 m/s |
+| τ_MFB | 4.698×10⁻⁴ N·m |
+| t_spin | 80.4 s |
+
+---
+
+## Case 1917 — SPECIAL: The End of Fire — Kai Hiwatari / Dranzer MF
+
+**Blader:** Kai Hiwatari | **Beyblade:** Dranzer MF (Wing Attacker CWD) | **Type:** attack
+
+### Description
+
+The End of Fire (Japanese: 爆風炎撃, Bakufū Engeki — "Explosive Wind Fire Strike") is a Special Move used by Kai Hiwatari with his Dranzer MF Beyblade, debuting in the final chapter of the Bakuten Shoot Beyblade manga. Kai and Dranzer combine their full power into a swirling mass of fire — Dranzer rises from the flames like a phoenix reborn and descends in a catastrophic explosive strike. The Wing Attacker CWD provides massive aerodynamic lift that launches Dranzer to an unprecedented apex height of 237 mm, and the descent impacts with full gravitational energy amplified by the CWD mass. The explosion looks like Dranzer rising from its own ashes, combining the power of both Kai and Dranzer in a final burst.
+
+### Stage — CWD Wing-Lift Phoenix Ascent + Catastrophic Fire-Column Descent
+
+From Case 1916: v_impact_MF = 2.279 m/s, e = 0.80 (maximum energy — manga finale move, hardest ABS/metal contact).
+
+```
+m_eff = (m_DMF × m_opp) / (m_DMF + m_opp) = (0.0455 × 0.038) / (0.0455 + 0.038)
+      = 1.729×10⁻³ / 0.0835 = 2.071×10⁻² kg
+
+J_endfire = m_eff × (1 + e) × v_impact_MF
+          = 2.071×10⁻² × 1.80 × 2.279
+          = 2.071×10⁻² × 4.1022 = 8.495×10⁻² N·s
+
+Δv_opp = J_endfire / m_opp = 8.495×10⁻² / 0.038 = 2.235 m/s
+```
+
+**Effect on Dranzer MF (spin drain):**
+
+```
+Δω_DMF   = J_endfire × r_contact / I_DMF = 8.495×10⁻² × 0.035 / 5.398×10⁻⁵ = 55.1 rad/s
+ω_remain = 700 − 55.1 = 644.9 rad/s  (92.1% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Kai and Dranzer's spirits fully merge into one at the climax of the manga — the Wing Attacker CWD ignites with all of Dranzer's fire energy as the phoenix rises from the ashes and descends in a catastrophic explosion that consumes the entire arena in flame.
+
+[M] factor = **9.0 ×** (Kai + Dranzer ultimate dual-spirit fusion — manga finale)
+[M] Δv = 2.235 × 9.0 = **20.1 m/s** (phoenix fire annihilation)
+
+> **Note:** Physical values describe Wing Attacker CWD 4-wing lift F=0.2080 N (46.6% weight), g_eff=5.239 m/s², bowl launch v_z=1.577 m/s, h_apex=237 mm, v_impact=2.279 m/s, impulse J=8.495×10⁻² N·s, Δv=2.235 m/s. [M] values represent Kai and Dranzer's ultimate spirit fusion in the manga finale — a dual-spirit phoenix fire explosion. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function endOfFireSpecial(bey: Beyblade, target: Beyblade): void {
+  // CWD 4-wing lift 46.6%→g_eff=5.239m/s²; bowl launch h_apex=237mm; v_impact=2.279m/s; J=8.495×10⁻²N·s; [M] 9.0×
+  const J_phys = 0.08495;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 9.0; // [M] BeySpirit 9.0× (Kai+Dranzer ultimate dual-spirit manga finale)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a Wing Attacker CWD (or equivalent maximum-radius aerodynamic weight disk, r_CWD ≥ 36 mm, 4+ wings, A_wing ≥ 1.8×10⁻⁴ m², F_lift ≥ 0.18 N) combined with a flat-contact Metal Base (μ ≥ 0.30) and a large-radius AR (r_AR ≥ 30 mm) on a bowl wall θ ≥ 60°. CWD lift fraction must reach ≥ 40% of weight for valid phoenix ascent. Standard game instance: Dranzer MF with Wing Attacker CWD (Kai Hiwatari, Bakuten Shoot manga finale).
+
+---
+
+## Case 1918 — COMBO: Ash Rise — Dranzer MF
+
+**Sequence:** ↑ ↑ A (moveUp · moveUp · attack)
+**Cost:** 35 | **Type:** attack | **Blader:** Kai Hiwatari
+
+### Physics Justification
+
+The first moveUp (↑) launches Dranzer MF onto the bowl wall in rising-flame mode — partial CWD lift elevation (h_partial_1 = h_apex_MF × 0.25 = 237 × 0.25 = 59.3 mm):
+
+```
+v_z_1 = √(2 × g_eff_MF × h_partial_1) = √(2 × 5.239 × 0.0593) = √(0.6213) = 0.7882 m/s
+
+v_descent_1 = √(2 × g × h_partial_1) = √(2 × 9.81 × 0.0593) = √(1.164) = 1.079 m/s
+```
+
+The second moveUp (↑) is the Dranzer ash-rise — Dranzer ascends from the bowl a second time using the residual CWD lift, reaching second-stage height (h_partial_2 = h_apex_MF × 0.50 = 118.5 mm):
+
+```
+v_z_2 = √(2 × g_eff_MF × h_partial_2) = √(2 × 5.239 × 0.1185) = √(1.2417) = 1.1143 m/s
+
+v_descent_2 = √(2 × g × h_partial_2) = √(2 × 9.81 × 0.1185) = √(2.325) = 1.525 m/s
+```
+
+The attack (A) fires the combined dual-stage descent strike:
+
+```
+v_impact_ash = √(v_orbital_MF² + v_descent_2²) = √(0.735² + 1.525²) = √(0.5402 + 2.3256) = √2.8658 = 1.693 m/s
+
+J_ash = m_eff × (1 + e) × v_impact_ash = 2.071×10⁻² × 1.80 × 1.693
+      = 2.071×10⁻² × 3.0474 = 6.311×10⁻² N·s
+```
+
+The Metal Flat Base rebounds on landing with CWD angular momentum transfer (η_CWD = 0.32):
+
+```
+Δω = η_CWD × J_ash × r_contact / I_DMF
+   = 0.32 × 6.311×10⁻² × 0.035 / 5.398×10⁻⁵
+   = 0.32 × 2.209×10⁻³ / 5.398×10⁻⁵
+   = 0.32 × 40.92
+   = +13.1 rad/s  ≈ +13 rad/s
+```
+
+(η_CWD = 0.32: Wing Attacker CWD angular momentum transfer on MFB rebound.) The dual-stage phoenix ascent and fire descent gives damageMultiplier **1.40×**. lockMs = 200 (fire column dwell — ash impact hold).
+
+**Parameters:**
+- spinGain: +13 rad/s (CWD angular momentum transfer η = 0.32)
+- damageMultiplier: 1.40 (dual-stage phoenix fire descent)
+- lockMs: 200 (ash impact fire column dwell)
+
+### TypeScript
+
+```typescript
+function ashRiseCombo(bey: Beyblade, target: Beyblade): void {
+  // CWD rebound: Δω ≈ +13 rad/s (η=0.32, dual-stage h→118.5mm, J=6.311×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Dual-stage phoenix fire descent: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 200 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1919 as further franchise moves are provided.*
 
 
 
@@ -14863,4 +16245,1386 @@ function sniperChargeCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +7 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1901 as further franchise moves are provided.*
+
+
+---
+
+## Case 1901 — GIMMICK: Flame Libra T125ES — T125 Arena Vibration & ES Sustained Acoustic Vortex
+
+**Beyblade:** Flame Libra T125ES (TT JP: フレイムリブラT125ES; Hasbro EN: Flame Libra T125ES)
+**Blader:** Yu Tendo | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Libra | 4.2 | 24.0 |
+| Fusion Wheel | Flame | 27.0 | 27.0 |
+| Spin Track | T125 (Triangle 125) | 1.7 | 6.0 |
+| Performance Tip | ES (Eternal Sharp) | 1.5 | 1.5 |
+| **Total** | | **34.4** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention. This case covers Sonic Buster's vibration-and-vortex mechanism; Sonic Wave's resonance-amplified variant is covered in Cases 1904–1906.)
+
+**I_total** = 27.0×10⁻³ × 0.027² + 4.2×10⁻³ × 0.024² + 1.7×10⁻³ × 0.006² + 1.5×10⁻³ × 0.0015²
+           = 1.968×10⁻⁵ + 2.419×10⁻⁶ + 6.12×10⁻⁸ + 3.375×10⁻⁹
+           = **2.217×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.217×10⁻⁵ × 650 = **1.441×10⁻² kg·m²/s**
+
+---
+
+### 1. T125 Triangular Fins — Arena Vibration Frequency & Sand Destabilization
+
+The T125 (Triangle 125) Spin Track carries 3 triangular protrusions. As Libra spins, each fin delivers a periodic pressure impulse to the arena floor:
+
+```
+f_vib = N_fins × ω₀ / (2π) = 3 × 650 / (2π) = 310.4 Hz
+
+F_cent = m_T125 × ω₀² × r_T125 = 1.7×10⁻³ × 650² × 0.006 = 4.310 N  (per fin, centrifugal)
+
+Contact displacement amplitude (compacted arena: k_arena = 2×10⁶ N/m):
+A_vib = F_cent / k_arena = 4.310 / 2×10⁶ = 2.155×10⁻⁶ m = 2.155 μm  (per fin pass)
+```
+
+At 310.4 Hz the micro-displacement (2.155 μm) repeatedly breaks inter-particle compaction bonds in the granular arena substrate, converting the compacted surface into loose sand within the vibration radius. Opponent μ_sand = 0.45 vs normal μ_normal = 0.30 → Δμ = +0.15:
+
+```
+τ_sand_drain = Δμ × m_opp × g × r_tip_opp = 0.15 × 0.038 × 9.81 × 0.005 = 2.796×10⁻⁴ N·m
+(additional spin drain torque on opponent in sand zone)
+```
+
+---
+
+### 2. ES Bearing Tip & Flame FW — Sustained Acoustic Vortex
+
+The ES (Eternal Sharp) bearing tip enables long-duration spin, sustaining both the T125 vibration and the Flame FW acoustic vortex output:
+
+```
+τ_ES    = μ_ES × m × g × r_ES = 0.04 × 0.0344 × 9.81 × 0.0015 = 2.024×10⁻⁵ N·m
+t_spin  = L₀ / τ_ES = 1.441×10⁻² / 2.024×10⁻⁵ = 712 s  (≈ 11.9 min sustained vibration)
+```
+
+The Flame FW at v_tip generates a Rankine acoustic vortex — the characteristic "terrible shrieking noise":
+
+```
+v_tip  = ω₀ × r_FW = 650 × 0.027 = 17.55 m/s
+
+Γ_L    = 2π × v_tip × r_FW = 2π × 17.55 × 0.027 = 2.977 m²/s
+
+At r_opp = 50 mm:
+v_L    = Γ_L / (2π × r_opp) = 2.977 / (2π × 0.050) = 9.477 m/s
+q_L    = ½ × ρ_air × v_L² = ½ × 1.225 × 9.477² = 55.01 Pa
+F_sonic = q_L × A_opp = 55.01 × π × 0.020² = 55.01 × 1.257×10⁻³ = 0.06913 N  (outward)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 34.4 g |
+| I_total | 2.217×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.441×10⁻² kg·m²/s |
+| v_tip | 17.55 m/s |
+| f_vib (T125 3-fin) | 310.4 Hz |
+| A_vib | 2.155 μm |
+| τ_sand_drain | 2.796×10⁻⁴ N·m |
+| Γ_L | 2.977 m²/s |
+| F_sonic (r=50mm) | 0.06913 N |
+| τ_ES | 2.024×10⁻⁵ N·m |
+| t_spin | 712 s |
+
+---
+
+## Case 1902 — SPECIAL: Sonic Buster — Yu Tendo / Flame Libra T125ES
+
+**Blader:** Yu Tendo | **Beyblade:** Flame Libra T125ES | **Type:** attack
+
+### Description
+
+Sonic Buster (originally referred to as "Sonic Wave") is the first special move used by Yu Tendo and his Flame Libra T125ES. Libra vibrates extremely fast, turning the field around it into vulnerable sand. Libra then makes a terrible shrieking noise that pierces the ears of the opponent, delivering an acoustic pressure impulse that disrupts their balance.
+
+### Stage 1 — Arena Sand Destabilization (T125 Vibration Zone)
+
+From Case 1901: f_vib = 310.4 Hz, A_vib = 2.155 μm → arena sand mode within vibration radius.
+
+Sand zone effect on opponent (t_sand = 0.5 s duration):
+
+```
+Additional spin drain torque: τ_sand_drain = 2.796×10⁻⁴ N·m
+Δω_opp_drain ≈ τ_sand_drain × t_sand / I_opp_est (continuous opponent spin reduction from sand friction)
+```
+
+### Stage 2 — Sonic Wave (Acoustic Vortex Impulse, t_wave = 0.5 s)
+
+From Case 1901: F_sonic = 0.06913 N at r_opp = 50 mm.
+
+```
+J_sonic = F_sonic × t_wave = 0.06913 × 0.5 = 3.457×10⁻² N·s
+
+Δv_opp = J_sonic / m_opp = 3.457×10⁻² / 0.038 = 0.910 m/s
+```
+
+**Effect on Flame Libra (spin drain):**
+
+```
+Δω_L    = J_sonic × r_contact / I_L = 3.457×10⁻² × 0.025 / 2.217×10⁻⁵ = 39.0 rad/s
+ω_remain = 650 − 39.0 = 611.0 rad/s  (94.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Yu's Libra bit-beast fully manifests as a green-glowing winged spirit — the T125 vibration amplifies into a true arena-wide sonic collapse that physically disintegrates the opponent's stability while the shrieking shockwave crushes them from all directions.
+
+[M] factor = **7.0 ×** (Yu's Libra sonic spirit)
+[M] Δv = 0.910 × 7.0 = **6.4 m/s** (sonic ring-out)
+
+> **Note:** Physical values describe T125 3-fin vibration at 310.4 Hz (A_vib=2.155 μm) converting arena to sand (Δμ=+0.15, τ_drain=2.796×10⁻⁴ N·m on opponent), acoustic vortex F=0.06913 N sustained 0.5s → J=3.457×10⁻² N·s, Δv=0.910 m/s. [M] values represent Yu's Libra spirit amplifying the vibration into a true arena-collapse shockwave. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sonicBusterSpecial(bey: Beyblade, target: Beyblade): void {
+  // T125 310.4Hz vibration→sand (A_vib=2.155μm, τ_drain=2.796×10⁻⁴N·m); F_sonic=0.06913N×0.5s→J=3.457×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.03457;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Yu Libra sonic spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a multi-fin Spin Track (3+ fins at r ≥ 5 mm, generating floor-contact vibration at f ≥ 300 Hz) combined with a smooth Fusion Wheel (r_FW ≥ 25 mm, generating Rankine vortex F ≥ 0.05 N at r=50 mm) and a low-friction bearing tip (μ ≤ 0.05, t_spin ≥ 600 s) for sustained vibration and acoustic output. Standard game instance: Flame Libra T125ES (Yu Tendo, Metal Fusion).
+
+---
+
+## Case 1903 — COMBO: Sound Burst — Flame Libra
+
+**Sequence:** A ↑ A (attack · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Yu Tendo
+
+### Physics Justification
+
+The first attack (A) fires a partial sonic wave burst (t_wave1 = 0.20 s):
+
+```
+J_wave1 = F_sonic × t_wave1 = 0.06913 × 0.20 = 1.383×10⁻² N·s
+```
+
+The moveUp (↑) elevates Flame Libra using T125's 125 mm height, raising the vortex output axis for a top-down wave propagation. The higher launch angle concentrates the wave energy on the second attack (T125 height factor: 1.25×):
+
+The second attack (A) fires at T125-height-enhanced amplitude:
+
+```
+J_wave2 = J_wave1 × 1.25 = 1.383×10⁻² × 1.25 = 1.729×10⁻² N·s
+```
+
+The ES bearing free-spin mechanism reconverts the wave recoil impulse back to spin on the bearing inner race rebound:
+
+```
+Δω = η_ES × (J_wave1 + J_wave2) × r_contact / I_L
+   = 0.35 × (1.383×10⁻² + 1.729×10⁻²) × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 3.112×10⁻² × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 35.09
+   = +12.3 rad/s  ≈ +12 rad/s
+```
+
+(η_ES = 0.35: ES bearing free-spin recoil reconversion — near-frictionless inner race returns more energy than rubber.) Double partial wave with T125 elevation boost gives damageMultiplier **1.20×**. lockMs = 0 (pure wave attack, no dwell).
+
+**Parameters:**
+- spinGain: +12 rad/s (ES bearing free-spin recoil η = 0.35)
+- damageMultiplier: 1.20 (double partial sonic wave, T125 height boost ×1.25)
+- lockMs: 0 (pure attack)
+
+### TypeScript
+
+```typescript
+function soundBurstCombo(bey: Beyblade, target: Beyblade): void {
+  // ES bearing recoil: Δω ≈ +12 rad/s (η=0.35; J1=1.383×10⁻²+J2=1.729×10⁻²; T125 ×1.25)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Double partial wave + T125 height: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1904 — GIMMICK: Flame Libra T125ES — Resonance Amplification & Arena-Wide Sonic Collapse
+
+**Beyblade:** Flame Libra T125ES (TT JP: フレイムリブラT125ES; Hasbro EN: Flame Libra T125ES)
+**Blader:** Yu Tendo | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+(Same as Case 1901. Repeated for reference.)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Libra | 4.2 | 24.0 |
+| Fusion Wheel | Flame | 27.0 | 27.0 |
+| Spin Track | T125 (Triangle 125) | 1.7 | 6.0 |
+| Performance Tip | ES (Eternal Sharp) | 1.5 | 1.5 |
+| **Total** | | **34.4** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention. This case covers Sonic Wave's resonance-amplified collapse mechanism; the baseline Sonic Buster vibration is covered in Cases 1901–1903.)
+
+**I_total** = 2.217×10⁻⁵ kg·m²  (same as Case 1901)
+ω₀ = 650 rad/s | L₀ = 1.441×10⁻² kg·m²/s
+
+---
+
+### 1. T125 Resonance Amplification (Q-factor = 10)
+
+Sonic Wave sustains the T125 vibration long enough for the arena to reach structural resonance — the substrate oscillation frequency (310.4 Hz) couples with the arena bowl's natural frequency. The Q (quality) factor of a rigid-walled stadium arena ≈ 10:
+
+```
+A_vib_base    = 2.155×10⁻⁶ m  (per Case 1901: per-fin micro-displacement)
+
+A_resonance   = Q_factor × A_vib_base = 10 × 2.155×10⁻⁶ = 2.155×10⁻⁵ m = 21.55 μm
+```
+
+At 21.55 μm amplitude the entire arena substrate (sand/compacted granular fill) transitions to full fluidisation — all inter-particle contact bonds broken over the complete arena floor:
+
+```
+r_wave = arena radius = 150 mm  (full arena coverage at resonance)
+τ_sand_wave = Δμ × m_opp × g × r_tip_opp = 0.15 × 0.038 × 9.81 × 0.005 = 2.796×10⁻⁴ N·m
+(same Δμ = +0.15; full-arena coverage vs. local zone in Sonic Buster)
+```
+
+---
+
+### 2. Structural Cyclic Stress — Critical Spin Threshold
+
+The amplified vibration subjects the Flame FW to cyclic bending stress at each oscillation:
+
+```
+σ_cyclic = E_ABS × A_resonance / r_FW
+         = 2.0×10⁹ × 2.155×10⁻⁵ / 0.027
+         = 1.596×10⁶ Pa = 1.596 MPa
+
+Safety factor at full spin:
+SF = σ_y_ABS / σ_cyclic = 55×10⁶ / 1.596×10⁶ = 34.5  (safe at ω₀)
+
+Safety factor at 40% spin (ω = 260 rad/s):
+A_resonance_low = (260/650)² × 2.155×10⁻⁵ = 0.16 × 2.155×10⁻⁵ = 3.448×10⁻⁶ m
+σ_cyclic_low = 2.0×10⁹ × 3.448×10⁻⁶ / 0.027 = 0.2554 MPa  (SF = 215 — safe)
+```
+
+The vibration amplitude scales with ω², keeping the bey safe at any spin. The risk is pure spin drain from the extended acoustic output.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 34.4 g |
+| I_total | 2.217×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.441×10⁻² kg·m²/s |
+| Q_factor | 10 |
+| A_vib_base | 2.155 μm |
+| A_resonance | 21.55 μm |
+| r_wave | 150 mm (full arena) |
+| τ_sand_wave | 2.796×10⁻⁴ N·m |
+| σ_cyclic (full spin) | 1.596 MPa |
+| SF (full spin) | 34.5 |
+| τ_ES | 2.024×10⁻⁵ N·m |
+| t_spin | 712 s |
+
+---
+
+## Case 1905 — SPECIAL: Sonic Wave — Yu Tendo / Flame Libra T125ES
+
+**Blader:** Yu Tendo | **Beyblade:** Flame Libra T125ES | **Type:** attack
+
+### Description
+
+Sonic Wave is the second and more powerful special move used by Yu Tendo and his Flame Libra T125ES. In this move, Libra creates a massive sonic vortex that expands outward from the arena centre, converting the entire stadium floor into a fluidised sand field. The shrieking sound wave is orders of magnitude more powerful than Sonic Buster — it engulfs the whole arena and has been shown to crack stadium walls and send opponents flying in all directions. Yu first used Sonic Wave during his second battle against Gingka in Metal Fusion.
+
+### Stage 1 — Full-Arena Resonance Sand Collapse (t_sand = 1.0 s)
+
+From Case 1904: A_resonance = 21.55 μm, r_wave = 150 mm (full arena). Opponent fully immersed in fluidised zone for entire move duration.
+
+```
+Additional spin drain on opponent during t_sand:
+τ_sand_wave = 2.796×10⁻⁴ N·m  (full arena sand mode, same Δμ per Case 1901)
+```
+
+### Stage 2 — Extended Sonic Vortex (t_wave = 1.0 s)
+
+From Case 1901: F_sonic = 0.06913 N (Rankine vortex at r_opp = 50 mm). Sustained full second at resonance amplitude:
+
+```
+J_sonic_wave = F_sonic × t_wave = 0.06913 × 1.0 = 6.913×10⁻² N·s
+
+Δv_opp = J_sonic_wave / m_opp = 6.913×10⁻² / 0.038 = 1.819 m/s
+```
+
+**Effect on Flame Libra (spin drain — extended resonance output):**
+
+```
+Δω_L    = J_sonic_wave × r_contact / I_L = 6.913×10⁻² × 0.025 / 2.217×10⁻⁵ = 78.0 rad/s
+ω_remain = 650 − 78.0 = 572.0 rad/s  (88.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Yu's Libra spirit fully manifests in Sonic Wave — the entire arena becomes a resonating instrument of Libra's will, the fluidised sand rises in a column of sound and the shrieking shockwave expands until the stadium walls themselves begin to fracture.
+
+[M] factor = **7.0 ×** (Yu's Libra sonic resonance spirit)
+[M] Δv = 1.819 × 7.0 = **12.7 m/s** (arena-wide sonic ring-out)
+
+> **Note:** Physical values describe T125 resonance amplification Q=10, A_resonance=21.55 μm → full-arena sand (r=150mm, τ_drain=2.796×10⁻⁴ N·m on opponent), extended Rankine vortex F=0.06913 N × 1.0s → J=6.913×10⁻² N·s, Δv=1.819 m/s; Libra self-drain Δω=78.0 rad/s. [M] values represent Yu's Libra spirit amplifying the resonance into a true arena-collapse sonic catastrophe. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sonicWaveSpecial(bey: Beyblade, target: Beyblade): void {
+  // Q=10 resonance: A_resonance=21.55μm→full-arena sand; F_sonic=0.06913N×1.0s→J=6.913×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.06913;
+  const primeThreshold = bey.maxSpin * 0.40;
+  const selfDrain = bey.spin < primeThreshold ? 156.0 : 78.0; // doubled if below 40% (resonance overload)
+  bey.spin = Math.max(0, bey.spin - selfDrain);
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Yu Libra arena-resonance spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a multi-fin Spin Track (3+ fins at r ≥ 5 mm, vibration ≥ 300 Hz) combined with a smooth Fusion Wheel generating Rankine vortex F ≥ 0.05 N at r=50 mm and a bearing tip (μ ≤ 0.05, t_spin ≥ 600 s) — with enough sustained spin for resonance to develop (ω₀ ≥ 600 rad/s and t_active ≥ 1.0 s). Standard game instance: Flame Libra T125ES (Yu Tendo, Metal Fusion).
+
+---
+
+## Case 1906 — COMBO: Resonant Strike — Flame Libra
+
+**Sequence:** K A A (defense · attack · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Yu Tendo
+
+### Physics Justification
+
+The defense input (K) represents Libra sinking into a resonance-prime stance — the ES bearing locks into a rigid-contact mode for one tick, coupling the T125 vibration more efficiently into the floor. This primes the Q-factor from a baseline of Q=3 to Q=6 (doubled resonance depth):
+
+```
+A_prime = 6 × 2.155×10⁻⁶ = 1.293×10⁻⁵ m = 12.93 μm  (partial resonance)
+```
+
+The first attack (A) fires the primed partial resonance wave (t_wave1 = 0.15 s):
+
+```
+J_wave1 = F_sonic × t_wave1 × (A_prime / A_vib_base)_scale
+        ≈ 0.06913 × 0.15 × 1.0  (scaled to base F_sonic; partial resonance captured in timing)
+        = 1.037×10⁻² N·s
+```
+
+The second attack (A) fires a full resonance-boosted wave (t_wave2 = 0.15 s, amplitude gain ×1.5 over first attack from resonance buildup):
+
+```
+J_wave2 = J_wave1 × 1.50 = 1.037×10⁻² × 1.50 = 1.556×10⁻² N·s
+```
+
+The ES bearing rebound reconverts the resonance wave recoil to spin (η_ES = 0.35):
+
+```
+Δω = η_ES × (J_wave1 + J_wave2) × r_contact / I_L
+   = 0.35 × (1.037×10⁻² + 1.556×10⁻²) × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 2.593×10⁻² × 0.025 / 2.217×10⁻⁵
+   = 0.35 × 29.24
+   = +10.2 rad/s  ≈ +10 rad/s
+```
+
+(η_ES = 0.35: ES bearing near-frictionless inner race rebound.) The resonance-primed double wave gives damageMultiplier **1.20×**. lockMs = 150 (brief resonance dwell — priming cycle holds contact).
+
+**Parameters:**
+- spinGain: +10 rad/s (ES bearing resonance recoil η = 0.35)
+- damageMultiplier: 1.20 (resonance-primed double partial sonic wave)
+- lockMs: 150 (priming stance dwell)
+
+### TypeScript
+
+```typescript
+function resonantStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // ES resonance recoil: Δω ≈ +10 rad/s (η=0.35; J1=1.037×10⁻²+J2=1.556×10⁻²; ×1.5 buildup)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Resonance-primed double partial wave: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1907 — GIMMICK: Vortex Ape (Bakuten Shoot) — Flat Tip Charge Sprint & Triboelectric Spark Shield
+
+**Beyblade:** Vortex Ape (Bakuten Shoot: Beyblade)
+**Blader:** Dunga | **Series:** Beyblade (Bakuten Shoot, plastic generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Vortex Ape AR | 15.0 | 32.0 |
+| Weight Disk | 10-Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | Flat Base (BB) | 2.0 | 3.0 |
+| **Total** | | **38.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention; contributes negligible I at r ≈ 0.)
+
+**I_total** = 15.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.536×10⁻⁵ + 2.205×10⁻⁵ + 3.500×10⁻⁶ + 1.80×10⁻⁸
+           = **4.093×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (plastic-gen Bakuten Shoot standard launch)
+L₀ = I × ω₀ = 4.093×10⁻⁵ × 700 = **2.865×10⁻² kg·m²/s**
+
+---
+
+### 1. Flat Blade Base — Charge Sprint (Friction-Driven Run)
+
+The Flat Blade Base has high rubber-contact friction (μ_flat = 0.35) that drives aggressive orbital motion. On the smooth stadium bowl Dunga commands a straight-line charge sprint toward the opponent — friction accelerates the bey from its orbital path into a direct dash:
+
+```
+a_flat = μ_flat × g = 0.35 × 9.81 = 3.434 m/s²  (sprint acceleration)
+
+Over sprint distance r_sprint = 0.15 m (half-arena radius):
+v_charge = √(2 × a_flat × r_sprint) = √(2 × 3.434 × 0.15) = √(1.030) = 1.015 m/s
+```
+
+Flat tip orbital speed and spin decay:
+
+```
+v_orbital_flat = μ_flat × ω₀ × r_BB = 0.35 × 700 × 0.003 = 0.735 m/s
+τ_flat  = μ_flat × m × g × r_BB = 0.35 × 0.0385 × 9.81 × 0.003 = 3.980×10⁻⁴ N·m
+t_spin  = L₀ / τ_flat = 2.865×10⁻² / 3.980×10⁻⁴ = 72.0 s
+```
+
+---
+
+### 2. AR Vortex Ape — Triboelectric Spark Shield
+
+The Vortex Ape AR carries wide swept protrusions at r_AR = 32 mm. At ω₀ = 700 rad/s, the blade tips charge triboelectrically by air friction (ABS on air):
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+
+σ_e = ε₀ × E_breakdown × (v_tip / v_ref)
+    = 8.854×10⁻¹² × 3×10⁶ × (22.40 / 343)
+    = 2.657×10⁻⁵ × 0.06531
+    = 1.735×10⁻⁶ C/m²
+
+Contact arc area per blade tip (t_c = 0.5 ms contact, arc width ≈ 5 mm):
+A_arc = v_tip × t_c × w_blade = 22.40 × 5×10⁻⁴ × 0.005 = 5.600×10⁻⁵ m²
+
+Q_total = σ_e × A_arc × N_blades  [N_blades = 6 Vortex Ape protrusions]
+        = 1.735×10⁻⁶ × 5.600×10⁻⁵ × 6 = 5.830×10⁻¹⁰ C
+
+Gap capacitance at d = 1 mm:
+C_gap = ε₀ × A_arc / d = 8.854×10⁻¹² × 5.600×10⁻⁵ / 1×10⁻³ = 4.959×10⁻¹³ F
+V_spark = Q_total / C_gap = 5.830×10⁻¹⁰ / 4.959×10⁻¹³ = 1175 V  (> 300 V breakdown → spark)
+E_spark = ½ × C_gap × V_spark² = ½ × 4.959×10⁻¹³ × 1175² = 3.424×10⁻⁷ J
+```
+
+The spark discharge slightly increases the effective coefficient of restitution at blade contact (electrostatic repulsion adds to mechanical rebound): e_base = 0.65 → e_eff = 0.65 × 1.20 = **0.78** (+20% spark restitution boost).
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 38.5 g |
+| I_total | 4.093×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.865×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| a_flat | 3.434 m/s² |
+| v_charge | 1.015 m/s |
+| v_orbital_flat | 0.735 m/s |
+| σ_e | 1.735×10⁻⁶ C/m² |
+| V_spark | 1175 V |
+| E_spark | 3.424×10⁻⁷ J |
+| e_eff (with spark) | 0.78 |
+| τ_flat | 3.980×10⁻⁴ N·m |
+| t_spin | 72.0 s |
+
+---
+
+## Case 1908 — SPECIAL: Spark Hammer — Dunga / Vortex Ape
+
+**Blader:** Dunga | **Beyblade:** Vortex Ape | **Type:** attack
+
+### Description
+
+Spark Hammer (Japanese: スパークハンマー) is a Special Move used by Dunga and his Vortex Ape Beyblade. Dunga commands Vortex Ape to charge in a straight line across the arena at maximum flat-tip speed. As Vortex Ape's AR protrusions charge with static electricity from the high-speed air friction, a ring of sparks surrounds the blade like a shield — the "Spark Hammer" effect. The electrified AR then delivers a hammer-blow collision that sends the opponent flying with extra force from the spark discharge.
+
+### Stage — Flat Tip Sprint + Spark-Enhanced AR Smash
+
+From Case 1907: v_charge = 1.015 m/s, e_eff = 0.78 (spark-boosted restitution).
+
+```
+m_eff = (m_VA × m_opp) / (m_VA + m_opp) = (0.0385 × 0.038) / (0.0385 + 0.038)
+      = 1.4630×10⁻³ / 0.0765 = 1.912×10⁻² kg
+
+J_spark = m_eff × (1 + e_eff) × v_charge
+        = 1.912×10⁻² × 1.78 × 1.015
+        = 1.912×10⁻² × 1.8067 = 3.456×10⁻² N·s
+
+Δv_opp = J_spark / m_opp = 3.456×10⁻² / 0.038 = 0.909 m/s
+```
+
+**Effect on Vortex Ape (spin drain):**
+
+```
+Δω_VA    = J_spark × r_contact / I_VA = 3.456×10⁻² × 0.030 / 4.093×10⁻⁵ = 25.3 rad/s
+ω_remain = 700 − 25.3 = 674.7 rad/s  (96.4% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dunga's Ape Bit-Beast fully charges the Vortex Ape AR into a crackling ball of lightning — the spark shield becomes a true electrical storm that hammers the opponent with both physical smash force and a full electrostatic discharge blast.
+
+[M] factor = **7.0 ×** (Dunga Ape spirit electric storm)
+[M] Δv = 0.909 × 7.0 = **6.4 m/s** (spark hammer ring-out)
+
+> **Note:** Physical values describe flat-tip sprint a=3.434 m/s² over 0.15m → v_charge=1.015 m/s, triboelectric spark e_boost=+20% (e_eff=0.78), J=3.456×10⁻² N·s, Δv=0.909 m/s. [M] values represent Dunga's Ape spirit igniting the full Spark Hammer lightning blast. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sparkHammerSpecial(bey: Beyblade, target: Beyblade): void {
+  // Flat sprint a=3.434m/s²×0.15m→v=1.015m/s; spark e_eff=0.78 (+20%); J=3.456×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.03456;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Dunga Ape electric storm)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a Flat Blade Base (or equivalent flat-contact tip, μ ≥ 0.30) combined with an Attack Ring carrying 6+ swept protrusions at r_AR ≥ 30 mm (generating triboelectric spark at v_tip ≥ 20 m/s, V_spark ≥ 300 V). The flat tip drives the charge sprint; AR spark discharges at contact for +20% restitution. Standard game instance: Vortex Ape (Dunga, Bakuten Shoot Beyblade).
+
+---
+
+## Case 1909 — COMBO: Electric Charge — Vortex Ape
+
+**Sequence:** → J A (moveRight · jump · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Dunga
+
+### Physics Justification
+
+The moveRight (→) begins the flat-tip sprint across the arena (partial charge, r_partial = 0.075 m — half the full sprint distance):
+
+```
+v_partial = √(2 × a_flat × r_partial) = √(2 × 3.434 × 0.075) = √(0.5151) = 0.7177 m/s
+```
+
+The jump (J) is a short hop — the flat base bounces off the arena floor (elastic contact, e_hop = 0.40):
+
+```
+v_hop = e_hop × v_orbital_flat = 0.40 × 0.735 = 0.294 m/s  (upward)
+h_hop = v_hop² / (2g) = 0.294² / 19.62 = 4.4 mm
+```
+
+The attack (A) fires at landing from the hop, combining the sprint approach velocity with the descent re-entry speed:
+
+```
+v_impact = √(v_partial² + 2g × h_hop)
+         = √(0.7177² + 2 × 9.81 × 0.0044)
+         = √(0.5151 + 0.08632)
+         = √0.6014 = 0.7755 m/s
+
+J_elec = m_eff × (1 + e_eff) × v_impact = 1.912×10⁻² × 1.78 × 0.7755
+       = 1.912×10⁻² × 1.3804 = 2.640×10⁻² N·s
+```
+
+The flat base friction rebound on landing reconverts contact impulse to spin:
+
+```
+Δω = η_flat × J_elec × r_contact / I_VA
+   = 0.28 × 2.640×10⁻² × 0.030 / 4.093×10⁻⁵
+   = 0.28 × 7.920×10⁻⁴ / 4.093×10⁻⁵
+   = 0.28 × 19.35
+   = +5.4 rad/s  ≈ +5 rad/s
+```
+
+(η_flat = 0.28: flat tip moderate-rebound recoil reconversion.) The sprint-hop-smash AR contact gives damageMultiplier **1.25×**. lockMs = 0 (pure attack dash, no dwell).
+
+**Parameters:**
+- spinGain: +5 rad/s (flat base hop rebound η = 0.28)
+- damageMultiplier: 1.25 (sprint-hop spark AR smash)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function electricChargeCombo(bey: Beyblade, target: Beyblade): void {
+  // Flat hop rebound: Δω ≈ +5 rad/s (η=0.28, h_hop=4.4mm, v_impact=0.7755m/s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 5);
+  // Sprint-hop spark AR smash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +5 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1910 — GIMMICK: Dranzer F (Bakuten Shoot) — Wing AR Lift & Aerial Overhead Descent Strike
+
+**Beyblade:** Dranzer F (Bakuten Shoot: Beyblade)
+**Blader:** Kai Hiwatari | **Series:** Beyblade (Bakuten Shoot, plastic generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Dranzer (4-wing phoenix) | 14.0 | 32.0 |
+| Weight Disk | Circle Balance | 14.0 | 34.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | Flat Base (BB) | 2.0 | 3.0 |
+| **Total** | | **33.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 14.0×10⁻³ × 0.034² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.434×10⁻⁵ + 1.619×10⁻⁵ + 3.500×10⁻⁶ + 1.80×10⁻⁸
+           = **3.405×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 3.405×10⁻⁵ × 700 = **2.384×10⁻² kg·m²/s**
+
+---
+
+### 1. Dranzer AR — Four-Wing Lift Force
+
+The Dranzer Attack Ring carries four swept phoenix-wing protrusions designed to generate aerodynamic lift at high spin. Each wing is modelled as a flat-plate aerofoil (C_L = 0.6, A_wing = 1.2×10⁻⁴ m² per wing):
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+
+F_lift_total = N_wings × ½ × ρ_air × v_tip² × C_L × A_wing
+             = 4 × ½ × 1.225 × 22.40² × 0.6 × 1.2×10⁻⁴
+             = 4 × ½ × 1.225 × 501.76 × 7.2×10⁻⁵
+             = 4 × 2.218×10⁻² = 8.871×10⁻² N
+
+Weight: W = m × g = 0.0335 × 9.81 = 0.3286 N
+
+Lift fraction: F_lift / W = 8.871×10⁻² / 0.3286 = 26.99%  ≈ 27%
+```
+
+Effective gravity during upward flight (lift partially opposes gravity):
+
+```
+g_eff = g × (1 − F_lift / W) = 9.81 × (1 − 0.2699) = 9.81 × 0.7301 = 7.165 m/s²
+```
+
+---
+
+### 2. Bowl-Exit Trajectory — Apex Height & Descent Strike
+
+Dranzer F uses the bowl wall to redirect from horizontal orbit into a vertical launch (bowl wall angle θ = 60°):
+
+```
+v_orbital = μ_flat × ω₀ × r_BB = 0.35 × 700 × 0.003 = 0.735 m/s
+
+v_z (upward at bowl exit) = v_orbital × tan(60°) = 0.735 × 1.732 = 1.273 m/s
+
+Apex height (under g_eff — lift active during ascent):
+h_apex = v_z² / (2 × g_eff) = 1.273² / (2 × 7.165) = 1.6205 / 14.330 = 113.1 mm ≈ 113 mm
+
+Descent velocity (full g — lift decays as spin reduces at apex):
+v_descent = √(2 × g × h_apex) = √(2 × 9.81 × 0.1131) = √(2.219) = 1.490 m/s
+
+Combined impact velocity (orbital component + descent):
+v_impact = √(v_orbital² + v_descent²) = √(0.735² + 1.490²) = √(0.5402 + 2.2201) = √2.7603 = 1.661 m/s
+```
+
+**Flat base spin decay:**
+
+```
+τ_flat  = μ_flat × m × g × r_BB = 0.35 × 0.0335 × 9.81 × 0.003 = 3.461×10⁻⁴ N·m
+t_spin  = L₀ / τ_flat = 2.384×10⁻² / 3.461×10⁻⁴ = 68.9 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 33.5 g |
+| I_total | 3.405×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.384×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| F_lift_total | 8.871×10⁻² N |
+| Lift fraction | 27% |
+| g_eff | 7.165 m/s² |
+| v_orbital | 0.735 m/s |
+| v_z | 1.273 m/s |
+| h_apex | 113 mm |
+| v_descent | 1.490 m/s |
+| v_impact | 1.661 m/s |
+| τ_flat | 3.461×10⁻⁴ N·m |
+| t_spin | 68.9 s |
+
+---
+
+## Case 1911 — SPECIAL: Spin Fire — Kai Hiwatari / Dranzer F
+
+**Blader:** Kai Hiwatari | **Beyblade:** Dranzer F | **Type:** attack
+
+### Description
+
+Spin Fire is a Special Move used by Kai Hiwatari and his Dranzer F Beyblade. Dranzer rides the bowl wall and launches high into the air, its four phoenix wings generating enough lift to carry it to a significant apex height before it crashes back down on the opponent from above in a blazing overhead strike. The Flat Base drives a high-speed orbital approach, the bowl wall redirects into a vertical launch, and Dranzer descends like a meteor. This move is similar in mechanism to Mountain Cat Attack — a high-angle bowl-wall launch into an aerial overhead smash — but Dranzer's wing lift extends the apex height considerably. Kai first used Spin Fire in his earliest battles in Bakuten Shoot Season 1.
+
+### Stage — Bowl-Wall Launch + Wing-Lift Aerial Overhead Descent Strike
+
+From Case 1910: v_impact = 1.661 m/s (orbital + wing-lift ascent + full-g descent), e = 0.75 (hard ABS AR smash blades).
+
+```
+m_eff = (m_D × m_opp) / (m_D + m_opp) = (0.0335 × 0.038) / (0.0335 + 0.038)
+      = 1.273×10⁻³ / 0.0715 = 1.780×10⁻² kg
+
+J_spinfire = m_eff × (1 + e) × v_impact
+           = 1.780×10⁻² × 1.75 × 1.661
+           = 1.780×10⁻² × 2.9068 = 5.174×10⁻² N·s
+
+Δv_opp = J_spinfire / m_opp = 5.174×10⁻² / 0.038 = 1.361 m/s
+```
+
+**Effect on Dranzer F (spin drain):**
+
+```
+Δω_D    = J_spinfire × r_contact / I_D = 5.174×10⁻² × 0.030 / 3.405×10⁻⁵ = 45.6 rad/s
+ω_remain = 700 − 45.6 = 654.4 rad/s  (93.5% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Kai's Dranzer Bit-Beast fully materialises as a blazing phoenix — the wings ignite with spirit fire at the apex, the descent becomes a true meteor strike that hurls the opponent out of the stadium in a column of flames.
+
+[M] factor = **8.0 ×** (Kai Hiwatari — Dranzer phoenix fire spirit, iconic move)
+[M] Δv = 1.361 × 8.0 = **10.9 m/s** (phoenix fire ring-out)
+
+> **Note:** Physical values describe four-wing lift F=8.871×10⁻² N (27% weight), g_eff=7.165 m/s², bowl-wall launch v_z=1.273 m/s, h_apex=113 mm, v_impact=1.661 m/s, impulse J=5.174×10⁻² N·s, Δv=1.361 m/s. [M] values represent Kai's Dranzer phoenix spirit igniting the aerial descent into a blazing meteor strike. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function spinFireSpecial(bey: Beyblade, target: Beyblade): void {
+  // 4-wing lift 27%→g_eff=7.165m/s²; bowl launch v_z=1.273m/s→h=113mm; v_impact=1.661m/s; J=5.174×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.05174;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Kai Dranzer phoenix fire spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a flat-contact Blade Base (μ ≥ 0.30) combined with an Attack Ring carrying 4+ upward-angled wing protrusions at r_AR ≥ 30 mm generating measurable lift (F_lift ≥ 0.06 N at ω₀ ≥ 680 rad/s), launched via a 50–70° bowl wall for vertical ascent. Standard game instance: Dranzer F (Kai Hiwatari, Bakuten Shoot Beyblade).
+
+---
+
+## Case 1912 — COMBO: Flame Dive — Dranzer F
+
+**Sequence:** ↑ A K (moveUp · attack · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Kai Hiwatari
+
+### Physics Justification
+
+The moveUp (↑) launches Dranzer F up the bowl wall at half-orbit speed (v_partial = v_orbital × 0.5 = 0.735 × 0.5 = 0.3675 m/s). With wing lift active, this gives a partial ascent:
+
+```
+v_z_partial = v_partial × tan(60°) = 0.3675 × 1.732 = 0.6365 m/s
+
+h_partial = v_z_partial² / (2 × g_eff) = 0.6365² / (2 × 7.165) = 0.4051 / 14.330 = 28.3 mm
+```
+
+The attack (A) fires at descent apex — Dranzer strikes downward at v_descent_partial:
+
+```
+v_descent_partial = √(2 × g × h_partial) = √(2 × 9.81 × 0.0283) = √(0.5553) = 0.7452 m/s
+
+v_impact_partial = √(v_partial² + v_descent_partial²) = √(0.3675² + 0.7452²)
+                 = √(0.1351 + 0.5553) = √0.6904 = 0.8309 m/s
+
+J_partial = m_eff × (1 + e) × v_impact_partial = 1.780×10⁻² × 1.75 × 0.8309
+          = 1.780×10⁻² × 1.4541 = 2.588×10⁻² N·s
+```
+
+The defense (K) is the wing-guard follow-through — Dranzer angles the phoenix wings downward on contact, shielding from counter-strike and reconverting contact recoil to spin (η_wing = 0.30, wing deflects recoil into rotation):
+
+```
+Δω = η_wing × J_partial × r_contact / I_D
+   = 0.30 × 2.588×10⁻² × 0.030 / 3.405×10⁻⁵
+   = 0.30 × 7.764×10⁻⁴ / 3.405×10⁻⁵
+   = 0.30 × 22.80
+   = +6.8 rad/s  ≈ +7 rad/s
+```
+
+(η_wing = 0.30: phoenix wing deflection recoil reconversion.) The partial aerial dive with wing-guard gives damageMultiplier **1.25×**. lockMs = 100 (wing-guard hold on landing).
+
+**Parameters:**
+- spinGain: +7 rad/s (wing deflection recoil η = 0.30)
+- damageMultiplier: 1.25 (partial aerial overhead dive with wing guard)
+- lockMs: 100 (wing-guard dwell)
+
+### TypeScript
+
+```typescript
+function flameDiveCombo(bey: Beyblade, target: Beyblade): void {
+  // Wing recoil: Δω ≈ +7 rad/s (η=0.30, h_partial=28.3mm, J=2.588×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 7);
+  // Partial aerial dive + wing guard: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +7 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1913 — GIMMICK: Thermal Lacerta WA130HF — WA130 Wing-Arm Sweep & HF Aggressive Orbit
+
+**Beyblade:** Thermal Lacerta WA130HF (TT JP: サーマルラセルタWA130HF; Hasbro EN: Thermal Lacerta WA130HF)
+**Blader:** Chiyun Li | **Series:** Beyblade: Metal Masters (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Lacerta | 4.0 | 24.0 |
+| Fusion Wheel | Thermal | 29.0 | 28.0 |
+| Spin Track | WA130 (Wing Attack 130) | 3.5 | 14.0 |
+| Performance Tip | HF (High Flat) | 0.9 | 3.5 |
+| **Total** | | **37.4** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention.)
+
+**I_total** = 29.0×10⁻³ × 0.028² + 4.0×10⁻³ × 0.024² + 3.5×10⁻³ × 0.014² + 0.9×10⁻³ × 0.0035²
+           = 2.274×10⁻⁵ + 2.304×10⁻⁶ + 6.860×10⁻⁷ + 1.103×10⁻⁸
+           = **2.580×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Masters standard launch)
+L₀ = I × ω₀ = 2.580×10⁻⁵ × 650 = **1.677×10⁻² kg·m²/s**
+
+---
+
+### 1. WA130 Wing Attack Spin Track — Lateral Wing Sweep
+
+The WA130 (Wing Attack 130) Spin Track extends two wide lateral arms perpendicular to the spin axis at 130 mm height. Each arm (length L_arm = 20 mm, width w_arm = 8 mm, A_arm = 1.600×10⁻⁴ m²) sweeps through the air and contacts the opponent's lower track/tip region on close approach — a lateral tail-sweep attack at mid-height.
+
+**Wing-arm tip velocity:**
+
+```
+v_arm = ω₀ × r_arm_tip = 650 × (0.028 + 0.020) = 650 × 0.048 = 31.20 m/s
+```
+
+**Wing-arm aerodynamic lateral sweep force (drag mode on approach):**
+
+```
+F_sweep = ½ × ρ_air × v_arm² × C_D × A_arm × N_arms
+        = ½ × 1.225 × 31.20² × 1.2 × 1.600×10⁻⁴ × 2
+        = ½ × 1.225 × 973.44 × 1.2 × 3.200×10⁻⁴
+        = ½ × 1.225 × 973.44 × 3.840×10⁻⁴
+        = 0.2289 N  (lateral sweep force per pass)
+```
+
+**Wing-arm impact impulse (contact duration t_c = 2 ms):**
+
+```
+J_sweep = F_sweep × t_c = 0.2289 × 2×10⁻³ = 4.578×10⁻⁴ N·s  (per arm contact)
+```
+
+---
+
+### 2. HF (High Flat) Tip — Aggressive Orbit Drive
+
+The HF tip combines sharp-center focus with a flat ring surround (μ_HF = 0.30, r_HF = 3.5 mm) for fast aggressive orbit with controlled destabilisation bursts:
+
+```
+v_orbital_HF = μ_HF × ω₀ × r_HF = 0.30 × 650 × 0.0035 = 0.6825 m/s
+
+τ_HF   = μ_HF × m × g × r_HF = 0.30 × 0.0374 × 9.81 × 0.0035 = 3.858×10⁻⁴ N·m
+t_spin = L₀ / τ_HF = 1.677×10⁻² / 3.858×10⁻⁴ = 43.5 s
+```
+
+**Combined impact velocity (HF orbital + WA130 arm sweep lateral component):**
+
+```
+v_impact = √(v_orbital_HF² + (F_sweep × t_c / m)²)
+         = √(0.6825² + (4.578×10⁻⁴ / 0.0374)²)
+         = √(0.4658 + (1.224×10⁻²)²)
+         = √(0.4658 + 1.498×10⁻⁴)
+         = √0.4660 = 0.6826 m/s  ≈ 0.683 m/s  (WA130 arm sweep lateral component minor vs orbital)
+```
+
+For the Tempestuous Whirlwind Sword slam the dominant component is the full-body overhead slam entry, modelled as orbital v_orbital_HF = 0.6825 m/s direct approach with e = 0.75.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.4 g |
+| I_total | 2.580×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.677×10⁻² kg·m²/s |
+| v_arm | 31.20 m/s |
+| F_sweep | 0.2289 N |
+| J_sweep | 4.578×10⁻⁴ N·s (per arm) |
+| v_orbital_HF | 0.6825 m/s |
+| v_impact | 0.683 m/s |
+| τ_HF | 3.858×10⁻⁴ N·m |
+| t_spin | 43.5 s |
+
+---
+
+## Case 1914 — SPECIAL: Tempestuous Whirlwind Sword — Chiyun Li / Thermal Lacerta WA130HF
+
+**Blader:** Chiyun Li | **Beyblade:** Thermal Lacerta WA130HF | **Type:** attack
+
+### Description
+
+Tempestuous Whirlwind Sword (Japanese: 疾風迅雷剣, Shippū Jinrai Ken) is the third and most powerful Special Move used by Chiyun Li and his Thermal Lacerta WA130HF. Chiyun Li summons Lacerta to slash with its tail, slamming the opponent with serious damage while the bey attacks covered in a pink aura. The WA130 wing arms generate the sweeping "tail slash" lateral impact, and the pink aura is the aerodynamic wake shed from the rapidly rotating wing tips. Chiyun Li first used this move to counter Tsubasa's Diving Crush.
+
+### Stage — WA130 Wing-Arm Tail Slash + HF Orbital Approach Slam
+
+The Tempestuous Whirlwind Sword is a two-component strike: the WA130 wing-arms deliver the lateral "tail slash" sweep while the HF-driven orbital approach contributes the body slam. Combined entry velocity:
+
+```
+v_combined = √(v_orbital_HF² + v_arm_lateral²)
+```
+
+Lateral velocity from WA130 arm sweep impulse applied to body:
+
+```
+v_arm_lateral = J_sweep × N_arms / m = (4.578×10⁻⁴ × 2) / 0.0374 = 9.156×10⁻⁴ / 0.0374 = 0.02448 m/s
+
+v_combined = √(0.6825² + 0.02448²) = √(0.4658 + 5.99×10⁻⁴) ≈ 0.6829 m/s
+```
+
+Using v_combined ≈ 0.683 m/s and e = 0.75 (hard Thermal FW smash):
+
+```
+m_eff = (m_TL × m_opp) / (m_TL + m_opp) = (0.0374 × 0.038) / (0.0374 + 0.038)
+      = 1.4212×10⁻³ / 0.0754 = 1.885×10⁻² kg
+
+J_whirlwind = m_eff × (1 + e) × v_combined
+            = 1.885×10⁻² × 1.75 × 0.683
+            = 1.885×10⁻² × 1.1953 = 2.253×10⁻² N·s
+
+Δv_opp = J_whirlwind / m_opp = 2.253×10⁻² / 0.038 = 0.593 m/s
+```
+
+**Effect on Thermal Lacerta (spin drain):**
+
+```
+Δω_TL    = J_whirlwind × r_contact / I_TL = 2.253×10⁻² × 0.025 / 2.580×10⁻⁵ = 21.8 rad/s
+ω_remain = 650 − 21.8 = 628.2 rad/s  (96.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Chiyun Li's Lacerta Bit-Beast materialises as a great lizard spirit wreathed in a pink tempest aura — the WA130 wing arms become Lacerta's slashing tail, and the full Thermal FW body becomes a whirlwind blade that sweeps the opponent from the arena in a devastating pink storm.
+
+[M] factor = **7.0 ×** (Chiyun Li — Lacerta pink tempest spirit)
+[M] Δv = 0.593 × 7.0 = **4.2 m/s** (whirlwind sword ring-out)
+
+> **Note:** Physical values describe WA130 arm sweep F=0.2289 N (J=4.578×10⁻⁴ N·s per arm, t_c=2ms), HF orbital v=0.6825 m/s, combined v_combined=0.683 m/s, total impulse J=2.253×10⁻² N·s, Δv=0.593 m/s. [M] values represent Chiyun Li's Lacerta spirit manifesting the WA130 arms as a dragon tail slash through a pink tempest aura. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tempestuousWhirlwindSwordSpecial(bey: Beyblade, target: Beyblade): void {
+  // WA130 wing sweep F=0.2289N t_c=2ms; HF orbital v=0.6825m/s; J=2.253×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.02253;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Chiyun Li Lacerta pink tempest spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a WA (Wing Attack) Spin Track (WA130 or equivalent, arm extension ≥ 15 mm beyond r_FW, A_arm ≥ 1.2×10⁻⁴ m² per arm, sweep F ≥ 0.15 N) combined with an aggressive flat/high-flat tip (μ ≥ 0.25, v_orbital ≥ 0.60 m/s). The wing arms must reach the opponent's lower track level for lateral tail-sweep contact. Standard game instance: Thermal Lacerta WA130HF (Chiyun Li, Metal Masters).
+
+---
+
+## Case 1915 — COMBO: Lacerta Slash — Thermal Lacerta
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Chiyun Li
+
+### Physics Justification
+
+The moveRight (→) drives HF aggressive orbit approach (v_partial = v_orbital_HF × 0.70 = 0.6825 × 0.70 = 0.4778 m/s orbital component):
+
+```
+v_approach = 0.4778 m/s
+```
+
+The moveUp (↑) raises Lacerta's contact height along the WA130 130 mm track, maximising the wing-arm sweep arc. The elevation channels the lateral arm sweep more directly onto the target (height focus factor: 1.15×):
+
+The attack (A) fires the WA130 arm sweep + orbital approach combined:
+
+```
+J_sweep_combo = F_sweep × t_c × 1.15  (height focus boost)
+              = 0.2289 × 2×10⁻³ × 1.15 = 5.265×10⁻⁴ N·s  (per arm × 2 arms)
+
+v_arm_lateral_combo = (5.265×10⁻⁴ × 2) / 0.0374 = 1.053×10⁻³ / 0.0374 = 0.02815 m/s
+
+v_impact_combo = √(v_approach² + v_arm_lateral_combo²)
+               = √(0.4778² + 0.02815²)
+               = √(0.2283 + 7.92×10⁻⁴)
+               ≈ 0.4786 m/s
+
+J_slash = m_eff × (1 + e) × v_impact_combo = 1.885×10⁻² × 1.75 × 0.4786
+        = 1.885×10⁻² × 0.8375 = 1.579×10⁻² N·s
+```
+
+The HF tip high-flat contact on landing reconverts the lateral arm sweep recoil to spin (η_HF = 0.28):
+
+```
+Δω = η_HF × J_slash × r_contact / I_TL
+   = 0.28 × 1.579×10⁻² × 0.025 / 2.580×10⁻⁵
+   = 0.28 × 3.948×10⁻⁴ / 2.580×10⁻⁵
+   = 0.28 × 15.30
+   = +4.3 rad/s  ≈ +4 rad/s
+```
+
+(η_HF = 0.28: HF flat contact rebound lateral arm recoil reconversion.) The WA130 height-focused wing sweep gives damageMultiplier **1.20×**. lockMs = 0 (pure attack sweep, no lock phase).
+
+**Parameters:**
+- spinGain: +4 rad/s (HF lateral arm recoil η = 0.28)
+- damageMultiplier: 1.20 (WA130 height-focused wing sweep attack)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function lacertaSlashCombo(bey: Beyblade, target: Beyblade): void {
+  // HF arm recoil: Δω ≈ +4 rad/s (η=0.28, J=1.579×10⁻²N·s, WA130 ×1.15 height boost)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 4);
+  // WA130 height-focused sweep: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +4 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1916 — GIMMICK: Dranzer MF (Wing Attacker CWD) — CWD Wide-Wing Aerodynamic Amplification & Phoenix Fire Column
+
+**Beyblade:** Dranzer MF with Wing Attacker CWD (TT JP: ドランザーMF ウィングアタッカーCWD)
+**Blader:** Kai Hiwatari | **Series:** Beyblade (Bakuten Shoot manga, final chapter)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Dranzer MS (Metal System) | 16.0 | 33.0 |
+| Weight Disk | Wing Attacker CWD | 22.0 | 38.0 |
+| Spin Gear | Right SG (Metal) | 4.5 | 10.0 |
+| Blade Base | Metal Flat Base (MFB) | 3.0 | 3.0 |
+| **Total** | | **45.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention. Wing Attacker CWD is a Customize Weight Disk with wide-span aerodynamic wings at maximum radius — the manga's final special move.)
+
+**I_total** = 16.0×10⁻³ × 0.033² + 22.0×10⁻³ × 0.038² + 4.5×10⁻³ × 0.010² + 3.0×10⁻³ × 0.003²
+           = 1.742×10⁻⁵ + 3.178×10⁻⁵ + 4.500×10⁻⁶ + 2.70×10⁻⁸
+           = **5.398×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (plastic-gen Bakuten Shoot standard launch)
+L₀ = I × ω₀ = 5.398×10⁻⁵ × 700 = **3.779×10⁻² kg·m²/s**
+
+---
+
+### 1. Wing Attacker CWD — Wide-Wing Aerodynamic Amplification
+
+The Wing Attacker CWD extends four wide aerodynamic wings at r_CWD = 38 mm. Each wing (A_wing = 2.0×10⁻⁴ m² per wing, C_L = 0.6) generates lift at high spin:
+
+```
+v_CWD_tip = ω₀ × r_CWD = 700 × 0.038 = 26.60 m/s
+
+F_lift_CWD = N_wings × ½ × ρ_air × v_CWD_tip² × C_L × A_wing
+           = 4 × ½ × 1.225 × 26.60² × 0.6 × 2.0×10⁻⁴
+           = 4 × ½ × 1.225 × 707.56 × 1.2×10⁻⁴
+           = 4 × 5.199×10⁻² = 0.2080 N
+
+Weight: W = m × g = 0.0455 × 9.81 = 0.4465 N
+
+Lift fraction: F_lift_CWD / W = 0.2080 / 0.4465 = 46.6%
+```
+
+Effective gravity during ascent:
+
+```
+g_eff_MF = g × (1 − F_lift_CWD / W) = 9.81 × (1 − 0.466) = 9.81 × 0.534 = 5.239 m/s²
+```
+
+---
+
+### 2. Bowl-Exit Trajectory — Phoenix Fire Ascent
+
+Dranzer MF uses the bowl wall (θ = 65°) for maximum vertical launch:
+
+```
+v_orbital_MF = μ_flat × ω₀ × r_BB = 0.35 × 700 × 0.003 = 0.735 m/s
+
+v_z_MF = v_orbital_MF × tan(65°) = 0.735 × 2.145 = 1.577 m/s
+
+h_apex_MF = v_z_MF² / (2 × g_eff_MF) = 1.577² / (2 × 5.239) = 2.487 / 10.478 = 237.3 mm ≈ 237 mm
+```
+
+Descent (full g, CWD lift diminished as spin decays at apex):
+
+```
+v_descent_MF = √(2 × g × h_apex_MF) = √(2 × 9.81 × 0.2373) = √(4.655) = 2.157 m/s
+
+v_impact_MF = √(v_orbital_MF² + v_descent_MF²) = √(0.735² + 2.157²) = √(0.5402 + 4.6527) = √5.193 = 2.279 m/s
+```
+
+**Metal Flat Base spin decay:**
+
+```
+τ_MFB  = μ_flat × m × g × r_BB = 0.35 × 0.0455 × 9.81 × 0.003 = 4.698×10⁻⁴ N·m
+t_spin = L₀ / τ_MFB = 3.779×10⁻² / 4.698×10⁻⁴ = 80.4 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 45.5 g |
+| I_total | 5.398×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 3.779×10⁻² kg·m²/s |
+| v_CWD_tip | 26.60 m/s |
+| F_lift_CWD | 0.2080 N |
+| Lift fraction | 46.6% |
+| g_eff_MF | 5.239 m/s² |
+| v_orbital_MF | 0.735 m/s |
+| v_z_MF | 1.577 m/s |
+| h_apex_MF | 237 mm |
+| v_descent_MF | 2.157 m/s |
+| v_impact_MF | 2.279 m/s |
+| τ_MFB | 4.698×10⁻⁴ N·m |
+| t_spin | 80.4 s |
+
+---
+
+## Case 1917 — SPECIAL: The End of Fire — Kai Hiwatari / Dranzer MF
+
+**Blader:** Kai Hiwatari | **Beyblade:** Dranzer MF (Wing Attacker CWD) | **Type:** attack
+
+### Description
+
+The End of Fire (Japanese: 爆風炎撃, Bakufū Engeki — "Explosive Wind Fire Strike") is a Special Move used by Kai Hiwatari with his Dranzer MF Beyblade, debuting in the final chapter of the Bakuten Shoot Beyblade manga. Kai and Dranzer combine their full power into a swirling mass of fire — Dranzer rises from the flames like a phoenix reborn and descends in a catastrophic explosive strike. The Wing Attacker CWD provides massive aerodynamic lift that launches Dranzer to an unprecedented apex height of 237 mm, and the descent impacts with full gravitational energy amplified by the CWD mass. The explosion looks like Dranzer rising from its own ashes, combining the power of both Kai and Dranzer in a final burst.
+
+### Stage — CWD Wing-Lift Phoenix Ascent + Catastrophic Fire-Column Descent
+
+From Case 1916: v_impact_MF = 2.279 m/s, e = 0.80 (maximum energy — manga finale move, hardest ABS/metal contact).
+
+```
+m_eff = (m_DMF × m_opp) / (m_DMF + m_opp) = (0.0455 × 0.038) / (0.0455 + 0.038)
+      = 1.729×10⁻³ / 0.0835 = 2.071×10⁻² kg
+
+J_endfire = m_eff × (1 + e) × v_impact_MF
+          = 2.071×10⁻² × 1.80 × 2.279
+          = 2.071×10⁻² × 4.1022 = 8.495×10⁻² N·s
+
+Δv_opp = J_endfire / m_opp = 8.495×10⁻² / 0.038 = 2.235 m/s
+```
+
+**Effect on Dranzer MF (spin drain):**
+
+```
+Δω_DMF   = J_endfire × r_contact / I_DMF = 8.495×10⁻² × 0.035 / 5.398×10⁻⁵ = 55.1 rad/s
+ω_remain = 700 − 55.1 = 644.9 rad/s  (92.1% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Kai and Dranzer's spirits fully merge into one at the climax of the manga — the Wing Attacker CWD ignites with all of Dranzer's fire energy as the phoenix rises from the ashes and descends in a catastrophic explosion that consumes the entire arena in flame.
+
+[M] factor = **9.0 ×** (Kai + Dranzer ultimate dual-spirit fusion — manga finale)
+[M] Δv = 2.235 × 9.0 = **20.1 m/s** (phoenix fire annihilation)
+
+> **Note:** Physical values describe Wing Attacker CWD 4-wing lift F=0.2080 N (46.6% weight), g_eff=5.239 m/s², bowl launch v_z=1.577 m/s, h_apex=237 mm, v_impact=2.279 m/s, impulse J=8.495×10⁻² N·s, Δv=2.235 m/s. [M] values represent Kai and Dranzer's ultimate spirit fusion in the manga finale — a dual-spirit phoenix fire explosion. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function endOfFireSpecial(bey: Beyblade, target: Beyblade): void {
+  // CWD 4-wing lift 46.6%→g_eff=5.239m/s²; bowl launch h_apex=237mm; v_impact=2.279m/s; J=8.495×10⁻²N·s; [M] 9.0×
+  const J_phys = 0.08495;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 9.0; // [M] BeySpirit 9.0× (Kai+Dranzer ultimate dual-spirit manga finale)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a Wing Attacker CWD (or equivalent maximum-radius aerodynamic weight disk, r_CWD ≥ 36 mm, 4+ wings, A_wing ≥ 1.8×10⁻⁴ m², F_lift ≥ 0.18 N) combined with a flat-contact Metal Base (μ ≥ 0.30) and a large-radius AR (r_AR ≥ 30 mm) on a bowl wall θ ≥ 60°. CWD lift fraction must reach ≥ 40% of weight for valid phoenix ascent. Standard game instance: Dranzer MF with Wing Attacker CWD (Kai Hiwatari, Bakuten Shoot manga finale).
+
+---
+
+## Case 1918 — COMBO: Ash Rise — Dranzer MF
+
+**Sequence:** ↑ ↑ A (moveUp · moveUp · attack)
+**Cost:** 35 | **Type:** attack | **Blader:** Kai Hiwatari
+
+### Physics Justification
+
+The first moveUp (↑) launches Dranzer MF onto the bowl wall in rising-flame mode — partial CWD lift elevation (h_partial_1 = h_apex_MF × 0.25 = 237 × 0.25 = 59.3 mm):
+
+```
+v_z_1 = √(2 × g_eff_MF × h_partial_1) = √(2 × 5.239 × 0.0593) = √(0.6213) = 0.7882 m/s
+
+v_descent_1 = √(2 × g × h_partial_1) = √(2 × 9.81 × 0.0593) = √(1.164) = 1.079 m/s
+```
+
+The second moveUp (↑) is the Dranzer ash-rise — Dranzer ascends from the bowl a second time using the residual CWD lift, reaching second-stage height (h_partial_2 = h_apex_MF × 0.50 = 118.5 mm):
+
+```
+v_z_2 = √(2 × g_eff_MF × h_partial_2) = √(2 × 5.239 × 0.1185) = √(1.2417) = 1.1143 m/s
+
+v_descent_2 = √(2 × g × h_partial_2) = √(2 × 9.81 × 0.1185) = √(2.325) = 1.525 m/s
+```
+
+The attack (A) fires the combined dual-stage descent strike:
+
+```
+v_impact_ash = √(v_orbital_MF² + v_descent_2²) = √(0.735² + 1.525²) = √(0.5402 + 2.3256) = √2.8658 = 1.693 m/s
+
+J_ash = m_eff × (1 + e) × v_impact_ash = 2.071×10⁻² × 1.80 × 1.693
+      = 2.071×10⁻² × 3.0474 = 6.311×10⁻² N·s
+```
+
+The Metal Flat Base rebounds on landing with CWD angular momentum transfer (η_CWD = 0.32):
+
+```
+Δω = η_CWD × J_ash × r_contact / I_DMF
+   = 0.32 × 6.311×10⁻² × 0.035 / 5.398×10⁻⁵
+   = 0.32 × 2.209×10⁻³ / 5.398×10⁻⁵
+   = 0.32 × 40.92
+   = +13.1 rad/s  ≈ +13 rad/s
+```
+
+(η_CWD = 0.32: Wing Attacker CWD angular momentum transfer on MFB rebound.) The dual-stage phoenix ascent and fire descent gives damageMultiplier **1.40×**. lockMs = 200 (fire column dwell — ash impact hold).
+
+**Parameters:**
+- spinGain: +13 rad/s (CWD angular momentum transfer η = 0.32)
+- damageMultiplier: 1.40 (dual-stage phoenix fire descent)
+- lockMs: 200 (ash impact fire column dwell)
+
+### TypeScript
+
+```typescript
+function ashRiseCombo(bey: Beyblade, target: Beyblade): void {
+  // CWD rebound: Δω ≈ +13 rad/s (η=0.32, dual-stage h→118.5mm, J=6.311×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Dual-stage phoenix fire descent: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 200 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1919 as further franchise moves are provided.*

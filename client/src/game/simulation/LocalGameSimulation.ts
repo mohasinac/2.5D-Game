@@ -2,7 +2,7 @@
 // Used for: tryout (solo), pvai (1-human vs AI), story-battle, tournament-ai, royale-ai.
 // No Colyseus connection required — produces ServerGameState snapshots each tick.
 
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db, COLLECTIONS } from '../../lib/firebase';
 import type { ServerArenaState, ServerBeyblade, ServerGameState } from '../../types/game';
 import type { GameRoomConfig } from '../../types/gameRoom';
@@ -251,9 +251,20 @@ export class LocalGameSimulation {
       this.tournamentTotalRounds = Math.max(1, Math.min(7, aiCount));
     }
 
-    // Load arena
+    // Load arena — 'random' picks a random arena from the collection
     let arenaData: Record<string, unknown> | null = null;
-    if (arenaId !== 'default') {
+    let resolvedArenaId = arenaId;
+    if (arenaId === 'random') {
+      try {
+        const snap = await getDocs(collection(db, COLLECTIONS.ARENAS));
+        if (!snap.empty) {
+          const docs = snap.docs;
+          const picked = docs[Math.floor(Math.random() * docs.length)];
+          resolvedArenaId = picked.id;
+          arenaData = picked.data() as Record<string, unknown>;
+        }
+      } catch { /* fall through to defaults */ }
+    } else if (arenaId !== 'default') {
       try {
         const snap = await getDoc(doc(db, COLLECTIONS.ARENAS, arenaId));
         if (snap.exists()) arenaData = snap.data() as Record<string, unknown>;
@@ -266,7 +277,7 @@ export class LocalGameSimulation {
       this.arenaRadius = Math.min(w, h) * 0.45;
       const wb = arenaData.worldBackground as Record<string, unknown> | undefined;
       this.arena = {
-        ...defaultArena(arenaId),
+        ...defaultArena(resolvedArenaId),
         name: (arenaData.name as string) ?? 'Arena',
         width: w, height: h,
         shape: (arenaData.shape as 'circle' | 'rectangle') ?? 'circle',

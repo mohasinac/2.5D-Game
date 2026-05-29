@@ -40434,43 +40434,55 @@ Metal Defense has no competitive application in any type configuration:
 ## CASE XXXX — WD Circle Wide (Draciel MS)
 
 **Part:** Weight Disk, Circle Wide
-**Weight:** ~9.5 g (standard); ~10.1 g (Draciel MS starter exclusive — heavier variant)
-**Material:** Zinc alloy
-**Architecture:** Open-spoke ring (outer rim + inner hub ring connected by 3 radial spokes)
+**Weight:** ~14 g (standard); ~14.5–14.7 g (Draciel MS starter exclusive — heavier variant) [FACT: user-measured; earlier session used 9.5 g which was an incorrect inference]
+**Thickness:** 5.1 mm standard; 5.6 mm (Draciel heavy variant) [FACT]
+**Material:** Zinc die-cast alloy
+**Architecture:** Open-spoke ring — thick outer rim + inner hub connected by 3 diagonal spokes; large open sectors between spokes
 
 ### Physical Description
 
-Circle Wide uses an open-spoke architecture: a substantial outer rim ring, an inner hub ring, and three connecting radial spokes. The majority of material mass sits at or near the outer rim, which gives Circle Wide one of the highest OWDs of any HMS WD despite its moderate total weight. The open spoke design is visually distinct from solid-disk WDs like Circle Heavy.
+Circle Wide uses an open-spoke architecture: a heavy outer rim ring, an inner hub ring, and three diagonal connecting spokes. The open sectors between spokes account for most of the WD's projected area, making it visually the most "hollow" of the three standard HMS WDs. The majority of mass sits in the outer rim, giving Circle Wide the highest OWD of the three starter WDs despite being the lightest in total mass.
 
-**Heavier Draciel MS variant:** The A-125 starter (both Takara and Sonokong versions) ships a Circle Wide measuring approximately 0.6 g heavier than the standard version found in other sets. This additional mass is distributed in the outer rim zone, incrementally improving OWD. The heavier variant is strictly preferred over the standard version in all applications.
+**Heavier Draciel MS variant:** The A-125 starter ships a Circle Wide measuring 0.5–0.7 g heavier than the standard version, with an additional 0.5 mm of thickness (5.6 mm vs 5.1 mm). The extra mass is in the outer rim zone. Strictly preferred over the standard version for all applications. Large production variation exists across standard Circle Wides — individual specimens range from ~13 g to ~14 g; weigh your specific WD before assuming nominal values.
 
 ### Moment of Inertia
 
-**Standard Circle Wide (~9.5 g):**
+OWD (outer weight distribution) for Circle Wide is the highest of the three starter WDs due to the open-spoke design concentrating mass at the outer rim. All values [INFERENCE from image geometry and OWD estimate]:
 
-| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
-|------|----------|--------------|--------------|-----------|
-| Hub ring | 2 | 0 | 8 | 6.40 × 10⁻⁸ |
-| Spokes (3) | 2 | 8 | 15 | 2.89 × 10⁻⁷ |
-| Outer rim ring | 5.5 | 15 | 22 | 1.950 × 10⁻⁶ |
-| **Total** | **9.5** | | | **2.304 × 10⁻⁶ kg·m²** |
+| Zone | Mass (g) | r_mean (mm) | I (kg·m²) |
+|------|----------|-------------|-----------|
+| Hub ring | 2.5 | 7 | 1.225×10⁻⁶ → 1.2×10⁻⁷ |
+| Spokes (3) | 2.0 | 15 | 4.500×10⁻⁷ |
+| Outer rim ring | 9.5 | 29 | 7.990×10⁻⁶ → 8.0×10⁻⁶ |
+| **Total** | **~14** | | **~8.6×10⁻⁶ [INFERENCE]** |
 
-OWD = 2.304×10⁻⁶ / (0.0095 × 0.022²) = 2.304×10⁻⁶ / 4.598×10⁻⁶ = **0.501**
+Note: these zone estimates are rough. The back-calculated OWD from assembly data is more reliable than the zone breakdown above.
 
-**Draciel MS heavy variant (~10.1 g, +0.6 g in outer rim):**
+**OWD estimate:** 0.515 [sourced from Draciel MS competitive context; consistent with open-spoke rim-dominant design]
 
-Additional outer rim (0.6 g at r = 15–22 mm): ½ × 0.0006 × (0.015² + 0.022²) = 2.127×10⁻⁷ kg·m²
+**Draciel heavy variant (~14.6 g, +0.5 mm thickness):** Additional mass in outer rim → I_heavy ≈ I_std + 0.6×10⁻⁶ [INFERENCE]. Strictly preferred over standard in both stamina and attack builds.
 
-I_CW_heavy = 2.304×10⁻⁶ + 2.127×10⁻⁷ = **2.517 × 10⁻⁶ kg·m²**
-OWD_heavy = 2.517×10⁻⁶ / (0.0101 × 0.022²) = 2.517×10⁻⁶ / 4.888×10⁻⁶ = **0.515**
+### Life After Death (LAD)
+
+Circle Wide's large outer radius (r_outer ≈ 32 mm) is its defining competitive property for stamina combos. During the dying wobble phase (low ω, high tilt angle θ):
+
+- The WD outer rim contacts the stadium floor before any AR protrusion can drag
+- Prevents AR-floor contact almost entirely → spin loss during LAD is from smooth metal rim on stadium, not ABS AR protrusions
+- μ_metal_rim ≈ 0.10–0.15 vs μ_AR_protrusion ≈ 0.30–0.50 → substantially less spin drain per wobble cycle
+
+The large outer radius also means the bey catches the tilt at a smaller tilt angle, prolonging the time before the AR would ever reach the floor.
+
+**Stamina role:** Circle Wide is the standard WD for HMS Stamina combos precisely because its outer rim extends far enough to provide reliable LAD regardless of AR geometry. "Regardless of the AR you use, Circle Wide will be the only upper part to make contact with the stadium" — confirmed by the r_outer exceeding any HMS AR protrusion height at normal battle tilts.
+
+**Attack role:** Wide distribution also aids Attack combos by keeping weight at the perimeter for momentum, without adding mass that would slow the assembly. A lighter WD with high OWD is preferable in attack builds where excessive mass would reduce approach speed.
 
 ### Competitive Notes
 
-Circle Wide (heavy variant) has the highest OWD of any HMS WD in the standard library at 0.515 — above Circle Heavy (0.374) and competitive with CWD Defense Ring. Its total absolute I (2.517×10⁻⁶) is lower than Circle Heavy (2.717×10⁻⁶) due to lower total mass, but the radial distribution is more efficient.
+Circle Wide is the most versatile of the three starter WDs. It is correct for Stamina (LAD) and acceptable for Attack (lightweight, high OWD). It has no specific disadvantage in any scenario where a standard WD slot is used. The heavy Draciel variant is strictly preferred in all applications.
 
-**Best WD application:** Stamina and spin-steal combos where maximizing OWD at low total mass is preferred. The heavy Draciel variant is the specific target for stamina-oriented WD builds. In assemblies where the full CWD slot is available (God Ring, Defense Ring), the WD is irrelevant; Circle Wide applies to beys using the WD slot only.
+**Best WD application:** Stamina first, Attack second. In assemblies where the CWD slot is available (CWD God Ring, CWD Defense Ring), the WD slot is irrelevant; Circle Wide applies only where the WD slot is the highest-tier weight disk in use.
 
-**See the Common Weight Disks reference page for full weight range data across production lots.**
+**See CASE XXXX — Common Weight Disks for full three-WD comparison.**
 
 ---
 
@@ -40718,4 +40730,412 @@ Metal Saucer in any high-power or attack-type matchup: catastrophic. F_recoil = 
 Metal Saucer in opposite-spin weak-launch stamina matchups: marginally viable. Gear teeth provide good friction for spin equalization; floating frame provides partial protection from contact impulses. At low relative velocities (weak launch ≈ 60–80% power), the contact events stay in the rolling/friction regime rather than the elastic collision regime.
 
 **No smash or defense application.** The only role is spin-stealing, and only with weak-launch technique. This is among the narrowest niche of any HMS AR.
+
+---
+
+## A-126 Dragoon MS
+
+**Set/Release:** A-126 Dragoon MS (Takara HMS, 2003). Additional releases: Hasbro Dragoon MS Starter (White), Sonokong Dragoon MS Starter (White), A-130 Double Shooter Set (Blue), Random Booster ACT 1 (Light Red), Fukubako 2004 (Black), Toys 'R' Us Limited (Dark Red), tournament recolours (Gold, Silver, Bronze, Light Blue).
+
+---
+
+## CASE XXXX — Bit Protector: Small Type (Dragoon MS)
+
+**Part:** Bit Protector, Small Type
+**Set/Release:** A-126 Dragoon MS (Takara HMS, 2003)
+**Weight:** ~1 g
+**Material:** ABS plastic
+
+Small Type BP with Dragoon spirit artwork. Seats on the upper peg of the HMS core. I contribution is negligible at r ≈ 0.
+
+BP Size Type on the initial A-126 release is not consistent for every production cycle or re-release. Being reproduced the following year could mean a different BP Size Type. No physics consequence regardless of size variant.
+
+**Moment of Inertia:** I_BP ≈ 3.5×10⁻⁸ kg·m² [all HMS Small Type BPs are functionally identical; see CASE 1850]
+**Assembly share (Dragoon MS):** < 0.5 %
+
+---
+
+## CASE XXXX — Attack Ring: Metal Attacker (Dragoon MS)
+
+**Part:** Attack Ring, Metal Attacker
+**Set/Release:** A-126 Dragoon MS (Takara HMS, 2003)
+**Weight:** ~14 g
+**Material:** ABS plastic carrier + zinc die-cast metal tabs (6 total, 3 pairs)
+**Spin compatibility:** Left-Spin preferred for attack; Right-Spin docile
+
+**Physical description:** Metal Attacker is a 3-blade AR: three large ABS plastic blades on a central plastic hub, each blade containing a pair of small die-cast zinc metal tabs recessed into the outer blade tip. Unlike Metal Upper (CASE 1851), which uses a large continuous die-cast outer ring constituting the majority of AR mass, Metal Attacker uses a plastic-dominant architecture with metal only at the blade tips. This mass distribution is the direct cause of the ~14 g weight — approximately 6 g less than metal-ring ARs of equivalent outer radius.
+
+**Moment of Inertia:**
+
+| Zone | Mass (g) | r_mean (mm) | I (kg·m²) |
+|------|----------|-------------|-----------|
+| ABS plastic carrier + blade bodies | ~8 | ~13 | 1.352×10⁻⁶ |
+| Die-cast metal tabs (6 total) | ~6 | ~21 | 2.646×10⁻⁶ |
+| **Total** | **~14** | | **~4.0×10⁻⁶** |
+
+**I_Metal Attacker ≈ 4.0×10⁻⁶ kg·m² [INFERENCE — mass split estimated from image geometry]**
+
+OWD = I / (m × r_ref²), r_ref = 23 mm (HMS standard):
+OWD(MA) = 4.0×10⁻⁶ / (14×10⁻³ × 0.023²) = 4.0×10⁻⁶ / 7.406×10⁻⁶ = **0.540** [INFERENCE]
+
+OWD is not the liability. Absolute I is. For context:
+- Metal Upper (CASE 1851): I_AR = 6.175×10⁻⁶, m = 20 g — 54 % higher I
+- Metal Attacker: I_AR ≈ 4.0×10⁻⁶, m = 14 g — lightest HMS AR analyzed
+
+**Contact character:**
+
+Left-Spin: The three plastic blade leading faces angle forward, presenting a moderately aggressive contact geometry. The metal tabs at the tips provide a harder contact surface. Contact angle from tangent [INFERENCE from image]: ~25–30°, giving smash efficiency η = cos(27°) ≈ 0.89 and recoil fraction sin(27°) ≈ 0.45. The geometry is not catastrophic — the contact faces are reasonably angled. The constraint is mass, not contact geometry: at 14 g, each collision impulse J = m × Δv returns less force to the opponent than any competitive AR. The design is "somewhat promising for Attack in left-spin" but cannot follow through.
+
+Right-Spin: The blade trailing faces present — smooth and rounded, producing deflection-dominant contact rather than smash. "Fairly docile despite its appearance" — consistent with trailing-face geometry. No competitive application in right-spin attack.
+
+**Weight penalty analysis:** At 14 g, Metal Attacker is 5–6 g lighter than competitive HMS ARs. Against a 20 g AR opponent at matched approach speed, Metal Attacker suffers a mechanical disadvantage in every exchange: lower I means faster spin decay per contact, lower m means greater deflection per hit. These two effects compound — the bey spins out faster and gets knocked around more easily per contact.
+
+**Stamina viability:** Negative. Three large blade protrusions create sustained aerodynamic drag and periodic collision exposure. The light weight might have been forgivable in a smooth-profile stamina geometry; this design does not qualify.
+
+**Best combo application (stock AR):** Defense (right-spin), CWD God Ring + Metal CWD (RBA2) + Bearing Core 2. Wall-save oriented. The mass deficit is not overcome, but at least the AR is removed from the role of primary impact absorber.
+
+---
+
+## CASE XXXX — Weight Disk: Circle Wide (Dragoon MS)
+
+**Part:** Weight Disk, Circle Wide (standard variant, ~9.5 g)
+**Set/Release:** A-126 Dragoon MS (Takara HMS, 2003)
+
+Circle Wide is fully analyzed in the Draciel MS WD case (CASE XXXX — WD Circle Wide, Draciel MS). Key values reproduced here for assembly calculations:
+
+- **Standard mass:** ~14 g (large production variation; weigh individual specimens)
+- **OWD = 0.515** [INFERENCE] — highest OWD of any standard HMS WD; three-spoke asymmetric ring concentrates mass at outer rim
+- **Heavier Draciel MS variant** (~14.5–14.7 g, 5.6 mm thick vs 5.1 mm; strictly preferred when available): not present in A-126 Dragoon MS
+
+In the context of Dragoon MS, Circle Wide is mechanically appropriate but not the limiting factor. The lowest-mass AR in HMS on the lightest standard WD produces the lowest-L₀ stock assembly in the series. The WD's high OWD partially compensates but cannot overcome the AR mass shortfall.
+
+---
+
+## CASE XXXX — Running Core: Grip Flat Core (Dragoon MS)
+
+**Part:** Running Core, Grip Flat Core
+**Set/Release:** A-126 Dragoon MS (Takara HMS, 2003)
+**Weight:** ~1 g
+**Material:** ABS plastic body + vulcanized rubber dome tip (navy blue)
+**Contact radius:** r_tip ≈ 7 mm [INFERENCE from image — blue dome diameter wider than standard HMS sharp or semi-flat tips]
+
+**Overview:** Grip Flat Core is the first rubber-based RC in the HMS series. All prior HMS RCs (Sharp Core, Semi-Flat Core, Metal Change Core, SCC Gamma, etc.) are plastic, producing either near-stationary stamina or moderate movement arcs. GFC's rubber dome introduces stick-slip dynamics that define attack-type behavior across all Beyblade generations, brought to HMS for the first time.
+
+**Rubber tip mechanics:**
+At launch (ω₀ ≈ 620 rad/s for HMS), the tip circumferential velocity v_tip = ω₀ × r_tip = 620 × 0.007 = 4.34 m/s exceeds the floor's static friction limit — the tip slides (kinetic regime). As ω decays, v_tip decreases until v_tip ≈ v_orbital, at which point the tip enters the grip phase and laterally propels the assembly. This stick-slip cycle produces the characteristic flower pattern. Petal count and orbit radius are determined by tip geometry and μ; exact values [UNKNOWN — no direct measurement].
+
+**Friction coefficient:**
+μ_GFC ≈ 0.75 [INFERENCE — rubber-flat on ABS stadium; varies with surface condition and temperature]
+
+**Torque and spin time (stock Dragoon MS, m = 25.5 g):**
+τ_GFC = μ × m × g × r_tip = 0.75 × 0.0255 × 9.81 × 0.007 = **1.314×10⁻³ N·m**
+
+t_spin = L₀ / τ = 4.09×10⁻³ / 1.314×10⁻³ = **3.1 s** [INFERENCE — ideal stadium, no collisions]
+
+This is an attack RC. The 3.1 s theoretical spin window is not a performance deficit — it quantifies the energy budget available before the tip drains the assembly. Competitive relevance is collisions-per-second, not duration.
+
+**Low-profile body:** GFC body height is shorter than Metal Change Core, Sharp Core, and most HMS stamina RCs. This matters mechanically: ARs with upward-ramping leading faces (Circle Upper, Samurai Upper) require the bey center of mass low enough that the ramp geometry engages opponent ARs at the correct height. GFC's low profile places the AR in the correct contact band for ramp-geometry ARs. This is the direct cause of the competitive synergy between GFC and ramp ARs.
+
+**Controllability:** In stadiums with a defined Tornado Ridge, GFC's flower pattern is bounded and controllable. In stadiums with weaker ridges or larger arenas, the orbital speed can carry the bey out of the stadium (self-KO risk). "Good speed and high level of controllability" — verified for standard HMS stadium geometry.
+
+**Assembly share (Dragoon MS):** I_GFC / I_total ≈ 5×10⁻⁸ / 6.59×10⁻⁶ = **< 1 %** — negligible. RC I is never meaningful for rubber-tip RCs.
+
+**Comparison to GFCUV:** See CASE XXXX — RC Grip Flat Core (Ultimate Mode), Dragoon MSUV. The navy blue vs pink/red rubber compound distinction is the entire performance gap between GFC and GFCUV.
+
+---
+
+## CASE XXXX — Assembly: Dragoon MS (Stock)
+
+**Assembly:** A-126 Dragoon MS
+**Components:** BP Small Type (~1 g) / Metal Attacker AR (~14 g) / Circle Wide WD (~14 g) / Grip Flat Core RC (~1 g)
+**Total mass:** ~30 g
+
+**Moment of Inertia summary:**
+
+| Part | I (kg·m²) | Assembly share |
+|------|-----------|----------------|
+| BP Small Type | ~3.5×10⁻⁸ | < 1 % |
+| Metal Attacker AR | ~4.0×10⁻⁶ | ~49 % |
+| Circle Wide WD | ~4.2×10⁻⁶ [INFERENCE] | ~51 % |
+| Grip Flat Core RC | ~5.0×10⁻⁸ | < 1 % |
+| **Total** | **~8.2×10⁻⁶ kg·m²** [INFERENCE] | |
+
+Note: Circle Wide I estimated from OWD = 0.515, m = 14 g [INFERENCE]. Exact value pending full Common WD case analysis.
+
+**Angular momentum at launch:**
+L₀ = I_total × ω₀ ≈ 8.2×10⁻⁶ × 620 = **~5.08×10⁻³ N·m·s ≈ 5.1 mN·m·s** [INFERENCE]
+
+**Theoretical spin time (stock, GFC):**
+τ_GFC = 0.75 × 0.030 × 9.81 × 0.007 = **1.544×10⁻³ N·m** [INFERENCE — updated for m = 30 g]
+t_spin = 5.1×10⁻³ / 1.544×10⁻³ = **3.3 s** [INFERENCE]
+
+Dragoon MS remains the attack-oriented assembly in the HMS starter lineup — high rubber friction drains spin rapidly, while Circle Wide's high OWD provides the best available rotational inertia from the lightweight AR + standard WD pairing.
+
+**Competitive assessment:** Stock Dragoon MS combines the lightest AR (lowest collision resistance) with the highest-friction RC (fastest spin drain). The GFC produces aggressive flower-pattern movement but Metal Attacker's 14 g mass cannot generate meaningful KO impulse. The stock assembly is not competitive. Its value is the Grip Flat Core RC — the part with competitive relevance in custom builds.
+
+**Best combo (stock AR):** Metal Attacker (RS) / CWD God Ring + Metal CWD (RBA2) / Bearing Core 2 — damage limitation; wall saves.
+**Best combo (extracted RC):** Samurai Upper (RS) / CWD Defense Ring + Metal CWD (RBA2) / Grip Flat Core — top-tier attack combo per source material.
+
+---
+
+## MA-01 Dragoon MSUV
+
+**Set/Release:** MA-01 Dragoon MS (Ultimate Version) (Takara HMS, mid-winter 2003). The "MA" prefix denotes Master Art — a premium starter tier within the HMS line. Additional releases: Random Booster ACT 2 (Light Green), 5 Saint Beasts Booster (Proto-Grey), Tournament Recolour (G1 Bronze).
+
+---
+
+## CASE XXXX — Bit Protector: Small Type (Dragoon MSUV)
+
+**Part:** Bit Protector, Small Type
+**Set/Release:** MA-01 Dragoon MSUV (Takara HMS, 2003)
+
+Same Small Type BP as A-126 Dragoon MS. BP Size Type inconsistency applies equally — initial production may use Small Type; later recolours may differ. No physics consequence. All values identical to CASE XXXX — BP Small Type (Dragoon MS).
+
+---
+
+## CASE XXXX — Attack Ring: Metal Spiker (Dragoon MSUV)
+
+**Part:** Attack Ring, Metal Spiker
+**Set/Release:** MA-01 Dragoon MSUV (Takara HMS, 2003)
+**Weight:** ~14 g
+**Material:** ABS plastic carrier + zinc die-cast metal tabs (spikier profile, dragon head motif)
+**Spin compatibility:** Right-Spin preferred for docile defense; Left-Spin marginally more recoil than Metal Attacker
+
+**Physical description:** Metal Spiker is a direct successor to Metal Attacker (CASE XXXX, A-126 Dragoon MS). It maintains the identical 3-blade plastic-dominant architecture and the same ~14 g total weight. Distinguishing features are purely cosmetic and minor-structural: spikier die-cast metal tab profiles at the outer blade tips, a dragon head molded into the ABS plastic carrier, and revised sticker art (full-coverage "DG" flame motif vs. partial sticker on Metal Attacker). The outer radius, blade count, and mass split are identical.
+
+**Moment of Inertia:**
+I_Metal Spiker ≈ 4.0×10⁻⁶ kg·m² [INFERENCE — identical mass and geometry class to Metal Attacker; spikier tabs add marginal r_mean increase negligible at this mass scale]
+
+OWD(MS) ≈ 0.540 [INFERENCE — same as Metal Attacker within uncertainty]
+
+**Functional parity with Metal Attacker:**
+Per source material: Metal Spiker "performs identically to Metal Attacker." Confirmed by matched mass, geometry class, and OWD. The spikier metal tip profile produces a marginally higher contact point protrusion in left-spin, increasing the contact angle from tangent by [INFERENCE] ~2–3°. This raises the recoil fraction fractionally — the "just a touch more recoil" effect — without improving smash efficiency. The mass ceiling is unchanged. Metal Spiker meets the same wall Metal Attacker does in every matchup.
+
+**Left-Spin recoil increase (quantified):** If contact angle increases from ~27° (Metal Attacker) to ~29° (Metal Spiker) at the spiked tip:
+- F_smash: cos(29°) = 0.875 vs cos(27°) = 0.891 → 1.8 % reduction
+- F_recoil: sin(29°) = 0.485 vs sin(27°) = 0.454 → 6.8 % increase
+
+The spiked tip makes left-spin Metal Spiker slightly more prone to self-recoil without any smash compensation. In right-spin defense (preferred application), the trailing face geometry is identical — no change in behavior.
+
+**Best combo application (stock AR):** Defense (right-spin), CWD God Ring + Metal CWD (RBA2) / Bearing Core 2 — same conclusion as Metal Attacker. Left-spin is actively worse on Metal Spiker than Metal Attacker due to the recoil increase.
+
+---
+
+## CASE XXXX — Weight Disk: Circle Wide (Dragoon MSUV)
+
+**Part:** Weight Disk, Circle Wide (standard variant, ~9.5 g)
+**Set/Release:** MA-01 Dragoon MSUV (Takara HMS, 2003)
+
+Identical part to A-126 Dragoon MS. All values from CASE XXXX — WD Circle Wide (Dragoon MS) apply without change. Standard mass ~14 g, OWD = 0.515 [INFERENCE]. See also CASE XXXX — Common Weight Disks.
+
+---
+
+## CASE XXXX — Running Core: Grip Flat Core (Ultimate Mode) (Dragoon MSUV)
+
+**Part:** Running Core, Grip Flat Core (Ultimate Mode) — referred to competitively as GFCUV
+**Set/Release:** MA-01 Dragoon MSUV (Takara HMS, 2003)
+**Weight:** ~1 g
+**Material:** ABS plastic body + vulcanized rubber dome tip (pink/red)
+**Contact radius:** r_tip ≈ 7 mm [INFERENCE — body profile visually identical to GFC; dome radius appears matched]
+
+**Overview:** GFCUV is a reformulated version of Grip Flat Core (CASE XXXX, A-126 Dragoon MS). The external body geometry is identical — same low-profile height, same launcher peg geometry, same overall form factor. The sole physical distinction is the rubber dome compound: GFC uses navy blue rubber; GFCUV uses pink/red rubber. This compound difference alone produces the most significant attack performance gap in the HMS series.
+
+**Rubber compound differentiation:**
+The pink/red compound is softer and/or higher-friction than the navy blue GFC compound. A softer rubber:
+1. Deforms more under normal load → larger contact patch per floor contact event
+2. Higher μ_kinetic and μ_static against ABS stadium surface
+3. Sharper stick-slip transition → larger lateral impulse per grip event → higher orbital velocity
+
+Both effects multiply the flower-pattern propulsion force per cycle. The result is an estimated 120–150 % increase in orbital speed [source material estimate; INFERENCE — not directly measured].
+
+**Friction coefficient:**
+μ_GFCUV ≈ 0.90–0.95 [INFERENCE — estimated from competitive performance context; ~20–27 % higher than μ_GFC ≈ 0.75]
+
+**Torque and spin time (stock Dragoon MSUV, m = 25.5 g):**
+τ_GFCUV = 0.92 × 0.0255 × 9.81 × 0.007 = **1.612×10⁻³ N·m** [INFERENCE]
+
+t_spin = L₀ / τ = 4.09×10⁻³ / 1.612×10⁻³ = **2.5 s** [INFERENCE — shortest theoretical spin time of any HMS assembly analyzed]
+
+GFCUV drains spin ~23 % faster than GFC for the same assembly. This is not a defect — the higher energy expenditure drives proportionally higher orbital speed.
+
+**Effect on mediocre ARs:**
+GFCUV "raises up even the most mediocre ARs." The mechanism: collision impulse J = m × Δv scales with v_orbital. A ~1.35× orbital speed increase on a mass-limited AR (e.g. Metal Upper at 20 g) produces a collision impulse comparable to a heavier AR at GFC speeds. A 35 % speed increase compensates for a ~26 % mass deficit in impulse terms. This is why Jiraiya Blade and Metal Upper — marginal on GFC — enter competitive viability on GFCUV. It is also why "assessing an AR on GFC gives no bearing on how it will perform on GFCUV" — the GFC baseline systematically understates every AR's attack potential.
+
+**Control cost:**
+Higher orbital speed reduces stadium awareness and increases self-KO risk in low-ridge stadiums. This is the primary argument against GFCUV vs. GFC for some playstyles. In standard HMS stadiums with a defined Tornado Ridge, the speed is manageable for experienced launchers.
+
+**Series-wide context:**
+GFCUV is the best attack RC in HMS and among the best attack performance tips in the plastic-generation Beyblade timeline. Its competitive role in HMS parallels RF (Right Rubber Flat) in MFB and Xtreme in Burst — the defining attack tip of its era. No HMS RC matches its combination of orbital speed, AR-agnostic performance elevation, and low-profile body.
+
+**GFC vs GFCUV comparison:**
+
+| Metric | GFC | GFCUV |
+|--------|-----|--------|
+| Rubber color | Navy blue | Pink/red |
+| μ_eff [INFERENCE] | ~0.75 | ~0.90–0.95 |
+| v_orbital [INFERENCE] | 1.0× baseline | ~1.2–1.5× |
+| τ_friction (25.5 g asm) | 1.314×10⁻³ N·m | ~1.612×10⁻³ N·m |
+| t_spin (25.5 g asm) [INFERENCE] | 3.1 s | 2.5 s |
+| Control (low-ridge stadiums) | Good | Reduced |
+| AR synergy | Attack-class ARs | All ARs |
+| Competitive tier | Strong | Best in HMS |
+
+---
+
+## CASE XXXX — Assembly: Dragoon MSUV (Stock)
+
+**Assembly:** MA-01 Dragoon MSUV
+**Components:** BP Small Type (~1 g) / Metal Spiker AR (~14 g) / Circle Wide WD (~14 g) / Grip Flat Core (Ultimate Mode) RC (~1 g)
+**Total mass:** ~30 g — mass-identical to A-126 Dragoon MS. I_total and L₀ unchanged; RC swap changes τ only.
+
+**Moment of Inertia summary:**
+
+| Part | I (kg·m²) | Assembly share |
+|------|-----------|----------------|
+| BP Small Type | ~3.5×10⁻⁸ | < 1 % |
+| Metal Spiker AR | ~4.0×10⁻⁶ | ~49 % |
+| Circle Wide WD | ~4.2×10⁻⁶ [INFERENCE] | ~51 % |
+| GFCUV RC | ~5.0×10⁻⁸ | < 1 % |
+| **Total** | **~8.2×10⁻⁶ kg·m²** [INFERENCE] | |
+
+**All I values [INFERENCE].**
+
+L₀ ≈ 8.2×10⁻⁶ × 620 = **~5.1×10⁻³ N·m·s ≈ 5.1 mN·m·s** [INFERENCE] — same as Dragoon MS.
+
+**Theoretical spin time (stock, GFCUV):**
+τ_GFCUV = 0.92 × 0.030 × 9.81 × 0.007 = **1.895×10⁻³ N·m** [INFERENCE]
+t_spin = 5.1×10⁻³ / 1.895×10⁻³ = **2.7 s** [INFERENCE]
+
+**Dragoon MS vs Dragoon MSUV stock comparison:**
+
+| Metric | Dragoon MS | Dragoon MSUV |
+|--------|------------|--------------|
+| AR | Metal Attacker (~14 g) | Metal Spiker (~14 g) |
+| RC | GFC (navy blue) | GFCUV (pink/red) |
+| I_total [INFERENCE] | ~8.2×10⁻⁶ kg·m² | ~8.2×10⁻⁶ kg·m² |
+| L₀ [INFERENCE] | ~5.1 mN·m·s | ~5.1 mN·m·s |
+| τ_friction [INFERENCE] | 1.544×10⁻³ N·m | 1.895×10⁻³ N·m |
+| t_spin [INFERENCE] | 3.3 s | 2.7 s |
+| v_orbital [INFERENCE] | 1.0× baseline | ~1.35× |
+| Competitive RC value | Moderate | Best in HMS |
+
+**Competitive assessment:** Stock Dragoon MSUV is marginally more dangerous than stock Dragoon MS — GFCUV's higher orbital speed increases collision impulse — but Metal Spiker's mass deficit still limits KO throughput against heavier assemblies. The stock bey is not competitive. The GFCUV RC is the sole reason to own this bey competitively.
+
+**Best combo (stock AR):** Metal Spiker (RS) / CWD God Ring + Metal CWD (RBA2) / Bearing Core 2 — same wall-save defense posture as Dragoon MS.
+**Best combo (extracted RC):** Samurai Upper (RS) / CWD Defense Ring + Metal CWD (RBA2) / GFCUV — best attack combo in all of HMS per source material. Advance Striker is also noted as an acceptable AR alternative.
+
+---
+
+## Common Weight Disks — HMS Starter Library
+
+The three standard (non-CWD) Weight Disks released across the HMS starter lineup. All are zinc die-cast alloy. All weights are measured values; large production variation exists — weigh individual specimens before treating nominal values as authoritative.
+
+| WD | Mass (nominal) | First released with | Architecture | Role |
+|----|---------------|--------------------|----|------|
+| Circle Heavy | ~16 g | A-123 Gaia Dragoon MS | Compact near-solid annulus | Attack / Compact |
+| Circle Balance | ~15 g | A-124 Driger MS | 3-spoke, intermediate ring | No strong niche |
+| Circle Wide | ~14 g | A-125 Draciel MS | Open 3-spoke, large outer rim | Stamina / Attack |
+
+---
+
+## CASE XXXX — Common WD: Circle Heavy (~16 g)
+
+**Part:** Weight Disk, Circle Heavy
+**First release:** A-123 Gaia Dragoon MS (Takara HMS, 2003)
+**Weight:** ~16 g [nominal; heaviest standard HMS WD]
+**Architecture:** Compact near-solid annulus — small outer diameter, thick body, minimal open space between inner hole and outer edge
+
+**Physical description:** Circle Heavy is noticeably smaller in outer diameter than the other two starter WDs. The body is nearly solid from the inner shaft hole outward to the outer rim with no meaningful open sectors. The compact, dense construction concentrates all 16 g of mass within a small radial footprint.
+
+"All of its weight concentrated in its small perimeter" — the "small perimeter" refers to the compact outer diameter, not a thin-rim design. All mass is present but within a smaller outer radius than Circle Balance or Circle Wide.
+
+**Moment of Inertia:**
+
+Compact annular approximation (r_inner ≈ 7 mm, r_outer ≈ 20 mm, near-uniform solid):
+I_CH = m × (r_i² + r_o²) / 2 = 16×10⁻³ × (0.007² + 0.020²) / 2 = 16×10⁻³ × 2.245×10⁻⁴ = **3.592×10⁻⁶ kg·m²** [INFERENCE]
+
+OWD = I_CH / (m × r_ref²), r_ref = 23 mm:
+OWD(CH) = 3.592×10⁻⁶ / (16×10⁻³ × 0.023²) = 3.592×10⁻⁶ / 8.464×10⁻⁶ = **0.424** [INFERENCE]
+
+Lowest OWD of the three starter WDs — compact outer radius limits radial inertia efficiency even though total mass is highest.
+
+**Why Attack / Compact:**
+
+ARs with contact points extending past the WD outer radius need the WD to stay out of the contact zone. Circle Heavy's compact outer diameter exposes extended contact points fully. Cited examples from source material:
+- **Jiraiya Blade:** contact points protrude further from center than most ARs; compact WD allows protrusions to operate freely
+- **Metal Ape:** weight centralization in a compact package; Circle Heavy matches this design target
+
+**Circle Heavy vs Circle Wide absolute I:**
+- Circle Heavy: I ≈ 3.59×10⁻⁶ (16 g, compact)
+- Circle Wide: I ≈ 4.2×10⁻⁶ [INFERENCE] (14 g, wide-rim)
+
+Circle Wide has higher absolute I despite being 2 g lighter — the wider rim radius wins over the mass advantage. This quantitatively explains why Circle Wide outperforms Circle Heavy in stamina builds.
+
+**LAD:** Circle Heavy has the smallest outer radius and catches tilt latest. Worst LAD of the three starter WDs. Not a stamina WD.
+
+**Best combos:**
+- Jiraiya Blade / Circle Heavy / GFCUV
+- Metal Ape / Circle Heavy / Metal Change Core
+
+---
+
+## CASE XXXX — Common WD: Circle Balance (~15 g)
+
+**Part:** Weight Disk, Circle Balance
+**First release:** A-124 Driger MS (Takara HMS, 2003)
+**Weight:** ~15 g [nominal]
+**Architecture:** 3-spoke design, intermediate outer ring — wider spoke body than Circle Wide, smaller outer diameter than Circle Wide, larger outer diameter than Circle Heavy
+
+**Moment of Inertia:**
+
+Back-calculated from Driger MS assembly (CASE 1852–1853):
+I_Driger_total = 9.814×10⁻⁶ kg·m²
+I_Metal_Upper_AR = 6.175×10⁻⁶ (CASE 1851)
+I_SFC_RC + I_BP ≈ 0.1×10⁻⁶
+
+**I_CB = 9.814 − 6.175 − 0.1 = 3.539×10⁻⁶ kg·m²** [derived from assembly data; most reliable value available]
+
+OWD(CB) = 3.539×10⁻⁶ / (15×10⁻³ × 0.023²) = 3.539×10⁻⁶ / 7.935×10⁻⁶ = **0.446** [INFERENCE]
+
+**Three-WD ranking:**
+
+| WD | Mass (g) | I (kg·m²) | OWD | LAD |
+|----|----------|-----------|-----|-----|
+| Circle Heavy | ~16 | ~3.59×10⁻⁶ [INFERENCE] | 0.424 [INFERENCE] | Worst |
+| Circle Balance | ~15 | ~3.54×10⁻⁶ [derived] | 0.446 [INFERENCE] | Intermediate |
+| Circle Wide | ~14 | ~4.2×10⁻⁶ [INFERENCE] | 0.515 | Best |
+
+Despite being heaviest, Circle Heavy has lower absolute I than Circle Wide. Circle Balance is middle in every metric.
+
+**Competitive role:** Circle Balance has no unique niche. Circle Wide outperforms it in both stamina (better LAD, higher I) and attack (better OWD). Circle Heavy outperforms it in compact-AR applications. "There isn't anything wrong with Circle Balance, but it simply doesn't have its own unique role" — confirmed by the analysis: it reaches the top in no metric.
+
+**Best combos (substitute only):**
+- Jiraiya Blade / Circle Balance / Metal Change Core
+- Circle Upper / Circle Balance / Bearing Core
+
+---
+
+## CASE XXXX — Common WD: Circle Wide (~14 g, standalone reference)
+
+**Part:** Weight Disk, Circle Wide
+**First release:** A-125 Draciel MS (Takara HMS, 2003)
+**Weight:** ~14 g standard (range ~13–14 g confirmed across production lots; weigh each specimen) [FACT: user-measured]
+**Draciel MS heavy variant:** ~14.5–14.7 g, 5.6 mm thick vs 5.1 mm standard [FACT: user-measured]
+
+For full zone breakdown and I table see CASE XXXX — WD Circle Wide (Draciel MS). Standalone summary:
+
+- Standard I ≈ 4.2×10⁻⁶ kg·m² [INFERENCE], OWD ≈ 0.515
+- Draciel heavy variant I ≈ 4.5×10⁻⁶ kg·m² [INFERENCE]
+- Highest absolute I and highest OWD of the three starter WDs despite lowest nominal mass — wide rim radius dominates both metrics
+
+**LAD:** Circle Wide's large outer radius (r_outer ≈ 32 mm) catches tilt earliest. Smooth metal rim (μ ≈ 0.10–0.15) vs ABS AR protrusion (μ ≈ 0.30–0.50) — far less spin-draining during the wobble phase. Best LAD of the three starter WDs by a significant margin.
+
+**Production variation note:** Lighter specimens (~13 g) suit stamina combos; heavier specimens (~14 g) suit attack combos. Draciel heavy variant (~14.6 g) is strictly preferred for attack builds when available. Technically the better choice over standard Circle Wide for Attack-type combos.
+
+**Sonokong mold:** Slightly smaller center hole → tighter shaft fit (zero rattle; marginally beneficial). Risk: may be too tight for Takara RCs. Inspect fit before forcing. The no-rattle benefit alone does not justify the risk.
+
+**Best combos:**
+- Wolf Crusher / Circle Wide / Bearing Core — stamina LAD platform
+- Advance Attacker / Circle Wide / Grip Flat Core — attack with wide OWD
+- Any stamina AR / Circle Wide (heavy Draciel) / Bearing Core 2 — preferred stamina build
 

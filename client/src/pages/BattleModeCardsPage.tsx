@@ -36,13 +36,17 @@ export function BattleModeCardsPage() {
   const [loading, setLoading] = useState(true);
 
   const [selectedBey, setSelectedBey] = useState<string>('');
-  const [selectedArena, setSelectedArena] = useState<string>('');
+  const [selectedArena, setSelectedArena] = useState<string>('random');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(1);
   const [aiCountTournament, setAiCountTournament] = useState(3);  // rounds — 3 = 8-player bracket (QF/SF/F)
   const [aiCountRoyale, setAiCountRoyale] = useState(11);         // bots — 11 = 12-player free-for-all
 
   const [drawer, setDrawer] = useState<DrawerState>({ open: false, roomType: null });
+
+  // Modes that default to a random arena
+  const isRandomDefaultMode = (rt: RoomType | null) =>
+    rt === 'tournament-ai' || rt === 'royale-ai' || rt === 'royale';
 
   useEffect(() => {
     const go = settings?.beybladeId ?? '';
@@ -59,21 +63,26 @@ export function BattleModeCardsPage() {
       const beys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id }));
       const arns = arenaSnap.docs.map(d => ({ id: d.id, name: (d.data().name as string) || d.id }));
       setBeyblades(beys.length ? beys : [{ id: 'default', name: 'Default Beyblade' }]);
-      setArenas(arns.length ? arns : [{ id: 'default', name: 'Default Arena' }]);
+      // Prepend the random option — always available
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...(arns.length ? arns : [{ id: 'default', name: 'Default Arena' }])]);
       if (!selectedBey && beys.length) setSelectedBey(beys[0].id);
-      if (!selectedArena && arns.length) setSelectedArena(arns[0].id);
+      // selectedArena is already 'random' by default — only override if user has a saved preference
+      if (settings?.arenaId) setSelectedArena(settings.arenaId);
     }).catch(() => {
       setBeyblades([{ id: 'default', name: 'Default Beyblade' }]);
-      setArenas([{ id: 'default', name: 'Default Arena' }]);
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, { id: 'default', name: 'Default Arena' }]);
       if (!selectedBey) setSelectedBey('default');
-      if (!selectedArena) setSelectedArena('default');
     }).finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openDrawer = useCallback((roomType: RoomType) => {
+    // Reset arena to random when opening tournament/royale drawers
+    if (isRandomDefaultMode(roomType) && selectedArena !== 'random') {
+      setSelectedArena('random');
+    }
     setDrawer({ open: true, roomType });
-  }, []);
+  }, [selectedArena]);
 
   const launchGame = useCallback(() => {
     if (!drawer.roomType) return;
