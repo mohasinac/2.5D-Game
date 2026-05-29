@@ -189,7 +189,15 @@ export const useGameStore = create<GameStore>()(
         import.meta.env.MODE === "test" ? noopStorage : encryptedStorage,
       ),
       // Only persist settings — _hydrated and actions are runtime-only.
-      partialize: (state) => ({ settings: state.settings }),
+      // enable25D is excluded from persistence; it's always read fresh from
+      // Firestore on BattleModeCardsPage mount so stale localStorage values
+      // cannot silently disable 2.5D rendering.
+      partialize: (state) => ({
+        settings: {
+          ...state.settings,
+          enable25D: undefined, // never persist; always default true
+        },
+      }),
       onRehydrateStorage: () => (_state, error) => {
         if (!error && !useGameStore.getState()._hydrated) {
           useGameStore.setState({ _hydrated: true });

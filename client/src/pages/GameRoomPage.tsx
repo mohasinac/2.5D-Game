@@ -171,7 +171,8 @@ export function GameRoomPage() {
   const showLoading = loadingStep !== 'warmup-ready' && gameState.status === 'waiting';
 
   // ─── Renderer ─────────────────────────────────────────────────────────────
-  const rendererMode = config?.is25D ? '2.5d' : '2d';
+  // Default to 2.5D — only use flat 2D when is25D is explicitly false.
+  const rendererMode = config?.is25D !== false ? '2.5d' : '2d';
   const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset, triggerScreenShake, triggerHitFlash } = usePixiRenderer(containerRef, rendererMode as '2d' | '2.5d');
 
   useEffect(() => {
