@@ -39205,3 +39205,494 @@ Against Defense: FSC's docile orbit (no lateral velocity from the low-friction t
 **Free Shaft Core (extracted):** Second-rate compact RC. Matches MCC in tip friction profile but consistently underperforms due to reduced gyroscopic restoring efficiency. The sub-3 g mass and metal sharp tip make it theoretically excellent for endurance; the free shaft mechanism limits how much of that theoretical endurance is realised in practice. Usable in Jiraiya Blade compact combos when MCC is unavailable; not a replacement for MCC in serious competitive play.
 
 **Stock Dranzer MF:** Lowest L₀ stock assembly of the HMS group. The combination of Wing Attacker's near-zero effective CWD contribution and the Free Shaft Core's negligible I makes the stock assembly an almost-pure Smash Phoenix flywheel with non-functional support parts. Unlike Slash Riger MS (active self-destruction), Dranzer MF stock fails passively — it doesn't break itself, it simply brings nothing to the table.
+
+---
+
+## CASE 1890 — BP Large Type (Bloody Devil MS)
+
+**Beyblade:** MA-23 Bloody Devil MS  
+**Release:** Mid-Winter 2005, Starter MA-23 (Grey)  
+**Re-releases:** None  
+**Generation:** HMS (Heavy Metal System)
+
+**Bit Protector — Large Type**
+
+Bloody Devil MS is the penultimate starter release in the HMS lineup. The production window between release and the end of HMS manufacturing was brief — insufficient for a re-release cycle that would carry a different BP size. Large Type is the only confirmed BP for this bey with high confidence, consistent with all other confirmed single-run HMS starters.
+
+**Mass:** ~3 g  
+**I_BP = 1.35 × 10⁻⁸ kg·m²**  
+(3 g concentrated near hub at r ≈ 3 mm: I = ½ × 0.003 × (0.003)² = 1.35 × 10⁻⁸)
+
+Contribution to any assembly: < 0.3 % of total I. Negligible in all calculations.
+
+---
+
+## CASE 1891 — AR Devil Crusher (~20 g)
+
+**Beyblade:** MA-23 Bloody Devil MS  
+**Part:** Attack Ring — Devil Crusher  
+**Mass:** ~20 g  
+**Spin direction:** Right-Spin (RS) standard; Left-Spin (LS) marginally reduces recoil at slight power cost
+
+**Shared Metal Frame Family**
+
+Devil Crusher shares its zinc die-cast metal frame with two earlier HMS ARs: Phantom Fox MS's Upper Fox and Dragoon MF's Upper Dragon. All three use the same metal casting for the ring body; the distinguishing features between members are the ABS plastic overlays and sticker sheets applied atop the metal frame.
+
+This family shares a broadly similar outer contact geometry — a moderate upper-attack ramp with contact points at r ≈ 25 mm. The critical variable between members is the mass fraction carried by the ABS overlay versus the metal frame, which determines how far the effective mass distribution sits from the outer edge.
+
+Among the three, Devil Crusher carries the most substantial plastic overlay. The two large "devil face" ABS sections, positioned at 180° symmetry around the AR, are both the most visually prominent and the most mass-significant plastic features in the family. The user notes it has "so much plastic that it feels nearly inert" — the physics bears this out in the I calculation below.
+
+**Mass decomposition:**
+
+| Zone | Material | Mass | r_avg | I |
+|---|---|---|---|---|
+| Hub (shaft interface) | Metal | 2 g | 4 mm | 1.60 × 10⁻⁸ |
+| Mid ring | Metal | 3 g | 12 mm | 2.16 × 10⁻⁷ |
+| Outer frame | Metal | 9 g | 25 mm | 2.813 × 10⁻⁶ |
+| Devil face overlays | ABS | 6 g | 20 mm | 1.200 × 10⁻⁶ |
+
+**I_DC = 4.245 × 10⁻⁶ kg·m²**  
+**OWD = I / (m × r_outer²) = 4.245 × 10⁻⁶ / (0.020 × 0.025²) = 0.340**  
+**r_gyr = √(2I/m) = √(2 × 4.245 × 10⁻⁶ / 0.020) = 20.6 mm**
+
+**Comparison within the shared metal frame family:**
+
+| AR | Mass | I (kg·m²) | OWD | ABS fraction |
+|---|---|---|---|---|
+| Upper Fox (Phantom Fox MS) | ~19 g | ~4.394 × 10⁻⁶ | ~0.370 | Low |
+| Upper Dragon (Dragoon MF) | ~20 g | ~4.500 × 10⁻⁶ | ~0.360 | Moderate |
+| **Devil Crusher (Bloody Devil MS)** | **~20 g** | **4.245 × 10⁻⁶** | **0.340** | **High** |
+
+Devil Crusher is the heaviest member (tied with Upper Dragon) but has the lowest I — entirely because the 6 g of ABS devil faces sit at r = 20 mm rather than the metal outer edge at r = 25 mm. The 5 mm inward displacement of 6 g reduces I by:
+
+ΔI = ½ × 0.006 × [(0.025)² − (0.020)²] = ½ × 0.006 × (6.25 − 4.00) × 10⁻⁴ = **6.75 × 10⁻⁷ kg·m²**
+
+This is a 15.9 % reduction relative to an equivalent all-metal 20 g AR — not negligible, and directly responsible for the weaker smash output relative to its siblings.
+
+**Dynamic balance:**
+
+The two devil faces are at exactly 180° opposing positions with equal mass — the ABS overlay is 2-fold symmetric with no net mass asymmetry. Unlike Smash Phoenix (CASE 1885), where a 3 g mass deficit in one half of the metal frame itself created a dynamic imbalance producing τ_imbalance 28× gravity torque at battle speed, Devil Crusher's symmetry is preserved in both the metal frame and the ABS overlay. No imbalance-driven oscillation component exists at any ω. The assembly spins cleanly from a balance perspective.
+
+This is a meaningful contrast: both Smash Phoenix and Devil Crusher use 2-fold symmetry, but the asymmetry in Smash Phoenix was in the mass-significant metal frame, while Devil Crusher's symmetry holds across both materials. No imbalance torque correction is required for any Devil Crusher assembly.
+
+**Smash attack geometry:**
+
+Upper-family upper-attack ramp θ ≈ 20°:
+- F_vertical (upward component) = sin(20°) × F_impact = **0.342 × F_impact**
+- F_horizontal (lateral deflection) = cos(20°) × F_impact = **0.940 × F_impact**
+
+**Plastic interference mechanism:**
+
+The devil face ABS panels sit at the leading edge of the AR's contact arc. When Devil Crusher engages an opponent's AR at attack speed, the first surface encountered is typically the ABS face rather than the metal frame edge behind it.
+
+ABS-on-ABS coefficient of restitution: ε ≈ 0.55  
+Metal-on-ABS coefficient of restitution: ε ≈ 0.75
+
+The ~27 % reduction in restitution coefficient at first contact means:
+- Initial impact energy transfer: ~73 % as efficient as a pure-metal leading edge at the same speed
+- Over the full contact arc (as the bey rotates into the engagement), the metal frame eventually participates — but the ABS leading edge has already absorbed a portion of the impact energy as deformation and heat
+
+**Effective smash force: ~65–70 % of equivalent Upper Fox / Upper Dragon contact** at the same ω.
+
+This quantifies the user's observation: "much the same recoil, but without the same raw Smash Attack power to justify it." The recoil derives from the metal frame geometry (unchanged between members). The power deficit derives from the ABS leading-edge absorption at first contact.
+
+**Left-spin consideration:**
+
+In LS, the devil face panels transition from leading to trailing surfaces. The metal frame edge contacts first, partially recovering contact efficiency and reducing the ABS absorption penalty from ~30–35 % to ~10–15 %. LS provides approximately a 5–8 % power improvement for negligible recoil change. Not transformative, but measurable in direct comparison with the same opponent.
+
+**Best combo:**  
+AR: Devil Crusher (Right-Spin)  
+WD: CWD Defense Ring (with Metal CWD from RBA2)  
+RC: Grip Flat Core (Ultimate Mode)
+
+Game plan: flower pattern with GFCUV controlling orbital trajectory. Devil Crusher's ~65–70 % effective smash power means knockouts require more precise hit geometry (full AR engagement rather than glancing contact) than with Upper Fox or Upper Dragon. Sliding/Catapult and Banking patterns remain viable; the execution window is tighter.
+
+---
+
+## CASE 1892 — CWD Devil Saucer (~17 g)
+
+**Beyblade:** MA-23 Bloody Devil MS  
+**Part:** CWD (Customize Weight Disk) — Devil Saucer  
+**Mass:** ~17 g  
+**Design:** Free-spinning full outer disk with 8 radially protruding contact teeth
+
+**Design classification:**
+
+Devil Saucer belongs to the HMS free-spinning CWD family alongside CWD Free Crusher (CASE 1881) and CWD Wing Attacker (CASE 1886). Unlike those wing-based designs where individual wings rotate freely on a rigid carrier body, Devil Saucer uses a full rotating saucer disk — the entire outer mass element (disk body plus 8 teeth) rotates freely on a central bearing/hub carrier. This is the most extreme form of the free-spin CWD concept: no portion of the outer mass is rigidly coupled to the assembly.
+
+**Mass distribution:**
+
+| Zone | Status | Mass | r_avg | I |
+|---|---|---|---|---|
+| Hub / carrier (body) | Rigid | ~3 g | 5 mm | 3.75 × 10⁻⁸ |
+| Saucer disk | Free | ~9 g | 20 mm | 1.800 × 10⁻⁶ |
+| 8 contact teeth | Free | ~5 g | 26 mm | 1.690 × 10⁻⁶ |
+
+**I_DS_body = 3.75 × 10⁻⁸ kg·m²** (rigid; contributes to assembly I)  
+**I_DS_free = 3.490 × 10⁻⁶ kg·m²** (decoupled; does not contribute)  
+**I_DS_locked (hypothetical) = 3.528 × 10⁻⁶ kg·m²**
+
+**OWD_free = 3.75 × 10⁻⁸ / (0.017 × 0.026²) = 0.003**  
+**OWD_locked = 3.528 × 10⁻⁶ / (0.017 × 0.026²) = 0.307**
+
+OWD comparison across HMS free-spinning CWDs:
+
+| CWD | OWD_free | OWD_locked | Free mass fraction |
+|---|---|---|---|
+| Free Crusher (CASE 1881) | 0.063 | 0.241 | ~72 % |
+| Wing Attacker (CASE 1886) | 0.050 | — | ~76 % |
+| **Devil Saucer** | **0.003** | **0.307** | **~82 %** |
+
+Devil Saucer has the lowest OWD_free of all HMS CWDs analyzed. The full-disk free-spin design decouples more total mass from the assembly than either wing design, leaving an even smaller fraction contributing to I.
+
+**The stationary case — what Devil Saucer could have been:**
+
+"Had it been stationary Devil Saucer may have saw some niche use, perhaps similar to CWD Free Defense Ring and its ability to knock around God Ring and Reverse Defenser." (user)
+
+If Devil Saucer were locked (I_locked = 3.528 × 10⁻⁶, OWD = 0.307):
+- The 8 protruding teeth at r ≈ 26 mm would function as engagement hooks against smooth-rimmed opponent CWDs
+- God Ring and Reverse Defenser — with their smooth circular outer rims — would catch on the teeth during lateral contact, creating a mechanical couple that delivers an angular impulse in the spin-down direction
+- 8 teeth give frequent but brief catch events (higher repetition rate than Free Defense Ring's fewer hooks)
+- I_locked ≈ 3.528 × 10⁻⁶ provides solid I contribution, comparable to God Ring (~3.0 × 10⁻⁶)
+
+A locked Devil Saucer would have been a legitimate mid-tier disruptive/defense CWD — not top-tier, but useful in a specific counter-build. The design concept is sound; the execution choice of free-spin removes all of this utility.
+
+**Why free-spin negates the design:**
+
+**1. Tooth engagement is fleeting:** The free-spinning saucer rotates away from any catch point within a fraction of a revolution. The ~10–15° engagement arc that would deliver a useful impulse against a locked CWD is cut to ~2–3° before the saucer spins free. Impulse delivered: ~15–20 % of the locked equivalent.
+
+**2. Self-inflicted floor drag:** During high-orbital-speed movement (flower pattern, sliding attack), the 8 teeth extending to r ≈ 26 mm make intermittent contact with the stadium floor. Each contact event transfers angular momentum from the free-spinning saucer through the bearing into the assembly body as an adverse rotational impulse, draining the assembly's spin.
+
+**3. Stadium wall raking:** The 8 teeth engage stadium wall features during wall-riding or banking maneuvers. Raking force = tooth-to-wall friction × contact velocity → braking impulse on the assembly at exactly the moments when the assembly is in an active attack orbit.
+
+**4. Net angular momentum transfer direction:** The free saucer rotates at ω_DS independent of the assembly. If ω_DS < ω_assembly (saucer lagging behind due to bearing drag), any catch event with the opponent transfers angular momentum FROM the assembly TO the saucer — not to the opponent. This is the primary mechanism of self-inflicted RPM loss that the user identifies: "more often than not it is most likely to cause significant losses in RPM for your combo instead of the opponent."
+
+**Comparison to Free Crusher and Wing Attacker:**
+
+Free Crusher (3 wings at r ≈ 30 mm): each wing is an individual free element. The BCC upper slope can mechanically lock wings, creating a mode where I_FC_locked = 2.493 × 10⁻⁶ (CASE 1881). At minimum, a partial lock mechanism exists.
+
+Wing Attacker (2 wings at r ≈ 27 mm): no lock mechanism, but body carrier mass is proportionally larger relative to wing mass. OWD_free = 0.050.
+
+**Devil Saucer:** The entire outer mass is decoupled as a single unit. There is no partial coupling mechanism and no operational condition under which the 3.490 × 10⁻⁶ free mass contributes to the assembly. The penalty is permanent and unconditional.
+
+**Metal CWD insert (for use in best combo):**
+
+Metal CWD (~5 g from RBA2) inserts into the Devil Saucer hub/carrier body:
+I_MCWD ≈ ½ × 0.005 × (0.008)² = 1.60 × 10⁻⁷  
+**I_DS + MCWD (body combined) = 3.75 × 10⁻⁸ + 1.60 × 10⁻⁷ = 1.975 × 10⁻⁷ kg·m²**
+
+The Metal CWD insert adds mass near the hub, contributing negligibly to OWD but slightly to absolute I. Its primary function is as a bearing spacer and hub stiffener.
+
+**Best combo:**  
+AR: Circle Upper (Right-Spin)  
+WD: CWD Devil Saucer (with Metal CWD from RBA2)  
+RC: Grip Flat Core (Ultimate Mode)
+
+Circle Upper carries all attack function. Devil Saucer + Metal CWD contributes only 1.975 × 10⁻⁷ to I — effectively a Circle Upper + GFCUV combo with an ornamental CWD. The window: at very high ω (immediately post-launch), saucer teeth have high relative velocity against the floor/wall, but the drag force per contact event is also at its maximum. The battle must be decided in the first 2–4 seconds of the launch phase before Devil Saucer self-drain compounds.
+
+---
+
+## CASE 1893 — RC Shooter Change Core Alpha (~5 g)
+
+**Beyblade:** MA-23 Bloody Devil MS  
+**Part:** Running Core — Shooter Change Core Alpha (SCC Alpha)  
+**Mass:** ~5 g  
+**Tip modes:** Semi-Flat (SF) | Hole-Flat (HF) — switchable via twist collar  
+**Gimmick:** Lowered CWD attachment position + twist-collar tip mode change
+
+**Design context:**
+
+SCC Alpha is one of two Shooter Change Core variants in the HMS lineup, the other being SCC Gamma (from a companion release). The design is described as visually most similar to Bunshin Core — both feature a prominent wide flange/disk at the WD attachment level — but without Bunshin Core's detachment mechanism. In practicality it is most comparable to Battle Change Core: it allows both tip-mode selection and rapid CWD substitution, though through different mechanical means.
+
+The defining physical feature is the CWD attachment position: the WD retention groove on SCC Alpha sits approximately 4 mm lower in the assembly stack than on a standard HMS RC. Any CWD fitted to SCC Alpha rides lower relative to the tip contact point, and correspondingly closer to the stadium floor. This has profound consequences for floor clearance during battle.
+
+**Mass distribution:**
+
+| Zone | Mass | r_avg | I |
+|---|---|---|---|
+| Shaft / inner column | 1.5 g | 3 mm | 6.75 × 10⁻⁹ |
+| Wide attachment flange | 2.0 g | 17 mm | 2.89 × 10⁻⁷ |
+| Lower cone + mode tabs | 1.5 g | 8 mm | 4.80 × 10⁻⁸ |
+
+**I_SCC_alpha = 3.44 × 10⁻⁷ kg·m²**
+
+**Tip geometry by mode:**
+
+| Mode | Hole state | r_tip | μ_eff | τ (45 g assembly) |
+|---|---|---|---|---|
+| Semi-Flat | Covered (full disc) | 2.0 mm | 0.10 | 8.83 × 10⁻⁵ N·m |
+| Hole-Flat | Open (outer ring only) | r_eff ≈ 2.5 mm | 0.12 | 1.32 × 10⁻⁴ N·m |
+
+Hole-Flat mode produces 50 % more friction torque than Semi-Flat at the same assembly mass. HF is the aggressive mode: more lateral resistance, faster orbital response, higher per-second spin cost.
+
+**Lowered CWD position — floor clearance analysis:**
+
+CWD outer radius (CWD Defense Ring, the combo CWD of choice): r_CWD ≈ 27 mm
+
+Height of CWD rim above stadium floor when assembly is upright:
+- Standard HMS RC: h_normal ≈ 8 mm
+- SCC Alpha: h_SCC ≈ 4 mm (WD attachment point 4 mm lower)
+
+Critical tilt angle θ_crit at which CWD rim contacts the floor:
+θ_crit = arcsin(h / r_CWD)
+
+| RC type | h_CWD | θ_crit |
+|---|---|---|
+| Standard HMS RC | 8 mm | arcsin(8/27) ≈ **17.2°** |
+| **SCC Alpha** | **4 mm** | **arcsin(4/27) ≈ 8.5°** |
+
+**HMS normal combat tilt range: 10°–15°.**
+
+Standard RC: CWD floor contact occurs only at extreme wobble onset (> 17°) — a late-battle phenomenon that does not arise during normal exchanges.
+
+SCC Alpha: CWD floor contact occurs at **8.5° tilt** — within the normal combat operating envelope. Any hit that imparts moderate tilt triggers scraping immediately, regardless of battle phase.
+
+**Scraping torque when CWD rim contacts floor (θ = 10°, m = 45 g):**
+
+Normal force on rim ≈ m × g × sin(θ) = 0.045 × 9.81 × sin(10°) = **0.0766 N**  
+τ_rim_drag = μ_ABS × F_normal × r_CWD = 0.30 × 0.0766 × 0.027 = **6.20 × 10⁻⁴ N·m**
+
+Ratio to tip torques:
+- vs. Semi-Flat (τ_SF = 8.83 × 10⁻⁵): τ_rim / τ_SF = **7.0×**
+- vs. Hole-Flat (τ_HF = 1.32 × 10⁻⁴): τ_rim / τ_HF = **4.7×**
+
+Any scraping event drains spin at 4.7–7.0× the nominal rate depending on tip mode. For a thicker CWD rim (Defense Ring at ~4 mm profile depth), the contact surface is larger and effective τ_rim_drag may reach **8–10× Semi-Flat tip torque**.
+
+**CoM height effect:**
+
+With the CWD 4 mm lower, the assembly center of mass drops from h_CoM ≈ 17 mm (standard RC) to h_CoM ≈ 13 mm above the tip contact point.
+
+Precession rate Ω = mgh / (I × ω): the reduced h means Ω is approximately 24 % slower at equivalent ω. In isolation, this improves orbital stability — later nutation onset, more circular orbit, reduced per-revolution floor-contact time.
+
+However, this stability benefit is entirely negated by the reduced floor clearance. The slower precession means the assembly spends more time near the floor-contact tilt angle before wobbling through it — increasing the duration of each scraping event rather than reducing total scraping. The CoM advantage and the clearance penalty are not orthogonal: in net effect, SCC Alpha provides no stability advantage over a standard RC; only the floor-contact liability remains.
+
+**Plastic tip wear:**
+
+Both modes use ABS plastic for the tip surface. Approximate wear rate under sustained combat: 0.2–0.4 mm per minute.
+- After 30 s in HF mode: tip ring height reduced ~0.1 mm → r_eff shifts from 2.5 → ~2.35 mm → τ_HF decreases ~6 % mid-battle
+- After 30 s in SF mode: r_tip shifts from 2.0 → ~1.85 mm → similar decay
+
+The tip profile evolves mid-battle, making SCC Alpha combos inconsistent across matches in tournament conditions. Each match the tip is in a slightly different worn state, altering orbital behavior unpredictably.
+
+**Mode change mechanism:**
+
+A rotating twist collar over the tip shaft blocks or exposes the central hole in the tip face. 90° rotation toggles between modes without tools. The ABS collar is subject to wear from repeated rotation and tip-contact abrasion. The ring contact geometry in HF mode is not perfectly even, introducing a mild drift bias as the tip tends to precess toward the low-contact side of the ring.
+
+**Relationship to SCC Gamma:**
+
+The two SCC variants share the lowered WD attachment concept and full-ABS construction. SCC Alpha offers Hole-Flat ↔ Semi-Flat. SCC Gamma likely provides a different mode pairing. Both represent the most mechanically complex RC design concept in the HMS lineup while also being among the least competitive due to the shared floor-proximity liability.
+
+**Best combo:**  
+AR: Samurai Upper (Right-Spin)  
+WD: CWD Defense Ring (with Metal CWD from RBA2)  
+RC: Shooter Change Core Alpha (Hole-Flat mode)
+
+Game plan: Samurai Upper is selected for its strong upper-attack ramp. HF mode provides aggressive orbital response (τ = 1.32 × 10⁻⁴ N·m) to set up a flower pattern. Defense Ring + Metal CWD provides the I backbone for sustained orbit. The goal is a decisive Samurai Upper knockout before the SCC Alpha scraping cascade terminates the combo. Tornado Stalling is viable in the opening seconds; once any hit imparts > 8.5° tilt, the outcome is effectively determined.
+
+---
+
+## CASE 1894 — Assembly: Bloody Devil MS
+
+**Full stock assembly:** BP Large Type + AR Devil Crusher + CWD Devil Saucer + RC SCC Alpha (Semi-Flat)
+
+**Stock Assembly I:**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Devil Crusher | 20 g | 4.245 × 10⁻⁶ |
+| CWD Devil Saucer (body only) | 17 g | 3.75 × 10⁻⁸ |
+| RC SCC Alpha | 5 g | 3.44 × 10⁻⁷ |
+| **Total** | **45 g** | **4.640 × 10⁻⁶ kg·m²** |
+
+[CWD Devil Saucer free disk + 8 teeth: I_free = 3.490 × 10⁻⁶ — decoupled, does not contribute]
+
+**L₀_stock** = 4.640 × 10⁻⁶ × 620 = **2.877 mN·m·s**
+
+**AR dominance:**
+
+Devil Crusher contributes 4.245 × 10⁻⁶ of total 4.640 × 10⁻⁶ = **91.5 % of assembly I**.
+
+This is the highest AR dominance of any HMS stock assembly in the group:
+
+| Assembly | AR I | Total I | AR % |
+|---|---|---|---|
+| Slash Riger MS | 4.367 × 10⁻⁶ | 5.094 × 10⁻⁶ | 85.7 % |
+| Dranzer MF | 3.760 × 10⁻⁶ | 4.419 × 10⁻⁶ | 85.2 % |
+| **Bloody Devil MS** | **4.245 × 10⁻⁶** | **4.640 × 10⁻⁶** | **91.5 %** |
+
+The combination of Devil Saucer's near-zero body I (3.75 × 10⁻⁸) and SCC Alpha's below-average RC I (3.44 × 10⁻⁷) concentrates virtually the entire assembly I in the AR. Devil Crusher is the flywheel; the support parts provide only structure and tip contact.
+
+**Nominal spin-down (Semi-Flat mode, no scraping events):**
+
+τ_SF (45 g) = 0.10 × 0.045 × 9.81 × 0.002 = **8.83 × 10⁻⁵ N·m**
+
+| Phase | ω range (rad/s) | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **13.0 s** |
+| Battle → wobble | 372 → 250 | 122 | **6.4 s** |
+| Wobble → fall | 250 → 50 | 200 | **10.5 s** |
+| **Total** | — | 570 | **29.9 s** |
+
+**Practical duration — dual active failure modes:**
+
+Unlike previous HMS stock assemblies where one part actively drains spin (Slash Riger MS: FWC wing floor contact in wobble phase; Dranzer MF: Wing Attacker passive floor drag), Bloody Devil MS stock combines two simultaneous active failure mechanisms from the first hit:
+
+**Failure Mode 1 — Devil Saucer self-drain:**  
+Devil Saucer's free-spinning 8-tooth disk at r = 26 mm generates floor drag, wall raking, and adverse angular momentum transfer events throughout the battle at all tilt angles. The teeth extend to r ≈ 26 mm — full CWD clearance — and create micro-contact events continuously during orbital motion even at nominal tilt.
+
+**Failure Mode 2 — SCC Alpha CWD floor scraping:**  
+At any tilt ≥ 8.5°, the CWD rim contacts the stadium floor, producing τ_rim_drag = 6.20 × 10⁻⁴ N·m — 7× the stock Semi-Flat tip torque. The first collision in combat routinely imparts tilt > 8.5°, triggering this penalty immediately.
+
+When scraping is active (assembly I = 4.640 × 10⁻⁶, m = 45 g):
+Δω per 0.5-second event = 6.20 × 10⁻⁴ × 0.5 / 4.640 × 10⁻⁶ = **66.8 rad/s**  
+Tip drain rate (SF): 8.83 × 10⁻⁵ / 4.640 × 10⁻⁶ = 19.0 rad/s per second  
+0.5-second scraping equivalent to **~3.5 seconds** of uninterrupted Semi-Flat tip friction.
+
+In a typical HMS battle, the first collision occurs within 2–3 seconds of the in-progress phase. From that point:
+- Devil Saucer self-drain: continuously active from launch
+- SCC Alpha scraping: active immediately after first hit ≥ 8.5° tilt
+
+Both failure modes operate simultaneously within 3–5 seconds of battle start.
+
+**Practical assembly duration: 2–6 seconds in competitive combat.**
+
+This makes Bloody Devil MS stock the most actively self-destructive HMS stock assembly in the group:
+- Slash Riger MS stock (CASE 1883): wing contact terminates assembly during wobble phase (~30 s theoretical)
+- Dranzer MF stock (CASE 1889): fails passively — mediocre performance rather than active self-destruction
+- **Bloody Devil MS stock:** dual failure active from battle start; terminates in early battle phase regardless of opponent
+
+**Stock assembly comparison (all HMS stock assemblies, this session):**
+
+| Assembly | I_total (kg·m²) | L₀ (mN·m·s) | t_ideal (s) | Role |
+|---|---|---|---|---|
+| Samurai Changer MS (BCC) | 1.202 × 10⁻⁵ | 7.45 | 53.9 | Attack/gimmick |
+| Phantom Fox MS (Semi-Flat) | 1.122 × 10⁻⁵ | 6.96 | 57.8 | Stamina |
+| Dragoon MF (MWGC) | 1.033 × 10⁻⁵ | 6.41 | 28.5 | Attack |
+| Dranzer MS (MCC HF) | 9.668 × 10⁻⁶ | 5.99 | — | Defense/Stamina |
+| Round Shell MS (RWC) | 7.349 × 10⁻⁶ | 4.56 | 16.7 | Destabilizer |
+| Magical Ape MS (Flat Core) | 6.617 × 10⁻⁶ | 4.10 | 22.8 | Compact/Attack |
+| Slash Riger MS (FWC stock) | 5.094 × 10⁻⁶ | 3.16 | 31.4† | Gimmick |
+| **Bloody Devil MS (DS + SCC-α)** | **4.640 × 10⁻⁶** | **2.877** | **29.9‡** | **Collector** |
+| Dranzer MF (Wing Attacker + FSC) | 4.419 × 10⁻⁶ | 2.74 | 89.4§ | Collector/Limited |
+
+†Practical ≈ 2–4 s due to FWC wing floor contact catastrophe  
+‡Practical ≈ 2–6 s due to Devil Saucer self-drain + SCC Alpha floor scraping active simultaneously  
+§Practical significantly shorter due to Wing Attacker destabilization and Smash Phoenix imbalance
+
+Bloody Devil MS slots second-lowest in L₀ among HMS stock assemblies, above only Dranzer MF. The practical battle time is shorter than both Slash Riger MS and Dranzer MF due to the dual-failure combination triggering in the early battle phase rather than the mid or late phase.
+
+---
+
+### Best AR Combo
+
+**Devil Crusher (RS) + CWD Defense Ring + Metal CWD (RBA2) + GFCUV**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Devil Crusher | 20 g | 4.245 × 10⁻⁶ |
+| CWD Defense Ring + Metal CWD | ~19 g | 5.592 × 10⁻⁶ |
+| RC GFCUV | ~4 g | 3.20 × 10⁻⁷ |
+| **Total** | **~46 g** | **10.171 × 10⁻⁶ kg·m²** |
+
+**L₀_AR** = 10.171 × 10⁻⁶ × 620 = **6.306 mN·m·s**
+
+τ_GFCUV (m = 46 g) = 0.30 × 0.046 × 9.81 × 0.0025 = **3.38 × 10⁻⁴ N·m**
+
+| Phase | ω range (rad/s) | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **7.4 s** |
+| Battle → wobble | 372 → 250 | 122 | **3.7 s** |
+| Wobble → fall | 250 → 50 | 200 | **6.0 s** |
+| **Total** | — | 570 | **17.1 s** |
+
+Standard GFCUV attack combo. Defense Ring + Metal CWD provides the I backbone; GFCUV controls the orbital trajectory via rubber friction. Devil Crusher delivers contact at ~65–70 % efficiency versus its siblings — knockouts require more precise hit geometry (full AR engagement rather than glancing contact) than Upper Fox or Upper Dragon. The 17.1 s window is adequate for a flower pattern sequence (typically 3–5 passes in 8–12 s of active battle time at GFCUV orbital speeds). Sliding/Catapult or Banking is required; the combo cannot win a spin-down contest.
+
+---
+
+### Best CWD Combo
+
+**Circle Upper (RS) + CWD Devil Saucer + Metal CWD (RBA2) + GFCUV**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Circle Upper | ~20 g | ~5.200 × 10⁻⁶ |
+| CWD Devil Saucer + Metal CWD (body) | ~22 g | 1.975 × 10⁻⁷ |
+| RC GFCUV | ~4 g | 3.20 × 10⁻⁷ |
+| **Total** | **~49 g** | **5.731 × 10⁻⁶ kg·m²** |
+
+[Devil Saucer free disk: 3.490 × 10⁻⁶ — decoupled]
+
+**L₀_CWD** = 5.731 × 10⁻⁶ × 620 = **3.553 mN·m·s**
+
+τ_GFCUV (m = 49 g) = 0.30 × 0.049 × 9.81 × 0.0025 = **3.61 × 10⁻⁴ N·m**
+
+| Phase | ω range (rad/s) | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **3.9 s** |
+| Battle → wobble | 372 → 250 | 122 | **1.9 s** |
+| Wobble → fall | 250 → 50 | 200 | **3.2 s** |
+| **Total** | — | 570 | **9.0 s** |
+
+Circle Upper carries all attack function. Devil Saucer + Metal CWD contributes only 1.975 × 10⁻⁷ to I — 3.4 % of the total. This is functionally a Circle Upper + GFCUV combo with an ornamental CWD.
+
+The 9.0 s window is the shortest of the three Bloody Devil MS best combos. The Devil Saucer self-drain penalty accelerates the practical timeline further: at ω = 620 rad/s post-launch, saucer teeth at r = 26 mm have a rim velocity of 620 × 0.026 ≈ 16.1 m/s. Floor and wall contact drag at this velocity is substantial, compressing the effective launch→battle transition from 3.9 s (nominal) to approximately 2.5–3.0 s in combat. A decisive Circle Upper hit must land within the first 2–3 seconds of the in-progress phase or the combo's spin budget is exhausted before achieving a knockout.
+
+---
+
+### Best RC Combo
+
+**Samurai Upper (RS) + CWD Defense Ring + Metal CWD (RBA2) + SCC Alpha (Hole-Flat)**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Samurai Upper | ~18 g | ~3.200 × 10⁻⁶ |
+| CWD Defense Ring + Metal CWD | ~19 g | 5.592 × 10⁻⁶ |
+| RC SCC Alpha | 5 g | 3.44 × 10⁻⁷ |
+| **Total** | **~45 g** | **~9.150 × 10⁻⁶ kg·m²** |
+
+**L₀_RC** = 9.150 × 10⁻⁶ × 620 = **5.673 mN·m·s**
+
+τ_HF (m = 45 g) = 0.12 × 0.045 × 9.81 × 0.0025 = **1.32 × 10⁻⁴ N·m**
+
+| Phase | ω range (rad/s) | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **17.1 s** |
+| Battle → wobble | 372 → 250 | 122 | **8.4 s** |
+| Wobble → fall | 250 → 50 | 200 | **13.8 s** |
+| **Total** | — | 570 | **39.3 s** (theoretical) |
+
+**Practical duration: 3–10 s, highly variable.**
+
+The theoretical 39.3 s assumes tip friction as the sole spin-down mechanism throughout. In practice, the SCC Alpha floor-scraping penalty takes over from the first hit that imparts > 8.5° tilt:
+
+At any θ ≥ 8.5° (RC combo, m = 45 g, I = 9.150 × 10⁻⁶):
+τ_rim_drag = 6.20 × 10⁻⁴ N·m (4.7× the HF tip torque)
+
+Spin loss from a 0.5-second scraping event:
+Δω = 6.20 × 10⁻⁴ × 0.5 / 9.150 × 10⁻⁶ = **33.9 rad/s**
+
+HF tip drain rate: τ_HF / I = 1.32 × 10⁻⁴ / 9.150 × 10⁻⁶ = 14.43 rad/s per second  
+0.5-second scraping equivalent to **~2.3 seconds** of uninterrupted Hole-Flat tip friction.
+
+Three scraping events (1.5 s total) in rapid succession lose 3 × 33.9 = 101.7 rad/s — 16.4 % of launch ω₀ = 620 rad/s — which pushes the assembly directly into the wobble threshold (ω_wobble = 250 rad/s at the theoretical floor). Multiple hits in 5–6 seconds cascade rapidly toward termination.
+
+**Tornado Stalling strategy (user-recommended):**  
+In the opening seconds of SCC Alpha combos, Tornado Stalling (wall-orbit at the stadium perimeter) leverages Defense Ring + Metal CWD's high I to maintain stable orbit before contact occurs. During tornado stall, tilt is minimal and SCC Alpha scraping does not engage. If the initial flower-pattern pass lands a decisive Samurai Upper hit, the combo wins cleanly. If the pass misses, the combo may sustain tornado stall for several additional seconds — but once any mutual hit imparts > 8.5° tilt on either bey, the scraping cascade begins and the outcome is effectively determined.
+
+Against docile opponents (Stamina/Defense sitting near center): the first-pass flower pattern has the best probability of landing an upper-attack hit before SCC Alpha self-disrupts. Against aggressive attack types: the contest is determined by which bey reaches 8.5° tilt first under the mutual hit exchange — SCC Alpha's sensitivity to tilt makes this effectively a coin-flip at high engagement rates.
+
+---
+
+### Competitive Standing
+
+**AR Devil Crusher (extracted):** Third-ranked in its own metal frame family (Upper Dragon ≥ Upper Fox > Devil Crusher). Usable as an attack AR — knockouts are achievable — but consistently weaker than its siblings due to ABS leading-edge interference reducing smash efficiency to ~65–70 %. No redeeming Defense or Stamina application due to the metal frame recoil characteristics common to the entire family. Competitive value: low. Extract Upper Fox or Upper Dragon from their respective beys for the metal frame quality; Devil Crusher is the fallback option within the family.
+
+**CWD Devil Saucer (extracted):** No competitive application. The worst-performing free-spinning CWD in the HMS lineup by OWD_free (0.003 vs. 0.050–0.063 for Wing Attacker and Free Crusher). Unlike those CWDs, which retain at least a partial lock mechanism (Free Crusher) or a theoretical use case, Devil Saucer's full-disk free-spin design provides no operational mode in which it functions as an effective CWD. The concept — an 8-toothed engagement disk — would have been legitimate if locked. As a free-spinning design, it is a collectors' curiosity with zero extracted competitive value.
+
+**RC Shooter Change Core Alpha (extracted):** Mechanically the most ambitious concept in the HMS running core lineup. The lowered WD position, mode-change collar, and tool-free WD swap represent engineering investment beyond the series norm for a single RC component. In competitive practice, the execution fails: the lowered CWD position creates floor-contact penalties at normal combat tilt (θ_crit = 8.5° vs. ~17° for standard RCs), and the plastic tip construction accelerates wear across matches. Usable as a Hole-Flat attack RC in brief tornado-stall-to-flower-pattern combos when paired with Samurai Upper and a high-I CWD; not a substitute for GFC (Ultimate Mode) or MCC in serious play. The concept is sound; the geometry is not.
+
+**Stock Bloody Devil MS:** The most actively self-defeating stock assembly in the HMS group. Two failure mechanisms (Devil Saucer self-drain, SCC Alpha floor scraping) are simultaneously active from the first hit, producing practical battle durations of 2–6 seconds regardless of opponent. As the penultimate HMS release, Bloody Devil MS stands as the clearest example that Takara's final-series design team prioritized visual novelty and mechanical gimmickry over competitive execution. The stock bey is the most interesting to look at of the HMS lineup; it is also the most reliably self-terminated.

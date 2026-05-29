@@ -6643,7 +6643,268 @@ function tornadoGuardCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +10 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1883 as further franchise moves are provided.*
+
+
+---
+
+## Case 1883 — GIMMICK: Flash Leopard — Aerodynamic Drag Heating & Hot Wind Vortex
+
+**Beyblade:** Flash Leopard (TT JP: フラッシュレオパルド; Hasbro EN: Flash Leopard)
+**Blader:** Ozuma | **Series:** Beyblade (Bakuten Shoot V-Force, Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Flash Leopard (4-blade) | 14.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | SG Flat | 2.5 | 5.0 |
+| **Total** | | **38.0** | |
+
+(Bit Chip ~1 g at r ≈ 0 excluded per convention.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.5×10⁻³ × 0.005²
+           = 1.434×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 6.25×10⁻⁸
+           = **3.680×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (standard plastic-gen Bakuten Shoot launch)
+L₀ = I × ω₀ = 3.680×10⁻⁵ × 700 = **2.576×10⁻² kg·m²/s**
+
+---
+
+### 1. Flash Leopard AR — Aerodynamic Drag Dissipation (Primary Heat Source)
+
+The Flash Leopard Attack Ring carries four angular blade protrusions. At high-speed rotation these blades sweep through air at v_tip; skin-friction and pressure drag on each blade are almost entirely dissipated as thermal energy in the ABS plastic — heating the AR from within, causing the surrounding air to circulate as a hot wind vortex.
+
+**Blade tip velocity:**
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+```
+
+**Aerodynamic drag on 4 blades (C_D = 1.2, A_blade = 4×10⁻³ × 15×10⁻³ = 6.0×10⁻⁵ m²):**
+
+```
+F_drag = ½ × ρ_air × C_D × n_blades × A_blade × v_tip²
+       = ½ × 1.225 × 1.2 × 4 × 6.0×10⁻⁵ × 22.40²
+       = ½ × 1.225 × 1.2 × 2.4×10⁻⁴ × 501.76
+       = 0.08851 N
+
+P_aero = F_drag × v_tip = 0.08851 × 22.40 = 1.983 W  (dissipated as heat into AR)
+```
+
+---
+
+### 2. SG Flat BB — Frictional Heat Generation & Orbital Speed
+
+The Flat Blade Base contacts the arena over a wide surface (r_flat = 5 mm, μ_flat = 0.15), driving orbital motion and adding a secondary heat source:
+
+```
+τ_flat = μ × m × g × r_flat = 0.15 × 0.038 × 9.81 × 0.005 = 2.796×10⁻⁴ N·m
+P_fric = τ_flat × ω₀ = 2.796×10⁻⁴ × 700 = 0.1957 W
+t_spin = L₀ / τ_flat = 2.576×10⁻² / 2.796×10⁻⁴ = 92.1 s
+v_orbital = μ × ω₀ × r_flat = 0.15 × 700 × 0.005 = 0.5250 m/s
+```
+
+**Total heat generation rate:**
+
+```
+P_heat = P_aero + P_fric = 1.983 + 0.1957 = 2.179 W
+```
+
+**AR temperature rise over t_buildup = 5 s (Sacred Fire activation window):**
+
+```
+Q_heat  = P_heat × t_buildup = 2.179 × 5 = 10.89 J
+ΔT_AR   = Q_heat / (m_AR × c_ABS) = 10.89 / (0.014 × 1400) = 0.556 K
+(physical; ABS ignition ≈ 370°C; BeySpirit amplifies to true fire temperature)
+```
+
+---
+
+### 3. Hot Wind Vortex (Rankine Model)
+
+The spinning Flash Leopard AR drives a Rankine vortex of heated air:
+
+```
+Γ_vortex = 2π × v_tip × r_AR = 2π × 22.40 × 0.032 = 4.500 m²/s
+
+At r_opp = 50 mm from centre:
+v_wind   = Γ_vortex / (2π × r_opp) = 4.500 / (2π × 0.050) = 14.32 m/s
+
+q_wind   = ½ × ρ_air × v_wind² = ½ × 1.225 × 14.32² = 125.7 Pa
+
+A_opp    = π × 0.020² = 1.257×10⁻³ m²
+F_wind   = q_wind × A_opp = 125.7 × 1.257×10⁻³ = 0.1580 N  (radially outward — hot wind repulsion)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 38.0 g |
+| I_total | 3.680×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.576×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| P_aero | 1.983 W |
+| P_fric | 0.1957 W |
+| P_heat | 2.179 W |
+| ΔT_AR (5 s) | 0.556 K |
+| Γ_vortex | 4.500 m²/s |
+| v_wind (r=50 mm) | 14.32 m/s |
+| q_wind | 125.7 Pa |
+| F_wind | 0.1580 N |
+| τ_flat | 2.796×10⁻⁴ N·m |
+| t_spin | 92.1 s |
+| v_orbital | 0.5250 m/s |
+
+---
+
+## Case 1884 — SPECIAL: Sacred Fire — Ozuma / Flash Leopard
+
+**Blader:** Ozuma | **Beyblade:** Flash Leopard | **Type:** attack
+
+### Description
+
+Sacred Fire is a Special Move used by Ozuma and his Flash Leopard. The beyblade heats up — driven by aerodynamic drag dissipation across the Flash Leopard AR blades (P_aero = 1.983 W) — causing hot winds to blow from the Rankine vortex. Upon contact the thermally-primed AR can melt the opponent's beyblade plastics. The hot wind vortex acts as both a repulsion field that pushes opponents outward and a thermal transfer medium, while the heated AR delivers a direct fire contact on impact.
+
+### Stage 1 — Hot Wind Vortex Blast
+
+Flash Leopard's vortex exerts F_wind = 0.1580 N outward on the opponent for t_blast = 0.5 s:
+
+```
+J_wind      = F_wind × t_blast = 0.1580 × 0.5 = 7.900×10⁻² N·s
+
+Δv_opp_wind = J_wind / m_opp = 7.900×10⁻² / 0.038 = 2.079 m/s  (outward repulsion)
+```
+
+### Stage 2 — Heated AR Flat-Base Contact
+
+Flash Leopard's SG Flat drives orbital approach at v_orbital = 0.5250 m/s. Thermally-primed AR contacts opponent (e = 0.65 — ABS-on-ABS with thermal softening factor):
+
+```
+m_eff = (0.038 × 0.038) / (0.038 + 0.038) = 1.444×10⁻³ / 0.076 = 1.900×10⁻² kg
+
+J_sacred = m_eff × (1 + e) × v_orbital
+         = 1.900×10⁻² × 1.65 × 0.5250
+         = 1.646×10⁻² N·s
+
+Δv_opp_contact = J_sacred / m_opp = 1.646×10⁻² / 0.038 = 0.433 m/s
+```
+
+**Total physical Δv on opponent:**
+
+```
+Δv_total = Δv_wind + Δv_contact = 2.079 + 0.433 = 2.512 m/s
+```
+
+**Effect on Flash Leopard (spin drain — flat tip orbital strike):**
+
+```
+Δω_FL    = J_sacred × r_contact / I_FL = 1.646×10⁻² × 0.025 / 3.680×10⁻⁵ = 11.2 rad/s
+ω_remain = 700 − 11.2 = 688.8 rad/s  (98.4% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ozuma's Leopard spirit materialises from the Bit Chip, transmuting the modest 0.556 K physical heat rise into true elemental sacred fire — the AR ignites with plasma-level temperature and the hot wind vortex becomes a real fire storm.
+
+[M] factor = **7.0 ×**
+[M] Δv = 2.079 × 7.0 = **14.6 m/s** (sacred fire plasma ring-out)
+
+> **Note:** Physical values describe aerodynamic drag heating (P_aero = 1.983 W, P_heat = 2.179 W total, ΔT_AR = 0.556 K over 5 s), hot wind vortex ejection at F = 0.1580 N over 0.5 s (J_wind = 7.900×10⁻² N·s, Δv_wind = 2.079 m/s), and flat-base orbital contact impulse (J = 1.646×10⁻² N·s, Δv_total = 2.512 m/s). [M] values represent Ozuma's Leopard BeySpirit transmuting aerodynamic heat into sacred fire plasma. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sacredFireSpecial(bey: Beyblade, target: Beyblade): void {
+  // P_aero=1.983W→AR heating; hot wind vortex J_wind=7.900×10⁻²N·s; AR contact J=1.646×10⁻²N·s; [M] 7.0×
+  const J_wind = 0.07900;
+  const J_contact = 0.01646;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Stage 1: heated AR flat-base contact (physical)
+  applyForce(target.id, (dx / dist) * J_contact, (dy / dist) * J_contact);
+  // Stage 2: sacred fire plasma blast — [M] 7.0×
+  const amplified = J_wind * 7.0; // [M] BeySpirit 7.0× (Ozuma Leopard sacred fire plasma)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using an Attack Ring with 4+ angular blade protrusions generating sufficient aerodynamic drag (P_aero ≥ 1.5 W at ω₀ ≥ 680 rad/s) combined with a Flat or Semi-Flat Blade Base (μ ≥ 0.12, r_tip ≥ 4 mm) that sustains continuous frictional heat generation and orbital movement. The hot wind vortex requires ongoing orbital motion to continuously refresh the Rankine circulation — a stationary bey dissipates the vortex. Standard game instance: Flash Leopard (Ozuma, Bakuten Shoot V-Force plastic generation).
+
+---
+
+## Case 1885 — COMBO: Ember Strike — Flash Leopard
+
+**Sequence:** A K A (attack · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ozuma
+
+### Physics Justification
+
+The first attack (A) is an initial orbital contact at v_orbital = 0.5250 m/s, delivering the first flat-base impulse:
+
+```
+J_contact_1 = m_eff × (1 + e) × v_orbital = 1.900×10⁻² × 1.65 × 0.5250 = 1.646×10⁻² N·s
+```
+
+The defense stance (K) represents Flash Leopard pausing near the opponent, allowing the heated AR to dwell at maximum thermal output (t_lock = 150 ms):
+
+```
+ΔQ_lock  = P_heat × t_lock = 2.179 × 0.150 = 0.327 J
+ΔT_lock  = 0.327 / (0.014 × 1400) = 0.0167 K  (physical AR pre-heating increment)
+```
+
+The second attack (A) re-engages with the thermally-primed AR at the same orbital speed. The flat base elastic rebound from the first contact reconverts partial impulse to spin:
+
+```
+Δω = η × (J_contact_1 + J_contact_2) × r_contact / I_FL
+   = 0.40 × 2 × 1.646×10⁻² × 0.025 / 3.680×10⁻⁵
+   = 0.40 × 3.292×10⁻² × 0.025 / 3.680×10⁻⁵
+   = 0.40 × 8.230×10⁻⁴ / 3.680×10⁻⁵
+   = 0.40 × 22.36
+   = +8.94 rad/s  ≈ +9 rad/s
+```
+
+(η = 0.40: SG Flat elastic rebound reconversion over two-contact sequence.) The double orbital strike with thermal dwell gives damageMultiplier **1.20×**. lockMs = 150 represents the AR thermal dwell window between contacts.
+
+**Parameters:**
+- spinGain: +9 rad/s (SG Flat double orbital rebound η = 0.40)
+- damageMultiplier: 1.20 (double orbital strike with thermal AR dwell)
+- lockMs: 150 (AR thermal dwell window between contacts)
+
+### TypeScript
+
+```typescript
+function emberStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // SG Flat double orbital rebound reconversion: Δω ≈ +9 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 9);
+  // Double orbital strike with thermal dwell: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 150: AR thermal dwell between contacts
+  bey.lockMs = 150;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +9 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1886 as further franchise moves are provided.*
 
 
 
@@ -12101,4 +12362,265 @@ function tornadoGuardCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +10 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1883 as further franchise moves are provided.*
+
+
+---
+
+## Case 1883 — GIMMICK: Flash Leopard — Aerodynamic Drag Heating & Hot Wind Vortex
+
+**Beyblade:** Flash Leopard (TT JP: フラッシュレオパルド; Hasbro EN: Flash Leopard)
+**Blader:** Ozuma | **Series:** Beyblade (Bakuten Shoot V-Force, Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Flash Leopard (4-blade) | 14.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | SG Flat | 2.5 | 5.0 |
+| **Total** | | **38.0** | |
+
+(Bit Chip ~1 g at r ≈ 0 excluded per convention.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.5×10⁻³ × 0.005²
+           = 1.434×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 6.25×10⁻⁸
+           = **3.680×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (standard plastic-gen Bakuten Shoot launch)
+L₀ = I × ω₀ = 3.680×10⁻⁵ × 700 = **2.576×10⁻² kg·m²/s**
+
+---
+
+### 1. Flash Leopard AR — Aerodynamic Drag Dissipation (Primary Heat Source)
+
+The Flash Leopard Attack Ring carries four angular blade protrusions. At high-speed rotation these blades sweep through air at v_tip; skin-friction and pressure drag on each blade are almost entirely dissipated as thermal energy in the ABS plastic — heating the AR from within, causing the surrounding air to circulate as a hot wind vortex.
+
+**Blade tip velocity:**
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+```
+
+**Aerodynamic drag on 4 blades (C_D = 1.2, A_blade = 4×10⁻³ × 15×10⁻³ = 6.0×10⁻⁵ m²):**
+
+```
+F_drag = ½ × ρ_air × C_D × n_blades × A_blade × v_tip²
+       = ½ × 1.225 × 1.2 × 4 × 6.0×10⁻⁵ × 22.40²
+       = ½ × 1.225 × 1.2 × 2.4×10⁻⁴ × 501.76
+       = 0.08851 N
+
+P_aero = F_drag × v_tip = 0.08851 × 22.40 = 1.983 W  (dissipated as heat into AR)
+```
+
+---
+
+### 2. SG Flat BB — Frictional Heat Generation & Orbital Speed
+
+The Flat Blade Base contacts the arena over a wide surface (r_flat = 5 mm, μ_flat = 0.15), driving orbital motion and adding a secondary heat source:
+
+```
+τ_flat = μ × m × g × r_flat = 0.15 × 0.038 × 9.81 × 0.005 = 2.796×10⁻⁴ N·m
+P_fric = τ_flat × ω₀ = 2.796×10⁻⁴ × 700 = 0.1957 W
+t_spin = L₀ / τ_flat = 2.576×10⁻² / 2.796×10⁻⁴ = 92.1 s
+v_orbital = μ × ω₀ × r_flat = 0.15 × 700 × 0.005 = 0.5250 m/s
+```
+
+**Total heat generation rate:**
+
+```
+P_heat = P_aero + P_fric = 1.983 + 0.1957 = 2.179 W
+```
+
+**AR temperature rise over t_buildup = 5 s (Sacred Fire activation window):**
+
+```
+Q_heat  = P_heat × t_buildup = 2.179 × 5 = 10.89 J
+ΔT_AR   = Q_heat / (m_AR × c_ABS) = 10.89 / (0.014 × 1400) = 0.556 K
+(physical; ABS ignition ≈ 370°C; BeySpirit amplifies to true fire temperature)
+```
+
+---
+
+### 3. Hot Wind Vortex (Rankine Model)
+
+The spinning Flash Leopard AR drives a Rankine vortex of heated air:
+
+```
+Γ_vortex = 2π × v_tip × r_AR = 2π × 22.40 × 0.032 = 4.500 m²/s
+
+At r_opp = 50 mm from centre:
+v_wind   = Γ_vortex / (2π × r_opp) = 4.500 / (2π × 0.050) = 14.32 m/s
+
+q_wind   = ½ × ρ_air × v_wind² = ½ × 1.225 × 14.32² = 125.7 Pa
+
+A_opp    = π × 0.020² = 1.257×10⁻³ m²
+F_wind   = q_wind × A_opp = 125.7 × 1.257×10⁻³ = 0.1580 N  (radially outward — hot wind repulsion)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 38.0 g |
+| I_total | 3.680×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.576×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| P_aero | 1.983 W |
+| P_fric | 0.1957 W |
+| P_heat | 2.179 W |
+| ΔT_AR (5 s) | 0.556 K |
+| Γ_vortex | 4.500 m²/s |
+| v_wind (r=50 mm) | 14.32 m/s |
+| q_wind | 125.7 Pa |
+| F_wind | 0.1580 N |
+| τ_flat | 2.796×10⁻⁴ N·m |
+| t_spin | 92.1 s |
+| v_orbital | 0.5250 m/s |
+
+---
+
+## Case 1884 — SPECIAL: Sacred Fire — Ozuma / Flash Leopard
+
+**Blader:** Ozuma | **Beyblade:** Flash Leopard | **Type:** attack
+
+### Description
+
+Sacred Fire is a Special Move used by Ozuma and his Flash Leopard. The beyblade heats up — driven by aerodynamic drag dissipation across the Flash Leopard AR blades (P_aero = 1.983 W) — causing hot winds to blow from the Rankine vortex. Upon contact the thermally-primed AR can melt the opponent's beyblade plastics. The hot wind vortex acts as both a repulsion field that pushes opponents outward and a thermal transfer medium, while the heated AR delivers a direct fire contact on impact.
+
+### Stage 1 — Hot Wind Vortex Blast
+
+Flash Leopard's vortex exerts F_wind = 0.1580 N outward on the opponent for t_blast = 0.5 s:
+
+```
+J_wind      = F_wind × t_blast = 0.1580 × 0.5 = 7.900×10⁻² N·s
+
+Δv_opp_wind = J_wind / m_opp = 7.900×10⁻² / 0.038 = 2.079 m/s  (outward repulsion)
+```
+
+### Stage 2 — Heated AR Flat-Base Contact
+
+Flash Leopard's SG Flat drives orbital approach at v_orbital = 0.5250 m/s. Thermally-primed AR contacts opponent (e = 0.65 — ABS-on-ABS with thermal softening factor):
+
+```
+m_eff = (0.038 × 0.038) / (0.038 + 0.038) = 1.444×10⁻³ / 0.076 = 1.900×10⁻² kg
+
+J_sacred = m_eff × (1 + e) × v_orbital
+         = 1.900×10⁻² × 1.65 × 0.5250
+         = 1.646×10⁻² N·s
+
+Δv_opp_contact = J_sacred / m_opp = 1.646×10⁻² / 0.038 = 0.433 m/s
+```
+
+**Total physical Δv on opponent:**
+
+```
+Δv_total = Δv_wind + Δv_contact = 2.079 + 0.433 = 2.512 m/s
+```
+
+**Effect on Flash Leopard (spin drain — flat tip orbital strike):**
+
+```
+Δω_FL    = J_sacred × r_contact / I_FL = 1.646×10⁻² × 0.025 / 3.680×10⁻⁵ = 11.2 rad/s
+ω_remain = 700 − 11.2 = 688.8 rad/s  (98.4% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ozuma's Leopard spirit materialises from the Bit Chip, transmuting the modest 0.556 K physical heat rise into true elemental sacred fire — the AR ignites with plasma-level temperature and the hot wind vortex becomes a real fire storm.
+
+[M] factor = **7.0 ×**
+[M] Δv = 2.079 × 7.0 = **14.6 m/s** (sacred fire plasma ring-out)
+
+> **Note:** Physical values describe aerodynamic drag heating (P_aero = 1.983 W, P_heat = 2.179 W total, ΔT_AR = 0.556 K over 5 s), hot wind vortex ejection at F = 0.1580 N over 0.5 s (J_wind = 7.900×10⁻² N·s, Δv_wind = 2.079 m/s), and flat-base orbital contact impulse (J = 1.646×10⁻² N·s, Δv_total = 2.512 m/s). [M] values represent Ozuma's Leopard BeySpirit transmuting aerodynamic heat into sacred fire plasma. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sacredFireSpecial(bey: Beyblade, target: Beyblade): void {
+  // P_aero=1.983W→AR heating; hot wind vortex J_wind=7.900×10⁻²N·s; AR contact J=1.646×10⁻²N·s; [M] 7.0×
+  const J_wind = 0.07900;
+  const J_contact = 0.01646;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Stage 1: heated AR flat-base contact (physical)
+  applyForce(target.id, (dx / dist) * J_contact, (dy / dist) * J_contact);
+  // Stage 2: sacred fire plasma blast — [M] 7.0×
+  const amplified = J_wind * 7.0; // [M] BeySpirit 7.0× (Ozuma Leopard sacred fire plasma)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using an Attack Ring with 4+ angular blade protrusions generating sufficient aerodynamic drag (P_aero ≥ 1.5 W at ω₀ ≥ 680 rad/s) combined with a Flat or Semi-Flat Blade Base (μ ≥ 0.12, r_tip ≥ 4 mm) that sustains continuous frictional heat generation and orbital movement. The hot wind vortex requires ongoing orbital motion to continuously refresh the Rankine circulation — a stationary bey dissipates the vortex. Standard game instance: Flash Leopard (Ozuma, Bakuten Shoot V-Force plastic generation).
+
+---
+
+## Case 1885 — COMBO: Ember Strike — Flash Leopard
+
+**Sequence:** A K A (attack · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ozuma
+
+### Physics Justification
+
+The first attack (A) is an initial orbital contact at v_orbital = 0.5250 m/s, delivering the first flat-base impulse:
+
+```
+J_contact_1 = m_eff × (1 + e) × v_orbital = 1.900×10⁻² × 1.65 × 0.5250 = 1.646×10⁻² N·s
+```
+
+The defense stance (K) represents Flash Leopard pausing near the opponent, allowing the heated AR to dwell at maximum thermal output (t_lock = 150 ms):
+
+```
+ΔQ_lock  = P_heat × t_lock = 2.179 × 0.150 = 0.327 J
+ΔT_lock  = 0.327 / (0.014 × 1400) = 0.0167 K  (physical AR pre-heating increment)
+```
+
+The second attack (A) re-engages with the thermally-primed AR at the same orbital speed. The flat base elastic rebound from the first contact reconverts partial impulse to spin:
+
+```
+Δω = η × (J_contact_1 + J_contact_2) × r_contact / I_FL
+   = 0.40 × 2 × 1.646×10⁻² × 0.025 / 3.680×10⁻⁵
+   = 0.40 × 3.292×10⁻² × 0.025 / 3.680×10⁻⁵
+   = 0.40 × 8.230×10⁻⁴ / 3.680×10⁻⁵
+   = 0.40 × 22.36
+   = +8.94 rad/s  ≈ +9 rad/s
+```
+
+(η = 0.40: SG Flat elastic rebound reconversion over two-contact sequence.) The double orbital strike with thermal dwell gives damageMultiplier **1.20×**. lockMs = 150 represents the AR thermal dwell window between contacts.
+
+**Parameters:**
+- spinGain: +9 rad/s (SG Flat double orbital rebound η = 0.40)
+- damageMultiplier: 1.20 (double orbital strike with thermal AR dwell)
+- lockMs: 150 (AR thermal dwell window between contacts)
+
+### TypeScript
+
+```typescript
+function emberStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // SG Flat double orbital rebound reconversion: Δω ≈ +9 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 9);
+  // Double orbital strike with thermal dwell: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 150: AR thermal dwell between contacts
+  bey.lockMs = 150;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +9 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1886 as further franchise moves are provided.*
