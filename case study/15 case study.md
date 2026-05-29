@@ -19840,7 +19840,1607 @@ function windShiftCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +4 rad/s (partial) | ✓ |
 
-*Cases continue from Case 2069 as further franchise moves are provided.*
+
+
+---
+
+## Case 2069 — GIMMICK: Griffolyon — Spirit Feather Multi-Hit Claw Strike
+
+**Beyblade:** Griffolyon (Beyblade original plastic-gen era)
+**Blader:** Robert Jürgens | **Series:** Beyblade (original anime S1/S2)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Griffolyon (excluded, r≈0) | 1.0 | ≈0 |
+| Attack Ring | Triple Wing (three swept-wing protrusions) | 14.0 | 27.0 |
+| Weight Disk | Ten Heavy (10-sided heavy polymer disc) | 10.0 | 27.0 |
+| Spin Gear | Right SG (standard right-spin gear) | 4.0 | 3.0 |
+| Base | Flat Base (high-friction flat-tip base) | 3.0 | 3.0 |
+| **Total** | | **32.0** | |
+
+(Plastic-generation 5-part system; Bit Chip excluded from I (r≈0). AR Triple Wing: three large swept-wing blade protrusions at r=27mm — triple-wing geometry maximises multi-contact opportunity per revolution; "Triple" names the three-winged attack structure; "Wing" names the swept feather geometry referencing the Griffolyon (griffin + lion) beast spirit. Ten Heavy WD: 10-sided heavy polymer disc at r=27mm — high outer-mass density maximises impact momentum. Right SG: standard right-spin at r=3mm. Flat Base: high-friction flat-tip at r=3mm; μ_FB≈0.80, t_spin≈18s — aggressive outward sprint enables wing multi-contact. 32.0g total.)
+
+**I_total** = 14.0×10⁻³ × 0.027² + 10.0×10⁻³ × 0.027² + 4.0×10⁻³ × 0.003² + 3.0×10⁻³ × 0.003²
+           = 10.206×10⁻⁶ + 7.290×10⁻⁶ + 0.036×10⁻⁶ + 0.027×10⁻⁶
+           = **1.756×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-era standard launch)
+L₀ = I × ω₀ = 1.756×10⁻⁵ × 500 = **8.780×10⁻³ kg·m²/s**
+
+---
+
+### 1. Wing Tip Speed and Spirit Feather Sequence
+
+```
+Triple Wing tip tangential speed:
+  v_tip = ω₀ × r_AR = 500 × 0.027 = 13.50 m/s
+
+Wing Dagger spirit feathers (N=8 successive feather-blade contacts per orbit pass):
+  m_feather = 0.80 g = 8.0×10⁻⁴ kg  (each spirit feather mass element at tip)
+  v_feather = v_tip × 0.60 = 13.50 × 0.60 = 8.100 m/s  (feather contact speed)
+  η_decay = 0.85  (each successive contact delivers 85% of prior feather's impulse)
+```
+
+---
+
+### 2. Multi-Hit Feather Impulse Sum
+
+Each of the N=8 spirit feather contacts delivers a decaying impulse. The geometric series sums the total accumulated impulse:
+
+```
+Single feather impulse:
+  J_single = m_feather × v_feather = 8.0×10⁻⁴ × 8.100 = 6.480×10⁻³ N·s
+
+Geometric series sum (η_decay=0.85, N=8):
+  Sum = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.85^8) / (1 − 0.85)
+      = (1 − 0.2725) / 0.15 = 0.7275 / 0.15 = 4.850
+
+Total feather impulse:
+  J_WD = J_single × Sum = 6.480×10⁻³ × 4.850 = 3.143×10⁻² N·s
+
+m_opp = 36 g  (plastic-era opponent)
+  Δv_opp = J_WD / m_opp = 3.143×10⁻² / 0.036 = 0.873 m/s
+
+Spin drain on Griffolyon:
+  Δω = J_WD × r_AR / I_total = 3.143×10⁻² × 0.027 / 1.756×10⁻⁵ = 48.3 rad/s  (90.3% retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 32.0 g |
+| I_total | 1.756×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| v_tip | 13.50 m/s |
+| N | 8 feathers |
+| m_feather | 8.0×10⁻⁴ kg |
+| v_feather | 8.100 m/s |
+| η_decay | 0.85 |
+| J_single | 6.480×10⁻³ N·s |
+| Sum | 4.850 |
+| J_WD | 3.143×10⁻² N·s |
+| Δv_opp | 0.873 m/s |
+| Δω (Griffolyon) | 48.3 rad/s (90.3% retained) |
+
+---
+
+## Case 2070 — SPECIAL: Wing Dagger — Robert Jürgens / Griffolyon
+
+**Blader:** Robert Jürgens | **Beyblade:** Griffolyon | **Type:** attack
+
+### Description
+
+Wing Dagger is a Special Move used by Robert Jürgens and Griffolyon (Beyblade original series). The Griffolyon bit-beast manifests its spirit wings as a sequence of rapid feather-blade strikes — eight successive feather contacts, each slightly less powerful than the last, accumulating into a crushing multi-hit assault. Robert uses this in European championship-tier battles throughout the original series.
+
+### Stage — Spirit Feather Multi-Hit Claw Strike
+
+From Case 2069: v_tip=13.50 m/s, N=8, J_single=6.480×10⁻³ N·s, Sum=4.850, J_WD=3.143×10⁻² N·s, Δv_opp=0.873 m/s.
+
+```
+Spin retention after feather sequence:
+  ω_remain = 500 − 48.3 = 451.7 rad/s  (90.3% retained)
+  (Eight successive feather contacts at η_decay=0.85; each feather delivers less than the last
+   but the geometric series accumulates into a decisive total impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Robert does not shout his move. He watches. The Griffolyon spirit assembles its feathers over three revolutions — it is not one impact, it is eight. First: v_feather=8.1 m/s, J=6.48×10⁻³. Second: 85% of the first. Third: 72% of the first. The series does not stop until the eighth contact. What Griffolyon delivers is not a single blow; it is a sustained punishment. The opponent's bey cannot escape between feathers — they arrive too quickly. Robert's precision ensures every one of the eight lands. "Wing Dagger" — the wing itself is the weapon, and it has eight edges.
+
+[M] factor = **7.0 ×** (Robert Jürgens — European champion, secondary rival, Griffolyon griffin spirit)
+[M] Δv = 0.873 × 7.0 = **6.111 m/s** (spirit feather multi-hit ring-out)
+
+> **Note:** Physical values describe Triple Wing tip v_tip=13.50 m/s; spirit feather multi-hit N=8, η_decay=0.85 geometric series Sum=4.850; J_single=6.480×10⁻³ N·s; J_WD=3.143×10⁻² N·s; Δv=0.873 m/s; Δω=48.3 rad/s (90.3% retained). Compatible with any bey using a multi-wing AR on a high-friction flat base. [M] values represent Robert Jürgens's Griffolyon griffin spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wingDaggerSpecial(bey: Beyblade, target: Beyblade): void {
+  // Spirit feather multi-hit: N=8 η_decay=0.85 Sum=4.850 J=3.143×10⁻²N·s; [M] 7.0×
+  const J_WD = 0.03143;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WD * 7.0; // [M] BeySpirit 7.0× (Robert Griffolyon griffin feather spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-era beyblade using an Attack Ring with ≥3 swept wing protrusions (r_AR ≥ 25 mm) on a high-friction flat Base (μ ≥ 0.75, t_spin ≤ 22s) capable of sustaining multi-contact approach speed v_feather ≥ 7.5 m/s. The Griffolyon griffin spirit feather technique is specific to Robert Jürgens. Standard game instance: Griffolyon (Robert Jürgens, Beyblade original series).
+
+---
+
+## Case 2071 — COMBO: Wing Rain — Griffolyon
+
+**Sequence:** ↑ ← A (moveUp · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Robert Jürgens
+
+### Physics Justification
+
+The moveUp (↑) lifts Griffolyon into the upper arc — Flat Base friction drives the sprint outward. The moveLeft (←) sweeps leftward, pre-positioning a feather strike angle from a less-expected direction. The attack (A) fires at partial feather count (N=5 instead of full 8 — combo tier, partial spirit manifestation):
+
+```
+Partial feather strike in combo (N=5, 60% approach speed):
+  v_feather_combo = v_feather × 0.60 = 8.100 × 0.60 = 4.860 m/s
+  (reduced spirit feather speed in combo tier — partial bit-beast manifestation)
+
+  J_single_combo = m_feather × v_feather_combo = 8.0×10⁻⁴ × 4.860 = 3.888×10⁻³ N·s
+
+  Sum_combo = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.85^5) / 0.15
+            = (1 − 0.4437) / 0.15 = 0.5563 / 0.15 = 3.709
+
+  J_combo = J_single_combo × Sum_combo = 3.888×10⁻³ × 3.709 = 1.442×10⁻² N·s
+```
+
+Wing rebound spin recovery (η_wing_rebound = 0.14):
+
+```
+Δω = η_wing_rebound × J_combo × r_AR / I_total
+   = 0.14 × 1.442×10⁻² × 0.027 / 1.756×10⁻⁵
+   = 0.14 × 22.2
+   = +3.11 rad/s  → round to +3 rad/s
+```
+
+(η_wing_rebound=0.14: Triple Wing rebounds off opponent blade; feather contact returns partial energy as spin; effective spinGain = +3 rad/s.) Partial multi-hit feather contact gives damageMultiplier **1.25×**. lockMs = 150 (five-hit feather sequence dwell).
+
+**Parameters:**
+- spinGain: +3 rad/s (wing feather rebound)
+- damageMultiplier: 1.25 (partial feather multi-hit)
+- lockMs: 150 (feather sequence dwell)
+
+### TypeScript
+
+```typescript
+function wingRainCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial feather N=5: Δω ≈ +3 rad/s (η=0.14, v=4.860m/s, J=1.442×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Partial feather multi-hit: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2072 — GIMMICK: Sword Valtryek Blitz Power Retsu — Spring-Assisted Sword Blade Contact Strike
+
+**Beyblade:** Sword Valtryek Blitz Power Retsu (Beyblade Burst Rise era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Rise
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Sword Valtryek (winged blade with protruding sword strike geometry) | 16.0 | 24.0 |
+| Disc | Blitz (wide 4-point burst-assist disc) | 14.0 | 22.0 |
+| Driver | Power (spring-assisted hard-rubber tip) | 12.0 | 5.0 |
+| Layer Base | Retsu (連 — Chain/Sequence) base | 9.0 | 8.0 |
+| **Total** | | **51.0** | |
+
+(Beyblade Burst Rise 4-part layer+disc+driver system. Blade Sword Valtryek: winged sword-strike geometry at r=24mm — "Sword" names the protruding blade contact geometry; Valtryek (from Valkyrie — the Norse battle maiden) names the warrior spirit. Blitz (German: lightning) disc: wide 4-point burst-assist disc at r=22mm; wide span provides burst resistance and angular mass for sustained spin. Power driver: spring-assisted hard-rubber tip at r=5mm; internal spring pre-compresses at launch, releasing stored energy on contact to boost v_contact; μ_Power≈0.82, t_spin≈22s. Retsu (連) base: chain/sequence base at r=8mm; structural reinforcement ring. 51.0g total.)
+
+**I_total** = 16.0×10⁻³ × 0.024² + 14.0×10⁻³ × 0.022² + 12.0×10⁻³ × 0.005² + 9.0×10⁻³ × 0.008²
+           = 9.216×10⁻⁶ + 6.776×10⁻⁶ + 0.300×10⁻⁶ + 0.576×10⁻⁶
+           = **1.687×10⁻⁵ kg·m²**
+
+ω₀ = 670 rad/s (Burst Rise era standard launch)
+L₀ = I × ω₀ = 1.687×10⁻⁵ × 670 = **1.130×10⁻² kg·m²/s**
+
+---
+
+### 1. Power Driver Spring Release
+
+The Power driver's internal spring stores energy at launch. On contact, the spring releases, adding an incremental velocity boost to the approach:
+
+```
+Spring parameters (Power driver):
+  k_spring = 180 N/m  (Power driver internal spring constant)
+  x_compress = 3 mm = 0.003 m  (spring pre-compression at launch)
+  E_spring = ½ × k_spring × x_compress² = 0.5 × 180 × 0.003² = 8.100×10⁻⁴ J
+
+Base approach speed (Power driver high-friction flat):
+  v_base = 2.500 m/s  (hard-rubber Power tip orbital speed)
+
+Spring-boosted contact speed (energy conservation):
+  v_contact² = v_base² + 2 × E_spring / m_bey
+             = 2.500² + 2 × 8.100×10⁻⁴ / 0.051
+             = 6.250 + 0.0318
+             = 6.282 m²/s²
+  v_contact = √6.282 = 2.506 m/s
+```
+
+---
+
+### 2. Sword Blade Contact Strike
+
+The protruding sword blade geometry on the Sword Valtryek blade strikes the opponent. The hard-rubber Power tip provides grip at impact, channeling the spring energy into the contact:
+
+```
+Contact parameters:
+  e_contact = 0.80  (hard-rubber Power tip + Sword blade on standard Burst opponent)
+
+m_opp = 50 g  (Burst Rise era opponent)
+m_eff = (m_SV × m_opp) / (m_SV + m_opp) = (0.051 × 0.050) / (0.051 + 0.050)
+      = 2.550×10⁻³ / 0.101 = 2.525×10⁻² kg
+
+J_WW = m_eff × (1 + e_contact) × v_contact
+     = 2.525×10⁻² × 1.80 × 2.506
+     = 2.525×10⁻² × 4.511 = 1.139×10⁻¹ N·s
+
+Δv_opp = J_WW / m_opp = 1.139×10⁻¹ / 0.050 = 2.278 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 51.0 g |
+| I_total | 1.687×10⁻⁵ kg·m² |
+| ω₀ | 670 rad/s |
+| k_spring | 180 N/m |
+| x_compress | 3 mm |
+| E_spring | 8.100×10⁻⁴ J |
+| v_base | 2.500 m/s |
+| v_contact | 2.506 m/s |
+| e_contact | 0.80 |
+| m_eff | 2.525×10⁻² kg |
+| J_WW | 1.139×10⁻¹ N·s |
+| Δv_opp | 2.278 m/s |
+
+---
+
+## Case 2073 — SPECIAL: Wing Whip — Valt Aoi / Sword Valtryek Blitz Power Retsu
+
+**Blader:** Valt Aoi | **Beyblade:** Sword Valtryek Blitz Power Retsu | **Type:** attack
+
+### Description
+
+Wing Whip is a Special Move used by Valt Aoi and Sword Valtryek Blitz Power Retsu (Beyblade Burst Rise). Sword Valtryek uses its sword-blade protrusion to deliver a whipping strike powered by the spring-loaded Power driver — the spring releases at the moment of contact, amplifying the impact force.
+
+### Stage — Spring-Assisted Sword Blade Contact Strike
+
+From Case 2072: k_spring=180 N/m, x=3mm, E_spring=8.100×10⁻⁴ J, v_contact=2.506 m/s, e_contact=0.80, J_WW=1.139×10⁻¹ N·s, Δv_opp=2.278 m/s.
+
+```
+Spin drain from spring-assisted sword strike:
+  Δω = J_WW × r_Blade / I_total = 1.139×10⁻¹ × 0.024 / 1.687×10⁻⁵ = 162.0 rad/s
+  ω_remain = 670 − 162.0 = 508.0 rad/s  (75.8% retained)
+  (Power driver spring fully releases at contact; tip returns to standard rubber grip after strike)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+The spring is already compressed before the match begins. The Power driver holds the energy in reserve. Valt does not charge — he positions, and the moment the sword blade makes contact the spring fires. 8.100×10⁻⁴ joules, added in one instant. The Valtryek Valkyrie spirit channels from the blade tip through the entire assembly: the sword geometry focuses the strike, the Blitz disc's mass maintains the orbit, the Retsu base sequences the chain. Wing Whip is a trap set at launch that closes at contact. Nobody sees the spring let go.
+
+[M] factor = **8.0 ×** (Valt Aoi — main protagonist, Valtryek Valkyrie battle spirit)
+[M] Δv = 2.278 × 8.0 = **18.22 m/s** (spring-assisted sword strike ring-out)
+
+> **Note:** Physical values describe Power driver spring: k=180 N/m, x=3mm, E=8.100×10⁻⁴ J → v_contact=2.506 m/s (vs v_base=2.500 m/s); Sword blade geometry e_contact=0.80; m_eff=2.525×10⁻² kg (51g vs 50g opp); J_WW=1.139×10⁻¹ N·s; Δv=2.278 m/s; Δω_drain=162.0 rad/s (75.8% spin retained). [M] values represent Valt's Valtryek Valkyrie spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wingWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Spring-assisted sword strike: k=180N/m x=3mm E=8.1e-4J J=1.139×10⁻¹N·s; [M] 8.0×
+  const J_WW = 0.1139;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WW * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek Valkyrie sword spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Rise-era beyblade using a Blade with protruding sword/wing contact geometry (r_Blade ≥ 22 mm) on a spring-assisted Driver (k ≥ 150 N/m, x_compress ≥ 2 mm, E_spring ≥ 3.0×10⁻⁴ J) capable of delivering v_contact ≥ 2.4 m/s. Standard game instance: Sword Valtryek Blitz Power Retsu (Valt Aoi, Beyblade Burst Rise).
+
+---
+
+## Case 2074 — COMBO: Power Rush — Sword Valtryek Blitz Power Retsu
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 25 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveUp (↑) lifts Sword Valtryek into the upper arc — Power driver's spring partially compresses. The moveRight (→) arcs rightward, pre-positioning for the sword strike angle. The attack (A) fires at partial spring compression (x=2mm instead of full 3mm — combo tier, partial spring energy):
+
+```
+Partial spring compression in combo (x=2mm):
+  E_combo = ½ × 180 × 0.002² = ½ × 180 × 4.0×10⁻⁶ = 3.600×10⁻⁴ J
+
+  v_combo² = (v_base × 0.75)² + 2 × E_combo / m_bey
+           = (2.500 × 0.75)² + 2 × 3.600×10⁻⁴ / 0.051
+           = 3.516 + 0.01412
+           = 3.530 m²/s²
+  v_combo = √3.530 = 1.879 m/s
+
+  e_combo = 0.76  (reduced contact precision in combo)
+  J_combo = m_eff × (1 + e_combo) × v_combo
+          = 2.525×10⁻² × 1.76 × 1.879
+          = 2.525×10⁻² × 3.307 = 8.350×10⁻² N·s
+```
+
+Spring tip rebound spin recovery (η_spring_rebound = 0.10):
+
+```
+Δω = η_spring_rebound × J_combo × r_Blade / I_total
+   = 0.10 × 8.350×10⁻² × 0.024 / 1.687×10⁻⁵
+   = 0.10 × 118.8
+   = +11.88 rad/s  → round to +12 rad/s
+```
+
+(η_spring_rebound=0.10: Power driver rubber tip rebounds off opponent blade, spring partially re-absorbs impact returning spin; effective spinGain = +12 rad/s.) Partial spring sword strike gives damageMultiplier **1.40×**. lockMs = 80 (spring-release sword contact dwell).
+
+**Parameters:**
+- spinGain: +12 rad/s (spring tip rebound)
+- damageMultiplier: 1.40 (partial spring sword strike)
+- lockMs: 80 (spring contact dwell)
+
+### TypeScript
+
+```typescript
+function powerRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial spring x=2mm: Δω ≈ +12 rad/s (η=0.10, v=1.879m/s, J=8.350×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Partial spring sword strike: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 80 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2075 — GIMMICK: Lycanlor — Spirit Claw Multi-Hit Slash Strike
+
+**Beyblade:** Lycanlor (Beyblade original plastic-gen era)
+**Blader:** Lupinex | **Series:** Beyblade (original anime S2 / V-Force)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Lycanlor (excluded, r≈0) | 1.0 | ≈0 |
+| Attack Ring | Howling Claw (4-claw swept attack ring) | 13.0 | 26.0 |
+| Weight Disk | Eight Heavy (8-sided heavy polymer disc) | 9.0 | 26.0 |
+| Spin Gear | Right SG (standard right-spin gear) | 4.0 | 3.0 |
+| Base | Flat Base (high-friction flat-tip base) | 5.0 | 3.0 |
+| **Total** | | **32.0** | |
+
+(Plastic-generation 5-part system; Bit Chip excluded from I (r≈0). AR Howling Claw: four swept claw-blade protrusions at r=26mm — claw geometry produces sharp contact points across four arc sectors; "Howling" references Lycanlor's wolf-spirit manifested as a howl; "Claw" names the arc-tip contact geometry. Eight Heavy WD: 8-sided heavy polymer disc at r=26mm — high outer-mass density maintains spin under multi-hit claw contact. Right SG: standard right-spin at r=3mm. Flat Base: high-friction flat-tip at r=3mm; μ_FB≈0.80, t_spin≈20s — drives outward sprint enabling claw multi-contact. 32.0g total.)
+
+**I_total** = 13.0×10⁻³ × 0.026² + 9.0×10⁻³ × 0.026² + 4.0×10⁻³ × 0.003² + 5.0×10⁻³ × 0.003²
+           = 8.788×10⁻⁶ + 6.084×10⁻⁶ + 0.036×10⁻⁶ + 0.045×10⁻⁶
+           = **1.495×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-era standard launch)
+L₀ = I × ω₀ = 1.495×10⁻⁵ × 500 = **7.475×10⁻³ kg·m²/s**
+
+---
+
+### 1. Claw Tip Speed and Spirit Claw Sequence
+
+```
+Howling Claw tip tangential speed:
+  v_tip = ω₀ × r_AR = 500 × 0.026 = 13.00 m/s
+
+Wolf Storm spirit claws (N=5 successive claw-slash contacts per orbit pass):
+  m_claw = 1.0 g = 1.0×10⁻³ kg  (each spirit claw mass element at tip)
+  v_claw = v_tip × 0.6731 = 13.00 × 0.6731 = 8.750 m/s  (claw contact speed)
+  η_decay = 0.88  (each successive claw delivers 88% of prior claw's impulse;
+                   higher retention than Wing Dagger — wolf claw resists more than feather)
+```
+
+---
+
+### 2. Multi-Hit Claw Impulse Sum
+
+Each of the N=5 spirit claw contacts delivers a decaying impulse. The geometric series sums the accumulated impulse:
+
+```
+Single claw impulse:
+  J_single = m_claw × v_claw = 1.0×10⁻³ × 8.750 = 8.750×10⁻³ N·s
+
+Geometric series sum (η_decay=0.88, N=5):
+  Sum = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.88^5) / (1 − 0.88)
+      = (1 − 0.5277) / 0.12 = 0.4723 / 0.12 = 3.936
+
+Total claw impulse:
+  J_WS = J_single × Sum = 8.750×10⁻³ × 3.936 = 3.444×10⁻² N·s
+
+m_opp = 36 g  (plastic-era opponent)
+  Δv_opp = J_WS / m_opp = 3.444×10⁻² / 0.036 = 0.957 m/s
+
+Spin drain on Lycanlor:
+  Δω = J_WS × r_AR / I_total = 3.444×10⁻² × 0.026 / 1.495×10⁻⁵ = 59.9 rad/s  (88.0% retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 32.0 g |
+| I_total | 1.495×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| v_tip | 13.00 m/s |
+| N | 5 claws |
+| m_claw | 1.0×10⁻³ kg |
+| v_claw | 8.750 m/s |
+| η_decay | 0.88 |
+| J_single | 8.750×10⁻³ N·s |
+| Sum | 3.936 |
+| J_WS | 3.444×10⁻² N·s |
+| Δv_opp | 0.957 m/s |
+| Δω (Lycanlor) | 59.9 rad/s (88.0% retained) |
+
+---
+
+## Case 2076 — SPECIAL: Wolf Storm — Lupinex / Lycanlor
+
+**Blader:** Lupinex | **Beyblade:** Lycanlor | **Type:** attack
+
+### Description
+
+Wolf Storm is a Special Move used by Lupinex and Lycanlor (Beyblade original series V-Force). When Lupinex calls out the move, he summons Lycanlor's bit-beast, which then continuously claws at the opponent for massive damage — five successive spirit claw strikes that intensify into a sustained slashing storm.
+
+### Stage — Spirit Claw Multi-Hit Slash Strike
+
+From Case 2075: v_tip=13.00 m/s, N=5, J_single=8.750×10⁻³ N·s, Sum=3.936, J_WS=3.444×10⁻² N·s, Δv_opp=0.957 m/s.
+
+```
+Spin retention after claw sequence:
+  ω_remain = 500 − 59.9 = 440.1 rad/s  (88.0% retained)
+  (Five successive claw contacts at η_decay=0.88; higher mass per claw vs feather model
+   means each individual contact carries more impulse — the wolf spirit sustains force better
+   than a feather, though the sequence is shorter)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Lycanlor does not wait to be called. When Lupinex names the move, the wolf-spirit has already completed the first claw. The five contacts arrive before the opponent's bey can exit the contact zone: 8.750 m/s per claw, each retaining 88% of the last. The Howling Claw AR's four arc sectors mean every revolution gives multiple contact opportunities. What the Lycanlor spirit delivers is not a sequence of blows — it is a single storm that happens to have five edges. The opponent hears the howl after all five have landed.
+
+[M] factor = **7.0 ×** (Lupinex — secondary antagonist, Lycanlor wolf spirit, V-Force era)
+[M] Δv = 0.957 × 7.0 = **6.699 m/s** (spirit claw storm ring-out)
+
+> **Note:** Physical values describe Howling Claw tip v_tip=13.00 m/s; spirit claw multi-hit N=5, η_decay=0.88 geometric series Sum=3.936; J_single=8.750×10⁻³ N·s; J_WS=3.444×10⁻² N·s; Δv=0.957 m/s; Δω=59.9 rad/s (88.0% retained). Compatible with any bey using a claw-geometry AR on a high-friction flat base. [M] values represent Lupinex's Lycanlor wolf spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wolfStormSpecial(bey: Beyblade, target: Beyblade): void {
+  // Spirit claw multi-hit: N=5 η_decay=0.88 Sum=3.936 J=3.444×10⁻²N·s; [M] 7.0×
+  const J_WS = 0.03444;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WS * 7.0; // [M] BeySpirit 7.0× (Lupinex Lycanlor wolf claw spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-era beyblade using an Attack Ring with ≥4 claw-type protrusions (r_AR ≥ 24 mm) on a high-friction flat Base (μ ≥ 0.75, t_spin ≤ 22s) capable of sustaining multi-contact approach speed v_claw ≥ 7.5 m/s. The Lycanlor wolf spirit claw technique is specific to Lupinex. Standard game instance: Lycanlor (Lupinex, Beyblade original series V-Force).
+
+---
+
+## Case 2077 — COMBO: Wolf Claw — Lycanlor
+
+**Sequence:** ↑ ← A (moveUp · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Lupinex
+
+### Physics Justification
+
+The moveUp (↑) lifts Lycanlor into the upper arc — Flat Base friction drives the sprint outward. The moveLeft (←) sweeps leftward for a flank claw approach. The attack (A) fires at partial claw count (N=3 instead of full 5 — combo tier, three-claw partial wolf strike):
+
+```
+Partial claw strike in combo (N=3, 60% claw speed):
+  v_claw_combo = v_claw × 0.60 = 8.750 × 0.60 = 5.250 m/s
+
+  J_single_combo = m_claw × v_claw_combo = 1.0×10⁻³ × 5.250 = 5.250×10⁻³ N·s
+
+  Sum_combo = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.88^3) / 0.12
+            = (1 − 0.6815) / 0.12 = 0.3185 / 0.12 = 2.654
+
+  J_combo = J_single_combo × Sum_combo = 5.250×10⁻³ × 2.654 = 1.393×10⁻² N·s
+```
+
+Claw rebound spin recovery (η_claw_rebound = 0.14):
+
+```
+Δω = η_claw_rebound × J_combo × r_AR / I_total
+   = 0.14 × 1.393×10⁻² × 0.026 / 1.495×10⁻⁵
+   = 0.14 × 24.2
+   = +3.39 rad/s  → round to +3 rad/s
+```
+
+(η_claw_rebound=0.14: Howling Claw rebounds off opponent blade; claw contact returns partial energy as spin; effective spinGain = +3 rad/s.) Partial claw multi-hit gives damageMultiplier **1.25×**. lockMs = 160 (three-claw sequence dwell).
+
+**Parameters:**
+- spinGain: +3 rad/s (claw rebound)
+- damageMultiplier: 1.25 (partial claw multi-hit)
+- lockMs: 160 (claw sequence dwell)
+
+### TypeScript
+
+```typescript
+function wolfClawCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial claw N=3: Δω ≈ +3 rad/s (η=0.14, v=5.250m/s, J=1.393×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Partial claw multi-hit: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 160 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2078 — GIMMICK: Wizard Fafnir Ratchet Rise Sen — Ratchet Disc Torque-Decoupled Counter-Spin Deflect
+
+**Beyblade:** Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB era)
+**Blader:** Fumiya Kindo | **Series:** Beyblade Burst DB (Dynamite Battle)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Wizard Fafnir (left-spin stamina blade; wide outer ring at r=28mm) | 13.0 | 26.0 |
+| DB Core | Fafnir (left-spin counter-rotation hub; absorption nodes at r=12mm) | 9.0 | 10.0 |
+| Armor | Armor 3 (reinforcement ring) | 12.0 | 18.0 |
+| Disc | Ratchet (ratcheting torque-decoupling disc; ratchet teeth at r=22mm) | 8.0 | 20.0 |
+| Driver | Rise (rising-tip rider; rubber rim at r=8mm for speed boost on contact) | 9.0 | 6.0 |
+| **Total** | | **51.0** | |
+
+(Beyblade Burst DB 5-part system. Blade Wizard Fafnir: left-spin stamina blade at r=26mm; wide outer ring presents a broad deflect surface; "Wizard" references Fumiya's sorcerer aesthetic; "Fafnir" (Old Norse — the dragon of greed) names the greedy-spin absorption beast. DB Core Fafnir: left-spin counter-rotation hub at r=10mm; absorption nodes at r=12mm passively drain spin from right-spin opponents on contact. Armor 3: reinforcement ring at r=18mm. Ratchet disc: ratcheting torque-decoupling mechanism at r=22mm — the key component; ratchet teeth allow forward engagement but slip backward, decoupling up to 90% of contact torque from the Fafnir blade body when struck by a counter-clockwise opponent; "Ratchet" names the asymmetric clutch mechanism. Rise driver: rising rubber rim tip at r=6mm. 51.0g total.)
+
+**I_total** = 13.0×10⁻³ × 0.026² + 9.0×10⁻³ × 0.010² + 12.0×10⁻³ × 0.018² + 8.0×10⁻³ × 0.020² + 9.0×10⁻³ × 0.006²
+           = 8.788×10⁻⁶ + 0.900×10⁻⁶ + 3.888×10⁻⁶ + 3.200×10⁻⁶ + 0.324×10⁻⁶
+           = **1.710×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (DB era standard launch; left-spin)
+L₀ = I × ω₀ = 1.710×10⁻⁵ × 700 = **1.197×10⁻² kg·m²/s**
+
+---
+
+### 1. Ratchet Disc Torque Decoupling
+
+The Ratchet disc's asymmetric clutch mechanism: when a counter-clockwise (right-spin) opponent contacts Wizard Fafnir from the blade's deflect surface, the ratchet teeth engage the forward clutch and decouple the contact torque from reaching the main Fafnir blade body. Only a small fraction of contact torque passes through to the body:
+
+```
+Ratchet disc decoupling coefficient:
+  k_ratchet = 0.90  (ratchet teeth decouple 90% of contact torque from Fafnir body spin;
+                     only 10% of impact torque reaches the main blade — near-total decoupling)
+
+Deflect tilt angle (Fafnir angled toward opponent's attack vector):
+  θ_ratchet = 30°  (Fafnir positions Ratchet disc face at 30° to opponent attack)
+```
+
+---
+
+### 2. Ratchet Deflect Impulse
+
+The ratchet-decoupled deflect redirects the opponent's attack laterally. The shaped ratchet teeth provide an impulse geometry factor:
+
+```
+Opponent approach:
+  v_opp = 2.500 m/s  (DB era opponent attack speed)
+
+Normal component at θ_ratchet=30°:
+  v_N = v_opp × sin(θ_ratchet) = 2.500 × sin(30°) = 2.500 × 0.500 = 1.250 m/s
+
+Ratchet disc deflect parameters:
+  η_ratchet = 1.25  (ratchet tooth geometry: 25% impulse increase vs flat surface)
+  e_ratchet = 0.88  (hard ratchet tooth surface — near-elastic contact)
+
+m_opp = 51 g  (DB era opponent)
+m_eff = (m_WF × m_opp) / (m_WF + m_opp) = (0.051 × 0.051) / (0.051 + 0.051)
+      = 2.601×10⁻³ / 0.102 = 2.550×10⁻² kg
+
+J_WP = η_ratchet × m_eff × (1 + e_ratchet) × v_N
+     = 1.25 × 2.550×10⁻² × 1.88 × 1.250
+     = 1.25 × 2.550×10⁻² × 2.350 = 1.25 × 5.993×10⁻² = 7.491×10⁻² N·s
+
+Δv_opp = J_WP / m_opp = 7.491×10⁻² / 0.051 = 1.469 m/s
+
+Spin drain on Fafnir (ratchet decouples 90% contact torque):
+  Δω = J_WP × (1 − k_ratchet) × r_disc / I_total
+     = 7.491×10⁻² × 0.10 × 0.020 / 1.710×10⁻⁵
+     = 8.760×10⁻⁵ / 1.710×10⁻⁵ = 5.1 rad/s  (99.3% spin retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 51.0 g |
+| I_total | 1.710×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| θ_ratchet | 30° |
+| v_opp | 2.500 m/s |
+| v_N | 1.250 m/s |
+| k_ratchet | 0.90 |
+| η_ratchet | 1.25 |
+| e_ratchet | 0.88 |
+| m_eff | 2.550×10⁻² kg |
+| J_WP | 7.491×10⁻² N·s |
+| Δv_opp | 1.469 m/s |
+| Δω (Fafnir) | 5.1 rad/s (99.3% retained) |
+
+---
+
+## Case 2079 — SPECIAL: Wrench Parry — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen
+
+**Blader:** Fumiya Kindo | **Beyblade:** Wizard Fafnir Ratchet Rise Sen | **Type:** defense/stamina
+
+### Description
+
+Wrench Parry, known as Ratchet Through (ラチェットスルー, Rachetto Surū) in Japan, is a Special Move used by Fumiya Kindo and Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB). Wizard Fafnir uses its Ratchet Disc to deflect heavy attacks from counter-clockwise spinning Beyblades — the ratchet teeth slip under impact, redirecting the incoming force while Fafnir retains almost all its spin.
+
+### Stage — Ratchet Disc Torque-Decoupled Counter-Spin Deflect
+
+From Case 2078: θ_ratchet=30°, v_N=1.250 m/s, k_ratchet=0.90, η_ratchet=1.25, e_ratchet=0.88, J_WP=7.491×10⁻² N·s, Δv_opp=1.469 m/s.
+
+```
+Fafnir spin retention after ratchet deflect:
+  ω_remain = 700 − 5.1 = 694.9 rad/s  (99.3% retained)
+  (Ratchet disc decouples 90% of contact torque — Fafnir loses almost no spin
+   while the Ratchet tooth geometry redirects the opponent's full attack energy)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Fumiya angles Wizard Fafnir so the Ratchet disc faces the incoming attack. The ratchet teeth are not passive — they are designed to slip in one direction only. The opponent's right-spin attack arrives at 2.500 m/s and meets the ratchet face at 30°: 1.250 m/s of normal force, redirected by tooth geometry (+25%), with near-elastic contact (e=0.88). What reaches the Fafnir blade body: 10% of the impact torque. 5.1 rad/s drain. The Fafnir dragon absorbs what it can use and sends the rest back. Ratchet Through: the ratchet doesn't stop the force. It just decides where it goes.
+
+[M] factor = **7.5 ×** (Fumiya Kindo — DB era rival, Wizard Fafnir left-spin absorption dragon)
+[M] Δv = 1.469 × 7.5 = **11.02 m/s** (ratchet torque-decoupled deflect ring-out)
+
+> **Note:** Physical values describe Ratchet disc torque decoupling k_ratchet=0.90 (90% contact torque decoupled → 99.3% spin retained, Δω=5.1 rad/s); θ_ratchet=30°; v_N=1.250 m/s; η_ratchet=1.25 (ratchet tooth geometry +25% impulse); e_ratchet=0.88 (near-elastic ratchet teeth); m_eff=2.550×10⁻² kg; J_WP=7.491×10⁻² N·s; Δv=1.469 m/s. Japanese name: Ratchet Through (ラチェットスルー). Only effective against counter-clockwise (right-spin) opponents; clockwise opponents do not engage the ratchet slip mechanism. [M] values represent Fumiya's Fafnir dragon spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wrenchParrySpecial(bey: Beyblade, target: Beyblade): void {
+  // Ratchet disc deflect: k_ratchet=0.90 θ=30° J=7.491×10⁻²N·s; [M] 7.5×
+  const J_WP = 0.07491;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WP * 7.5; // [M] BeySpirit 7.5× (Fumiya Fafnir ratchet dragon spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any DB-era beyblade using a Disc with ratchet torque-decoupling mechanism (k_ratchet ≥ 0.85, η_ratchet ≥ 1.15) on a left-spin Blade with wide deflect surface (r_Blade ≥ 24 mm) against counter-clockwise attacking opponents. The ratchet slip is specific to right-spin opponents — the deflect does not function against same-spin (left-spin) attackers. Standard game instance: Wizard Fafnir Ratchet Rise Sen (Fumiya Kindo, Beyblade Burst DB). Japanese name: Ratchet Through.
+
+---
+
+## Case 2080 — COMBO: Ratchet Redirect — Wizard Fafnir Ratchet Rise Sen
+
+**Sequence:** → K A (moveRight · defense · attack)
+**Cost:** 15 | **Type:** defense/stamina | **Blader:** Fumiya Kindo
+
+### Physics Justification
+
+The moveRight (→) sweeps Wizard Fafnir to the deflect position — Rise tip's rubber rim assists speed maintenance during the approach. The defense key (K) engages Fumiya's partial ratchet stance — the disc angle reduces to θ=20° (partial engagement, less normal component). The attack (A) fires the partial ratchet deflect:
+
+```
+Partial ratchet deflect in combo (θ=20°):
+  v_N_combo = v_opp × sin(20°) = 2.500 × 0.342 = 0.855 m/s
+  η_ratchet_combo = 1.10  (partial ratchet engagement — 10% boost vs flat)
+  e_combo = 0.84  (slightly softer partial contact angle)
+
+  J_combo = η_ratchet_combo × m_eff × (1 + e_combo) × v_N_combo
+          = 1.10 × 2.550×10⁻² × 1.84 × 0.855
+          = 1.10 × 2.550×10⁻² × 1.573 = 1.10 × 4.011×10⁻² = 4.412×10⁻² N·s
+```
+
+Ratchet spin recovery (η_ratchet_spin = 0.12):
+
+```
+Δω = η_ratchet_spin × J_combo × r_disc / I_total
+   = 0.12 × 4.412×10⁻² × 0.020 / 1.710×10⁻⁵
+   = 0.12 × 51.6
+   = +6.19 rad/s  → round to +6 rad/s
+```
+
+(η_ratchet_spin=0.12: ratchet teeth spring back after partial slip, returning a fraction of contact energy as spin to the Fafnir blade; effective spinGain = +6 rad/s.) Partial ratchet deflect gives damageMultiplier **1.25×**. lockMs = 100 (ratchet tooth contact dwell).
+
+**Parameters:**
+- spinGain: +6 rad/s (ratchet spring-back)
+- damageMultiplier: 1.25 (partial ratchet deflect)
+- lockMs: 100 (ratchet dwell)
+
+### TypeScript
+
+```typescript
+function ratchetRedirectCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial ratchet θ=20°: Δω ≈ +6 rad/s (η=0.12, v_N=0.855m/s, J=4.412×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 6);
+  // Partial ratchet deflect: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +6 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2081 — GIMMICK: Wizard Fafnir Ratchet Rise Sen — Rise Tip Rim Friction Speed Boost
+
+**Beyblade:** Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB era)
+**Blader:** Fumiya Kindo | **Series:** Beyblade Burst DB (Dynamite Battle)
+
+### Assembly
+
+Same assembly as Case 2078: m=51.0 g, I_total=1.710×10⁻⁵ kg·m², ω₀=700 rad/s. The Rise Tip sub-gimmick is analyzed here: the rubber outer rim of the Rise driver can contact the arena floor wall at high speed, generating a brief friction-driven velocity boost that Fumiya uses to close the gap before an attack.
+
+---
+
+### 1. Rise Tip Rim Friction Acceleration
+
+```
+Rise driver parameters:
+  r_rim = 8 mm = 0.008 m  (rubber outer rim radius on Rise tip)
+  μ_Rise = 0.85  (rubber rim coefficient of friction on stadium floor)
+  F_normal = m_bey × g = 0.051 × 9.81 = 0.500 N  (normal force from bey weight)
+
+Friction force from rim contact:
+  F_rim = μ_Rise × F_normal = 0.85 × 0.500 = 0.425 N
+
+Acceleration during rim boost:
+  a_rim = F_rim / m_bey = 0.425 / 0.051 = 8.33 m/s²
+
+Duration of rim contact boost:
+  t_rim = 0.15 s  (Rise tip rim contact window — rubber rim grips arena floor)
+
+Speed boost from rim friction:
+  v_boost = a_rim × t_rim = 8.33 × 0.15 = 1.250 m/s
+```
+
+---
+
+### 2. Attack Speed After Rim Boost
+
+Wizard Fafnir approaches from a low orbit (v_base=1.500 m/s from left-spin stamina path) and catches the arena floor rim, receiving the boost before attacking:
+
+```
+Base orbital approach speed (Rise stamina orbit):
+  v_base = 1.500 m/s
+
+Attack speed after rim friction boost:
+  v_attack = v_base + v_boost = 1.500 + 1.250 = 2.750 m/s
+
+Contact parameters:
+  e_contact = 0.78  (Wizard blade on standard DB opponent)
+
+m_opp = 51 g  (DB era opponent, same mass as Wizard Fafnir)
+m_eff = (m_WF × m_opp) / (m_WF + m_opp) = (0.051 × 0.051) / (0.051 + 0.051)
+      = 2.601×10⁻³ / 0.102 = 2.550×10⁻² kg
+
+J_WB = m_eff × (1 + e_contact) × v_attack
+     = 2.550×10⁻² × 1.78 × 2.750
+     = 2.550×10⁻² × 4.895 = 1.248×10⁻¹ N·s
+
+Δv_opp = J_WB / m_opp = 1.248×10⁻¹ / 0.051 = 2.447 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 51.0 g |
+| I_total | 1.710×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| r_rim | 8 mm |
+| μ_Rise | 0.85 |
+| F_rim | 0.425 N |
+| a_rim | 8.33 m/s² |
+| t_rim | 0.15 s |
+| v_boost | 1.250 m/s |
+| v_base | 1.500 m/s |
+| v_attack | 2.750 m/s |
+| e_contact | 0.78 |
+| J_WB | 1.248×10⁻¹ N·s |
+| Δv_opp | 2.447 m/s |
+
+---
+
+## Case 2082 — SPECIAL: Wizard Blow — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen
+
+**Blader:** Fumiya Kindo | **Beyblade:** Wizard Fafnir Ratchet Rise Sen | **Type:** attack/stamina
+
+### Description
+
+Wizard Blow (ウィザードブロー, U~izādo Burō) is a Special Move used by Fumiya Kindo and Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB). Because it does not have a spring like Nothing or Absorb, Wizard Fafnir uses the rim of its Rise Tip to get a speed boost — the rubber rim catches the arena floor and propels Fafnir into the opponent at greater velocity than its standard orbit permits.
+
+### Stage — Rise Tip Rim Friction Speed Boost
+
+From Case 2081: r_rim=8mm, μ_Rise=0.85, F_rim=0.425 N, a_rim=8.33 m/s², t_rim=0.15s, v_boost=1.250 m/s, v_base=1.500 m/s, v_attack=2.750 m/s, J_WB=1.248×10⁻¹ N·s, Δv_opp=2.447 m/s.
+
+```
+Spin drain from rim-boosted attack:
+  Δω = J_WB × r_Blade / I_total = 1.248×10⁻¹ × 0.026 / 1.710×10⁻⁵ = 189.7 rad/s
+  ω_remain = 700 − 189.7 = 510.3 rad/s  (72.9% retained)
+  (Rise rubber rim boost is a one-shot acceleration; after the attack, Rise returns to stamina orbit
+   at reduced spin — but the Fafnir blade's left-spin stamina path still maintains stable orbit)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Fumiya knows what the Rise tip does. It is not a spring. It is not a mechanism that fires on command. It is friction — the rubber rim catches the floor, and for 0.15 seconds, 0.425 newtons push Fafnir faster than its orbit can carry it. 1.250 m/s gained in one moment: not a spring trigger, not a launch event. Just the rim doing what rubber does on a hard surface. The Fafnir dragon spirit channels through that acceleration: 2.750 m/s at contact, 1.248×10⁻¹ newton-seconds delivered. Wizard Blow: the wizardry is knowing how to use what you have.
+
+[M] factor = **7.5 ×** (Fumiya Kindo — DB era rival, Wizard Fafnir left-spin absorption dragon)
+[M] Δv = 2.447 × 7.5 = **18.35 m/s** (rim friction boost ring-out)
+
+> **Note:** Physical values describe Rise tip rubber rim: r_rim=8mm, μ_Rise=0.85, F_rim=0.425 N, a=8.33 m/s², t_rim=0.15s → v_boost=1.250 m/s; v_base=1.500 m/s; v_attack=2.750 m/s; e_contact=0.78; m_eff=2.550×10⁻² kg; J_WB=1.248×10⁻¹ N·s; Δv=2.447 m/s; Δω_drain=189.7 rad/s (72.9% spin retained). Explicitly not a spring mechanism — distinguishing from Nothing and Absorb drivers. Japanese name: Wizard Blow (ウィザードブロー). [M] values represent Fumiya's Fafnir dragon spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wizardBlowSpecial(bey: Beyblade, target: Beyblade): void {
+  // Rise rim friction boost: μ=0.85 t=0.15s v_boost=1.250m/s J=1.248×10⁻¹N·s; [M] 7.5×
+  const J_WB = 0.1248;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WB * 7.5; // [M] BeySpirit 7.5× (Fumiya Fafnir rim-boost dragon spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any DB-era beyblade using a Driver with a rubber outer rim (r_rim ≥ 6 mm, μ ≥ 0.80) capable of floor contact friction acceleration (a_rim ≥ 7.0 m/s², t_rim ≥ 0.10s, v_boost ≥ 0.8 m/s). Explicitly requires rubber rim contact with the arena floor — not a spring mechanism. Standard game instance: Wizard Fafnir Ratchet Rise Sen (Fumiya Kindo, Beyblade Burst DB). Japanese name: Wizard Blow.
+
+---
+
+## Case 2083 — COMBO: Rise Rush — Wizard Fafnir Ratchet Rise Sen
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack/stamina | **Blader:** Fumiya Kindo
+
+### Physics Justification
+
+The moveRight (→) positions Wizard Fafnir on the right approach vector — Rise rubber rim begins partial floor contact. The moveUp (↑) arcs upward, shortening the rim contact duration to t=0.10s (combo tier — partial rim boost only). The attack (A) fires at reduced rim boost:
+
+```
+Partial rim friction boost in combo (t_rim=0.10s):
+  v_boost_combo = a_rim × t_rim_combo = 8.33 × 0.10 = 0.833 m/s
+
+  v_combo = v_base + v_boost_combo = 1.500 + 0.833 = 2.333 m/s
+  e_combo = 0.76  (reduced contact precision in combo)
+
+  J_combo = m_eff × (1 + e_combo) × v_combo
+          = 2.550×10⁻² × 1.76 × 2.333
+          = 2.550×10⁻² × 4.106 = 1.047×10⁻¹ N·s
+```
+
+Rise rim rebound spin recovery (η_rim_rebound = 0.08):
+
+```
+Δω = η_rim_rebound × J_combo × r_Blade / I_total
+   = 0.08 × 1.047×10⁻¹ × 0.026 / 1.710×10⁻⁵
+   = 0.08 × 159.3
+   = +12.74 rad/s  → round to +13 rad/s
+```
+
+(η_rim_rebound=0.08: rubber Rise rim rebounds off opponent blade, returning partial contact energy as spin; effective spinGain = +13 rad/s.) Partial rim boost attack gives damageMultiplier **1.35×**. lockMs = 90 (rubber rim contact dwell).
+
+**Parameters:**
+- spinGain: +13 rad/s (rubber rim rebound)
+- damageMultiplier: 1.35 (partial rim boost attack)
+- lockMs: 90 (rubber rim dwell)
+
+### TypeScript
+
+```typescript
+function riseRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial rim boost t=0.10s: Δω ≈ +13 rad/s (η=0.08, v=2.333m/s, J=1.047×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Partial rim boost attack: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 90 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2084 — GIMMICK: World Spryzen Unite' 2B — Aerial Descent Attack-Mode Slope Slam
+
+**Beyblade:** World Spryzen Unite' 2B (Beyblade Burst GT era)
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst GT (God Turbo)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | World Spryzen (World Ring metallic contact band at r=29mm) | 15.0 | 27.0 |
+| Chassis | 2B (dual-mode dual-bound chassis; bound free-spin outer ring at r=24mm) | 14.0 | 20.0 |
+| Disc | Unite' (prime unite disc; medium-span mass distribution) | 12.0 | 21.0 |
+| Driver | Base | 9.0 | 5.0 |
+| **Total** | | **50.0** | |
+
+(Beyblade Burst GT 4-part system. Blade World Spryzen: World Ring — a metallic band contact ring at r=27mm; "World" references Shu's global-stage mastery; "Spryzen" (from Sprossen — German: sprout/rung) names the rung-like blade geometry. 2B Chassis: dual-mode — Attack Mode extends the World Ring outward for maximum contact radius; Defense Mode retires the ring inward behind the bound free-spin outer ring. In Attack Mode (World Whip), the 2B chassis positions the World Ring at r_world=29mm. Unite' disc: medium-span prime disc at r=21mm. Base driver: low-friction bearing-tip base at r=5mm. 50.0g total.)
+
+**I_total** = 15.0×10⁻³ × 0.027² + 14.0×10⁻³ × 0.020² + 12.0×10⁻³ × 0.021² + 9.0×10⁻³ × 0.005²
+           = 10.935×10⁻⁶ + 5.600×10⁻⁶ + 5.292×10⁻⁶ + 0.225×10⁻⁶
+           = **2.205×10⁻⁵ kg·m²**
+
+ω₀ = 670 rad/s (Burst GT era standard launch)
+L₀ = I × ω₀ = 2.205×10⁻⁵ × 670 = **1.477×10⁻² kg·m²/s**
+
+---
+
+### 1. Aerial Descent (Attack Mode — World Whip)
+
+World Spryzen is set in Attack Mode and launched into the air. The fall converts gravitational PE to KE, boosting contact speed:
+
+```
+Aerial launch parameters (World Whip — Attack Mode):
+  h_launch = 50 mm = 0.050 m  (vertical drop from air-launch peak to arena floor)
+  v_base = 2.200 m/s  (World Spryzen orbit speed before aerial descent)
+
+Slope-boosted contact speed (energy conservation):
+  v_contact² = v_base² + 2 × g × h_launch
+             = 2.200² + 2 × 9.81 × 0.050
+             = 4.840 + 0.981
+             = 5.821 m²/s²
+  v_contact = √5.821 = 2.413 m/s
+```
+
+---
+
+### 2. World Ring Metal Slash
+
+The metallic World Ring strikes the opponent in Attack Mode. High restitution from metal-on-hard-resin:
+
+```
+Metal contact parameters:
+  e_world = 0.85  (metallic World Ring — near-elastic hard surface)
+
+m_opp = 50 g  (Burst GT era opponent, same as World Spryzen)
+m_eff = (m_WS × m_opp) / (m_WS + m_opp) = (0.050 × 0.050) / (0.050 + 0.050)
+      = 2.500×10⁻³ / 0.100 = 2.500×10⁻² kg
+
+J_WW = m_eff × (1 + e_world) × v_contact
+     = 2.500×10⁻² × 1.85 × 2.413
+     = 2.500×10⁻² × 4.464 = 1.116×10⁻¹ N·s
+
+Δv_opp = J_WW / m_opp = 1.116×10⁻¹ / 0.050 = 2.232 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 50.0 g |
+| I_total | 2.205×10⁻⁵ kg·m² |
+| ω₀ | 670 rad/s |
+| h_launch | 50 mm |
+| v_base | 2.200 m/s |
+| v_contact | 2.413 m/s |
+| e_world | 0.85 |
+| m_eff | 2.500×10⁻² kg |
+| J_WW | 1.116×10⁻¹ N·s |
+| Δv_opp | 2.232 m/s |
+
+---
+
+## Case 2085 — SPECIAL: World Whip — Shu Kurenai / World Spryzen Unite' 2B
+
+**Blader:** Shu Kurenai | **Beyblade:** World Spryzen Unite' 2B | **Type:** attack
+
+### Description
+
+World Whip, known as World Slash (ワールドスラッシュ, Wārudo Surasshu) in Japan, is a Special Move used by Shu Kurenai and World Spryzen Unite' 2B (Beyblade Burst GT). Set in Attack Mode and launched in the air, Spryzen utilizes the fall to increase in speed and gains an increase in energy, releasing a powerful slash with the World Ring that generates sparks.
+
+### Stage — Aerial Descent Attack-Mode Slope Slam
+
+From Case 2084: h_launch=50mm, v_base=2.200 m/s, v_contact=2.413 m/s, e_world=0.85, J_WW=1.116×10⁻¹ N·s, Δv_opp=2.232 m/s.
+
+```
+Spin drain from aerial World Ring slash:
+  Δω = J_WW × r_world / I_total = 1.116×10⁻¹ × 0.029 / 2.205×10⁻⁵ = 146.8 rad/s
+  ω_remain = 670 − 146.8 = 523.2 rad/s  (78.1% retained)
+  (Attack Mode extends World Ring to r=29mm; greater contact radius increases torque drain
+   vs Defense Mode; aerial fall h=50mm adds 0.981 m²/s² of kinetic energy)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu does not launch low. World Spryzen leaves the launcher above the stadium — the 2B chassis locks into Attack Mode before the bey leaves Shu's hand. The fall takes 50mm to complete: 0.981 m²/s² of gravity converted to horizontal contact velocity. The World Ring's metallic band is already spinning at 670 rad/s when it arrives. e_world=0.85: almost nothing is lost at impact. The sparks the anime shows are real — metal on hard resin at 2.413 m/s produces exactly that. "World Slash" — the World Ring cuts through the opponent's Burst resistance with the weight of the fall behind it.
+
+[M] factor = **8.0 ×** (Shu Kurenai — deuteragonist/rival, Red Eye arc, Spryzen Valkyrie spirit)
+[M] Δv = 2.232 × 8.0 = **17.86 m/s** (aerial World Ring slash ring-out)
+
+> **Note:** Physical values describe 2B Attack Mode aerial descent: h_launch=50mm → v_contact=2.413 m/s (2gh energy addition 0.981 m²/s²); World Ring metallic band e_world=0.85; m_eff=2.500×10⁻² kg (50g vs 50g); J_WW=1.116×10⁻¹ N·s; Δv=2.232 m/s; Δω_drain=146.8 rad/s (78.1% retained, r_world=29mm Attack Mode). Japanese name: World Slash (ワールドスラッシュ). [M] values represent Shu's Spryzen spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function worldWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Aerial Attack Mode: h=50mm v=2.413m/s e=0.85 J=1.116×10⁻¹N·s; [M] 8.0×
+  const J_WW = 0.1116;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WW * 8.0; // [M] BeySpirit 8.0× (Shu World Spryzen Valkyrie spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst GT-era beyblade using a Blade with a metallic World Ring or equivalent attack band (r_Blade ≥ 25 mm, e_metal ≥ 0.82) on a dual-mode Chassis capable of aerial Attack Mode deployment (h_launch ≥ 35mm, v_contact ≥ 2.1 m/s). Standard game instance: World Spryzen Unite' 2B (Shu Kurenai, Beyblade Burst GT). Japanese name: World Slash.
+
+---
+
+## Case 2086 — COMBO: World Slash — World Spryzen Unite' 2B
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 25 | **Type:** attack | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The moveUp (↑) lifts World Spryzen into an elevated arc — Attack Mode maintains the World Ring extended. The moveRight (→) arcs rightward, descending from partial height (h_combo=30mm, less than the full special's 50mm). The attack (A) fires at 80% base approach speed (combo tier):
+
+```
+Partial aerial descent in combo (h=30mm, 80% base speed):
+  v_combo_base = v_base × 0.80 = 2.200 × 0.80 = 1.760 m/s
+
+  v_combo² = 1.760² + 2 × 9.81 × 0.030 = 3.098 + 0.589 = 3.687 m²/s²
+  v_combo = √3.687 = 1.920 m/s
+
+  e_combo = 0.80  (reduced contact alignment in combo)
+  J_combo = m_eff × (1 + e_combo) × v_combo
+          = 2.500×10⁻² × 1.80 × 1.920
+          = 2.500×10⁻² × 3.456 = 8.640×10⁻² N·s
+```
+
+World Ring rebound spin recovery (η_world_rebound = 0.10):
+
+```
+Δω = η_world_rebound × J_combo × r_world / I_total
+   = 0.10 × 8.640×10⁻² × 0.029 / 2.205×10⁻⁵
+   = 0.10 × 113.6
+   = +11.36 rad/s  → round to +11 rad/s
+```
+
+(η_world_rebound=0.10: metallic World Ring rebounds cleanly off hard opponent material, returning partial energy as spin; effective spinGain = +11 rad/s.) Partial aerial World Ring slam gives damageMultiplier **1.40×**. lockMs = 100 (World Ring impact dwell).
+
+**Parameters:**
+- spinGain: +11 rad/s (World Ring metal rebound)
+- damageMultiplier: 1.40 (partial aerial World Ring slam)
+- lockMs: 100 (World Ring impact dwell)
+
+### TypeScript
+
+```typescript
+function worldSlashCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial aerial h=30mm: Δω ≈ +11 rad/s (η=0.10, v=1.920m/s, J=8.640×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Partial aerial World Ring slam: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2087 — GIMMICK: World Spryzen Unite' 2B (Defense Mode) — 2B Bound Free-Spin Chassis Torque Deflect
+
+**Beyblade:** World Spryzen Unite' 2B (Beyblade Burst GT era) — Defense Mode
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst GT (God Turbo)
+
+### Assembly
+
+Same assembly as Case 2084: m=50.0 g, I_total=2.205×10⁻⁵ kg·m², ω₀=670 rad/s. Here the 2B Chassis is set to **Defense Mode**: the World Ring is retracted inward and the bound free-spin outer ring (at r=24mm) becomes the primary contact surface.
+
+---
+
+### 1. 2B Defense Mode — Bound Free-Spin Ring Torque Decoupling
+
+In Defense Mode, the free-spin outer ring on the 2B Chassis contacts the opponent. Like ED145's bearing, this ring rotates independently, decoupling contact torque from the Spryzen blade body:
+
+```
+2B free-spin outer ring decoupling coefficient:
+  k_2B_decouple = 0.82  (2B bound free-spin ring decouples 82% of contact torque;
+                         slightly less than ED145 k=0.85 — bound ring adds mild resistance)
+
+Defense Mode contact radius:
+  r_2B = 24 mm = 0.024 m  (free-spin outer ring contact radius in Defense Mode)
+
+Deflect tilt angle (Spryzen maneuvers to present 2B ring face to opponent):
+  θ_2B = 15°  (shallower than Wrench Parry — 2B ring deflects at narrow angle)
+```
+
+---
+
+### 2. Bound Ring Deflect Impulse
+
+The 2B free-spin ring presents a shaped concave geometry to the opponent's blade. The bound's slight give provides additional impulse geometry enhancement:
+
+```
+Opponent approach:
+  v_opp = 2.500 m/s  (Burst GT era opponent attack speed)
+
+Normal component at θ_2B=15°:
+  v_N = v_opp × sin(θ_2B) = 2.500 × sin(15°) = 2.500 × 0.259 = 0.648 m/s
+
+2B bound ring parameters:
+  η_2B = 1.15  (bound ring concave geometry: 15% impulse increase vs flat surface)
+  e_bound = 0.90  (free-spin bound rubber surface — high restitution at low contact force)
+
+m_opp = 50 g  (Burst GT era opponent)
+m_eff = (m_WS × m_opp) / (m_WS + m_opp) = (0.050 × 0.050) / (0.050 + 0.050)
+      = 2.500×10⁻³ / 0.100 = 2.500×10⁻² kg
+
+J_WS = η_2B × m_eff × (1 + e_bound) × v_N
+     = 1.15 × 2.500×10⁻² × 1.90 × 0.648
+     = 1.15 × 2.500×10⁻² × 1.231 = 1.15 × 3.078×10⁻² = 3.539×10⁻² N·s
+
+Δv_opp = J_WS / m_opp = 3.539×10⁻² / 0.050 = 0.708 m/s
+
+Spin drain on Spryzen (2B decouples 82% contact torque):
+  Δω = J_WS × (1 − k_2B_decouple) × r_2B / I_total
+     = 3.539×10⁻² × 0.18 × 0.024 / 2.205×10⁻⁵
+     = 1.529×10⁻⁴ / 2.205×10⁻⁵ = 6.9 rad/s  (99.0% spin retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 50.0 g |
+| I_total | 2.205×10⁻⁵ kg·m² |
+| ω₀ | 670 rad/s |
+| θ_2B | 15° |
+| v_opp | 2.500 m/s |
+| v_N | 0.648 m/s |
+| k_2B_decouple | 0.82 |
+| η_2B | 1.15 |
+| e_bound | 0.90 |
+| m_eff | 2.500×10⁻² kg |
+| J_WS | 3.539×10⁻² N·s |
+| Δv_opp | 0.708 m/s |
+| Δω (Spryzen) | 6.9 rad/s (99.0% retained) |
+
+---
+
+## Case 2088 — SPECIAL: World Spin — Shu Kurenai / World Spryzen Unite' 2B
+
+**Blader:** Shu Kurenai | **Beyblade:** World Spryzen Unite' 2B | **Type:** defense/stamina
+
+### Description
+
+World Spin (ワールドスピン, Wārudo Supin) is a Special Move used by Shu Kurenai and World Spryzen Unite' 2B (Beyblade Burst GT). With the 2B Chassis set to Defense Mode, World Spryzen can maneuver the opposing Beyblade's attack with the free-spinning bound on the Chassis, avoiding the damage.
+
+### Stage — 2B Bound Free-Spin Chassis Torque Deflect
+
+From Case 2087: θ_2B=15°, v_N=0.648 m/s, k_2B_decouple=0.82, η_2B=1.15, e_bound=0.90, J_WS=3.539×10⁻² N·s, Δv_opp=0.708 m/s.
+
+```
+Spryzen spin retention after 2B ring deflect:
+  ω_remain = 670 − 6.9 = 663.1 rad/s  (99.0% retained)
+  (2B free-spin bound ring decouples 82% of contact torque — Spryzen loses almost no spin
+   while the bound's slight give redirects the opponent's attack energy as a deflect impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu switches 2B to Defense Mode before the opponent arrives. The World Ring retreats. What the opponent's blade meets is the free-spin bound outer ring — it gives slightly at contact (e_bound=0.90), but that slight give is the point: the ring absorbs the attack vector's direction, redirects 15° off-axis, and the bound's concave geometry adds 15% more deflect force than a flat surface would. 6.9 rad/s of spin lost. 99.0% retained. World Spin is the 2B Chassis doing exactly what it was designed to do, with Shu controlling which mode is active.
+
+[M] factor = **8.0 ×** (Shu Kurenai — deuteragonist/rival, Red Eye arc, Spryzen Valkyrie spirit)
+[M] Δv = 0.708 × 8.0 = **5.664 m/s** (2B bound ring deflect ring-out)
+
+> **Note:** Physical values describe 2B Defense Mode bound free-spin ring: k_2B_decouple=0.82 (82% torque decoupled → 99.0% spin retained, Δω=6.9 rad/s); θ_2B=15°; v_N=0.648 m/s; η_2B=1.15 (bound concave geometry +15%); e_bound=0.90 (high-restitution rubber bound surface); m_eff=2.500×10⁻² kg; J_WS=3.539×10⁻² N·s; Δv=0.708 m/s. Japanese name: World Spin (ワールドスピン). Defense Mode only — Attack Mode uses World Whip mechanics (Case 2085). [M] values represent Shu's Spryzen spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function worldSpinSpecial(bey: Beyblade, target: Beyblade): void {
+  // 2B Defense Mode bound ring deflect: k=0.82 θ=15° J=3.539×10⁻²N·s; [M] 8.0×
+  const J_WS = 0.03539;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WS * 8.0; // [M] BeySpirit 8.0× (Shu World Spryzen defense spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst GT-era beyblade using a dual-mode Chassis with a free-spin bound outer ring (r_ring ≥ 20 mm, k_decouple ≥ 0.78, e_bound ≥ 0.85) in Defense Mode configuration. Defense Mode positioning must retract the primary blade contact surface and expose the bound ring. Standard game instance: World Spryzen Unite' 2B (Shu Kurenai, Beyblade Burst GT). Japanese name: World Spin.
+
+---
+
+## Case 2089 — COMBO: World Guard — World Spryzen Unite' 2B
+
+**Sequence:** ↑ K A (moveUp · defense · attack)
+**Cost:** 15 | **Type:** defense/stamina | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The moveUp (↑) lifts World Spryzen into the upper defensive arc — Defense Mode bound ring positioned facing outward. The defense key (K) engages Shu's 2B partial defense stance — ring angle reduces to θ=8° (shallower engagement, less normal component). The attack (A) fires the shallow deflect:
+
+```
+Shallow 2B ring deflect in combo (θ=8°):
+  v_N_combo = v_opp × sin(8°) = 2.500 × 0.139 = 0.348 m/s
+  η_2B_combo = 1.08  (shallow partial bound engagement — 8% boost vs flat)
+  e_combo = 0.86  (slightly softer shallow contact angle)
+
+  J_combo = η_2B_combo × m_eff × (1 + e_combo) × v_N_combo
+          = 1.08 × 2.500×10⁻² × 1.86 × 0.348
+          = 1.08 × 2.500×10⁻² × 0.647 = 1.08 × 1.618×10⁻² = 1.747×10⁻² N·s
+```
+
+Bound ring spin recovery (η_bound_spin = 0.20):
+
+```
+Δω = η_bound_spin × J_combo × r_2B / I_total
+   = 0.20 × 1.747×10⁻² × 0.024 / 2.205×10⁻⁵
+   = 0.20 × 19.0
+   = +3.80 rad/s  → round to +4 rad/s
+```
+
+(η_bound_spin=0.20: 2B bound ring spring-back after shallow deflect returns a higher fraction of contact energy as spin than deep-angle contact; effective spinGain = +4 rad/s.) Shallow 2B bound deflect gives damageMultiplier **1.15×**. lockMs = 80 (shallow bound ring contact dwell).
+
+**Parameters:**
+- spinGain: +4 rad/s (bound ring spring-back)
+- damageMultiplier: 1.15 (shallow 2B bound deflect)
+- lockMs: 80 (bound dwell)
+
+### TypeScript
+
+```typescript
+function worldGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // Shallow 2B bound θ=8°: Δω ≈ +4 rad/s (η_bound=0.20, v_N=0.348m/s, J=1.747×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 4);
+  // Shallow bound deflect: 1.15× normal impulse
+  bey.damageMultiplier = 1.15;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.15, (dy / dist) * 0.15);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.15 | ✓ |
+| lockMs | ≤ 300 | 80 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +4 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2090 — GIMMICK: Wonder Valtryek 12 Volcanic — Recoil-Assisted Volcanic Rim Orbital Attack
+
+**Beyblade:** Wonder Valtryek 12 Volcanic (Beyblade Burst Surge/Superking era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Surge (Superking)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Wonder Valtryek (wing-blade with attack geometry at r=26mm) | 15.0 | 24.0 |
+| Chassis/Layer | 12 Disc (12-pointed star disc; wide-span mass) | 16.0 | 23.0 |
+| Driver | Volcanic (rubber flat tip with outer rubber raised rim) | 10.0 | 6.0 |
+| Layer Base | Wonder Base | 7.0 | 8.0 |
+| **Total** | | **48.0** | |
+
+(Beyblade Burst Surge 4-part system. Blade Wonder Valtryek: wing-blade attack geometry at r=24mm; "Wonder" (Wunder — German: miracle/wonder) references Valt's signature belief in miracles; Valtryek (Valkyrie) names the battle-maiden spirit. 12 disc: 12-pointed star wide-span disc at r=23mm — high outer-mass density stabilises the orbit during the Volcanic recoil acceleration phase. Volcanic driver: rubber flat tip with raised rubber outer rim at r=6mm; the rim is the key feature — it contacts the arena wall/floor and receives recoil impulse; μ_Volcanic≈0.88 (rubber outer rim on arena surface), t_spin≈18s. Wonder Base: structural base at r=8mm. 48.0g total.)
+
+**I_total** = 15.0×10⁻³ × 0.024² + 16.0×10⁻³ × 0.023² + 10.0×10⁻³ × 0.006² + 7.0×10⁻³ × 0.008²
+           = 8.640×10⁻⁶ + 8.464×10⁻⁶ + 0.360×10⁻⁶ + 0.448×10⁻⁶
+           = **1.791×10⁻⁵ kg·m²**
+
+ω₀ = 660 rad/s (Burst Surge/Superking era standard launch)
+L₀ = I × ω₀ = 1.791×10⁻⁵ × 660 = **1.182×10⁻² kg·m²/s**
+
+---
+
+### 1. Incoming Attack Recoil Model
+
+Wonder Valtryek receives an opponent's attack and uses the Volcanic rim to absorb and redirect the recoil into forward orbital velocity:
+
+```
+Incoming opponent attack:
+  v_opp_incoming = 2.000 m/s  (opponent attack speed toward Wonder Valtryek)
+  e_receive = 0.70  (Volcanic rubber absorbs incoming attack — moderate restitution)
+
+m_opp = 48 g  (Burst Surge opponent, same era)
+m_eff_receive = (m_WV × m_opp) / (m_WV + m_opp) = (0.048 × 0.048) / (0.048 + 0.048)
+              = 2.304×10⁻³ / 0.096 = 2.400×10⁻² kg
+
+Received impulse (inbound):
+  J_received = m_eff_receive × (1 + e_receive) × v_opp_incoming
+             = 2.400×10⁻² × 1.70 × 2.000
+             = 2.400×10⁻² × 3.400 = 8.160×10⁻² N·s
+
+Recoil redirection factor (Volcanic rim geometry channels impulse orbital):
+  η_recoil = 0.55  (55% of received impulse redirected as forward orbital boost
+                    via Volcanic rubber rim eccentric contact geometry)
+
+Orbital velocity boost from recoil:
+  v_boost_recoil = η_recoil × J_received / m_WV
+                 = 0.55 × 8.160×10⁻² / 0.048
+                 = 4.488×10⁻² / 0.048 = 0.935 m/s
+```
+
+---
+
+### 2. Volcanic Rim Orbital Attack
+
+After receiving the recoil boost, Wonder Valtryek circles outward at maximum speed and attacks:
+
+```
+Base orbital speed (Volcanic rubber flat tip):
+  v_base = 1.600 m/s
+
+Attack speed (base + recoil boost):
+  v_attack = v_base + v_boost_recoil = 1.600 + 0.935 = 2.535 m/s
+
+Contact parameters:
+  e_attack = 0.80  (Wonder blade attack geometry on standard Burst opponent)
+
+J_WFL = m_eff_receive × (1 + e_attack) × v_attack
+      = 2.400×10⁻² × 1.80 × 2.535
+      = 2.400×10⁻² × 4.563 = 1.095×10⁻¹ N·s
+
+Δv_opp = J_WFL / m_opp = 1.095×10⁻¹ / 0.048 = 2.281 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 48.0 g |
+| I_total | 1.791×10⁻⁵ kg·m² |
+| ω₀ | 660 rad/s |
+| v_opp_incoming | 2.000 m/s |
+| e_receive | 0.70 |
+| J_received | 8.160×10⁻² N·s |
+| η_recoil | 0.55 |
+| v_boost_recoil | 0.935 m/s |
+| v_base | 1.600 m/s |
+| v_attack | 2.535 m/s |
+| e_attack | 0.80 |
+| J_WFL | 1.095×10⁻¹ N·s |
+| Δv_opp | 2.281 m/s |
+
+---
+
+## Case 2091 — SPECIAL: Wonder Flash Launch — Valt Aoi / Wonder Valtryek 12 Volcanic
+
+**Blader:** Valt Aoi | **Beyblade:** Wonder Valtryek 12 Volcanic | **Type:** attack
+
+### Description
+
+Wonder Flash Launch, known as Winning Rush Shoot (ウイニングラッシュシュート, Uiningu Rasshu Shūto) in Japan, is a special technique used by Valt Aoi and his Wonder Valtryek 12 Volcanic (Beyblade Burst Surge). Wonder Valtryek uses the recoil from an opponent attack and speeds up on the Volcanic Driver, circling around towards the outer edge of the stadium, then attacks the opponent at great speed.
+
+### Stage — Recoil-Assisted Volcanic Rim Orbital Attack
+
+From Case 2090: v_opp_incoming=2.000 m/s, e_receive=0.70, J_received=8.160×10⁻² N·s, η_recoil=0.55, v_boost_recoil=0.935 m/s, v_base=1.600 m/s, v_attack=2.535 m/s, J_WFL=1.095×10⁻¹ N·s, Δv_opp=2.281 m/s.
+
+```
+Spin drain from Volcanic orbital attack:
+  Δω = J_WFL × r_Blade / I_total = 1.095×10⁻¹ × 0.024 / 1.791×10⁻⁵ = 146.7 rad/s
+  ω_remain = 660 − 146.7 = 513.3 rad/s  (77.8% retained)
+  (Volcanic rubber tip sustains the outward orbit arc to the stadium edge;
+   the attack converts the full recoil-boosted orbital speed into contact impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt does not dodge the incoming attack. Wonder Valtryek takes the hit — Volcanic absorbs it (e_receive=0.70) and the rubber rim geometry channels 55% of the received impulse into a new direction. The bey that arrived at 2.000 m/s is now gone. Wonder Valtryek is already circling the outer edge of the stadium at 2.535 m/s. The Valtryek Valkyrie spirit appears not in avoiding the strike but in using it: "Winning Rush Shoot" — the rush is the opponent's own energy, returned from the edge of the arena. Valt has always understood that Valtryek fights best when it's already moving.
+
+[M] factor = **8.0 ×** (Valt Aoi — main protagonist, Valtryek Valkyrie battle spirit)
+[M] Δv = 2.281 × 8.0 = **18.25 m/s** (recoil-boosted Volcanic orbital attack ring-out)
+
+> **Note:** Physical values describe Volcanic rim recoil model: incoming v=2.000 m/s, e_receive=0.70, J_received=8.160×10⁻² N·s; η_recoil=0.55 (55% redirected orbital); v_boost=0.935 m/s; v_base=1.600 m/s; v_attack=2.535 m/s; e_attack=0.80; m_eff=2.400×10⁻² kg; J_WFL=1.095×10⁻¹ N·s; Δv=2.281 m/s; Δω_drain=146.7 rad/s (77.8% spin retained). Japanese name: Winning Rush Shoot (ウイニングラッシュシュート). [M] values represent Valt's Valtryek Valkyrie spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wonderFlashLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Recoil orbital: e_receive=0.70 η=0.55 v_attack=2.535m/s J=1.095×10⁻¹N·s; [M] 8.0×
+  const J_WFL = 0.1095;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WFL * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek Volcanic recoil spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Surge-era beyblade using a Driver with a rubber outer raised rim (r_rim ≥ 5 mm, μ ≥ 0.85) capable of recoil redirection (η_recoil ≥ 0.45) and sustained outer-edge orbital approach (v_base ≥ 1.4 m/s, t_spin ≤ 22s). The recoil-redirect orbital technique is specific to Valt Aoi's read of incoming attacks. Standard game instance: Wonder Valtryek 12 Volcanic (Valt Aoi, Beyblade Burst Surge). Japanese name: Winning Rush Shoot.
+
+---
+
+## Case 2092 — COMBO: Flash Rush — Wonder Valtryek 12 Volcanic
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 25 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveUp (↑) lifts Wonder Valtryek into the upper arc — Volcanic rubber rim contacts the upper bowl wall, gathering partial recoil from the wall contact. The moveRight (→) arcs rightward, completing the outer-edge orbit approach. The attack (A) fires at 75% attack speed (combo tier — no incoming opponent attack to absorb, uses only partial wall recoil):
+
+```
+Partial recoil orbit in combo (wall recoil only, η_recoil_wall=0.35):
+  v_wall_incoming = 1.500 m/s  (estimated orbital speed as bey hits upper bowl wall)
+  J_wall = m_eff_receive × (1 + 0.65) × v_wall_incoming
+         = 2.400×10⁻² × 1.65 × 1.500 = 2.400×10⁻² × 2.475 = 5.940×10⁻² N·s
+
+  v_boost_wall = 0.35 × 5.940×10⁻² / 0.048 = 2.079×10⁻² / 0.048 = 0.433 m/s
+
+  v_combo = v_base + v_boost_wall = 1.600 + 0.433 = 2.033 m/s
+  e_combo = 0.78  (reduced alignment in combo)
+  J_combo = m_eff_receive × (1 + e_combo) × v_combo
+          = 2.400×10⁻² × 1.78 × 2.033
+          = 2.400×10⁻² × 3.619 = 8.686×10⁻² N·s
+```
+
+Volcanic rim rebound spin recovery (η_volcanic_rebound = 0.09):
+
+```
+Δω = η_volcanic_rebound × J_combo × r_Blade / I_total
+   = 0.09 × 8.686×10⁻² × 0.024 / 1.791×10⁻⁵
+   = 0.09 × 116.4
+   = +10.48 rad/s  → round to +10 rad/s
+```
+
+(η_volcanic_rebound=0.09: Volcanic rubber tip rebounds off opponent blade, rubber rim returns partial energy as spin; effective spinGain = +10 rad/s.) Wall-recoil orbital attack gives damageMultiplier **1.35×**. lockMs = 100 (Volcanic rim contact dwell).
+
+**Parameters:**
+- spinGain: +10 rad/s (Volcanic rim rebound)
+- damageMultiplier: 1.35 (wall-recoil orbital attack)
+- lockMs: 100 (Volcanic rim dwell)
+
+### TypeScript
+
+```typescript
+function flashRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Wall recoil orbit: Δω ≈ +10 rad/s (η=0.09, v=2.033m/s, J=8.686×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Wall-recoil orbital attack: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+*Cases continue from Case 2093 as further franchise moves are provided.*
 
 
 
@@ -38495,4 +40095,1604 @@ function windShiftCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +4 rad/s (partial) | ✓ |
 
-*Cases continue from Case 2069 as further franchise moves are provided.*
+
+
+---
+
+## Case 2069 — GIMMICK: Griffolyon — Spirit Feather Multi-Hit Claw Strike
+
+**Beyblade:** Griffolyon (Beyblade original plastic-gen era)
+**Blader:** Robert Jürgens | **Series:** Beyblade (original anime S1/S2)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Griffolyon (excluded, r≈0) | 1.0 | ≈0 |
+| Attack Ring | Triple Wing (three swept-wing protrusions) | 14.0 | 27.0 |
+| Weight Disk | Ten Heavy (10-sided heavy polymer disc) | 10.0 | 27.0 |
+| Spin Gear | Right SG (standard right-spin gear) | 4.0 | 3.0 |
+| Base | Flat Base (high-friction flat-tip base) | 3.0 | 3.0 |
+| **Total** | | **32.0** | |
+
+(Plastic-generation 5-part system; Bit Chip excluded from I (r≈0). AR Triple Wing: three large swept-wing blade protrusions at r=27mm — triple-wing geometry maximises multi-contact opportunity per revolution; "Triple" names the three-winged attack structure; "Wing" names the swept feather geometry referencing the Griffolyon (griffin + lion) beast spirit. Ten Heavy WD: 10-sided heavy polymer disc at r=27mm — high outer-mass density maximises impact momentum. Right SG: standard right-spin at r=3mm. Flat Base: high-friction flat-tip at r=3mm; μ_FB≈0.80, t_spin≈18s — aggressive outward sprint enables wing multi-contact. 32.0g total.)
+
+**I_total** = 14.0×10⁻³ × 0.027² + 10.0×10⁻³ × 0.027² + 4.0×10⁻³ × 0.003² + 3.0×10⁻³ × 0.003²
+           = 10.206×10⁻⁶ + 7.290×10⁻⁶ + 0.036×10⁻⁶ + 0.027×10⁻⁶
+           = **1.756×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-era standard launch)
+L₀ = I × ω₀ = 1.756×10⁻⁵ × 500 = **8.780×10⁻³ kg·m²/s**
+
+---
+
+### 1. Wing Tip Speed and Spirit Feather Sequence
+
+```
+Triple Wing tip tangential speed:
+  v_tip = ω₀ × r_AR = 500 × 0.027 = 13.50 m/s
+
+Wing Dagger spirit feathers (N=8 successive feather-blade contacts per orbit pass):
+  m_feather = 0.80 g = 8.0×10⁻⁴ kg  (each spirit feather mass element at tip)
+  v_feather = v_tip × 0.60 = 13.50 × 0.60 = 8.100 m/s  (feather contact speed)
+  η_decay = 0.85  (each successive contact delivers 85% of prior feather's impulse)
+```
+
+---
+
+### 2. Multi-Hit Feather Impulse Sum
+
+Each of the N=8 spirit feather contacts delivers a decaying impulse. The geometric series sums the total accumulated impulse:
+
+```
+Single feather impulse:
+  J_single = m_feather × v_feather = 8.0×10⁻⁴ × 8.100 = 6.480×10⁻³ N·s
+
+Geometric series sum (η_decay=0.85, N=8):
+  Sum = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.85^8) / (1 − 0.85)
+      = (1 − 0.2725) / 0.15 = 0.7275 / 0.15 = 4.850
+
+Total feather impulse:
+  J_WD = J_single × Sum = 6.480×10⁻³ × 4.850 = 3.143×10⁻² N·s
+
+m_opp = 36 g  (plastic-era opponent)
+  Δv_opp = J_WD / m_opp = 3.143×10⁻² / 0.036 = 0.873 m/s
+
+Spin drain on Griffolyon:
+  Δω = J_WD × r_AR / I_total = 3.143×10⁻² × 0.027 / 1.756×10⁻⁵ = 48.3 rad/s  (90.3% retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 32.0 g |
+| I_total | 1.756×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| v_tip | 13.50 m/s |
+| N | 8 feathers |
+| m_feather | 8.0×10⁻⁴ kg |
+| v_feather | 8.100 m/s |
+| η_decay | 0.85 |
+| J_single | 6.480×10⁻³ N·s |
+| Sum | 4.850 |
+| J_WD | 3.143×10⁻² N·s |
+| Δv_opp | 0.873 m/s |
+| Δω (Griffolyon) | 48.3 rad/s (90.3% retained) |
+
+---
+
+## Case 2070 — SPECIAL: Wing Dagger — Robert Jürgens / Griffolyon
+
+**Blader:** Robert Jürgens | **Beyblade:** Griffolyon | **Type:** attack
+
+### Description
+
+Wing Dagger is a Special Move used by Robert Jürgens and Griffolyon (Beyblade original series). The Griffolyon bit-beast manifests its spirit wings as a sequence of rapid feather-blade strikes — eight successive feather contacts, each slightly less powerful than the last, accumulating into a crushing multi-hit assault. Robert uses this in European championship-tier battles throughout the original series.
+
+### Stage — Spirit Feather Multi-Hit Claw Strike
+
+From Case 2069: v_tip=13.50 m/s, N=8, J_single=6.480×10⁻³ N·s, Sum=4.850, J_WD=3.143×10⁻² N·s, Δv_opp=0.873 m/s.
+
+```
+Spin retention after feather sequence:
+  ω_remain = 500 − 48.3 = 451.7 rad/s  (90.3% retained)
+  (Eight successive feather contacts at η_decay=0.85; each feather delivers less than the last
+   but the geometric series accumulates into a decisive total impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Robert does not shout his move. He watches. The Griffolyon spirit assembles its feathers over three revolutions — it is not one impact, it is eight. First: v_feather=8.1 m/s, J=6.48×10⁻³. Second: 85% of the first. Third: 72% of the first. The series does not stop until the eighth contact. What Griffolyon delivers is not a single blow; it is a sustained punishment. The opponent's bey cannot escape between feathers — they arrive too quickly. Robert's precision ensures every one of the eight lands. "Wing Dagger" — the wing itself is the weapon, and it has eight edges.
+
+[M] factor = **7.0 ×** (Robert Jürgens — European champion, secondary rival, Griffolyon griffin spirit)
+[M] Δv = 0.873 × 7.0 = **6.111 m/s** (spirit feather multi-hit ring-out)
+
+> **Note:** Physical values describe Triple Wing tip v_tip=13.50 m/s; spirit feather multi-hit N=8, η_decay=0.85 geometric series Sum=4.850; J_single=6.480×10⁻³ N·s; J_WD=3.143×10⁻² N·s; Δv=0.873 m/s; Δω=48.3 rad/s (90.3% retained). Compatible with any bey using a multi-wing AR on a high-friction flat base. [M] values represent Robert Jürgens's Griffolyon griffin spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wingDaggerSpecial(bey: Beyblade, target: Beyblade): void {
+  // Spirit feather multi-hit: N=8 η_decay=0.85 Sum=4.850 J=3.143×10⁻²N·s; [M] 7.0×
+  const J_WD = 0.03143;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WD * 7.0; // [M] BeySpirit 7.0× (Robert Griffolyon griffin feather spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-era beyblade using an Attack Ring with ≥3 swept wing protrusions (r_AR ≥ 25 mm) on a high-friction flat Base (μ ≥ 0.75, t_spin ≤ 22s) capable of sustaining multi-contact approach speed v_feather ≥ 7.5 m/s. The Griffolyon griffin spirit feather technique is specific to Robert Jürgens. Standard game instance: Griffolyon (Robert Jürgens, Beyblade original series).
+
+---
+
+## Case 2071 — COMBO: Wing Rain — Griffolyon
+
+**Sequence:** ↑ ← A (moveUp · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Robert Jürgens
+
+### Physics Justification
+
+The moveUp (↑) lifts Griffolyon into the upper arc — Flat Base friction drives the sprint outward. The moveLeft (←) sweeps leftward, pre-positioning a feather strike angle from a less-expected direction. The attack (A) fires at partial feather count (N=5 instead of full 8 — combo tier, partial spirit manifestation):
+
+```
+Partial feather strike in combo (N=5, 60% approach speed):
+  v_feather_combo = v_feather × 0.60 = 8.100 × 0.60 = 4.860 m/s
+  (reduced spirit feather speed in combo tier — partial bit-beast manifestation)
+
+  J_single_combo = m_feather × v_feather_combo = 8.0×10⁻⁴ × 4.860 = 3.888×10⁻³ N·s
+
+  Sum_combo = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.85^5) / 0.15
+            = (1 − 0.4437) / 0.15 = 0.5563 / 0.15 = 3.709
+
+  J_combo = J_single_combo × Sum_combo = 3.888×10⁻³ × 3.709 = 1.442×10⁻² N·s
+```
+
+Wing rebound spin recovery (η_wing_rebound = 0.14):
+
+```
+Δω = η_wing_rebound × J_combo × r_AR / I_total
+   = 0.14 × 1.442×10⁻² × 0.027 / 1.756×10⁻⁵
+   = 0.14 × 22.2
+   = +3.11 rad/s  → round to +3 rad/s
+```
+
+(η_wing_rebound=0.14: Triple Wing rebounds off opponent blade; feather contact returns partial energy as spin; effective spinGain = +3 rad/s.) Partial multi-hit feather contact gives damageMultiplier **1.25×**. lockMs = 150 (five-hit feather sequence dwell).
+
+**Parameters:**
+- spinGain: +3 rad/s (wing feather rebound)
+- damageMultiplier: 1.25 (partial feather multi-hit)
+- lockMs: 150 (feather sequence dwell)
+
+### TypeScript
+
+```typescript
+function wingRainCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial feather N=5: Δω ≈ +3 rad/s (η=0.14, v=4.860m/s, J=1.442×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Partial feather multi-hit: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2072 — GIMMICK: Sword Valtryek Blitz Power Retsu — Spring-Assisted Sword Blade Contact Strike
+
+**Beyblade:** Sword Valtryek Blitz Power Retsu (Beyblade Burst Rise era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Rise
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Sword Valtryek (winged blade with protruding sword strike geometry) | 16.0 | 24.0 |
+| Disc | Blitz (wide 4-point burst-assist disc) | 14.0 | 22.0 |
+| Driver | Power (spring-assisted hard-rubber tip) | 12.0 | 5.0 |
+| Layer Base | Retsu (連 — Chain/Sequence) base | 9.0 | 8.0 |
+| **Total** | | **51.0** | |
+
+(Beyblade Burst Rise 4-part layer+disc+driver system. Blade Sword Valtryek: winged sword-strike geometry at r=24mm — "Sword" names the protruding blade contact geometry; Valtryek (from Valkyrie — the Norse battle maiden) names the warrior spirit. Blitz (German: lightning) disc: wide 4-point burst-assist disc at r=22mm; wide span provides burst resistance and angular mass for sustained spin. Power driver: spring-assisted hard-rubber tip at r=5mm; internal spring pre-compresses at launch, releasing stored energy on contact to boost v_contact; μ_Power≈0.82, t_spin≈22s. Retsu (連) base: chain/sequence base at r=8mm; structural reinforcement ring. 51.0g total.)
+
+**I_total** = 16.0×10⁻³ × 0.024² + 14.0×10⁻³ × 0.022² + 12.0×10⁻³ × 0.005² + 9.0×10⁻³ × 0.008²
+           = 9.216×10⁻⁶ + 6.776×10⁻⁶ + 0.300×10⁻⁶ + 0.576×10⁻⁶
+           = **1.687×10⁻⁵ kg·m²**
+
+ω₀ = 670 rad/s (Burst Rise era standard launch)
+L₀ = I × ω₀ = 1.687×10⁻⁵ × 670 = **1.130×10⁻² kg·m²/s**
+
+---
+
+### 1. Power Driver Spring Release
+
+The Power driver's internal spring stores energy at launch. On contact, the spring releases, adding an incremental velocity boost to the approach:
+
+```
+Spring parameters (Power driver):
+  k_spring = 180 N/m  (Power driver internal spring constant)
+  x_compress = 3 mm = 0.003 m  (spring pre-compression at launch)
+  E_spring = ½ × k_spring × x_compress² = 0.5 × 180 × 0.003² = 8.100×10⁻⁴ J
+
+Base approach speed (Power driver high-friction flat):
+  v_base = 2.500 m/s  (hard-rubber Power tip orbital speed)
+
+Spring-boosted contact speed (energy conservation):
+  v_contact² = v_base² + 2 × E_spring / m_bey
+             = 2.500² + 2 × 8.100×10⁻⁴ / 0.051
+             = 6.250 + 0.0318
+             = 6.282 m²/s²
+  v_contact = √6.282 = 2.506 m/s
+```
+
+---
+
+### 2. Sword Blade Contact Strike
+
+The protruding sword blade geometry on the Sword Valtryek blade strikes the opponent. The hard-rubber Power tip provides grip at impact, channeling the spring energy into the contact:
+
+```
+Contact parameters:
+  e_contact = 0.80  (hard-rubber Power tip + Sword blade on standard Burst opponent)
+
+m_opp = 50 g  (Burst Rise era opponent)
+m_eff = (m_SV × m_opp) / (m_SV + m_opp) = (0.051 × 0.050) / (0.051 + 0.050)
+      = 2.550×10⁻³ / 0.101 = 2.525×10⁻² kg
+
+J_WW = m_eff × (1 + e_contact) × v_contact
+     = 2.525×10⁻² × 1.80 × 2.506
+     = 2.525×10⁻² × 4.511 = 1.139×10⁻¹ N·s
+
+Δv_opp = J_WW / m_opp = 1.139×10⁻¹ / 0.050 = 2.278 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 51.0 g |
+| I_total | 1.687×10⁻⁵ kg·m² |
+| ω₀ | 670 rad/s |
+| k_spring | 180 N/m |
+| x_compress | 3 mm |
+| E_spring | 8.100×10⁻⁴ J |
+| v_base | 2.500 m/s |
+| v_contact | 2.506 m/s |
+| e_contact | 0.80 |
+| m_eff | 2.525×10⁻² kg |
+| J_WW | 1.139×10⁻¹ N·s |
+| Δv_opp | 2.278 m/s |
+
+---
+
+## Case 2073 — SPECIAL: Wing Whip — Valt Aoi / Sword Valtryek Blitz Power Retsu
+
+**Blader:** Valt Aoi | **Beyblade:** Sword Valtryek Blitz Power Retsu | **Type:** attack
+
+### Description
+
+Wing Whip is a Special Move used by Valt Aoi and Sword Valtryek Blitz Power Retsu (Beyblade Burst Rise). Sword Valtryek uses its sword-blade protrusion to deliver a whipping strike powered by the spring-loaded Power driver — the spring releases at the moment of contact, amplifying the impact force.
+
+### Stage — Spring-Assisted Sword Blade Contact Strike
+
+From Case 2072: k_spring=180 N/m, x=3mm, E_spring=8.100×10⁻⁴ J, v_contact=2.506 m/s, e_contact=0.80, J_WW=1.139×10⁻¹ N·s, Δv_opp=2.278 m/s.
+
+```
+Spin drain from spring-assisted sword strike:
+  Δω = J_WW × r_Blade / I_total = 1.139×10⁻¹ × 0.024 / 1.687×10⁻⁵ = 162.0 rad/s
+  ω_remain = 670 − 162.0 = 508.0 rad/s  (75.8% retained)
+  (Power driver spring fully releases at contact; tip returns to standard rubber grip after strike)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+The spring is already compressed before the match begins. The Power driver holds the energy in reserve. Valt does not charge — he positions, and the moment the sword blade makes contact the spring fires. 8.100×10⁻⁴ joules, added in one instant. The Valtryek Valkyrie spirit channels from the blade tip through the entire assembly: the sword geometry focuses the strike, the Blitz disc's mass maintains the orbit, the Retsu base sequences the chain. Wing Whip is a trap set at launch that closes at contact. Nobody sees the spring let go.
+
+[M] factor = **8.0 ×** (Valt Aoi — main protagonist, Valtryek Valkyrie battle spirit)
+[M] Δv = 2.278 × 8.0 = **18.22 m/s** (spring-assisted sword strike ring-out)
+
+> **Note:** Physical values describe Power driver spring: k=180 N/m, x=3mm, E=8.100×10⁻⁴ J → v_contact=2.506 m/s (vs v_base=2.500 m/s); Sword blade geometry e_contact=0.80; m_eff=2.525×10⁻² kg (51g vs 50g opp); J_WW=1.139×10⁻¹ N·s; Δv=2.278 m/s; Δω_drain=162.0 rad/s (75.8% spin retained). [M] values represent Valt's Valtryek Valkyrie spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wingWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Spring-assisted sword strike: k=180N/m x=3mm E=8.1e-4J J=1.139×10⁻¹N·s; [M] 8.0×
+  const J_WW = 0.1139;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WW * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek Valkyrie sword spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Rise-era beyblade using a Blade with protruding sword/wing contact geometry (r_Blade ≥ 22 mm) on a spring-assisted Driver (k ≥ 150 N/m, x_compress ≥ 2 mm, E_spring ≥ 3.0×10⁻⁴ J) capable of delivering v_contact ≥ 2.4 m/s. Standard game instance: Sword Valtryek Blitz Power Retsu (Valt Aoi, Beyblade Burst Rise).
+
+---
+
+## Case 2074 — COMBO: Power Rush — Sword Valtryek Blitz Power Retsu
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 25 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveUp (↑) lifts Sword Valtryek into the upper arc — Power driver's spring partially compresses. The moveRight (→) arcs rightward, pre-positioning for the sword strike angle. The attack (A) fires at partial spring compression (x=2mm instead of full 3mm — combo tier, partial spring energy):
+
+```
+Partial spring compression in combo (x=2mm):
+  E_combo = ½ × 180 × 0.002² = ½ × 180 × 4.0×10⁻⁶ = 3.600×10⁻⁴ J
+
+  v_combo² = (v_base × 0.75)² + 2 × E_combo / m_bey
+           = (2.500 × 0.75)² + 2 × 3.600×10⁻⁴ / 0.051
+           = 3.516 + 0.01412
+           = 3.530 m²/s²
+  v_combo = √3.530 = 1.879 m/s
+
+  e_combo = 0.76  (reduced contact precision in combo)
+  J_combo = m_eff × (1 + e_combo) × v_combo
+          = 2.525×10⁻² × 1.76 × 1.879
+          = 2.525×10⁻² × 3.307 = 8.350×10⁻² N·s
+```
+
+Spring tip rebound spin recovery (η_spring_rebound = 0.10):
+
+```
+Δω = η_spring_rebound × J_combo × r_Blade / I_total
+   = 0.10 × 8.350×10⁻² × 0.024 / 1.687×10⁻⁵
+   = 0.10 × 118.8
+   = +11.88 rad/s  → round to +12 rad/s
+```
+
+(η_spring_rebound=0.10: Power driver rubber tip rebounds off opponent blade, spring partially re-absorbs impact returning spin; effective spinGain = +12 rad/s.) Partial spring sword strike gives damageMultiplier **1.40×**. lockMs = 80 (spring-release sword contact dwell).
+
+**Parameters:**
+- spinGain: +12 rad/s (spring tip rebound)
+- damageMultiplier: 1.40 (partial spring sword strike)
+- lockMs: 80 (spring contact dwell)
+
+### TypeScript
+
+```typescript
+function powerRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial spring x=2mm: Δω ≈ +12 rad/s (η=0.10, v=1.879m/s, J=8.350×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Partial spring sword strike: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 80 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2075 — GIMMICK: Lycanlor — Spirit Claw Multi-Hit Slash Strike
+
+**Beyblade:** Lycanlor (Beyblade original plastic-gen era)
+**Blader:** Lupinex | **Series:** Beyblade (original anime S2 / V-Force)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Lycanlor (excluded, r≈0) | 1.0 | ≈0 |
+| Attack Ring | Howling Claw (4-claw swept attack ring) | 13.0 | 26.0 |
+| Weight Disk | Eight Heavy (8-sided heavy polymer disc) | 9.0 | 26.0 |
+| Spin Gear | Right SG (standard right-spin gear) | 4.0 | 3.0 |
+| Base | Flat Base (high-friction flat-tip base) | 5.0 | 3.0 |
+| **Total** | | **32.0** | |
+
+(Plastic-generation 5-part system; Bit Chip excluded from I (r≈0). AR Howling Claw: four swept claw-blade protrusions at r=26mm — claw geometry produces sharp contact points across four arc sectors; "Howling" references Lycanlor's wolf-spirit manifested as a howl; "Claw" names the arc-tip contact geometry. Eight Heavy WD: 8-sided heavy polymer disc at r=26mm — high outer-mass density maintains spin under multi-hit claw contact. Right SG: standard right-spin at r=3mm. Flat Base: high-friction flat-tip at r=3mm; μ_FB≈0.80, t_spin≈20s — drives outward sprint enabling claw multi-contact. 32.0g total.)
+
+**I_total** = 13.0×10⁻³ × 0.026² + 9.0×10⁻³ × 0.026² + 4.0×10⁻³ × 0.003² + 5.0×10⁻³ × 0.003²
+           = 8.788×10⁻⁶ + 6.084×10⁻⁶ + 0.036×10⁻⁶ + 0.045×10⁻⁶
+           = **1.495×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-era standard launch)
+L₀ = I × ω₀ = 1.495×10⁻⁵ × 500 = **7.475×10⁻³ kg·m²/s**
+
+---
+
+### 1. Claw Tip Speed and Spirit Claw Sequence
+
+```
+Howling Claw tip tangential speed:
+  v_tip = ω₀ × r_AR = 500 × 0.026 = 13.00 m/s
+
+Wolf Storm spirit claws (N=5 successive claw-slash contacts per orbit pass):
+  m_claw = 1.0 g = 1.0×10⁻³ kg  (each spirit claw mass element at tip)
+  v_claw = v_tip × 0.6731 = 13.00 × 0.6731 = 8.750 m/s  (claw contact speed)
+  η_decay = 0.88  (each successive claw delivers 88% of prior claw's impulse;
+                   higher retention than Wing Dagger — wolf claw resists more than feather)
+```
+
+---
+
+### 2. Multi-Hit Claw Impulse Sum
+
+Each of the N=5 spirit claw contacts delivers a decaying impulse. The geometric series sums the accumulated impulse:
+
+```
+Single claw impulse:
+  J_single = m_claw × v_claw = 1.0×10⁻³ × 8.750 = 8.750×10⁻³ N·s
+
+Geometric series sum (η_decay=0.88, N=5):
+  Sum = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.88^5) / (1 − 0.88)
+      = (1 − 0.5277) / 0.12 = 0.4723 / 0.12 = 3.936
+
+Total claw impulse:
+  J_WS = J_single × Sum = 8.750×10⁻³ × 3.936 = 3.444×10⁻² N·s
+
+m_opp = 36 g  (plastic-era opponent)
+  Δv_opp = J_WS / m_opp = 3.444×10⁻² / 0.036 = 0.957 m/s
+
+Spin drain on Lycanlor:
+  Δω = J_WS × r_AR / I_total = 3.444×10⁻² × 0.026 / 1.495×10⁻⁵ = 59.9 rad/s  (88.0% retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 32.0 g |
+| I_total | 1.495×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| v_tip | 13.00 m/s |
+| N | 5 claws |
+| m_claw | 1.0×10⁻³ kg |
+| v_claw | 8.750 m/s |
+| η_decay | 0.88 |
+| J_single | 8.750×10⁻³ N·s |
+| Sum | 3.936 |
+| J_WS | 3.444×10⁻² N·s |
+| Δv_opp | 0.957 m/s |
+| Δω (Lycanlor) | 59.9 rad/s (88.0% retained) |
+
+---
+
+## Case 2076 — SPECIAL: Wolf Storm — Lupinex / Lycanlor
+
+**Blader:** Lupinex | **Beyblade:** Lycanlor | **Type:** attack
+
+### Description
+
+Wolf Storm is a Special Move used by Lupinex and Lycanlor (Beyblade original series V-Force). When Lupinex calls out the move, he summons Lycanlor's bit-beast, which then continuously claws at the opponent for massive damage — five successive spirit claw strikes that intensify into a sustained slashing storm.
+
+### Stage — Spirit Claw Multi-Hit Slash Strike
+
+From Case 2075: v_tip=13.00 m/s, N=5, J_single=8.750×10⁻³ N·s, Sum=3.936, J_WS=3.444×10⁻² N·s, Δv_opp=0.957 m/s.
+
+```
+Spin retention after claw sequence:
+  ω_remain = 500 − 59.9 = 440.1 rad/s  (88.0% retained)
+  (Five successive claw contacts at η_decay=0.88; higher mass per claw vs feather model
+   means each individual contact carries more impulse — the wolf spirit sustains force better
+   than a feather, though the sequence is shorter)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Lycanlor does not wait to be called. When Lupinex names the move, the wolf-spirit has already completed the first claw. The five contacts arrive before the opponent's bey can exit the contact zone: 8.750 m/s per claw, each retaining 88% of the last. The Howling Claw AR's four arc sectors mean every revolution gives multiple contact opportunities. What the Lycanlor spirit delivers is not a sequence of blows — it is a single storm that happens to have five edges. The opponent hears the howl after all five have landed.
+
+[M] factor = **7.0 ×** (Lupinex — secondary antagonist, Lycanlor wolf spirit, V-Force era)
+[M] Δv = 0.957 × 7.0 = **6.699 m/s** (spirit claw storm ring-out)
+
+> **Note:** Physical values describe Howling Claw tip v_tip=13.00 m/s; spirit claw multi-hit N=5, η_decay=0.88 geometric series Sum=3.936; J_single=8.750×10⁻³ N·s; J_WS=3.444×10⁻² N·s; Δv=0.957 m/s; Δω=59.9 rad/s (88.0% retained). Compatible with any bey using a claw-geometry AR on a high-friction flat base. [M] values represent Lupinex's Lycanlor wolf spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wolfStormSpecial(bey: Beyblade, target: Beyblade): void {
+  // Spirit claw multi-hit: N=5 η_decay=0.88 Sum=3.936 J=3.444×10⁻²N·s; [M] 7.0×
+  const J_WS = 0.03444;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WS * 7.0; // [M] BeySpirit 7.0× (Lupinex Lycanlor wolf claw spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-era beyblade using an Attack Ring with ≥4 claw-type protrusions (r_AR ≥ 24 mm) on a high-friction flat Base (μ ≥ 0.75, t_spin ≤ 22s) capable of sustaining multi-contact approach speed v_claw ≥ 7.5 m/s. The Lycanlor wolf spirit claw technique is specific to Lupinex. Standard game instance: Lycanlor (Lupinex, Beyblade original series V-Force).
+
+---
+
+## Case 2077 — COMBO: Wolf Claw — Lycanlor
+
+**Sequence:** ↑ ← A (moveUp · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Lupinex
+
+### Physics Justification
+
+The moveUp (↑) lifts Lycanlor into the upper arc — Flat Base friction drives the sprint outward. The moveLeft (←) sweeps leftward for a flank claw approach. The attack (A) fires at partial claw count (N=3 instead of full 5 — combo tier, three-claw partial wolf strike):
+
+```
+Partial claw strike in combo (N=3, 60% claw speed):
+  v_claw_combo = v_claw × 0.60 = 8.750 × 0.60 = 5.250 m/s
+
+  J_single_combo = m_claw × v_claw_combo = 1.0×10⁻³ × 5.250 = 5.250×10⁻³ N·s
+
+  Sum_combo = (1 − η_decay^N) / (1 − η_decay) = (1 − 0.88^3) / 0.12
+            = (1 − 0.6815) / 0.12 = 0.3185 / 0.12 = 2.654
+
+  J_combo = J_single_combo × Sum_combo = 5.250×10⁻³ × 2.654 = 1.393×10⁻² N·s
+```
+
+Claw rebound spin recovery (η_claw_rebound = 0.14):
+
+```
+Δω = η_claw_rebound × J_combo × r_AR / I_total
+   = 0.14 × 1.393×10⁻² × 0.026 / 1.495×10⁻⁵
+   = 0.14 × 24.2
+   = +3.39 rad/s  → round to +3 rad/s
+```
+
+(η_claw_rebound=0.14: Howling Claw rebounds off opponent blade; claw contact returns partial energy as spin; effective spinGain = +3 rad/s.) Partial claw multi-hit gives damageMultiplier **1.25×**. lockMs = 160 (three-claw sequence dwell).
+
+**Parameters:**
+- spinGain: +3 rad/s (claw rebound)
+- damageMultiplier: 1.25 (partial claw multi-hit)
+- lockMs: 160 (claw sequence dwell)
+
+### TypeScript
+
+```typescript
+function wolfClawCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial claw N=3: Δω ≈ +3 rad/s (η=0.14, v=5.250m/s, J=1.393×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Partial claw multi-hit: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 160 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2078 — GIMMICK: Wizard Fafnir Ratchet Rise Sen — Ratchet Disc Torque-Decoupled Counter-Spin Deflect
+
+**Beyblade:** Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB era)
+**Blader:** Fumiya Kindo | **Series:** Beyblade Burst DB (Dynamite Battle)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Wizard Fafnir (left-spin stamina blade; wide outer ring at r=28mm) | 13.0 | 26.0 |
+| DB Core | Fafnir (left-spin counter-rotation hub; absorption nodes at r=12mm) | 9.0 | 10.0 |
+| Armor | Armor 3 (reinforcement ring) | 12.0 | 18.0 |
+| Disc | Ratchet (ratcheting torque-decoupling disc; ratchet teeth at r=22mm) | 8.0 | 20.0 |
+| Driver | Rise (rising-tip rider; rubber rim at r=8mm for speed boost on contact) | 9.0 | 6.0 |
+| **Total** | | **51.0** | |
+
+(Beyblade Burst DB 5-part system. Blade Wizard Fafnir: left-spin stamina blade at r=26mm; wide outer ring presents a broad deflect surface; "Wizard" references Fumiya's sorcerer aesthetic; "Fafnir" (Old Norse — the dragon of greed) names the greedy-spin absorption beast. DB Core Fafnir: left-spin counter-rotation hub at r=10mm; absorption nodes at r=12mm passively drain spin from right-spin opponents on contact. Armor 3: reinforcement ring at r=18mm. Ratchet disc: ratcheting torque-decoupling mechanism at r=22mm — the key component; ratchet teeth allow forward engagement but slip backward, decoupling up to 90% of contact torque from the Fafnir blade body when struck by a counter-clockwise opponent; "Ratchet" names the asymmetric clutch mechanism. Rise driver: rising rubber rim tip at r=6mm. 51.0g total.)
+
+**I_total** = 13.0×10⁻³ × 0.026² + 9.0×10⁻³ × 0.010² + 12.0×10⁻³ × 0.018² + 8.0×10⁻³ × 0.020² + 9.0×10⁻³ × 0.006²
+           = 8.788×10⁻⁶ + 0.900×10⁻⁶ + 3.888×10⁻⁶ + 3.200×10⁻⁶ + 0.324×10⁻⁶
+           = **1.710×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (DB era standard launch; left-spin)
+L₀ = I × ω₀ = 1.710×10⁻⁵ × 700 = **1.197×10⁻² kg·m²/s**
+
+---
+
+### 1. Ratchet Disc Torque Decoupling
+
+The Ratchet disc's asymmetric clutch mechanism: when a counter-clockwise (right-spin) opponent contacts Wizard Fafnir from the blade's deflect surface, the ratchet teeth engage the forward clutch and decouple the contact torque from reaching the main Fafnir blade body. Only a small fraction of contact torque passes through to the body:
+
+```
+Ratchet disc decoupling coefficient:
+  k_ratchet = 0.90  (ratchet teeth decouple 90% of contact torque from Fafnir body spin;
+                     only 10% of impact torque reaches the main blade — near-total decoupling)
+
+Deflect tilt angle (Fafnir angled toward opponent's attack vector):
+  θ_ratchet = 30°  (Fafnir positions Ratchet disc face at 30° to opponent attack)
+```
+
+---
+
+### 2. Ratchet Deflect Impulse
+
+The ratchet-decoupled deflect redirects the opponent's attack laterally. The shaped ratchet teeth provide an impulse geometry factor:
+
+```
+Opponent approach:
+  v_opp = 2.500 m/s  (DB era opponent attack speed)
+
+Normal component at θ_ratchet=30°:
+  v_N = v_opp × sin(θ_ratchet) = 2.500 × sin(30°) = 2.500 × 0.500 = 1.250 m/s
+
+Ratchet disc deflect parameters:
+  η_ratchet = 1.25  (ratchet tooth geometry: 25% impulse increase vs flat surface)
+  e_ratchet = 0.88  (hard ratchet tooth surface — near-elastic contact)
+
+m_opp = 51 g  (DB era opponent)
+m_eff = (m_WF × m_opp) / (m_WF + m_opp) = (0.051 × 0.051) / (0.051 + 0.051)
+      = 2.601×10⁻³ / 0.102 = 2.550×10⁻² kg
+
+J_WP = η_ratchet × m_eff × (1 + e_ratchet) × v_N
+     = 1.25 × 2.550×10⁻² × 1.88 × 1.250
+     = 1.25 × 2.550×10⁻² × 2.350 = 1.25 × 5.993×10⁻² = 7.491×10⁻² N·s
+
+Δv_opp = J_WP / m_opp = 7.491×10⁻² / 0.051 = 1.469 m/s
+
+Spin drain on Fafnir (ratchet decouples 90% contact torque):
+  Δω = J_WP × (1 − k_ratchet) × r_disc / I_total
+     = 7.491×10⁻² × 0.10 × 0.020 / 1.710×10⁻⁵
+     = 8.760×10⁻⁵ / 1.710×10⁻⁵ = 5.1 rad/s  (99.3% spin retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 51.0 g |
+| I_total | 1.710×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| θ_ratchet | 30° |
+| v_opp | 2.500 m/s |
+| v_N | 1.250 m/s |
+| k_ratchet | 0.90 |
+| η_ratchet | 1.25 |
+| e_ratchet | 0.88 |
+| m_eff | 2.550×10⁻² kg |
+| J_WP | 7.491×10⁻² N·s |
+| Δv_opp | 1.469 m/s |
+| Δω (Fafnir) | 5.1 rad/s (99.3% retained) |
+
+---
+
+## Case 2079 — SPECIAL: Wrench Parry — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen
+
+**Blader:** Fumiya Kindo | **Beyblade:** Wizard Fafnir Ratchet Rise Sen | **Type:** defense/stamina
+
+### Description
+
+Wrench Parry, known as Ratchet Through (ラチェットスルー, Rachetto Surū) in Japan, is a Special Move used by Fumiya Kindo and Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB). Wizard Fafnir uses its Ratchet Disc to deflect heavy attacks from counter-clockwise spinning Beyblades — the ratchet teeth slip under impact, redirecting the incoming force while Fafnir retains almost all its spin.
+
+### Stage — Ratchet Disc Torque-Decoupled Counter-Spin Deflect
+
+From Case 2078: θ_ratchet=30°, v_N=1.250 m/s, k_ratchet=0.90, η_ratchet=1.25, e_ratchet=0.88, J_WP=7.491×10⁻² N·s, Δv_opp=1.469 m/s.
+
+```
+Fafnir spin retention after ratchet deflect:
+  ω_remain = 700 − 5.1 = 694.9 rad/s  (99.3% retained)
+  (Ratchet disc decouples 90% of contact torque — Fafnir loses almost no spin
+   while the Ratchet tooth geometry redirects the opponent's full attack energy)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Fumiya angles Wizard Fafnir so the Ratchet disc faces the incoming attack. The ratchet teeth are not passive — they are designed to slip in one direction only. The opponent's right-spin attack arrives at 2.500 m/s and meets the ratchet face at 30°: 1.250 m/s of normal force, redirected by tooth geometry (+25%), with near-elastic contact (e=0.88). What reaches the Fafnir blade body: 10% of the impact torque. 5.1 rad/s drain. The Fafnir dragon absorbs what it can use and sends the rest back. Ratchet Through: the ratchet doesn't stop the force. It just decides where it goes.
+
+[M] factor = **7.5 ×** (Fumiya Kindo — DB era rival, Wizard Fafnir left-spin absorption dragon)
+[M] Δv = 1.469 × 7.5 = **11.02 m/s** (ratchet torque-decoupled deflect ring-out)
+
+> **Note:** Physical values describe Ratchet disc torque decoupling k_ratchet=0.90 (90% contact torque decoupled → 99.3% spin retained, Δω=5.1 rad/s); θ_ratchet=30°; v_N=1.250 m/s; η_ratchet=1.25 (ratchet tooth geometry +25% impulse); e_ratchet=0.88 (near-elastic ratchet teeth); m_eff=2.550×10⁻² kg; J_WP=7.491×10⁻² N·s; Δv=1.469 m/s. Japanese name: Ratchet Through (ラチェットスルー). Only effective against counter-clockwise (right-spin) opponents; clockwise opponents do not engage the ratchet slip mechanism. [M] values represent Fumiya's Fafnir dragon spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wrenchParrySpecial(bey: Beyblade, target: Beyblade): void {
+  // Ratchet disc deflect: k_ratchet=0.90 θ=30° J=7.491×10⁻²N·s; [M] 7.5×
+  const J_WP = 0.07491;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WP * 7.5; // [M] BeySpirit 7.5× (Fumiya Fafnir ratchet dragon spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any DB-era beyblade using a Disc with ratchet torque-decoupling mechanism (k_ratchet ≥ 0.85, η_ratchet ≥ 1.15) on a left-spin Blade with wide deflect surface (r_Blade ≥ 24 mm) against counter-clockwise attacking opponents. The ratchet slip is specific to right-spin opponents — the deflect does not function against same-spin (left-spin) attackers. Standard game instance: Wizard Fafnir Ratchet Rise Sen (Fumiya Kindo, Beyblade Burst DB). Japanese name: Ratchet Through.
+
+---
+
+## Case 2080 — COMBO: Ratchet Redirect — Wizard Fafnir Ratchet Rise Sen
+
+**Sequence:** → K A (moveRight · defense · attack)
+**Cost:** 15 | **Type:** defense/stamina | **Blader:** Fumiya Kindo
+
+### Physics Justification
+
+The moveRight (→) sweeps Wizard Fafnir to the deflect position — Rise tip's rubber rim assists speed maintenance during the approach. The defense key (K) engages Fumiya's partial ratchet stance — the disc angle reduces to θ=20° (partial engagement, less normal component). The attack (A) fires the partial ratchet deflect:
+
+```
+Partial ratchet deflect in combo (θ=20°):
+  v_N_combo = v_opp × sin(20°) = 2.500 × 0.342 = 0.855 m/s
+  η_ratchet_combo = 1.10  (partial ratchet engagement — 10% boost vs flat)
+  e_combo = 0.84  (slightly softer partial contact angle)
+
+  J_combo = η_ratchet_combo × m_eff × (1 + e_combo) × v_N_combo
+          = 1.10 × 2.550×10⁻² × 1.84 × 0.855
+          = 1.10 × 2.550×10⁻² × 1.573 = 1.10 × 4.011×10⁻² = 4.412×10⁻² N·s
+```
+
+Ratchet spin recovery (η_ratchet_spin = 0.12):
+
+```
+Δω = η_ratchet_spin × J_combo × r_disc / I_total
+   = 0.12 × 4.412×10⁻² × 0.020 / 1.710×10⁻⁵
+   = 0.12 × 51.6
+   = +6.19 rad/s  → round to +6 rad/s
+```
+
+(η_ratchet_spin=0.12: ratchet teeth spring back after partial slip, returning a fraction of contact energy as spin to the Fafnir blade; effective spinGain = +6 rad/s.) Partial ratchet deflect gives damageMultiplier **1.25×**. lockMs = 100 (ratchet tooth contact dwell).
+
+**Parameters:**
+- spinGain: +6 rad/s (ratchet spring-back)
+- damageMultiplier: 1.25 (partial ratchet deflect)
+- lockMs: 100 (ratchet dwell)
+
+### TypeScript
+
+```typescript
+function ratchetRedirectCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial ratchet θ=20°: Δω ≈ +6 rad/s (η=0.12, v_N=0.855m/s, J=4.412×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 6);
+  // Partial ratchet deflect: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +6 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2081 — GIMMICK: Wizard Fafnir Ratchet Rise Sen — Rise Tip Rim Friction Speed Boost
+
+**Beyblade:** Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB era)
+**Blader:** Fumiya Kindo | **Series:** Beyblade Burst DB (Dynamite Battle)
+
+### Assembly
+
+Same assembly as Case 2078: m=51.0 g, I_total=1.710×10⁻⁵ kg·m², ω₀=700 rad/s. The Rise Tip sub-gimmick is analyzed here: the rubber outer rim of the Rise driver can contact the arena floor wall at high speed, generating a brief friction-driven velocity boost that Fumiya uses to close the gap before an attack.
+
+---
+
+### 1. Rise Tip Rim Friction Acceleration
+
+```
+Rise driver parameters:
+  r_rim = 8 mm = 0.008 m  (rubber outer rim radius on Rise tip)
+  μ_Rise = 0.85  (rubber rim coefficient of friction on stadium floor)
+  F_normal = m_bey × g = 0.051 × 9.81 = 0.500 N  (normal force from bey weight)
+
+Friction force from rim contact:
+  F_rim = μ_Rise × F_normal = 0.85 × 0.500 = 0.425 N
+
+Acceleration during rim boost:
+  a_rim = F_rim / m_bey = 0.425 / 0.051 = 8.33 m/s²
+
+Duration of rim contact boost:
+  t_rim = 0.15 s  (Rise tip rim contact window — rubber rim grips arena floor)
+
+Speed boost from rim friction:
+  v_boost = a_rim × t_rim = 8.33 × 0.15 = 1.250 m/s
+```
+
+---
+
+### 2. Attack Speed After Rim Boost
+
+Wizard Fafnir approaches from a low orbit (v_base=1.500 m/s from left-spin stamina path) and catches the arena floor rim, receiving the boost before attacking:
+
+```
+Base orbital approach speed (Rise stamina orbit):
+  v_base = 1.500 m/s
+
+Attack speed after rim friction boost:
+  v_attack = v_base + v_boost = 1.500 + 1.250 = 2.750 m/s
+
+Contact parameters:
+  e_contact = 0.78  (Wizard blade on standard DB opponent)
+
+m_opp = 51 g  (DB era opponent, same mass as Wizard Fafnir)
+m_eff = (m_WF × m_opp) / (m_WF + m_opp) = (0.051 × 0.051) / (0.051 + 0.051)
+      = 2.601×10⁻³ / 0.102 = 2.550×10⁻² kg
+
+J_WB = m_eff × (1 + e_contact) × v_attack
+     = 2.550×10⁻² × 1.78 × 2.750
+     = 2.550×10⁻² × 4.895 = 1.248×10⁻¹ N·s
+
+Δv_opp = J_WB / m_opp = 1.248×10⁻¹ / 0.051 = 2.447 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 51.0 g |
+| I_total | 1.710×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| r_rim | 8 mm |
+| μ_Rise | 0.85 |
+| F_rim | 0.425 N |
+| a_rim | 8.33 m/s² |
+| t_rim | 0.15 s |
+| v_boost | 1.250 m/s |
+| v_base | 1.500 m/s |
+| v_attack | 2.750 m/s |
+| e_contact | 0.78 |
+| J_WB | 1.248×10⁻¹ N·s |
+| Δv_opp | 2.447 m/s |
+
+---
+
+## Case 2082 — SPECIAL: Wizard Blow — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen
+
+**Blader:** Fumiya Kindo | **Beyblade:** Wizard Fafnir Ratchet Rise Sen | **Type:** attack/stamina
+
+### Description
+
+Wizard Blow (ウィザードブロー, U~izādo Burō) is a Special Move used by Fumiya Kindo and Wizard Fafnir Ratchet Rise Sen (Beyblade Burst DB). Because it does not have a spring like Nothing or Absorb, Wizard Fafnir uses the rim of its Rise Tip to get a speed boost — the rubber rim catches the arena floor and propels Fafnir into the opponent at greater velocity than its standard orbit permits.
+
+### Stage — Rise Tip Rim Friction Speed Boost
+
+From Case 2081: r_rim=8mm, μ_Rise=0.85, F_rim=0.425 N, a_rim=8.33 m/s², t_rim=0.15s, v_boost=1.250 m/s, v_base=1.500 m/s, v_attack=2.750 m/s, J_WB=1.248×10⁻¹ N·s, Δv_opp=2.447 m/s.
+
+```
+Spin drain from rim-boosted attack:
+  Δω = J_WB × r_Blade / I_total = 1.248×10⁻¹ × 0.026 / 1.710×10⁻⁵ = 189.7 rad/s
+  ω_remain = 700 − 189.7 = 510.3 rad/s  (72.9% retained)
+  (Rise rubber rim boost is a one-shot acceleration; after the attack, Rise returns to stamina orbit
+   at reduced spin — but the Fafnir blade's left-spin stamina path still maintains stable orbit)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Fumiya knows what the Rise tip does. It is not a spring. It is not a mechanism that fires on command. It is friction — the rubber rim catches the floor, and for 0.15 seconds, 0.425 newtons push Fafnir faster than its orbit can carry it. 1.250 m/s gained in one moment: not a spring trigger, not a launch event. Just the rim doing what rubber does on a hard surface. The Fafnir dragon spirit channels through that acceleration: 2.750 m/s at contact, 1.248×10⁻¹ newton-seconds delivered. Wizard Blow: the wizardry is knowing how to use what you have.
+
+[M] factor = **7.5 ×** (Fumiya Kindo — DB era rival, Wizard Fafnir left-spin absorption dragon)
+[M] Δv = 2.447 × 7.5 = **18.35 m/s** (rim friction boost ring-out)
+
+> **Note:** Physical values describe Rise tip rubber rim: r_rim=8mm, μ_Rise=0.85, F_rim=0.425 N, a=8.33 m/s², t_rim=0.15s → v_boost=1.250 m/s; v_base=1.500 m/s; v_attack=2.750 m/s; e_contact=0.78; m_eff=2.550×10⁻² kg; J_WB=1.248×10⁻¹ N·s; Δv=2.447 m/s; Δω_drain=189.7 rad/s (72.9% spin retained). Explicitly not a spring mechanism — distinguishing from Nothing and Absorb drivers. Japanese name: Wizard Blow (ウィザードブロー). [M] values represent Fumiya's Fafnir dragon spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wizardBlowSpecial(bey: Beyblade, target: Beyblade): void {
+  // Rise rim friction boost: μ=0.85 t=0.15s v_boost=1.250m/s J=1.248×10⁻¹N·s; [M] 7.5×
+  const J_WB = 0.1248;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WB * 7.5; // [M] BeySpirit 7.5× (Fumiya Fafnir rim-boost dragon spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any DB-era beyblade using a Driver with a rubber outer rim (r_rim ≥ 6 mm, μ ≥ 0.80) capable of floor contact friction acceleration (a_rim ≥ 7.0 m/s², t_rim ≥ 0.10s, v_boost ≥ 0.8 m/s). Explicitly requires rubber rim contact with the arena floor — not a spring mechanism. Standard game instance: Wizard Fafnir Ratchet Rise Sen (Fumiya Kindo, Beyblade Burst DB). Japanese name: Wizard Blow.
+
+---
+
+## Case 2083 — COMBO: Rise Rush — Wizard Fafnir Ratchet Rise Sen
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack/stamina | **Blader:** Fumiya Kindo
+
+### Physics Justification
+
+The moveRight (→) positions Wizard Fafnir on the right approach vector — Rise rubber rim begins partial floor contact. The moveUp (↑) arcs upward, shortening the rim contact duration to t=0.10s (combo tier — partial rim boost only). The attack (A) fires at reduced rim boost:
+
+```
+Partial rim friction boost in combo (t_rim=0.10s):
+  v_boost_combo = a_rim × t_rim_combo = 8.33 × 0.10 = 0.833 m/s
+
+  v_combo = v_base + v_boost_combo = 1.500 + 0.833 = 2.333 m/s
+  e_combo = 0.76  (reduced contact precision in combo)
+
+  J_combo = m_eff × (1 + e_combo) × v_combo
+          = 2.550×10⁻² × 1.76 × 2.333
+          = 2.550×10⁻² × 4.106 = 1.047×10⁻¹ N·s
+```
+
+Rise rim rebound spin recovery (η_rim_rebound = 0.08):
+
+```
+Δω = η_rim_rebound × J_combo × r_Blade / I_total
+   = 0.08 × 1.047×10⁻¹ × 0.026 / 1.710×10⁻⁵
+   = 0.08 × 159.3
+   = +12.74 rad/s  → round to +13 rad/s
+```
+
+(η_rim_rebound=0.08: rubber Rise rim rebounds off opponent blade, returning partial contact energy as spin; effective spinGain = +13 rad/s.) Partial rim boost attack gives damageMultiplier **1.35×**. lockMs = 90 (rubber rim contact dwell).
+
+**Parameters:**
+- spinGain: +13 rad/s (rubber rim rebound)
+- damageMultiplier: 1.35 (partial rim boost attack)
+- lockMs: 90 (rubber rim dwell)
+
+### TypeScript
+
+```typescript
+function riseRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial rim boost t=0.10s: Δω ≈ +13 rad/s (η=0.08, v=2.333m/s, J=1.047×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Partial rim boost attack: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 90 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2084 — GIMMICK: World Spryzen Unite' 2B — Aerial Descent Attack-Mode Slope Slam
+
+**Beyblade:** World Spryzen Unite' 2B (Beyblade Burst GT era)
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst GT (God Turbo)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | World Spryzen (World Ring metallic contact band at r=29mm) | 15.0 | 27.0 |
+| Chassis | 2B (dual-mode dual-bound chassis; bound free-spin outer ring at r=24mm) | 14.0 | 20.0 |
+| Disc | Unite' (prime unite disc; medium-span mass distribution) | 12.0 | 21.0 |
+| Driver | Base | 9.0 | 5.0 |
+| **Total** | | **50.0** | |
+
+(Beyblade Burst GT 4-part system. Blade World Spryzen: World Ring — a metallic band contact ring at r=27mm; "World" references Shu's global-stage mastery; "Spryzen" (from Sprossen — German: sprout/rung) names the rung-like blade geometry. 2B Chassis: dual-mode — Attack Mode extends the World Ring outward for maximum contact radius; Defense Mode retires the ring inward behind the bound free-spin outer ring. In Attack Mode (World Whip), the 2B chassis positions the World Ring at r_world=29mm. Unite' disc: medium-span prime disc at r=21mm. Base driver: low-friction bearing-tip base at r=5mm. 50.0g total.)
+
+**I_total** = 15.0×10⁻³ × 0.027² + 14.0×10⁻³ × 0.020² + 12.0×10⁻³ × 0.021² + 9.0×10⁻³ × 0.005²
+           = 10.935×10⁻⁶ + 5.600×10⁻⁶ + 5.292×10⁻⁶ + 0.225×10⁻⁶
+           = **2.205×10⁻⁵ kg·m²**
+
+ω₀ = 670 rad/s (Burst GT era standard launch)
+L₀ = I × ω₀ = 2.205×10⁻⁵ × 670 = **1.477×10⁻² kg·m²/s**
+
+---
+
+### 1. Aerial Descent (Attack Mode — World Whip)
+
+World Spryzen is set in Attack Mode and launched into the air. The fall converts gravitational PE to KE, boosting contact speed:
+
+```
+Aerial launch parameters (World Whip — Attack Mode):
+  h_launch = 50 mm = 0.050 m  (vertical drop from air-launch peak to arena floor)
+  v_base = 2.200 m/s  (World Spryzen orbit speed before aerial descent)
+
+Slope-boosted contact speed (energy conservation):
+  v_contact² = v_base² + 2 × g × h_launch
+             = 2.200² + 2 × 9.81 × 0.050
+             = 4.840 + 0.981
+             = 5.821 m²/s²
+  v_contact = √5.821 = 2.413 m/s
+```
+
+---
+
+### 2. World Ring Metal Slash
+
+The metallic World Ring strikes the opponent in Attack Mode. High restitution from metal-on-hard-resin:
+
+```
+Metal contact parameters:
+  e_world = 0.85  (metallic World Ring — near-elastic hard surface)
+
+m_opp = 50 g  (Burst GT era opponent, same as World Spryzen)
+m_eff = (m_WS × m_opp) / (m_WS + m_opp) = (0.050 × 0.050) / (0.050 + 0.050)
+      = 2.500×10⁻³ / 0.100 = 2.500×10⁻² kg
+
+J_WW = m_eff × (1 + e_world) × v_contact
+     = 2.500×10⁻² × 1.85 × 2.413
+     = 2.500×10⁻² × 4.464 = 1.116×10⁻¹ N·s
+
+Δv_opp = J_WW / m_opp = 1.116×10⁻¹ / 0.050 = 2.232 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 50.0 g |
+| I_total | 2.205×10⁻⁵ kg·m² |
+| ω₀ | 670 rad/s |
+| h_launch | 50 mm |
+| v_base | 2.200 m/s |
+| v_contact | 2.413 m/s |
+| e_world | 0.85 |
+| m_eff | 2.500×10⁻² kg |
+| J_WW | 1.116×10⁻¹ N·s |
+| Δv_opp | 2.232 m/s |
+
+---
+
+## Case 2085 — SPECIAL: World Whip — Shu Kurenai / World Spryzen Unite' 2B
+
+**Blader:** Shu Kurenai | **Beyblade:** World Spryzen Unite' 2B | **Type:** attack
+
+### Description
+
+World Whip, known as World Slash (ワールドスラッシュ, Wārudo Surasshu) in Japan, is a Special Move used by Shu Kurenai and World Spryzen Unite' 2B (Beyblade Burst GT). Set in Attack Mode and launched in the air, Spryzen utilizes the fall to increase in speed and gains an increase in energy, releasing a powerful slash with the World Ring that generates sparks.
+
+### Stage — Aerial Descent Attack-Mode Slope Slam
+
+From Case 2084: h_launch=50mm, v_base=2.200 m/s, v_contact=2.413 m/s, e_world=0.85, J_WW=1.116×10⁻¹ N·s, Δv_opp=2.232 m/s.
+
+```
+Spin drain from aerial World Ring slash:
+  Δω = J_WW × r_world / I_total = 1.116×10⁻¹ × 0.029 / 2.205×10⁻⁵ = 146.8 rad/s
+  ω_remain = 670 − 146.8 = 523.2 rad/s  (78.1% retained)
+  (Attack Mode extends World Ring to r=29mm; greater contact radius increases torque drain
+   vs Defense Mode; aerial fall h=50mm adds 0.981 m²/s² of kinetic energy)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu does not launch low. World Spryzen leaves the launcher above the stadium — the 2B chassis locks into Attack Mode before the bey leaves Shu's hand. The fall takes 50mm to complete: 0.981 m²/s² of gravity converted to horizontal contact velocity. The World Ring's metallic band is already spinning at 670 rad/s when it arrives. e_world=0.85: almost nothing is lost at impact. The sparks the anime shows are real — metal on hard resin at 2.413 m/s produces exactly that. "World Slash" — the World Ring cuts through the opponent's Burst resistance with the weight of the fall behind it.
+
+[M] factor = **8.0 ×** (Shu Kurenai — deuteragonist/rival, Red Eye arc, Spryzen Valkyrie spirit)
+[M] Δv = 2.232 × 8.0 = **17.86 m/s** (aerial World Ring slash ring-out)
+
+> **Note:** Physical values describe 2B Attack Mode aerial descent: h_launch=50mm → v_contact=2.413 m/s (2gh energy addition 0.981 m²/s²); World Ring metallic band e_world=0.85; m_eff=2.500×10⁻² kg (50g vs 50g); J_WW=1.116×10⁻¹ N·s; Δv=2.232 m/s; Δω_drain=146.8 rad/s (78.1% retained, r_world=29mm Attack Mode). Japanese name: World Slash (ワールドスラッシュ). [M] values represent Shu's Spryzen spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function worldWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Aerial Attack Mode: h=50mm v=2.413m/s e=0.85 J=1.116×10⁻¹N·s; [M] 8.0×
+  const J_WW = 0.1116;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WW * 8.0; // [M] BeySpirit 8.0× (Shu World Spryzen Valkyrie spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst GT-era beyblade using a Blade with a metallic World Ring or equivalent attack band (r_Blade ≥ 25 mm, e_metal ≥ 0.82) on a dual-mode Chassis capable of aerial Attack Mode deployment (h_launch ≥ 35mm, v_contact ≥ 2.1 m/s). Standard game instance: World Spryzen Unite' 2B (Shu Kurenai, Beyblade Burst GT). Japanese name: World Slash.
+
+---
+
+## Case 2086 — COMBO: World Slash — World Spryzen Unite' 2B
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 25 | **Type:** attack | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The moveUp (↑) lifts World Spryzen into an elevated arc — Attack Mode maintains the World Ring extended. The moveRight (→) arcs rightward, descending from partial height (h_combo=30mm, less than the full special's 50mm). The attack (A) fires at 80% base approach speed (combo tier):
+
+```
+Partial aerial descent in combo (h=30mm, 80% base speed):
+  v_combo_base = v_base × 0.80 = 2.200 × 0.80 = 1.760 m/s
+
+  v_combo² = 1.760² + 2 × 9.81 × 0.030 = 3.098 + 0.589 = 3.687 m²/s²
+  v_combo = √3.687 = 1.920 m/s
+
+  e_combo = 0.80  (reduced contact alignment in combo)
+  J_combo = m_eff × (1 + e_combo) × v_combo
+          = 2.500×10⁻² × 1.80 × 1.920
+          = 2.500×10⁻² × 3.456 = 8.640×10⁻² N·s
+```
+
+World Ring rebound spin recovery (η_world_rebound = 0.10):
+
+```
+Δω = η_world_rebound × J_combo × r_world / I_total
+   = 0.10 × 8.640×10⁻² × 0.029 / 2.205×10⁻⁵
+   = 0.10 × 113.6
+   = +11.36 rad/s  → round to +11 rad/s
+```
+
+(η_world_rebound=0.10: metallic World Ring rebounds cleanly off hard opponent material, returning partial energy as spin; effective spinGain = +11 rad/s.) Partial aerial World Ring slam gives damageMultiplier **1.40×**. lockMs = 100 (World Ring impact dwell).
+
+**Parameters:**
+- spinGain: +11 rad/s (World Ring metal rebound)
+- damageMultiplier: 1.40 (partial aerial World Ring slam)
+- lockMs: 100 (World Ring impact dwell)
+
+### TypeScript
+
+```typescript
+function worldSlashCombo(bey: Beyblade, target: Beyblade): void {
+  // Partial aerial h=30mm: Δω ≈ +11 rad/s (η=0.10, v=1.920m/s, J=8.640×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Partial aerial World Ring slam: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2087 — GIMMICK: World Spryzen Unite' 2B (Defense Mode) — 2B Bound Free-Spin Chassis Torque Deflect
+
+**Beyblade:** World Spryzen Unite' 2B (Beyblade Burst GT era) — Defense Mode
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst GT (God Turbo)
+
+### Assembly
+
+Same assembly as Case 2084: m=50.0 g, I_total=2.205×10⁻⁵ kg·m², ω₀=670 rad/s. Here the 2B Chassis is set to **Defense Mode**: the World Ring is retracted inward and the bound free-spin outer ring (at r=24mm) becomes the primary contact surface.
+
+---
+
+### 1. 2B Defense Mode — Bound Free-Spin Ring Torque Decoupling
+
+In Defense Mode, the free-spin outer ring on the 2B Chassis contacts the opponent. Like ED145's bearing, this ring rotates independently, decoupling contact torque from the Spryzen blade body:
+
+```
+2B free-spin outer ring decoupling coefficient:
+  k_2B_decouple = 0.82  (2B bound free-spin ring decouples 82% of contact torque;
+                         slightly less than ED145 k=0.85 — bound ring adds mild resistance)
+
+Defense Mode contact radius:
+  r_2B = 24 mm = 0.024 m  (free-spin outer ring contact radius in Defense Mode)
+
+Deflect tilt angle (Spryzen maneuvers to present 2B ring face to opponent):
+  θ_2B = 15°  (shallower than Wrench Parry — 2B ring deflects at narrow angle)
+```
+
+---
+
+### 2. Bound Ring Deflect Impulse
+
+The 2B free-spin ring presents a shaped concave geometry to the opponent's blade. The bound's slight give provides additional impulse geometry enhancement:
+
+```
+Opponent approach:
+  v_opp = 2.500 m/s  (Burst GT era opponent attack speed)
+
+Normal component at θ_2B=15°:
+  v_N = v_opp × sin(θ_2B) = 2.500 × sin(15°) = 2.500 × 0.259 = 0.648 m/s
+
+2B bound ring parameters:
+  η_2B = 1.15  (bound ring concave geometry: 15% impulse increase vs flat surface)
+  e_bound = 0.90  (free-spin bound rubber surface — high restitution at low contact force)
+
+m_opp = 50 g  (Burst GT era opponent)
+m_eff = (m_WS × m_opp) / (m_WS + m_opp) = (0.050 × 0.050) / (0.050 + 0.050)
+      = 2.500×10⁻³ / 0.100 = 2.500×10⁻² kg
+
+J_WS = η_2B × m_eff × (1 + e_bound) × v_N
+     = 1.15 × 2.500×10⁻² × 1.90 × 0.648
+     = 1.15 × 2.500×10⁻² × 1.231 = 1.15 × 3.078×10⁻² = 3.539×10⁻² N·s
+
+Δv_opp = J_WS / m_opp = 3.539×10⁻² / 0.050 = 0.708 m/s
+
+Spin drain on Spryzen (2B decouples 82% contact torque):
+  Δω = J_WS × (1 − k_2B_decouple) × r_2B / I_total
+     = 3.539×10⁻² × 0.18 × 0.024 / 2.205×10⁻⁵
+     = 1.529×10⁻⁴ / 2.205×10⁻⁵ = 6.9 rad/s  (99.0% spin retained)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 50.0 g |
+| I_total | 2.205×10⁻⁵ kg·m² |
+| ω₀ | 670 rad/s |
+| θ_2B | 15° |
+| v_opp | 2.500 m/s |
+| v_N | 0.648 m/s |
+| k_2B_decouple | 0.82 |
+| η_2B | 1.15 |
+| e_bound | 0.90 |
+| m_eff | 2.500×10⁻² kg |
+| J_WS | 3.539×10⁻² N·s |
+| Δv_opp | 0.708 m/s |
+| Δω (Spryzen) | 6.9 rad/s (99.0% retained) |
+
+---
+
+## Case 2088 — SPECIAL: World Spin — Shu Kurenai / World Spryzen Unite' 2B
+
+**Blader:** Shu Kurenai | **Beyblade:** World Spryzen Unite' 2B | **Type:** defense/stamina
+
+### Description
+
+World Spin (ワールドスピン, Wārudo Supin) is a Special Move used by Shu Kurenai and World Spryzen Unite' 2B (Beyblade Burst GT). With the 2B Chassis set to Defense Mode, World Spryzen can maneuver the opposing Beyblade's attack with the free-spinning bound on the Chassis, avoiding the damage.
+
+### Stage — 2B Bound Free-Spin Chassis Torque Deflect
+
+From Case 2087: θ_2B=15°, v_N=0.648 m/s, k_2B_decouple=0.82, η_2B=1.15, e_bound=0.90, J_WS=3.539×10⁻² N·s, Δv_opp=0.708 m/s.
+
+```
+Spryzen spin retention after 2B ring deflect:
+  ω_remain = 670 − 6.9 = 663.1 rad/s  (99.0% retained)
+  (2B free-spin bound ring decouples 82% of contact torque — Spryzen loses almost no spin
+   while the bound's slight give redirects the opponent's attack energy as a deflect impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu switches 2B to Defense Mode before the opponent arrives. The World Ring retreats. What the opponent's blade meets is the free-spin bound outer ring — it gives slightly at contact (e_bound=0.90), but that slight give is the point: the ring absorbs the attack vector's direction, redirects 15° off-axis, and the bound's concave geometry adds 15% more deflect force than a flat surface would. 6.9 rad/s of spin lost. 99.0% retained. World Spin is the 2B Chassis doing exactly what it was designed to do, with Shu controlling which mode is active.
+
+[M] factor = **8.0 ×** (Shu Kurenai — deuteragonist/rival, Red Eye arc, Spryzen Valkyrie spirit)
+[M] Δv = 0.708 × 8.0 = **5.664 m/s** (2B bound ring deflect ring-out)
+
+> **Note:** Physical values describe 2B Defense Mode bound free-spin ring: k_2B_decouple=0.82 (82% torque decoupled → 99.0% spin retained, Δω=6.9 rad/s); θ_2B=15°; v_N=0.648 m/s; η_2B=1.15 (bound concave geometry +15%); e_bound=0.90 (high-restitution rubber bound surface); m_eff=2.500×10⁻² kg; J_WS=3.539×10⁻² N·s; Δv=0.708 m/s. Japanese name: World Spin (ワールドスピン). Defense Mode only — Attack Mode uses World Whip mechanics (Case 2085). [M] values represent Shu's Spryzen spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function worldSpinSpecial(bey: Beyblade, target: Beyblade): void {
+  // 2B Defense Mode bound ring deflect: k=0.82 θ=15° J=3.539×10⁻²N·s; [M] 8.0×
+  const J_WS = 0.03539;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WS * 8.0; // [M] BeySpirit 8.0× (Shu World Spryzen defense spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst GT-era beyblade using a dual-mode Chassis with a free-spin bound outer ring (r_ring ≥ 20 mm, k_decouple ≥ 0.78, e_bound ≥ 0.85) in Defense Mode configuration. Defense Mode positioning must retract the primary blade contact surface and expose the bound ring. Standard game instance: World Spryzen Unite' 2B (Shu Kurenai, Beyblade Burst GT). Japanese name: World Spin.
+
+---
+
+## Case 2089 — COMBO: World Guard — World Spryzen Unite' 2B
+
+**Sequence:** ↑ K A (moveUp · defense · attack)
+**Cost:** 15 | **Type:** defense/stamina | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The moveUp (↑) lifts World Spryzen into the upper defensive arc — Defense Mode bound ring positioned facing outward. The defense key (K) engages Shu's 2B partial defense stance — ring angle reduces to θ=8° (shallower engagement, less normal component). The attack (A) fires the shallow deflect:
+
+```
+Shallow 2B ring deflect in combo (θ=8°):
+  v_N_combo = v_opp × sin(8°) = 2.500 × 0.139 = 0.348 m/s
+  η_2B_combo = 1.08  (shallow partial bound engagement — 8% boost vs flat)
+  e_combo = 0.86  (slightly softer shallow contact angle)
+
+  J_combo = η_2B_combo × m_eff × (1 + e_combo) × v_N_combo
+          = 1.08 × 2.500×10⁻² × 1.86 × 0.348
+          = 1.08 × 2.500×10⁻² × 0.647 = 1.08 × 1.618×10⁻² = 1.747×10⁻² N·s
+```
+
+Bound ring spin recovery (η_bound_spin = 0.20):
+
+```
+Δω = η_bound_spin × J_combo × r_2B / I_total
+   = 0.20 × 1.747×10⁻² × 0.024 / 2.205×10⁻⁵
+   = 0.20 × 19.0
+   = +3.80 rad/s  → round to +4 rad/s
+```
+
+(η_bound_spin=0.20: 2B bound ring spring-back after shallow deflect returns a higher fraction of contact energy as spin than deep-angle contact; effective spinGain = +4 rad/s.) Shallow 2B bound deflect gives damageMultiplier **1.15×**. lockMs = 80 (shallow bound ring contact dwell).
+
+**Parameters:**
+- spinGain: +4 rad/s (bound ring spring-back)
+- damageMultiplier: 1.15 (shallow 2B bound deflect)
+- lockMs: 80 (bound dwell)
+
+### TypeScript
+
+```typescript
+function worldGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // Shallow 2B bound θ=8°: Δω ≈ +4 rad/s (η_bound=0.20, v_N=0.348m/s, J=1.747×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 4);
+  // Shallow bound deflect: 1.15× normal impulse
+  bey.damageMultiplier = 1.15;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.15, (dy / dist) * 0.15);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.15 | ✓ |
+| lockMs | ≤ 300 | 80 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +4 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2090 — GIMMICK: Wonder Valtryek 12 Volcanic — Recoil-Assisted Volcanic Rim Orbital Attack
+
+**Beyblade:** Wonder Valtryek 12 Volcanic (Beyblade Burst Surge/Superking era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Surge (Superking)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Wonder Valtryek (wing-blade with attack geometry at r=26mm) | 15.0 | 24.0 |
+| Chassis/Layer | 12 Disc (12-pointed star disc; wide-span mass) | 16.0 | 23.0 |
+| Driver | Volcanic (rubber flat tip with outer rubber raised rim) | 10.0 | 6.0 |
+| Layer Base | Wonder Base | 7.0 | 8.0 |
+| **Total** | | **48.0** | |
+
+(Beyblade Burst Surge 4-part system. Blade Wonder Valtryek: wing-blade attack geometry at r=24mm; "Wonder" (Wunder — German: miracle/wonder) references Valt's signature belief in miracles; Valtryek (Valkyrie) names the battle-maiden spirit. 12 disc: 12-pointed star wide-span disc at r=23mm — high outer-mass density stabilises the orbit during the Volcanic recoil acceleration phase. Volcanic driver: rubber flat tip with raised rubber outer rim at r=6mm; the rim is the key feature — it contacts the arena wall/floor and receives recoil impulse; μ_Volcanic≈0.88 (rubber outer rim on arena surface), t_spin≈18s. Wonder Base: structural base at r=8mm. 48.0g total.)
+
+**I_total** = 15.0×10⁻³ × 0.024² + 16.0×10⁻³ × 0.023² + 10.0×10⁻³ × 0.006² + 7.0×10⁻³ × 0.008²
+           = 8.640×10⁻⁶ + 8.464×10⁻⁶ + 0.360×10⁻⁶ + 0.448×10⁻⁶
+           = **1.791×10⁻⁵ kg·m²**
+
+ω₀ = 660 rad/s (Burst Surge/Superking era standard launch)
+L₀ = I × ω₀ = 1.791×10⁻⁵ × 660 = **1.182×10⁻² kg·m²/s**
+
+---
+
+### 1. Incoming Attack Recoil Model
+
+Wonder Valtryek receives an opponent's attack and uses the Volcanic rim to absorb and redirect the recoil into forward orbital velocity:
+
+```
+Incoming opponent attack:
+  v_opp_incoming = 2.000 m/s  (opponent attack speed toward Wonder Valtryek)
+  e_receive = 0.70  (Volcanic rubber absorbs incoming attack — moderate restitution)
+
+m_opp = 48 g  (Burst Surge opponent, same era)
+m_eff_receive = (m_WV × m_opp) / (m_WV + m_opp) = (0.048 × 0.048) / (0.048 + 0.048)
+              = 2.304×10⁻³ / 0.096 = 2.400×10⁻² kg
+
+Received impulse (inbound):
+  J_received = m_eff_receive × (1 + e_receive) × v_opp_incoming
+             = 2.400×10⁻² × 1.70 × 2.000
+             = 2.400×10⁻² × 3.400 = 8.160×10⁻² N·s
+
+Recoil redirection factor (Volcanic rim geometry channels impulse orbital):
+  η_recoil = 0.55  (55% of received impulse redirected as forward orbital boost
+                    via Volcanic rubber rim eccentric contact geometry)
+
+Orbital velocity boost from recoil:
+  v_boost_recoil = η_recoil × J_received / m_WV
+                 = 0.55 × 8.160×10⁻² / 0.048
+                 = 4.488×10⁻² / 0.048 = 0.935 m/s
+```
+
+---
+
+### 2. Volcanic Rim Orbital Attack
+
+After receiving the recoil boost, Wonder Valtryek circles outward at maximum speed and attacks:
+
+```
+Base orbital speed (Volcanic rubber flat tip):
+  v_base = 1.600 m/s
+
+Attack speed (base + recoil boost):
+  v_attack = v_base + v_boost_recoil = 1.600 + 0.935 = 2.535 m/s
+
+Contact parameters:
+  e_attack = 0.80  (Wonder blade attack geometry on standard Burst opponent)
+
+J_WFL = m_eff_receive × (1 + e_attack) × v_attack
+      = 2.400×10⁻² × 1.80 × 2.535
+      = 2.400×10⁻² × 4.563 = 1.095×10⁻¹ N·s
+
+Δv_opp = J_WFL / m_opp = 1.095×10⁻¹ / 0.048 = 2.281 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 48.0 g |
+| I_total | 1.791×10⁻⁵ kg·m² |
+| ω₀ | 660 rad/s |
+| v_opp_incoming | 2.000 m/s |
+| e_receive | 0.70 |
+| J_received | 8.160×10⁻² N·s |
+| η_recoil | 0.55 |
+| v_boost_recoil | 0.935 m/s |
+| v_base | 1.600 m/s |
+| v_attack | 2.535 m/s |
+| e_attack | 0.80 |
+| J_WFL | 1.095×10⁻¹ N·s |
+| Δv_opp | 2.281 m/s |
+
+---
+
+## Case 2091 — SPECIAL: Wonder Flash Launch — Valt Aoi / Wonder Valtryek 12 Volcanic
+
+**Blader:** Valt Aoi | **Beyblade:** Wonder Valtryek 12 Volcanic | **Type:** attack
+
+### Description
+
+Wonder Flash Launch, known as Winning Rush Shoot (ウイニングラッシュシュート, Uiningu Rasshu Shūto) in Japan, is a special technique used by Valt Aoi and his Wonder Valtryek 12 Volcanic (Beyblade Burst Surge). Wonder Valtryek uses the recoil from an opponent attack and speeds up on the Volcanic Driver, circling around towards the outer edge of the stadium, then attacks the opponent at great speed.
+
+### Stage — Recoil-Assisted Volcanic Rim Orbital Attack
+
+From Case 2090: v_opp_incoming=2.000 m/s, e_receive=0.70, J_received=8.160×10⁻² N·s, η_recoil=0.55, v_boost_recoil=0.935 m/s, v_base=1.600 m/s, v_attack=2.535 m/s, J_WFL=1.095×10⁻¹ N·s, Δv_opp=2.281 m/s.
+
+```
+Spin drain from Volcanic orbital attack:
+  Δω = J_WFL × r_Blade / I_total = 1.095×10⁻¹ × 0.024 / 1.791×10⁻⁵ = 146.7 rad/s
+  ω_remain = 660 − 146.7 = 513.3 rad/s  (77.8% retained)
+  (Volcanic rubber tip sustains the outward orbit arc to the stadium edge;
+   the attack converts the full recoil-boosted orbital speed into contact impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt does not dodge the incoming attack. Wonder Valtryek takes the hit — Volcanic absorbs it (e_receive=0.70) and the rubber rim geometry channels 55% of the received impulse into a new direction. The bey that arrived at 2.000 m/s is now gone. Wonder Valtryek is already circling the outer edge of the stadium at 2.535 m/s. The Valtryek Valkyrie spirit appears not in avoiding the strike but in using it: "Winning Rush Shoot" — the rush is the opponent's own energy, returned from the edge of the arena. Valt has always understood that Valtryek fights best when it's already moving.
+
+[M] factor = **8.0 ×** (Valt Aoi — main protagonist, Valtryek Valkyrie battle spirit)
+[M] Δv = 2.281 × 8.0 = **18.25 m/s** (recoil-boosted Volcanic orbital attack ring-out)
+
+> **Note:** Physical values describe Volcanic rim recoil model: incoming v=2.000 m/s, e_receive=0.70, J_received=8.160×10⁻² N·s; η_recoil=0.55 (55% redirected orbital); v_boost=0.935 m/s; v_base=1.600 m/s; v_attack=2.535 m/s; e_attack=0.80; m_eff=2.400×10⁻² kg; J_WFL=1.095×10⁻¹ N·s; Δv=2.281 m/s; Δω_drain=146.7 rad/s (77.8% spin retained). Japanese name: Winning Rush Shoot (ウイニングラッシュシュート). [M] values represent Valt's Valtryek Valkyrie spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function wonderFlashLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Recoil orbital: e_receive=0.70 η=0.55 v_attack=2.535m/s J=1.095×10⁻¹N·s; [M] 8.0×
+  const J_WFL = 0.1095;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_WFL * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek Volcanic recoil spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Surge-era beyblade using a Driver with a rubber outer raised rim (r_rim ≥ 5 mm, μ ≥ 0.85) capable of recoil redirection (η_recoil ≥ 0.45) and sustained outer-edge orbital approach (v_base ≥ 1.4 m/s, t_spin ≤ 22s). The recoil-redirect orbital technique is specific to Valt Aoi's read of incoming attacks. Standard game instance: Wonder Valtryek 12 Volcanic (Valt Aoi, Beyblade Burst Surge). Japanese name: Winning Rush Shoot.
+
+---
+
+## Case 2092 — COMBO: Flash Rush — Wonder Valtryek 12 Volcanic
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 25 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveUp (↑) lifts Wonder Valtryek into the upper arc — Volcanic rubber rim contacts the upper bowl wall, gathering partial recoil from the wall contact. The moveRight (→) arcs rightward, completing the outer-edge orbit approach. The attack (A) fires at 75% attack speed (combo tier — no incoming opponent attack to absorb, uses only partial wall recoil):
+
+```
+Partial recoil orbit in combo (wall recoil only, η_recoil_wall=0.35):
+  v_wall_incoming = 1.500 m/s  (estimated orbital speed as bey hits upper bowl wall)
+  J_wall = m_eff_receive × (1 + 0.65) × v_wall_incoming
+         = 2.400×10⁻² × 1.65 × 1.500 = 2.400×10⁻² × 2.475 = 5.940×10⁻² N·s
+
+  v_boost_wall = 0.35 × 5.940×10⁻² / 0.048 = 2.079×10⁻² / 0.048 = 0.433 m/s
+
+  v_combo = v_base + v_boost_wall = 1.600 + 0.433 = 2.033 m/s
+  e_combo = 0.78  (reduced alignment in combo)
+  J_combo = m_eff_receive × (1 + e_combo) × v_combo
+          = 2.400×10⁻² × 1.78 × 2.033
+          = 2.400×10⁻² × 3.619 = 8.686×10⁻² N·s
+```
+
+Volcanic rim rebound spin recovery (η_volcanic_rebound = 0.09):
+
+```
+Δω = η_volcanic_rebound × J_combo × r_Blade / I_total
+   = 0.09 × 8.686×10⁻² × 0.024 / 1.791×10⁻⁵
+   = 0.09 × 116.4
+   = +10.48 rad/s  → round to +10 rad/s
+```
+
+(η_volcanic_rebound=0.09: Volcanic rubber tip rebounds off opponent blade, rubber rim returns partial energy as spin; effective spinGain = +10 rad/s.) Wall-recoil orbital attack gives damageMultiplier **1.35×**. lockMs = 100 (Volcanic rim contact dwell).
+
+**Parameters:**
+- spinGain: +10 rad/s (Volcanic rim rebound)
+- damageMultiplier: 1.35 (wall-recoil orbital attack)
+- lockMs: 100 (Volcanic rim dwell)
+
+### TypeScript
+
+```typescript
+function flashRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Wall recoil orbit: Δω ≈ +10 rad/s (η=0.09, v=2.033m/s, J=8.686×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Wall-recoil orbital attack: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+*Cases continue from Case 2093 as further franchise moves are provided.*

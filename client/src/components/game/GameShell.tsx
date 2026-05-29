@@ -415,13 +415,13 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
       display: 'flex', flexDirection: 'column', overflow: 'visible',
     }}>
       {/* Main row — no shoulder row at top; L/R are inline with their controls */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4px 14px 10px', gap: 10, minHeight: 0 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'stretch', padding: '4px 14px 10px', gap: 10, minHeight: 0, height: 0 }}>
 
         {/* Left gutter — L shoulder above joystick, then center buttons below */}
         <div style={{
           width: controlsHidden ? 0 : '20%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 8, flexShrink: 0,
+          gap: 8, flexShrink: 0, minHeight: 0,
           transition: `width ${T}`,
         }}>
           {/* L shoulder button — just above the joystick */}
@@ -456,7 +456,7 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
         <div style={{
           width: controlsHidden ? 0 : '26%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', height: '100%',
+          justifyContent: 'center', minHeight: 0,
           paddingTop: 4, paddingBottom: 8, gap: 8, flexShrink: 0,
           transition: `width ${T}`,
         }}>

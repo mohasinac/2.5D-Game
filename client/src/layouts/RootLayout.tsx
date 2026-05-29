@@ -59,8 +59,8 @@ export function RootLayout() {
     <GameProvider>
       <div className="min-h-screen bg-bg0 text-theme-text min-w-[320px]">
         {IS_LOCAL && (
-          <div className="fixed top-2 left-1/2 -translate-x-1/2 z-[200] bg-yellow-400 text-black px-2.5 py-0.5 rounded text-[11px] font-bold tracking-[0.05em] pointer-events-none">
-            LOCAL · ws://localhost:2567
+          <div className="fixed bottom-2 right-2 z-[200] bg-black/60 text-white/40 px-2 py-0.5 rounded text-[9px] font-mono pointer-events-none border border-white/10 backdrop-blur-sm">
+            DEV
           </div>
         )}
         {!hideAuth && (

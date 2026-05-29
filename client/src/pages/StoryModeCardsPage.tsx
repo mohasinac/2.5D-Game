@@ -71,7 +71,7 @@ export function StoryModeCardsPage() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      height: '100vh',
       background: '#050814',
       display: 'flex',
       flexDirection: 'column',
@@ -79,33 +79,36 @@ export function StoryModeCardsPage() {
       justifyContent: 'center',
       position: 'relative',
       overflow: 'hidden',
+      paddingTop: '52px',
+      paddingBottom: '8px',
+      boxSizing: 'border-box',
     }}>
       <button
         onClick={() => navigate('/')}
         style={{
-          position: 'absolute', top: '20px', left: '20px',
+          position: 'absolute', top: '12px', left: '16px',
           background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
           color: 'rgba(255,255,255,0.6)', borderRadius: '12px',
-          padding: '8px 16px', fontSize: '13px', fontWeight: 600,
+          padding: '7px 14px', fontSize: '12px', fontWeight: 600,
           cursor: 'pointer', letterSpacing: '0.04em', zIndex: 10,
         }}
       >
         ← Back
       </button>
 
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(12px, 2.5vh, 32px)', flexShrink: 0 }}>
         <h1 style={{
-          fontSize: 'clamp(22px, 4vw, 36px)', fontWeight: 900, color: '#fff',
+          fontSize: 'clamp(18px, 4vw, 32px)', fontWeight: 900, color: '#fff',
           letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
         }}>
           STORY MODE
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '13px', marginTop: '8px', letterSpacing: '0.05em' }}>
+        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', marginTop: '6px', letterSpacing: '0.05em' }}>
           Begin a new adventure or continue your journey
         </p>
       </div>
 
-      <div style={{ width: '100%', maxWidth: '600px', height: '440px' }}>
+      <div style={{ width: '100%', height: 'min(440px, calc(100vh - 160px))', flexShrink: 0 }}>
         <CardCarousel cards={cards} />
       </div>
     </div>

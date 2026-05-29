@@ -263,11 +263,11 @@ async function run() {
     // Use evaluate to navigate with state via React Router's programmatic navigation
     await page.evaluate((baseUrl) => {
       window.history.pushState(
-        { config: { roomType: "tryout", beybladeId: "", arenaId: "" } },
+        { config: { roomType: "tryout", beybladeId: "", arenaId: "", is25D: true } },
         "",
         "/game/room"
       );
-      window.dispatchEvent(new PopStateEvent("popstate", { state: { config: { roomType: "tryout", beybladeId: "", arenaId: "" } } }));
+      window.dispatchEvent(new PopStateEvent("popstate", { state: { config: { roomType: "tryout", beybladeId: "", arenaId: "", is25D: true } } }));
     }, BASE_URL);
     await sleep(1000);
   }
@@ -307,7 +307,7 @@ async function run() {
   // Navigate programmatically with state (simulate BattleModeCardsPage navigation)
   await page.evaluate(() => {
     const evt = new CustomEvent("__nav_game_room__", {
-      detail: { config: { roomType: "tryout", beybladeId: "", arenaId: "" } }
+      detail: { config: { roomType: "tryout", beybladeId: "", arenaId: "", is25D: true } }
     });
     document.dispatchEvent(evt);
   });
@@ -316,7 +316,7 @@ async function run() {
   await page.evaluate((url) => {
     // Use history API — React Router will pick this up via its listener
     window.history.pushState(
-      { usr: { config: { roomType: "tryout", beybladeId: "", arenaId: "" } } },
+      { usr: { config: { roomType: "tryout", beybladeId: "", arenaId: "", is25D: true } } },
       "",
       "/game/room"
     );
@@ -397,6 +397,7 @@ async function run() {
   // SECTION F — GameRoomPage landscape + GBA shell visual check
   // ══════════════════════════════════════════════════════════════════════════
   console.log("\n━━━  F. GameRoomPage GBA shell (landscape)  ━━━");
+  try {
 
   await setViewport(page, VIEWPORTS.landscape);
   await page.goto(`${BASE_URL}/game/battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
@@ -404,7 +405,7 @@ async function run() {
 
   await page.evaluate(() => {
     window.history.pushState(
-      { usr: { config: { roomType: "tryout", beybladeId: "", arenaId: "" } } },
+      { usr: { config: { roomType: "tryout", beybladeId: "", arenaId: "", is25D: true } } },
       "",
       "/game/room"
     );
@@ -436,6 +437,7 @@ async function run() {
   //   ctx2 (incognito) = Player 2 guest
   // ══════════════════════════════════════════════════════════════════════════
   console.log("\n━━━  G. 2-Player Friends Room (PvP)  ━━━");
+  try {
 
   await setViewport(page, VIEWPORTS.portrait);
 
@@ -662,9 +664,8 @@ async function run() {
   if (p1Result) console.log("  🏆  P1 result text:", p1Result);
 
   // Close incognito context
-  await p2.close();
-  await ctx2.close();
-  console.log("  ✅  P2 context closed");
+  try { await p2.close(); await ctx2.close(); console.log("  ✅  P2 context closed"); } catch {}
+  } catch (e) { console.log("  ⚠️  Section G error:", e.message); }
 
   // ══════════════════════════════════════════════════════════════════════════
   // DONE

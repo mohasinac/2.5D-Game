@@ -310,7 +310,7 @@ export function BattleLobbyPage() {
 
   if (phase === 'choose') {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[520px]">
           <button
             onClick={() => navigate('/game/battle', { replace: true })}
@@ -395,7 +395,7 @@ export function BattleLobbyPage() {
       ? 'Searching for opponent…'
       : 'Creating your room…';
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[360px]">
           <PhaseCard>
             <ConnectingSpinner label={label} />
@@ -418,7 +418,7 @@ export function BattleLobbyPage() {
 
   if (phase === 'friends-join') {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[360px]">
           <PhaseCard>
             <h2 className="text-white font-bold text-[18px] mb-1">Join a Room</h2>
@@ -461,8 +461,8 @@ export function BattleLobbyPage() {
   // ── Phase: in-lobby ───────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center p-4 pt-6">
-      <div className="w-full max-w-[540px]">
+    <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center p-4 pt-6">
+      <div className="w-full max-w-[540px] flex flex-col h-full overflow-y-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">

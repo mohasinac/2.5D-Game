@@ -95,15 +95,16 @@ export function GameModeLandingPage() {
     <div
       ref={containerRef}
       style={{
-        minHeight: '100vh',
+        height: '100vh',
         background: '#050814',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: 'clamp(12px, 2vh, 24px)',
         position: 'relative',
         overflow: 'hidden',
+        boxSizing: 'border-box',
       }}
     >
       {/* Ambient background rings */}
@@ -129,7 +130,7 @@ export function GameModeLandingPage() {
       </div>
 
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '48px', position: 'relative', zIndex: 1 }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(16px, 3vh, 48px)', position: 'relative', zIndex: 1, flexShrink: 0 }}>
         <div style={{ fontSize: '56px', marginBottom: '8px', filter: 'drop-shadow(0 0 20px rgba(99,102,241,0.6))' }}>
           🌀
         </div>
@@ -181,7 +182,7 @@ export function GameModeLandingPage() {
                   : 'rgba(255,255,255,0.02)',
                 border: `1px solid ${isFocused ? panel.accent : 'rgba(255,255,255,0.08)'}`,
                 borderRadius: '20px',
-                padding: '32px 28px',
+                padding: 'clamp(14px, 3vh, 32px) clamp(14px, 3vw, 28px)',
                 cursor: 'pointer',
                 textAlign: 'left',
                 transition: 'all 200ms ease',
