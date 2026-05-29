@@ -14,12 +14,14 @@ export const ROOM_NAMES = {
     battle: "battle_2d_room",
     aiBattle: "ai_battle_2d_room",
     tournament: "tournament_battle_2d_room",
+    royale: "royale_battle_room",
   },
   "2.5d": {
     tryout: "tryout_25d_room",
     battle: "battle_25d_room",
     aiBattle: "ai_battle_25d_room",
     tournament: "tournament_battle_25d_room",
+    royale: "royale_battle_room",
   },
 } as const;
 

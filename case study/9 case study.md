@@ -43834,3 +43834,478 @@ const beatLynxTH170WD = {
   },
 };
 ```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Gatinko Chip — Achilles (3.2 g, highest Burst Resistance in GC class, 2 hard + 2 standard locks)
+
+**Thesis:** The Achilles Gatinko Chip is a right-spin Burst-system chip at 3.2 g [FACT] whose defining competitive attribute is its four-lock burst mechanism — two hard locks and two standard locks — the highest total lock count of any Gatinko Chip [FACT]. In the Burst cantilever model, each lock tab acts as a cantilevered spring: k_tab = 3EI_tab/L³ where I_tab = b·h³/12. Hard locks have a greater tab height h_hard relative to standard locks (h_standard), producing k_hard > k_standard; the total burst-resistance force threshold F_burst that an incoming attack impulse must exceed is the sum of all simultaneously engaged lock spring constants times the burst-displacement: F_burst = (2k_hard + 2k_standard) × δ_burst [INFERENCE]. Because no other GC achieves four locks, Achilles requires any incoming attack to overcome a larger combined spring force, meaning a harder hit (greater angular impulse per contact) is required to trigger a burst. This is why the product description states Achilles provides high Burst Resistance "even when a Dash Driver is not used" [FACT] — its mechanical lock budget alone exceeds other chips' limits. Achilles is described as "the ideal Gatinko Chip to use in right-spin Combinations" when paired with the Goku Layer Weight [FACT]. The chip's mass of 3.2 g [FACT] is "a standard weight for Gatinko Chips" [FACT], meaning it does not add disproportionate mass to the layer; its inertia contribution is small (~1.28×10⁻⁷ kg·m² [INFERENCE]) relative to the Convert disc and Union base. Hasbro's Pro Series Achilles is "virtually unchanged" in design but "manufactured with weaker materials" [FACT], reducing lock tab stiffness and burst threshold.
+
+**Moment of Inertia — Achilles GC:**
+```
+I_GC = ½ × m × (r_i² + r_o²)
+m_GC = 0.0032 kg  [FACT]
+r_i ≈ 0.004 m (bore),  r_o ≈ 0.008 m (outer chip body)  [INFERENCE]
+
+I_GC = ½ × 0.0032 × (1.6×10⁻⁵ + 6.4×10⁻⁵)
+     = ½ × 0.0032 × 8.0×10⁻⁵ = 1.28×10⁻⁷ kg·m²  [INFERENCE]
+Share of Speed Mode assembly I: < 0.5%  [INFERENCE]
+```
+
+**Burst Lock Analysis:**
+```
+Burst tab cantilever model:
+  k_tab = 3EI_tab / L³,   I_tab = b·h³/12  (from style rules)
+
+Hard lock (h_hard > h_standard) → k_hard ∝ h_hard³ → higher spring constant
+Standard lock → k_standard < k_hard
+
+Achilles total: F_burst = (2·k_hard + 2·k_standard) × δ  [INFERENCE]
+All other GC chips (1–3 locks, at most one of which is hard):
+  F_burst(other) < F_burst(Achilles) for any equal δ  [FACT — highest lock count]
+
+→ Achilles survives impacts that burst competing chips at the same attack power
+→ Priority use: any right-spin combination where Burst is a competitive risk
+   (Attack drivers with high recoil, vs heavy attack layers)
+```
+
+**TypeScript model:**
+```typescript
+const achillasGC = {
+  id: "gc_achilles", name: "Achilles", generation: "burst_gatinko",
+  spin: "right", mass_g: 3.2,  // [FACT]
+  I_kgm2: 1.28e-7,             // [INFERENCE]
+  locks: { hard: 2, standard: 2, total: 4 }, // [FACT — highest total]
+  burstResistance: "highest_in_GC_class",    // [FACT]
+  burstResistanceWithoutDash: "high",        // [FACT]
+  idealLayerWeight: "goku",                  // [FACT]
+  hasbroNote: "virtually_unchanged_weaker_materials", // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Layer Weight — Retsu (~2.5 g, asymmetric three-hexagon layout, competitive dead weight)
+
+**Thesis:** The Retsu Layer Weight carries three hexagonal protrusions — one on the right side and two on the left side — in an asymmetric C₁ distribution [FACT]. The product description notes two deficiencies directly: the hexagons "don't have that much detail, they are just basic, thus having less weight than detailed weights like Sen and Goku" [FACT], and Retsu is "heavily outclassed and has no use in combinations" [FACT]. The asymmetric mass placement creates a physical imbalance: if the total mass (~2.5 g [INFERENCE]) is distributed with one-third on the right (one hex) and two-thirds on the left (two hexes), the center of mass is displaced from the geometric center by approximately e ≈ r_hex/3 ≈ 3 mm [INFERENCE]. At launch speed ω₀ = 600 rad/s, this eccentricity produces an imbalance centrifugal force F = m × e × ω² = 0.0025 × 0.003 × 600² = 2.7 N [INFERENCE]. This oscillating force drives synchronised nutation wobble at the spin frequency — a 2.7 N centrifugal imbalance on a 52.7 g assembly reduces spin efficiency and shortens effective spin time. Competitive Layer Weights (Sen, Goku) use symmetric mass distributions or carefully designed asymmetry that serves a functional purpose (e.g., eccentric attack bias); Retsu's asymmetry serves no documented functional role and is purely a result of its simplified geometry. The only scenario where Retsu is not a liability is when no Layer Weight is used at all and Retsu provides minimal inertia — but removing it entirely is typically preferable.
+
+**Imbalance Physics:**
+```
+m_Retsu ≈ 0.0025 kg  [INFERENCE — "low" and "less than Sen and Goku"]
+Mass distribution: 1/3 on right (r_R ≈ 10 mm), 2/3 on left (r_L ≈ 10 mm)  [INFERENCE]
+CoM offset from geometric centre:
+  e = (2/3 − 1/3) × r_hex = (1/3) × 0.010 = 0.0033 m ≈ 3.3 mm  [INFERENCE]
+
+Centrifugal imbalance force at ω₀ = 600 rad/s:
+  F_imbalance = m × e × ω² = 0.0025 × 0.0033 × 600² = 2.97 N  [INFERENCE]
+
+This force oscillates at ω (1 cycle per revolution), driving first-order wobble.
+```
+
+**I contribution:**
+```
+I_Retsu ≈ m × r_hex² = 0.0025 × (0.010)² = 2.5×10⁻⁷ kg·m²  [INFERENCE]
+Assembly share: < 1%  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const retsuLW = {
+  id: "lw_retsu", name: "Retsu", generation: "burst_gatinko",
+  mass_g: 2.5,            // [INFERENCE]
+  r_hex_mm: 10,           // [INFERENCE]
+  hexCount: 3,            // [FACT — 1R + 2L]
+  symmetry: "C1_asymmetric",             // [FACT]
+  comOffset_mm: 3.3,      // [INFERENCE]
+  F_imbalance_N: 2.97,    // at ω₀=600 [INFERENCE]
+  I_kgm2: 2.5e-7,         // [INFERENCE]
+  competitive_value: "none",             // [FACT]
+  outclassedBy: ["sen", "goku"],         // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Layer Base — Union Speed Mode (10.6 g TT, two large sloped blades, KO + Burst Attack, Swords removed)
+
+**Thesis:** The Union Layer Base is a right-spin Balance Type base with two large sloped blades as the primary contact points, providing high Knock-Out (KO) and Burst Attack potential [FACT]. In Speed Mode, the Union Sword accessories are removed, reducing the base to its 10.6 g TT core [FACT] and decreasing the effective blade length. The product text states that Speed Mode increases the speed of the Union combination and complements Attack Type Drivers such as Xtreme' [FACT] — the reduced mass allows the assembly to achieve higher translational speed during aggressive movement, maintaining the momentum needed for ring-out attacks while reducing the moment of inertia enough to accelerate through contact events more rapidly. The two sloped blades are oriented in C₂ symmetry with an estimated contact face angle from radial φ ≈ 25–35° [INFERENCE from "large sloped blades" description providing significant KO force], giving smash fraction cos(30°) ≈ 0.866 and recoil fraction sin(30°) = 0.500 [INFERENCE]. The Burst Attack potential arises from the blade contact stressing the opponent's Disc lock tabs: when Union's sloped blade strikes the opposing layer's outer contact face, the lateral impulse is transmitted inward to the lock interface, deflecting the cantilever tabs and potentially triggering a burst if the contact exceeds the opponent's burst threshold. The Union base's mass contribution to the full assembly I_total is approximately 9.66×10⁻⁶ kg·m² [INFERENCE], roughly 39% of total assembly inertia in Speed Mode [INFERENCE].
+
+**Moment of Inertia — Union Speed Mode (two-component model):**
+```
+m_Union_speed = 0.0106 kg  [FACT]
+
+Blade contact region (60% at r_o = 37 mm — large blades extend to outer edge):
+  I₁ = 0.60 × 0.0106 × (0.037)² = 0.00636 × 1.369×10⁻³ = 8.71×10⁻⁶ kg·m²
+
+Inner hub + ring (40% at r_i = 15 mm):
+  I₂ = 0.40 × 0.0106 × (0.015)² = 0.00424 × 2.25×10⁻⁴ = 9.54×10⁻⁷ kg·m²
+
+I_Union_speed = 8.71×10⁻⁶ + 9.54×10⁻⁷ = 9.66×10⁻⁶ kg·m²  [INFERENCE]
+
+OWD (r_ref = 37 mm, m = 10.6 g):
+  = 9.66×10⁻⁶ / (0.0106 × 0.037²)
+  = 9.66×10⁻⁶ / 1.451×10⁻⁵ = 0.666  [INFERENCE]
+```
+
+**Contact Geometry — Union Sloped Blades:**
+```
+φ ≈ 30°  [INFERENCE — "large sloped blades" with pronounced angle]
+Smash fraction: cos(30°) = 0.866  [INFERENCE]
+Recoil fraction: sin(30°) = 0.500  [INFERENCE]
+
+KO mechanism: smash impulse J_smash = cos(30°) × J_total → lateral displacement of opponent
+Burst mechanism: J_total stress propagates to opponent's Disc lock tabs → burst threshold exceeded
+→ KO and Burst Attack are complementary outcomes of the same high-smash geometry [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const unionBaseSpeedMode = {
+  id: "lb_union_speed", name: "Union (Speed Mode)",
+  generation: "burst_gatinko", mass_g: 10.6,  // [FACT]
+  r_blade_mm: 37, r_hub_mm: 15,               // [INFERENCE]
+  I_kgm2: 9.66e-6, OWD: 0.666,               // [INFERENCE]
+  symmetry: "C2", blades: 2,                  // [FACT]
+  contactAngle_deg: 30, smashFraction: 0.866, recoilFraction: 0.500, // [INFERENCE]
+  mode: "speed", unionSwordsAttached: false,
+  speedAdvantage: true, komplementDriver: "xtreme_prime", // [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Union Sword + Layer Base Power Mode (14.4 g TT = 10.6 g base + 3.8 g swords, extended blades, heavier smash)
+
+**Thesis:** In Power Mode the Union Sword accessories are attached to the Union Layer Base, increasing the base mass from 10.6 g to 14.4 g (TT) [FACT], a sword pair mass of 3.8 g [FACT-derived: 14.4 − 10.6]. The swords extend the two large sloped blades outward beyond the base blade tips, increasing both the effective outer contact radius and the total blade contact surface area. This produces two simultaneous improvements: each contact delivers a higher angular impulse (because r_contact increases and the blade length covers a larger arc), and the heavier assembly stores more angular momentum, sustaining attack power through more consecutive contacts before spin-out. The tradeoff is that the higher moment of inertia reduces translational acceleration — the combination moves more slowly in its attack pattern, which can make it easier to read and dodge, and reduces tornado-stalling viability. Power Mode is described as suitable when the two main sloped blades are the primary mechanism: "the Union Swords are attached onto the Base, increasing the weight of Union and the length of the two large blades" [FACT]. For maximum single-hit KO force against heavy stamina or defense opponents, Power Mode with Xtend+ Attack or Xtreme' is the preferred configuration; for speed-attack tornado stalling, Speed Mode is preferred.
+
+**Inertia Addition from Union Swords (3.8 g at r_sword ≈ 44 mm):**
+```
+Union Swords mass: m_swords = 14.4 − 10.6 = 3.8 g = 0.0038 kg  [FACT-derived]
+Sword tip radius ≈ 44 mm (extends beyond base blade tip at 37 mm)  [INFERENCE]
+
+I_swords = m_swords × r_sword² = 0.0038 × (0.044)² = 0.0038 × 1.936×10⁻³
+         = 7.36×10⁻⁶ kg·m²  [INFERENCE]
+
+I_Union_power = I_Union_speed + I_swords = 9.66×10⁻⁶ + 7.36×10⁻⁶ = 17.02×10⁻⁶ kg·m²  [INFERENCE]
+
+OWD increase (r_ref = 44 mm for swords, m = 14.4 g):
+  OWD_power = 17.02×10⁻⁶ / (0.0144 × 0.044²) = 17.02×10⁻⁶ / 2.789×10⁻⁵ = 0.610  [INFERENCE]
+
+Δ L₀ from adding swords (at ω₀ = 600 rad/s):
+  ΔL₀ = I_swords × ω₀ = 7.36×10⁻⁶ × 600 = 4.42×10⁻³ kg·m²/s  [INFERENCE]
+  → Swords add 30% to the layer's angular momentum contribution  [INFERENCE]
+```
+
+**Hasbro Power Mode mass: 14.1 g [FACT] → Hasbro swords: 14.1 − 10.3 = 3.8 g [FACT-derived] — same sword mass despite weaker materials.**
+
+**TypeScript model:**
+```typescript
+const unionBasePowerMode = {
+  id: "lb_union_power", name: "Union (Power Mode)",
+  generation: "burst_gatinko", mass_g: 14.4,   // [FACT TT]
+  mass_g_hasbro: 14.1,                         // [FACT]
+  swordsMass_g: 3.8,                           // [FACT-derived]
+  r_sword_mm: 44, r_base_blade_mm: 37,         // [INFERENCE]
+  I_kgm2: 17.02e-6, OWD: 0.610,               // [INFERENCE]
+  mode: "power", unionSwordsAttached: true,
+  deltaL0_kgm2s: 4.42e-3,                      // added by swords vs Speed Mode [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Disc — Convert (28.8 g, four-pronged outward distribution, hung metal, Normal vs Imbalanced Mode)
+
+**Thesis:** Convert is a wide four-sided Forge Disc at 28.8 g [FACT] — among the heaviest competitive Burst discs — whose four pronounced points extend further from centre than comparable four-sided discs such as Sting [FACT]. The metal portion of Convert "hangs downwards" [FACT]: the disc body extends below the standard horizontal plane, creating a geometry in which the lower disc rim is the lowest point of the spinning assembly (below even the tip during normal spin). This configuration dominates Convert's competitive viability profile: the downward-hanging metal provides exceptional attack capability through high peripheral inertia but creates a scrape risk against the stadium floor during normal stamina spin-down, and prevents the use of high-stance Drivers where the disc clearance would be insufficient. The product description confirms that Convert's "heavy weight and outward weight distribution make it excellent for attack combos, provided you do not mind a scrape risk" [FACT]. The plastic mode-change insert allows rotation between Normal Mode (symmetric four-pronged layout) and Imbalanced Mode (rotated, asymmetric mass distribution); Imbalanced Mode "severely hinders any Combination using it" [FACT] and has no competitive application. The outward distribution of Convert's mass — estimated at 70% of 28.8 g concentrated at the four outer prong tips at r ≈ 25 mm — produces OWD = 0.769 [INFERENCE] at r_ref = 25 mm and I_Convert ≈ 1.384×10⁻⁵ kg·m² [INFERENCE], contributing approximately 57% of the full Speed Mode assembly's total inertia [INFERENCE] and making Convert the dominant component in angular momentum terms. The hung-metal design also provides Life-After-Death utility: during extreme tilt, the hanging disc rim contacts the stadium bowl, creating a new floor contact at large radius that can briefly sustain precession energy, consistent with the description noting Convert "can work on Drivers like Drift and LAD Drivers" [FACT]. 10Wall is preferred for dedicated Stamina builds [FACT] because its even wider hung profile provides more consistent LAD contact without the scrape risk of Convert's pronounced points.
+
+**Moment of Inertia — Convert (two-component model):**
+```
+m_Convert = 0.0288 kg  [FACT]
+
+Outer prong tips (70% at r_o = 25 mm):
+  I₁ = 0.70 × 0.0288 × (0.025)² = 0.02016 × 6.25×10⁻⁴ = 1.260×10⁻⁵ kg·m²
+
+Inner disc body (30% at r_i = 12 mm):
+  I₂ = 0.30 × 0.0288 × (0.012)² = 0.00864 × 1.44×10⁻⁴ = 1.244×10⁻⁶ kg·m²
+
+I_Convert = 1.260×10⁻⁵ + 1.244×10⁻⁶ = 1.384×10⁻⁵ kg·m²  [INFERENCE]
+
+OWD (r_ref = 25 mm):
+  = 1.384×10⁻⁵ / (0.0288 × 0.025²)
+  = 1.384×10⁻⁵ / 1.800×10⁻⁵ = 0.769  [INFERENCE]
+
+→ High OWD for a disc, consistent with "outward weight distribution" [FACT]
+→ Assembly contribution (Speed Mode): 56.6%  [INFERENCE]
+```
+
+**Hung Metal — Scrape Geometry:**
+```
+If disc rim hangs δ mm below standard Driver tip contact plane, then
+at tilt angle θ = arctan(δ / r_disc) the disc rim contacts the stadium floor.
+
+For δ ≈ 2 mm (INFERENCE), r_disc ≈ 25 mm:
+  θ_scrape = arctan(2/25) ≈ 4.6°  [INFERENCE]
+
+Any tilt beyond ~5° from vertical causes the disc to contact the floor
+before the Driver tip would naturally engage the LAD pattern — creating
+premature spin-loss in Stamina configurations.
+
+With LAD Drivers (Drift, 10Wall, etc.), the Driver tip also hangs low,
+so the disc's scrape geometry is deliberately exploited: the disc contacts
+the bowl slope during LAD rather than the flat floor, providing
+a larger effective contact radius at r_disc = 25 mm vs typical tip r_tip = 0.5 mm,
+dramatically slowing precession decay during the LAD phase.
+```
+
+**Imbalanced Mode:**
+```
+Rotating the plastic insert shifts the four prong masses asymmetrically.
+Imbalanced mass offset e ≈ 3–5 mm  [INFERENCE]
+F_imbalance = m × e × ω² = 0.0288 × 0.004 × 600² = 41.5 N  [INFERENCE]
+
+At 41.5 N oscillating centrifugal force on a 52.7 g assembly, the wobble
+amplitude is catastrophic — this magnitude exceeds any practical launch.
+→ "Severely hinders any Combination" [FACT] confirmed by this order of magnitude.
+```
+
+**TypeScript model:**
+```typescript
+const convertDisc = {
+  id: "disc_convert", name: "Convert", generation: "burst_gatinko",
+  mass_g: 28.8,              // [FACT]
+  r_outer_mm: 25, r_inner_mm: 12,      // [INFERENCE]
+  outerMassFraction: 0.70,             // [INFERENCE]
+  I_kgm2: 1.384e-5, OWD: 0.769,       // [INFERENCE]
+  metalHangsDown: true,                // [FACT]
+  scrapeAngle_deg: 4.6,                // [INFERENCE]
+  modes: ["normal", "imbalanced"],
+  imbalancedModeCompetitive: false,    // [FACT]
+  F_imbalanced_N: 41.5,               // [INFERENCE]
+  attackExcellent: true, scrapeRisk: true, // [FACT]
+  ladCapable: true, ladOptimal: false,     // [FACT — 10Wall preferred]
+  assemblyShare_pct: 56.6,             // Speed Mode I contribution [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Driver — Xtend+ (7.6 g, three-mode Xtend Chip tip — Attack / Defense / Stamina, high LAD all modes)
+
+**Thesis:** Xtend+ is a 7.6 g [FACT] Burst Performance Tip (Driver) featuring the Xtend Chip — an interchangeable tip module that provides three distinct contact geometries: Attack (wide hollow flat), Defense (low-angle stepped cone), and Stamina (low-angle cone). Unlike its predecessor Xtend, Xtend+ does not include a manual height-change gimmick but instead provides the tip mode variety at a fixed standard height [FACT]. The Stamina Mode is confirmed as the best-performing of the three [FACT], achieving "excellent Stamina" [FACT] with a low-angle cone tip (comparable to Trans' Stamina Mode at a lower height [FACT]) — the sharp tip minimises floor friction torque to approximately 2.64×10⁻⁵ N·m [INFERENCE] for the 52.7 g Speed Mode assembly, yielding a theoretical spin time of ~557 s (9.3 min) [INFERENCE]. A critical common property across all three modes is "high Life-After-Death potential, comparable to Eternal, Atomic and Bearing" [FACT]: the low-angled base and wide diameter of the Xtend Chip body maintain floor contact at a large effective radius during extreme tilt, allowing the bey to precess in the LAD phase far longer than a sharper-based tip would permit. The Attack Mode — "highly aggressive movement pattern with speeds greater than Assault" [FACT] — has a wide hollow flat tip wider than Assault and akin to Zephyr; this produces high translational aggression but is "poorly suited for both traditional Attack and Tornado Stalling Combinations" [FACT] because the wide flat diameter makes banking patterns unstable and spin decay rapid (τ_attack ≈ 4.39×10⁻⁴ N·m, t_spin ≈ 33 s [INFERENCE]). The Defense Mode — stepped cone with a flat-edged step — triggers a second floor contact when the bey rises on the stadium slope, but "due to the edge of the tip being made of plastic rather than rubber like in Unite and smooth rather than tabbed like in Defense, the effect of the second point of contact is minimal, creating poor Knock-Out Resistance" [FACT].
+
+**Tip Contact Friction — All Three Modes (Speed Mode assembly, m_total ≈ 52.7 g):**
+```
+N = m × g = 0.0527 × 9.81 = 0.517 N  [INFERENCE — Retsu ~2.5 g estimated]
+μ_hard = 0.17
+
+Attack Mode (wide hollow flat, r_tip ≈ 5 mm [INFERENCE]):
+  τ_attack = μ × N × r_tip = 0.17 × 0.517 × 0.005 = 4.39×10⁻⁴ N·m  [INFERENCE]
+  t_spin = L₀ / τ = 1.47×10⁻² / 4.39×10⁻⁴ ≈ 33 s  [INFERENCE]
+  Actual spin time shorter: aggressive movement pattern keeps disc engaged  [INFERENCE]
+
+Defense Mode (stepped cone, r_cone ≈ 0.5 mm, r_step ≈ 3 mm [INFERENCE]):
+  Primary tip: τ₁ = 0.17 × 0.517 × 0.0005 = 4.39×10⁻⁵ N·m  [INFERENCE]
+  Step edge (on slope, transient): τ₂ = 0.17 × 0.517 × 0.003 = 2.64×10⁻⁴ N·m  [INFERENCE]
+  Step is plastic + smooth → step effectiveness minimal  [FACT]
+
+Stamina Mode (low-angle cone, r_tip ≈ 0.3 mm [INFERENCE]):
+  τ_stamina = 0.17 × 0.517 × 0.0003 = 2.64×10⁻⁵ N·m  [INFERENCE]
+  t_spin_theory = 1.47×10⁻² / 2.64×10⁻⁵ ≈ 557 s (9.3 min)  [INFERENCE]
+  Practical spin time: estimated 4–7 min including air drag + imperfect contact  [INFERENCE]
+```
+
+**LAD Analysis (all modes):**
+```
+"High Life-After-Death potential, comparable to Eternal, Atomic and Bearing" [FACT]
+
+LAD mechanism: at extreme tilt (θ → 90°), the wide-diameter base of the
+Xtend Chip contacts the stadium slope, sustaining precession.
+
+r_LAD_base ≈ 10–12 mm  [INFERENCE — "wide diameter" mentioned for LAD]
+τ_LAD = μ × N × r_LAD = 0.17 × 0.517 × 0.011 = 9.67×10⁻⁴ N·m  [INFERENCE]
+
+At ω_LAD (very low, precessing): L_precession determines actual LAD duration
+→ LAD phase extends competitive spin time beyond theoretical tip-contact t_spin
+→ Stamina Mode + high-LAD base = sustained performance against slow opponents
+
+Compare (Eternal: full free-spinning outer ring, near-zero τ; Bearing: ball bearing
+decoupling μ_eff ≈ 0.03): Xtend+ Stamina achieves similar LAD without free-spinning
+mechanism — through low cone angle and wide base geometry alone.  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const xtendPlusDriver = {
+  id: "driver_xtend_plus", name: "Xtend+", generation: "burst_gatinko",
+  mass_g: 7.6,                  // [FACT]
+  heightChange: false,          // [FACT — no manual height gimmick unlike Xtend]
+  modes: ["attack", "defense", "stamina"],
+  attack: {
+    tipStyle: "wide_hollow_flat", r_tip_mm: 5,        // [INFERENCE]
+    tau_Nm: 4.39e-4, tSpin_s: 33,                     // 52.7 g [INFERENCE]
+    wider_than: "assault", similar_to: "zephyr",      // [FACT]
+    banking_difficult: true, stamina_low: true,        // [FACT]
+  },
+  defense: {
+    tipStyle: "stepped_cone", r_cone_mm: 0.5, r_step_mm: 3,  // [INFERENCE]
+    stepMaterial: "plastic_smooth",                    // [FACT]
+    koResistance: "poor",                              // [FACT]
+  },
+  stamina: {
+    tipStyle: "low_angle_cone", r_tip_mm: 0.3,        // [INFERENCE]
+    tau_Nm: 2.64e-5, tSpin_theory_s: 557, tSpin_practical_s: [240, 420], // [INFERENCE]
+    bestMode: true,                                    // [FACT]
+    stamina: "excellent",                              // [FACT]
+    similar_to: "trans_stamina_lower_height",          // [FACT]
+  },
+  lad: {
+    potential: "high",                                 // [FACT]
+    comparableTo: ["eternal", "atomic", "bearing"],    // [FACT]
+    r_base_mm: 11,                                     // [INFERENCE]
+    tau_LAD_Nm: 9.67e-4,                               // [INFERENCE]
+  },
+  I_kgm2: 5.81e-7,              // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Full Assembly Speed Mode (~52.7 g, primary Stamina/Balance configuration, Beat Lynx comparison)
+
+**Thesis:** Union Achilles Convert Xtend+ Retsu in Speed Mode (Union Swords removed) assembles to approximately 52.7 g [INFERENCE — FACT subtotal 50.2 g without Retsu; Retsu ≈ 2.5 g [INFERENCE]]: Achilles GC 3.2 g + Retsu LW ~2.5 g + Union Speed 10.6 g + Convert 28.8 g + Xtend+ 7.6 g. The confirmed-FACT component masses (all except Retsu) sum to 50.2 g [FACT]. The full assembly moment of inertia is approximately 24.46×10⁻⁶ kg·m² [INFERENCE], dominated by Convert (56.6%) and Union Speed Mode (39.5%), with other parts contributing less than 4% combined. At ω₀ = 600 rad/s, L₀ = 1.47×10⁻² kg·m²/s [INFERENCE] — approximately 2× the L₀ of Beat Lynx TH170WD (7.43×10⁻³ kg·m²/s) and 15× the L₀ of Mad Cancer CH120FS (9.6×10⁻⁴ kg·m²/s), reflecting the Burst system's larger part radii generating much higher angular momentum at equivalent mass. The primary competitive configuration for this assembly is Stamina: Xtend+ Stamina Mode provides theoretical spin time ~557 s [INFERENCE] with high LAD comparable to Bearing/Eternal [FACT], and the Convert disc's outward distribution and hung-metal LAD contribution supplement spin maintenance during tilt. The stock configuration is sub-optimal (Retsu LW is "no use in combinations" [FACT], and Convert is not the first choice for Stamina vs 10Wall [FACT]) but the two-component limitation is manageable: swapping Retsu for Goku LW and Xtend+ Stamina with a stamina-optimised disc makes Union Achilles Speed Mode highly competitive.
+
+**Full Assembly Inertia Budget — Speed Mode:**
+```
+Part               Mass (g)       I (kg·m²)       Share
+────────────────────────────────────────────────────────────
+Achilles GC        3.2 [F]       1.28×10⁻⁷        0.5%
+Retsu LW          ~2.5 [I]       2.5×10⁻⁷         1.0%
+Union Base (Speed) 10.6 [F]      9.66×10⁻⁶        39.5%
+Convert Disc       28.8 [F]      1.384×10⁻⁵       56.6%
+Xtend+ Driver      7.6 [F]       5.81×10⁻⁷         2.4%
+────────────────────────────────────────────────────────────
+FACT subtotal      50.2 g        [without Retsu]
+Total (est)       ~52.7 g        24.46×10⁻⁶  [I]
+[F]=FACT  [I]=INFERENCE
+```
+
+**Angular Momentum and Spin-Time Envelope:**
+```
+L₀ = 24.46×10⁻⁶ × 600 = 1.47×10⁻² kg·m²/s  [INFERENCE]
+
+Comparisons  [INFERENCE]:
+  Mad Cancer CH120FS (~16 g):     L₀ = 9.6×10⁻⁴    →  6.5% of Union Achilles Speed
+  Beat Lynx TH170WD (47.8 g):    L₀ = 7.43×10⁻³   →  51% of Union Achilles Speed
+  Union Achilles Speed (~52.7 g): L₀ = 1.47×10⁻²   →  baseline
+
+Xtend+ Stamina Mode (Speed Assembly):
+  τ_stamina = 2.64×10⁻⁵ N·m  →  t_theory ≈ 557 s  [INFERENCE]
+  Practical estimate: 4–7 minutes  [INFERENCE]
+
+Xtend+ Attack Mode (Speed Assembly):
+  τ_attack  = 4.39×10⁻⁴ N·m  →  t_theory ≈ 33 s  [INFERENCE]
+  In practice: aggressive movement keeps t_spin ≈ 20–25 s  [INFERENCE]
+
+OWD_assembly (r_ref = 37 mm, m = 52.7 g):
+  = 24.46×10⁻⁶ / (0.0527 × 0.037²) = 24.46×10⁻⁶ / 7.22×10⁻⁵ = 0.339  [INFERENCE]
+  (Low assembly OWD because most mass — Convert 28.8 g — is at r = 25 mm, below r_ref = 37 mm)
+```
+
+**TypeScript model:**
+```typescript
+const unionAchillesSpeedMode = {
+  id: "union_achilles_xtend_plus_retsu_speed",
+  nameTTJP: "Union Achilles Convert Xtend+ Retsu",
+  blader: "Johannes_or_Aiga_Akaba",
+  releaseDate: "2019-09-21",    // [FACT]
+  price_jpy: 1296,              // [FACT]
+  generation: "burst_gatinko", series: "gatinko_layer", type: "balance",
+  parts: {
+    gatinkoChip: { id: "gc_achilles",         mass_g: 3.2  },  // [FACT]
+    layerWeight:  { id: "lw_retsu",           mass_g: 2.5  },  // [INFERENCE]
+    layerBase:    { id: "lb_union_speed",     mass_g: 10.6 },  // [FACT]
+    disc:         { id: "disc_convert",       mass_g: 28.8 },  // [FACT]
+    driver:       { id: "driver_xtend_plus",  mass_g: 7.6  },  // [FACT]
+  },
+  assembly: {
+    totalMass_g_fact:     50.2,    // without Retsu [FACT]
+    totalMass_g_est:      52.7,    // with Retsu [INFERENCE]
+    I_total_kgm2:         24.46e-6, // [INFERENCE]
+    OWD_assembly:         0.339,    // r_ref = 37 mm [INFERENCE]
+    omega0_rads:          600,
+    L0_kgm2s:             1.47e-2,  // [INFERENCE]
+    tSpinStamina_theory_s: 557,     // Xtend+ Stamina [INFERENCE]
+    tSpinAttack_theory_s:  33,      // Xtend+ Attack [INFERENCE]
+    dominantParts:        ["disc_convert_56pct", "union_speed_39pct"],
+  },
+  stockLimitations: ["retsu_lw_no_competitive_value", "convert_not_optimal_stamina"],
+  upgradeRecommendations: ["swap_retsu_for_goku", "consider_10wall_for_stamina"],
+};
+```
+
+---
+
+## CASE XXXX — Union Achilles Convert Xtend+ Retsu: Full Assembly Power Mode (~56.5 g, maximum smash and angular momentum, Attack-primary configuration)
+
+**Thesis:** Union Achilles Convert Xtend+ Retsu in Power Mode (Union Swords attached) assembles to approximately 56.5 g [INFERENCE — FACT subtotal 54.0 g without Retsu]: the Union base increases to 14.4 g (TT) [FACT] with all other parts unchanged. This is the highest-mass configuration of any bey in the current analysis set. The total moment of inertia in Power Mode is approximately 31.82×10⁻⁶ kg·m² [INFERENCE], with L₀ = 1.91×10⁻² kg·m²/s [INFERENCE] — 30% higher angular momentum than Speed Mode. The Union Swords (3.8 g at r ≈ 44 mm [INFERENCE]) add 7.36×10⁻⁶ kg·m² to the layer's inertia [INFERENCE], pushing the Union base's contribution from 39.5% to 53.7% of total assembly I and bringing it above Convert's 43.5% share [INFERENCE]. This reverses the inertia dominance order: in Speed Mode, Convert is the dominant component; in Power Mode, Union (with swords) is dominant. The practical implication is that Power Mode's attack trajectory is driven more by the extended blade geometry than by disc weight — the swords' long lever arm at r = 44 mm delivers higher angular impulse per contact than the Convert disc alone provides in Speed Mode. The primary configuration for Power Mode is Attack: Xtend+ Attack tip produces "highly aggressive movement with speeds greater than Assault" [FACT] and the Union Sword blades extend contact surface for KO and Burst Attack, though the theoretical attack-mode spin time of ~29 s [INFERENCE] limits the attack window. For sustained Stamina in Power Mode, Xtend+ Stamina achieves τ_stamina = 2.74×10⁻⁵ N·m and t_theory = 697 s [INFERENCE] — the highest in the current analysis — but Convert's scrape risk and Retsu's imbalance remain as stock limiters.
+
+**Full Assembly Inertia Budget — Power Mode:**
+```
+Part               Mass (g)       I (kg·m²)        Share
+─────────────────────────────────────────────────────────────
+Achilles GC        3.2 [F]       1.28×10⁻⁷         0.4%
+Retsu LW          ~2.5 [I]       2.5×10⁻⁷           0.8%
+Union+Swords (Power) 14.4 [F]   1.702×10⁻⁵         53.5%
+Convert Disc       28.8 [F]      1.384×10⁻⁵         43.5%
+Xtend+ Driver      7.6 [F]       5.81×10⁻⁷           1.8%
+─────────────────────────────────────────────────────────────
+FACT subtotal      54.0 g        [without Retsu]
+Total (est)       ~56.5 g        3.182×10⁻⁵  [I]
+
+Note: Power Mode reverses dominance: Union (53.5%) > Convert (43.5%)  [INFERENCE]
+```
+
+**Angular Momentum and Spin-Time Envelope — Power Mode:**
+```
+L₀_power = 3.182×10⁻⁵ × 600 = 1.91×10⁻² kg·m²/s  [INFERENCE]
+vs Speed Mode L₀ = 1.47×10⁻²: Power Mode is +30% angular momentum  [INFERENCE]
+
+N = m × g = 0.0565 × 9.81 = 0.554 N
+
+Xtend+ Attack Mode:
+  τ_attack = 0.17 × 0.554 × 0.005 = 4.71×10⁻⁴ N·m  [INFERENCE]
+  t_theory ≈ 1.91×10⁻² / 4.71×10⁻⁴ ≈ 41 s  [INFERENCE]
+
+Xtend+ Stamina Mode:
+  τ_stamina = 0.17 × 0.554 × 0.0003 = 2.83×10⁻⁵ N·m  [INFERENCE]
+  t_theory ≈ 1.91×10⁻² / 2.83×10⁻⁵ ≈ 675 s (11.2 min)  [INFERENCE]
+  → Highest theoretical spin time in the current analysis  [INFERENCE]
+```
+
+**TypeScript model:**
+```typescript
+const unionAchillesPowerMode = {
+  id: "union_achilles_xtend_plus_retsu_power",
+  nameTTJP: "Union Achilles Convert Xtend+ Retsu (Power Mode)",
+  generation: "burst_gatinko", type: "balance",
+  parts: {
+    gatinkoChip: { id: "gc_achilles",         mass_g: 3.2  },  // [FACT]
+    layerWeight:  { id: "lw_retsu",           mass_g: 2.5  },  // [INFERENCE]
+    layerBase:    { id: "lb_union_power",     mass_g: 14.4 },  // [FACT TT]
+    disc:         { id: "disc_convert",       mass_g: 28.8 },  // [FACT]
+    driver:       { id: "driver_xtend_plus",  mass_g: 7.6  },  // [FACT]
+  },
+  assembly: {
+    totalMass_g_fact:     54.0,    // without Retsu [FACT]
+    totalMass_g_est:      56.5,    // with Retsu [INFERENCE]
+    I_total_kgm2:         3.182e-5, // [INFERENCE]
+    omega0_rads:          600,
+    L0_kgm2s:             1.91e-2,  // [INFERENCE — highest in current analysis]
+    L0_vs_speedMode_pct:  130,      // 30% more angular momentum [INFERENCE]
+    tSpinStamina_theory_s: 675,     // [INFERENCE]
+    tSpinAttack_theory_s:  41,      // [INFERENCE]
+    dominantPart: "union_power_sword_53pct", // dominance reversal vs Speed Mode
+  },
+  stockLimitations: ["retsu_lw_no_value", "convert_scrape_risk", "xtend_plus_attack_limited"],
+};
+```

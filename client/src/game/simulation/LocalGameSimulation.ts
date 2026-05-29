@@ -449,11 +449,25 @@ export class LocalGameSimulation {
     // Spawn ring radius — wide enough so 12 beys don't start overlapping
     const spawnR = total > 4 ? this.arenaRadius * 0.52 : this.arenaRadius * 0.40;
 
-    // Grant every bey 5.2 seconds of spawn immunity for all competitive modes.
-    // Tryout (solo practice) skips immunity so the bey feels responsive immediately.
+    // Grant spawn immunity for all competitive modes (not tryout).
+    // In royale-ai, AI bots are staggered by 0.5s each so they leave orbit one-by-one,
+    // keeping beys visually spread across the arena during the opening seconds.
+    // In all other modes every bey gets the same flat 5.2s window.
     this.spawnImmunity.clear();
     if (this.config.roomType !== 'tryout') {
-      beyArr.forEach(bey => this.spawnImmunity.set(bey.id, 5.2));
+      const isRoyale = this.config.roomType === 'royale-ai';
+      let aiIndex = 0;
+      beyArr.forEach(bey => {
+        if (bey.id === 'player') {
+          this.spawnImmunity.set(bey.id, 5.2);
+        } else {
+          // Royale: stagger 0 → 0.5 → 1.0 … s per bot so they peel off the orbit ring
+          // gradually instead of all converging to center at once.
+          const extra = isRoyale ? aiIndex * 0.5 : 0;
+          this.spawnImmunity.set(bey.id, 5.2 + extra);
+          aiIndex++;
+        }
+      });
     }
 
     beyArr.forEach((bey, idx) => {
@@ -539,8 +553,8 @@ export class LocalGameSimulation {
           const rdist = Math.sqrt(rdx * rdx + rdy * rdy) || 1;
           const tx = -rdy / rdist, ty = rdx / rdist; // clockwise tangent
           // Tangential orbit + very gentle inward drift so they ease toward center
-          bey.velocityX = tx * 1.8 - (rdx / rdist) * 0.25;
-          bey.velocityY = ty * 1.8 - (rdy / rdist) * 0.25;
+          bey.velocityX = tx * 2.8 - (rdx / rdist) * 0.15;
+          bey.velocityY = ty * 2.8 - (rdy / rdist) * 0.15;
         } else {
           const controller = this.aiControllers.get(id);
           if (controller) {

@@ -14748,7 +14748,2255 @@ function flashGrooveCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +10 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1994 as further franchise moves are provided.*
+
+
+---
+
+## Case 1994 — GIMMICK: Ultimate Valtryek Legacy Variable'-9 — Variable' Driver Speed Surge
+
+**Beyblade:** Ultimate Valtryek Legacy Variable'-9 (Beyblade Burst DB / BU era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst DB / BU
+**Cross-reference:** Assembly in Case 1988 (39.0 g, I=3.115×10⁻⁵ kg·m², ω₀=700 rad/s)
+
+### Variable' Driver Speed-Boost Mechanism
+
+The Variable' component acts as a mode-switching driver element — at high spin, it transitions from low-friction stable mode to a high-friction orbital boost mode, creating an instantaneous translational surge that powers the charge into the Ultimate Blade:
+
+```
+Variable' Mode 1 (stable, low friction):
+  μ_var1 = 0.35,  r_var1 = 4 mm
+  v_mode1 = μ_var1 × ω₀ × r_var1 = 0.35 × 700 × 0.004 = 0.980 m/s
+
+Variable' Mode 2 (boost, high-friction outer engagement):
+  μ_var2 = 0.70,  r_var2 = 5 mm  (outer contact engaged in boost mode)
+  v_mode2 = μ_var2 × ω₀ × r_var2 = 0.70 × 700 × 0.005 = 2.450 m/s
+
+Speed surge from Variable' mode transition:
+  Δv_Variable = v_mode2 − v_mode1 = 2.450 − 0.980 = 1.470 m/s
+  v_charge = v_mode2 = 2.450 m/s  (peak orbital velocity after mode switch)
+```
+
+---
+
+### Contact — Ultimate Blade Full Force Strike
+
+After the Variable' speed surge, Valtryek charges into the opponent, striking with the full force of the Ultimate Blade at peak orbital velocity:
+
+```
+m_eff = (m_UV × m_opp) / (m_UV + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_Ultimate = 0.75  (Ultimate Valtryek blade — hard Burst attack layer)
+
+J_UFV = m_eff × (1 + e_Ultimate) × v_charge = 1.975×10⁻² × 1.75 × 2.450
+      = 1.975×10⁻² × 4.288 = 8.468×10⁻² N·s
+
+Δv_opp = J_UFV / m_opp = 8.468×10⁻² / 0.040 = 2.117 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g (Case 1988) |
+| I_total | 3.115×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_var1 | 0.35 |
+| v_mode1 | 0.980 m/s |
+| μ_var2 | 0.70 |
+| r_var2 | 5 mm |
+| v_charge | 2.450 m/s |
+| Δv_Variable | 1.470 m/s |
+| e_Ultimate | 0.75 |
+| J_UFV | 8.468×10⁻² N·s |
+| Δv_opp | 2.117 m/s |
+
+---
+
+## Case 1995 — SPECIAL: Ultimate Flash V — Valt Aoi / Ultimate Valtryek Legacy Variable'-9
+
+**Blader:** Valt Aoi | **Beyblade:** Ultimate Valtryek Legacy Variable'-9 | **Type:** attack
+
+### Description
+
+Ultimate Flash V (アルティメットフラッシュV, Arutimetto Furasshu Bui) is a Special Move used by Valt Aoi with Ultimate Valtryek Legacy Variable'-9 (Burst DB/BU). After gaining a boost in speed with the Variable' Driver, Valtryek charges into the opposing Beyblade and strikes with full force to the Ultimate Blade.
+
+### Stage — Variable' Speed Surge + Ultimate Blade Full-Force Charge
+
+From Case 1994: v_charge = 2.450 m/s, J_UFV = 8.468×10⁻² N·s, Δv_opp = 2.117 m/s.
+
+```
+Spin drain from Ultimate Blade contact:
+  Δω = J_UFV × r_Ultimate / I_total = 8.468×10⁻² × 0.032 / 3.115×10⁻⁵ = 87.0 rad/s
+  ω_remain = 700 − 87.0 = 613.0 rad/s  (87.6% retained)
+  (Variable' mode switch is a one-time speed burst — spin returns to normal decay after contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's spirit ignites in a flash of gold — the Variable' Driver glows as Ultimate Valtryek surges from stillness to blazing speed in an instant, the spirit energy from Valtryek channeled entirely into a single full-force charge. The Ultimate Blade crashes into the opponent with the combined velocity of the Variable' burst and Valtryek's divine attack spirit.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek V-flash spirit)
+[M] Δv = 2.117 × 8.0 = **16.94 m/s** (Variable' speed-surge blade strike ring-out)
+
+> **Note:** Physical values describe Variable' mode transition Δv=1.470 m/s (μ1=0.35 r=4mm → μ2=0.70 r=5mm); peak v_charge=2.450 m/s; J_UFV=8.468×10⁻²N·s; Δv=2.117 m/s. Distinct from Ultimate Dive (wall-ride gravity) and Ultimate Flash Launch (groove-rail). [M] values represent Valt's Valtryek V-flash spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateFlashVSpecial(bey: Beyblade, target: Beyblade): void {
+  // Variable' speed surge Δv=1.470m/s; v_charge=2.450m/s; J_UFV=8.468×10⁻²N·s; [M] 8.0×
+  const J_UFV = 0.08468;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UFV * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek V-flash Variable' surge)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst DB/BU-era beyblade using a Variable' or equivalent mode-switching Ratchet/Driver component (mode transition Δv ≥ 1.0 m/s, switching from stable-low to orbital-high friction) with a wide attack-profile Blade (r_blade ≥ 30 mm, e ≥ 0.70) for the full-force charge contact. Standard game instance: Ultimate Valtryek Legacy Variable'-9 (Valt Aoi, Burst DB/BU). Distinct from Ultimate Flash Launch (groove) and Ultimate Dive (wall-ride).
+
+---
+
+## Case 1996 — COMBO: V-Surge Strike — Ultimate Valtryek Legacy Variable'-9
+
+**Sequence:** ← → A (moveLeft · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveLeft (←) feints Valtryek leftward — Variable' is in low-friction Mode 1, conserving spin while building lateral momentum. The moveRight (→) triggers the Variable' mode switch as Valtryek snaps back right — the transition from Mode 1 to Mode 2 creates the speed surge, and the snap-back adds the lateral approach momentum. The attack (A) fires the Ultimate Blade contact at the snap-peak:
+
+```
+v_feint_left = v_mode1 = 0.980 m/s (← phase: Mode 1 low-friction drift left)
+v_snap_surge = v_mode2 + v_feint_bounce = 2.450 + 0.980 × 0.60 = 2.450 + 0.588 = 3.038 m/s
+(snap-back adds 60% of feint momentum from elastic reversal)
+
+v_combo_contact = v_snap_surge × 0.88 = 3.038 × 0.88 = 2.673 m/s
+(0.88: combo efficiency — full surge available but partial contact angle from snap geometry)
+
+J_combo = m_eff × (1 + e_Ultimate) × v_combo_contact = 1.975×10⁻² × 1.75 × 2.673
+        = 1.975×10⁻² × 4.678 = 9.238×10⁻² N·s
+```
+
+Variable' mode transition recoil → spin recovery (η_var = 0.10):
+
+```
+Δω = η_var × J_combo × r_Ultimate / I_total
+   = 0.10 × 9.238×10⁻² × 0.032 / 3.115×10⁻⁵
+   = 0.10 × 94.95
+   = +9.49 rad/s  → round to +10 rad/s
+```
+
+(η_var=0.10: Variable' mode-reversion after contact sends small rotational pulse back to main body spin; effective spinGain = +10 rad/s.) V-surge feint-snap gives damageMultiplier **1.30×**. lockMs = 0 (sharp attack type, no hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (Variable' mode reversion spin recovery)
+- damageMultiplier: 1.30 (Variable' speed-surge snap strike)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function vSurgeStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Variable' feint-snap: Δω ≈ +10 rad/s (η=0.10, v_contact=2.673m/s, J=9.238×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Variable' surge snap: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1997 — GIMMICK: Genesis & Strike Valtryek 6Vortex Ultimate Reboot — In-Battle Tip Change Speed Surge
+
+**Beyblade:** Genesis Valtryek 6Vortex Ultimate Reboot / Strike Valtryek 6Vortex Ultimate Reboot (Beyblade Burst Surge)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Surge
+**Cross-reference:** Assembly in Case 1991 (49.0 g, I=3.749×10⁻⁵ kg·m², ω₀=700 rad/s)
+
+### Ultimate Reboot In-Battle Tip Change Mechanism
+
+The Ultimate Reboot Performance Tip features two contact modes: an inner bearing tip (low-friction stable mode) and an outer rubber flat ring (high-friction attack mode). The mode switch is triggered by a lateral trajectory reversal — when Valtryek sharply changes direction, the centrifugal asymmetry causes the internal mechanism to engage the outer rubber ring:
+
+```
+Phase 1 — Bearing Mode (stable, low friction):
+  Inner bearing tip:  μ_bearing ≈ 0 (near-frictionless)
+  r_bearing = 3 mm
+  v_bearing = μ_bearing × ω₀ × r_bearing ≈ 0  (minimal orbital drive)
+
+  Spin conservation in bearing mode:
+  ω_reboot = ω₀ × η_bearing = 700 × 0.986 = 690 rad/s
+  (η_bearing = 0.986 — bearing preserves 98.6% of spin; minimal friction drain)
+
+Phase 2 — Flat Ring Mode (attack, high friction):
+  Outer rubber flat ring:  μ_ring = 0.50
+  r_ring = 10 mm
+  v_ring = μ_ring × ω_reboot × r_ring = 0.50 × 690 × 0.010 = 3.450 m/s
+
+Speed surge from tip mode transition:
+  Δv_reboot = v_ring − v_bearing ≈ 3.450 m/s  (full surge from near-zero to ring drive)
+  v_contact = v_ring = 3.450 m/s  (peak orbital velocity after flat ring engagement)
+```
+
+---
+
+### Contact — Full-Force Strike After Tip Transition
+
+```
+m_eff = (m_GV × m_opp) / (m_GV + m_opp) = (0.049 × 0.040) / (0.049 + 0.040)
+      = 1.960×10⁻³ / 0.089 = 2.202×10⁻² kg
+
+e_Genesis = 0.72  (Genesis/Strike Valtryek Sparking layer — hard attack contact)
+
+J_UGR = m_eff × (1 + e_Genesis) × v_contact = 2.202×10⁻² × 1.72 × 3.450
+      = 2.202×10⁻² × 5.934 = 1.307×10⁻¹ N·s
+
+Δv_opp = J_UGR / m_opp = 1.307×10⁻¹ / 0.040 = 3.268 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 49.0 g (Case 1991) |
+| I_total | 3.749×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_bearing | ≈ 0 |
+| r_bearing | 3 mm |
+| η_bearing | 0.986 |
+| ω_reboot | 690 rad/s |
+| μ_ring | 0.50 |
+| r_ring | 10 mm |
+| v_contact | 3.450 m/s |
+| Δv_reboot | 3.450 m/s |
+| e_Genesis | 0.72 |
+| J_UGR | 1.307×10⁻¹ N·s |
+| Δv_opp | 3.268 m/s |
+
+---
+
+## Case 1998 — SPECIAL: Ultimate Genesis Reboot — Valt Aoi / Genesis Valtryek 6Vortex Ultimate Reboot
+
+**Blader:** Valt Aoi | **Beyblade:** Genesis Valtryek 6Vortex Ultimate Reboot | **Type:** attack
+
+### Description
+
+Ultimate Genesis Reboot (アルティメットジェネシスリブート, Arutimetto Jeneshisu Ribūto) is a Special Move used by Valt Aoi with Genesis Valtryek 6Vortex Ultimate Reboot (Burst Surge). Similar to Genesis Reboot, Valtryek achieves instantaneous speed and power using the in-battle tip change feature of the Ultimate Reboot Performance Tip — switching from bearing mode to flat-ring attack mode mid-battle. This move resembles Gingka's Final Drive Mode.
+
+### Stage — In-Battle Tip Change + Full-Force Surge Strike
+
+From Case 1997: ω_reboot = 690 rad/s, v_contact = 3.450 m/s, J_UGR = 1.307×10⁻¹ N·s, Δv_opp = 3.268 m/s.
+
+```
+Spin drain from flat-ring surge contact:
+  Δω = J_UGR × r_layer / I_total = 1.307×10⁻¹ × 0.032 / 3.749×10⁻⁵ = 111.6 rad/s
+  ω_remain = 690 − 111.6 = 578.4 rad/s  (83.8% retained)
+  (Large outer ring radius means significant spin drain — attack type tradeoff)
+  (After contact, tip reverts to bearing mode for continued spin preservation)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's spirit blazes with a pure white and gold flash — Genesis Valtryek locks into the stadium floor on its silent bearing tip, appearing still as death. Then in one impossible instant, the Ultimate Reboot fires: the rubber ring slaps down, Valtryek explodes from stillness to a blinding surge, and the Genesis Blade crashes into the opponent like a thunderclap. The stadium shakes with the resonance of Valtryek's divine spirit.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek genesis spirit)
+[M] Δv = 3.268 × 8.0 = **26.14 m/s** (bearing-to-ring surge ring-out)
+
+> **Note:** Physical values describe Ultimate Reboot tip transition from near-zero bearing drive to flat-ring v_contact=3.450 m/s; bearing mode preserves spin at η=0.986 (ω_reboot=690 rad/s); J_UGR=1.307×10⁻¹ N·s; Δv=3.268 m/s. Resembles Gingka's Final Drive Mode (bearing→flat engagement). [M] values represent Valt's Valtryek genesis spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateGenesisRebootSpecial(bey: Beyblade, target: Beyblade): void {
+  // Ultimate Reboot bearing→flat ring: v_contact=3.450m/s; J_UGR=1.307×10⁻¹N·s; [M] 8.0×
+  const J_UGR = 0.1307;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UGR * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek genesis spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Surge-era beyblade using the Ultimate Reboot Performance Tip (or equivalent dual-mode bearing+flat driver) — bearing inner tip r=3mm μ≈0 for spin preservation, outer rubber flat ring r≥8mm μ≥0.45 for the attack-mode surge. Wide attack-profile Layer (r_layer ≥ 28 mm, e ≥ 0.70) required for full-force contact. Standard game instance: Genesis Valtryek 6Vortex Ultimate Reboot (Valt Aoi, Burst Surge). Distinct from Genesis Reboot (standard Reboot tip) and Ultimate Flash Launch (groove-rail).
+
+---
+
+## Case 1999 — COMBO: Genesis Surge — Genesis Valtryek 6Vortex Ultimate Reboot
+
+**Sequence:** K A K (defense · attack · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The first defense (K) triggers the bearing engagement — Valtryek pulls back into a tight orbit, the Ultimate Reboot bearing tip locking spin-drain to near zero. The attack (A) fires the trajectory reversal: the sharp inward lunge triggers the tip mode switch from bearing to flat ring, and the surge drives into the opponent. The second defense (K) reengages the bearing after contact, recovering orbital stability and returning a spin pulse to the body:
+
+```
+Bearing hold phase (K₁):
+  v_bearing ≈ 0 m/s (near-zero orbital drive; spin conserved at ω_reboot = 690 rad/s)
+
+Surge attack phase (A):
+  v_combo_contact = v_contact × 0.88 = 3.450 × 0.88 = 3.036 m/s
+  (0.88: combo contact efficiency — tip switch fires at 88% of full surged velocity in combo context)
+
+  J_combo = m_eff × (1 + e_Genesis) × v_combo_contact = 2.202×10⁻² × 1.72 × 3.036
+          = 2.202×10⁻² × 5.222 = 1.150×10⁻¹ N·s
+
+Bearing re-engage phase (K₂ — spin recovery):
+  η_reboot_recover = 0.13 (bearing re-engagement sends rotational pulse back to main body spin)
+  Δω = η_reboot_recover × J_combo × r_layer / I_total
+     = 0.13 × 1.150×10⁻¹ × 0.032 / 3.749×10⁻⁵
+     = 0.13 × 98.15
+     = +12.76 rad/s  → round to +15 rad/s
+```
+
+(η_reboot_recover=0.13: tip reversion to bearing mode after the combo attack returns a spin recovery burst; effective spinGain = +15 rad/s.) Bearing-surge attack gives damageMultiplier **1.35×**. lockMs = 100 (bearing re-engage dwell — brief hold at contact apex).
+
+**Parameters:**
+- spinGain: +15 rad/s (Ultimate Reboot bearing re-engagement spin recovery)
+- damageMultiplier: 1.35 (bearing-to-ring surge attack)
+- lockMs: 100 (bearing re-engage dwell)
+
+### TypeScript
+
+```typescript
+function genesisSurgeCombo(bey: Beyblade, target: Beyblade): void {
+  // Reboot bearing re-engage: Δω ≈ +15 rad/s (η=0.13, v_contact=3.036m/s, J=1.150×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 15);
+  // Bearing-to-ring surge: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +15 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2000 — GIMMICK: Dragoon MS Ultimate Version — Elemental Tornado Vortex (Manga)
+
+**Beyblade:** Dragoon MS Ultimate Version (Beyblade G-Revolution HMS manga)
+**Blader:** Tyson Granger | **Series:** Beyblade G-Revolution (manga)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| AR | Dragoon Wing (metal, wide wing attack profile) | 18.0 | 24.0 |
+| CWD | Circle Wide (tungsten alloy ring, maximum peripheral mass) | 13.0 | 30.0 |
+| HMC | Magnacore (magnetic core unit) | 5.0 | 4.0 |
+| SG | Metal Semi-Flat (HMS bearing-assist semi-flat tip) | 5.0 | 3.5 |
+| **Total** | | **41.0** | |
+
+(HMS G-Revolution format. Dragoon Wing AR: wide metal wing profile for high-torque vortex generation. Circle Wide CWD: tungsten ring at r=30mm — maximum peripheral moment for sustained tornado spin. Magnacore HMC: magnetic resonance core, enables BeySpirit elemental attribute infusion. Semi-flat HMS tip: low friction with moderate orbital drive. 41.0 g estimated.)
+
+**I_total** = 18.0×10⁻³ × 0.024² + 13.0×10⁻³ × 0.030² + 5.0×10⁻³ × 0.004² + 5.0×10⁻³ × 0.0035²
+           = 1.037×10⁻⁵ + 1.170×10⁻⁵ + 8.0×10⁻⁸ + 6.125×10⁻⁸
+           = **2.209×10⁻⁵ kg·m²**  (≈ 2.21×10⁻⁵ kg·m²)
+
+ω₀ = 520 rad/s (HMS G-Revolution standard launch)
+L₀ = I × ω₀ = 2.209×10⁻⁵ × 520 = **1.149×10⁻² kg·m²/s**
+
+---
+
+### 1. Rankine Vortex — Elemental Tornado Generation
+
+The wide Dragoon Wing AR at high spin generates a Rankine vortex in the air column above the bey. The vortex core radius is set by the AR wingspan; the circulation Γ is driven by the tangential tip speed of the wing tips:
+
+```
+v_tip = ω₀ × r_AR = 520 × 0.024 = 12.48 m/s  (wing-tip tangential velocity)
+
+Vortex core radius:
+  r_c = r_AR × 0.60 = 0.024 × 0.60 = 0.0144 m  (core is 60% of AR radius — tight vortex)
+
+Circulation Γ = 2π × r_c × v_tip_effective
+  v_tip_effective = v_tip × 0.55 = 12.48 × 0.55 = 6.864 m/s
+  (coupling efficiency 0.55 — HMS AR drives air column at 55% tip speed)
+  Γ = 2π × 0.0144 × 6.864 = 2π × 0.09884 = 0.6210 m²/s
+
+Wind velocity at target (r_eff = 0.040 m — standard opponent contact radius):
+  v_wind = Γ / (2π × r_eff) = 0.6210 / (2π × 0.040) = 0.6210 / 0.2513 = 2.471 m/s
+
+Sky Attribute amplification (Tyson's Dragoon MS — Sky Attribute):
+  η_sky = 1.50  (elemental resonance multiplier for sky-attribute tornado)
+  v_wind_sky = v_wind × η_sky = 2.471 × 1.50 = 3.706 m/s
+
+Sustained 5.0 s tornado wind impulse:
+  J_wind_ult = m_opp × v_wind_sky = 0.040 × 3.706 = 0.14824 N·s  (peak wind impulse over 5s)
+  J_wind_ult_effective = J_wind_ult × 0.226 = 0.03350 N·s  (effective single-contact equivalent)
+  (0.226: impulse-duration weighting — sustained wind at 5s delivers 22.6% of instantaneous peak)
+```
+
+---
+
+### 2. Elemental Attribute Variants
+
+```
+Water Attribute (water absorbed mid-battle):
+  η_water = 1.80  (water amplifies vortex: absorbed liquid mass increases air density in column)
+  v_wind_water = v_wind × η_water = 2.471 × 1.80 = 4.448 m/s
+
+Fire Attribute (Kai's version — Dranzer MS in tornado clash):
+  η_fire = 1.65  (fire thermal convection boosts updraft force within tornado)
+  v_wind_fire = v_wind × η_fire = 2.471 × 1.65 = 4.077 m/s
+```
+
+---
+
+### 3. Diving Crash — Tornado + Dive Impact
+
+After sustained vortex harassment, Dragoon MS dives into the opponent from above, riding the tornado's downward central column:
+
+```
+h_tornado = 0.250 m  (tornado reaches 250 mm height — towering vortex)
+v_dive = √(2g × h_tornado) = √(2 × 9.81 × 0.250) = √4.905 = 2.214 m/s
+
+m_eff = (m_DMS × m_opp) / (m_DMS + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+e_Wing = 0.78  (Dragoon Wing metal AR — hard high-restitution HMS contact)
+
+J_dive_US = m_eff × (1 + e_Wing) × v_dive = 2.025×10⁻² × 1.78 × 2.214
+          = 2.025×10⁻² × 3.941 = 7.980×10⁻² N·s
+
+J_total_US = J_wind_ult_effective + J_dive_US = 0.03350 + 0.07980 = 0.11330 N·s
+           ≈ 1.133×10⁻¹ N·s
+
+Δv_opp = J_total_US / m_opp = 1.133×10⁻¹ / 0.040 = 2.833 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g |
+| I_total | 2.209×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| v_tip | 12.48 m/s |
+| r_c | 14.4 mm |
+| Γ | 0.6210 m²/s |
+| v_wind | 2.471 m/s |
+| η_sky | 1.50 |
+| v_wind_sky | 3.706 m/s |
+| J_wind_ult_eff | 3.350×10⁻² N·s |
+| h_tornado | 250 mm |
+| v_dive | 2.214 m/s |
+| e_Wing | 0.78 |
+| J_dive_US | 7.980×10⁻² N·s |
+| J_total_US | 1.133×10⁻¹ N·s |
+| Δv_opp | 2.833 m/s |
+
+---
+
+## Case 2001 — SPECIAL: Ultimate Storm (Manga) — Tyson Granger / Dragoon MS Ultimate Version
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon MS Ultimate Version | **Type:** attack
+
+### Description
+
+Ultimate Storm (アルティメットストーム, Arutimetto Sutōmu) is a Special Move used by Tyson Granger and Dragoon MS Ultimate Version (Beyblade G-Revolution, HMS manga). A towering elemental tornado envelops the opposing Beyblade inside a swirling vortex cloud of rotating debris and dust — Dragoon's Sky Attribute tornado is powerful enough to lift and toss environmental objects. The tornado can inherit different elemental properties depending on the Attribute of Dragoon's Bit-Beast: Sky Attribute (standard), Water Attribute (when water is absorbed mid-battle), or Fire Attribute (Kai's Dranzer MS version in a tornado clash). The blader can also manipulate the tornado via their bey in a variety of maneuvers, including a diving crash.
+
+### Stage — Elemental Vortex Surge + Diving Crash
+
+From Case 2000: Γ=0.6210 m²/s, v_wind_sky=3.706 m/s, J_wind_ult_eff=3.350×10⁻² N·s, v_dive=2.214 m/s, J_dive_US=7.980×10⁻² N·s, J_total_US=1.133×10⁻¹ N·s, Δv_opp=2.833 m/s.
+
+```
+Spin drain from tornado dive contact:
+  Δω = J_total_US × r_AR / I_total = 1.133×10⁻¹ × 0.024 / 2.209×10⁻⁵ = 123.2 rad/s
+  ω_remain = 520 − 123.2 = 396.8 rad/s  (76.3% retained)
+  (Massive tornado energy output drains spin significantly — standard HMS attack tradeoff)
+
+Elemental attribute note (Water/Fire variants):
+  v_wind_water = 4.448 m/s → J_wind_water_eff = 0.040 × 4.448 × 0.226 = 4.021×10⁻² N·s
+  J_total_water = 4.021×10⁻² + 7.980×10⁻² = 1.200×10⁻¹ N·s → Δv_opp_water = 3.001 m/s
+  (Higher tornado mass from absorbed water; fire variant analogous at η=1.65)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tyson's Dragoon roars with primal fury — the Dragoon Wing ARs ignite with brilliant blue-white light as Dragoon MS spins to an impossible speed. A colossal tornado erupts from the stadium floor, climbing skyward as a pillar of wind, debris, and elemental energy. The opposing Beyblade is engulfed in the swirling column — then Dragoon itself plunges from the eye of the storm in a blinding diving crash, the full weight of the hurricane concentrated in a single devastat­ing impact. The stadium itself quakes.
+
+[M] factor = **8.0 ×** (Tyson Granger — original series protagonist, Dragoon sky-wind spirit)
+[M] Δv = 2.833 × 8.0 = **22.66 m/s** (elemental tornado diving crash ring-out)
+
+> **Note:** Physical values describe HMS Rankine vortex Γ=0.6210 m²/s; Sky η_sky=1.50 v_wind_sky=3.706 m/s; Water η_water=1.80; Fire η_fire=1.65 (Kai version); h_tornado=250mm v_dive=2.214 m/s; J_wind_eff=3.350×10⁻²; J_dive=7.980×10⁻²; J_total=1.133×10⁻¹ N·s; Δv=2.833 m/s. [M] values represent Tyson's Dragoon sky-element spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateStormMangaSpecial(bey: Beyblade, target: Beyblade): void {
+  // HMS Rankine vortex Γ=0.6210; sky η=1.50; dive h=250mm; J_total=1.133×10⁻¹N·s; [M] 8.0×
+  const J_total_US = 0.1133;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_US * 8.0; // [M] BeySpirit 8.0× (Tyson Dragoon sky-wind spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a wide metal Attack Ring (r_AR ≥ 20 mm) providing high-circulation vortex generation (Γ ≥ 0.40 m²/s) with a magnetic or elemental resonance core (Magnacore or equivalent) enabling attribute infusion. Standard game instance: Dragoon MS Ultimate Version (Tyson Granger, G-Revolution HMS manga). Elemental attribute can be Sky (default), Water (absorbed mid-battle), or Fire (Dranzer MS variant). Distinct from Ultimate Storm Attack (moving vortex that follows the bey).
+
+---
+
+## Case 2002 — COMBO: Tornado Crash — Dragoon MS Ultimate Version
+
+**Sequence:** ↑ ↓ A (moveUp · moveDown · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The moveUp (↑) spins Dragoon MS into a high orbit — the Dragoon Wing AR begins generating the vortex as orbital speed builds. The moveDown (↓) triggers the tornado dive arc — Dragoon drops from the high-orbit point inward, riding the vortex's downward central column. The attack (A) fires the diving crash at impact point:
+
+```
+Vortex partial build (↑ phase):
+  v_wind_combo = v_wind × 0.70 = 2.471 × 0.70 = 1.730 m/s  (70% circulation in combo)
+  J_wind_combo = m_opp × v_wind_combo × 0.226 = 0.040 × 1.730 × 0.226 = 1.564×10⁻² N·s
+
+Dive arc from reduced height (↓ phase):
+  h_combo = h_tornado × 0.60 = 0.250 × 0.60 = 0.150 m  (combo reaches 60% of full tornado height)
+  v_dive_combo = √(2g × h_combo) = √(2 × 9.81 × 0.150) = √2.943 = 1.715 m/s
+
+  J_dive_combo = m_eff × (1 + e_Wing) × v_dive_combo = 2.025×10⁻² × 1.78 × 1.715
+              = 2.025×10⁻² × 3.053 = 6.182×10⁻² N·s
+
+J_combo = J_wind_combo + J_dive_combo = 1.564×10⁻² + 6.182×10⁻² = 7.746×10⁻² N·s
+```
+
+Tornado spin-back recovery (η_vortex = 0.10):
+
+```
+Δω = η_vortex × J_combo × r_AR / I_total
+   = 0.10 × 7.746×10⁻² × 0.024 / 2.209×10⁻⁵
+   = 0.10 × 84.15
+   = +8.42 rad/s  → round to +8 rad/s
+```
+
+(η_vortex=0.10: tornado rebound adds a small rotational pulse to Dragoon's spin after the diving crash; effective spinGain = +8 rad/s.) Tornado crash dive gives damageMultiplier **1.30×**. lockMs = 50 (brief dive dwell at impact).
+
+**Parameters:**
+- spinGain: +8 rad/s (tornado vortex rebound)
+- damageMultiplier: 1.30 (tornado diving crash)
+- lockMs: 50 (dive impact dwell)
+
+### TypeScript
+
+```typescript
+function tornadoCrashCombo(bey: Beyblade, target: Beyblade): void {
+  // Tornado dive partial: Δω ≈ +8 rad/s (η=0.10, v_dive=1.715m/s, J=7.746×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Tornado crash dive: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2003 — GIMMICK: Dragoon MS / Metal Storm — Moving Storm Vortex (Anime)
+
+**Beyblade:** Dragoon MS (Beyblade G-Revolution HMS anime) / Metal Storm (variant)
+**Blader:** Tyson Granger | **Series:** Beyblade G-Revolution (anime)
+**Cross-reference:** Assembly in Case 2000 (41.0 g, I=2.209×10⁻⁵ kg·m², ω₀=520 rad/s)
+
+### Moving Vortex Mechanics
+
+Unlike Ultimate Storm (manga), the Ultimate Storm Attack anime version features a storm vortex that is not fixed in position — it moves with Dragoon MS as the bey orbits the stadium. The moving vortex combines the carried tornado's wind impulse with the orbital kinetic energy of the bey's own trajectory:
+
+```
+Base wind speed (from Case 2000):
+  v_wind = 2.471 m/s  (static Rankine vortex at r_eff = 40 mm)
+
+Moving vortex enhancement factor:
+  η_moving = 2.00  (vortex moves with bey — orbital velocity adds directly to wind field)
+  v_wind_moving = v_wind × η_moving = 2.471 × 2.00 = 4.942 m/s
+
+Physical basis: the bey's orbital velocity (v_orbital ≈ 2.30 m/s at r_orbit=35mm,
+ω=65 rad/s orbital rate) adds coherently to the rotating wind field —
+the front side of the vortex moves at v_wind + v_orbital while the trailing
+side is the net v_wind. The effective contact impulse from the combined field:
+  v_wind_eff = √(v_wind² + v_orbital²) = √(2.471² + 2.30²) = √(6.106 + 5.290) = √11.396 = 3.376 m/s
+  η_moving = v_wind_moving / v_wind_eff × correction = 4.942 / 3.376 = 1.464
+  (Using the analytical v_wind_moving = 4.942 m/s as the operative contact wind speed;
+   η_moving=2.00 captures the storm-follows-bey amplification seen in anime)
+
+Sustained moving-storm wind impulse (5.0 s orbit duration):
+  J_wind_moving = m_opp × v_wind_moving × 0.226 = 0.040 × 4.942 × 0.226 = 4.469×10⁻² N·s
+
+Direct contact strike at end of storm orbit:
+  v_contact = μ_SF × ω₀ × r_SF + v_orbital = 0.40 × 520 × 0.003 + 2.30 = 0.624 + 2.30 = 2.924 m/s
+  (Semi-flat tip μ=0.40 r=3mm; orbital velocity adds as approach speed at contact point)
+
+  J_contact = m_eff × (1 + e_Wing) × v_contact = 2.025×10⁻² × 1.78 × 2.924
+            = 2.025×10⁻² × 5.205 = 1.054×10⁻¹ N·s
+
+J_total_USA = J_wind_moving + J_contact = 4.469×10⁻² + 1.054×10⁻¹ = 1.501×10⁻¹ N·s
+
+Wait — apply storm+contact combined ceiling:
+  J_total_USA = 0.04469 + 0.10540 = 0.15009 N·s  (full combined)
+  Δv_opp = J_total_USA / m_opp = 0.15009 / 0.040 = 3.752 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g (Case 2000) |
+| I_total | 2.209×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| v_wind | 2.471 m/s |
+| η_moving | 2.00 |
+| v_wind_moving | 4.942 m/s |
+| J_wind_moving | 4.469×10⁻² N·s |
+| v_contact | 2.924 m/s |
+| e_Wing | 0.78 |
+| J_contact | 1.054×10⁻¹ N·s |
+| J_total_USA | 1.501×10⁻¹ N·s |
+| Δv_opp | 3.752 m/s |
+
+---
+
+## Case 2004 — SPECIAL: Ultimate Storm Attack — Tyson Granger / Dragoon MS
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon MS / Metal Storm | **Type:** attack
+
+### Description
+
+Ultimate Storm Attack (アルティメットストームアタック, Arutimetto Sutōmu Atakku) is a Special Move used by Tyson Granger and Dragoon MS (Beyblade G-Revolution anime). Similar to Dragoon S's Storm Attack, it is a more powerful version — and the storm moves with the Beyblade. As Dragoon MS orbits the stadium at speed, the tornado vortex travels with it, the combined wind field and orbital velocity amplifying the impact when the bey finally crashes into the opponent.
+
+### Stage — Moving Vortex Orbit + Direct Contact Strike
+
+From Case 2003: v_wind_moving=4.942 m/s, J_wind_moving=4.469×10⁻² N·s, v_contact=2.924 m/s, J_contact=1.054×10⁻¹ N·s, J_total_USA=1.501×10⁻¹ N·s, Δv_opp=3.752 m/s.
+
+```
+Spin drain from moving storm contact:
+  Δω = J_total_USA × r_AR / I_total = 1.501×10⁻¹ × 0.024 / 2.209×10⁻⁵ = 163.2 rad/s
+  ω_remain = 520 − 163.2 = 356.8 rad/s  (68.6% retained)
+  (Moving storm is the most spin-expensive Dragoon move — sustained orbit + full contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dragoon's spirit erupts with a roar that shakes the stadium — unlike any tornado before it, the storm doesn't stay still. A wall of howling wind, debris, and blue-white lightning sweeps around the entire stadium in a spiral, locked to Dragoon MS as it orbits at impossible speed. The opponent's Beyblade is battered by the moving tempest with every rotation — and then Dragoon launches itself out of the eye of the storm directly at the opponent, the combined force of the hurricane and a full-speed orbital strike landing at once.
+
+[M] factor = **8.0 ×** (Tyson Granger — original series protagonist, Dragoon sky-wind spirit)
+[M] Δv = 3.752 × 8.0 = **30.02 m/s** (moving-vortex orbital strike ring-out)
+
+> **Note:** Physical values describe moving-vortex η_moving=2.00, v_wind_moving=4.942 m/s; orbital contact v_contact=2.924 m/s; J_wind=4.469×10⁻², J_contact=1.054×10⁻¹; J_total=1.501×10⁻¹ N·s; Δv=3.752 m/s. Storm follows bey orbit — distinct from Ultimate Storm (static dive). [M] values represent Tyson's Dragoon storm-follow spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateStormAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Moving vortex η=2.00 v_wind=4.942m/s + orbital contact; J_total=1.501×10⁻¹N·s; [M] 8.0×
+  const J_total_USA = 0.1501;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_USA * 8.0; // [M] BeySpirit 8.0× (Tyson Dragoon storm-follow spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a wide metal Attack Ring (r_AR ≥ 20 mm, Γ_base ≥ 0.40 m²/s) with a low-friction drive tip capable of sustained orbital motion (semi-flat, bearing, or equivalent). The moving storm mechanic requires high orbital angular momentum — effective only at ω₀ ≥ 480 rad/s with continuous orbital drive. Standard game instances: Dragoon MS / Metal Storm (Tyson Granger, G-Revolution). Distinct from Ultimate Storm (static dive, manga version).
+
+---
+
+## Case 2005 — COMBO: Storm Follow — Dragoon MS
+
+**Sequence:** ↑ ↑ A (moveUp · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The first moveUp (↑) drives Dragoon MS into the outer orbital track — the vortex begins generating as the bey accelerates through the first arc. The second moveUp (↑) completes a full second arc, the moving storm fully locked to the bey's trajectory and reaching peak wind speed. The attack (A) releases the contact strike at the second-arc endpoint:
+
+```
+First arc wind build (↑₁):
+  v_wind_arc1 = v_wind × η_moving × 0.60 = 2.471 × 2.00 × 0.60 = 2.965 m/s
+  J_wind_arc1 = m_opp × v_wind_arc1 × 0.226 = 0.040 × 2.965 × 0.226 = 2.680×10⁻² N·s
+
+Second arc wind peak (↑₂):
+  v_wind_arc2 = v_wind × η_moving × 0.90 = 2.471 × 2.00 × 0.90 = 4.448 m/s
+  J_wind_arc2 = m_opp × v_wind_arc2 × 0.226 = 0.040 × 4.448 × 0.226 = 4.021×10⁻² N·s
+
+Contact strike (A, combo efficiency 0.85):
+  v_combo_contact = v_contact × 0.85 = 2.924 × 0.85 = 2.485 m/s
+  J_contact_combo = m_eff × (1 + e_Wing) × v_combo_contact = 2.025×10⁻² × 1.78 × 2.485
+                  = 2.025×10⁻² × 4.423 = 8.957×10⁻² N·s
+
+J_combo = J_wind_arc2 + J_contact_combo = 4.021×10⁻² + 8.957×10⁻² = 1.298×10⁻¹ N·s
+```
+
+Moving-storm orbital rebound (η_orbit = 0.08):
+
+```
+Δω = η_orbit × J_combo × r_AR / I_total
+   = 0.08 × 1.298×10⁻¹ × 0.024 / 2.209×10⁻⁵
+   = 0.08 × 141.1
+   = +11.3 rad/s  → round to +8 rad/s (conservative — double orbit drains spin)
+```
+
+(η_orbit=0.08: two full orbit arcs drain spin significantly; partial rebound from storm momentum. Effective spinGain = +8 rad/s.) Double-arc storm follow gives damageMultiplier **1.30×**. lockMs = 50 (brief contact dwell at orbit endpoint).
+
+**Parameters:**
+- spinGain: +8 rad/s (orbital storm rebound)
+- damageMultiplier: 1.30 (double-arc moving storm)
+- lockMs: 50 (orbit endpoint dwell)
+
+### TypeScript
+
+```typescript
+function stormFollowCombo(bey: Beyblade, target: Beyblade): void {
+  // Double-arc moving storm: Δω ≈ +8 rad/s (η=0.08, v_contact=2.485m/s, J=1.298×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Moving-storm double-arc: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2006 — GIMMICK: Storm Spryzen Knuckle Unite — Stadium Groove Speed Build + Heavy Contact
+
+**Beyblade:** Storm Spryzen Knuckle Unite (Beyblade Burst God / SuperKing era)
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst God (SuperKing)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Storm Spryzen (dual-spin, counter-attack oriented, God layer) | 30.0 | 33.0 |
+| Disc | Knuckle (4-knuckle forge disc, high peripheral mass) | 15.0 | 26.0 |
+| Driver | Unite (variable-friction: low-friction free-spin center + rubber outer ring) | 7.0 | 4.0 |
+| **Total** | | **52.0** | |
+
+(Burst God/SuperKing 3-part system. Storm Spryzen layer: wide dual-spin attack profile, reinforced outer edge for heavy contact. Knuckle disc: 4 peripheral knuckle protrusions at r=26mm for attack momentum. Unite driver: free-spin inner tip r=4mm for stamina/positioning + rubber outer ring r=9mm for groove-wall orbital drive and contact. 52.0 g estimated.)
+
+**I_total** = 30.0×10⁻³ × 0.033² + 15.0×10⁻³ × 0.026² + 7.0×10⁻³ × 0.004²
+           = 3.267×10⁻⁵ + 1.014×10⁻⁵ + 1.120×10⁻⁷
+           = **4.292×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst God standard launch)
+L₀ = I × ω₀ = 4.292×10⁻⁵ × 700 = **3.004×10⁻² kg·m²/s**
+
+---
+
+### 1. Stadium Groove-Rail Speed Build
+
+Storm Spryzen rides the stadium groove — the Unite driver's outer rubber ring engages the groove wall, converting all driving friction to tangential orbital acceleration (same mechanism as Case 1991 Ultimate Flash Launch):
+
+```
+Unite outer ring in groove-contact:
+  μ_Unite_outer = 0.52  (rubber outer ring — slightly higher friction than Reboot)
+  r_Unite_eff = 0.009 m  (9 mm outer ring radius)
+  v_orbital_free = μ_Unite_outer × ω₀ × r_Unite_eff = 0.52 × 700 × 0.009 = 3.276 m/s
+
+Groove constraint boost:
+  η_groove = 1.35  (groove rail eliminates lateral energy loss → 35% orbital speed increase)
+  v_groove_peak = v_orbital_free × η_groove = 3.276 × 1.35 = 4.423 m/s
+```
+
+---
+
+### 2. Counter Strike — Heavy Contact at Groove Exit
+
+Spryzen exits the groove at full speed and crashes into the opponent with the reinforced layer edge:
+
+```
+m_eff = (m_SS × m_opp) / (m_SS + m_opp) = (0.052 × 0.040) / (0.052 + 0.040)
+      = 2.080×10⁻³ / 0.092 = 2.261×10⁻² kg
+
+e_Spryzen = 0.73  (Storm Spryzen God layer — reinforced counter-attack edge)
+
+J_UCB = m_eff × (1 + e_Spryzen) × v_groove_peak = 2.261×10⁻² × 1.73 × 4.423
+      = 2.261×10⁻² × 7.652 = 1.730×10⁻¹ N·s
+
+Δv_opp = J_UCB / m_opp = 1.730×10⁻¹ / 0.040 = 4.325 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 52.0 g |
+| I_total | 4.292×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_Unite_outer | 0.52 |
+| r_Unite_eff | 9 mm |
+| v_orbital_free | 3.276 m/s |
+| η_groove | 1.35 |
+| v_groove_peak | 4.423 m/s |
+| e_Spryzen | 0.73 |
+| J_UCB | 1.730×10⁻¹ N·s |
+| Δv_opp | 4.325 m/s |
+
+---
+
+## Case 2007 — SPECIAL: Ultra Counter Break — Shu Kurenai / Storm Spryzen Knuckle Unite
+
+**Blader:** Shu Kurenai | **Beyblade:** Storm Spryzen Knuckle Unite | **Type:** attack
+
+### Description
+
+Ultra Counter Break (トゥルー・カウンターブレイク, Turū Kauntā Bureiku — True Counter Break in Japan) is a Special Move used by Shu Kurenai and Storm Spryzen Knuckle Unite (Burst God/SuperKing). A stronger version of the Counter Break in which Spryzen rides along the stadium's groove to pick up speed and deal heavy damage — similar to Valt Aoi's Ultimate Flash Launch.
+
+### Stage — Groove Speed Build + Counter-Attack Heavy Strike
+
+From Case 2006: v_groove_peak = 4.423 m/s, J_UCB = 1.730×10⁻¹ N·s, Δv_opp = 4.325 m/s.
+
+```
+Spin drain from groove-exit counter strike:
+  Δω = J_UCB × r_layer / I_total = 1.730×10⁻¹ × 0.033 / 4.292×10⁻⁵ = 133.0 rad/s
+  ω_remain = 700 − 133.0 = 567.0 rad/s  (81.0% retained)
+  (Heavier disc mass absorbs more impulse loss — attack-stamina tradeoff of Knuckle disc)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu's eyes blaze crimson as Spryzen locks into the groove wall — the red-and-white bey becomes a streak of fire along the stadium's edge, building speed until the track itself seems to crack with heat. At the apex of the groove, Spryzen vanishes from its orbit and reappears beside the opponent in a burst of red lightning. The Knuckle disc and reinforced layer edge connect with the full force of the groove charge — an unstoppable counter that drives the opponent straight off the stadium.
+
+[M] factor = **8.0 ×** (Shu Kurenai — main Burst rival/secondary protagonist, Spryzen counter-fire spirit)
+[M] Δv = 4.325 × 8.0 = **34.60 m/s** (groove counter break ring-out)
+
+> **Note:** Physical values describe groove-rail v_free=3.276 m/s (μ_Unite=0.52 r=9mm) → η=1.35 → v_groove=4.423 m/s; J_UCB=1.730×10⁻¹ N·s; Δv=4.325 m/s; Δω_drain=133.0 rad/s. Similar to Ultimate Flash Launch (groove-rail mechanism) but uses Unite driver outer ring at r=9mm and heavier 52.0g assembly. [M] values represent Shu's Spryzen counter-fire spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultraCounterBreakSpecial(bey: Beyblade, target: Beyblade): void {
+  // Groove η=1.35 v_groove=4.423m/s; counter strike; J_UCB=1.730×10⁻¹N·s; [M] 8.0×
+  const J_UCB = 0.1730;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UCB * 8.0; // [M] BeySpirit 8.0× (Shu Spryzen counter-fire spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst God/SuperKing-era beyblade using a rubber-ring variable-friction driver (outer ring r ≥ 7 mm, μ ≥ 0.45) capable of groove-wall engagement in a stadium with a circular groove rail (η_groove ≥ 1.20), combined with a reinforced wide-profile Layer (r_layer ≥ 30 mm, e ≥ 0.70) for the counter-attack contact. Standard game instance: Storm Spryzen Knuckle Unite (Shu Kurenai, Burst God/SuperKing). Distinct from Counter Break (standard, no groove) and Ultra Emperor Drift (outer-rim trajectory change).
+
+---
+
+## Case 2008 — COMBO: Counter Groove — Storm Spryzen Knuckle Unite
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The first moveRight (→) sends Storm Spryzen into the groove clockwise — the Unite outer ring engages the groove wall and orbital speed begins building. The second moveRight (→) drives a second full arc, reaching near-peak groove speed with both arcs contributing. The attack (A) releases the groove-exit counter strike at the second arc endpoint — identical groove mechanism to Flash Groove (Case 1993) but with the heavier Spryzen assembly generating larger impulse:
+
+```
+v_groove_arc1 = v_orbital_free = 3.276 m/s  (first arc in groove, natural speed)
+v_groove_arc2 = v_groove_arc1 × 1.20 = 3.276 × 1.20 = 3.931 m/s
+v_combo_contact = v_groove_arc2 × η_groove_partial = 3.931 × 1.15 = 4.521 m/s
+(partial groove boost: 2 arcs = 1.15× vs full groove η=1.35; consistent with Flash Groove)
+
+J_combo = m_eff × (1 + e_Spryzen) × v_combo_contact = 2.261×10⁻² × 1.73 × 4.521
+        = 2.261×10⁻² × 7.821 = 1.768×10⁻¹ N·s
+```
+
+Unite rubber outer ring spin recovery via groove-exit rebound (η_Unite = 0.09):
+
+```
+Δω = η_Unite × J_combo × r_layer / I_total
+   = 0.09 × 1.768×10⁻¹ × 0.033 / 4.292×10⁻⁵
+   = 0.09 × 135.9
+   = +12.2 rad/s  → round to +12 rad/s
+```
+
+(η_Unite=0.09: groove exit + rubber ring rebound converts partial orbital momentum to spin recovery; effective spinGain = +12 rad/s.) Double-arc groove counter gives damageMultiplier **1.35×**. lockMs = 0 (groove-exit attack: instantaneous trajectory change, no dwell).
+
+**Parameters:**
+- spinGain: +12 rad/s (Unite rubber groove-exit rebound)
+- damageMultiplier: 1.35 (double-arc counter groove)
+- lockMs: 0 (instantaneous trajectory change)
+
+### TypeScript
+
+```typescript
+function counterGrooveCombo(bey: Beyblade, target: Beyblade): void {
+  // Unite double-arc: Δω ≈ +12 rad/s (η=0.09, v_contact=4.521m/s, J=1.768×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Double-arc counter groove: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2009 — GIMMICK: Emperor Forneus — Outer Rim Drift Trajectory Change
+
+**Beyblade:** Emperor Forneus (Beyblade Burst Cho-Z era)
+**Blader:** Free de la Hoya | **Series:** Beyblade Burst Cho-Z
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Emperor Forneus (wide outer rim frame, extended attack/defense arc) | 30.0 | 35.0 |
+| Disc | 0 (zero-profile low-mass disc, central mass distribution) | 12.0 | 16.0 |
+| Driver | Atomic (ball-bearing center with rubber outer ring, dual-mode) | 7.0 | 4.0 |
+| **Total** | | **49.0** | |
+
+(Burst Cho-Z 3-part system. Emperor Forneus layer: wide outer rim extending to r=38mm — the extended rim is the defining gimmick, providing both trajectory deflection and high-speed contact arc. Disc 0: minimal profile for center mass. Atomic driver: inner bearing tip r=4mm for spin preservation + outer rubber ring for attack-mode orbital drive. 49.0 g estimated.)
+
+**I_total** = 30.0×10⁻³ × 0.035² + 12.0×10⁻³ × 0.016² + 7.0×10⁻³ × 0.004²
+           = 3.675×10⁻⁵ + 3.072×10⁻⁶ + 1.120×10⁻⁷
+           = **4.094×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 4.094×10⁻⁵ × 700 = **2.866×10⁻² kg·m²/s**
+
+---
+
+### 1. Standard Orbital Approach
+
+Forneus orbits at base tip-driven speed, bearing tip preserving spin:
+
+```
+μ_Atomic_bearing ≈ 0.08  (partial bearing friction — small orbital drive)
+r_Atomic_bearing = 4 mm
+v_orbital = μ_Atomic_bearing × ω₀ × r_Atomic_bearing = 0.08 × 700 × 0.004 = 0.224 m/s
+  (Low orbital speed preserves spin — standard Atomic bearing approach)
+```
+
+---
+
+### 2. Outer Rim Drift — Trajectory Change Mechanism
+
+As Forneus approaches the stadium wall or the opponent at a glancing angle, the extended outer rim (at r_rim=38mm) contacts and deflects the trajectory. The rim's own high tangential spin velocity contributes a directional vector change that redirects the bey from its glancing approach to a direct contact attack:
+
+```
+Outer rim tangential velocity:
+  v_rim_tang = ω₀ × r_rim = 700 × 0.038 = 26.60 m/s
+
+Drift deflection angle:
+  φ_drift = 30°  (glancing approach angle — rim deflects trajectory 30° toward opponent)
+
+Effective rim contribution to contact direction (perpendicular component):
+  η_rim = 0.16  (16% coupling efficiency: spin axis perpendicular to contact plane)
+  v_rim_eff = v_rim_tang × sin(φ_drift) × η_rim = 26.60 × 0.500 × 0.16 = 2.128 m/s
+
+Combined contact velocity after drift:
+  v_contact_drift = v_orbital + v_rim_eff = 0.224 + 2.128 = 2.352 m/s
+  (Drift converts rim spin energy into approach velocity — outer rim redirects trajectory)
+```
+
+---
+
+### 3. Rim Contact Strike
+
+```
+m_eff = (m_EF × m_opp) / (m_EF + m_opp) = (0.049 × 0.040) / (0.049 + 0.040)
+      = 1.960×10⁻³ / 0.089 = 2.202×10⁻² kg
+
+e_Forneus = 0.72  (Emperor Forneus outer rim — extended arc contact, Cho-Z layer)
+
+J_UED = m_eff × (1 + e_Forneus) × v_contact_drift = 2.202×10⁻² × 1.72 × 2.352
+      = 2.202×10⁻² × 4.045 = 8.908×10⁻² N·s
+
+Δv_opp = J_UED / m_opp = 8.908×10⁻² / 0.040 = 2.227 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 49.0 g |
+| I_total | 4.094×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| r_rim | 38 mm |
+| v_rim_tang | 26.60 m/s |
+| φ_drift | 30° |
+| η_rim | 0.16 |
+| v_rim_eff | 2.128 m/s |
+| v_contact_drift | 2.352 m/s |
+| e_Forneus | 0.72 |
+| J_UED | 8.908×10⁻² N·s |
+| Δv_opp | 2.227 m/s |
+
+---
+
+## Case 2010 — SPECIAL: Ultra Emperor Drift — Free de la Hoya / Emperor Forneus
+
+**Blader:** Free de la Hoya | **Beyblade:** Emperor Forneus | **Type:** attack
+
+### Description
+
+Ultra Emperor Drift (アルティメットエンペラードリフト, Arutimetto Enperā Dorifuto) is a Special Move used by Free de la Hoya and Emperor Forneus (Burst Cho-Z). Forneus uses its wide outer rim to change its trajectory and increase its speed and power for a heavy contact strike. Similar to Shu Kurenai's Counter Break — the outer rim deflection replaces the groove-speed mechanism, redirecting the bey's glancing approach into a full direct strike at amplified velocity.
+
+### Stage — Outer Rim Drift + Direct Contact Strike
+
+From Case 2009: v_rim_tang=26.60 m/s, φ_drift=30°, η_rim=0.16, v_contact_drift=2.352 m/s, J_UED=8.908×10⁻² N·s, Δv_opp=2.227 m/s.
+
+```
+Spin drain from outer rim drift contact:
+  Δω = J_UED × r_rim / I_total = 8.908×10⁻² × 0.038 / 4.094×10⁻⁵ = 82.6 rad/s
+  ω_remain = 700 − 82.6 = 617.4 rad/s  (88.2% retained)
+  (Outer rim contact at larger radius drains more spin than core contact — drift tradeoff)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Free de la Hoya's icy composure shatters into focused ferocity — Emperor Forneus glides like a phantom, its outer rim barely kissing the stadium wall at an impossible angle. In an instant the trajectory shifts: what looked like a miss becomes an unstoppable direct hit, the wide emperor rim connecting with the full rotational fury of the Cho-Z layer. The opponent's bey is sent spiraling across the stadium by a force that seemed to come from nowhere.
+
+[M] factor = **7.5 ×** (Free de la Hoya — Burst Cho-Z secondary protagonist, Forneus drift spirit)
+[M] Δv = 2.227 × 7.5 = **16.70 m/s** (outer rim drift trajectory ring-out)
+
+> **Note:** Physical values describe outer rim r_rim=38mm, v_rim_tang=26.60 m/s, φ_drift=30°, η_rim=0.16, v_rim_eff=2.128 m/s; v_contact_drift=2.352 m/s; J_UED=8.908×10⁻² N·s; Δv=2.227 m/s. Outer rim redirects glancing approach to direct contact — mechanism analogous to Counter Break's groove-speed trajectory redirect. [M] values represent Free's Forneus drift spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultraEmperorDriftSpecial(bey: Beyblade, target: Beyblade): void {
+  // Outer rim r=38mm drift η_rim=0.16; v_contact=2.352m/s; J_UED=8.908×10⁻²N·s; [M] 7.5×
+  const J_UED = 0.08908;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UED * 7.5; // [M] BeySpirit 7.5× (Free de la Hoya Forneus drift spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Cho-Z-era beyblade using an extended outer rim layer (r_rim ≥ 34 mm, φ_drift ≥ 20°) — the drift mechanism requires the rim radius to exceed the standard contact radius so that the rim's own tangential spin velocity contributes a directional redirect (v_rim_eff ≥ 1.5 m/s). Low-friction bearing or partial-bearing driver recommended to preserve spin through the glancing approach phase. Standard game instance: Emperor Forneus (Free de la Hoya, Burst Cho-Z). Distinct from Counter Break (groove-rail speed) and Ultimate Flash Launch (groove-rail speed).
+
+---
+
+## Case 2011 — COMBO: Emperor Drift — Emperor Forneus
+
+**Sequence:** ← → A (moveLeft · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Free de la Hoya
+
+### Physics Justification
+
+The moveLeft (←) sends Emperor Forneus left in a wide glancing orbit — the outer rim angles toward the opponent at the approach vector. The moveRight (→) snaps Forneus back right with the rim deflection: the trajectory change from ← to → is the drift — the rim catches at the reversal point, converts the direction-change into extra approach momentum. The attack (A) fires the contact at the drift apex:
+
+```
+Glancing approach speed (← phase):
+  v_approach_left = v_orbital = 0.224 m/s (low-friction bearing approach)
+
+Drift reversal (→ phase — trajectory snap):
+  v_snap_addition = v_orbital × 0.70 = 0.224 × 0.70 = 0.157 m/s (70% of approach adds to snap-back)
+  v_drift_combo = v_rim_eff × 0.88 = 2.128 × 0.88 = 1.873 m/s (88% rim eff. in combo)
+  v_combo_contact = v_drift_combo + v_snap_addition = 1.873 + 0.157 = 2.030 m/s
+
+J_combo = m_eff × (1 + e_Forneus) × v_combo_contact = 2.202×10⁻² × 1.72 × 2.030
+        = 2.202×10⁻² × 3.492 = 7.689×10⁻² N·s
+```
+
+Outer rim bearing reversion spin recovery (η_drift_rebound = 0.11):
+
+```
+Δω = η_drift_rebound × J_combo × r_rim / I_total
+   = 0.11 × 7.689×10⁻² × 0.038 / 4.094×10⁻⁵
+   = 0.11 × 71.3
+   = +7.84 rad/s  → round to +8 rad/s
+```
+
+(η_drift_rebound=0.11: rim reversion after drift strike sends small rotational pulse back to body spin; effective spinGain = +8 rad/s.) Drift snap gives damageMultiplier **1.30×**. lockMs = 0 (sharp trajectory snap — no dwell).
+
+**Parameters:**
+- spinGain: +8 rad/s (outer rim drift rebound)
+- damageMultiplier: 1.30 (drift trajectory snap)
+- lockMs: 0 (sharp snap, no dwell)
+
+### TypeScript
+
+```typescript
+function emperorDriftCombo(bey: Beyblade, target: Beyblade): void {
+  // Outer rim drift snap: Δω ≈ +8 rad/s (η=0.11, v_contact=2.030m/s, J=7.689×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Drift trajectory snap: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2012 — GIMMICK: Union Achilles Convert Xtend+ Retsu — Stadium Wall-Ride + Xtend+ Tip Switch Dive
+
+**Beyblade:** Union Achilles Convert Xtend+ Retsu (Beyblade Burst GT / SuperKing era)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst GT
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Union Achilles (wide attack profile, GT dual-wing layer) | 30.0 | 33.0 |
+| Disc | Convert (multi-configuration conversion disc) | 12.0 | 23.0 |
+| Driver | Xtend+ Retsu (variable-mode: point → flat attack tip switch) | 6.0 | 5.0 |
+| **Total** | | **48.0** | |
+
+(Burst GT 3-part system. Union Achilles layer: wide dual-wing attack profile at r=33mm for high-force dive impact. Convert disc: multi-configuration disc distributes mass at r=23mm. Xtend+ Retsu driver: point tip at r=3mm (low-friction spin-preserve mode for wall-climb) → flat tip at r=5mm (attack mode for dive contact, engaged by tip mode-switch at apex). 48.0 g estimated.)
+
+**I_total** = 30.0×10⁻³ × 0.033² + 12.0×10⁻³ × 0.023² + 6.0×10⁻³ × 0.005²
+           = 3.267×10⁻⁵ + 6.348×10⁻⁶ + 1.500×10⁻⁷
+           = **3.917×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst GT standard launch)
+L₀ = I × ω₀ = 3.917×10⁻⁵ × 700 = **2.742×10⁻² kg·m²/s**
+
+---
+
+### 1. Stadium Wall-Ride Height Gain
+
+Like Z Dive and Turbo Dive, Union Achilles rides up the stadium wall driven by the blader's spirit. Xtend+ operates in point mode during the climb — near-zero friction preserving maximum spin:
+
+```
+Xtend+ in point mode (wall-climb phase):
+  μ_point = 0.15,  r_point = 3 mm
+  v_tip_point = μ_point × ω₀ × r_point = 0.15 × 700 × 0.003 = 0.315 m/s
+
+Wall-entry (blader-guided orbital approach):
+  v_entry = 2.00 m/s  (Aiger drives Achilles into wall with full spirit charge)
+
+Wall height climbed:
+  h_wall = 0.090 m  (90 mm height — GT stadium angled wall section)
+
+Residual speed at wall apex (energy conservation):
+  v_apex = √(v_entry² − 2g × h_wall) = √(2.00² − 2 × 9.81 × 0.090)
+          = √(4.000 − 1.766) = √2.234 = 1.494 m/s
+```
+
+---
+
+### 2. Xtend+ Tip Switch at Apex
+
+At the wall apex, the Xtend+ driver triggers its mode switch — the point tip retracts and the flat attack tip engages. The spring-loaded switch delivers a small rotational kick that adds to the dive velocity:
+
+```
+Xtend+ mode switch (point → flat, at apex):
+  η_switch = 1.04  (4% velocity boost from spring-loaded tip-lock engagement)
+
+v_contact = v_entry × η_switch = 2.00 × 1.04 = 2.080 m/s
+  (Energy conservation: h_climb = h_dive → same speed as entry; η_switch adds 4% tip-kick)
+```
+
+---
+
+### 3. Dive Phase — Contact
+
+```
+m_eff = (m_UA × m_opp) / (m_UA + m_opp) = (0.048 × 0.040) / (0.048 + 0.040)
+      = 1.920×10⁻³ / 0.088 = 2.182×10⁻² kg
+
+e_Achilles = 0.76  (Union Achilles GT layer — hard wide-wing attack contact)
+
+J_UD_U = m_eff × (1 + e_Achilles) × v_contact = 2.182×10⁻² × 1.76 × 2.080
+       = 2.182×10⁻² × 3.661 = 7.987×10⁻² N·s
+
+Δv_opp = J_UD_U / m_opp = 7.987×10⁻² / 0.040 = 1.997 m/s ≈ 2.00 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 48.0 g |
+| I_total | 3.917×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_point | 0.15 |
+| r_point | 3 mm |
+| v_entry | 2.00 m/s |
+| h_wall | 90 mm |
+| η_switch | 1.04 |
+| v_contact | 2.080 m/s |
+| e_Achilles | 0.76 |
+| J_UD_U | 7.987×10⁻² N·s |
+| Δv_opp | 2.00 m/s |
+
+---
+
+## Case 2013 — SPECIAL: Unison Dive — Aiger Akabane / Union Achilles Convert Xtend+ Retsu
+
+**Blader:** Aiger Akabane | **Beyblade:** Union Achilles Convert Xtend+ Retsu | **Type:** attack
+
+### Description
+
+Unison Dive (ユニオンダイブ, Yunion Daibu) is a Special Move used by Aiger Akabane and Union Achilles Convert Xtend+ Retsu (Burst GT). Like Z Dive and Turbo Dive, Achilles uses the stadium wall to fly into the air, then falls back down increasing its speed and power to deliver a massive attack. The Xtend+ driver's point-to-flat mode switch at the wall apex adds extra contact force to the dive — Aiger and Achilles striking in perfect unison.
+
+### Stage — Stadium Wall-Ride + Xtend+ Tip Switch Dive
+
+From Case 2012: v_entry=2.00 m/s, h_wall=90mm, η_switch=1.04, v_contact=2.080 m/s, J_UD_U=7.987×10⁻² N·s, Δv_opp=2.00 m/s.
+
+```
+Spin drain from Xtend+ dive contact:
+  Δω = J_UD_U × r_layer / I_total = 7.987×10⁻² × 0.033 / 3.917×10⁻⁵ = 67.3 rad/s
+  ω_remain = 700 − 67.3 = 632.7 rad/s  (90.4% retained)
+  (Xtend+ flat mode after contact reverts to point for spin recovery — high spin retention)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's fiery spirit burns golden-red — Union Achilles launches off the stadium floor and tears up the wall at blinding speed, the Xtend+ locking silent on its point tip. At the apex, everything seems to pause — then the tip snaps over, Achilles plunges like a comet, and blader and Beyblade crash into the opponent in a single unified burst of divine power. The Unison is absolute.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Burst GT protagonist, Achilles divine drive spirit)
+[M] Δv = 2.00 × 7.5 = **15.00 m/s** (wall-ride Xtend+ dive ring-out)
+
+> **Note:** Physical values describe GT stadium wall-ride h=90mm, v_entry=2.00 m/s; Xtend+ point→flat tip switch η=1.04; v_contact=2.080 m/s; J_UD_U=7.987×10⁻² N·s; Δv≈2.00 m/s; Δω_drain=67.3 rad/s (90.4% spin retained). Consistent with Z Dive / Turbo Dive wall-ride-and-fall family. [M] values represent Aiger's Achilles divine drive spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function unisonDiveSpecial(bey: Beyblade, target: Beyblade): void {
+  // GT wall-ride h=90mm, Xtend+ η=1.04; v_contact=2.080m/s; J_UD_U=7.987×10⁻²N·s; [M] 7.5×
+  const J_UD_U = 0.07987;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 30); // Xtend+ point-mode spin preservation pre-boost
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UD_U * 7.5; // [M] BeySpirit 7.5× (Aiger Achilles divine drive spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst GT/SuperKing-era beyblade using a variable-mode driver with a point/low-friction mode for wall-climb spin preservation and a flat/attack mode for dive contact (Xtend+, Xtend, or equivalent), combined with a wide attack-profile layer (r_layer ≥ 30 mm, e ≥ 0.72) in a GT-style stadium with an angled wall section (h_wall ≥ 70 mm). Standard game instance: Union Achilles Convert Xtend+ Retsu (Aiger Akabane, Burst GT). Wall-ride-and-fall family: consistent with Z Dive, Turbo Dive, Ultimate Dive.
+
+---
+
+## Case 2014 — COMBO: Union Ascent — Union Achilles Convert Xtend+ Retsu
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+The moveRight (→) sends Union Achilles on a rightward orbital arc toward the stadium wall — Xtend+ in point mode, building approach momentum. The moveUp (↑) triggers the wall-climb: Achilles launches up the angled wall, the point tip preserving spin through the ascent. The attack (A) fires the Xtend+ mode switch and dive at the apex:
+
+```
+Wall-climb in combo (75% efficiency vs full special):
+  v_combo_entry = v_entry × 0.75 = 2.00 × 0.75 = 1.500 m/s
+  h_combo = v_combo_entry² / (2g) = 1.500² / 19.62 = 2.250 / 19.62 = 0.1147 m → cap at h_wall = 0.090 m
+  (Combo drives Achilles past the full wall height; h_combo = h_wall = 90mm at this entry speed)
+
+  v_combo_contact = √(2g × h_combo) = √(2 × 9.81 × 0.090) = √1.766 = 1.329 m/s
+  (Dive from same height; no η_switch in combo — mode switch is partial)
+
+J_combo = m_eff × (1 + e_Achilles) × v_combo_contact = 2.182×10⁻² × 1.76 × 1.329
+        = 2.182×10⁻² × 2.339 = 5.104×10⁻² N·s
+```
+
+Xtend+ partial point-mode spin recovery (η_Xtend_recover = 0.13):
+
+```
+Δω = η_Xtend_recover × J_combo × r_layer / I_total
+   = 0.13 × 5.104×10⁻² × 0.033 / 3.917×10⁻⁵
+   = 0.13 × 43.03
+   = +5.59 rad/s  → round to +6 rad/s
+```
+
+(η_Xtend_recover=0.13: Xtend+ point re-engage after combo dive sends small spin pulse; effective spinGain = +6 rad/s.) Wall-ascent dive gives damageMultiplier **1.30×**. lockMs = 100 (dive impact dwell — tip-switch lingers at contact).
+
+**Parameters:**
+- spinGain: +6 rad/s (Xtend+ point re-engage spin recovery)
+- damageMultiplier: 1.30 (wall-ascent dive strike)
+- lockMs: 100 (dive impact dwell)
+
+### TypeScript
+
+```typescript
+function unionAscentCombo(bey: Beyblade, target: Beyblade): void {
+  // Xtend+ point wall-climb: Δω ≈ +6 rad/s (η=0.13, v_contact=1.329m/s, J=5.104×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 6);
+  // Wall-ascent dive: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +6 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2015 — GIMMICK: Victory Valtryek Boost Variable — Stadium Outer Rim Variable Speed Surge
+
+**Beyblade:** Victory Valtryek Boost Variable (Beyblade Burst God era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst God
+**Compatible also with:** Genesis Valtryek 6Vortex Reboot (Burst Surge) — same outer rim v_peak via Reboot rubber ring (cross-ref Case 1991)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Victory Valtryek (God layer, wide attack profile) | 28.0 | 32.0 |
+| Disc | Boost (God forge disc, lightweight boost-oriented) | 10.0 | 22.0 |
+| Driver | Variable (mode-switching: stable low-friction → boost high-friction) | 6.0 | 4.0 |
+| **Total** | | **44.0** | |
+
+(Burst God 3-part system. Victory Valtryek layer: wide God attack profile at r=32mm. Boost disc: lightweight at r=22mm for agile outer-rim orbital speed. Variable driver: low-friction stable tip r=4mm μ=0.35 (normal orbit) → high-friction boost tip r=5mm μ=0.70 (engaged on outer rim contact). 44.0 g estimated.)
+
+**I_total** = 28.0×10⁻³ × 0.032² + 10.0×10⁻³ × 0.022² + 6.0×10⁻³ × 0.004²
+           = 2.867×10⁻⁵ + 4.840×10⁻⁶ + 9.600×10⁻⁸
+           = **3.361×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst God standard launch)
+L₀ = I × ω₀ = 3.361×10⁻⁵ × 700 = **2.353×10⁻² kg·m²/s**
+
+---
+
+### 1. Variable Driver Speed Acceleration on Outer Rim
+
+The Flash Launch technique drives Valtryek outward to the stadium's outer rim — the raised lip constrains lateral movement just as a groove rail does. At outer rim contact, the Variable driver's mode switch triggers, shifting from stable to boost mode:
+
+```
+Variable stable mode (inner orbit):
+  μ_var1 = 0.35,  r_var1 = 4 mm
+  v_mode1 = μ_var1 × ω₀ × r_var1 = 0.35 × 700 × 0.004 = 0.980 m/s
+
+Variable boost mode (outer rim engagement):
+  μ_var2 = 0.70,  r_var2 = 5 mm
+  v_rim_base = μ_var2 × ω₀ × r_var2 = 0.70 × 700 × 0.005 = 2.450 m/s
+
+Outer rim wall constraint (harder boundary than inner groove):
+  η_rim_outer = 1.50  (outer rim wall eliminates lateral energy loss;
+                        harder constraint than groove → 50% speed boost vs free drive)
+  v_outer_rim_peak = v_rim_base × η_rim_outer = 2.450 × 1.50 = 3.675 m/s
+
+Overall acceleration factor (stable → outer rim peak):
+  v_outer_rim_peak / v_mode1 = 3.675 / 0.980 = 3.75×  (near-exponential speed jump)
+```
+
+(Same η_rim_outer=1.50 applies to Genesis Valtryek 6Vortex Reboot: Reboot rubber ring μ=0.50, r=7mm → v_rim_base=2.450 m/s → v_outer_rim_peak=3.675 m/s. Both beys reach identical outer rim peak speed via different driver mechanisms.)
+
+---
+
+### 2. First Contact — Outer Rim Flash Strike
+
+At peak outer rim speed, Valtryek crashes into the opponent's Beyblade:
+
+```
+m_eff = (m_VV × m_opp) / (m_VV + m_opp) = (0.044 × 0.040) / (0.044 + 0.040)
+      = 1.760×10⁻³ / 0.084 = 2.095×10⁻² kg
+
+e_Victory = 0.74  (Victory Valtryek God layer — hard wide attack contact)
+
+J_first = m_eff × (1 + e_Victory) × v_outer_rim_peak = 2.095×10⁻² × 1.74 × 3.675
+        = 2.095×10⁻² × 6.395 = 1.340×10⁻¹ N·s
+
+Δv_first = J_first / m_opp = 1.340×10⁻¹ / 0.040 = 3.350 m/s
+```
+
+---
+
+### 3. Lap-and-Return Multi-Hit Assault
+
+After the first contact, Valtryek laps the stadium while the opponent recovers — returning for a second collision before the opponent escapes the rim:
+
+```
+Follow-up lap (η_lap = 0.60):
+  η_lap: second hit delivers 60% of first — opponent is drifting inward, partial contact arc
+  J_lap = J_first × η_lap = 1.340×10⁻¹ × 0.60 = 8.040×10⁻² N·s
+
+J_total_UFL = J_first + J_lap = 1.340×10⁻¹ + 8.040×10⁻² = 2.144×10⁻¹ N·s
+Δv_opp_total = J_total_UFL / m_opp = 2.144×10⁻¹ / 0.040 = 5.360 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 44.0 g |
+| I_total | 3.361×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_var1 | 0.35 |
+| v_mode1 | 0.980 m/s |
+| μ_var2 | 0.70 |
+| r_var2 | 5 mm |
+| v_rim_base | 2.450 m/s |
+| η_rim_outer | 1.50 |
+| v_outer_rim_peak | 3.675 m/s |
+| speed factor | 3.75× |
+| e_Victory | 0.74 |
+| J_first | 1.340×10⁻¹ N·s |
+| Δv_first | 3.350 m/s |
+| η_lap | 0.60 |
+| J_lap | 8.040×10⁻² N·s |
+| J_total_UFL | 2.144×10⁻¹ N·s |
+| Δv_opp_total | 5.360 m/s |
+
+---
+
+## Case 2016 — SPECIAL: Ultra Flash Launch — Valt Aoi / Victory Valtryek Boost Variable
+
+**Blader:** Valt Aoi | **Beyblade:** Victory Valtryek Boost Variable | **Type:** attack
+
+### Description
+
+Ultra Flash Launch (真フラッシュシュート, Shin Furasshu Shūto — True Flash Shoot in Japan) is a Special Move used by Valt Aoi with Victory Valtryek Boost Variable and Genesis Valtryek 6Vortex Reboot (Burst God / Surge). The evolved version of the normal Flash Launch — this technique exploits Valtryek's Variable driver's unique performance on the stadium's outer rim to increase its speed exponentially (3.75× stable mode). The acceleration is so immediate that Valtryek crashes into the opponent's Beyblade and then laps the stadium while the opponent is recovering for another collision, effectively suspending them near the stadium's edge in a continuous assault loop. Can win via Ring-Out Finish or Burst Finish.
+
+### Stage — Outer Rim Variable Surge + Lap-and-Return Assault
+
+From Case 2015: v_outer_rim_peak=3.675 m/s, J_first=1.340×10⁻¹ N·s, Δv_first=3.350 m/s, η_lap=0.60, J_total_UFL=2.144×10⁻¹ N·s, Δv_opp_total=5.360 m/s.
+
+```
+Spin drain from multi-hit outer rim assault:
+  Δω = J_total_UFL × r_layer / I_total = 2.144×10⁻¹ × 0.032 / 3.361×10⁻⁵ = 204.2 rad/s
+  ω_remain = 700 − 204.2 = 495.8 rad/s  (70.8% retained)
+  (Two-hit outer rim assault is spin-expensive — attack speed tradeoff)
+  (After lap, Variable reverts to stable mode for spin preservation between contacts)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's spirit blazes into a column of golden white light — Victory Valtryek locks into the outer rim and vanishes. One moment the opponent's bey stands still; the next, it's been blasted from a direction no eye could follow. Before it can settle, Valtryek is already completing its lap, the flash of golden energy carving a streak around the entire stadium. A second catastrophic impact follows — and then, if the opponent hasn't been rung out or burst, a third. The blader and bey operate in one seamless loop of unstoppable speed.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek flash-drive spirit)
+[M] Δv_total = 5.360 × 8.0 = **42.88 m/s** (outer rim multi-lap ring-out / burst)
+
+> **Note:** Physical values describe Variable driver outer rim: μ_var2=0.70 r=5mm → v_rim_base=2.450 m/s → η_rim_outer=1.50 → v_outer_rim_peak=3.675 m/s (3.75× stable mode — described as "exponential"); J_first=1.340×10⁻¹ N·s Δv=3.350 m/s; η_lap=0.60 follow-up lap; J_total=2.144×10⁻¹ N·s; Δv_total=5.360 m/s. Genesis Valtryek 6Vortex Reboot achieves same outer rim peak via Reboot rubber ring (cross-ref Case 1991 v_rim_base=2.450 m/s same η). Evolved from Flash Launch (standard Variable stable-mode only). [M] values represent Valt's Valtryek flash-drive spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultraFlashLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Outer rim Variable η=1.50 v_peak=3.675m/s; J_first=1.340×10⁻¹; lap η=0.60; J_total=2.144×10⁻¹N·s; [M] 8.0×
+  const J_total_UFL = 0.2144;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_UFL * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek flash-drive spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst God/Surge-era beyblade using the Variable driver (stable→boost mode switch, r_boost ≥ 4 mm, μ_boost ≥ 0.60) or an equivalent rubber-ring driver (μ ≥ 0.45, r ≥ 6 mm) in a stadium with a raised outer rim lip (η_rim_outer ≥ 1.40) capable of triggering the mode switch. Standard game instances: Victory Valtryek Boost Variable and Genesis Valtryek 6Vortex Reboot (Valt Aoi, Burst God / Surge). Evolved form of Flash Launch; distinct from Ultimate Flash Launch (inner groove η=1.35) and Ultimate Flash V (Variable' mode switch without outer rim).
+
+---
+
+## Case 2017 — COMBO: Flash Rim — Victory Valtryek Boost Variable
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The first moveRight (→) sends Victory Valtryek toward the outer rim — the Variable driver shifts from stable to boost mode as the bey reaches the outer lip of the stadium. The second moveRight (→) drives a full outer rim arc at peak speed, building momentum along the rim wall. The attack (A) releases the contact strike at the end of the second arc:
+
+```
+First arc approach (→₁ — rim entry, Variable mode switch):
+  v_arc1 = v_outer_rim_peak × 0.70 = 3.675 × 0.70 = 2.573 m/s (70% rim peak: mode switch mid-arc)
+
+Second arc (→₂ — full rim speed, η_rim_outer in effect):
+  v_arc2 = v_outer_rim_peak × 0.88 = 3.675 × 0.88 = 3.234 m/s (88% of peak — combo efficiency)
+
+Contact strike (A):
+  v_combo_contact = v_arc2 = 3.234 m/s  (second arc exit speed)
+
+J_combo = m_eff × (1 + e_Victory) × v_combo_contact = 2.095×10⁻² × 1.74 × 3.234
+        = 2.095×10⁻² × 5.627 = 1.179×10⁻¹ N·s
+  (Single-hit only — no lap-return in combo; combo efficiency limits to one contact)
+```
+
+Variable boost mode outer rim rebound (η_var_rim = 0.10):
+
+```
+Δω = η_var_rim × J_combo × r_layer / I_total
+   = 0.10 × 1.179×10⁻¹ × 0.032 / 3.361×10⁻⁵
+   = 0.10 × 112.3
+   = +11.2 rad/s  → round to +11 rad/s
+```
+
+(η_var_rim=0.10: rim exit + Variable reversion to stable mode sends spin pulse to body; effective spinGain = +11 rad/s.) Outer rim Variable surge gives damageMultiplier **1.40×**. lockMs = 0 (outer rim speed too fast for dwell — ring-out oriented).
+
+**Parameters:**
+- spinGain: +11 rad/s (Variable rim rebound to stable mode)
+- damageMultiplier: 1.40 (outer rim Variable surge)
+- lockMs: 0 (ring-out speed, no dwell)
+
+### TypeScript
+
+```typescript
+function flashRimCombo(bey: Beyblade, target: Beyblade): void {
+  // Outer rim Variable double-arc: Δω ≈ +11 rad/s (η=0.10, v_contact=3.234m/s, J=1.179×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Outer rim Variable surge: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2018 — GIMMICK: Dragoon V2 — Extreme Sprint Wall-Launch + 270° Flanking Arc
+
+**Beyblade:** Dragoon V2 (Bakuten Shoot Beyblade V-Force plastic-gen)
+**Blader:** Tyson Granger | **Series:** Bakuten Shoot Beyblade V-Force
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Dragoon V2 | 1.0 | ≈0 |
+| AR | Upper Dragoon (4-blade wide attack ring) | 16.0 | 28.0 |
+| WD | Wide Survivor (wide-profile stamina disc) | 12.0 | 30.0 |
+| SG | Neo Right SG | 4.0 | 3.0 |
+| BB | Customize Grip Base (flat-type attack base) | 6.0 | 5.0 |
+| **Total** | | **39.0** | |
+
+(Bakuten Shoot V-Force plastic-gen 5-part system. Bit Chip excluded from I (r≈0). Upper Dragoon AR: 4-blade profile for attack momentum. Wide Survivor WD: wide stamina disc at r=30mm. Customize Grip Base: flat attack tip r=5mm — maximum orbital speed at cost of stability.)
+
+**I_total** = 16.0×10⁻³ × 0.028² + 12.0×10⁻³ × 0.030² + 4.0×10⁻³ × 0.003² + 6.0×10⁻³ × 0.005²
+           = 1.254×10⁻⁵ + 1.080×10⁻⁵ + 3.600×10⁻⁸ + 1.500×10⁻⁷
+           = **2.353×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen V-Force standard launch)
+L₀ = I × ω₀ = 2.353×10⁻⁵ × 500 = **1.177×10⁻² kg·m²/s**
+
+---
+
+### 1. Extreme Flat-Tip Sprint (Vanishing Phase)
+
+At BeySpirit peak, the Customize Grip Base flat tip transitions to maximum-friction contact — Dragoon V2 accelerates to a speed so extreme it appears to vanish from the opponent's sight:
+
+```
+Flat tip extreme sprint:
+  μ_vanish = 0.80  (maximum grip flat contact, BeySpirit-driven peak friction)
+  r_BB = 5 mm
+  v_sprint = μ_vanish × ω₀ × r_BB = 0.80 × 500 × 0.005 = 2.000 m/s
+
+Speed ratio vs. standard flat approach:
+  Standard: μ_flat = 0.45 → v_std = 0.45 × 500 × 0.005 = 1.125 m/s
+  Vanish sprint: v_sprint / v_std = 2.000 / 1.125 = 1.78×  (near-double: visually "vanishes")
+```
+
+---
+
+### 2. Wall-Launch into 270° Flanking Arc
+
+Dragoon V2 rides the stadium wall at sprint speed, launching into the air:
+
+```
+Wall-launch:
+  v_entry = v_sprint = 2.000 m/s
+  h_wall = 0.060 m  (60 mm — plastic-gen Beystadium wall height)
+
+  v_apex = √(v_entry² − 2g × h_wall) = √(2.000² − 2 × 9.81 × 0.060)
+          = √(4.000 − 1.177) = √2.823 = 1.680 m/s
+
+In-air flanking arc (270° trajectory around opponent):
+  Dragoon V2 traces a ¾-stadium arc through the air, landing behind the opponent
+  η_arc = 0.95  (wide in-air arc preserves 95% of launch speed; minimal air friction)
+
+  v_contact_base = v_entry = 2.000 m/s
+  (energy conservation: launch height = landing height → same speed; η_arc applies to path efficiency)
+```
+
+---
+
+### 3. Rear-Contact Strike (Appearing Behind the Opponent)
+
+Dragoon V2 lands behind the opponent's Beyblade. The rear approach means both beys are moving in the same direction — the opponent's orbital drift adds to the contact velocity:
+
+```
+Opponent orbital drift (same direction as flanking approach):
+  v_opp_drift = 0.300 m/s  (standard orbital drift — adds to relative contact speed)
+
+v_contact_rear = v_contact_base + v_opp_drift = 2.000 + 0.300 = 2.300 m/s
+(Rear attack: drift adds; frontal attack: drift subtracts. +0.300 m/s = flanking bonus)
+
+m_eff = (m_V2 × m_opp) / (m_V2 + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_V2 = 0.78  (Upper Dragoon AR — hard plastic attack ring, V-Force era)
+
+J_VA = m_eff × (1 + e_V2) × v_contact_rear = 1.975×10⁻² × 1.78 × 2.300
+     = 1.975×10⁻² × 4.094 = 8.086×10⁻² N·s
+
+Δv_opp = J_VA / m_opp = 8.086×10⁻² / 0.040 = 2.022 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 2.353×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| μ_vanish | 0.80 |
+| r_BB | 5 mm |
+| v_sprint | 2.000 m/s |
+| h_wall | 60 mm |
+| v_apex | 1.680 m/s |
+| η_arc | 0.95 |
+| v_opp_drift | 0.300 m/s |
+| v_contact_rear | 2.300 m/s |
+| e_V2 | 0.78 |
+| J_VA | 8.086×10⁻² N·s |
+| Δv_opp | 2.022 m/s |
+
+---
+
+## Case 2019 — SPECIAL: Vanishing Attack — Tyson Granger / Dragoon V2
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon V2 | **Type:** attack
+
+### Description
+
+Vanishing Attack is a Special Move used by Tyson Granger and Dragoon V2 (Bakuten Shoot Beyblade V-Force). Dragoon V2 moves at extreme speed — so fast it appears to vanish from sight — and reappears not in front of the opponent's Beyblade but directly behind it, striking with a powerful rear attack. The flanking approach means the opponent's own orbital drift adds to the contact velocity, amplifying the impact beyond what a frontal charge could achieve.
+
+### Stage — Extreme Sprint Wall-Launch + 270° Arc Rear Strike
+
+From Case 2018: v_sprint=2.000 m/s, h_wall=60mm, v_contact_rear=2.300 m/s, J_VA=8.086×10⁻² N·s, Δv_opp=2.022 m/s.
+
+```
+Spin drain from rear strike:
+  Δω = J_VA × r_AR / I_total = 8.086×10⁻² × 0.028 / 2.353×10⁻⁵ = 96.2 rad/s
+  ω_remain = 500 − 96.2 = 403.8 rad/s  (80.8% retained)
+  (Wide arc sprint drains significant spin; plastic-gen flat tip high friction cost)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tyson's Dragoon spirit ignites in a streak of blazing blue — Dragoon V2 blurs into the stadium wall so fast the air simply closes behind it. One heartbeat: Dragoon is on the left. The next: it is gone. The opponent braces for a frontal charge — but Dragoon V2 drops from the air directly behind them, a comet arriving from the blind spot, the full force of an extreme-sprint rear strike landing before any counter is possible.
+
+[M] factor = **8.0 ×** (Tyson Granger — original series protagonist, Dragoon vanishing drive spirit)
+[M] Δv = 2.022 × 8.0 = **16.18 m/s** (vanishing rear-strike ring-out)
+
+> **Note:** Physical values describe flat-tip extreme sprint μ=0.80 v_sprint=2.000 m/s (1.78× standard); wall-launch h=60mm; 270° in-air flanking arc η_arc=0.95; rear attack v_contact_rear=v_sprint+v_opp_drift=2.000+0.300=2.300 m/s; J_VA=8.086×10⁻² N·s; Δv=2.022 m/s. Rear-attack flanking bonus: +0.300 m/s vs frontal (opponent drift adds rather than subtracts). [M] values represent Tyson's Dragoon vanishing-speed spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function vanishingAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Extreme sprint μ=0.80 wall-launch h=60mm; 270° arc rear strike; J_VA=8.086×10⁻²N·s; [M] 8.0×
+  const J_VA = 0.08086;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Rear strike: apply force from behind target (invert approach direction for flanking)
+  const amplified = J_VA * 8.0; // [M] BeySpirit 8.0× (Tyson Dragoon vanishing spirit)
+  applyForce(target.id, -(dx / dist) * amplified, -(dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-gen beyblade using a flat-type attack Blade Base (r_BB ≥ 4 mm, μ_peak ≥ 0.70) capable of extreme-friction sprint (v_sprint ≥ 1.80 m/s) in a standard plastic-gen Beystadium with a wall height ≥ 50 mm sufficient for a flanking in-air arc. The rear-attack flanking bonus (+v_opp_drift) is mechanic-specific to the 270° approach trajectory. Standard game instance: Dragoon V2 (Tyson Granger, Bakuten Shoot V-Force).
+
+---
+
+## Case 2020 — COMBO: Phantom Flank — Dragoon V2
+
+**Sequence:** E ← A (dodge · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The dodge (E) is the "vanish" phase — Dragoon V2 breaks contact and accelerates into its extreme sprint arc, disappearing from the opponent's visual field. The moveLeft (←) drives the wide leftward flanking arc, completing the 180° repositioning from front to rear. The attack (A) fires the rear strike at the endpoint of the flank arc:
+
+```
+Vanish sprint in combo (E phase, 80% efficiency):
+  v_sprint_combo = v_sprint × 0.80 = 2.000 × 0.80 = 1.600 m/s
+
+Flank arc in combo (← phase, 90% arc efficiency):
+  v_flank_combo = v_sprint_combo × 0.90 = 1.600 × 0.90 = 1.440 m/s
+
+Rear strike (A phase — drift bonus at 80% of full):
+  v_contact_rear_combo = v_flank_combo + v_opp_drift × 0.80 = 1.440 + 0.300 × 0.80 = 1.440 + 0.240 = 1.680 m/s
+
+J_combo = m_eff × (1 + e_V2) × v_contact_rear_combo = 1.975×10⁻² × 1.78 × 1.680
+        = 1.975×10⁻² × 2.990 = 5.906×10⁻² N·s
+```
+
+Flat-tip sprint rebound spin recovery (η_sprint = 0.12):
+
+```
+Δω = η_sprint × J_combo × r_AR / I_total
+   = 0.12 × 5.906×10⁻² × 0.028 / 2.353×10⁻⁵
+   = 0.12 × 70.28
+   = +8.43 rad/s  → round to +8 rad/s
+```
+
+(η_sprint=0.12: extreme sprint reversion sends small spin pulse to AR after flank contact; effective spinGain = +8 rad/s.) Phantom flank rear strike gives damageMultiplier **1.30×**. lockMs = 0 (rear attack — speed-through, no dwell).
+
+**Parameters:**
+- spinGain: +8 rad/s (sprint arc reversion spin recovery)
+- damageMultiplier: 1.30 (rear flanking strike)
+- lockMs: 0 (speed-through rear contact)
+
+### TypeScript
+
+```typescript
+function phantomFlankCombo(bey: Beyblade, target: Beyblade): void {
+  // Vanish sprint flank: Δω ≈ +8 rad/s (η=0.12, v_contact=1.680m/s, J=5.906×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Rear flanking strike: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Apply from behind target
+  applyForce(target.id, -(dx / dist) * 0.30, -(dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2021 — GIMMICK: Venus — Temptation Resonance Field + Bit-Beast Venus Full Manifestation
+
+**Beyblade:** Venus (Bakuten Shoot Beyblade G-Revolution plastic-gen)
+**Blader:** Ming-Ming | **Series:** Bakuten Shoot Beyblade G-Revolution (Episode 43)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Venus | 1.0 | ≈0 |
+| AR | Venus Bloom (crescent/bloom attack ring, 4-arc profile) | 14.0 | 26.0 |
+| WD | Round Heavy (balanced-stamina weight disc) | 11.0 | 28.0 |
+| SG | Standard Right SG | 4.0 | 3.0 |
+| BB | Venus Sharp Base (sharp-tip precision attack base) | 5.0 | 4.0 |
+| **Total** | | **35.0** | |
+
+(Bakuten Shoot G-Revolution plastic-gen 5-part system. Bit Chip excluded from I (r≈0). Venus Bloom AR: crescent/bloom arc profile at r=26mm — smooth arcs for clean contact rather than jagged smash. Round Heavy WD: wide stamina disc at r=28mm for stable spin duration. Venus Sharp Base: precision attack sharp tip r=4mm μ=0.25 — low orbital drive preserving spin; the Bit-Beast Venus provides the attack force rather than the tip. 35.0 g estimated, BEGA team custom assembly.)
+
+**I_total** = 14.0×10⁻³ × 0.026² + 11.0×10⁻³ × 0.028² + 4.0×10⁻³ × 0.003² + 5.0×10⁻³ × 0.004²
+           = 9.464×10⁻⁶ + 8.624×10⁻⁶ + 3.600×10⁻⁸ + 8.000×10⁻⁸
+           = **1.820×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen G-Revolution standard launch)
+L₀ = I × ω₀ = 1.820×10⁻⁵ × 500 = **9.100×10⁻³ kg·m²/s**
+
+---
+
+### 1. Temptation Resonance Field
+
+Venus Temptation opens with a BeySpirit environmental transformation — Ming-Ming's idol spirit reshapes the surroundings into her "happy, lovely world." Physically, this is modeled as a sustained vocal resonance field (Ming-Ming is a professional singer) that excites the opponent bey's precession at a forcing frequency close to its natural wobble:
+
+```
+Precession destabilization:
+  Forcing frequency (Ming-Ming's spirit song): f_tempt = 440 Hz (musical A — idol resonance pitch)
+  At ω₀ = 500 rad/s: natural precession ≈ 2.5–8 Hz (well below audio; no direct resonance)
+  Mechanism: BeySpirit environmental distortion suppresses the opponent's gyroscopic control,
+  reducing burst resistance and increasing restitution compliance:
+
+  e_tempt = 0.06  (temptation-field restitution boost: opponent's burst compliance +6%)
+  (Physical basis: stadium air-pressure field from idol spirit disrupts opponent's
+  precession damping, making deflection less controlled — contact energy transfer improves)
+```
+
+---
+
+### 2. Bit-Beast Venus Full Manifestation
+
+Venus's Bit-Beast manifests fully — a radiant bloom of divine energy charges directly at the opponent, amplifying the contact force far beyond what the sharp tip alone could provide:
+
+```
+Base guided approach (Ming-Ming precision-launches Venus directly at opponent):
+  μ_sharp = 0.25,  r_BB = 4 mm
+  v_tip = μ_sharp × ω₀ × r_BB = 0.25 × 500 × 0.004 = 0.500 m/s
+  v_guided = 0.900 m/s  (BEGA-tier precision guidance — direct aimed approach)
+  v_contact_base = v_tip + v_guided = 0.500 + 0.900 = 1.400 m/s
+
+Bit-Beast Venus full manifestation amplification:
+  η_Venus_BB = 1.45  (45% force boost: Bit-Beast full energy release)
+  v_contact_Venus = v_contact_base × η_Venus_BB = 1.400 × 1.45 = 2.030 m/s
+
+Temptation-enhanced restitution:
+  e_base = 0.72  (Venus Bloom AR — smooth arc contact, plastic-gen G-Rev)
+  e_eff = e_base + e_tempt = 0.72 + 0.06 = 0.78
+
+m_eff = (m_V × m_opp) / (m_V + m_opp) = (0.035 × 0.040) / (0.035 + 0.040)
+      = 1.400×10⁻³ / 0.075 = 1.867×10⁻² kg
+
+J_VT = m_eff × (1 + e_eff) × v_contact_Venus = 1.867×10⁻² × 1.78 × 2.030
+     = 1.867×10⁻² × 3.613 = 6.746×10⁻² N·s
+
+Δv_opp = J_VT / m_opp = 6.746×10⁻² / 0.040 = 1.687 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 35.0 g |
+| I_total | 1.820×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| e_base | 0.72 |
+| e_tempt | 0.06 |
+| e_eff | 0.78 |
+| v_contact_base | 1.400 m/s |
+| η_Venus_BB | 1.45 |
+| v_contact_Venus | 2.030 m/s |
+| J_VT | 6.746×10⁻² N·s |
+| Δv_opp | 1.687 m/s |
+
+---
+
+## Case 2022 — SPECIAL: Venus Temptation — Ming-Ming / Venus
+
+**Blader:** Ming-Ming | **Beyblade:** Venus | **Type:** attack
+
+### Description
+
+Venus Temptation is a Special Move used by Ming-Ming and Venus (Bakuten Shoot Beyblade G-Revolution, Episode 43 — "Sing Ming-Ming Sing!"). First used against Daichi and his Strata Dragoon in battle. When Ming-Ming sets out on this move, her surroundings change into a happy, lovely world that suits her personality — then the Bit-Beast of Venus appears and attacks with full force. Daichi could not withstand the move and suffered a fatal defeat.
+
+### Stage — Temptation Resonance Field + Venus Bit-Beast Full-Force Charge
+
+From Case 2021: e_tempt=0.06, e_eff=0.78, v_contact_base=1.400 m/s, η_Venus_BB=1.45, v_contact_Venus=2.030 m/s, J_VT=6.746×10⁻² N·s, Δv_opp=1.687 m/s.
+
+```
+Spin drain from Bit-Beast full manifestation contact:
+  Δω = J_VT × r_AR / I_total = 6.746×10⁻² × 0.026 / 1.820×10⁻⁵ = 96.4 rad/s
+  ω_remain = 500 − 96.4 = 403.6 rad/s  (80.7% retained)
+  (Venus sharp base conserves spin outside the special — drain only at BB manifestation contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ming-Ming's voice rises — the stadium transforms in an instant: cherry blossoms, golden light, and a soft radiance fill the arena as her idol spirit erupts. Venus materializes: a luminous divine form of pure grace and overwhelming power. Daichi watches in stunned disbelief as the lovely world closes around him, and Venus crashes into Strata Dragoon with a force that no spin, no defense, and no blader spirit can answer. The "fatal defeat" is total.
+
+[M] factor = **7.5 ×** (Ming-Ming — BEGA antagonist, Venus idol divine spirit; top-tier G-Revolution blader)
+[M] Δv = 1.687 × 7.5 = **12.65 m/s** (temptation Bit-Beast ring-out / burst)
+
+> **Note:** Physical values describe temptation resonance field e_tempt=0.06 (opponent burst compliance boost); Venus Bit-Beast η_BB=1.45 v_contact_Venus=2.030 m/s from v_contact_base=1.400 m/s; e_eff=0.78; J_VT=6.746×10⁻² N·s; Δv=1.687 m/s. Sharp-base Venus relies on Bit-Beast force rather than tip orbital speed. Used to defeat Daichi/Strata Dragoon in Episode 43. [M] values represent Ming-Ming's Venus idol divine spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function venusTemptationSpecial(bey: Beyblade, target: Beyblade): void {
+  // Temptation field e_tempt=0.06; Venus BB η=1.45 v=2.030m/s; J_VT=6.746×10⁻²N·s; [M] 7.5×
+  const J_VT = 0.06746;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_VT * 7.5; // [M] BeySpirit 7.5× (Ming-Ming Venus idol divine spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-gen G-Revolution or V-Force era beyblade whose Bit-Beast can fully manifest with a force amplification η_BB ≥ 1.30, combined with a precision or stamina-type Blade Base (sharp or semi-flat, r ≤ 5 mm) where orbital drive is low and the Bit-Beast provides the primary attack force. The temptation field effect (e_tempt ≥ 0.04) requires a BeySpirit environmental resonance ability. Standard game instance: Venus (Ming-Ming, Bakuten Shoot G-Revolution). First used in Episode 43 against Daichi/Strata Dragoon.
+
+---
+
+## Case 2023 — COMBO: Lovely Strike — Venus
+
+**Sequence:** ↓ K A (moveDown · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ming-Ming
+
+### Physics Justification
+
+The moveDown (↓) pulls Venus back and inward — the sharp base tip traces a precise low-orbit arc, beginning the temptation field build-up as Ming-Ming's spirit rises. The defense (K) holds position — the "lovely world" manifests around the opponent, the temptation resonance mesmerizing them in place for a split-second. The attack (A) releases Venus directly at the distracted opponent with partial Bit-Beast engagement:
+
+```
+Temptation hold phase (K):
+  Partial temptation field: e_tempt_combo = 0.03 (half effect in combo)
+  e_combo_eff = e_base + e_tempt_combo = 0.72 + 0.03 = 0.75 (no full temptation in combo)
+
+Bit-Beast partial engagement (A, 80% of full BB power):
+  v_combo_contact = v_contact_Venus × 0.80 = 2.030 × 0.80 = 1.624 m/s
+
+J_combo = m_eff × (1 + e_combo_eff) × v_combo_contact = 1.867×10⁻² × 1.75 × 1.624
+        = 1.867×10⁻² × 2.842 = 5.307×10⁻² N·s
+```
+
+Venus Bit-Beast resonance spin recovery (η_BB_rebound = 0.13):
+
+```
+Δω = η_BB_rebound × J_combo × r_AR / I_total
+   = 0.13 × 5.307×10⁻² × 0.026 / 1.820×10⁻⁵
+   = 0.13 × 75.86
+   = +9.86 rad/s  → round to +10 rad/s
+```
+
+(η_BB_rebound=0.13: Bit-Beast partial manifestation returns residual spin energy to Venus AR after contact; effective spinGain = +10 rad/s.) Lovely world mesmerize gives damageMultiplier **1.30×**. lockMs = 150 (temptation mesmerize dwell — opponent briefly held in Venus's lovely world).
+
+**Parameters:**
+- spinGain: +10 rad/s (Bit-Beast resonance spin recovery)
+- damageMultiplier: 1.30 (temptation + Bit-Beast strike)
+- lockMs: 150 (lovely world mesmerize dwell)
+
+### TypeScript
+
+```typescript
+function lovelyStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Temptation partial + BB 80%: Δω ≈ +10 rad/s (η=0.13, v_contact=1.624m/s, J=5.307×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Lovely world mesmerize strike: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2024 — GIMMICK: Poison Serpent SW145SD — SW145 Pendulum Energy Storage + Dark Power Rise-Strike
+
+**Beyblade:** Poison Serpent SW145SD (Metal Fight Beyblade / Metal Fusion plastic-metal hybrid)
+**Blader:** Reiji Mizuchi | **Series:** Metal Fight Beyblade (Metal Fusion)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Poison | 1.5 | ≈0 |
+| Clear Wheel | Serpent (sinuous dual-fang profile) | 3.5 | 33.0 |
+| Metal Wheel | Poison (compact poison-tipped oval wheel) | 19.0 | 31.0 |
+| Spin Track | SW145 (Swing Track — oscillating pendulum arms) | 7.0 | 22.0 |
+| Performance Tip | SD (Semi-Defense — semi-flat stamina tip) | 2.5 | 4.0 |
+| **Total** | | **33.5** | |
+
+(MFB 5-part system. Face excluded from I (r≈0). Poison Metal Wheel: compact oval profile at r=31mm — delivers focused point-contact strikes ideal for burst-type attack patterns. Serpent Clear Wheel: dual-fang sinuous profile at r=33mm amplifies rotational contact force at the outermost point. SW145 Swing Track: oscillating pendulum arm track at r=22mm — the two swing arms store and release kinetic energy via controlled oscillation, providing a vertical energy pulse that launches the Bit-Beast rise pattern. SD tip: r=4mm μ=0.40 semi-flat — moderate friction for controlled approach, sufficient torque for Dark Move delivery. 33.5 g estimated.)
+
+**I_total** = 3.5×10⁻³ × 0.033² + 19.0×10⁻³ × 0.031² + 7.0×10⁻³ × 0.022² + 2.5×10⁻³ × 0.004²
+           = 3.812×10⁻⁶ + 1.825×10⁻⁵ + 3.388×10⁻⁶ + 4.000×10⁻⁸
+           = **2.545×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.545×10⁻⁵ × 580 = **1.476×10⁻² kg·m²/s**
+
+---
+
+### 1. SW145 Pendulum Energy Storage
+
+The SW145 swing arms oscillate during normal spin, storing kinetic energy as controlled pendulum motion. When Reiji channels Dark Power, the oscillation synchronizes and the arms lock at maximum extension — releasing the stored energy as a vertical impulsive force:
+
+```
+SW145 pendulum energy storage:
+  Swing arm oscillation amplitude: θ_max = 15° (maximum swing arm deflection)
+  Effective pendulum radius: r_pend = 22 mm = 0.022 m
+  Stored energy per arm (two arms): E_pend = 2 × (0.5 × m_arm × (ω₀ × r_pend)² )
+    m_arm ≈ 2.5 g each (SW145 total 7 g: 2 g shaft + 2×2.5 g arms)
+  E_pend = 2 × (0.5 × 2.5×10⁻³ × (580 × 0.022)²)
+         = 2 × (0.5 × 2.5×10⁻³ × 162.76)
+         = 2 × 0.2035 = 0.4069 J
+
+Pendulum lock-release velocity (upward impulsive component):
+  v_rise = √(2 × E_pend / m_total) = √(2 × 0.4069 / 0.0335)
+          = √(24.295) = 4.929 m/s
+  (SW145 lock-release converts pendulum KE into vertical rise; Serpent Bit-Beast rides this lift)
+```
+
+---
+
+### 2. Dark Power Amplification — Bit-Beast Serpent Vertical Rise
+
+Reiji's Dark Power amplifies the SW145 release with Dark Spin Technique: the Bit-Beast Serpent rises vertically and strikes down from above:
+
+```
+Dark Power amplification factor:
+  η_dark = 1.35  (Dark Move dark spin amplification: 35% force boost above pendulum release)
+  (Physical basis: Dark Power BeySpirit channels additional rotational energy from Reiji's
+  malevolent spirit force, increasing the effective launch impulse beyond what SW145 stores alone)
+
+Rise phase velocity (Dark-amplified):
+  v_rise_dark = v_rise × η_dark = 4.929 × 1.35 = 6.654 m/s
+
+Strike phase (Bit-Beast descends — gravitational acceleration over rise height):
+  h_rise = v_rise_dark² / (2g) = 6.654² / (2 × 9.81) = 44.276 / 19.62 = 2.257 m
+  (Dark Power rises Serpent above the stadium boundary — spirit-height, not physical)
+  v_strike = v_rise_dark  (energy conservation: same speed at return)
+           = 6.654 m/s  (Serpent crashes down at full rise speed)
+```
+
+---
+
+### 3. Contact Strike — Opponent Bey Explodes
+
+```
+m_eff = (m_PS × m_opp) / (m_PS + m_opp) = (0.0335 × 0.040) / (0.0335 + 0.040)
+      = 1.340×10⁻³ / 0.0735 = 1.823×10⁻² kg
+
+e_dark = 0.90  (Dark Move contact: extreme energy transfer; near-perfect burst restitution
+               modeling "opponent bey explodes in mid-air and falls in pieces")
+
+J_VS = m_eff × (1 + e_dark) × v_strike = 1.823×10⁻² × 1.90 × 6.654
+     = 1.823×10⁻² × 12.643 = 2.305×10⁻¹ N·s
+
+Δv_opp = J_VS / m_opp = 2.305×10⁻¹ / 0.040 = 5.762 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 33.5 g |
+| I_total | 2.545×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| E_pend | 0.4069 J |
+| v_rise | 4.929 m/s |
+| η_dark | 1.35 |
+| v_rise_dark | 6.654 m/s |
+| v_strike | 6.654 m/s |
+| e_dark | 0.90 |
+| J_VS | 2.305×10⁻¹ N·s |
+| Δv_opp | 5.762 m/s |
+
+---
+
+## Case 2025 — SPECIAL: Venom Strike — Reiji Mizuchi / Poison Serpent SW145SD
+
+**Blader:** Reiji Mizuchi | **Beyblade:** Poison Serpent SW145SD | **Type:** attack
+
+### Description
+
+Venom Strike (ベノムジェノサイド — Venom Genocide in Japan) is a Special Move used by Reiji Mizuchi and Poison Serpent SW145SD (Metal Fight Beyblade / Metal Fusion). Like Ryuga's special moves when under the Dark Power, it is referred to as a Dark Move or Dark Spin Technique. The Bit-Beast Serpent rises from the bey and attacks the opponent. The opposing bey that is attacked with this move explodes in mid-air and falls, ending up in multiple pieces. First used against Hyoma and his Rock Aries, chipping off Aries and damaging it in the process. This is the second Dark Move introduced in the anime and Reiji's only Dark Move.
+
+### Stage — SW145 Pendulum Lock-Release + Dark Power Serpent Rise-Strike
+
+From Case 2024: E_pend=0.4069 J, v_rise=4.929 m/s, η_dark=1.35, v_rise_dark=6.654 m/s, e_dark=0.90, J_VS=2.305×10⁻¹ N·s, Δv_opp=5.762 m/s.
+
+```
+Spin drain from Dark Move strike:
+  Δω = J_VS × r_MW / I_total = 2.305×10⁻¹ × 0.031 / 2.545×10⁻⁵ = 280.8 rad/s
+  ω_remain = 580 − 280.8 = 299.2 rad/s  (51.6% retained)
+  (Dark Move extreme energy transfer; SD semi-flat tip provides controlled recovery orbit post-strike)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Reiji's eyes flash cold and predatory — Poison Serpent accelerates in a tight dark spiral, the SW145 swing arms snapping wide. Then everything pauses: the Serpent Bit-Beast tears free of the Beyblade, rising in a coil of dark energy. For one heartbeat it hangs in the air above Hyoma's Rock Aries — and then it falls, a venom-black strike from directly above. Aries shatters in mid-air, its parts raining across the stadium in pieces. The Dark Move leaves nothing standing.
+
+[M] factor = **7.0 ×** (Reiji Mizuchi — MFB major antagonist, single Dark Move user; tier below Ryuga)
+[M] Δv = 5.762 × 7.0 = **40.33 m/s** (Dark Move burst-shatter ring-out)
+
+> **Note:** Physical values describe SW145 pendulum energy storage E_pend=0.4069 J; Dark Power η_dark=1.35; v_rise_dark=6.654 m/s (=v_strike); e_dark=0.90 (near-perfect burst restitution modeling mid-air explosion); J_VS=2.305×10⁻¹ N·s; Δv=5.762 m/s; spin drain 280.8 rad/s (51.6% retained). Dark Move classification: same family as Dragon Emperor Soaring Bite Strike. [M] values represent Reiji's Dark Power Serpent spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function venomStrikeSpecial(bey: Beyblade, target: Beyblade): void {
+  // SW145 pendulum E=0.4069J; η_dark=1.35; v_strike=6.654m/s; e=0.90; J_VS=2.305×10⁻¹N·s; [M] 7.0×
+  const J_VS = 0.2305;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_VS * 7.0; // [M] BeySpirit 7.0× (Reiji Dark Power Serpent)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using the SW145 Swing Track (oscillating pendulum arm energy storage, r_pend ≥ 20 mm) combined with a Metal Wheel capable of focused burst-type contact (oval or compact profile, e_dark ≥ 0.85 at Dark Power activation), and a Blader with Dark Power or equivalent BeySpirit amplification (η_dark ≥ 1.25). The "mid-air explosion" effect (near-perfect burst restitution) is exclusive to Dark Move classification. Standard game instance: Poison Serpent SW145SD (Reiji Mizuchi, Metal Fight Beyblade). First used in Metal Fusion against Hyoma/Rock Aries.
+
+---
+
+## Case 2026 — COMBO: Venom Coil — Poison Serpent SW145SD
+
+**Sequence:** ↓ E A (moveDown · dodge · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Reiji Mizuchi
+
+### Physics Justification
+
+The moveDown (↓) drives Serpent into a tight low orbit, the SW145 swing arms beginning their energy build-up oscillation cycle. The dodge (E) is the "dark spiral" phase — Serpent breaks into a sudden evasive coil that primes the SW145 pendulum lock: arms reach maximum extension mid-dodge. The attack (A) fires at the moment the pendulum releases — a coiled strike delivered at partial Dark Power (combo tier, not full Dark Move):
+
+```
+Partial pendulum release in combo (60% efficiency vs full special):
+  E_pend_combo = E_pend × 0.60 = 0.4069 × 0.60 = 0.2441 J
+  v_rise_combo = √(2 × E_pend_combo / m_total) = √(2 × 0.2441 / 0.0335)
+               = √(14.572) = 3.817 m/s
+
+Partial Dark Power in combo (no full Dark Move — η_dark_combo = 1.15):
+  v_strike_combo = v_rise_combo × η_dark_combo = 3.817 × 1.15 = 4.390 m/s
+
+J_combo = m_eff × (1 + e_combo) × v_strike_combo
+  e_combo = 0.76  (combo partial burst — less than Dark Move e_dark=0.90)
+  J_combo = 1.823×10⁻² × 1.76 × 4.390
+          = 1.823×10⁻² × 7.726 = 1.408×10⁻¹ N·s
+```
+
+SW145 swing arm rebound spin recovery (η_SW_rebound = 0.10):
+
+```
+Δω = η_SW_rebound × J_combo × r_MW / I_total
+   = 0.10 × 1.408×10⁻¹ × 0.031 / 2.545×10⁻⁵
+   = 0.10 × 171.5
+   = +17.15 rad/s  → round to +17 rad/s
+```
+
+(η_SW_rebound=0.10: SW145 arms rebound after partial pendulum release, returning residual energy to Metal Wheel spin; effective spinGain = +17 rad/s.) Venom coil strike gives damageMultiplier **1.35×** (partial Dark Power burst). lockMs = 80 (dark coil dwell — brief dark spiral lock before release).
+
+**Parameters:**
+- spinGain: +17 rad/s (SW145 pendulum rebound spin recovery)
+- damageMultiplier: 1.35 (partial Dark Power coil strike)
+- lockMs: 80 (dark spiral coil dwell)
+
+### TypeScript
+
+```typescript
+function venomCoilCombo(bey: Beyblade, target: Beyblade): void {
+  // SW145 partial pendulum: Δω ≈ +17 rad/s (η=0.10, v_strike=4.390m/s, J=1.408×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 17);
+  // Partial Dark Power coil: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 80 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +17 rad/s (partial) | ✓ |
+
+*Cases continue from Case 2027 as further franchise moves are provided.*
 
 
 
@@ -28311,4 +30559,2252 @@ function flashGrooveCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +10 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1994 as further franchise moves are provided.*
+
+
+---
+
+## Case 1994 — GIMMICK: Ultimate Valtryek Legacy Variable'-9 — Variable' Driver Speed Surge
+
+**Beyblade:** Ultimate Valtryek Legacy Variable'-9 (Beyblade Burst DB / BU era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst DB / BU
+**Cross-reference:** Assembly in Case 1988 (39.0 g, I=3.115×10⁻⁵ kg·m², ω₀=700 rad/s)
+
+### Variable' Driver Speed-Boost Mechanism
+
+The Variable' component acts as a mode-switching driver element — at high spin, it transitions from low-friction stable mode to a high-friction orbital boost mode, creating an instantaneous translational surge that powers the charge into the Ultimate Blade:
+
+```
+Variable' Mode 1 (stable, low friction):
+  μ_var1 = 0.35,  r_var1 = 4 mm
+  v_mode1 = μ_var1 × ω₀ × r_var1 = 0.35 × 700 × 0.004 = 0.980 m/s
+
+Variable' Mode 2 (boost, high-friction outer engagement):
+  μ_var2 = 0.70,  r_var2 = 5 mm  (outer contact engaged in boost mode)
+  v_mode2 = μ_var2 × ω₀ × r_var2 = 0.70 × 700 × 0.005 = 2.450 m/s
+
+Speed surge from Variable' mode transition:
+  Δv_Variable = v_mode2 − v_mode1 = 2.450 − 0.980 = 1.470 m/s
+  v_charge = v_mode2 = 2.450 m/s  (peak orbital velocity after mode switch)
+```
+
+---
+
+### Contact — Ultimate Blade Full Force Strike
+
+After the Variable' speed surge, Valtryek charges into the opponent, striking with the full force of the Ultimate Blade at peak orbital velocity:
+
+```
+m_eff = (m_UV × m_opp) / (m_UV + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_Ultimate = 0.75  (Ultimate Valtryek blade — hard Burst attack layer)
+
+J_UFV = m_eff × (1 + e_Ultimate) × v_charge = 1.975×10⁻² × 1.75 × 2.450
+      = 1.975×10⁻² × 4.288 = 8.468×10⁻² N·s
+
+Δv_opp = J_UFV / m_opp = 8.468×10⁻² / 0.040 = 2.117 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g (Case 1988) |
+| I_total | 3.115×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_var1 | 0.35 |
+| v_mode1 | 0.980 m/s |
+| μ_var2 | 0.70 |
+| r_var2 | 5 mm |
+| v_charge | 2.450 m/s |
+| Δv_Variable | 1.470 m/s |
+| e_Ultimate | 0.75 |
+| J_UFV | 8.468×10⁻² N·s |
+| Δv_opp | 2.117 m/s |
+
+---
+
+## Case 1995 — SPECIAL: Ultimate Flash V — Valt Aoi / Ultimate Valtryek Legacy Variable'-9
+
+**Blader:** Valt Aoi | **Beyblade:** Ultimate Valtryek Legacy Variable'-9 | **Type:** attack
+
+### Description
+
+Ultimate Flash V (アルティメットフラッシュV, Arutimetto Furasshu Bui) is a Special Move used by Valt Aoi with Ultimate Valtryek Legacy Variable'-9 (Burst DB/BU). After gaining a boost in speed with the Variable' Driver, Valtryek charges into the opposing Beyblade and strikes with full force to the Ultimate Blade.
+
+### Stage — Variable' Speed Surge + Ultimate Blade Full-Force Charge
+
+From Case 1994: v_charge = 2.450 m/s, J_UFV = 8.468×10⁻² N·s, Δv_opp = 2.117 m/s.
+
+```
+Spin drain from Ultimate Blade contact:
+  Δω = J_UFV × r_Ultimate / I_total = 8.468×10⁻² × 0.032 / 3.115×10⁻⁵ = 87.0 rad/s
+  ω_remain = 700 − 87.0 = 613.0 rad/s  (87.6% retained)
+  (Variable' mode switch is a one-time speed burst — spin returns to normal decay after contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's spirit ignites in a flash of gold — the Variable' Driver glows as Ultimate Valtryek surges from stillness to blazing speed in an instant, the spirit energy from Valtryek channeled entirely into a single full-force charge. The Ultimate Blade crashes into the opponent with the combined velocity of the Variable' burst and Valtryek's divine attack spirit.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek V-flash spirit)
+[M] Δv = 2.117 × 8.0 = **16.94 m/s** (Variable' speed-surge blade strike ring-out)
+
+> **Note:** Physical values describe Variable' mode transition Δv=1.470 m/s (μ1=0.35 r=4mm → μ2=0.70 r=5mm); peak v_charge=2.450 m/s; J_UFV=8.468×10⁻²N·s; Δv=2.117 m/s. Distinct from Ultimate Dive (wall-ride gravity) and Ultimate Flash Launch (groove-rail). [M] values represent Valt's Valtryek V-flash spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateFlashVSpecial(bey: Beyblade, target: Beyblade): void {
+  // Variable' speed surge Δv=1.470m/s; v_charge=2.450m/s; J_UFV=8.468×10⁻²N·s; [M] 8.0×
+  const J_UFV = 0.08468;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UFV * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek V-flash Variable' surge)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst DB/BU-era beyblade using a Variable' or equivalent mode-switching Ratchet/Driver component (mode transition Δv ≥ 1.0 m/s, switching from stable-low to orbital-high friction) with a wide attack-profile Blade (r_blade ≥ 30 mm, e ≥ 0.70) for the full-force charge contact. Standard game instance: Ultimate Valtryek Legacy Variable'-9 (Valt Aoi, Burst DB/BU). Distinct from Ultimate Flash Launch (groove) and Ultimate Dive (wall-ride).
+
+---
+
+## Case 1996 — COMBO: V-Surge Strike — Ultimate Valtryek Legacy Variable'-9
+
+**Sequence:** ← → A (moveLeft · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveLeft (←) feints Valtryek leftward — Variable' is in low-friction Mode 1, conserving spin while building lateral momentum. The moveRight (→) triggers the Variable' mode switch as Valtryek snaps back right — the transition from Mode 1 to Mode 2 creates the speed surge, and the snap-back adds the lateral approach momentum. The attack (A) fires the Ultimate Blade contact at the snap-peak:
+
+```
+v_feint_left = v_mode1 = 0.980 m/s (← phase: Mode 1 low-friction drift left)
+v_snap_surge = v_mode2 + v_feint_bounce = 2.450 + 0.980 × 0.60 = 2.450 + 0.588 = 3.038 m/s
+(snap-back adds 60% of feint momentum from elastic reversal)
+
+v_combo_contact = v_snap_surge × 0.88 = 3.038 × 0.88 = 2.673 m/s
+(0.88: combo efficiency — full surge available but partial contact angle from snap geometry)
+
+J_combo = m_eff × (1 + e_Ultimate) × v_combo_contact = 1.975×10⁻² × 1.75 × 2.673
+        = 1.975×10⁻² × 4.678 = 9.238×10⁻² N·s
+```
+
+Variable' mode transition recoil → spin recovery (η_var = 0.10):
+
+```
+Δω = η_var × J_combo × r_Ultimate / I_total
+   = 0.10 × 9.238×10⁻² × 0.032 / 3.115×10⁻⁵
+   = 0.10 × 94.95
+   = +9.49 rad/s  → round to +10 rad/s
+```
+
+(η_var=0.10: Variable' mode-reversion after contact sends small rotational pulse back to main body spin; effective spinGain = +10 rad/s.) V-surge feint-snap gives damageMultiplier **1.30×**. lockMs = 0 (sharp attack type, no hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (Variable' mode reversion spin recovery)
+- damageMultiplier: 1.30 (Variable' speed-surge snap strike)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function vSurgeStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Variable' feint-snap: Δω ≈ +10 rad/s (η=0.10, v_contact=2.673m/s, J=9.238×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Variable' surge snap: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1997 — GIMMICK: Genesis & Strike Valtryek 6Vortex Ultimate Reboot — In-Battle Tip Change Speed Surge
+
+**Beyblade:** Genesis Valtryek 6Vortex Ultimate Reboot / Strike Valtryek 6Vortex Ultimate Reboot (Beyblade Burst Surge)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Surge
+**Cross-reference:** Assembly in Case 1991 (49.0 g, I=3.749×10⁻⁵ kg·m², ω₀=700 rad/s)
+
+### Ultimate Reboot In-Battle Tip Change Mechanism
+
+The Ultimate Reboot Performance Tip features two contact modes: an inner bearing tip (low-friction stable mode) and an outer rubber flat ring (high-friction attack mode). The mode switch is triggered by a lateral trajectory reversal — when Valtryek sharply changes direction, the centrifugal asymmetry causes the internal mechanism to engage the outer rubber ring:
+
+```
+Phase 1 — Bearing Mode (stable, low friction):
+  Inner bearing tip:  μ_bearing ≈ 0 (near-frictionless)
+  r_bearing = 3 mm
+  v_bearing = μ_bearing × ω₀ × r_bearing ≈ 0  (minimal orbital drive)
+
+  Spin conservation in bearing mode:
+  ω_reboot = ω₀ × η_bearing = 700 × 0.986 = 690 rad/s
+  (η_bearing = 0.986 — bearing preserves 98.6% of spin; minimal friction drain)
+
+Phase 2 — Flat Ring Mode (attack, high friction):
+  Outer rubber flat ring:  μ_ring = 0.50
+  r_ring = 10 mm
+  v_ring = μ_ring × ω_reboot × r_ring = 0.50 × 690 × 0.010 = 3.450 m/s
+
+Speed surge from tip mode transition:
+  Δv_reboot = v_ring − v_bearing ≈ 3.450 m/s  (full surge from near-zero to ring drive)
+  v_contact = v_ring = 3.450 m/s  (peak orbital velocity after flat ring engagement)
+```
+
+---
+
+### Contact — Full-Force Strike After Tip Transition
+
+```
+m_eff = (m_GV × m_opp) / (m_GV + m_opp) = (0.049 × 0.040) / (0.049 + 0.040)
+      = 1.960×10⁻³ / 0.089 = 2.202×10⁻² kg
+
+e_Genesis = 0.72  (Genesis/Strike Valtryek Sparking layer — hard attack contact)
+
+J_UGR = m_eff × (1 + e_Genesis) × v_contact = 2.202×10⁻² × 1.72 × 3.450
+      = 2.202×10⁻² × 5.934 = 1.307×10⁻¹ N·s
+
+Δv_opp = J_UGR / m_opp = 1.307×10⁻¹ / 0.040 = 3.268 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 49.0 g (Case 1991) |
+| I_total | 3.749×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_bearing | ≈ 0 |
+| r_bearing | 3 mm |
+| η_bearing | 0.986 |
+| ω_reboot | 690 rad/s |
+| μ_ring | 0.50 |
+| r_ring | 10 mm |
+| v_contact | 3.450 m/s |
+| Δv_reboot | 3.450 m/s |
+| e_Genesis | 0.72 |
+| J_UGR | 1.307×10⁻¹ N·s |
+| Δv_opp | 3.268 m/s |
+
+---
+
+## Case 1998 — SPECIAL: Ultimate Genesis Reboot — Valt Aoi / Genesis Valtryek 6Vortex Ultimate Reboot
+
+**Blader:** Valt Aoi | **Beyblade:** Genesis Valtryek 6Vortex Ultimate Reboot | **Type:** attack
+
+### Description
+
+Ultimate Genesis Reboot (アルティメットジェネシスリブート, Arutimetto Jeneshisu Ribūto) is a Special Move used by Valt Aoi with Genesis Valtryek 6Vortex Ultimate Reboot (Burst Surge). Similar to Genesis Reboot, Valtryek achieves instantaneous speed and power using the in-battle tip change feature of the Ultimate Reboot Performance Tip — switching from bearing mode to flat-ring attack mode mid-battle. This move resembles Gingka's Final Drive Mode.
+
+### Stage — In-Battle Tip Change + Full-Force Surge Strike
+
+From Case 1997: ω_reboot = 690 rad/s, v_contact = 3.450 m/s, J_UGR = 1.307×10⁻¹ N·s, Δv_opp = 3.268 m/s.
+
+```
+Spin drain from flat-ring surge contact:
+  Δω = J_UGR × r_layer / I_total = 1.307×10⁻¹ × 0.032 / 3.749×10⁻⁵ = 111.6 rad/s
+  ω_remain = 690 − 111.6 = 578.4 rad/s  (83.8% retained)
+  (Large outer ring radius means significant spin drain — attack type tradeoff)
+  (After contact, tip reverts to bearing mode for continued spin preservation)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's spirit blazes with a pure white and gold flash — Genesis Valtryek locks into the stadium floor on its silent bearing tip, appearing still as death. Then in one impossible instant, the Ultimate Reboot fires: the rubber ring slaps down, Valtryek explodes from stillness to a blinding surge, and the Genesis Blade crashes into the opponent like a thunderclap. The stadium shakes with the resonance of Valtryek's divine spirit.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek genesis spirit)
+[M] Δv = 3.268 × 8.0 = **26.14 m/s** (bearing-to-ring surge ring-out)
+
+> **Note:** Physical values describe Ultimate Reboot tip transition from near-zero bearing drive to flat-ring v_contact=3.450 m/s; bearing mode preserves spin at η=0.986 (ω_reboot=690 rad/s); J_UGR=1.307×10⁻¹ N·s; Δv=3.268 m/s. Resembles Gingka's Final Drive Mode (bearing→flat engagement). [M] values represent Valt's Valtryek genesis spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateGenesisRebootSpecial(bey: Beyblade, target: Beyblade): void {
+  // Ultimate Reboot bearing→flat ring: v_contact=3.450m/s; J_UGR=1.307×10⁻¹N·s; [M] 8.0×
+  const J_UGR = 0.1307;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UGR * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek genesis spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Surge-era beyblade using the Ultimate Reboot Performance Tip (or equivalent dual-mode bearing+flat driver) — bearing inner tip r=3mm μ≈0 for spin preservation, outer rubber flat ring r≥8mm μ≥0.45 for the attack-mode surge. Wide attack-profile Layer (r_layer ≥ 28 mm, e ≥ 0.70) required for full-force contact. Standard game instance: Genesis Valtryek 6Vortex Ultimate Reboot (Valt Aoi, Burst Surge). Distinct from Genesis Reboot (standard Reboot tip) and Ultimate Flash Launch (groove-rail).
+
+---
+
+## Case 1999 — COMBO: Genesis Surge — Genesis Valtryek 6Vortex Ultimate Reboot
+
+**Sequence:** K A K (defense · attack · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The first defense (K) triggers the bearing engagement — Valtryek pulls back into a tight orbit, the Ultimate Reboot bearing tip locking spin-drain to near zero. The attack (A) fires the trajectory reversal: the sharp inward lunge triggers the tip mode switch from bearing to flat ring, and the surge drives into the opponent. The second defense (K) reengages the bearing after contact, recovering orbital stability and returning a spin pulse to the body:
+
+```
+Bearing hold phase (K₁):
+  v_bearing ≈ 0 m/s (near-zero orbital drive; spin conserved at ω_reboot = 690 rad/s)
+
+Surge attack phase (A):
+  v_combo_contact = v_contact × 0.88 = 3.450 × 0.88 = 3.036 m/s
+  (0.88: combo contact efficiency — tip switch fires at 88% of full surged velocity in combo context)
+
+  J_combo = m_eff × (1 + e_Genesis) × v_combo_contact = 2.202×10⁻² × 1.72 × 3.036
+          = 2.202×10⁻² × 5.222 = 1.150×10⁻¹ N·s
+
+Bearing re-engage phase (K₂ — spin recovery):
+  η_reboot_recover = 0.13 (bearing re-engagement sends rotational pulse back to main body spin)
+  Δω = η_reboot_recover × J_combo × r_layer / I_total
+     = 0.13 × 1.150×10⁻¹ × 0.032 / 3.749×10⁻⁵
+     = 0.13 × 98.15
+     = +12.76 rad/s  → round to +15 rad/s
+```
+
+(η_reboot_recover=0.13: tip reversion to bearing mode after the combo attack returns a spin recovery burst; effective spinGain = +15 rad/s.) Bearing-surge attack gives damageMultiplier **1.35×**. lockMs = 100 (bearing re-engage dwell — brief hold at contact apex).
+
+**Parameters:**
+- spinGain: +15 rad/s (Ultimate Reboot bearing re-engagement spin recovery)
+- damageMultiplier: 1.35 (bearing-to-ring surge attack)
+- lockMs: 100 (bearing re-engage dwell)
+
+### TypeScript
+
+```typescript
+function genesisSurgeCombo(bey: Beyblade, target: Beyblade): void {
+  // Reboot bearing re-engage: Δω ≈ +15 rad/s (η=0.13, v_contact=3.036m/s, J=1.150×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 15);
+  // Bearing-to-ring surge: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +15 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2000 — GIMMICK: Dragoon MS Ultimate Version — Elemental Tornado Vortex (Manga)
+
+**Beyblade:** Dragoon MS Ultimate Version (Beyblade G-Revolution HMS manga)
+**Blader:** Tyson Granger | **Series:** Beyblade G-Revolution (manga)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| AR | Dragoon Wing (metal, wide wing attack profile) | 18.0 | 24.0 |
+| CWD | Circle Wide (tungsten alloy ring, maximum peripheral mass) | 13.0 | 30.0 |
+| HMC | Magnacore (magnetic core unit) | 5.0 | 4.0 |
+| SG | Metal Semi-Flat (HMS bearing-assist semi-flat tip) | 5.0 | 3.5 |
+| **Total** | | **41.0** | |
+
+(HMS G-Revolution format. Dragoon Wing AR: wide metal wing profile for high-torque vortex generation. Circle Wide CWD: tungsten ring at r=30mm — maximum peripheral moment for sustained tornado spin. Magnacore HMC: magnetic resonance core, enables BeySpirit elemental attribute infusion. Semi-flat HMS tip: low friction with moderate orbital drive. 41.0 g estimated.)
+
+**I_total** = 18.0×10⁻³ × 0.024² + 13.0×10⁻³ × 0.030² + 5.0×10⁻³ × 0.004² + 5.0×10⁻³ × 0.0035²
+           = 1.037×10⁻⁵ + 1.170×10⁻⁵ + 8.0×10⁻⁸ + 6.125×10⁻⁸
+           = **2.209×10⁻⁵ kg·m²**  (≈ 2.21×10⁻⁵ kg·m²)
+
+ω₀ = 520 rad/s (HMS G-Revolution standard launch)
+L₀ = I × ω₀ = 2.209×10⁻⁵ × 520 = **1.149×10⁻² kg·m²/s**
+
+---
+
+### 1. Rankine Vortex — Elemental Tornado Generation
+
+The wide Dragoon Wing AR at high spin generates a Rankine vortex in the air column above the bey. The vortex core radius is set by the AR wingspan; the circulation Γ is driven by the tangential tip speed of the wing tips:
+
+```
+v_tip = ω₀ × r_AR = 520 × 0.024 = 12.48 m/s  (wing-tip tangential velocity)
+
+Vortex core radius:
+  r_c = r_AR × 0.60 = 0.024 × 0.60 = 0.0144 m  (core is 60% of AR radius — tight vortex)
+
+Circulation Γ = 2π × r_c × v_tip_effective
+  v_tip_effective = v_tip × 0.55 = 12.48 × 0.55 = 6.864 m/s
+  (coupling efficiency 0.55 — HMS AR drives air column at 55% tip speed)
+  Γ = 2π × 0.0144 × 6.864 = 2π × 0.09884 = 0.6210 m²/s
+
+Wind velocity at target (r_eff = 0.040 m — standard opponent contact radius):
+  v_wind = Γ / (2π × r_eff) = 0.6210 / (2π × 0.040) = 0.6210 / 0.2513 = 2.471 m/s
+
+Sky Attribute amplification (Tyson's Dragoon MS — Sky Attribute):
+  η_sky = 1.50  (elemental resonance multiplier for sky-attribute tornado)
+  v_wind_sky = v_wind × η_sky = 2.471 × 1.50 = 3.706 m/s
+
+Sustained 5.0 s tornado wind impulse:
+  J_wind_ult = m_opp × v_wind_sky = 0.040 × 3.706 = 0.14824 N·s  (peak wind impulse over 5s)
+  J_wind_ult_effective = J_wind_ult × 0.226 = 0.03350 N·s  (effective single-contact equivalent)
+  (0.226: impulse-duration weighting — sustained wind at 5s delivers 22.6% of instantaneous peak)
+```
+
+---
+
+### 2. Elemental Attribute Variants
+
+```
+Water Attribute (water absorbed mid-battle):
+  η_water = 1.80  (water amplifies vortex: absorbed liquid mass increases air density in column)
+  v_wind_water = v_wind × η_water = 2.471 × 1.80 = 4.448 m/s
+
+Fire Attribute (Kai's version — Dranzer MS in tornado clash):
+  η_fire = 1.65  (fire thermal convection boosts updraft force within tornado)
+  v_wind_fire = v_wind × η_fire = 2.471 × 1.65 = 4.077 m/s
+```
+
+---
+
+### 3. Diving Crash — Tornado + Dive Impact
+
+After sustained vortex harassment, Dragoon MS dives into the opponent from above, riding the tornado's downward central column:
+
+```
+h_tornado = 0.250 m  (tornado reaches 250 mm height — towering vortex)
+v_dive = √(2g × h_tornado) = √(2 × 9.81 × 0.250) = √4.905 = 2.214 m/s
+
+m_eff = (m_DMS × m_opp) / (m_DMS + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+e_Wing = 0.78  (Dragoon Wing metal AR — hard high-restitution HMS contact)
+
+J_dive_US = m_eff × (1 + e_Wing) × v_dive = 2.025×10⁻² × 1.78 × 2.214
+          = 2.025×10⁻² × 3.941 = 7.980×10⁻² N·s
+
+J_total_US = J_wind_ult_effective + J_dive_US = 0.03350 + 0.07980 = 0.11330 N·s
+           ≈ 1.133×10⁻¹ N·s
+
+Δv_opp = J_total_US / m_opp = 1.133×10⁻¹ / 0.040 = 2.833 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g |
+| I_total | 2.209×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| v_tip | 12.48 m/s |
+| r_c | 14.4 mm |
+| Γ | 0.6210 m²/s |
+| v_wind | 2.471 m/s |
+| η_sky | 1.50 |
+| v_wind_sky | 3.706 m/s |
+| J_wind_ult_eff | 3.350×10⁻² N·s |
+| h_tornado | 250 mm |
+| v_dive | 2.214 m/s |
+| e_Wing | 0.78 |
+| J_dive_US | 7.980×10⁻² N·s |
+| J_total_US | 1.133×10⁻¹ N·s |
+| Δv_opp | 2.833 m/s |
+
+---
+
+## Case 2001 — SPECIAL: Ultimate Storm (Manga) — Tyson Granger / Dragoon MS Ultimate Version
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon MS Ultimate Version | **Type:** attack
+
+### Description
+
+Ultimate Storm (アルティメットストーム, Arutimetto Sutōmu) is a Special Move used by Tyson Granger and Dragoon MS Ultimate Version (Beyblade G-Revolution, HMS manga). A towering elemental tornado envelops the opposing Beyblade inside a swirling vortex cloud of rotating debris and dust — Dragoon's Sky Attribute tornado is powerful enough to lift and toss environmental objects. The tornado can inherit different elemental properties depending on the Attribute of Dragoon's Bit-Beast: Sky Attribute (standard), Water Attribute (when water is absorbed mid-battle), or Fire Attribute (Kai's Dranzer MS version in a tornado clash). The blader can also manipulate the tornado via their bey in a variety of maneuvers, including a diving crash.
+
+### Stage — Elemental Vortex Surge + Diving Crash
+
+From Case 2000: Γ=0.6210 m²/s, v_wind_sky=3.706 m/s, J_wind_ult_eff=3.350×10⁻² N·s, v_dive=2.214 m/s, J_dive_US=7.980×10⁻² N·s, J_total_US=1.133×10⁻¹ N·s, Δv_opp=2.833 m/s.
+
+```
+Spin drain from tornado dive contact:
+  Δω = J_total_US × r_AR / I_total = 1.133×10⁻¹ × 0.024 / 2.209×10⁻⁵ = 123.2 rad/s
+  ω_remain = 520 − 123.2 = 396.8 rad/s  (76.3% retained)
+  (Massive tornado energy output drains spin significantly — standard HMS attack tradeoff)
+
+Elemental attribute note (Water/Fire variants):
+  v_wind_water = 4.448 m/s → J_wind_water_eff = 0.040 × 4.448 × 0.226 = 4.021×10⁻² N·s
+  J_total_water = 4.021×10⁻² + 7.980×10⁻² = 1.200×10⁻¹ N·s → Δv_opp_water = 3.001 m/s
+  (Higher tornado mass from absorbed water; fire variant analogous at η=1.65)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tyson's Dragoon roars with primal fury — the Dragoon Wing ARs ignite with brilliant blue-white light as Dragoon MS spins to an impossible speed. A colossal tornado erupts from the stadium floor, climbing skyward as a pillar of wind, debris, and elemental energy. The opposing Beyblade is engulfed in the swirling column — then Dragoon itself plunges from the eye of the storm in a blinding diving crash, the full weight of the hurricane concentrated in a single devastat­ing impact. The stadium itself quakes.
+
+[M] factor = **8.0 ×** (Tyson Granger — original series protagonist, Dragoon sky-wind spirit)
+[M] Δv = 2.833 × 8.0 = **22.66 m/s** (elemental tornado diving crash ring-out)
+
+> **Note:** Physical values describe HMS Rankine vortex Γ=0.6210 m²/s; Sky η_sky=1.50 v_wind_sky=3.706 m/s; Water η_water=1.80; Fire η_fire=1.65 (Kai version); h_tornado=250mm v_dive=2.214 m/s; J_wind_eff=3.350×10⁻²; J_dive=7.980×10⁻²; J_total=1.133×10⁻¹ N·s; Δv=2.833 m/s. [M] values represent Tyson's Dragoon sky-element spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateStormMangaSpecial(bey: Beyblade, target: Beyblade): void {
+  // HMS Rankine vortex Γ=0.6210; sky η=1.50; dive h=250mm; J_total=1.133×10⁻¹N·s; [M] 8.0×
+  const J_total_US = 0.1133;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_US * 8.0; // [M] BeySpirit 8.0× (Tyson Dragoon sky-wind spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a wide metal Attack Ring (r_AR ≥ 20 mm) providing high-circulation vortex generation (Γ ≥ 0.40 m²/s) with a magnetic or elemental resonance core (Magnacore or equivalent) enabling attribute infusion. Standard game instance: Dragoon MS Ultimate Version (Tyson Granger, G-Revolution HMS manga). Elemental attribute can be Sky (default), Water (absorbed mid-battle), or Fire (Dranzer MS variant). Distinct from Ultimate Storm Attack (moving vortex that follows the bey).
+
+---
+
+## Case 2002 — COMBO: Tornado Crash — Dragoon MS Ultimate Version
+
+**Sequence:** ↑ ↓ A (moveUp · moveDown · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The moveUp (↑) spins Dragoon MS into a high orbit — the Dragoon Wing AR begins generating the vortex as orbital speed builds. The moveDown (↓) triggers the tornado dive arc — Dragoon drops from the high-orbit point inward, riding the vortex's downward central column. The attack (A) fires the diving crash at impact point:
+
+```
+Vortex partial build (↑ phase):
+  v_wind_combo = v_wind × 0.70 = 2.471 × 0.70 = 1.730 m/s  (70% circulation in combo)
+  J_wind_combo = m_opp × v_wind_combo × 0.226 = 0.040 × 1.730 × 0.226 = 1.564×10⁻² N·s
+
+Dive arc from reduced height (↓ phase):
+  h_combo = h_tornado × 0.60 = 0.250 × 0.60 = 0.150 m  (combo reaches 60% of full tornado height)
+  v_dive_combo = √(2g × h_combo) = √(2 × 9.81 × 0.150) = √2.943 = 1.715 m/s
+
+  J_dive_combo = m_eff × (1 + e_Wing) × v_dive_combo = 2.025×10⁻² × 1.78 × 1.715
+              = 2.025×10⁻² × 3.053 = 6.182×10⁻² N·s
+
+J_combo = J_wind_combo + J_dive_combo = 1.564×10⁻² + 6.182×10⁻² = 7.746×10⁻² N·s
+```
+
+Tornado spin-back recovery (η_vortex = 0.10):
+
+```
+Δω = η_vortex × J_combo × r_AR / I_total
+   = 0.10 × 7.746×10⁻² × 0.024 / 2.209×10⁻⁵
+   = 0.10 × 84.15
+   = +8.42 rad/s  → round to +8 rad/s
+```
+
+(η_vortex=0.10: tornado rebound adds a small rotational pulse to Dragoon's spin after the diving crash; effective spinGain = +8 rad/s.) Tornado crash dive gives damageMultiplier **1.30×**. lockMs = 50 (brief dive dwell at impact).
+
+**Parameters:**
+- spinGain: +8 rad/s (tornado vortex rebound)
+- damageMultiplier: 1.30 (tornado diving crash)
+- lockMs: 50 (dive impact dwell)
+
+### TypeScript
+
+```typescript
+function tornadoCrashCombo(bey: Beyblade, target: Beyblade): void {
+  // Tornado dive partial: Δω ≈ +8 rad/s (η=0.10, v_dive=1.715m/s, J=7.746×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Tornado crash dive: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2003 — GIMMICK: Dragoon MS / Metal Storm — Moving Storm Vortex (Anime)
+
+**Beyblade:** Dragoon MS (Beyblade G-Revolution HMS anime) / Metal Storm (variant)
+**Blader:** Tyson Granger | **Series:** Beyblade G-Revolution (anime)
+**Cross-reference:** Assembly in Case 2000 (41.0 g, I=2.209×10⁻⁵ kg·m², ω₀=520 rad/s)
+
+### Moving Vortex Mechanics
+
+Unlike Ultimate Storm (manga), the Ultimate Storm Attack anime version features a storm vortex that is not fixed in position — it moves with Dragoon MS as the bey orbits the stadium. The moving vortex combines the carried tornado's wind impulse with the orbital kinetic energy of the bey's own trajectory:
+
+```
+Base wind speed (from Case 2000):
+  v_wind = 2.471 m/s  (static Rankine vortex at r_eff = 40 mm)
+
+Moving vortex enhancement factor:
+  η_moving = 2.00  (vortex moves with bey — orbital velocity adds directly to wind field)
+  v_wind_moving = v_wind × η_moving = 2.471 × 2.00 = 4.942 m/s
+
+Physical basis: the bey's orbital velocity (v_orbital ≈ 2.30 m/s at r_orbit=35mm,
+ω=65 rad/s orbital rate) adds coherently to the rotating wind field —
+the front side of the vortex moves at v_wind + v_orbital while the trailing
+side is the net v_wind. The effective contact impulse from the combined field:
+  v_wind_eff = √(v_wind² + v_orbital²) = √(2.471² + 2.30²) = √(6.106 + 5.290) = √11.396 = 3.376 m/s
+  η_moving = v_wind_moving / v_wind_eff × correction = 4.942 / 3.376 = 1.464
+  (Using the analytical v_wind_moving = 4.942 m/s as the operative contact wind speed;
+   η_moving=2.00 captures the storm-follows-bey amplification seen in anime)
+
+Sustained moving-storm wind impulse (5.0 s orbit duration):
+  J_wind_moving = m_opp × v_wind_moving × 0.226 = 0.040 × 4.942 × 0.226 = 4.469×10⁻² N·s
+
+Direct contact strike at end of storm orbit:
+  v_contact = μ_SF × ω₀ × r_SF + v_orbital = 0.40 × 520 × 0.003 + 2.30 = 0.624 + 2.30 = 2.924 m/s
+  (Semi-flat tip μ=0.40 r=3mm; orbital velocity adds as approach speed at contact point)
+
+  J_contact = m_eff × (1 + e_Wing) × v_contact = 2.025×10⁻² × 1.78 × 2.924
+            = 2.025×10⁻² × 5.205 = 1.054×10⁻¹ N·s
+
+J_total_USA = J_wind_moving + J_contact = 4.469×10⁻² + 1.054×10⁻¹ = 1.501×10⁻¹ N·s
+
+Wait — apply storm+contact combined ceiling:
+  J_total_USA = 0.04469 + 0.10540 = 0.15009 N·s  (full combined)
+  Δv_opp = J_total_USA / m_opp = 0.15009 / 0.040 = 3.752 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g (Case 2000) |
+| I_total | 2.209×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| v_wind | 2.471 m/s |
+| η_moving | 2.00 |
+| v_wind_moving | 4.942 m/s |
+| J_wind_moving | 4.469×10⁻² N·s |
+| v_contact | 2.924 m/s |
+| e_Wing | 0.78 |
+| J_contact | 1.054×10⁻¹ N·s |
+| J_total_USA | 1.501×10⁻¹ N·s |
+| Δv_opp | 3.752 m/s |
+
+---
+
+## Case 2004 — SPECIAL: Ultimate Storm Attack — Tyson Granger / Dragoon MS
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon MS / Metal Storm | **Type:** attack
+
+### Description
+
+Ultimate Storm Attack (アルティメットストームアタック, Arutimetto Sutōmu Atakku) is a Special Move used by Tyson Granger and Dragoon MS (Beyblade G-Revolution anime). Similar to Dragoon S's Storm Attack, it is a more powerful version — and the storm moves with the Beyblade. As Dragoon MS orbits the stadium at speed, the tornado vortex travels with it, the combined wind field and orbital velocity amplifying the impact when the bey finally crashes into the opponent.
+
+### Stage — Moving Vortex Orbit + Direct Contact Strike
+
+From Case 2003: v_wind_moving=4.942 m/s, J_wind_moving=4.469×10⁻² N·s, v_contact=2.924 m/s, J_contact=1.054×10⁻¹ N·s, J_total_USA=1.501×10⁻¹ N·s, Δv_opp=3.752 m/s.
+
+```
+Spin drain from moving storm contact:
+  Δω = J_total_USA × r_AR / I_total = 1.501×10⁻¹ × 0.024 / 2.209×10⁻⁵ = 163.2 rad/s
+  ω_remain = 520 − 163.2 = 356.8 rad/s  (68.6% retained)
+  (Moving storm is the most spin-expensive Dragoon move — sustained orbit + full contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dragoon's spirit erupts with a roar that shakes the stadium — unlike any tornado before it, the storm doesn't stay still. A wall of howling wind, debris, and blue-white lightning sweeps around the entire stadium in a spiral, locked to Dragoon MS as it orbits at impossible speed. The opponent's Beyblade is battered by the moving tempest with every rotation — and then Dragoon launches itself out of the eye of the storm directly at the opponent, the combined force of the hurricane and a full-speed orbital strike landing at once.
+
+[M] factor = **8.0 ×** (Tyson Granger — original series protagonist, Dragoon sky-wind spirit)
+[M] Δv = 3.752 × 8.0 = **30.02 m/s** (moving-vortex orbital strike ring-out)
+
+> **Note:** Physical values describe moving-vortex η_moving=2.00, v_wind_moving=4.942 m/s; orbital contact v_contact=2.924 m/s; J_wind=4.469×10⁻², J_contact=1.054×10⁻¹; J_total=1.501×10⁻¹ N·s; Δv=3.752 m/s. Storm follows bey orbit — distinct from Ultimate Storm (static dive). [M] values represent Tyson's Dragoon storm-follow spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateStormAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Moving vortex η=2.00 v_wind=4.942m/s + orbital contact; J_total=1.501×10⁻¹N·s; [M] 8.0×
+  const J_total_USA = 0.1501;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_USA * 8.0; // [M] BeySpirit 8.0× (Tyson Dragoon storm-follow spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a wide metal Attack Ring (r_AR ≥ 20 mm, Γ_base ≥ 0.40 m²/s) with a low-friction drive tip capable of sustained orbital motion (semi-flat, bearing, or equivalent). The moving storm mechanic requires high orbital angular momentum — effective only at ω₀ ≥ 480 rad/s with continuous orbital drive. Standard game instances: Dragoon MS / Metal Storm (Tyson Granger, G-Revolution). Distinct from Ultimate Storm (static dive, manga version).
+
+---
+
+## Case 2005 — COMBO: Storm Follow — Dragoon MS
+
+**Sequence:** ↑ ↑ A (moveUp · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The first moveUp (↑) drives Dragoon MS into the outer orbital track — the vortex begins generating as the bey accelerates through the first arc. The second moveUp (↑) completes a full second arc, the moving storm fully locked to the bey's trajectory and reaching peak wind speed. The attack (A) releases the contact strike at the second-arc endpoint:
+
+```
+First arc wind build (↑₁):
+  v_wind_arc1 = v_wind × η_moving × 0.60 = 2.471 × 2.00 × 0.60 = 2.965 m/s
+  J_wind_arc1 = m_opp × v_wind_arc1 × 0.226 = 0.040 × 2.965 × 0.226 = 2.680×10⁻² N·s
+
+Second arc wind peak (↑₂):
+  v_wind_arc2 = v_wind × η_moving × 0.90 = 2.471 × 2.00 × 0.90 = 4.448 m/s
+  J_wind_arc2 = m_opp × v_wind_arc2 × 0.226 = 0.040 × 4.448 × 0.226 = 4.021×10⁻² N·s
+
+Contact strike (A, combo efficiency 0.85):
+  v_combo_contact = v_contact × 0.85 = 2.924 × 0.85 = 2.485 m/s
+  J_contact_combo = m_eff × (1 + e_Wing) × v_combo_contact = 2.025×10⁻² × 1.78 × 2.485
+                  = 2.025×10⁻² × 4.423 = 8.957×10⁻² N·s
+
+J_combo = J_wind_arc2 + J_contact_combo = 4.021×10⁻² + 8.957×10⁻² = 1.298×10⁻¹ N·s
+```
+
+Moving-storm orbital rebound (η_orbit = 0.08):
+
+```
+Δω = η_orbit × J_combo × r_AR / I_total
+   = 0.08 × 1.298×10⁻¹ × 0.024 / 2.209×10⁻⁵
+   = 0.08 × 141.1
+   = +11.3 rad/s  → round to +8 rad/s (conservative — double orbit drains spin)
+```
+
+(η_orbit=0.08: two full orbit arcs drain spin significantly; partial rebound from storm momentum. Effective spinGain = +8 rad/s.) Double-arc storm follow gives damageMultiplier **1.30×**. lockMs = 50 (brief contact dwell at orbit endpoint).
+
+**Parameters:**
+- spinGain: +8 rad/s (orbital storm rebound)
+- damageMultiplier: 1.30 (double-arc moving storm)
+- lockMs: 50 (orbit endpoint dwell)
+
+### TypeScript
+
+```typescript
+function stormFollowCombo(bey: Beyblade, target: Beyblade): void {
+  // Double-arc moving storm: Δω ≈ +8 rad/s (η=0.08, v_contact=2.485m/s, J=1.298×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Moving-storm double-arc: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2006 — GIMMICK: Storm Spryzen Knuckle Unite — Stadium Groove Speed Build + Heavy Contact
+
+**Beyblade:** Storm Spryzen Knuckle Unite (Beyblade Burst God / SuperKing era)
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst God (SuperKing)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Storm Spryzen (dual-spin, counter-attack oriented, God layer) | 30.0 | 33.0 |
+| Disc | Knuckle (4-knuckle forge disc, high peripheral mass) | 15.0 | 26.0 |
+| Driver | Unite (variable-friction: low-friction free-spin center + rubber outer ring) | 7.0 | 4.0 |
+| **Total** | | **52.0** | |
+
+(Burst God/SuperKing 3-part system. Storm Spryzen layer: wide dual-spin attack profile, reinforced outer edge for heavy contact. Knuckle disc: 4 peripheral knuckle protrusions at r=26mm for attack momentum. Unite driver: free-spin inner tip r=4mm for stamina/positioning + rubber outer ring r=9mm for groove-wall orbital drive and contact. 52.0 g estimated.)
+
+**I_total** = 30.0×10⁻³ × 0.033² + 15.0×10⁻³ × 0.026² + 7.0×10⁻³ × 0.004²
+           = 3.267×10⁻⁵ + 1.014×10⁻⁵ + 1.120×10⁻⁷
+           = **4.292×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst God standard launch)
+L₀ = I × ω₀ = 4.292×10⁻⁵ × 700 = **3.004×10⁻² kg·m²/s**
+
+---
+
+### 1. Stadium Groove-Rail Speed Build
+
+Storm Spryzen rides the stadium groove — the Unite driver's outer rubber ring engages the groove wall, converting all driving friction to tangential orbital acceleration (same mechanism as Case 1991 Ultimate Flash Launch):
+
+```
+Unite outer ring in groove-contact:
+  μ_Unite_outer = 0.52  (rubber outer ring — slightly higher friction than Reboot)
+  r_Unite_eff = 0.009 m  (9 mm outer ring radius)
+  v_orbital_free = μ_Unite_outer × ω₀ × r_Unite_eff = 0.52 × 700 × 0.009 = 3.276 m/s
+
+Groove constraint boost:
+  η_groove = 1.35  (groove rail eliminates lateral energy loss → 35% orbital speed increase)
+  v_groove_peak = v_orbital_free × η_groove = 3.276 × 1.35 = 4.423 m/s
+```
+
+---
+
+### 2. Counter Strike — Heavy Contact at Groove Exit
+
+Spryzen exits the groove at full speed and crashes into the opponent with the reinforced layer edge:
+
+```
+m_eff = (m_SS × m_opp) / (m_SS + m_opp) = (0.052 × 0.040) / (0.052 + 0.040)
+      = 2.080×10⁻³ / 0.092 = 2.261×10⁻² kg
+
+e_Spryzen = 0.73  (Storm Spryzen God layer — reinforced counter-attack edge)
+
+J_UCB = m_eff × (1 + e_Spryzen) × v_groove_peak = 2.261×10⁻² × 1.73 × 4.423
+      = 2.261×10⁻² × 7.652 = 1.730×10⁻¹ N·s
+
+Δv_opp = J_UCB / m_opp = 1.730×10⁻¹ / 0.040 = 4.325 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 52.0 g |
+| I_total | 4.292×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_Unite_outer | 0.52 |
+| r_Unite_eff | 9 mm |
+| v_orbital_free | 3.276 m/s |
+| η_groove | 1.35 |
+| v_groove_peak | 4.423 m/s |
+| e_Spryzen | 0.73 |
+| J_UCB | 1.730×10⁻¹ N·s |
+| Δv_opp | 4.325 m/s |
+
+---
+
+## Case 2007 — SPECIAL: Ultra Counter Break — Shu Kurenai / Storm Spryzen Knuckle Unite
+
+**Blader:** Shu Kurenai | **Beyblade:** Storm Spryzen Knuckle Unite | **Type:** attack
+
+### Description
+
+Ultra Counter Break (トゥルー・カウンターブレイク, Turū Kauntā Bureiku — True Counter Break in Japan) is a Special Move used by Shu Kurenai and Storm Spryzen Knuckle Unite (Burst God/SuperKing). A stronger version of the Counter Break in which Spryzen rides along the stadium's groove to pick up speed and deal heavy damage — similar to Valt Aoi's Ultimate Flash Launch.
+
+### Stage — Groove Speed Build + Counter-Attack Heavy Strike
+
+From Case 2006: v_groove_peak = 4.423 m/s, J_UCB = 1.730×10⁻¹ N·s, Δv_opp = 4.325 m/s.
+
+```
+Spin drain from groove-exit counter strike:
+  Δω = J_UCB × r_layer / I_total = 1.730×10⁻¹ × 0.033 / 4.292×10⁻⁵ = 133.0 rad/s
+  ω_remain = 700 − 133.0 = 567.0 rad/s  (81.0% retained)
+  (Heavier disc mass absorbs more impulse loss — attack-stamina tradeoff of Knuckle disc)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu's eyes blaze crimson as Spryzen locks into the groove wall — the red-and-white bey becomes a streak of fire along the stadium's edge, building speed until the track itself seems to crack with heat. At the apex of the groove, Spryzen vanishes from its orbit and reappears beside the opponent in a burst of red lightning. The Knuckle disc and reinforced layer edge connect with the full force of the groove charge — an unstoppable counter that drives the opponent straight off the stadium.
+
+[M] factor = **8.0 ×** (Shu Kurenai — main Burst rival/secondary protagonist, Spryzen counter-fire spirit)
+[M] Δv = 4.325 × 8.0 = **34.60 m/s** (groove counter break ring-out)
+
+> **Note:** Physical values describe groove-rail v_free=3.276 m/s (μ_Unite=0.52 r=9mm) → η=1.35 → v_groove=4.423 m/s; J_UCB=1.730×10⁻¹ N·s; Δv=4.325 m/s; Δω_drain=133.0 rad/s. Similar to Ultimate Flash Launch (groove-rail mechanism) but uses Unite driver outer ring at r=9mm and heavier 52.0g assembly. [M] values represent Shu's Spryzen counter-fire spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultraCounterBreakSpecial(bey: Beyblade, target: Beyblade): void {
+  // Groove η=1.35 v_groove=4.423m/s; counter strike; J_UCB=1.730×10⁻¹N·s; [M] 8.0×
+  const J_UCB = 0.1730;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UCB * 8.0; // [M] BeySpirit 8.0× (Shu Spryzen counter-fire spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst God/SuperKing-era beyblade using a rubber-ring variable-friction driver (outer ring r ≥ 7 mm, μ ≥ 0.45) capable of groove-wall engagement in a stadium with a circular groove rail (η_groove ≥ 1.20), combined with a reinforced wide-profile Layer (r_layer ≥ 30 mm, e ≥ 0.70) for the counter-attack contact. Standard game instance: Storm Spryzen Knuckle Unite (Shu Kurenai, Burst God/SuperKing). Distinct from Counter Break (standard, no groove) and Ultra Emperor Drift (outer-rim trajectory change).
+
+---
+
+## Case 2008 — COMBO: Counter Groove — Storm Spryzen Knuckle Unite
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The first moveRight (→) sends Storm Spryzen into the groove clockwise — the Unite outer ring engages the groove wall and orbital speed begins building. The second moveRight (→) drives a second full arc, reaching near-peak groove speed with both arcs contributing. The attack (A) releases the groove-exit counter strike at the second arc endpoint — identical groove mechanism to Flash Groove (Case 1993) but with the heavier Spryzen assembly generating larger impulse:
+
+```
+v_groove_arc1 = v_orbital_free = 3.276 m/s  (first arc in groove, natural speed)
+v_groove_arc2 = v_groove_arc1 × 1.20 = 3.276 × 1.20 = 3.931 m/s
+v_combo_contact = v_groove_arc2 × η_groove_partial = 3.931 × 1.15 = 4.521 m/s
+(partial groove boost: 2 arcs = 1.15× vs full groove η=1.35; consistent with Flash Groove)
+
+J_combo = m_eff × (1 + e_Spryzen) × v_combo_contact = 2.261×10⁻² × 1.73 × 4.521
+        = 2.261×10⁻² × 7.821 = 1.768×10⁻¹ N·s
+```
+
+Unite rubber outer ring spin recovery via groove-exit rebound (η_Unite = 0.09):
+
+```
+Δω = η_Unite × J_combo × r_layer / I_total
+   = 0.09 × 1.768×10⁻¹ × 0.033 / 4.292×10⁻⁵
+   = 0.09 × 135.9
+   = +12.2 rad/s  → round to +12 rad/s
+```
+
+(η_Unite=0.09: groove exit + rubber ring rebound converts partial orbital momentum to spin recovery; effective spinGain = +12 rad/s.) Double-arc groove counter gives damageMultiplier **1.35×**. lockMs = 0 (groove-exit attack: instantaneous trajectory change, no dwell).
+
+**Parameters:**
+- spinGain: +12 rad/s (Unite rubber groove-exit rebound)
+- damageMultiplier: 1.35 (double-arc counter groove)
+- lockMs: 0 (instantaneous trajectory change)
+
+### TypeScript
+
+```typescript
+function counterGrooveCombo(bey: Beyblade, target: Beyblade): void {
+  // Unite double-arc: Δω ≈ +12 rad/s (η=0.09, v_contact=4.521m/s, J=1.768×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Double-arc counter groove: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2009 — GIMMICK: Emperor Forneus — Outer Rim Drift Trajectory Change
+
+**Beyblade:** Emperor Forneus (Beyblade Burst Cho-Z era)
+**Blader:** Free de la Hoya | **Series:** Beyblade Burst Cho-Z
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Emperor Forneus (wide outer rim frame, extended attack/defense arc) | 30.0 | 35.0 |
+| Disc | 0 (zero-profile low-mass disc, central mass distribution) | 12.0 | 16.0 |
+| Driver | Atomic (ball-bearing center with rubber outer ring, dual-mode) | 7.0 | 4.0 |
+| **Total** | | **49.0** | |
+
+(Burst Cho-Z 3-part system. Emperor Forneus layer: wide outer rim extending to r=38mm — the extended rim is the defining gimmick, providing both trajectory deflection and high-speed contact arc. Disc 0: minimal profile for center mass. Atomic driver: inner bearing tip r=4mm for spin preservation + outer rubber ring for attack-mode orbital drive. 49.0 g estimated.)
+
+**I_total** = 30.0×10⁻³ × 0.035² + 12.0×10⁻³ × 0.016² + 7.0×10⁻³ × 0.004²
+           = 3.675×10⁻⁵ + 3.072×10⁻⁶ + 1.120×10⁻⁷
+           = **4.094×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 4.094×10⁻⁵ × 700 = **2.866×10⁻² kg·m²/s**
+
+---
+
+### 1. Standard Orbital Approach
+
+Forneus orbits at base tip-driven speed, bearing tip preserving spin:
+
+```
+μ_Atomic_bearing ≈ 0.08  (partial bearing friction — small orbital drive)
+r_Atomic_bearing = 4 mm
+v_orbital = μ_Atomic_bearing × ω₀ × r_Atomic_bearing = 0.08 × 700 × 0.004 = 0.224 m/s
+  (Low orbital speed preserves spin — standard Atomic bearing approach)
+```
+
+---
+
+### 2. Outer Rim Drift — Trajectory Change Mechanism
+
+As Forneus approaches the stadium wall or the opponent at a glancing angle, the extended outer rim (at r_rim=38mm) contacts and deflects the trajectory. The rim's own high tangential spin velocity contributes a directional vector change that redirects the bey from its glancing approach to a direct contact attack:
+
+```
+Outer rim tangential velocity:
+  v_rim_tang = ω₀ × r_rim = 700 × 0.038 = 26.60 m/s
+
+Drift deflection angle:
+  φ_drift = 30°  (glancing approach angle — rim deflects trajectory 30° toward opponent)
+
+Effective rim contribution to contact direction (perpendicular component):
+  η_rim = 0.16  (16% coupling efficiency: spin axis perpendicular to contact plane)
+  v_rim_eff = v_rim_tang × sin(φ_drift) × η_rim = 26.60 × 0.500 × 0.16 = 2.128 m/s
+
+Combined contact velocity after drift:
+  v_contact_drift = v_orbital + v_rim_eff = 0.224 + 2.128 = 2.352 m/s
+  (Drift converts rim spin energy into approach velocity — outer rim redirects trajectory)
+```
+
+---
+
+### 3. Rim Contact Strike
+
+```
+m_eff = (m_EF × m_opp) / (m_EF + m_opp) = (0.049 × 0.040) / (0.049 + 0.040)
+      = 1.960×10⁻³ / 0.089 = 2.202×10⁻² kg
+
+e_Forneus = 0.72  (Emperor Forneus outer rim — extended arc contact, Cho-Z layer)
+
+J_UED = m_eff × (1 + e_Forneus) × v_contact_drift = 2.202×10⁻² × 1.72 × 2.352
+      = 2.202×10⁻² × 4.045 = 8.908×10⁻² N·s
+
+Δv_opp = J_UED / m_opp = 8.908×10⁻² / 0.040 = 2.227 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 49.0 g |
+| I_total | 4.094×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| r_rim | 38 mm |
+| v_rim_tang | 26.60 m/s |
+| φ_drift | 30° |
+| η_rim | 0.16 |
+| v_rim_eff | 2.128 m/s |
+| v_contact_drift | 2.352 m/s |
+| e_Forneus | 0.72 |
+| J_UED | 8.908×10⁻² N·s |
+| Δv_opp | 2.227 m/s |
+
+---
+
+## Case 2010 — SPECIAL: Ultra Emperor Drift — Free de la Hoya / Emperor Forneus
+
+**Blader:** Free de la Hoya | **Beyblade:** Emperor Forneus | **Type:** attack
+
+### Description
+
+Ultra Emperor Drift (アルティメットエンペラードリフト, Arutimetto Enperā Dorifuto) is a Special Move used by Free de la Hoya and Emperor Forneus (Burst Cho-Z). Forneus uses its wide outer rim to change its trajectory and increase its speed and power for a heavy contact strike. Similar to Shu Kurenai's Counter Break — the outer rim deflection replaces the groove-speed mechanism, redirecting the bey's glancing approach into a full direct strike at amplified velocity.
+
+### Stage — Outer Rim Drift + Direct Contact Strike
+
+From Case 2009: v_rim_tang=26.60 m/s, φ_drift=30°, η_rim=0.16, v_contact_drift=2.352 m/s, J_UED=8.908×10⁻² N·s, Δv_opp=2.227 m/s.
+
+```
+Spin drain from outer rim drift contact:
+  Δω = J_UED × r_rim / I_total = 8.908×10⁻² × 0.038 / 4.094×10⁻⁵ = 82.6 rad/s
+  ω_remain = 700 − 82.6 = 617.4 rad/s  (88.2% retained)
+  (Outer rim contact at larger radius drains more spin than core contact — drift tradeoff)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Free de la Hoya's icy composure shatters into focused ferocity — Emperor Forneus glides like a phantom, its outer rim barely kissing the stadium wall at an impossible angle. In an instant the trajectory shifts: what looked like a miss becomes an unstoppable direct hit, the wide emperor rim connecting with the full rotational fury of the Cho-Z layer. The opponent's bey is sent spiraling across the stadium by a force that seemed to come from nowhere.
+
+[M] factor = **7.5 ×** (Free de la Hoya — Burst Cho-Z secondary protagonist, Forneus drift spirit)
+[M] Δv = 2.227 × 7.5 = **16.70 m/s** (outer rim drift trajectory ring-out)
+
+> **Note:** Physical values describe outer rim r_rim=38mm, v_rim_tang=26.60 m/s, φ_drift=30°, η_rim=0.16, v_rim_eff=2.128 m/s; v_contact_drift=2.352 m/s; J_UED=8.908×10⁻² N·s; Δv=2.227 m/s. Outer rim redirects glancing approach to direct contact — mechanism analogous to Counter Break's groove-speed trajectory redirect. [M] values represent Free's Forneus drift spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultraEmperorDriftSpecial(bey: Beyblade, target: Beyblade): void {
+  // Outer rim r=38mm drift η_rim=0.16; v_contact=2.352m/s; J_UED=8.908×10⁻²N·s; [M] 7.5×
+  const J_UED = 0.08908;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UED * 7.5; // [M] BeySpirit 7.5× (Free de la Hoya Forneus drift spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Cho-Z-era beyblade using an extended outer rim layer (r_rim ≥ 34 mm, φ_drift ≥ 20°) — the drift mechanism requires the rim radius to exceed the standard contact radius so that the rim's own tangential spin velocity contributes a directional redirect (v_rim_eff ≥ 1.5 m/s). Low-friction bearing or partial-bearing driver recommended to preserve spin through the glancing approach phase. Standard game instance: Emperor Forneus (Free de la Hoya, Burst Cho-Z). Distinct from Counter Break (groove-rail speed) and Ultimate Flash Launch (groove-rail speed).
+
+---
+
+## Case 2011 — COMBO: Emperor Drift — Emperor Forneus
+
+**Sequence:** ← → A (moveLeft · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Free de la Hoya
+
+### Physics Justification
+
+The moveLeft (←) sends Emperor Forneus left in a wide glancing orbit — the outer rim angles toward the opponent at the approach vector. The moveRight (→) snaps Forneus back right with the rim deflection: the trajectory change from ← to → is the drift — the rim catches at the reversal point, converts the direction-change into extra approach momentum. The attack (A) fires the contact at the drift apex:
+
+```
+Glancing approach speed (← phase):
+  v_approach_left = v_orbital = 0.224 m/s (low-friction bearing approach)
+
+Drift reversal (→ phase — trajectory snap):
+  v_snap_addition = v_orbital × 0.70 = 0.224 × 0.70 = 0.157 m/s (70% of approach adds to snap-back)
+  v_drift_combo = v_rim_eff × 0.88 = 2.128 × 0.88 = 1.873 m/s (88% rim eff. in combo)
+  v_combo_contact = v_drift_combo + v_snap_addition = 1.873 + 0.157 = 2.030 m/s
+
+J_combo = m_eff × (1 + e_Forneus) × v_combo_contact = 2.202×10⁻² × 1.72 × 2.030
+        = 2.202×10⁻² × 3.492 = 7.689×10⁻² N·s
+```
+
+Outer rim bearing reversion spin recovery (η_drift_rebound = 0.11):
+
+```
+Δω = η_drift_rebound × J_combo × r_rim / I_total
+   = 0.11 × 7.689×10⁻² × 0.038 / 4.094×10⁻⁵
+   = 0.11 × 71.3
+   = +7.84 rad/s  → round to +8 rad/s
+```
+
+(η_drift_rebound=0.11: rim reversion after drift strike sends small rotational pulse back to body spin; effective spinGain = +8 rad/s.) Drift snap gives damageMultiplier **1.30×**. lockMs = 0 (sharp trajectory snap — no dwell).
+
+**Parameters:**
+- spinGain: +8 rad/s (outer rim drift rebound)
+- damageMultiplier: 1.30 (drift trajectory snap)
+- lockMs: 0 (sharp snap, no dwell)
+
+### TypeScript
+
+```typescript
+function emperorDriftCombo(bey: Beyblade, target: Beyblade): void {
+  // Outer rim drift snap: Δω ≈ +8 rad/s (η=0.11, v_contact=2.030m/s, J=7.689×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Drift trajectory snap: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2012 — GIMMICK: Union Achilles Convert Xtend+ Retsu — Stadium Wall-Ride + Xtend+ Tip Switch Dive
+
+**Beyblade:** Union Achilles Convert Xtend+ Retsu (Beyblade Burst GT / SuperKing era)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst GT
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Union Achilles (wide attack profile, GT dual-wing layer) | 30.0 | 33.0 |
+| Disc | Convert (multi-configuration conversion disc) | 12.0 | 23.0 |
+| Driver | Xtend+ Retsu (variable-mode: point → flat attack tip switch) | 6.0 | 5.0 |
+| **Total** | | **48.0** | |
+
+(Burst GT 3-part system. Union Achilles layer: wide dual-wing attack profile at r=33mm for high-force dive impact. Convert disc: multi-configuration disc distributes mass at r=23mm. Xtend+ Retsu driver: point tip at r=3mm (low-friction spin-preserve mode for wall-climb) → flat tip at r=5mm (attack mode for dive contact, engaged by tip mode-switch at apex). 48.0 g estimated.)
+
+**I_total** = 30.0×10⁻³ × 0.033² + 12.0×10⁻³ × 0.023² + 6.0×10⁻³ × 0.005²
+           = 3.267×10⁻⁵ + 6.348×10⁻⁶ + 1.500×10⁻⁷
+           = **3.917×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst GT standard launch)
+L₀ = I × ω₀ = 3.917×10⁻⁵ × 700 = **2.742×10⁻² kg·m²/s**
+
+---
+
+### 1. Stadium Wall-Ride Height Gain
+
+Like Z Dive and Turbo Dive, Union Achilles rides up the stadium wall driven by the blader's spirit. Xtend+ operates in point mode during the climb — near-zero friction preserving maximum spin:
+
+```
+Xtend+ in point mode (wall-climb phase):
+  μ_point = 0.15,  r_point = 3 mm
+  v_tip_point = μ_point × ω₀ × r_point = 0.15 × 700 × 0.003 = 0.315 m/s
+
+Wall-entry (blader-guided orbital approach):
+  v_entry = 2.00 m/s  (Aiger drives Achilles into wall with full spirit charge)
+
+Wall height climbed:
+  h_wall = 0.090 m  (90 mm height — GT stadium angled wall section)
+
+Residual speed at wall apex (energy conservation):
+  v_apex = √(v_entry² − 2g × h_wall) = √(2.00² − 2 × 9.81 × 0.090)
+          = √(4.000 − 1.766) = √2.234 = 1.494 m/s
+```
+
+---
+
+### 2. Xtend+ Tip Switch at Apex
+
+At the wall apex, the Xtend+ driver triggers its mode switch — the point tip retracts and the flat attack tip engages. The spring-loaded switch delivers a small rotational kick that adds to the dive velocity:
+
+```
+Xtend+ mode switch (point → flat, at apex):
+  η_switch = 1.04  (4% velocity boost from spring-loaded tip-lock engagement)
+
+v_contact = v_entry × η_switch = 2.00 × 1.04 = 2.080 m/s
+  (Energy conservation: h_climb = h_dive → same speed as entry; η_switch adds 4% tip-kick)
+```
+
+---
+
+### 3. Dive Phase — Contact
+
+```
+m_eff = (m_UA × m_opp) / (m_UA + m_opp) = (0.048 × 0.040) / (0.048 + 0.040)
+      = 1.920×10⁻³ / 0.088 = 2.182×10⁻² kg
+
+e_Achilles = 0.76  (Union Achilles GT layer — hard wide-wing attack contact)
+
+J_UD_U = m_eff × (1 + e_Achilles) × v_contact = 2.182×10⁻² × 1.76 × 2.080
+       = 2.182×10⁻² × 3.661 = 7.987×10⁻² N·s
+
+Δv_opp = J_UD_U / m_opp = 7.987×10⁻² / 0.040 = 1.997 m/s ≈ 2.00 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 48.0 g |
+| I_total | 3.917×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_point | 0.15 |
+| r_point | 3 mm |
+| v_entry | 2.00 m/s |
+| h_wall | 90 mm |
+| η_switch | 1.04 |
+| v_contact | 2.080 m/s |
+| e_Achilles | 0.76 |
+| J_UD_U | 7.987×10⁻² N·s |
+| Δv_opp | 2.00 m/s |
+
+---
+
+## Case 2013 — SPECIAL: Unison Dive — Aiger Akabane / Union Achilles Convert Xtend+ Retsu
+
+**Blader:** Aiger Akabane | **Beyblade:** Union Achilles Convert Xtend+ Retsu | **Type:** attack
+
+### Description
+
+Unison Dive (ユニオンダイブ, Yunion Daibu) is a Special Move used by Aiger Akabane and Union Achilles Convert Xtend+ Retsu (Burst GT). Like Z Dive and Turbo Dive, Achilles uses the stadium wall to fly into the air, then falls back down increasing its speed and power to deliver a massive attack. The Xtend+ driver's point-to-flat mode switch at the wall apex adds extra contact force to the dive — Aiger and Achilles striking in perfect unison.
+
+### Stage — Stadium Wall-Ride + Xtend+ Tip Switch Dive
+
+From Case 2012: v_entry=2.00 m/s, h_wall=90mm, η_switch=1.04, v_contact=2.080 m/s, J_UD_U=7.987×10⁻² N·s, Δv_opp=2.00 m/s.
+
+```
+Spin drain from Xtend+ dive contact:
+  Δω = J_UD_U × r_layer / I_total = 7.987×10⁻² × 0.033 / 3.917×10⁻⁵ = 67.3 rad/s
+  ω_remain = 700 − 67.3 = 632.7 rad/s  (90.4% retained)
+  (Xtend+ flat mode after contact reverts to point for spin recovery — high spin retention)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's fiery spirit burns golden-red — Union Achilles launches off the stadium floor and tears up the wall at blinding speed, the Xtend+ locking silent on its point tip. At the apex, everything seems to pause — then the tip snaps over, Achilles plunges like a comet, and blader and Beyblade crash into the opponent in a single unified burst of divine power. The Unison is absolute.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Burst GT protagonist, Achilles divine drive spirit)
+[M] Δv = 2.00 × 7.5 = **15.00 m/s** (wall-ride Xtend+ dive ring-out)
+
+> **Note:** Physical values describe GT stadium wall-ride h=90mm, v_entry=2.00 m/s; Xtend+ point→flat tip switch η=1.04; v_contact=2.080 m/s; J_UD_U=7.987×10⁻² N·s; Δv≈2.00 m/s; Δω_drain=67.3 rad/s (90.4% spin retained). Consistent with Z Dive / Turbo Dive wall-ride-and-fall family. [M] values represent Aiger's Achilles divine drive spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function unisonDiveSpecial(bey: Beyblade, target: Beyblade): void {
+  // GT wall-ride h=90mm, Xtend+ η=1.04; v_contact=2.080m/s; J_UD_U=7.987×10⁻²N·s; [M] 7.5×
+  const J_UD_U = 0.07987;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 30); // Xtend+ point-mode spin preservation pre-boost
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UD_U * 7.5; // [M] BeySpirit 7.5× (Aiger Achilles divine drive spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst GT/SuperKing-era beyblade using a variable-mode driver with a point/low-friction mode for wall-climb spin preservation and a flat/attack mode for dive contact (Xtend+, Xtend, or equivalent), combined with a wide attack-profile layer (r_layer ≥ 30 mm, e ≥ 0.72) in a GT-style stadium with an angled wall section (h_wall ≥ 70 mm). Standard game instance: Union Achilles Convert Xtend+ Retsu (Aiger Akabane, Burst GT). Wall-ride-and-fall family: consistent with Z Dive, Turbo Dive, Ultimate Dive.
+
+---
+
+## Case 2014 — COMBO: Union Ascent — Union Achilles Convert Xtend+ Retsu
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+The moveRight (→) sends Union Achilles on a rightward orbital arc toward the stadium wall — Xtend+ in point mode, building approach momentum. The moveUp (↑) triggers the wall-climb: Achilles launches up the angled wall, the point tip preserving spin through the ascent. The attack (A) fires the Xtend+ mode switch and dive at the apex:
+
+```
+Wall-climb in combo (75% efficiency vs full special):
+  v_combo_entry = v_entry × 0.75 = 2.00 × 0.75 = 1.500 m/s
+  h_combo = v_combo_entry² / (2g) = 1.500² / 19.62 = 2.250 / 19.62 = 0.1147 m → cap at h_wall = 0.090 m
+  (Combo drives Achilles past the full wall height; h_combo = h_wall = 90mm at this entry speed)
+
+  v_combo_contact = √(2g × h_combo) = √(2 × 9.81 × 0.090) = √1.766 = 1.329 m/s
+  (Dive from same height; no η_switch in combo — mode switch is partial)
+
+J_combo = m_eff × (1 + e_Achilles) × v_combo_contact = 2.182×10⁻² × 1.76 × 1.329
+        = 2.182×10⁻² × 2.339 = 5.104×10⁻² N·s
+```
+
+Xtend+ partial point-mode spin recovery (η_Xtend_recover = 0.13):
+
+```
+Δω = η_Xtend_recover × J_combo × r_layer / I_total
+   = 0.13 × 5.104×10⁻² × 0.033 / 3.917×10⁻⁵
+   = 0.13 × 43.03
+   = +5.59 rad/s  → round to +6 rad/s
+```
+
+(η_Xtend_recover=0.13: Xtend+ point re-engage after combo dive sends small spin pulse; effective spinGain = +6 rad/s.) Wall-ascent dive gives damageMultiplier **1.30×**. lockMs = 100 (dive impact dwell — tip-switch lingers at contact).
+
+**Parameters:**
+- spinGain: +6 rad/s (Xtend+ point re-engage spin recovery)
+- damageMultiplier: 1.30 (wall-ascent dive strike)
+- lockMs: 100 (dive impact dwell)
+
+### TypeScript
+
+```typescript
+function unionAscentCombo(bey: Beyblade, target: Beyblade): void {
+  // Xtend+ point wall-climb: Δω ≈ +6 rad/s (η=0.13, v_contact=1.329m/s, J=5.104×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 6);
+  // Wall-ascent dive: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +6 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2015 — GIMMICK: Victory Valtryek Boost Variable — Stadium Outer Rim Variable Speed Surge
+
+**Beyblade:** Victory Valtryek Boost Variable (Beyblade Burst God era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst God
+**Compatible also with:** Genesis Valtryek 6Vortex Reboot (Burst Surge) — same outer rim v_peak via Reboot rubber ring (cross-ref Case 1991)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Victory Valtryek (God layer, wide attack profile) | 28.0 | 32.0 |
+| Disc | Boost (God forge disc, lightweight boost-oriented) | 10.0 | 22.0 |
+| Driver | Variable (mode-switching: stable low-friction → boost high-friction) | 6.0 | 4.0 |
+| **Total** | | **44.0** | |
+
+(Burst God 3-part system. Victory Valtryek layer: wide God attack profile at r=32mm. Boost disc: lightweight at r=22mm for agile outer-rim orbital speed. Variable driver: low-friction stable tip r=4mm μ=0.35 (normal orbit) → high-friction boost tip r=5mm μ=0.70 (engaged on outer rim contact). 44.0 g estimated.)
+
+**I_total** = 28.0×10⁻³ × 0.032² + 10.0×10⁻³ × 0.022² + 6.0×10⁻³ × 0.004²
+           = 2.867×10⁻⁵ + 4.840×10⁻⁶ + 9.600×10⁻⁸
+           = **3.361×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst God standard launch)
+L₀ = I × ω₀ = 3.361×10⁻⁵ × 700 = **2.353×10⁻² kg·m²/s**
+
+---
+
+### 1. Variable Driver Speed Acceleration on Outer Rim
+
+The Flash Launch technique drives Valtryek outward to the stadium's outer rim — the raised lip constrains lateral movement just as a groove rail does. At outer rim contact, the Variable driver's mode switch triggers, shifting from stable to boost mode:
+
+```
+Variable stable mode (inner orbit):
+  μ_var1 = 0.35,  r_var1 = 4 mm
+  v_mode1 = μ_var1 × ω₀ × r_var1 = 0.35 × 700 × 0.004 = 0.980 m/s
+
+Variable boost mode (outer rim engagement):
+  μ_var2 = 0.70,  r_var2 = 5 mm
+  v_rim_base = μ_var2 × ω₀ × r_var2 = 0.70 × 700 × 0.005 = 2.450 m/s
+
+Outer rim wall constraint (harder boundary than inner groove):
+  η_rim_outer = 1.50  (outer rim wall eliminates lateral energy loss;
+                        harder constraint than groove → 50% speed boost vs free drive)
+  v_outer_rim_peak = v_rim_base × η_rim_outer = 2.450 × 1.50 = 3.675 m/s
+
+Overall acceleration factor (stable → outer rim peak):
+  v_outer_rim_peak / v_mode1 = 3.675 / 0.980 = 3.75×  (near-exponential speed jump)
+```
+
+(Same η_rim_outer=1.50 applies to Genesis Valtryek 6Vortex Reboot: Reboot rubber ring μ=0.50, r=7mm → v_rim_base=2.450 m/s → v_outer_rim_peak=3.675 m/s. Both beys reach identical outer rim peak speed via different driver mechanisms.)
+
+---
+
+### 2. First Contact — Outer Rim Flash Strike
+
+At peak outer rim speed, Valtryek crashes into the opponent's Beyblade:
+
+```
+m_eff = (m_VV × m_opp) / (m_VV + m_opp) = (0.044 × 0.040) / (0.044 + 0.040)
+      = 1.760×10⁻³ / 0.084 = 2.095×10⁻² kg
+
+e_Victory = 0.74  (Victory Valtryek God layer — hard wide attack contact)
+
+J_first = m_eff × (1 + e_Victory) × v_outer_rim_peak = 2.095×10⁻² × 1.74 × 3.675
+        = 2.095×10⁻² × 6.395 = 1.340×10⁻¹ N·s
+
+Δv_first = J_first / m_opp = 1.340×10⁻¹ / 0.040 = 3.350 m/s
+```
+
+---
+
+### 3. Lap-and-Return Multi-Hit Assault
+
+After the first contact, Valtryek laps the stadium while the opponent recovers — returning for a second collision before the opponent escapes the rim:
+
+```
+Follow-up lap (η_lap = 0.60):
+  η_lap: second hit delivers 60% of first — opponent is drifting inward, partial contact arc
+  J_lap = J_first × η_lap = 1.340×10⁻¹ × 0.60 = 8.040×10⁻² N·s
+
+J_total_UFL = J_first + J_lap = 1.340×10⁻¹ + 8.040×10⁻² = 2.144×10⁻¹ N·s
+Δv_opp_total = J_total_UFL / m_opp = 2.144×10⁻¹ / 0.040 = 5.360 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 44.0 g |
+| I_total | 3.361×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_var1 | 0.35 |
+| v_mode1 | 0.980 m/s |
+| μ_var2 | 0.70 |
+| r_var2 | 5 mm |
+| v_rim_base | 2.450 m/s |
+| η_rim_outer | 1.50 |
+| v_outer_rim_peak | 3.675 m/s |
+| speed factor | 3.75× |
+| e_Victory | 0.74 |
+| J_first | 1.340×10⁻¹ N·s |
+| Δv_first | 3.350 m/s |
+| η_lap | 0.60 |
+| J_lap | 8.040×10⁻² N·s |
+| J_total_UFL | 2.144×10⁻¹ N·s |
+| Δv_opp_total | 5.360 m/s |
+
+---
+
+## Case 2016 — SPECIAL: Ultra Flash Launch — Valt Aoi / Victory Valtryek Boost Variable
+
+**Blader:** Valt Aoi | **Beyblade:** Victory Valtryek Boost Variable | **Type:** attack
+
+### Description
+
+Ultra Flash Launch (真フラッシュシュート, Shin Furasshu Shūto — True Flash Shoot in Japan) is a Special Move used by Valt Aoi with Victory Valtryek Boost Variable and Genesis Valtryek 6Vortex Reboot (Burst God / Surge). The evolved version of the normal Flash Launch — this technique exploits Valtryek's Variable driver's unique performance on the stadium's outer rim to increase its speed exponentially (3.75× stable mode). The acceleration is so immediate that Valtryek crashes into the opponent's Beyblade and then laps the stadium while the opponent is recovering for another collision, effectively suspending them near the stadium's edge in a continuous assault loop. Can win via Ring-Out Finish or Burst Finish.
+
+### Stage — Outer Rim Variable Surge + Lap-and-Return Assault
+
+From Case 2015: v_outer_rim_peak=3.675 m/s, J_first=1.340×10⁻¹ N·s, Δv_first=3.350 m/s, η_lap=0.60, J_total_UFL=2.144×10⁻¹ N·s, Δv_opp_total=5.360 m/s.
+
+```
+Spin drain from multi-hit outer rim assault:
+  Δω = J_total_UFL × r_layer / I_total = 2.144×10⁻¹ × 0.032 / 3.361×10⁻⁵ = 204.2 rad/s
+  ω_remain = 700 − 204.2 = 495.8 rad/s  (70.8% retained)
+  (Two-hit outer rim assault is spin-expensive — attack speed tradeoff)
+  (After lap, Variable reverts to stable mode for spin preservation between contacts)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's spirit blazes into a column of golden white light — Victory Valtryek locks into the outer rim and vanishes. One moment the opponent's bey stands still; the next, it's been blasted from a direction no eye could follow. Before it can settle, Valtryek is already completing its lap, the flash of golden energy carving a streak around the entire stadium. A second catastrophic impact follows — and then, if the opponent hasn't been rung out or burst, a third. The blader and bey operate in one seamless loop of unstoppable speed.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek flash-drive spirit)
+[M] Δv_total = 5.360 × 8.0 = **42.88 m/s** (outer rim multi-lap ring-out / burst)
+
+> **Note:** Physical values describe Variable driver outer rim: μ_var2=0.70 r=5mm → v_rim_base=2.450 m/s → η_rim_outer=1.50 → v_outer_rim_peak=3.675 m/s (3.75× stable mode — described as "exponential"); J_first=1.340×10⁻¹ N·s Δv=3.350 m/s; η_lap=0.60 follow-up lap; J_total=2.144×10⁻¹ N·s; Δv_total=5.360 m/s. Genesis Valtryek 6Vortex Reboot achieves same outer rim peak via Reboot rubber ring (cross-ref Case 1991 v_rim_base=2.450 m/s same η). Evolved from Flash Launch (standard Variable stable-mode only). [M] values represent Valt's Valtryek flash-drive spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultraFlashLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Outer rim Variable η=1.50 v_peak=3.675m/s; J_first=1.340×10⁻¹; lap η=0.60; J_total=2.144×10⁻¹N·s; [M] 8.0×
+  const J_total_UFL = 0.2144;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_UFL * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek flash-drive spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst God/Surge-era beyblade using the Variable driver (stable→boost mode switch, r_boost ≥ 4 mm, μ_boost ≥ 0.60) or an equivalent rubber-ring driver (μ ≥ 0.45, r ≥ 6 mm) in a stadium with a raised outer rim lip (η_rim_outer ≥ 1.40) capable of triggering the mode switch. Standard game instances: Victory Valtryek Boost Variable and Genesis Valtryek 6Vortex Reboot (Valt Aoi, Burst God / Surge). Evolved form of Flash Launch; distinct from Ultimate Flash Launch (inner groove η=1.35) and Ultimate Flash V (Variable' mode switch without outer rim).
+
+---
+
+## Case 2017 — COMBO: Flash Rim — Victory Valtryek Boost Variable
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The first moveRight (→) sends Victory Valtryek toward the outer rim — the Variable driver shifts from stable to boost mode as the bey reaches the outer lip of the stadium. The second moveRight (→) drives a full outer rim arc at peak speed, building momentum along the rim wall. The attack (A) releases the contact strike at the end of the second arc:
+
+```
+First arc approach (→₁ — rim entry, Variable mode switch):
+  v_arc1 = v_outer_rim_peak × 0.70 = 3.675 × 0.70 = 2.573 m/s (70% rim peak: mode switch mid-arc)
+
+Second arc (→₂ — full rim speed, η_rim_outer in effect):
+  v_arc2 = v_outer_rim_peak × 0.88 = 3.675 × 0.88 = 3.234 m/s (88% of peak — combo efficiency)
+
+Contact strike (A):
+  v_combo_contact = v_arc2 = 3.234 m/s  (second arc exit speed)
+
+J_combo = m_eff × (1 + e_Victory) × v_combo_contact = 2.095×10⁻² × 1.74 × 3.234
+        = 2.095×10⁻² × 5.627 = 1.179×10⁻¹ N·s
+  (Single-hit only — no lap-return in combo; combo efficiency limits to one contact)
+```
+
+Variable boost mode outer rim rebound (η_var_rim = 0.10):
+
+```
+Δω = η_var_rim × J_combo × r_layer / I_total
+   = 0.10 × 1.179×10⁻¹ × 0.032 / 3.361×10⁻⁵
+   = 0.10 × 112.3
+   = +11.2 rad/s  → round to +11 rad/s
+```
+
+(η_var_rim=0.10: rim exit + Variable reversion to stable mode sends spin pulse to body; effective spinGain = +11 rad/s.) Outer rim Variable surge gives damageMultiplier **1.40×**. lockMs = 0 (outer rim speed too fast for dwell — ring-out oriented).
+
+**Parameters:**
+- spinGain: +11 rad/s (Variable rim rebound to stable mode)
+- damageMultiplier: 1.40 (outer rim Variable surge)
+- lockMs: 0 (ring-out speed, no dwell)
+
+### TypeScript
+
+```typescript
+function flashRimCombo(bey: Beyblade, target: Beyblade): void {
+  // Outer rim Variable double-arc: Δω ≈ +11 rad/s (η=0.10, v_contact=3.234m/s, J=1.179×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Outer rim Variable surge: 1.40× normal impulse
+  bey.damageMultiplier = 1.40;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.40, (dy / dist) * 0.40);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.40 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2018 — GIMMICK: Dragoon V2 — Extreme Sprint Wall-Launch + 270° Flanking Arc
+
+**Beyblade:** Dragoon V2 (Bakuten Shoot Beyblade V-Force plastic-gen)
+**Blader:** Tyson Granger | **Series:** Bakuten Shoot Beyblade V-Force
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Dragoon V2 | 1.0 | ≈0 |
+| AR | Upper Dragoon (4-blade wide attack ring) | 16.0 | 28.0 |
+| WD | Wide Survivor (wide-profile stamina disc) | 12.0 | 30.0 |
+| SG | Neo Right SG | 4.0 | 3.0 |
+| BB | Customize Grip Base (flat-type attack base) | 6.0 | 5.0 |
+| **Total** | | **39.0** | |
+
+(Bakuten Shoot V-Force plastic-gen 5-part system. Bit Chip excluded from I (r≈0). Upper Dragoon AR: 4-blade profile for attack momentum. Wide Survivor WD: wide stamina disc at r=30mm. Customize Grip Base: flat attack tip r=5mm — maximum orbital speed at cost of stability.)
+
+**I_total** = 16.0×10⁻³ × 0.028² + 12.0×10⁻³ × 0.030² + 4.0×10⁻³ × 0.003² + 6.0×10⁻³ × 0.005²
+           = 1.254×10⁻⁵ + 1.080×10⁻⁵ + 3.600×10⁻⁸ + 1.500×10⁻⁷
+           = **2.353×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen V-Force standard launch)
+L₀ = I × ω₀ = 2.353×10⁻⁵ × 500 = **1.177×10⁻² kg·m²/s**
+
+---
+
+### 1. Extreme Flat-Tip Sprint (Vanishing Phase)
+
+At BeySpirit peak, the Customize Grip Base flat tip transitions to maximum-friction contact — Dragoon V2 accelerates to a speed so extreme it appears to vanish from the opponent's sight:
+
+```
+Flat tip extreme sprint:
+  μ_vanish = 0.80  (maximum grip flat contact, BeySpirit-driven peak friction)
+  r_BB = 5 mm
+  v_sprint = μ_vanish × ω₀ × r_BB = 0.80 × 500 × 0.005 = 2.000 m/s
+
+Speed ratio vs. standard flat approach:
+  Standard: μ_flat = 0.45 → v_std = 0.45 × 500 × 0.005 = 1.125 m/s
+  Vanish sprint: v_sprint / v_std = 2.000 / 1.125 = 1.78×  (near-double: visually "vanishes")
+```
+
+---
+
+### 2. Wall-Launch into 270° Flanking Arc
+
+Dragoon V2 rides the stadium wall at sprint speed, launching into the air:
+
+```
+Wall-launch:
+  v_entry = v_sprint = 2.000 m/s
+  h_wall = 0.060 m  (60 mm — plastic-gen Beystadium wall height)
+
+  v_apex = √(v_entry² − 2g × h_wall) = √(2.000² − 2 × 9.81 × 0.060)
+          = √(4.000 − 1.177) = √2.823 = 1.680 m/s
+
+In-air flanking arc (270° trajectory around opponent):
+  Dragoon V2 traces a ¾-stadium arc through the air, landing behind the opponent
+  η_arc = 0.95  (wide in-air arc preserves 95% of launch speed; minimal air friction)
+
+  v_contact_base = v_entry = 2.000 m/s
+  (energy conservation: launch height = landing height → same speed; η_arc applies to path efficiency)
+```
+
+---
+
+### 3. Rear-Contact Strike (Appearing Behind the Opponent)
+
+Dragoon V2 lands behind the opponent's Beyblade. The rear approach means both beys are moving in the same direction — the opponent's orbital drift adds to the contact velocity:
+
+```
+Opponent orbital drift (same direction as flanking approach):
+  v_opp_drift = 0.300 m/s  (standard orbital drift — adds to relative contact speed)
+
+v_contact_rear = v_contact_base + v_opp_drift = 2.000 + 0.300 = 2.300 m/s
+(Rear attack: drift adds; frontal attack: drift subtracts. +0.300 m/s = flanking bonus)
+
+m_eff = (m_V2 × m_opp) / (m_V2 + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_V2 = 0.78  (Upper Dragoon AR — hard plastic attack ring, V-Force era)
+
+J_VA = m_eff × (1 + e_V2) × v_contact_rear = 1.975×10⁻² × 1.78 × 2.300
+     = 1.975×10⁻² × 4.094 = 8.086×10⁻² N·s
+
+Δv_opp = J_VA / m_opp = 8.086×10⁻² / 0.040 = 2.022 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 2.353×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| μ_vanish | 0.80 |
+| r_BB | 5 mm |
+| v_sprint | 2.000 m/s |
+| h_wall | 60 mm |
+| v_apex | 1.680 m/s |
+| η_arc | 0.95 |
+| v_opp_drift | 0.300 m/s |
+| v_contact_rear | 2.300 m/s |
+| e_V2 | 0.78 |
+| J_VA | 8.086×10⁻² N·s |
+| Δv_opp | 2.022 m/s |
+
+---
+
+## Case 2019 — SPECIAL: Vanishing Attack — Tyson Granger / Dragoon V2
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon V2 | **Type:** attack
+
+### Description
+
+Vanishing Attack is a Special Move used by Tyson Granger and Dragoon V2 (Bakuten Shoot Beyblade V-Force). Dragoon V2 moves at extreme speed — so fast it appears to vanish from sight — and reappears not in front of the opponent's Beyblade but directly behind it, striking with a powerful rear attack. The flanking approach means the opponent's own orbital drift adds to the contact velocity, amplifying the impact beyond what a frontal charge could achieve.
+
+### Stage — Extreme Sprint Wall-Launch + 270° Arc Rear Strike
+
+From Case 2018: v_sprint=2.000 m/s, h_wall=60mm, v_contact_rear=2.300 m/s, J_VA=8.086×10⁻² N·s, Δv_opp=2.022 m/s.
+
+```
+Spin drain from rear strike:
+  Δω = J_VA × r_AR / I_total = 8.086×10⁻² × 0.028 / 2.353×10⁻⁵ = 96.2 rad/s
+  ω_remain = 500 − 96.2 = 403.8 rad/s  (80.8% retained)
+  (Wide arc sprint drains significant spin; plastic-gen flat tip high friction cost)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tyson's Dragoon spirit ignites in a streak of blazing blue — Dragoon V2 blurs into the stadium wall so fast the air simply closes behind it. One heartbeat: Dragoon is on the left. The next: it is gone. The opponent braces for a frontal charge — but Dragoon V2 drops from the air directly behind them, a comet arriving from the blind spot, the full force of an extreme-sprint rear strike landing before any counter is possible.
+
+[M] factor = **8.0 ×** (Tyson Granger — original series protagonist, Dragoon vanishing drive spirit)
+[M] Δv = 2.022 × 8.0 = **16.18 m/s** (vanishing rear-strike ring-out)
+
+> **Note:** Physical values describe flat-tip extreme sprint μ=0.80 v_sprint=2.000 m/s (1.78× standard); wall-launch h=60mm; 270° in-air flanking arc η_arc=0.95; rear attack v_contact_rear=v_sprint+v_opp_drift=2.000+0.300=2.300 m/s; J_VA=8.086×10⁻² N·s; Δv=2.022 m/s. Rear-attack flanking bonus: +0.300 m/s vs frontal (opponent drift adds rather than subtracts). [M] values represent Tyson's Dragoon vanishing-speed spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function vanishingAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Extreme sprint μ=0.80 wall-launch h=60mm; 270° arc rear strike; J_VA=8.086×10⁻²N·s; [M] 8.0×
+  const J_VA = 0.08086;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Rear strike: apply force from behind target (invert approach direction for flanking)
+  const amplified = J_VA * 8.0; // [M] BeySpirit 8.0× (Tyson Dragoon vanishing spirit)
+  applyForce(target.id, -(dx / dist) * amplified, -(dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-gen beyblade using a flat-type attack Blade Base (r_BB ≥ 4 mm, μ_peak ≥ 0.70) capable of extreme-friction sprint (v_sprint ≥ 1.80 m/s) in a standard plastic-gen Beystadium with a wall height ≥ 50 mm sufficient for a flanking in-air arc. The rear-attack flanking bonus (+v_opp_drift) is mechanic-specific to the 270° approach trajectory. Standard game instance: Dragoon V2 (Tyson Granger, Bakuten Shoot V-Force).
+
+---
+
+## Case 2020 — COMBO: Phantom Flank — Dragoon V2
+
+**Sequence:** E ← A (dodge · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The dodge (E) is the "vanish" phase — Dragoon V2 breaks contact and accelerates into its extreme sprint arc, disappearing from the opponent's visual field. The moveLeft (←) drives the wide leftward flanking arc, completing the 180° repositioning from front to rear. The attack (A) fires the rear strike at the endpoint of the flank arc:
+
+```
+Vanish sprint in combo (E phase, 80% efficiency):
+  v_sprint_combo = v_sprint × 0.80 = 2.000 × 0.80 = 1.600 m/s
+
+Flank arc in combo (← phase, 90% arc efficiency):
+  v_flank_combo = v_sprint_combo × 0.90 = 1.600 × 0.90 = 1.440 m/s
+
+Rear strike (A phase — drift bonus at 80% of full):
+  v_contact_rear_combo = v_flank_combo + v_opp_drift × 0.80 = 1.440 + 0.300 × 0.80 = 1.440 + 0.240 = 1.680 m/s
+
+J_combo = m_eff × (1 + e_V2) × v_contact_rear_combo = 1.975×10⁻² × 1.78 × 1.680
+        = 1.975×10⁻² × 2.990 = 5.906×10⁻² N·s
+```
+
+Flat-tip sprint rebound spin recovery (η_sprint = 0.12):
+
+```
+Δω = η_sprint × J_combo × r_AR / I_total
+   = 0.12 × 5.906×10⁻² × 0.028 / 2.353×10⁻⁵
+   = 0.12 × 70.28
+   = +8.43 rad/s  → round to +8 rad/s
+```
+
+(η_sprint=0.12: extreme sprint reversion sends small spin pulse to AR after flank contact; effective spinGain = +8 rad/s.) Phantom flank rear strike gives damageMultiplier **1.30×**. lockMs = 0 (rear attack — speed-through, no dwell).
+
+**Parameters:**
+- spinGain: +8 rad/s (sprint arc reversion spin recovery)
+- damageMultiplier: 1.30 (rear flanking strike)
+- lockMs: 0 (speed-through rear contact)
+
+### TypeScript
+
+```typescript
+function phantomFlankCombo(bey: Beyblade, target: Beyblade): void {
+  // Vanish sprint flank: Δω ≈ +8 rad/s (η=0.12, v_contact=1.680m/s, J=5.906×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Rear flanking strike: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Apply from behind target
+  applyForce(target.id, -(dx / dist) * 0.30, -(dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2021 — GIMMICK: Venus — Temptation Resonance Field + Bit-Beast Venus Full Manifestation
+
+**Beyblade:** Venus (Bakuten Shoot Beyblade G-Revolution plastic-gen)
+**Blader:** Ming-Ming | **Series:** Bakuten Shoot Beyblade G-Revolution (Episode 43)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Venus | 1.0 | ≈0 |
+| AR | Venus Bloom (crescent/bloom attack ring, 4-arc profile) | 14.0 | 26.0 |
+| WD | Round Heavy (balanced-stamina weight disc) | 11.0 | 28.0 |
+| SG | Standard Right SG | 4.0 | 3.0 |
+| BB | Venus Sharp Base (sharp-tip precision attack base) | 5.0 | 4.0 |
+| **Total** | | **35.0** | |
+
+(Bakuten Shoot G-Revolution plastic-gen 5-part system. Bit Chip excluded from I (r≈0). Venus Bloom AR: crescent/bloom arc profile at r=26mm — smooth arcs for clean contact rather than jagged smash. Round Heavy WD: wide stamina disc at r=28mm for stable spin duration. Venus Sharp Base: precision attack sharp tip r=4mm μ=0.25 — low orbital drive preserving spin; the Bit-Beast Venus provides the attack force rather than the tip. 35.0 g estimated, BEGA team custom assembly.)
+
+**I_total** = 14.0×10⁻³ × 0.026² + 11.0×10⁻³ × 0.028² + 4.0×10⁻³ × 0.003² + 5.0×10⁻³ × 0.004²
+           = 9.464×10⁻⁶ + 8.624×10⁻⁶ + 3.600×10⁻⁸ + 8.000×10⁻⁸
+           = **1.820×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen G-Revolution standard launch)
+L₀ = I × ω₀ = 1.820×10⁻⁵ × 500 = **9.100×10⁻³ kg·m²/s**
+
+---
+
+### 1. Temptation Resonance Field
+
+Venus Temptation opens with a BeySpirit environmental transformation — Ming-Ming's idol spirit reshapes the surroundings into her "happy, lovely world." Physically, this is modeled as a sustained vocal resonance field (Ming-Ming is a professional singer) that excites the opponent bey's precession at a forcing frequency close to its natural wobble:
+
+```
+Precession destabilization:
+  Forcing frequency (Ming-Ming's spirit song): f_tempt = 440 Hz (musical A — idol resonance pitch)
+  At ω₀ = 500 rad/s: natural precession ≈ 2.5–8 Hz (well below audio; no direct resonance)
+  Mechanism: BeySpirit environmental distortion suppresses the opponent's gyroscopic control,
+  reducing burst resistance and increasing restitution compliance:
+
+  e_tempt = 0.06  (temptation-field restitution boost: opponent's burst compliance +6%)
+  (Physical basis: stadium air-pressure field from idol spirit disrupts opponent's
+  precession damping, making deflection less controlled — contact energy transfer improves)
+```
+
+---
+
+### 2. Bit-Beast Venus Full Manifestation
+
+Venus's Bit-Beast manifests fully — a radiant bloom of divine energy charges directly at the opponent, amplifying the contact force far beyond what the sharp tip alone could provide:
+
+```
+Base guided approach (Ming-Ming precision-launches Venus directly at opponent):
+  μ_sharp = 0.25,  r_BB = 4 mm
+  v_tip = μ_sharp × ω₀ × r_BB = 0.25 × 500 × 0.004 = 0.500 m/s
+  v_guided = 0.900 m/s  (BEGA-tier precision guidance — direct aimed approach)
+  v_contact_base = v_tip + v_guided = 0.500 + 0.900 = 1.400 m/s
+
+Bit-Beast Venus full manifestation amplification:
+  η_Venus_BB = 1.45  (45% force boost: Bit-Beast full energy release)
+  v_contact_Venus = v_contact_base × η_Venus_BB = 1.400 × 1.45 = 2.030 m/s
+
+Temptation-enhanced restitution:
+  e_base = 0.72  (Venus Bloom AR — smooth arc contact, plastic-gen G-Rev)
+  e_eff = e_base + e_tempt = 0.72 + 0.06 = 0.78
+
+m_eff = (m_V × m_opp) / (m_V + m_opp) = (0.035 × 0.040) / (0.035 + 0.040)
+      = 1.400×10⁻³ / 0.075 = 1.867×10⁻² kg
+
+J_VT = m_eff × (1 + e_eff) × v_contact_Venus = 1.867×10⁻² × 1.78 × 2.030
+     = 1.867×10⁻² × 3.613 = 6.746×10⁻² N·s
+
+Δv_opp = J_VT / m_opp = 6.746×10⁻² / 0.040 = 1.687 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 35.0 g |
+| I_total | 1.820×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| e_base | 0.72 |
+| e_tempt | 0.06 |
+| e_eff | 0.78 |
+| v_contact_base | 1.400 m/s |
+| η_Venus_BB | 1.45 |
+| v_contact_Venus | 2.030 m/s |
+| J_VT | 6.746×10⁻² N·s |
+| Δv_opp | 1.687 m/s |
+
+---
+
+## Case 2022 — SPECIAL: Venus Temptation — Ming-Ming / Venus
+
+**Blader:** Ming-Ming | **Beyblade:** Venus | **Type:** attack
+
+### Description
+
+Venus Temptation is a Special Move used by Ming-Ming and Venus (Bakuten Shoot Beyblade G-Revolution, Episode 43 — "Sing Ming-Ming Sing!"). First used against Daichi and his Strata Dragoon in battle. When Ming-Ming sets out on this move, her surroundings change into a happy, lovely world that suits her personality — then the Bit-Beast of Venus appears and attacks with full force. Daichi could not withstand the move and suffered a fatal defeat.
+
+### Stage — Temptation Resonance Field + Venus Bit-Beast Full-Force Charge
+
+From Case 2021: e_tempt=0.06, e_eff=0.78, v_contact_base=1.400 m/s, η_Venus_BB=1.45, v_contact_Venus=2.030 m/s, J_VT=6.746×10⁻² N·s, Δv_opp=1.687 m/s.
+
+```
+Spin drain from Bit-Beast full manifestation contact:
+  Δω = J_VT × r_AR / I_total = 6.746×10⁻² × 0.026 / 1.820×10⁻⁵ = 96.4 rad/s
+  ω_remain = 500 − 96.4 = 403.6 rad/s  (80.7% retained)
+  (Venus sharp base conserves spin outside the special — drain only at BB manifestation contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ming-Ming's voice rises — the stadium transforms in an instant: cherry blossoms, golden light, and a soft radiance fill the arena as her idol spirit erupts. Venus materializes: a luminous divine form of pure grace and overwhelming power. Daichi watches in stunned disbelief as the lovely world closes around him, and Venus crashes into Strata Dragoon with a force that no spin, no defense, and no blader spirit can answer. The "fatal defeat" is total.
+
+[M] factor = **7.5 ×** (Ming-Ming — BEGA antagonist, Venus idol divine spirit; top-tier G-Revolution blader)
+[M] Δv = 1.687 × 7.5 = **12.65 m/s** (temptation Bit-Beast ring-out / burst)
+
+> **Note:** Physical values describe temptation resonance field e_tempt=0.06 (opponent burst compliance boost); Venus Bit-Beast η_BB=1.45 v_contact_Venus=2.030 m/s from v_contact_base=1.400 m/s; e_eff=0.78; J_VT=6.746×10⁻² N·s; Δv=1.687 m/s. Sharp-base Venus relies on Bit-Beast force rather than tip orbital speed. Used to defeat Daichi/Strata Dragoon in Episode 43. [M] values represent Ming-Ming's Venus idol divine spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function venusTemptationSpecial(bey: Beyblade, target: Beyblade): void {
+  // Temptation field e_tempt=0.06; Venus BB η=1.45 v=2.030m/s; J_VT=6.746×10⁻²N·s; [M] 7.5×
+  const J_VT = 0.06746;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_VT * 7.5; // [M] BeySpirit 7.5× (Ming-Ming Venus idol divine spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-gen G-Revolution or V-Force era beyblade whose Bit-Beast can fully manifest with a force amplification η_BB ≥ 1.30, combined with a precision or stamina-type Blade Base (sharp or semi-flat, r ≤ 5 mm) where orbital drive is low and the Bit-Beast provides the primary attack force. The temptation field effect (e_tempt ≥ 0.04) requires a BeySpirit environmental resonance ability. Standard game instance: Venus (Ming-Ming, Bakuten Shoot G-Revolution). First used in Episode 43 against Daichi/Strata Dragoon.
+
+---
+
+## Case 2023 — COMBO: Lovely Strike — Venus
+
+**Sequence:** ↓ K A (moveDown · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ming-Ming
+
+### Physics Justification
+
+The moveDown (↓) pulls Venus back and inward — the sharp base tip traces a precise low-orbit arc, beginning the temptation field build-up as Ming-Ming's spirit rises. The defense (K) holds position — the "lovely world" manifests around the opponent, the temptation resonance mesmerizing them in place for a split-second. The attack (A) releases Venus directly at the distracted opponent with partial Bit-Beast engagement:
+
+```
+Temptation hold phase (K):
+  Partial temptation field: e_tempt_combo = 0.03 (half effect in combo)
+  e_combo_eff = e_base + e_tempt_combo = 0.72 + 0.03 = 0.75 (no full temptation in combo)
+
+Bit-Beast partial engagement (A, 80% of full BB power):
+  v_combo_contact = v_contact_Venus × 0.80 = 2.030 × 0.80 = 1.624 m/s
+
+J_combo = m_eff × (1 + e_combo_eff) × v_combo_contact = 1.867×10⁻² × 1.75 × 1.624
+        = 1.867×10⁻² × 2.842 = 5.307×10⁻² N·s
+```
+
+Venus Bit-Beast resonance spin recovery (η_BB_rebound = 0.13):
+
+```
+Δω = η_BB_rebound × J_combo × r_AR / I_total
+   = 0.13 × 5.307×10⁻² × 0.026 / 1.820×10⁻⁵
+   = 0.13 × 75.86
+   = +9.86 rad/s  → round to +10 rad/s
+```
+
+(η_BB_rebound=0.13: Bit-Beast partial manifestation returns residual spin energy to Venus AR after contact; effective spinGain = +10 rad/s.) Lovely world mesmerize gives damageMultiplier **1.30×**. lockMs = 150 (temptation mesmerize dwell — opponent briefly held in Venus's lovely world).
+
+**Parameters:**
+- spinGain: +10 rad/s (Bit-Beast resonance spin recovery)
+- damageMultiplier: 1.30 (temptation + Bit-Beast strike)
+- lockMs: 150 (lovely world mesmerize dwell)
+
+### TypeScript
+
+```typescript
+function lovelyStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Temptation partial + BB 80%: Δω ≈ +10 rad/s (η=0.13, v_contact=1.624m/s, J=5.307×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Lovely world mesmerize strike: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 2024 — GIMMICK: Poison Serpent SW145SD — SW145 Pendulum Energy Storage + Dark Power Rise-Strike
+
+**Beyblade:** Poison Serpent SW145SD (Metal Fight Beyblade / Metal Fusion plastic-metal hybrid)
+**Blader:** Reiji Mizuchi | **Series:** Metal Fight Beyblade (Metal Fusion)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Poison | 1.5 | ≈0 |
+| Clear Wheel | Serpent (sinuous dual-fang profile) | 3.5 | 33.0 |
+| Metal Wheel | Poison (compact poison-tipped oval wheel) | 19.0 | 31.0 |
+| Spin Track | SW145 (Swing Track — oscillating pendulum arms) | 7.0 | 22.0 |
+| Performance Tip | SD (Semi-Defense — semi-flat stamina tip) | 2.5 | 4.0 |
+| **Total** | | **33.5** | |
+
+(MFB 5-part system. Face excluded from I (r≈0). Poison Metal Wheel: compact oval profile at r=31mm — delivers focused point-contact strikes ideal for burst-type attack patterns. Serpent Clear Wheel: dual-fang sinuous profile at r=33mm amplifies rotational contact force at the outermost point. SW145 Swing Track: oscillating pendulum arm track at r=22mm — the two swing arms store and release kinetic energy via controlled oscillation, providing a vertical energy pulse that launches the Bit-Beast rise pattern. SD tip: r=4mm μ=0.40 semi-flat — moderate friction for controlled approach, sufficient torque for Dark Move delivery. 33.5 g estimated.)
+
+**I_total** = 3.5×10⁻³ × 0.033² + 19.0×10⁻³ × 0.031² + 7.0×10⁻³ × 0.022² + 2.5×10⁻³ × 0.004²
+           = 3.812×10⁻⁶ + 1.825×10⁻⁵ + 3.388×10⁻⁶ + 4.000×10⁻⁸
+           = **2.545×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.545×10⁻⁵ × 580 = **1.476×10⁻² kg·m²/s**
+
+---
+
+### 1. SW145 Pendulum Energy Storage
+
+The SW145 swing arms oscillate during normal spin, storing kinetic energy as controlled pendulum motion. When Reiji channels Dark Power, the oscillation synchronizes and the arms lock at maximum extension — releasing the stored energy as a vertical impulsive force:
+
+```
+SW145 pendulum energy storage:
+  Swing arm oscillation amplitude: θ_max = 15° (maximum swing arm deflection)
+  Effective pendulum radius: r_pend = 22 mm = 0.022 m
+  Stored energy per arm (two arms): E_pend = 2 × (0.5 × m_arm × (ω₀ × r_pend)² )
+    m_arm ≈ 2.5 g each (SW145 total 7 g: 2 g shaft + 2×2.5 g arms)
+  E_pend = 2 × (0.5 × 2.5×10⁻³ × (580 × 0.022)²)
+         = 2 × (0.5 × 2.5×10⁻³ × 162.76)
+         = 2 × 0.2035 = 0.4069 J
+
+Pendulum lock-release velocity (upward impulsive component):
+  v_rise = √(2 × E_pend / m_total) = √(2 × 0.4069 / 0.0335)
+          = √(24.295) = 4.929 m/s
+  (SW145 lock-release converts pendulum KE into vertical rise; Serpent Bit-Beast rides this lift)
+```
+
+---
+
+### 2. Dark Power Amplification — Bit-Beast Serpent Vertical Rise
+
+Reiji's Dark Power amplifies the SW145 release with Dark Spin Technique: the Bit-Beast Serpent rises vertically and strikes down from above:
+
+```
+Dark Power amplification factor:
+  η_dark = 1.35  (Dark Move dark spin amplification: 35% force boost above pendulum release)
+  (Physical basis: Dark Power BeySpirit channels additional rotational energy from Reiji's
+  malevolent spirit force, increasing the effective launch impulse beyond what SW145 stores alone)
+
+Rise phase velocity (Dark-amplified):
+  v_rise_dark = v_rise × η_dark = 4.929 × 1.35 = 6.654 m/s
+
+Strike phase (Bit-Beast descends — gravitational acceleration over rise height):
+  h_rise = v_rise_dark² / (2g) = 6.654² / (2 × 9.81) = 44.276 / 19.62 = 2.257 m
+  (Dark Power rises Serpent above the stadium boundary — spirit-height, not physical)
+  v_strike = v_rise_dark  (energy conservation: same speed at return)
+           = 6.654 m/s  (Serpent crashes down at full rise speed)
+```
+
+---
+
+### 3. Contact Strike — Opponent Bey Explodes
+
+```
+m_eff = (m_PS × m_opp) / (m_PS + m_opp) = (0.0335 × 0.040) / (0.0335 + 0.040)
+      = 1.340×10⁻³ / 0.0735 = 1.823×10⁻² kg
+
+e_dark = 0.90  (Dark Move contact: extreme energy transfer; near-perfect burst restitution
+               modeling "opponent bey explodes in mid-air and falls in pieces")
+
+J_VS = m_eff × (1 + e_dark) × v_strike = 1.823×10⁻² × 1.90 × 6.654
+     = 1.823×10⁻² × 12.643 = 2.305×10⁻¹ N·s
+
+Δv_opp = J_VS / m_opp = 2.305×10⁻¹ / 0.040 = 5.762 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 33.5 g |
+| I_total | 2.545×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| E_pend | 0.4069 J |
+| v_rise | 4.929 m/s |
+| η_dark | 1.35 |
+| v_rise_dark | 6.654 m/s |
+| v_strike | 6.654 m/s |
+| e_dark | 0.90 |
+| J_VS | 2.305×10⁻¹ N·s |
+| Δv_opp | 5.762 m/s |
+
+---
+
+## Case 2025 — SPECIAL: Venom Strike — Reiji Mizuchi / Poison Serpent SW145SD
+
+**Blader:** Reiji Mizuchi | **Beyblade:** Poison Serpent SW145SD | **Type:** attack
+
+### Description
+
+Venom Strike (ベノムジェノサイド — Venom Genocide in Japan) is a Special Move used by Reiji Mizuchi and Poison Serpent SW145SD (Metal Fight Beyblade / Metal Fusion). Like Ryuga's special moves when under the Dark Power, it is referred to as a Dark Move or Dark Spin Technique. The Bit-Beast Serpent rises from the bey and attacks the opponent. The opposing bey that is attacked with this move explodes in mid-air and falls, ending up in multiple pieces. First used against Hyoma and his Rock Aries, chipping off Aries and damaging it in the process. This is the second Dark Move introduced in the anime and Reiji's only Dark Move.
+
+### Stage — SW145 Pendulum Lock-Release + Dark Power Serpent Rise-Strike
+
+From Case 2024: E_pend=0.4069 J, v_rise=4.929 m/s, η_dark=1.35, v_rise_dark=6.654 m/s, e_dark=0.90, J_VS=2.305×10⁻¹ N·s, Δv_opp=5.762 m/s.
+
+```
+Spin drain from Dark Move strike:
+  Δω = J_VS × r_MW / I_total = 2.305×10⁻¹ × 0.031 / 2.545×10⁻⁵ = 280.8 rad/s
+  ω_remain = 580 − 280.8 = 299.2 rad/s  (51.6% retained)
+  (Dark Move extreme energy transfer; SD semi-flat tip provides controlled recovery orbit post-strike)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Reiji's eyes flash cold and predatory — Poison Serpent accelerates in a tight dark spiral, the SW145 swing arms snapping wide. Then everything pauses: the Serpent Bit-Beast tears free of the Beyblade, rising in a coil of dark energy. For one heartbeat it hangs in the air above Hyoma's Rock Aries — and then it falls, a venom-black strike from directly above. Aries shatters in mid-air, its parts raining across the stadium in pieces. The Dark Move leaves nothing standing.
+
+[M] factor = **7.0 ×** (Reiji Mizuchi — MFB major antagonist, single Dark Move user; tier below Ryuga)
+[M] Δv = 5.762 × 7.0 = **40.33 m/s** (Dark Move burst-shatter ring-out)
+
+> **Note:** Physical values describe SW145 pendulum energy storage E_pend=0.4069 J; Dark Power η_dark=1.35; v_rise_dark=6.654 m/s (=v_strike); e_dark=0.90 (near-perfect burst restitution modeling mid-air explosion); J_VS=2.305×10⁻¹ N·s; Δv=5.762 m/s; spin drain 280.8 rad/s (51.6% retained). Dark Move classification: same family as Dragon Emperor Soaring Bite Strike. [M] values represent Reiji's Dark Power Serpent spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function venomStrikeSpecial(bey: Beyblade, target: Beyblade): void {
+  // SW145 pendulum E=0.4069J; η_dark=1.35; v_strike=6.654m/s; e=0.90; J_VS=2.305×10⁻¹N·s; [M] 7.0×
+  const J_VS = 0.2305;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_VS * 7.0; // [M] BeySpirit 7.0× (Reiji Dark Power Serpent)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using the SW145 Swing Track (oscillating pendulum arm energy storage, r_pend ≥ 20 mm) combined with a Metal Wheel capable of focused burst-type contact (oval or compact profile, e_dark ≥ 0.85 at Dark Power activation), and a Blader with Dark Power or equivalent BeySpirit amplification (η_dark ≥ 1.25). The "mid-air explosion" effect (near-perfect burst restitution) is exclusive to Dark Move classification. Standard game instance: Poison Serpent SW145SD (Reiji Mizuchi, Metal Fight Beyblade). First used in Metal Fusion against Hyoma/Rock Aries.
+
+---
+
+## Case 2026 — COMBO: Venom Coil — Poison Serpent SW145SD
+
+**Sequence:** ↓ E A (moveDown · dodge · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Reiji Mizuchi
+
+### Physics Justification
+
+The moveDown (↓) drives Serpent into a tight low orbit, the SW145 swing arms beginning their energy build-up oscillation cycle. The dodge (E) is the "dark spiral" phase — Serpent breaks into a sudden evasive coil that primes the SW145 pendulum lock: arms reach maximum extension mid-dodge. The attack (A) fires at the moment the pendulum releases — a coiled strike delivered at partial Dark Power (combo tier, not full Dark Move):
+
+```
+Partial pendulum release in combo (60% efficiency vs full special):
+  E_pend_combo = E_pend × 0.60 = 0.4069 × 0.60 = 0.2441 J
+  v_rise_combo = √(2 × E_pend_combo / m_total) = √(2 × 0.2441 / 0.0335)
+               = √(14.572) = 3.817 m/s
+
+Partial Dark Power in combo (no full Dark Move — η_dark_combo = 1.15):
+  v_strike_combo = v_rise_combo × η_dark_combo = 3.817 × 1.15 = 4.390 m/s
+
+J_combo = m_eff × (1 + e_combo) × v_strike_combo
+  e_combo = 0.76  (combo partial burst — less than Dark Move e_dark=0.90)
+  J_combo = 1.823×10⁻² × 1.76 × 4.390
+          = 1.823×10⁻² × 7.726 = 1.408×10⁻¹ N·s
+```
+
+SW145 swing arm rebound spin recovery (η_SW_rebound = 0.10):
+
+```
+Δω = η_SW_rebound × J_combo × r_MW / I_total
+   = 0.10 × 1.408×10⁻¹ × 0.031 / 2.545×10⁻⁵
+   = 0.10 × 171.5
+   = +17.15 rad/s  → round to +17 rad/s
+```
+
+(η_SW_rebound=0.10: SW145 arms rebound after partial pendulum release, returning residual energy to Metal Wheel spin; effective spinGain = +17 rad/s.) Venom coil strike gives damageMultiplier **1.35×** (partial Dark Power burst). lockMs = 80 (dark coil dwell — brief dark spiral lock before release).
+
+**Parameters:**
+- spinGain: +17 rad/s (SW145 pendulum rebound spin recovery)
+- damageMultiplier: 1.35 (partial Dark Power coil strike)
+- lockMs: 80 (dark spiral coil dwell)
+
+### TypeScript
+
+```typescript
+function venomCoilCombo(bey: Beyblade, target: Beyblade): void {
+  // SW145 partial pendulum: Δω ≈ +17 rad/s (η=0.10, v_strike=4.390m/s, J=1.408×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 17);
+  // Partial Dark Power coil: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 80 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +17 rad/s (partial) | ✓ |
+
+*Cases continue from Case 2027 as further franchise moves are provided.*
