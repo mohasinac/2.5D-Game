@@ -19,6 +19,7 @@ import { isLocalRoom, COLYSEUS_ROOM_NAME, type GameRoomConfig } from '../types/g
 import { LocalGameSimulation, type SimSnapshot } from '../game/simulation/LocalGameSimulation';
 
 import { GameShell } from '../components/game/GameShell';
+import { PauseMenu } from '../components/game/PauseMenu';
 import { LoadingProgress } from '../components/LoadingProgress';
 import { Countdown } from '../components/game/Countdown';
 import { LaunchPhase } from '../components/game/LaunchPhase';
@@ -96,6 +97,12 @@ export function GameRoomPage() {
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
   const [debuffStartedAt, setDebuffStartedAt] = useState<number | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
+  const [lostConnection, setLostConnection] = useState(false);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showPostMatch, setShowPostMatch] = useState(false);
+  const postMatchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const bitBeastCinematic = useBitBeastCinematic(config?.beybladeId ?? null);
   const { byId: comboMap } = useCombos();
@@ -165,7 +172,7 @@ export function GameRoomPage() {
 
   // ─── Renderer ─────────────────────────────────────────────────────────────
   const rendererMode = config?.is25D ? '2.5d' : '2d';
-  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset } = usePixiRenderer(containerRef, rendererMode as '2d' | '2.5d');
+  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset, triggerScreenShake, triggerHitFlash } = usePixiRenderer(containerRef, rendererMode as '2d' | '2.5d');
 
   useEffect(() => {
     if (myBeyblade?.id) setControlledBeyblade(myBeyblade.id);
@@ -203,7 +210,18 @@ export function GameRoomPage() {
   // ─── Start local simulation ───────────────────────────────────────────────
   useEffect(() => {
     if (!local || !config) return;
-    const sim = new LocalGameSimulation(config, snap => setSimSnap(snap));
+    const sim = new LocalGameSimulation(config, snap => setSimSnap(snap), (event) => {
+      if (event.type === 'collision') {
+        const mag = Math.min(8, 2 + event.relativeSpeed * 0.5);
+        triggerScreenShake(mag, 200);
+        triggerHitFlash(event.beyId);
+        triggerHitFlash(event.otherBeyId);
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(30);
+      } else if (event.type === 'burst') {
+        triggerScreenShake(8, 300);
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(120);
+      }
+    });
     simRef.current = sim;
     sim.start();
     return () => sim.stop();
@@ -227,8 +245,43 @@ export function GameRoomPage() {
   useEffect(() => {
     if (gameState.status === 'finished' || gameState.status === 'series-finished') {
       if (gameState.winner) setVictoryVisible(true);
+      setShowPostMatch(true);
+      postMatchTimerRef.current = setTimeout(() => navigate('/game/battle', { replace: true }), 30_000);
     }
-  }, [gameState.status, gameState.winner]);
+    return () => { if (postMatchTimerRef.current) clearTimeout(postMatchTimerRef.current); };
+  }, [gameState.status, gameState.winner, navigate]);
+
+  // ─── Disconnect / reconnect (server rooms) ──────────────────────────────
+  useEffect(() => {
+    if (local) return;
+    const state = colyseus.connectionState;
+    if (state === 'disconnected' && gameState.status === 'in-progress') {
+      setReconnecting(true);
+      reconnectTimerRef.current = setTimeout(() => {
+        setReconnecting(false);
+        setLostConnection(true);
+      }, 30_000);
+    } else if (state === 'connected') {
+      setReconnecting(false);
+      setLostConnection(false);
+      if (reconnectTimerRef.current) { clearTimeout(reconnectTimerRef.current); reconnectTimerRef.current = null; }
+    }
+  }, [local, colyseus.connectionState, gameState.status]);
+
+  // ─── Keyboard pause toggle (Escape) ──────────────────────────────────────
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPaused(prev => {
+          const next = !prev;
+          if (local) { if (next) simRef.current?.pause(); else simRef.current?.resume(); }
+          return next;
+        });
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [local]);
 
   const handleExit = useCallback(() => {
     if (!local) colyseus.room?.leave();
@@ -571,6 +624,66 @@ export function GameRoomPage() {
         )}
 
       </div>
+
+      {/* Pause menu */}
+      {paused && (
+        <PauseMenu
+          isLocal={local}
+          onResume={() => { setPaused(false); if (local) simRef.current?.resume(); }}
+          onForfeit={() => { if (!local) colyseus.room?.leave(); simRef.current?.stop(); }}
+        />
+      )}
+
+      {/* Reconnecting toast */}
+      {reconnecting && !lostConnection && (
+        <div style={{ position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 600, background: 'rgba(20,20,40,0.95)', border: '1px solid rgba(255,200,0,0.4)', borderRadius: 10, padding: '10px 20px', color: '#ffcc00', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', border: '2px solid #ffcc00', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+          Connection lost — reconnecting…
+        </div>
+      )}
+
+      {/* Lost connection overlay */}
+      {lostConnection && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+          <div style={{ fontSize: 32 }}>📡</div>
+          <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', textTransform: 'uppercase' }}>Match Ended</div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>Connection lost</div>
+          <button onClick={() => navigate('/game/battle', { replace: true })} style={{ padding: '12px 32px', background: 'rgba(0,229,255,0.15)', border: '1px solid rgba(0,229,255,0.4)', borderRadius: 10, color: '#00e5ff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+            Back to Lobby
+          </button>
+        </div>
+      )}
+
+      {/* Post-match summary */}
+      {showPostMatch && (gameState.status === 'finished' || gameState.status === 'series-finished') && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 650, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ background: '#111120', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 18, padding: 28, width: '100%', maxWidth: 420 }}>
+            <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 900, color: '#fff', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              {winnerName ? `${winnerName} Wins!` : 'Match Over'}
+            </div>
+            <div style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20 }}>Returning to lobby in 30s…</div>
+
+            {/* Per-player stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: beyblades.size === 1 ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 20 }}>
+              {[...beyblades.values()].slice(0, 2).map(b => (
+                <div key={b.id} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '12px 14px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: b.id === winnerBey?.id ? '#44ff88' : '#fff', marginBottom: 6, textTransform: 'uppercase' }}>{b.username}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8 }}>
+                    <div>Damage: {Math.round(b.damageDealt ?? 0)}</div>
+                    <div>Collisions: {b.collisions ?? 0}</div>
+                    <div>Spin end: {b.spin > 0 ? `${Math.round((b.spin / b.maxSpin) * 100)}%` : '0% (out)'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <button onClick={() => { if (postMatchTimerRef.current) clearTimeout(postMatchTimerRef.current); setShowPostMatch(false); }} style={{ padding: '10px 0', background: 'rgba(0,229,255,0.12)', border: '1px solid rgba(0,229,255,0.3)', borderRadius: 10, color: '#00e5ff', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Rematch</button>
+              <button onClick={() => { if (postMatchTimerRef.current) clearTimeout(postMatchTimerRef.current); navigate('/game/battle', { replace: true }); }} style={{ padding: '10px 0', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#fff', fontSize: 14, cursor: 'pointer' }}>Back to Modes</button>
+            </div>
+          </div>
+        </div>
+      )}
     </GameShell>
   );
 }

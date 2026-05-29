@@ -2147,6 +2147,45 @@ export class BeybladeGameRenderer {
     void data.accessoryId;
   }
 
+  /**
+   * Briefly jitters arenaTiltInner ±magnitude px then restores it — screen shake
+   * that does not warp sprite positions relative to each other.
+   * durationMs defaults to 200ms (plan spec).
+   */
+  public triggerScreenShake(magnitude = 4, durationMs = 200): void {
+    if (!this.arenaTiltInner) return;
+    const origX = this.arenaTiltInner.x;
+    const origY = this.arenaTiltInner.y;
+    const startTime = performance.now();
+    const shake = () => {
+      const elapsed = performance.now() - startTime;
+      if (elapsed >= durationMs) {
+        this.arenaTiltInner.x = origX;
+        this.arenaTiltInner.y = origY;
+        return;
+      }
+      const decay = 1 - elapsed / durationMs;
+      this.arenaTiltInner.x = origX + (Math.random() - 0.5) * magnitude * 2 * decay;
+      this.arenaTiltInner.y = origY + (Math.random() - 0.5) * magnitude * 2 * decay;
+      requestAnimationFrame(shake);
+    };
+    requestAnimationFrame(shake);
+  }
+
+  /**
+   * Flashes a bey sprite white for 80ms — gives clear visual hit feedback.
+   */
+  public triggerHitFlash(beyId: string): void {
+    const sprite = this.beybladeSprites.get(beyId);
+    if (!sprite) return;
+    const origTint = (sprite.tint as unknown as number) ?? 0xffffff;
+    sprite.tint = 0xffffff as unknown as PIXI.ColorSource;
+    setTimeout(() => {
+      const s = this.beybladeSprites.get(beyId);
+      if (s) s.tint = origTint as unknown as PIXI.ColorSource;
+    }, 80);
+  }
+
   private renderMeteorLandingZone(): void {
     if (!this.meteorLandingZone) return;
 

@@ -137,6 +137,14 @@ export function usePixiRenderer(
   const cameraZoomReset = useCallback(() => { rendererRef.current?.cameraZoomReset(); }, []);
   const getViewportCm = useCallback(() => rendererRef.current?.getViewportCm() ?? null, []);
 
+  const triggerScreenShake = useCallback((magnitude?: number, durationMs?: number) => {
+    rendererRef.current?.triggerScreenShake(magnitude, durationMs);
+  }, []);
+
+  const triggerHitFlash = useCallback((beyId: string) => {
+    rendererRef.current?.triggerHitFlash(beyId);
+  }, []);
+
   return {
     render,
     spawnCollisionParticles,
@@ -151,5 +159,7 @@ export function usePixiRenderer(
     cameraZoomOut,
     cameraZoomReset,
     getViewportCm,
+    triggerScreenShake,
+    triggerHitFlash,
   };
 }

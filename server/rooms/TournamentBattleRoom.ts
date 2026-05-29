@@ -58,6 +58,8 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
   static pendingMatchCallbacks = new Map<string, (winnerId: string, matchFirestoreId: string) => void>();
 
   private lastInputTime = 0;
+  private isPrivateRoom = false;
+  private idleTimer: ReturnType<typeof setTimeout> | null = null;
   protected playerSessions = new Set<string>();
   protected spectatorSessions = new Set<string>();
   protected aiSessions = new Set<string>();
@@ -87,6 +89,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
     if (!tryReserveRoom()) throw new Error("Server at capacity (max 20 rooms)");
 
     this.autoDispose = true;
+    this.isPrivateRoom = !!options.private;
 
     this.globalSettings = await loadGlobalSettings();
     if (this.globalSettings?.maintenanceMode) throw new Error("Maintenance");
@@ -184,6 +187,9 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
       return;
     }
 
+    // Clear idle timer if a player rejoins a private room
+    if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
+
     this.playerSessions.add(client.sessionId);
     this.comboTrackers.set(client.sessionId, createComboTracker());
     console.log(`Player ${client.sessionId} joined TournamentBattleRoom (${this.playerSessions.size}/2 slots)`);
@@ -268,7 +274,14 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
     const humanCount = this.playerSessions.size - this.aiSessions.size;
     if (humanCount === 0) {
-      this.disconnect();
+      if (this.isPrivateRoom) {
+        this.idleTimer = setTimeout(() => {
+          this.broadcast('room-closed', { reason: 'idle' });
+          this.disconnect();
+        }, 60_000);
+      } else {
+        this.disconnect();
+      }
     }
   }
 

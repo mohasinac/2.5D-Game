@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from "react";
-import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGame } from "@/contexts/GameContext";
 import { BUILT_IN_MODIFIERS, MODIFIER_MAP } from "@/types/roundModifier";
@@ -8,255 +8,632 @@ import { getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/cn";
 
-const TYPE_COLORS_MAP: Record<string, string> = {
-  attack: "text-theme-red",
-  defense: "text-theme-blue",
-  stamina: "text-theme-green",
-  balanced: "text-theme-yellow",
+// ─── Mode detection from pathname ────────────────────────────────────────────
+
+type LobbyMode = 'pvp' | 'royale' | 'tournament';
+
+function modeFromPathname(pathname: string): LobbyMode {
+  if (pathname.includes('/royale/')) return 'royale';
+  if (pathname.includes('/tournament/')) return 'tournament';
+  return 'pvp';
+}
+
+function roomNameForMode(mode: LobbyMode): string {
+  if (mode === 'royale') return 'royale_battle_room';
+  if (mode === 'tournament') return 'tournament_battle_25d_room';
+  return 'battle_25d_room';
+}
+
+function maxPlayersForMode(mode: LobbyMode): number {
+  if (mode === 'royale') return 12;
+  if (mode === 'tournament') return 16;
+  return 4;
+}
+
+const MODE_LABELS: Record<LobbyMode, string> = {
+  pvp: 'PVP BATTLE',
+  royale: 'BATTLE ROYALE',
+  tournament: 'TOURNAMENT',
 };
 
 type BestOf = 1 | 3 | 5;
 
+// ─── Phase types ──────────────────────────────────────────────────────────────
+
+type Phase =
+  | 'choose'          // Phase 1: Random vs Friends
+  | 'random-connect'  // Connecting to random match
+  | 'friends-choose'  // Friends: Create vs Join sub-choice
+  | 'friends-create'  // Waiting for room creation (connecting)
+  | 'friends-join'    // Input room code
+  | 'in-lobby';       // Phase 2: in the room
+
+// ─── Colour helpers ───────────────────────────────────────────────────────────
+
+const TYPE_COLORS_MAP: Record<string, string> = {
+  attack: 'text-red-400',
+  defense: 'text-blue-400',
+  stamina: 'text-green-400',
+  balanced: 'text-yellow-400',
+};
+
+// ─── Card component ───────────────────────────────────────────────────────────
+
+function PhaseCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn(
+      'rounded-2xl border border-white/[.08] bg-[#111120] p-6',
+      className,
+    )}>
+      {children}
+    </div>
+  );
+}
+
+function ActionBtn({
+  label, onClick, primary, disabled, className,
+}: {
+  label: string; onClick: () => void; primary?: boolean; disabled?: boolean; className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'w-full py-3 rounded-xl font-bold text-[15px] border cursor-pointer transition-all duration-150',
+        primary
+          ? 'bg-[#00e5ff] text-[#0a0a0f] border-[#00e5ff] hover:bg-[#00d4eb]'
+          : 'bg-transparent text-white border-white/[.15] hover:border-white/30',
+        disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
+        className,
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+// ─── Connecting spinner ───────────────────────────────────────────────────────
+
+function ConnectingSpinner({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-4 py-12">
+      <div className="w-12 h-12 rounded-full border-2 border-[#00e5ff]/30 border-t-[#00e5ff] animate-spin" />
+      <p className="text-white/60 text-[14px]">{label}</p>
+    </div>
+  );
+}
+
+// ─── Player slot (lobby) ─────────────────────────────────────────────────────
+
+function PlayerSlot({
+  index, username, beyType, imageUrl, isSelf, isHost, isEmpty,
+}: {
+  index: number; username?: string; beyType?: string; imageUrl?: string;
+  isSelf?: boolean; isHost?: boolean; isEmpty?: boolean;
+}) {
+  if (isEmpty) {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3 opacity-35">
+        <div className="w-8 h-8 rounded-full border border-dashed border-white/20 flex items-center justify-center text-[12px] text-white/40">
+          {index + 1}
+        </div>
+        <div className="w-9 h-9 rounded-full border border-dashed border-white/15" />
+        <span className="text-white/35 text-[13px]">Waiting…</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-3 px-4 py-3">
+      <div className="w-8 h-8 rounded-full bg-white/[.06] flex items-center justify-center text-[12px] font-bold text-white/50 shrink-0">
+        {index + 1}
+      </div>
+      {imageUrl ? (
+        <img src={imageUrl} alt={username} className="w-9 h-9 rounded-full object-contain bg-white/[.06]" />
+      ) : (
+        <div className="w-9 h-9 rounded-full bg-white/[.08] flex items-center justify-center text-white font-bold shrink-0">
+          {username?.[0]?.toUpperCase() ?? '?'}
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-white font-medium text-[13px] truncate">{username}</span>
+          {isHost && <span className="text-[10px] text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-px rounded">HOST</span>}
+          {isSelf && <span className="text-[11px] text-white/35">(you)</span>}
+        </div>
+        {beyType && (
+          <span className={cn('text-[11px] font-semibold capitalize', TYPE_COLORS_MAP[beyType] ?? 'text-white/50')}>
+            {beyType}
+          </span>
+        )}
+      </div>
+      <span className="text-green-400 text-[15px]">✓</span>
+    </div>
+  );
+}
+
+// ─── Royale 12-slot grid ──────────────────────────────────────────────────────
+
+function RoyaleGrid({
+  players, myUserId,
+}: {
+  players: Array<{ id: string; username: string; userId?: string; type?: string; imageUrl?: string }>;
+  myUserId?: string;
+}) {
+  const slots = Array.from({ length: 12 }).map((_, i) => players[i] ?? null);
+  return (
+    <div className="grid grid-cols-4 gap-2 p-4">
+      {slots.map((p, i) => (
+        <div key={i} className={cn(
+          'rounded-xl border p-2 flex flex-col items-center gap-1 min-h-[72px] justify-center',
+          p ? 'border-white/[.12] bg-white/[.04]' : 'border-dashed border-white/[.07] bg-transparent',
+        )}>
+          {p ? (
+            <>
+              <div className="w-8 h-8 rounded-full bg-white/[.1] flex items-center justify-center text-white font-bold text-[12px]">
+                {p.username?.[0]?.toUpperCase() ?? '?'}
+              </div>
+              <span className="text-white text-[10px] font-medium truncate w-full text-center leading-tight">{p.username}</span>
+              {p.userId === myUserId && <span className="text-[9px] text-[#00e5ff]">YOU</span>}
+            </>
+          ) : (
+            <span className="text-white/20 text-[11px]">Waiting…</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export function BattleLobbyPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const mode = modeFromPath(location.pathname);
+  const navigate    = useNavigate();
+  const location    = useLocation();
   const { settings } = useGame();
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [bestOf, setBestOf] = useState<BestOf>(1);
-  const [copied, setCopied] = useState(false);
-  const [copiedJoin, setCopiedJoin] = useState(false);
+
+  const lobbyMode   = modeFromPathname(location.pathname);
+  const roomName    = roomNameForMode(lobbyMode);
+  const maxPlayers  = maxPlayersForMode(lobbyMode);
+
+  // Phase state
+  const [phase, setPhase]           = useState<Phase>('choose');
+  const [joinCode, setJoinCode]     = useState('');
+  const [isPrivate, setIsPrivate]   = useState(false);
+
+  // Lobby controls
+  const [bestOf, setBestOf]         = useState<BestOf>(1);
+  const [bracketSize, setBracketSize] = useState<4 | 8 | 16>(4);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
+  const [copied, setCopied]         = useState(false);
   const [modeDisabled, setModeDisabled] = useState(false);
 
-  // If ?join=ROOM_ID is present, attempt to join that specific room (private match invite).
-  const inviteRoomId = searchParams.get("join") ?? undefined;
+  // triggerConnect pattern: avoids stale closure when calling connect() right after setState
+  const [triggerConnect, setTriggerConnect] = useState(false);
+  const [connectRoomId, setConnectRoomId] = useState<string | undefined>(undefined);
+
+  // Used in refs so connect() closure always reads the latest values
+  const roomIdRef   = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    getDoc(doc(db, "settings", "game")).then((snap) => {
+    getDoc(doc(db, 'settings', 'game')).then(snap => {
       if (snap.exists() && snap.data().enablePvp === false) setModeDisabled(true);
     }).catch(() => {});
   }, []);
 
-  const MAX_MODIFIERS = 2;
+  const colyseusOptions = useMemo(() => ({
+    beybladeId: settings.beybladeId ?? 'default',
+    arenaId:    settings.arenaId    ?? 'default',
+    username:   settings.username   ?? 'Player',
+    userId:     settings.userId,
+    private:    isPrivate,
+    modifierIds: selectedModifierIds,
+    bracketSize: lobbyMode === 'tournament' ? bracketSize : undefined,
+  }), [settings.beybladeId, settings.arenaId, settings.username, settings.userId,
+       isPrivate, selectedModifierIds, lobbyMode, bracketSize]);
 
+  const { connectionState, gameState, beyblades, room, connect, disconnect } =
+    useColyseus({
+      roomName,
+      roomId: connectRoomId,
+      options: colyseusOptions,
+      autoConnect: false,
+    });
+
+  // Fire connect() one tick after triggerConnect is set (avoids stale closure)
+  useEffect(() => {
+    if (!triggerConnect) return;
+    setTriggerConnect(false);
+    connect();
+  }, [triggerConnect]); // intentionally omit `connect` — called once per trigger
+
+  // Transition to in-lobby when connected
+  useEffect(() => {
+    if (connectionState === 'connected' && phase !== 'in-lobby') {
+      setPhase('in-lobby');
+    }
+  }, [connectionState, phase]);
+
+  // Navigate to game room when match starts
+  useEffect(() => {
+    if (gameState?.status === 'in-progress' && room) {
+      navigate('/game/room', { replace: true, state: {
+        config: {
+          roomType: lobbyMode === 'pvp' ? 'pvp' : lobbyMode === 'royale' ? 'royale' : 'tournament',
+          beybladeId: settings.beybladeId ?? 'default',
+          arenaId:    settings.arenaId    ?? 'default',
+          is25D:      true,
+          pvpRoomId:  room.roomId,
+        },
+      }});
+    }
+  }, [gameState?.status, room, navigate, lobbyMode, settings]);
+
+  // Server closed room (idle timeout) — bounce back to Phase 1
+  useEffect(() => {
+    if (connectionState === 'disconnected' && phase === 'in-lobby') {
+      toast('Room closed (no players)', { icon: '🚪', style: { background: '#1a1a2e', color: '#e2e8f0', border: '1px solid #2d2d44' } });
+      setPhase('choose');
+      setConnectRoomId(undefined);
+      roomIdRef.current = undefined;
+    }
+  }, [connectionState, phase]);
+
+  const playerList = Array.from(beyblades.values());
+  const myUserId   = settings.userId;
+  const isHost     = playerList.length > 0 && playerList[0].userId === myUserId;
+  const canStart   = playerList.length >= 2 && isHost;
+
+  const handleLeave = useCallback(() => {
+    disconnect();
+    setPhase('choose');
+    setConnectRoomId(undefined);
+    roomIdRef.current = undefined;
+  }, [disconnect]);
+
+  const handleCopyCode = () => {
+    if (!room?.roomId) return;
+    navigator.clipboard.writeText(room.roomId).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const MAX_MODIFIERS = 2;
   const toggleModifier = (id: string) => {
     setSelectedModifierIds(prev =>
       prev.includes(id) ? prev.filter(m => m !== id) : prev.length < MAX_MODIFIERS ? [...prev, id] : prev
     );
   };
 
-  const colyseusOptions = useMemo(() => ({
-    beybladeId: settings.beybladeId ?? "default",
-    arenaId: settings.arenaId ?? "default",
-    username: settings.username ?? "Player",
-    userId: settings.userId,
-    modifierIds: selectedModifierIds,
-  }), [settings.beybladeId, settings.arenaId, settings.username, settings.userId, selectedModifierIds]);
+  // ── Phase 1: choose ─────────────────────────────────────────────────────────
 
-  const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect } =
-    useColyseus({
-      roomName: roomNameFor(mode, "battle"),
-      roomId: inviteRoomId,
-      options: colyseusOptions,
-      autoConnect: true,
-    });
+  if (phase === 'choose') {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-[520px]">
+          <button
+            onClick={() => navigate('/game/battle', { replace: true })}
+            className="text-white/40 text-[13px] mb-6 flex items-center gap-1 hover:text-white/60 transition-colors"
+          >
+            ← Back to Battle Mode
+          </button>
+          <h1 className="text-[28px] font-black text-white tracking-tight mb-2">
+            {MODE_LABELS[lobbyMode]}
+          </h1>
+          <p className="text-white/50 text-[14px] mb-8">
+            {lobbyMode === 'royale'
+              ? 'Up to 12 players. Last bey standing wins.'
+              : lobbyMode === 'tournament'
+              ? 'Compete in a bracket. Unfilled slots become AI bots.'
+              : 'Fight a real opponent online.'}
+          </p>
 
-  useEffect(() => {
-    if (!room) return;
-    room.onMessage("countdown", (data: { count: number }) => { setCountdown(data.count); });
-    room.onMessage("game-start", () => { setCountdown(null); navigate(`/game/${mode}/battle/${room.roomId}`); });
-  }, [room, navigate]);
+          {modeDisabled && (
+            <div className="mb-5 bg-yellow-400/[.08] border border-yellow-400/25 rounded-xl px-4 py-3 text-[13px] text-yellow-400">
+              This mode is currently disabled by the administrator.
+            </div>
+          )}
 
-  useEffect(() => {
-    if (gameState?.status === "in-progress" && room) navigate(`/game/${mode}/battle/${room.roomId}`);
-  }, [gameState?.status, room, navigate]);
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* Random Match */}
+            <PhaseCard className="flex flex-col gap-3">
+              <div className="text-[#00e5ff] text-2xl mb-1">⚡</div>
+              <h2 className="text-white font-bold text-[16px]">RANDOM MATCH</h2>
+              <p className="text-white/45 text-[12px] flex-1">
+                Auto-matched with strangers online. Jump in instantly.
+              </p>
+              <ActionBtn
+                label="Find Match"
+                primary
+                disabled={modeDisabled}
+                onClick={() => {
+                  setIsPrivate(false);
+                  setConnectRoomId(undefined);
+                  setPhase('random-connect');
+                  setTriggerConnect(true);
+                }}
+              />
+            </PhaseCard>
 
-  const playerList = Array.from(beyblades.values());
-  const isHost = playerList.length > 0 && playerList[0].userId === settings.userId;
-  const canStart = playerList.length >= 2 && isHost;
-
-  const spectateUrl = room ? `${window.location.origin}/game/battle/${room.roomId}?spectate=true` : null;
-
-  const handleCopySpectateLink = () => {
-    if (!spectateUrl) return;
-    navigator.clipboard.writeText(spectateUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  return (
-    <div className="min-h-screen bg-bg0 flex items-center justify-center p-4">
-      <div className="w-full max-w-[560px]">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <Link to="/game" className="text-theme-faint text-[13px] no-underline block mb-1.5">
-              ← Back to menu
-            </Link>
-            <h1 className="text-[28px] font-black text-theme-text tracking-[-0.02em]">PVP Battle Lobby</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className={cn(
-              "w-2.5 h-2.5 rounded-full",
-              connectionState === "connected" ? "bg-theme-green pulse" : "bg-theme-yellow"
-            )} />
-            <span className="text-[13px] text-theme-muted font-mono">{connectionState}</span>
+            {/* Friends Room */}
+            <PhaseCard className="flex flex-col gap-3">
+              <div className="text-purple-400 text-2xl mb-1">🔗</div>
+              <h2 className="text-white font-bold text-[16px]">FRIENDS ROOM</h2>
+              <p className="text-white/45 text-[12px] flex-1">
+                Create a private room and share the code with friends.
+              </p>
+              <div className="flex flex-col gap-2">
+                <ActionBtn
+                  label="Create Room"
+                  primary
+                  disabled={modeDisabled}
+                  onClick={() => {
+                    setIsPrivate(true);
+                    setConnectRoomId(undefined);
+                    setPhase('friends-create');
+                    setTriggerConnect(true);
+                  }}
+                />
+                <ActionBtn
+                  label="Join with Code"
+                  disabled={modeDisabled}
+                  onClick={() => setPhase('friends-join')}
+                />
+              </div>
+            </PhaseCard>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {modeDisabled && (
-          <div className="bg-theme-yellow/[.09] border border-theme-yellow/[.27] rounded-[10px] px-[18px] py-3 mb-5 text-[13px] text-theme-yellow">
-            PVP Battle is currently disabled by the administrator.
-          </div>
-        )}
+  // ── Phase: random-connect / friends-create ───────────────────────────────────
 
-        {/* Room code + private match invite */}
-        {room && (
-          <div className="mb-5 bg-bg2/[.53] rounded-xl border border-border-c p-4">
-            <p className="text-[11px] text-theme-faint mb-1">Room ID (share with friends)</p>
-            <div className="flex items-center gap-2">
-              <p className="text-[16px] font-mono text-theme-text tracking-widest flex-1 m-0">{room.roomId}</p>
-              <button
-                data-testid="copy-join-link"
-                onClick={() => {
-                  const joinUrl = `${window.location.origin}/game/${mode}/battle/lobby?join=${room.roomId}`;
-                  navigator.clipboard.writeText(joinUrl).then(() => {
-                    setCopiedJoin(true);
-                    setTimeout(() => setCopiedJoin(false), 2000);
-                  });
-                }}
-                className={cn(
-                  "py-[5px] px-3 rounded-lg text-[11px] font-semibold cursor-pointer whitespace-nowrap border",
-                  copiedJoin
-                    ? "bg-green-13 text-theme-green border-theme-green"
-                    : "bg-bg3 text-theme-muted border-border-c"
-                )}
-              >
-                {copiedJoin ? "Copied!" : "Copy Invite Link"}
-              </button>
-            </div>
-            {inviteRoomId && (
-              <p className="text-[11px] text-theme-blue mt-1.5">Joining private room {inviteRoomId}</p>
+  if (phase === 'random-connect' || phase === 'friends-create') {
+    const label = phase === 'random-connect'
+      ? 'Searching for opponent…'
+      : 'Creating your room…';
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-[360px]">
+          <PhaseCard>
+            <ConnectingSpinner label={label} />
+            {connectionState === 'error' && (
+              <p className="text-red-400 text-[13px] text-center mb-4">
+                Connection failed. Check your internet and try again.
+              </p>
             )}
+            <ActionBtn label="Cancel" onClick={() => {
+              disconnect();
+              setPhase('choose');
+            }} />
+          </PhaseCard>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Phase: friends-join (code input) ─────────────────────────────────────────
+
+  if (phase === 'friends-join') {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-[360px]">
+          <PhaseCard>
+            <h2 className="text-white font-bold text-[18px] mb-1">Join a Room</h2>
+            <p className="text-white/45 text-[13px] mb-5">Enter the room code shared by your friend.</p>
+            <input
+              type="text"
+              placeholder="Enter room code…"
+              value={joinCode}
+              onChange={e => setJoinCode(e.target.value.trim())}
+              className="w-full bg-white/[.06] border border-white/[.1] rounded-xl px-4 py-3 text-white font-mono text-[16px] tracking-widest mb-4 outline-none focus:border-[#00e5ff]/50"
+            />
+            {connectionState === 'error' && (
+              <p className="text-red-400 text-[13px] mb-3">
+                Could not find room "{joinCode}". Check the code and try again.
+              </p>
+            )}
+            <div className="flex flex-col gap-2">
+              <ActionBtn
+                label={connectionState === 'connecting' ? 'Joining…' : 'Join Room'}
+                primary
+                disabled={!joinCode || connectionState === 'connecting'}
+                onClick={() => {
+                  setIsPrivate(false);
+                  setConnectRoomId(joinCode);
+                  roomIdRef.current = joinCode;
+                  setTriggerConnect(true);
+                }}
+              />
+              <ActionBtn label="← Back" onClick={() => {
+                disconnect();
+                setPhase('choose');
+              }} />
+            </div>
+          </PhaseCard>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Phase: in-lobby ───────────────────────────────────────────────────────────
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center p-4 pt-6">
+      <div className="w-full max-w-[540px]">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h1 className="text-[22px] font-black text-white tracking-tight">{MODE_LABELS[lobbyMode]}</h1>
+            <div className="flex items-center gap-2 mt-0.5">
+              <div className={cn(
+                'w-2 h-2 rounded-full',
+                connectionState === 'connected' ? 'bg-green-400' : 'bg-yellow-400',
+              )} />
+              <span className="text-white/45 text-[12px] font-mono">{connectionState}</span>
+            </div>
+          </div>
+          <button
+            onClick={handleLeave}
+            className="text-white/40 text-[13px] hover:text-white/70 transition-colors"
+          >
+            ← Leave Room
+          </button>
+        </div>
+
+        {/* Room code (Friends Room only) */}
+        {isPrivate && room?.roomId && (
+          <div className="mb-4 bg-white/[.04] rounded-xl border border-white/[.08] px-4 py-3 flex items-center justify-between">
+            <div>
+              <p className="text-white/40 text-[10px] uppercase tracking-[0.1em] mb-0.5">Room Code</p>
+              <p className="text-white font-mono text-[18px] tracking-[0.2em] font-bold">{room.roomId}</p>
+            </div>
+            <button
+              onClick={handleCopyCode}
+              className={cn(
+                'py-1.5 px-4 rounded-lg text-[12px] font-semibold border transition-all',
+                copied
+                  ? 'bg-green-400/10 text-green-400 border-green-400/30'
+                  : 'bg-white/[.06] text-white/60 border-white/[.1] hover:border-white/25',
+              )}
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
           </div>
         )}
 
-        {/* Player list */}
-        <div className="bg-bg1 rounded-2xl border border-border-c overflow-hidden mb-5">
-          <div className="px-4 py-[10px] border-b border-border-c flex justify-between items-center">
-            <span className="text-[13px] font-semibold text-theme-muted">Players</span>
-            <span className="text-[12px] text-theme-faint">{playerList.length}/4</span>
+        {/* Random match room code (show for discovery) */}
+        {!isPrivate && room?.roomId && (
+          <div className="mb-4 bg-white/[.03] rounded-xl border border-white/[.06] px-4 py-2 flex items-center justify-between">
+            <div>
+              <p className="text-white/30 text-[10px] uppercase tracking-[0.1em] mb-0.5">Room ID</p>
+              <p className="text-white/60 font-mono text-[13px]">{room.roomId}</p>
+            </div>
+            <button
+              onClick={handleCopyCode}
+              className="py-1 px-3 rounded-lg text-[11px] font-semibold border bg-white/[.04] text-white/40 border-white/[.08] hover:border-white/20 transition-all"
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+        )}
+
+        {/* Player list / Royale grid */}
+        <div className="bg-[#111120] rounded-2xl border border-white/[.08] overflow-hidden mb-4">
+          <div className="px-4 py-3 border-b border-white/[.07] flex items-center justify-between">
+            <span className="text-white/60 text-[13px] font-semibold">Players</span>
+            <span className="text-white/35 text-[12px]">{playerList.length}/{maxPlayers}</span>
           </div>
 
           {playerList.length === 0 ? (
-            <div className="p-8 text-center text-theme-faint">
-              <div className="spin w-9 h-9 border-2 border-border-c border-t-theme-blue rounded-full mx-auto mb-3" />
-              <p>Waiting for players to join...</p>
+            <div className="p-8 text-center">
+              <div className="w-8 h-8 rounded-full border-2 border-white/10 border-t-[#00e5ff] animate-spin mx-auto mb-3" />
+              <p className="text-white/40 text-[13px]">Waiting for players to join…</p>
             </div>
+          ) : lobbyMode === 'royale' ? (
+            <RoyaleGrid players={playerList} myUserId={myUserId} />
           ) : (
             <>
-              {playerList.map((player, i) => (
-                <div key={player.id} className="flex items-center gap-3 px-4 py-3 border-b border-border-c">
-                  <div className="w-8 h-8 rounded-full bg-bg3 flex items-center justify-center text-[13px] font-bold text-theme-muted shrink-0">
-                    {i + 1}
-                  </div>
-                  {player.imageUrl ? (
-                    <img src={player.imageUrl} alt={player.username} className="w-10 h-10 rounded-full object-contain bg-bg2" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-bg3 flex items-center justify-center text-theme-text font-bold shrink-0">
-                      {player.username[0]?.toUpperCase()}
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-theme-text font-medium text-[14px]">{player.username}</span>
-                      {i === 0 && (
-                        <span className="text-[11px] text-theme-yellow bg-yellow-10 border border-yellow-20 px-1.5 py-px rounded">HOST</span>
-                      )}
-                      {player.userId === settings.userId && (
-                        <span className="text-[11px] text-theme-faint">(you)</span>
-                      )}
-                    </div>
-                    <span className={cn("text-[11px] font-semibold capitalize", TYPE_COLORS_MAP[player.type] ?? "text-theme-muted")}>
-                      {player.type}
-                    </span>
-                  </div>
-                  <span className="text-theme-green text-[16px]">✓</span>
-                </div>
+              {playerList.map((p, i) => (
+                <PlayerSlot
+                  key={p.id}
+                  index={i}
+                  username={p.username}
+                  beyType={p.type}
+                  imageUrl={p.imageUrl}
+                  isSelf={p.userId === myUserId}
+                  isHost={i === 0}
+                />
               ))}
               {Array.from({ length: Math.max(0, 2 - playerList.length) }).map((_, i) => (
-                <div key={`empty-${i}`} className="flex items-center gap-3 px-4 py-3 opacity-40">
-                  <div className="w-8 h-8 rounded-full bg-transparent border border-dashed border-border-c flex items-center justify-center text-[13px] text-theme-faint">
-                    {playerList.length + i + 1}
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-transparent border border-dashed border-border-c" />
-                  <span className="text-theme-faint text-[13px]">Waiting for player...</span>
-                </div>
+                <PlayerSlot key={`empty-${i}`} index={playerList.length + i} isEmpty />
               ))}
             </>
           )}
         </div>
 
-        {/* Host controls: format selector + spectate link */}
+        {/* Host controls */}
         {isHost && (
-          <div className="bg-bg1 rounded-[14px] border border-border-c p-4 mb-5">
-            <p className="text-[12px] text-theme-muted mb-2.5 font-semibold">Match Format</p>
-            <div className="flex gap-2 mb-3.5">
-              {([1, 3, 5] as BestOf[]).map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setBestOf(n)}
-                  className={cn(
-                    "flex-1 py-2 rounded-lg text-[13px] font-bold cursor-pointer border",
-                    bestOf === n
-                      ? "border-theme-blue bg-blue-13 text-theme-blue"
-                      : "border-border-c bg-transparent text-theme-muted"
-                  )}
-                >
-                  BO{n}
-                </button>
-              ))}
-            </div>
-            <p className="text-[11px] text-theme-faint mb-3.5">
-              {bestOf === 1 ? "Single match — first to win takes it." : `First to ${Math.ceil(bestOf / 2)} wins the series.`}
-            </p>
+          <div className="bg-[#111120] rounded-2xl border border-white/[.08] p-4 mb-4">
+            {/* Best-of selector (PvP / tournament) */}
+            {lobbyMode !== 'royale' && (
+              <>
+                <p className="text-white/50 text-[12px] font-semibold mb-2 uppercase tracking-[0.08em]">Match Format</p>
+                <div className="flex gap-2 mb-4">
+                  {([1, 3, 5] as BestOf[]).map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setBestOf(n)}
+                      className={cn(
+                        'flex-1 py-2 rounded-xl text-[13px] font-bold border transition-all cursor-pointer',
+                        bestOf === n
+                          ? 'border-[#00e5ff] bg-[#00e5ff]/10 text-[#00e5ff]'
+                          : 'border-white/[.1] bg-transparent text-white/50 hover:border-white/25',
+                      )}
+                    >
+                      BO{n}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
 
-            {/* Round modifier picker */}
-            <p className="text-[12px] text-theme-muted mb-2 font-semibold">
-              Round Modifiers
-              <span className="text-[11px] text-theme-faint font-normal ml-1.5">
-                ({selectedModifierIds.length}/{MAX_MODIFIERS} selected)
-              </span>
+            {/* Bracket size (tournament only) */}
+            {lobbyMode === 'tournament' && (
+              <>
+                <p className="text-white/50 text-[12px] font-semibold mb-2 uppercase tracking-[0.08em]">Bracket Size</p>
+                <div className="flex gap-2 mb-4">
+                  {([4, 8, 16] as const).map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setBracketSize(n)}
+                      className={cn(
+                        'flex-1 py-2 rounded-xl text-[13px] font-bold border transition-all cursor-pointer',
+                        bracketSize === n
+                          ? 'border-purple-400 bg-purple-400/10 text-purple-400'
+                          : 'border-white/[.1] bg-transparent text-white/50 hover:border-white/25',
+                      )}
+                    >
+                      {n} players
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Round modifiers */}
+            <p className="text-white/50 text-[12px] font-semibold mb-2 uppercase tracking-[0.08em]">
+              Modifiers
+              <span className="text-white/30 font-normal normal-case ml-1.5">({selectedModifierIds.length}/{MAX_MODIFIERS})</span>
             </p>
-            {(["physics", "combat", "rules", "chaos"] as const).map(category => {
-              const group = BUILT_IN_MODIFIERS.filter(m => m.category === category);
+            {(['physics', 'combat', 'rules', 'chaos'] as const).map(cat => {
+              const group = BUILT_IN_MODIFIERS.filter(m => m.category === cat);
               return (
-                <div key={category} className="mb-2.5">
-                  <p className="text-[10px] text-theme-faint uppercase tracking-[0.08em] mb-1">{category}</p>
+                <div key={cat} className="mb-2">
+                  <p className="text-[10px] text-white/30 uppercase tracking-[0.08em] mb-1">{cat}</p>
                   <div className="flex flex-wrap gap-1">
                     {group.map(mod => {
                       const selected = selectedModifierIds.includes(mod.id);
-                      const disabled = !selected && selectedModifierIds.length >= MAX_MODIFIERS;
+                      const capped   = !selected && selectedModifierIds.length >= MAX_MODIFIERS;
                       return (
                         <button
                           key={mod.id}
-                          data-testid={`modifier-toggle-${mod.id}`}
                           onClick={() => toggleModifier(mod.id)}
-                          disabled={disabled}
+                          disabled={capped}
                           title={mod.description}
                           className={cn(
-                            "py-1 px-2.5 rounded-full text-[11px] font-semibold flex items-center gap-1 transition-all duration-100 border",
+                            'py-1 px-2.5 rounded-full text-[11px] font-semibold flex items-center gap-1 border transition-all cursor-pointer',
                             selected
-                              ? "border-theme-yellow bg-yellow-10 text-theme-yellow"
-                              : disabled
-                              ? "border-border-c bg-transparent text-theme-muted/40 cursor-not-allowed"
-                              : "border-border-c bg-transparent text-theme-muted cursor-pointer"
+                              ? 'border-yellow-400/40 bg-yellow-400/10 text-yellow-400'
+                              : capped
+                              ? 'border-white/[.06] text-white/25 cursor-not-allowed'
+                              : 'border-white/[.1] text-white/45 hover:border-white/25',
                           )}
                         >
-                          {mod.icon && <span className="text-[13px]">{mod.icon}</span>}
+                          {mod.icon && <span className="text-[12px]">{mod.icon}</span>}
                           {mod.name}
                         </button>
                       );
@@ -265,76 +642,55 @@ export function BattleLobbyPage() {
                 </div>
               );
             })}
-            {selectedModifierIds.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-2.5 p-2 bg-yellow-10 rounded-lg border border-yellow-20">
-                <span className="text-[11px] text-theme-faint w-full mb-1">Active:</span>
-                {selectedModifierIds.map(id => {
-                  const mod = MODIFIER_MAP.get(id);
-                  if (!mod) return null;
-                  return (
-                    <span key={id} className="text-[11px] text-theme-yellow font-mono">
-                      {mod.icon} {mod.name}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
-
-            {spectateUrl && (
-              <>
-                <p className="text-[12px] text-theme-muted mb-1.5 font-semibold">Spectate Link</p>
-                <div className="flex gap-2">
-                  <input
-                    readOnly
-                    value={spectateUrl}
-                    className="flex-1 bg-bg3 border border-border-c rounded-lg px-2.5 py-1.5 text-theme-muted text-[11px] font-mono"
-                  />
-                  <button
-                    onClick={handleCopySpectateLink}
-                    className={cn(
-                      "px-3.5 py-1.5 rounded-lg text-[12px] font-semibold cursor-pointer border",
-                      copied
-                        ? "bg-green-13 text-theme-green border-theme-green"
-                        : "bg-bg3 text-theme-muted border-border-c"
-                    )}
-                  >
-                    {copied ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         )}
 
-        {/* Start button */}
-        <div className="text-center">
+        {/* Active modifier summary */}
+        {selectedModifierIds.length > 0 && (
+          <div className="bg-yellow-400/[.06] border border-yellow-400/20 rounded-xl px-3 py-2 mb-4 flex flex-wrap gap-2">
+            <span className="text-[11px] text-white/40 w-full">Active modifiers:</span>
+            {selectedModifierIds.map(id => {
+              const mod = MODIFIER_MAP.get(id);
+              if (!mod) return null;
+              return (
+                <span key={id} className="text-[11px] text-yellow-400 font-mono">{mod.icon} {mod.name}</span>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="flex flex-col gap-3">
           {isHost ? (
             <button
-              onClick={() => room && canStart && room.send("start-game", { bestOf })}
-              disabled={!canStart || modeDisabled}
+              onClick={() => room && canStart && room.send('start-game', { bestOf, bracketSize, modifierIds: selectedModifierIds })}
+              disabled={!canStart}
               className={cn(
-                "py-3.5 px-10 rounded-xl font-bold text-[16px] border-none",
-                canStart ? "bg-theme-red text-white cursor-pointer" : "bg-bg3 text-theme-faint cursor-not-allowed"
+                'w-full py-4 rounded-2xl font-black text-[16px] border-none transition-all',
+                canStart
+                  ? 'bg-[#00e5ff] text-[#0a0a0f] cursor-pointer hover:bg-[#00d4eb]'
+                  : 'bg-white/[.06] text-white/25 cursor-not-allowed',
               )}
             >
-              {canStart ? `Start Battle! (BO${bestOf})` : `Waiting for ${2 - playerList.length} more player${2 - playerList.length !== 1 ? "s" : ""}...`}
+              {canStart
+                ? `Start Early ▶  (${playerList.length} players)`
+                : `Waiting for ${Math.max(0, 2 - playerList.length)} more player${2 - playerList.length !== 1 ? 's' : ''}…`}
             </button>
           ) : (
-            <p className="text-theme-faint">Waiting for host to start the match...</p>
+            <div className="text-center py-3 text-white/40 text-[14px]">
+              Waiting for host to start…
+            </div>
           )}
-          <p className="text-[12px] text-theme-faint mt-2.5">2-4 players · Last beyblade standing wins</p>
         </div>
-      </div>
 
-      {/* Countdown overlay */}
-      {countdown !== null && (
-        <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50">
-          <div className="text-center">
-            <div className="text-[120px] font-black text-theme-text font-mono">{countdown}</div>
-            <p className="text-theme-muted mt-4 text-[18px]">Match starting...</p>
-          </div>
-        </div>
-      )}
+        <p className="text-center text-white/25 text-[12px] mt-4">
+          {lobbyMode === 'royale'
+            ? 'Up to 12 players · Last bey standing wins · Bots fill remaining slots after 60s'
+            : lobbyMode === 'tournament'
+            ? 'Unfilled slots become AI bots · Best-of configurable by host'
+            : '2–4 players · Last beyblade standing wins'}
+        </p>
+      </div>
     </div>
   );
 }

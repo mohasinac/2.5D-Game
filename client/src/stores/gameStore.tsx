@@ -14,6 +14,7 @@ export interface GameSettings {
   username?: string;
   userId?: string;
   activeRoomId: string | null;
+  enable25D: boolean;
 }
 
 // ─── AES-GCM encrypted localStorage ─────────────────────────────────────────
@@ -109,6 +110,7 @@ export const defaultSettings: GameSettings = {
   // Stable random ID generated once per device; persisted across reloads.
   userId: `user_${Math.random().toString(36).slice(2, 9)}`,
   activeRoomId: null,
+  enable25D: true,
 };
 
 // ─── Store ───────────────────────────────────────────────────────────────────

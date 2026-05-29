@@ -34,15 +34,13 @@ function useTouchBtn(action: string) {
 }
 
 // ─── Virtual joystick ─────────────────────────────────────────────────────────
-// Replaces the old 4-button D-pad. The thumb moves in 2D to the pointer
-// position; diagonal presses activate both axes simultaneously.
 function VirtualJoystick({ size = 96 }: { size?: number }) {
   const [thumbOffset, setThumbOffset] = useState({ x: 0, y: 0 });
   const [active, setActive] = useState(false);
   const baseRef   = useRef<HTMLDivElement>(null);
   const ptrRef    = useRef<number | null>(null);
 
-  const maxTravel = size * 0.33;   // max thumb displacement from center
+  const maxTravel = size * 0.33;
   const deadZone  = 0.22;
   const thumbSz   = Math.round(size * 0.38);
 
@@ -76,7 +74,6 @@ function VirtualJoystick({ size = 96 }: { size?: number }) {
     touchInputState.moveLeft = touchInputState.moveRight = touchInputState.moveUp = touchInputState.moveDown = false;
   }
 
-  // Direction indicator arrows — light up when that axis side is active
   const nx = thumbOffset.x / maxTravel;
   const ny = thumbOffset.y / maxTravel;
   const arrowColor = (on: boolean) => on ? 'rgba(139,92,246,0.85)' : 'rgba(255,255,255,0.12)';
@@ -113,7 +110,6 @@ function VirtualJoystick({ size = 96 }: { size?: number }) {
         ptrRef.current = null; setActive(false); resetAxis();
       }}
     >
-      {/* Axis guide cross + inner ring */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: '50%', left: '12%', right: '12%', height: 1, background: 'rgba(255,255,255,0.06)', transform: 'translateY(-50%)' }} />
         <div style={{ position: 'absolute', left: '50%', top: '12%', bottom: '12%', width: 1, background: 'rgba(255,255,255,0.06)', transform: 'translateX(-50%)' }} />
@@ -125,7 +121,6 @@ function VirtualJoystick({ size = 96 }: { size?: number }) {
         }} />
       </div>
 
-      {/* Direction arrows — illuminate when axis active */}
       <div style={{ position: 'absolute', top: arrowEdge, left: '50%', transform: 'translateX(-50%)',
         color: arrowColor(ny < -deadZone), fontSize: size * 0.13, lineHeight: 1, pointerEvents: 'none' }}>▲</div>
       <div style={{ position: 'absolute', bottom: arrowEdge, left: '50%', transform: 'translateX(-50%)',
@@ -135,7 +130,6 @@ function VirtualJoystick({ size = 96 }: { size?: number }) {
       <div style={{ position: 'absolute', right: arrowEdge, top: '50%', transform: 'translateY(-50%)',
         color: arrowColor(nx > deadZone), fontSize: size * 0.13, lineHeight: 1, pointerEvents: 'none' }}>▶</div>
 
-      {/* Moveable thumb */}
       <div style={{
         position: 'absolute',
         width: thumbSz, height: thumbSz, borderRadius: '50%',
@@ -155,8 +149,20 @@ function VirtualJoystick({ size = 96 }: { size?: number }) {
   );
 }
 
-// ─── Action buttons (A/B/X/Y diamond) ─────────────────────────────────────────
-function ABtn({ label, action, color, style }: { label: string; action: string; color: string; style: React.CSSProperties }) {
+// ─── Two-line button label (action name + key shortcut) ───────────────────────
+function BtnLabel({ top, bottom }: { top: string; bottom: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, lineHeight: 1.15, textAlign: 'center' }}>
+      <span>{top}</span>
+      <span style={{ fontSize: '0.6em', opacity: 0.72, letterSpacing: '0.04em' }}>{bottom}</span>
+    </div>
+  );
+}
+
+// ─── Action buttons (diamond) ─────────────────────────────────────────────────
+function ABtn({ label, action, color, style }: {
+  label: React.ReactNode; action: string; color: string; style: React.CSSProperties
+}) {
   const h = useTouchBtn(action);
   return (
     <div {...h} style={{
@@ -175,22 +181,23 @@ function ABtn({ label, action, color, style }: { label: string; action: string; 
 }
 
 function ActionCluster({ btnSize = 40, containerSize = 110 }: { btnSize?: number; containerSize?: number }) {
-  const fs = Math.round(btnSize * 0.33);
+  const fs = Math.round(btnSize * 0.22);
   return (
     <div style={{ position: 'relative', width: containerSize, height: containerSize, flexShrink: 0 }}>
-      <ABtn label="X" action="dodge"   color="#b45309" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '12%' }} />
-      <ABtn label="A" action="attack"  color="#dc2626" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '85%', top: '50%' }} />
-      <ABtn label="B" action="defense" color="#2563eb" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '88%' }} />
-      <ABtn label="Y" action="jump"    color="#16a34a" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '15%', top: '50%' }} />
+      <ABtn label={<BtnLabel top="DODGE"   bottom="A · J" />} action="dodge"   color="#b45309" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '12%' }} />
+      <ABtn label={<BtnLabel top="ATTACK"  bottom="D · L" />} action="attack"  color="#dc2626" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '85%', top: '50%' }} />
+      <ABtn label={<BtnLabel top="DEFENSE" bottom="S · K" />} action="defense" color="#2563eb" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '88%' }} />
+      <ABtn label={<BtnLabel top="JUMP"    bottom="W · I" />} action="jump"    color="#16a34a" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '15%', top: '50%' }} />
     </div>
   );
 }
 
-// ─── Small oval button — supports bitmask action OR a direct onPress callback ──
+// ─── Small oval button ─────────────────────────────────────────────────────────
 function OvalBtn({
-  label, action = '_noop', onPress, wide = false,
+  label, subLabel, action = '_noop', onPress, wide = false,
 }: {
   label: string;
+  subLabel?: string;
   action?: string;
   onPress?: () => void;
   wide?: boolean;
@@ -205,49 +212,65 @@ function OvalBtn({
     : h;
   return (
     <div {...handlers} style={{
-      width: wide ? 52 : 44, height: 14, borderRadius: 7,
+      width: wide ? 52 : 44, height: 20, borderRadius: 10,
       background: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
       border: '1px solid rgba(0,0,0,0.45)',
       boxShadow: '0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      color: 'rgba(255,255,255,0.38)', fontSize: 7, fontWeight: 800,
-      letterSpacing: '0.12em', textTransform: 'uppercase',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      color: 'rgba(255,255,255,0.45)', fontSize: 7, fontWeight: 800,
+      letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1.2,
       cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-    }}>{label}</div>
+    }}>
+      <span>{label}</span>
+      {subLabel && <span style={{ fontSize: 6, opacity: 0.65 }}>{subLabel}</span>}
+    </div>
   );
 }
 
-// ─── Shoulder tab ─────────────────────────────────────────────────────────────
-function ShoulderBtn({ label, action, side }: { label: string; action: string; side: 'L' | 'R' }) {
+// ─── Shoulder tab (L / R) ─────────────────────────────────────────────────────
+// Placed just above D-pad (L) or action cluster (R), not at the top of the shell.
+function ShoulderBtn({ label, subLabel, action, side, hidden = false }: {
+  label: string; subLabel?: string; action: string; side: 'L' | 'R'; hidden?: boolean;
+}) {
   const h = useTouchBtn(action);
+  if (hidden) return null;
   return (
     <div {...h} style={{
-      width: 80, height: 26,
+      minWidth: 72, height: 30,
       background: 'linear-gradient(180deg, #9ca3af 0%, #6b7280 60%, #4b5563 100%)',
-      borderRadius: side === 'L' ? '6px 6px 0 10px' : '6px 6px 10px 0',
+      borderRadius: side === 'L' ? '8px 8px 0 12px' : '8px 8px 12px 0',
       boxShadow: '0 3px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)',
       border: '1px solid rgba(0,0,0,0.3)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      color: 'rgba(255,255,255,0.75)', fontSize: 11, fontWeight: 800, letterSpacing: '0.05em',
-      cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-    }}>{label}</div>
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: 800, letterSpacing: '0.05em',
+      lineHeight: 1.2, cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+    }}>
+      <span>{label}</span>
+      {subLabel && <span style={{ fontSize: 7, opacity: 0.7 }}>{subLabel}</span>}
+    </div>
   );
 }
 
-// ─── Small shoulder tab (for portrait) ────────────────────────────────────────
-function SmallShoulderBtn({ label, action, side }: { label: string; action: string; side: 'L' | 'R' }) {
+// ─── Small shoulder tab (portrait) ───────────────────────────────────────────
+function SmallShoulderBtn({ label, subLabel, action, side, hidden = false }: {
+  label: string; subLabel?: string; action: string; side: 'L' | 'R'; hidden?: boolean;
+}) {
   const h = useTouchBtn(action);
+  if (hidden) return null;
   return (
     <div {...h} style={{
-      width: 60, height: 22,
+      minWidth: 58, height: 26,
       background: 'linear-gradient(180deg, #9ca3af 0%, #6b7280 60%, #4b5563 100%)',
-      borderRadius: side === 'L' ? '5px 5px 0 8px' : '5px 5px 8px 0',
+      borderRadius: side === 'L' ? '6px 6px 0 10px' : '6px 6px 10px 0',
       boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)',
       border: '1px solid rgba(0,0,0,0.3)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      color: 'rgba(255,255,255,0.75)', fontSize: 10, fontWeight: 800, letterSpacing: '0.05em',
-      cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-    }}>{label}</div>
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      color: 'rgba(255,255,255,0.85)', fontSize: 9, fontWeight: 800, letterSpacing: '0.05em',
+      lineHeight: 1.2, cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+    }}>
+      <span>{label}</span>
+      {subLabel && <span style={{ fontSize: 6.5, opacity: 0.7 }}>{subLabel}</span>}
+    </div>
   );
 }
 
@@ -277,7 +300,7 @@ function ZoomStrip({
   );
 }
 
-// ─── Speaker grille (dot matrix, GBC style) ───────────────────────────────────
+// ─── Speaker grille ──────────────────────────────────────────────────────────
 function SpeakerDots({ cols = 5, rows = 4 }: { cols?: number; rows?: number }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 6px)`, gap: 4 }}>
@@ -312,7 +335,7 @@ function ScreenBezel({ children, style }: { children: React.ReactNode; style?: R
   );
 }
 
-// ─── LANDSCAPE layout (GBA style) ─────────────────────────────────────────────
+// ─── LANDSCAPE layout ─────────────────────────────────────────────────────────
 interface ShellProps {
   children: React.ReactNode;
   onExit?: () => void;
@@ -321,45 +344,94 @@ interface ShellProps {
   onZoomReset?: () => void;
   controlsHidden: boolean;
   onToggleControls: () => void;
+  show25D: boolean;
 }
 
-function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls }: ShellProps) {
+// ─── Overlay theme ─────────────────────────────────────────────────────────────
+const SHELL_THEMES: Record<string, string> = {
+  dark:         'linear-gradient(155deg,#1f1f2e 0%,#111 100%)',
+  ocean:        'linear-gradient(155deg,#0d2d5e 0%,#071a38 100%)',
+  fire:         'linear-gradient(155deg,#5e1a0d 0%,#380707 100%)',
+  forest:       'linear-gradient(155deg,#0d3a1a 0%,#071c0d 100%)',
+  gold:         'linear-gradient(155deg,#5e4a0d 0%,#38280a 100%)',
+  midnight:     'linear-gradient(155deg,#0a0a0f 0%,#000 100%)',
+  neon:         'linear-gradient(155deg,#5e0d3a 0%,#38071e 100%)',
+  space:        'linear-gradient(155deg,#1a1a2e 0%,#0a0a14 100%)',
+  purple:       'linear-gradient(155deg, #8b5cf6 0%, #7c3aed 35%, #6d28d9 65%, #5b21b6 100%)',
+};
+
+function useShellBackground(): string {
+  const [bg, setBg] = useState(() => {
+    try {
+      const theme = localStorage.getItem('bey.overlayTheme') ?? 'purple';
+      if (theme === 'custom') {
+        const color = localStorage.getItem('bey.overlayTheme.customColor') ?? '#1a1a2e';
+        return `linear-gradient(155deg,${color} 0%,${color}cc 100%)`;
+      }
+      if (theme === 'custom-image') {
+        const img = localStorage.getItem('bey.overlayTheme.customBg');
+        if (img) return img; // will be used as backgroundImage
+      }
+      return SHELL_THEMES[theme] ?? SHELL_THEMES.purple;
+    } catch { return SHELL_THEMES.purple; }
+  });
+
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const theme = localStorage.getItem('bey.overlayTheme') ?? 'purple';
+        if (theme === 'custom') {
+          const color = localStorage.getItem('bey.overlayTheme.customColor') ?? '#1a1a2e';
+          setBg(`linear-gradient(155deg,${color} 0%,${color}cc 100%)`);
+        } else if (theme === 'custom-image') {
+          const img = localStorage.getItem('bey.overlayTheme.customBg');
+          if (img) setBg(img); else setBg(SHELL_THEMES.purple);
+        } else {
+          setBg(SHELL_THEMES[theme] ?? SHELL_THEMES.purple);
+        }
+      } catch { setBg(SHELL_THEMES.purple); }
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
+  return bg;
+}
+
+function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls, show25D }: ShellProps) {
   const T = '0.28s ease';
+  const shellBg = useShellBackground();
+  const isImageBg = shellBg.startsWith('data:');
   return (
     <div style={{
       position: 'relative',
       width:  'min(96vw, calc(96vh * 1.72))',
       height: 'min(96vh, calc(96vw / 1.72))',
-      background: 'linear-gradient(155deg, #8b5cf6 0%, #7c3aed 35%, #6d28d9 65%, #5b21b6 100%)',
+      background: isImageBg ? undefined : shellBg,
+      backgroundImage: isImageBg ? `url(${shellBg})` : undefined,
+      backgroundSize: 'cover', backgroundPosition: 'center',
       borderRadius: '12px 12px 30px 30px',
       boxShadow: '0 0 0 1.5px rgba(255,255,255,0.18), 0 24px 80px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.22)',
       display: 'flex', flexDirection: 'column', overflow: 'visible',
     }}>
-      {/* Shoulder row — collapses when controls hidden */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between',
-        paddingLeft: 20, paddingRight: 20,
-        maxHeight: controlsHidden ? 0 : 40, overflow: 'hidden',
-        transition: `max-height ${T}`,
-      }}>
-        <ShoulderBtn label="L" action="chargeHeld" side="L" />
-        <ShoulderBtn label="R" action="specialTap" side="R" />
-      </div>
-
-      {/* Main row */}
+      {/* Main row — no shoulder row at top; L/R are inline with their controls */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4px 14px 10px', gap: 10, minHeight: 0 }}>
 
-        {/* Left — joystick + SELECT/START (collapses) */}
+        {/* Left gutter — L shoulder above joystick, then center buttons below */}
         <div style={{
           width: controlsHidden ? 0 : '20%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 12, flexShrink: 0,
+          gap: 8, flexShrink: 0,
           transition: `width ${T}`,
         }}>
+          {/* L shoulder button — just above the joystick */}
+          <ShoulderBtn label="L" subLabel="CHARGE" action="chargeHeld" side="L" />
           <VirtualJoystick size={90} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            <OvalBtn label="SELECT" action="specialTap" />
-            <OvalBtn label="START"  onPress={onExit} />
+          {/* Center action buttons: CHARGE | SPECIAL | PAUSE */}
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <OvalBtn label="CHARGE" subLabel="hold ⎵" action="chargeHeld" wide />
+            <OvalBtn label="SPECIAL" subLabel="tap ⎵" action="specialTap" wide />
+            <OvalBtn label="PAUSE"  onPress={onExit} wide />
           </div>
         </div>
 
@@ -380,18 +452,20 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
           </div>
         </div>
 
-        {/* Right — action cluster (collapses) */}
+        {/* Right gutter — R shoulder above action cluster (R hidden in 2D mode) */}
         <div style={{
           width: controlsHidden ? 0 : '26%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'space-between', height: '100%',
-          paddingTop: 4, paddingBottom: 8, flexShrink: 0,
+          justifyContent: 'center', height: '100%',
+          paddingTop: 4, paddingBottom: 8, gap: 8, flexShrink: 0,
           transition: `width ${T}`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, alignSelf: 'flex-end', paddingRight: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e, 0 0 12px rgba(34,197,94,0.5)' }} />
             <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>POWER</span>
           </div>
+          {/* R shoulder button — just above action cluster; hidden in 2D mode */}
+          <ShoulderBtn label="R" subLabel="SPECIAL" action="specialTap" side="R" hidden={!show25D} />
           <ActionCluster btnSize={42} containerSize={114} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5, transform: 'rotate(-10deg)' }}>
             {[0,1,2,3,4].map(i => <div key={i} style={{ width: 36, height: 3, borderRadius: 2, background: 'rgba(0,0,0,0.28)' }} />)}
@@ -402,42 +476,34 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
   );
 }
 
-// ─── PORTRAIT layout (GBC style) ──────────────────────────────────────────────
-function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls }: ShellProps) {
+// ─── PORTRAIT layout ──────────────────────────────────────────────────────────
+function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls, show25D }: ShellProps) {
   const T = '0.28s ease';
+  const shellBg = useShellBackground();
+  const isImageBg = shellBg.startsWith('data:');
   return (
     <div style={{
       width: '100%', height: '100%',
       display: 'flex', flexDirection: 'column',
-      background: 'linear-gradient(175deg, #7c3aed 0%, #6d28d9 40%, #5b21b6 100%)',
+      background: isImageBg ? undefined : shellBg,
+      backgroundImage: isImageBg ? `url(${shellBg})` : undefined,
+      backgroundSize: isImageBg ? 'cover' : undefined,
+      backgroundPosition: isImageBg ? 'center' : undefined,
       overflow: 'hidden',
     }}>
 
-      {/* ── L/R shoulder buttons above screen (collapse when hidden) ── */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between',
-        paddingLeft: 10, paddingRight: 10, paddingTop: 4, flexShrink: 0,
-        maxHeight: controlsHidden ? 0 : 36, overflow: 'hidden',
-        transition: `max-height ${T}`,
-      }}>
-        <SmallShoulderBtn label="L" action="chargeHeld" side="L" />
-        <SmallShoulderBtn label="R" action="specialTap" side="R" />
-      </div>
-
-      {/* ── Screen section — grows when controls hidden ─── */}
+      {/* ── Screen section ─── */}
       <div style={{
         width: '100%',
         aspectRatio: '1 / 1',
-        maxHeight: controlsHidden ? '96vh' : '56vh',
+        maxHeight: controlsHidden ? '96vh' : '54vh',
         flexShrink: 0,
         background: '#0a0b14',
         position: 'relative',
         boxShadow: 'inset 0 -4px 16px rgba(0,0,0,0.7)',
         transition: 'max-height 0.28s ease',
       }}>
-        {/* Bezel top accent */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: 'rgba(255,255,255,0.04)' }} />
-        {/* Screen inner */}
         <div style={{
           position: 'absolute',
           inset: '10px 14px 10px',
@@ -448,7 +514,6 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
             {children}
           </div>
         </div>
-        {/* GAME BOY COLOR label + toggle at bottom of bezel */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
           height: 28, background: '#0a0b14',
@@ -468,47 +533,54 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
 
       {/* ── Controller body — collapses when controls hidden ── */}
       <div style={{
-        maxHeight: controlsHidden ? 0 : '45vh',
+        maxHeight: controlsHidden ? 0 : '47vh',
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
-        padding: controlsHidden ? 0 : '4px 16px 10px',
+        padding: controlsHidden ? 0 : '4px 12px 8px',
         gap: 0,
         minHeight: 0,
         position: 'relative',
         transition: 'max-height 0.28s ease, padding 0.28s ease',
       }}>
         {/* Nintendo emboss */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 4, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 3, flexShrink: 0 }}>
           <div style={{
-            fontSize: 13, fontWeight: 700, letterSpacing: '0.2em',
+            fontSize: 12, fontWeight: 700, letterSpacing: '0.2em',
             color: 'rgba(0,0,0,0.25)', textTransform: 'uppercase',
             textShadow: '0 1px 0 rgba(255,255,255,0.08)',
           }}>Nintendo</div>
         </div>
 
-        {/* Main controls row */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45%' }}>
-            <VirtualJoystick size={120} />
+        {/* Main controls row — L above joystick, R above action cluster */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', minHeight: 0 }}>
+          {/* Left: L shoulder button above joystick */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '45%', gap: 4 }}>
+            <SmallShoulderBtn label="L" subLabel="CHARGE" action="chargeHeld" side="L" />
+            <VirtualJoystick size={110} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45%' }}>
-            <ActionCluster btnSize={48} containerSize={130} />
+
+          {/* Right: R shoulder button (hidden in 2D) above action cluster */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '45%', gap: 4 }}>
+            <SmallShoulderBtn label="R" subLabel="SPECIAL" action="specialTap" side="R" hidden={!show25D} />
+            <ActionCluster btnSize={48} containerSize={126} />
           </div>
         </div>
 
-        {/* Bottom row: SELECT/START + Speaker */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: 6, flexShrink: 0 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <OvalBtn label="SELECT" action="specialTap" wide />
-              <OvalBtn label="START"  onPress={onExit} wide />
+        {/* Bottom row: CHARGE | SPECIAL | PAUSE + Speaker */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 6, flexShrink: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <OvalBtn label="CHARGE"  subLabel="hold ⎵" action="chargeHeld" wide />
+              <OvalBtn label="SPECIAL" subLabel="tap ⎵"  action="specialTap" wide />
+              <OvalBtn label="PAUSE"   onPress={onExit}  wide />
             </div>
-            <div style={{ display: 'flex', gap: 10, paddingLeft: 4 }}>
-              <span style={{ fontSize: 8, color: 'rgba(0,0,0,0.3)', fontWeight: 700, letterSpacing: '0.12em', width: 52, textAlign: 'center' }}>SELECT</span>
-              <span style={{ fontSize: 8, color: 'rgba(0,0,0,0.3)', fontWeight: 700, letterSpacing: '0.12em', width: 52, textAlign: 'center' }}>START</span>
+            <div style={{ display: 'flex', gap: 6, paddingLeft: 2 }}>
+              <span style={{ fontSize: 7, color: 'rgba(0,0,0,0.28)', fontWeight: 700, letterSpacing: '0.08em', width: 52, textAlign: 'center' }}>CHARGE</span>
+              <span style={{ fontSize: 7, color: 'rgba(0,0,0,0.28)', fontWeight: 700, letterSpacing: '0.08em', width: 52, textAlign: 'center' }}>SPECIAL</span>
+              <span style={{ fontSize: 7, color: 'rgba(0,0,0,0.28)', fontWeight: 700, letterSpacing: '0.08em', width: 52, textAlign: 'center' }}>PAUSE</span>
             </div>
           </div>
-          <SpeakerDots cols={6} rows={5} />
+          <SpeakerDots cols={6} rows={4} />
         </div>
       </div>
     </div>
@@ -554,7 +626,7 @@ export interface GameShellProps {
 
 export function GameShell({
   children,
-  show25DRotate: _show25DRotate = false,
+  show25DRotate = false,
   onExit,
   onZoomIn,
   onZoomOut,
@@ -573,7 +645,7 @@ export function GameShell({
     });
   }
 
-  const shellProps = { onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls: toggleControls };
+  const shellProps = { onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls: toggleControls, show25D: show25DRotate };
 
   return (
     <div className="game-shell">

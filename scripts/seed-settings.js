@@ -52,6 +52,8 @@ async function seedSettings() {
     // Tournament
     minimumTournamentGapMinutes: 30,
     defaultArenaId: "",
+    // 2.5D rendering — ON by default; admin can toggle off
+    enable25D: true,
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 

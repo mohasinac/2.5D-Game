@@ -2472,6 +2472,62 @@ const ARENAS = [
     surfaceFriction: 0.008,
     difficulty: "medium",
   },
+
+  // ── Classic Stadium (default arena) ──────────────────────────────────────────
+  // Based on the reference image: KO out-zones at corners, pink recoil wall ring,
+  // sky-blue tornado ridge, yellow flat-defense zone, red launch quadrant lines.
+  {
+    id: "classic_stadium",
+    name: "Classic Stadium",
+    description: "The definitive Beyblade stadium. Pink recoil walls, a sky-blue tornado ridge, and a flat defense zone at the centre. Launch from opposite quadrants.",
+    isDefault: true,
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "default",
+    autoRotate: false,
+
+    // Zone radii (in pixels at 1080×1080)
+    arenaPixelRadius: 486,   // outer KO boundary — outside = ring-out
+    pinkWallRadius:   432,   // inner edge of the pink recoil wall (no-go zone)
+    ridgeRadius:      360,   // sky-blue tornado ridge centre-line
+    flatZoneRadius:   216,   // yellow inner ring — flat defense area inside here
+
+    wallBounceFactor: 1.2,   // recoil multiplier when hitting the pink wall
+
+    // Spin zones — tornado ridge boosts spin CW
+    spinZones: [
+      {
+        id: "tornado_ridge",
+        cx: 540, cy: 540,
+        radius: 360,
+        ringWidth: 36,
+        spinDirection: "cw",
+        spinStrength: 0.35,
+        applyTo: "spin",
+        color: 0x00BFFF,
+      },
+    ],
+
+    // KO: bey crossing arenaPixelRadius is eliminated
+    koZone: "outside_circle",
+
+    // Launch placement
+    launchMode: "quadrant",       // 2 players → opposite quadrants; 4 → all four
+    royaleLaunchRadius: 412,      // spawn ring for 12-player royale (just inside pink wall)
+
+    wall: circleWall("metal", 18, 10),
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.007,
+    difficulty: "medium",
+  },
 ];
 
 // ─── Floor Group layouts (saved multi-floor configs) ──────────────────────────

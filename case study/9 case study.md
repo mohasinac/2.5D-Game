@@ -44309,3 +44309,1585 @@ const unionAchillesPowerMode = {
   stockLimitations: ["retsu_lw_no_value", "convert_scrape_risk", "xtend_plus_attack_limited"],
 };
 ```
+
+---
+
+## CASE XXXX: Gatinko Chip — Longinus (Zwei Longinus Drake Spiral' Metsu)
+
+The Longinus Gatinko Chip is the defining left-spin chip of the Gatinko Layer System. At **3.0 g [FACT]**, it carries an identical burst-resistance profile to the Valkyrie chip: **two hard locks only — no standard-thickness teeth [FACT]**. This binary hard-lock arrangement eliminates the low-strength teeth that wear and soften burst resistance on chips such as Achilles, producing a plateau resistance curve: the chip either holds or releases at the hard threshold, with no graduated weakening phase. The symmetric silhouette [FACT] means its angular momentum contribution is purely axisymmetric — no imbalance vector from the chip itself regardless of spin direction, critical for a left-spin assembly where even small imbalance terms are amplified by centrifugal force.
+
+At r_chip ≈ 8 mm [INFERENCE — standard GC hub radius]:
+I_chip = ½ × 0.003 × (0.008)² = **9.6 × 10⁻⁷ kg·m² [INFERENCE]**
+
+This is the smallest I contributor in the Zwei assembly (≈ 3.4% of total) and negligible for angular momentum budgeting. OWD_chip = 9.6×10⁻⁷ / (0.003 × 0.008²) = **0.500 [INFERENCE]**. Its functional value is entirely in the hard-lock cantilever geometry. Rated **top-tier for left-spin attack [FACT]** — no other Gatinko Chip offers two hard locks with left-spin compatibility.
+
+**TypeScript model:**
+```typescript
+const gcLonginus = {
+  id: "gc_longinus", nameTTJP: "Longinus",
+  generation: "burst_gatinko", partType: "gatinkoChip",
+  spinDirection: "left", mass_g: 3.0,           // [FACT]
+  lockConfig: { hardLocks: 2, standardLocks: 0 }, // [FACT — same count as Valkyrie]
+  wearProfile: "plateau",  // binary hold/release [INFERENCE]
+  I_kgm2: 9.60e-7, r_ref_m: 0.008, OWD: 0.500, // [INFERENCE]
+  competitiveRating: "top_tier_left_spin",        // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Layer Weight — Metsu (Zwei Longinus Drake Spiral' Metsu)
+
+The Metsu Layer Weight is a **Z-shape quad-hexagon design [FACT]** — four hexagonal nodes arranged so that two sit on one diagonal and two on the opposing diagonal, producing C₂ rotational symmetry. At **8.1 g [FACT]**, Metsu falls below the Goku LW in raw mass, meaning lower absolute I and gyroscopic stiffness. However, the Z-shape's mass distribution concentrates material further from centre than the Ten LW's cross-arm geometry, giving Metsu **higher effective OWD than Ten for attack [FACT]**, and the bilateral symmetry aligns constructively with **two-sided Layer Bases such as Judgement and Zwei [FACT]**.
+
+Mass decomposition (Z-shape, four nodes [INFERENCE]):
+- Outer two nodes (~60% at r = 22 mm): I = 0.60 × 0.0081 × (0.022)² = 2.358 × 10⁻⁶ kg·m²
+- Inner two nodes (~30% at r = 14 mm): I = 0.30 × 0.0081 × (0.014)² = 4.762 × 10⁻⁷ kg·m²
+- Central connector (~10% at r = 7 mm): I = 0.10 × 0.0081 × (0.007)² = 3.969 × 10⁻⁸ kg·m²
+
+**I_Metsu = 2.874 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD = 2.874×10⁻⁶ / (0.0081 × 0.023²) = **0.671 [INFERENCE]**
+
+Lighter than Goku → lower I for a given geometry → outclassed in pure attack mass [FACT]. Second-choice attack LW behind Goku; top-two choice for two-sided base configurations [FACT].
+
+**TypeScript model:**
+```typescript
+const lwMetsu = {
+  id: "lw_metsu", nameTTJP: "Metsu",
+  generation: "burst_gatinko", partType: "layerWeight",
+  mass_g: 8.1, shape: "Z_quad_hexagon", symmetry: "C2", // [FACT]
+  I_kgm2: 2.874e-6, r_ref_m: 0.023, OWD: 0.671,        // [INFERENCE]
+  bestBases: ["judgement", "zwei"],          // [FACT]
+  vsGoku: "outclassed_by_mass",             // [FACT]
+  vsTen: "superior_distribution_for_attack", // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Layer Base — Zwei (Zwei Longinus Drake Spiral' Metsu)
+
+The Zwei Layer Base at **15.9 g [FACT]** is among the heaviest Layer Bases in the Gatinko catalog and the defining constraint of the Zwei Longinus combination. The base carries **four blades in a 2+2 configuration — two smaller blades and two larger blades with metal dragon-head protrusions [FACT]** — all oriented with **downward-sloping contact faces [FACT]** that maximise smash delivery. The downward slope means the contact normal points radially outward and slightly downward: at φ ≈ 20° from the horizontal plane [INFERENCE from "downward-sloping" description], smash fraction = cos(20°) = **0.940 [INFERENCE]** — essentially pure lateral smash with minimal upward ejection component. This is the highest smash fraction in the current Gatinko analysis set.
+
+Mass decomposition (2+2 blade structure [INFERENCE]):
+- 2 large blades with metal dragon heads (~55% at r = 33 mm): I = 0.55 × 0.0159 × (0.033)² = 9.574 × 10⁻⁶ kg·m²
+- 2 small blades (~25% at r = 22 mm): I = 0.25 × 0.0159 × (0.022)² = 1.932 × 10⁻⁶ kg·m²
+- Hub/core (~20% at r = 8 mm): I = 0.20 × 0.0159 × (0.008)² = 2.038 × 10⁻⁷ kg·m²
+
+**I_Zwei = 1.171 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.171×10⁻⁵ / (0.0159 × 0.037²) = 1.171×10⁻⁵ / 2.177×10⁻⁵ = **0.538 [INFERENCE]**
+
+Critical limitations [all FACT]:
+1. **Left-spin only viable** — blade geometry tuned for CCW rotation; RS faces produce pure recoil.
+2. **No Burst Stopper** — no locking tab to prevent burst under heavy recoil.
+3. **Explicit plastic driver incompatibility** — product text states Zwei "cannot use plastic Drivers such as Spiral' well due to its heavy weight." The only manufacturer-confirmed part incompatibility in the current analysis set.
+
+**TypeScript model:**
+```typescript
+const lbZwei = {
+  id: "lb_zwei", nameTTJP: "Zwei",
+  generation: "burst_gatinko", partType: "layerBase",
+  spinDirection: "left_only", mass_g: 15.9,          // [FACT]
+  bladeConfig: "2plus2_metal_dragon_heads",           // [FACT]
+  contactAngle_deg: 20, smashFraction: 0.940,        // [INFERENCE]
+  I_kgm2: 1.171e-5, r_ref_m: 0.037, OWD: 0.538,    // [INFERENCE]
+  burstStopper: false, plasticDriverCompatible: false, // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Forge Disc — Drake (Zwei Longinus Drake Spiral' Metsu)
+
+The Drake Forge Disc at **26.4 g [FACT]** is a two-part construction of plastic body and metal components [FACT], produced in a four-sided layout whose dragon-head protrusions are **geometrically aligned with the Zwei Layer Base's large blades [FACT]**, concentrating disc mass beneath the base's primary contact points. This positional alignment maximises the angular momentum residing at the Zwei blade tips during impact — a co-design intent between Drake and Zwei in the stock configuration. The disc also carries a noted **scrape risk [FACT]**, and **Sting and Blitz are superior pairing discs for Zwei [FACT]**, offering equivalent or greater mass without the low-clearance dragon-head geometry.
+
+Mass decomposition (four-sided, metal-at-protrusion [INFERENCE]):
+- Metal dragon-head protrusions (~35% at r = 30 mm): I = 0.35 × 0.0264 × (0.030)² = 8.316 × 10⁻⁶ kg·m²
+- Plastic disc body (~40% at r = 20 mm): I = 0.40 × 0.0264 × (0.020)² = 4.224 × 10⁻⁶ kg·m²
+- Hub (~25% at r = 10 mm): I = 0.25 × 0.0264 × (0.010)² = 6.600 × 10⁻⁷ kg·m²
+
+**I_Drake = 1.322 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.322×10⁻⁵ / (0.0264 × 0.033²) = 1.322×10⁻⁵ / 2.876×10⁻⁵ = **0.460 [INFERENCE]**
+
+Moderate OWD — does not rank with high-OWD stamina discs (7, 10, 0) but the absolute mass and dragon-head position provide meaningful angular momentum contribution to the Zwei contact geometry.
+
+**TypeScript model:**
+```typescript
+const discDrake = {
+  id: "disc_drake", nameTTJP: "Drake",
+  generation: "burst_god", partType: "forgeDisc",
+  construction: "plastic_metal_twopart", mass_g: 26.4,      // [FACT]
+  dragonHeadAlignment: "zwei_compatible", scrapeRisk: true, // [FACT]
+  I_kgm2: 1.322e-5, r_ref_m: 0.033, OWD: 0.460,           // [INFERENCE]
+  superiorAlternatives: ["sting", "blitz"],                  // with Zwei [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Performance Tip — Spiral' (Zwei Longinus Drake Spiral' Metsu)
+
+Spiral' at **6.3 g [FACT]** is a Dash-generation driver [FACT] — stronger spring lock than standard Burst drivers for marginal burst resistance independent of Layer teeth. The flat tip carries **left-pointing spikes [FACT]**: textured protrusions angled CCW in the top view, engaging the stadium floor under left-spin centrifugal press to produce the left-spin flower-pattern trajectory. **Speed exceeds Assault [FACT]** — the aggressive rubber perimeter drives rapid orbital motion. However, the rough outer perimeter **cripples stamina [FACT]** and the flat tip profile **cannot maintain a banking pattern [FACT]** (no dome or taper to sustain wide-orbit tilt).
+
+The **manufacturer explicitly states Zwei cannot use plastic Drivers such as Spiral' well due to its heavy weight [FACT]** — the only stock incompatibility confirmed in writing within this analysis set. The Zwei base (15.9 g) + Drake disc (26.4 g) create a 42.3 g upper assembly. A 6.3 g plastic tip generating normal force N = 0.0597 × 9.81 = 0.586 N provides insufficient centrifugal driver stabilisation for flower-pattern execution under that load.
+
+Tip friction torque (flat contact [INFERENCE]):
+r_tip ≈ 10 mm; τ = μ × N × r_tip = 0.70 × 0.586 × 0.010 = **4.10 × 10⁻³ N·m [INFERENCE]**
+
+**TypeScript model:**
+```typescript
+const driverSpiralDash = {
+  id: "driver_spiral_prime", nameTTJP: "Spiral'",
+  generation: "burst_gatinko_dash", partType: "performanceTip",
+  mass_g: 6.3, dashDriver: true,              // [FACT]
+  spinBias: "left", tipType: "flat_spike",    // [FACT]
+  speed: "exceeds_assault",                   // [FACT]
+  canBankOrbit: false, stamina: "poor",       // [FACT]
+  zweiCompatible: false,                       // [FACT — manufacturer stated]
+  r_tip_m: 0.010, frictionTorque_Nm: 4.10e-3, // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Full Assembly — Zwei Longinus Drake Spiral' Metsu
+
+The Zwei Longinus Drake Spiral' Metsu stock combination is distinguished by three attributes unique in the current Burst analysis set: **(1) all five component masses are manufacturer-stated [ALL FACT] — the first complete-FACT assembly in this Burst section; (2) a manufacturer-confirmed stock incompatibility between Layer Base and Driver makes it the only pairing explicitly contradicted by product text; (3) it is the first pure left-spin attack assembly in the analysis, providing the chirality complement to Achilles-based right-spin sets.**
+
+**Assembly mass [ALL FACT]:**
+
+| Part | Mass (g) |
+|------|----------|
+| GC Longinus | 3.0 |
+| LW Metsu | 8.1 |
+| LB Zwei | 15.9 |
+| Drake | 26.4 |
+| Spiral' | 6.3 |
+| **Total** | **59.7** |
+
+I_total = I_GC (9.60×10⁻⁷) + I_LW (2.874×10⁻⁶) + I_LB (1.171×10⁻⁵) + I_Drake (1.322×10⁻⁵) + I_Spiral ≈ 4.0×10⁻⁷ [INFERENCE — plastic driver, low r]
+
+**I_total = 2.836 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 2.836×10⁻⁵ × 600 = **1.702 × 10⁻² kg·m²/s [INFERENCE]**
+
+t_spin_attack (with Spiral') = L₀ / τ_Spiral = 1.702×10⁻² / 4.10×10⁻³ ≈ **4.2 s [INFERENCE]** — confirms attack-only duty cycle; no stamina viability.
+
+```
+Dominant contributors to I_total:
+  Drake disc  ████████████████████████████████████  46.6%
+  LB Zwei     █████████████████████████████████     41.3%
+  LW Metsu    ██████                                10.1%
+  Other        ██                                   2.0%
+```
+
+Optimised Zwei build replaces Spiral' with a rubber Dash driver:
+- **Zwei Longinus Drake Destroy'** — sustained flower pattern; burst resistance from Dash lock + 2 hard Longinus locks [INFERENCE from FACT parts]
+- **Zwei Longinus Sting Xtreme'** — Sting eliminates Drake scrape risk; Xtreme' maximises KO potential [INFERENCE from FACT parts]
+
+**TypeScript model:**
+```typescript
+const zweiLonginusDrakeSpiralMetsu = {
+  id: "zwei_longinus_drake_spiral_metsu",
+  nameTTJP: "Zwei Longinus Drake Spiral' Metsu",
+  generation: "burst_gatinko", type: "attack", spinDirection: "left",
+  allMassesFact: true,                    // unique in current Burst set [FACT]
+  stockIncompat: "zwei_plastic_driver",  // [FACT — manufacturer stated]
+  parts: {
+    gatinkoChip: { id: "gc_longinus",         mass_g: 3.0  },  // [FACT]
+    layerWeight:  { id: "lw_metsu",           mass_g: 8.1  },  // [FACT]
+    layerBase:    { id: "lb_zwei",            mass_g: 15.9 },  // [FACT]
+    disc:         { id: "disc_drake",         mass_g: 26.4 },  // [FACT]
+    driver:       { id: "driver_spiral_prime", mass_g: 6.3 },  // [FACT]
+  },
+  assembly: {
+    totalMass_g: 59.7,         // [ALL FACT]
+    I_total_kgm2: 2.836e-5,   // [INFERENCE]
+    omega0_rads: 600,
+    L0_kgm2s: 1.702e-2,       // [INFERENCE]
+    tSpin_stock_s: 4.2,        // with Spiral' [INFERENCE]
+    optimalDrivers: ["destroy_prime", "xtreme_prime", "assault_prime"], // [INFERENCE]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Energy Layer — Legend Spriggan (Legend Spriggan 7 Merge)
+
+The Legend Spriggan Energy Layer at **14.5 g [FACT]** is one of the heaviest God Layers and the original dual-spin platform in the Burst system. The layer features **four blades — two black blades and two clear blades [FACT]** — with an **irremovable metal God Chip integrated at the layer center [FACT]**. The dual-spin mechanism provides **two independent sets of burst teeth: one for Right-Spin Mode, one for Left-Spin Mode [FACT]**, with the caveat that two teeth on each set are standard-layer thickness (thinner than the remainder), causing those positions to **wear down quickly [FACT]**. Replacement copies are explicitly recommended.
+
+In Right-Spin Mode, the black blades are sloped for Upper Attack but blade thickness redirects most contact to the blade tips, producing Spike Attack and high Burst Attack risk; the combination **requires high-friction rubber tips such as Xtreme to prevent Self-Burst [FACT]**. In Left-Spin Mode, the clear blade flat faces are intended for Smash Attack but the recoil design produces high Self-Burst risk instead [FACT]. Right-Spin Mode has greater success overall [FACT].
+
+Mass decomposition (4-blade + metal God Chip [INFERENCE]):
+- 2 black upper/spike blades (~30% at r = 32 mm): I = 0.30 × 0.0145 × (0.032)² = 4.464 × 10⁻⁶ kg·m²
+- 2 clear smash blades (~30% at r = 35 mm): I = 0.30 × 0.0145 × (0.035)² = 5.329 × 10⁻⁶ kg·m²
+- Metal God Chip (~15% at r = 8 mm): I = 0.15 × 0.0145 × (0.008)² = 1.392 × 10⁻⁷ kg·m²
+- ABS body/hub (~25% at r = 14 mm): I = 0.25 × 0.0145 × (0.014)² = 7.105 × 10⁻⁷ kg·m²
+
+**I_LegendSpriggan = 1.065 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.065×10⁻⁵ / (0.0145 × 0.037²) = 1.065×10⁻⁵ / 1.985×10⁻⁵ = **0.537 [INFERENCE]**
+
+The metal God Chip contributes only 1.3% of total I despite being ~15% of layer mass — its placement at r = 8 mm makes it a gyroscopic stabiliser, not an angular momentum contributor.
+
+**TypeScript model:**
+```typescript
+const layerLegendSpriggan = {
+  id: "layer_legend_spriggan", nameTTJP: "Legend Spriggan",
+  generation: "burst_god", partType: "energyLayer", type: "balance",
+  mass_g: 14.5, dualSpin: true,              // [FACT]
+  metalGodChip: "irremovable",              // [FACT]
+  bladeConfig: "2black_spike_2clear_smash", // [FACT]
+  rsMode: { attackType: "spike", selfBurstRisk: "high", requiresRubberTip: true },  // [FACT]
+  lsMode: { attackType: "smash", selfBurstRisk: "high", vsLeftSpinViable: true },   // [FACT]
+  thinTeeth: { countPerSet: 2, wearRate: "fast" }, // [FACT]
+  I_kgm2: 1.065e-5, r_ref_m: 0.037, OWD: 0.537,  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Forge Disc — 7 (Legend Spriggan 7 Merge)
+
+Forge Disc 7 at **23.2 g [FACT]** is an **asymmetrical elliptical disc [FACT]** that is nonetheless balanced by having two of its sections on one side be halves [FACT], allowing Disc Frame mounting. The seven protrusions resembling the numeral "7" extend further and are thicker than most other discs [FACT]. It is **one of the heaviest discs in the God era, outclassed only by 10 and 0 [FACT]**, and carries the **highest OWD of all Core Discs for Stamina Combinations [FACT]** — the protrusions concentrate mass toward the periphery more efficiently than the deceptively heavy Disc 0 (which is stated to have CWD despite its size [FACT from Disc 0 description]).
+
+Mass decomposition (seven protrusions, outer-weighted [INFERENCE]):
+- Outer protrusions (~55% at r = 30 mm): I = 0.55 × 0.0232 × (0.030)² = 1.148 × 10⁻⁵ kg·m²
+- Inner disc body (~35% at r = 20 mm): I = 0.35 × 0.0232 × (0.020)² = 3.248 × 10⁻⁶ kg·m²
+- Hub (~10% at r = 10 mm): I = 0.10 × 0.0232 × (0.010)² = 2.320 × 10⁻⁷ kg·m²
+
+**I_7 = 1.496 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.496×10⁻⁵ / (0.0232 × 0.033²) = 1.496×10⁻⁵ / 2.527×10⁻⁵ = **0.592 [INFERENCE]**
+
+This is the highest Disc OWD in the current Burst analysis set, consistent with the FACT that Disc 7 leads all Core Discs in Stamina potential. Disc Frame compatibility opens attack and defence supplementation without sacrificing the OWD baseline [FACT].
+
+**TypeScript model:**
+```typescript
+const disc7 = {
+  id: "disc_7", nameTTJP: "7",
+  generation: "burst_god", partType: "forgeDisc",
+  mass_g: 23.2, shape: "asymmetric_elliptical_balanced", // [FACT]
+  protrusions: 7, discFrameCompatible: true,             // [FACT]
+  owdRanking: "highest_core_disc_stamina",               // [FACT]
+  I_kgm2: 1.496e-5, r_ref_m: 0.033, OWD: 0.592,        // [INFERENCE]
+  superiorTo: ["0_for_stamina"],                          // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Performance Tip — Merge (Legend Spriggan 7 Merge)
+
+Merge at **5.95 g [FACT]** features a **six-pointed flat rubber tip with a sharp plastic tip in the center [FACT]**, sitting at standard height. This dual-geometry design produces two operationally distinct modes that are spin-state dependent rather than manually switched:
+
+**Center-stable mode (mint, launched straight):** The sharp plastic tip bears the full normal force. At r_sharp ≈ 0.3 mm [INFERENCE — sub-millimetre point contact], friction torque is negligible: τ = μ × N × r_sharp ≈ 0.70 × 0.428 × 3×10⁻⁴ ≈ 9.0×10⁻⁵ N·m [INFERENCE]. The bey remains near-stationary, conserving spin — analogous to a sharp or needle tip stamina mode.
+
+**Rubber-engagement mode (off-balance or launched at angle):** The six rubber points contact the stadium floor at r_rubber ≈ 8 mm [INFERENCE]. The increased rubber surface area produces **flower-pattern speeds exceeding Xtreme [FACT]** — the six contact points generate higher aggregate friction area than Xtreme's single rubber depression. Petal count is **6 [INFERENCE from six rubber points]**, producing a tighter symmetric orbit than a 5-petal tip. However, the greater rubber surface area **cripples stamina in this mode [FACT]**.
+
+**Worn tip mode:** Worn rubber switches from aggressive drive to a **braking function against knock-out [FACT]**, at the cost of stamina, before the sharp center restores stability.
+
+τ_rubber = μ × N × r_rubber = 0.70 × 0.428 × 0.008 = **2.40 × 10⁻³ N·m [INFERENCE]**
+
+(N = 0.04365 kg × 9.81 m/s² = 0.428 N using Legend Spriggan 7 Merge assembly mass)
+
+t_spin_attack = L₀ / τ_rubber ≈ 1.597×10⁻² / 2.40×10⁻³ ≈ **6.7 s [INFERENCE]** — attack-only duty cycle when rubber engages.
+
+**TypeScript model:**
+```typescript
+const driverMerge = {
+  id: "driver_merge", nameTTJP: "Merge",
+  generation: "burst_god", partType: "performanceTip",
+  mass_g: 5.95, tipType: "rubber_6point_plus_sharp_center", // [FACT]
+  modes: {
+    stableCenter: { contact: "sharp_plastic", stamina: "high", speed: "near_zero" },  // [FACT]
+    rubberFlower:  { contact: "rubber_6point", speed: "exceeds_xtreme", petalCount: 6, stamina: "poor" }, // [FACT + INFERENCE petal]
+    worn:          { contact: "rubber_brake", knockoutResistance: "improved", stamina: "reduced" }, // [FACT]
+  },
+  r_rubber_m: 0.008, frictionTorque_rubber_Nm: 2.40e-3, // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Full Assembly — Legend Spriggan 7 Merge
+
+Legend Spriggan 7 Merge is a **God Layer Balance-type assembly with all three component masses as manufacturer-stated facts [ALL FACT]**, totalling **43.65 g**.
+
+**Assembly mass [ALL FACT]:**
+
+| Part | Mass (g) |
+|------|----------|
+| Legend Spriggan | 14.5 |
+| Disc 7 | 23.2 |
+| Merge | 5.95 |
+| **Total** | **43.65** |
+
+I_total = I_layer (1.065×10⁻⁵) + I_7 (1.496×10⁻⁵) + I_Merge ≈ 4.0×10⁻⁷ [INFERENCE — low r tip]
+
+**I_total = 2.601 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 2.601×10⁻⁵ × 600 = **1.561 × 10⁻² kg·m²/s [INFERENCE]**
+
+t_spin_center = L₀ / τ_sharp ≈ 1.561×10⁻² / 9.0×10⁻⁵ ≈ **173 s [INFERENCE]** (theoretical; assumes perfect sharp-tip contact throughout — actual stamina is limited by eventual balance degradation).
+
+```
+Dominant contributors to I_total:
+  Disc 7            ████████████████████████████████████  57.5%
+  Legend Spriggan   ████████████████████████             40.9%
+  Merge + other     ██                                    1.6%
+```
+
+The combination is rated top-tier for Attack in RS Mode [FACT] when paired with high-friction rubber tips (Xtreme recommended [FACT]), with Disc 7's high OWD providing angular momentum retention between attacks. The Merge tip's center-stable mode supports non-combat spin conservation, while the rubber-engagement mode provides an escape mechanism when knocked off trajectory.
+
+**TypeScript model:**
+```typescript
+const legendSpriggan7Merge = {
+  id: "legend_spriggan_7_merge",
+  nameTTJP: "Legend Spriggan 7 Merge",
+  generation: "burst_god", type: "balance",
+  parts: {
+    layer:  { id: "layer_legend_spriggan", mass_g: 14.5 },  // [FACT]
+    disc:   { id: "disc_7",               mass_g: 23.2 },   // [FACT]
+    driver: { id: "driver_merge",          mass_g: 5.95 },  // [FACT]
+  },
+  assembly: {
+    totalMass_g: 43.65,         // [ALL FACT]
+    I_total_kgm2: 2.601e-5,    // [INFERENCE]
+    omega0_rads: 600,
+    L0_kgm2s: 1.561e-2,        // [INFERENCE]
+    tSpin_stableCenter_s: 173, // [INFERENCE — theoretical upper bound]
+    tSpin_rubberMode_s: 6.5,   // [INFERENCE — attack-only duty]
+    rsRecommendedTip: "xtreme", // to prevent self-burst [FACT]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Energy Layer — Cho-Z Spriggan (Cho-Z Spriggan 0Wall Zeta')
+
+The Cho-Z Spriggan Energy Layer at **19.5 g [FACT]** is the heaviest of the three Spriggan-lineage layers and the first to carry the **Cho-Z Awakening System [FACT]**: a bistable centrifugal mechanism that, at sufficiently high spin velocity, deploys sub-wings ("Cho-Z Wings") which in turn extend Burst Stopper tabs into the Disc prong grooves — physically blocking loss of the final click and preventing burst [FACT]. Because the mechanism is bistable, the wings do not retract at low spin and must be manually reset after each match [FACT]. This is mechanically distinct from a simple spring return: the bistable snap-through requires deliberate user intervention, creating an asymmetric operational cycle (auto-deploy, manual reset).
+
+The dual-spin architecture provides **two independent sets of Cho-Z Wings — only one set activates per spin direction, as the Disc's starting position blocks the other set [FACT]**. The activation threshold requires extreme spin speeds that may be difficult for younger bladers [FACT].
+
+The principal competitive limitation is directly caused by the Cho-Z Awakening gimmick geometry: the wings position the blades on the **top** of the layer rather than the equatorial contact zone, and the layer's thickness means the blades **rarely make contact with the opponent [FACT]**. When the wings are deployed, they additionally **cover half the gaps between the blades, further reducing attack potential [FACT]**. Despite the near-identical blade profile to Legend Spriggan's RS Mode, Cho-Z Spriggan is rated **poor for attack [FACT]** and is best suited for **spin-equalization, opposite spin to opponent [FACT]**, maximising defense and stamina via recoil reduction.
+
+As with Legend Spriggan, **two teeth per set are standard (thin) thickness** → rapid wear at those positions [FACT]; use of drivers with weak spring locks such as Bearing is recommended to mitigate burst risk from worn teeth [FACT].
+
+Mass decomposition (heavier than Legend Spriggan; Cho-Z Wings + larger body [INFERENCE]):
+- 4 outer blades (~55% at r = 33 mm): I = 0.55 × 0.0195 × (0.033)² = 1.167 × 10⁻⁵ kg·m²
+- ABS body/mid-ring (~25% at r = 18 mm): I = 0.25 × 0.0195 × (0.018)² = 1.580 × 10⁻⁶ kg·m²
+- Metal God Chip + wing mechanism (~20% at r = 10 mm): I = 0.20 × 0.0195 × (0.010)² = 3.900 × 10⁻⁷ kg·m²
+
+**I_CZSpriggan = 1.364 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.364×10⁻⁵ / (0.0195 × 0.037²) = 1.364×10⁻⁵ / 2.671×10⁻⁵ = **0.511 [INFERENCE]**
+
+**TypeScript model:**
+```typescript
+const layerChozSpriggan = {
+  id: "layer_choz_spriggan", nameTTJP: "Cho-Z Spriggan",
+  generation: "burst_choz", partType: "energyLayer", type: "balance",
+  mass_g: 19.5, dualSpin: true, metalGodChip: "irremovable",  // [FACT]
+  gimmick: {
+    name: "ChoZ_Awakening",
+    mechanism: "bistable_centrifugal",                         // [FACT]
+    effect: "burstStopper_tabs_deploy",                        // [FACT]
+    manualResetRequired: true,                                 // [FACT]
+    activationThreshold: "extreme_spin",                       // [FACT]
+    bladeContactEffect: "reduced_by_wing_position",            // [FACT]
+  },
+  thinTeeth: { countPerSet: 2, wearRate: "fast" },            // [FACT]
+  recommendedDriver: "bearing",                                 // [FACT]
+  attackRating: "poor",                                         // [FACT]
+  bestUse: "spin_equalization_opposite_spin",                  // [FACT]
+  I_kgm2: 1.364e-5, r_ref_m: 0.037, OWD: 0.511,             // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Forge Disc — 0 + Disc Frame — Wall (Cho-Z Spriggan 0Wall Zeta')
+
+**Forge Disc 0 — 24.0 g [FACT]**
+
+Disc 0 is a **symmetrical elliptical disc [FACT]** with two large, wide, smooth protrusions that nearly produce a circular profile [FACT]. It is **one of the heaviest discs in the God/Cho-Z era, outclassed only by 10 [FACT]**. Despite the protrusions implying high OWD, the product text explicitly states that **more weight is focused toward the centre — producing CWD [FACT]**, reducing stamina to the level of Disc 2 [FACT]. Disc 0 is therefore **outclassed by Disc 7 for Stamina [FACT]**, but its greater total mass makes it **ideal for Attack and Defense Combinations [FACT]**. The round profile also confers **high Life-After-Death even without Disc Frames such as Cross [FACT]**.
+
+Mass decomposition (CWD profile — centre-weighted despite protrusions [INFERENCE]):
+- Inner disc body (~50% at r = 17 mm): I = 0.50 × 0.0240 × (0.017)² = 3.468 × 10⁻⁶ kg·m²
+- Two outer protrusions (~35% at r = 28 mm): I = 0.35 × 0.0240 × (0.028)² = 6.585 × 10⁻⁶ kg·m²
+- Hub (~15% at r = 10 mm): I = 0.15 × 0.0240 × (0.010)² = 3.600 × 10⁻⁷ kg·m²
+
+**I_0 = 1.041 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.041×10⁻⁵ / (0.0240 × 0.033²) = 1.041×10⁻⁵ / 2.613×10⁻⁵ = **0.398 [INFERENCE]**
+
+This confirms the CWD description: OWD 0.398 vs Disc 7's 0.592 — consistent with "stamina like Disc 2" [FACT]. The mass advantage (24.0 g vs 23.2 g for Disc 7) makes 0 the heavier, lower-OWD alternative.
+
+---
+
+**Disc Frame Wall — 4.1 g [FACT]**
+
+Wall is a **round, thick Disc Frame with eight large downward protrusions [FACT]**, making it **one of the largest and heaviest Frames — heavier than Bump or Lift [FACT]**. The downward protrusions create a severe **scrape risk that inhibits banking patterns [FACT]** and causes stamina loss from stadium floor contact at even moderate spin velocities [FACT]. However, the same downward geometry **lowers the combination's centre of gravity [FACT]**, which benefits Bearing-based spin-equalization combinations by allowing them to **stay upright for longer, enabling more rotations and precession [FACT]**.
+
+Mass decomposition (8 downward protrusions [INFERENCE]):
+- 8 outer protrusions (~70% at r = 32 mm): I = 0.70 × 0.0041 × (0.032)² = 2.942 × 10⁻⁶ kg·m²
+- Ring body (~30% at r = 22 mm): I = 0.30 × 0.0041 × (0.022)² = 5.972 × 10⁻⁷ kg·m²
+
+**I_Wall = 3.539 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD_Wall = 3.539×10⁻⁶ / (0.0041 × 0.033²) = **0.793 [INFERENCE]** — highest per-gram OWD in the current Burst disc component analysis, owing to the large-radius downward spikes.
+
+**Combined 0Wall disc system: m = 28.1 g [FACT]; I_0Wall = 1.041×10⁻⁵ + 3.539×10⁻⁶ = 1.395×10⁻⁵ kg·m² [INFERENCE]**
+
+**TypeScript model:**
+```typescript
+const disc0Wall = {
+  id: "disc_0_wall", coreDisc: "disc_0", frame: "wall",
+  mass_g: { core: 24.0, frame: 4.1, total: 28.1 },  // [FACT]
+  disc0: {
+    shape: "symmetric_elliptical", protrusions: 2,   // [FACT]
+    weightDistribution: "CWD",                         // [FACT — centre-weighted despite appearance]
+    stamina: "like_disc_2",                            // [FACT]
+    LAD: "high",                                       // [FACT]
+    I_kgm2: 1.041e-5, OWD: 0.398,                    // [INFERENCE]
+  },
+  wall: {
+    protrusions: 8, orientation: "downward",           // [FACT]
+    heavier_than: ["bump", "lift"],                    // [FACT]
+    scrapeRisk: true, bankingCompatible: false,        // [FACT]
+    lowersCoG: true, bearingBenefit: "precession",    // [FACT]
+    I_kgm2: 3.539e-6, OWD: 0.793,                    // [INFERENCE]
+  },
+  I_combined_kgm2: 1.395e-5,  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Performance Tip — Zeta' (Cho-Z Spriggan 0Wall Zeta')
+
+Zeta' at **6.4 g [FACT]** is a Dash driver [FACT] — stronger spring lock than standard Burst drivers — with a **three-mode adjustable tip [FACT]** at standard height. Each mode produces a distinct contact geometry and behaviour profile:
+
+**Attack Mode — rectangular flat tip:**
+Produces highly aggressive movement at speeds comparable to Quake [FACT]. The rectangular shape prevents banking: the corners grind against the stadium floor and Tornado Ridge, causing severe stamina loss and inability to hold orbital paths [FACT]. Without the slant present in Quake's tip, Attack Mode cannot produce hop and potential Disc-to-Layer contact [FACT]. Attack Mode is rated unsuitable for both Mobile Attack and Tornado Staller Combinations [FACT].
+
+r_tip_attack ≈ 8 mm × 4 mm rectangular [INFERENCE]; effective r ≈ 6 mm; τ = μ × N × r ≈ 0.70 × 0.530 × 0.006 = **2.23 × 10⁻³ N·m [INFERENCE]** (N = 0.054 kg × 9.81 = 0.530 N)
+
+**Defense Mode — wide ball tip (no tabs):**
+Wide ball intended to maximise surface friction and Defence, but in practice **lags behind Defense driver and even Massive in almost every aspect [FACT]**. The absence of tabs (present on Defense driver as floor-brakes) means no knock-out resistance mechanism; the semi-aggressive early movement from wide ball contact brings the bey closer to the Tornado Ridge, increasing KO vulnerability [FACT].
+
+**Stamina Mode — flat tip + central protrusion (like Fusion):**
+When launched parallel, the central protrusion bears the load — near-stationary, conserving spin analogous to Fusion [FACT]. When knocked off-balance, the flat tip contacts the floor and creates movement at Accel-comparable speed before returning to the protrusion [FACT]. Stamina lags behind Survive, Revolve, and Atomic due to flat geometry and absence of a free-spinning component [FACT]. Can maintain a banking pattern better than Attack Mode but lags behind Accel and Xtreme; the central protrusion can break banking patterns [FACT].
+
+**TypeScript model:**
+```typescript
+const driverZetaDash = {
+  id: "driver_zeta_prime", nameTTJP: "Zeta'",
+  generation: "burst_choz_dash", partType: "performanceTip",
+  mass_g: 6.4, dashDriver: true, modes: 3,  // [FACT]
+  attack: {
+    tipShape: "rectangular_flat", speed: "like_quake",  // [FACT]
+    canBank: false, canHop: false, stamina: "poor",      // [FACT]
+  },
+  defense: {
+    tipShape: "wide_ball_no_tabs",                         // [FACT]
+    vsDefenseDriver: "inferior", vsMassive: "inferior",   // [FACT]
+    earlyMovement: "semi_aggressive", koResistance: "poor", // [FACT]
+  },
+  stamina: {
+    tipShape: "flat_center_protrusion",                    // [FACT]
+    stableContact: "protrusion", recoverContact: "flat",   // [FACT]
+    speed_offBalance: "like_accel",                        // [FACT]
+    vsAtomicRevolve: "inferior", canBreakBanking: true,   // [FACT]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Full Assembly — Cho-Z Spriggan 0Wall Zeta'
+
+Cho-Z Spriggan 0Wall Zeta' presents a design conflict embedded in the stock configuration: the Cho-Z Awakening System's best use case (spin-equalization with opposite spin, sustained precession) calls for a weak spring lock driver such as Bearing [FACT], but Zeta' is a Dash driver with a strong spring lock [FACT]. The Dash spring lock is better suited to attack combinations that accept high recoil — precisely what Cho-Z Spriggan's blade geometry cannot deliver due to its Cho-Z Wing positioning [FACT]. The stock combination is therefore a demonstration platform rather than a competitive configuration.
+
+**Assembly mass [ALL FACT]:**
+
+| Part | Mass (g) |
+|------|----------|
+| Cho-Z Spriggan | 19.5 |
+| Disc 0 | 24.0 |
+| Wall Frame | 4.1 |
+| Zeta' | 6.4 |
+| **Total** | **54.0** |
+
+I_total = I_CZS (1.364×10⁻⁵) + I_0Wall (1.395×10⁻⁵) + I_Zeta ≈ 5.0×10⁻⁷ [INFERENCE]
+
+**I_total = 2.809 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 2.809×10⁻⁵ × 600 = **1.685 × 10⁻² kg·m²/s [INFERENCE]**
+
+```
+Dominant contributors to I_total:
+  Disc 0Wall     ████████████████████████████████████  49.7%
+  Cho-Z Spriggan ██████████████████████████████████    48.6%
+  Zeta' + other  ██                                     1.7%
+```
+
+Optimised Cho-Z Spriggan configurations replace Zeta' with Bearing for spin-equalization [FACT recommendation from product text], and Disc 0Wall benefits that role by lowering CoG via the Wall Frame's downward protrusions [FACT], enabling longer upright precession and extended same-spin scraping or opposite-spin drain.
+
+**TypeScript model:**
+```typescript
+const chozSpriggan0WallZetaDash = {
+  id: "choz_spriggan_0wall_zeta_prime",
+  nameTTJP: "Cho-Z Spriggan 0Wall Zeta'",
+  generation: "burst_choz", type: "balance",
+  stockConflict: "dash_driver_vs_bearing_recommendation",  // [FACT]
+  parts: {
+    layer:  { id: "layer_choz_spriggan", mass_g: 19.5 }, // [FACT]
+    disc:   { id: "disc_0",             mass_g: 24.0 },  // [FACT]
+    frame:  { id: "frame_wall",          mass_g: 4.1  },  // [FACT]
+    driver: { id: "driver_zeta_prime",   mass_g: 6.4  },  // [FACT]
+  },
+  assembly: {
+    totalMass_g: 54.0,          // [ALL FACT]
+    I_total_kgm2: 2.809e-5,    // [INFERENCE]
+    omega0_rads: 600,
+    L0_kgm2s: 1.685e-2,        // [INFERENCE]
+    optimalDriver: "bearing",   // [FACT — product recommendation]
+    optimalUse: "spin_equalization_opposite_spin",  // [FACT]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Gatinko Chip — Valkyrie (Slash Valkyrie Blitz Power Retsu)
+
+The Valkyrie Gatinko Chip at **3.0 g [FACT]** is the right-spin counterpart to the Longinus chip analysed in the Zwei Longinus entry — identical in mass [FACT] and identical in lock architecture: **two hard locks only, no standard-thickness teeth [FACT]**. This gives Valkyrie high burst resistance without a Dash driver, placing it at the top of the Gatinko Chip burst-resistance hierarchy alongside Longinus. The key competitive distinction from Longinus is spin direction — Valkyrie is right-spin and therefore pairs with right-spin attack Layer Bases rather than left-spin configurations [FACT]. The product text confirms that **Valkyrie paired with the Goku Layer Weight is an excellent right-spin combination [FACT]**, identifying Goku as the optimal LW for this chip (consistent with Goku's higher mass and I advantage over Retsu and Metsu).
+
+I and OWD are identical to Longinus by mass and inferred geometry [INFERENCE]:
+I_chip = ½ × 0.003 × (0.008)² = **9.6 × 10⁻⁷ kg·m² [INFERENCE]**
+OWD = 0.500 [INFERENCE]
+
+**TypeScript model:**
+```typescript
+const gcValkyrie = {
+  id: "gc_valkyrie", nameTTJP: "Valkyrie",
+  generation: "burst_gatinko", partType: "gatinkoChip",
+  spinDirection: "right", mass_g: 3.0,          // [FACT]
+  lockConfig: { hardLocks: 2, standardLocks: 0 }, // [FACT]
+  wearProfile: "plateau",                          // [INFERENCE — same as Longinus]
+  I_kgm2: 9.60e-7, r_ref_m: 0.008, OWD: 0.500,  // [INFERENCE]
+  optimalLW: "goku",                               // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Layer Weight — Retsu (Slash Valkyrie Blitz Power Retsu)
+
+The Retsu Layer Weight carries **three hexagons in a 1R + 2L arrangement [FACT]** — one hexagon on the right side and two on the left — producing a fundamentally asymmetric mass distribution. Unlike the Metsu LW's C₂-symmetric Z-shape which places equal mass on both diagonals, Retsu has a net displacement of the weight centroid from the rotational axis. This creates a non-zero imbalance eccentricity (e) that generates a centrifugal imbalance force F = m × e × ω² at any spin speed, driving the combination toward precessing orbit rather than the steady rotation that attack combinations require.
+
+The product text explicitly states that Retsu's hexagons have **less detail than weights such as Sen and Goku [FACT]**, which in manufacturing terms means lower surface relief, fewer undercut geometries, and less total material volume at the outer radii — directly reducing mass and I relative to the detailed-weight alternatives. Retsu is rated **heavily outclassed with no use in combinations [FACT]**.
+
+Mass not stated in product text [UNKNOWN — using 2.5 g from Union Achilles analysis precedent, [INFERENCE]]:
+
+Asymmetric decomposition (1R at 18 mm, 2L at 16 mm [INFERENCE]):
+- 1 right hex (~37% at r = 18 mm): I = 0.37 × 0.0025 × (0.018)² = 2.997 × 10⁻⁷ kg·m²
+- 2 left hex (~50% at r = 16 mm): I = 0.50 × 0.0025 × (0.016)² = 3.200 × 10⁻⁷ kg·m²
+- Central (~13% at r = 8 mm): I = 0.13 × 0.0025 × (0.008)² = 2.080 × 10⁻⁸ kg·m²
+
+**I_Retsu ≈ 6.4 × 10⁻⁷ kg·m² [INFERENCE]**
+
+OWD = 6.4×10⁻⁷ / (0.0025 × 0.023²) = **0.484 [INFERENCE]**
+
+Imbalance eccentricity e ≈ 4 mm [INFERENCE]; F_imbalance = 0.0025 × 0.004 × 600² = **3.6 N at launch [INFERENCE]** — significant wobble driver for a 2.5 g component.
+
+**TypeScript model:**
+```typescript
+const lwRetsuRightSpin = {
+  id: "lw_retsu", nameTTJP: "Retsu",
+  generation: "burst_gatinko", partType: "layerWeight",
+  mass_g: 2.5,                          // [INFERENCE — not stated]
+  shape: "3hex_1R2L", symmetry: "C1",  // [FACT — asymmetric]
+  eccentricity_m: 0.004,               // [INFERENCE]
+  F_imbalance_N_at_600rads: 3.6,       // [INFERENCE]
+  I_kgm2: 6.40e-7, r_ref_m: 0.023, OWD: 0.484,  // [INFERENCE]
+  competitiveRating: "outclassed_no_use",          // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Layer Base — Slash (Slash Valkyrie Blitz Power Retsu)
+
+The Slash Layer Base at **9.1 g [FACT]** is the lightest Layer Base in the current Gatinko analysis (vs Zwei at 15.9 g, Union Speed at 10.6 g, Union Power at 14.4 g). The base carries **three upward-slanted wings as primary contact points [FACT]**, continuing the three-blade Valkyrie lineage from Cho-Z Valkyrie and earlier Energy Layers. The upward slant is the contact geometry inheritance from its predecessors — designed to impart Upper Attack by deflecting the opponent upward during blade-to-blade contact — but the product text explicitly states that the wings are **too short and do not protrude far enough to make decent contact [FACT]**, reducing the practical effectiveness of the slant geometry.
+
+Contact angle analysis (upward-slant, φ ≈ 30° from horizontal [INFERENCE]):
+- Smash fraction = cos(30°) = **0.866 [INFERENCE]**
+- Upper ejection fraction = sin(30°) = **0.500 [INFERENCE]**
+- This is a moderate upper-attack profile — higher upper fraction than Zwei's downward smash but lower total smash magnitude
+
+Compatible with **any right-spin or dual-spin Gatinko Chip [FACT]**. Outclassed by Judgement for right-spin attack [FACT].
+
+Mass decomposition (3-wing, shorter protrusion than Judgement [INFERENCE]):
+- 3 wings (~50% at r = 25 mm): I = 0.50 × 0.0091 × (0.025)² = 2.844 × 10⁻⁶ kg·m²
+- Hub/body (~50% at r = 12 mm): I = 0.50 × 0.0091 × (0.012)² = 6.552 × 10⁻⁷ kg·m²
+
+**I_Slash = 3.499 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD = 3.499×10⁻⁶ / (0.0091 × 0.030²) = 3.499×10⁻⁶ / 8.190×10⁻⁶ = **0.427 [INFERENCE]**
+
+The 9.1 g mass with lower OWD (0.427) produces significantly less I than the Zwei base (1.171×10⁻⁵) at more than 6 g less mass — Slash contributes proportionally less angular momentum at its contact zone. The wing shortfall confirmed in the product text compounds this: reduced protrusion radius lowers both I and the moment arm for impact force transfer.
+
+**TypeScript model:**
+```typescript
+const lbSlash = {
+  id: "lb_slash", nameTTJP: "Slash",
+  generation: "burst_gatinko", partType: "layerBase",
+  spinDirection: "right", mass_g: 9.1,            // [FACT]
+  bladeConfig: "3wing_upward_slant",              // [FACT]
+  contactAngle_deg: 30, smashFraction: 0.866,     // [INFERENCE]
+  upperFraction: 0.500,                            // [INFERENCE]
+  wingReach: "short_insufficient",                // [FACT]
+  I_kgm2: 3.499e-6, r_ref_m: 0.030, OWD: 0.427, // [INFERENCE]
+  outclassedBy: "judgement",                       // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Forge Disc — Blitz (Slash Valkyrie Blitz Power Retsu)
+
+The Blitz Forge Disc at **28.6 g [FACT]** is one of the heaviest discs in the Gatinko Layer System [FACT], exceeding Drake (26.4 g) and Convert (28.8 g ≈ equal). The disc is **three-sided [FACT]** with a secondary plastic piece riveted to the bottom carrying **three flaps that theoretically rise at high spin to improve weight distribution [FACT]**. In practice this gimmick has a **negligible effect [FACT]** — centrifugal-lift flaps on this scale do not alter the disc's mass distribution meaningfully before spin decay dominates.
+
+The disc's competitive value rests on three FACT properties: **well-rounded usage across attack, defense, and stamina [FACT]**; **best suited for attack due to three-sided weight distribution [FACT]** (the three-sided shape produces a triangular mass periodicity that aligns with three-wing attack layers like Slash); and **no scrape risk unlike Convert [FACT]** — the disc clears the stadium floor at full tilt without the low-clearance protrusions that limit Convert in practice.
+
+Mass decomposition (three-sided, flap gimmick [INFERENCE]):
+- 3 outer sections (~50% at r = 28 mm): I = 0.50 × 0.0286 × (0.028)² = 1.124 × 10⁻⁵ kg·m²
+- Inner disc body (~40% at r = 18 mm): I = 0.40 × 0.0286 × (0.018)² = 3.713 × 10⁻⁶ kg·m²
+- Plastic flap mechanism (~10% at r = 22 mm): I = 0.10 × 0.0286 × (0.022)² = 1.384 × 10⁻⁶ kg·m²
+
+**I_Blitz = 1.634 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.634×10⁻⁵ / (0.0286 × 0.033²) = 1.634×10⁻⁵ / 3.115×10⁻⁵ = **0.524 [INFERENCE]**
+
+Blitz is the dominant I contributor in the Slash Valkyrie assembly at ~74.8% of I_total — a mass-dominant disc profile consistent with its top-tier Gatinko disc status.
+
+**TypeScript model:**
+```typescript
+const discBlitz = {
+  id: "disc_blitz", nameTTJP: "Blitz",
+  generation: "burst_gatinko", partType: "forgeDisc",
+  mass_g: 28.6, sides: 3,               // [FACT]
+  flapGimmick: { theoretic: true, practicalEffect: "negligible" }, // [FACT]
+  scrapeRisk: false,                      // [FACT]
+  versatility: "attack_defense_stamina", // [FACT]
+  bestUse: "attack_3sided",              // [FACT]
+  I_kgm2: 1.634e-5, r_ref_m: 0.033, OWD: 0.524,  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Performance Tip — Power (Slash Valkyrie Blitz Power Retsu)
+
+The Power Performance Tip at **6.4 g [FACT]** carries a **spring-loaded flat star tip of wide diameter, described as a combination of Jaggy and Nothing [FACT]**. The spring mechanism provides a unique burst-resistance mode: when the spring-loaded tip is retracted and the spring compressed (achieved by impact force or deliberate depression), burst resistance rises to the level of a Dash driver [FACT]. This is an impact-triggered passive burst-resistance system — unlike the Cho-Z Awakening bistable mechanism (which is centrifugal and remains deployed), Power's spring is continuously active and resets automatically, making it a momentary resistance boost rather than a sustained lock.
+
+Despite this gimmick, the product text confirms that **Dash drivers offer more immediate and consistent high burst resistance [FACT]** — the spring must be compressed by impact to trigger, whereas Dash drivers maintain elevated resistance throughout the match. Furthermore, Power carries two additional competitive disqualifiers [FACT]:
+1. **Too little stamina** — the jagged star tip edge contacts the stadium floor with high friction and irregular geometry, accelerating spin decay.
+2. **Difficult to control due to jagged shape** — the star points prevent stable flower-pattern orbiting.
+
+Against attack alternatives, **Quick' and Xtreme' offer greater speed and control [FACT]**; against stamina alternatives, **Destroy' and Zephyr' offer more stamina [FACT]**. The product text concludes there is **no reason to use Power over other drivers [FACT]**.
+
+Tip geometry (wide-diameter flat star, r_star ≈ 9 mm [INFERENCE]):
+τ = μ × N × r_star = 0.70 × (0.0496 × 9.81) × 0.009 = 0.70 × 0.487 × 0.009 = **3.06 × 10⁻³ N·m [INFERENCE]**
+
+(N uses assembly mass = 49.6 g × g = 0.487 N; assembly mass from full-assembly case below)
+
+**TypeScript model:**
+```typescript
+const driverPower = {
+  id: "driver_power", nameTTJP: "Power",
+  generation: "burst_gatinko", partType: "performanceTip",
+  mass_g: 6.4,                                              // [FACT]
+  tipType: "spring_loaded_flat_star",                       // [FACT]
+  analogueTo: ["jaggy", "nothing"],                         // [FACT]
+  gimmick: {
+    type: "spring_compress_burst_resist",
+    triggeredBy: "impact",
+    brLevel: "dash_equivalent_when_compressed",             // [FACT]
+    vsActualDash: "less_immediate_less_consistent",         // [FACT]
+  },
+  stamina: "too_little",                                    // [FACT]
+  control: "difficult_jagged_shape",                        // [FACT]
+  superiorAlternatives: {
+    speed: ["quick_prime", "xtreme_prime"],                 // [FACT]
+    stamina: ["destroy_prime", "zephyr_prime"],             // [FACT]
+  },
+  competitiveRating: "no_reason_to_use",                   // [FACT]
+  r_tip_m: 0.009, frictionTorque_Nm: 3.06e-3,             // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Full Assembly — Slash Valkyrie Blitz Power Retsu
+
+Slash Valkyrie Blitz Power Retsu is notable as an assembly where **two of five components are outright rated uncompetitive in their own product text** — Retsu (no use in combinations [FACT]) and Power (no reason to use over other drivers [FACT]) — making it a demonstration and customisation-entry vehicle rather than a competitive configuration.
+
+**Assembly mass:**
+
+| Part | Mass (g) | Status |
+|------|----------|--------|
+| GC Valkyrie | 3.0 | [FACT] |
+| LW Retsu | ~2.5 | [INFERENCE] |
+| LB Slash | 9.1 | [FACT] |
+| Blitz | 28.6 | [FACT] |
+| Power | 6.4 | [FACT] |
+| **Total** | **~49.6** | [INFERENCE — Retsu mass unknown] |
+
+I_total = I_GC (9.6×10⁻⁷) + I_Retsu (6.4×10⁻⁷) + I_Slash (3.499×10⁻⁶) + I_Blitz (1.634×10⁻⁵) + I_Power ≈ 4.0×10⁻⁷
+
+**I_total = 2.184 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 2.184×10⁻⁵ × 600 = **1.310 × 10⁻² kg·m²/s [INFERENCE]**
+
+t_spin_attack (Power tip) = L₀ / τ = 1.310×10⁻² / 3.06×10⁻³ ≈ **4.3 s [INFERENCE]**
+
+```
+Dominant contributors to I_total:
+  Blitz         ████████████████████████████████████  74.8%
+  LB Slash      ██████████                            16.0%
+  GC Valkyrie   ████                                   4.4%
+  LW Retsu      ███                                    2.9%
+  Power          ██                                    1.9%
+```
+
+Competitive optimisation path — replace two underperforming parts:
+1. **Retsu → Goku**: explicitly recommended by product text [FACT]; higher mass and I, symmetric
+2. **Power → Quick' or Xtreme'**: [FACT]; restores speed and control for attack use
+
+The optimised combination **Slash Valkyrie Blitz Quick' / Xtreme' (Goku)** is the intended competitive form implied by the product text across both the Valkyrie chip and Power tip descriptions.
+
+**TypeScript model:**
+```typescript
+const slashValkyriePowerRetsu = {
+  id: "slash_valkyrie_blitz_power_retsu",
+  nameTTJP: "Slash Valkyrie Blitz Power Retsu",
+  generation: "burst_gatinko", type: "attack",
+  parts: {
+    gatinkoChip: { id: "gc_valkyrie",    mass_g: 3.0  },  // [FACT]
+    layerWeight:  { id: "lw_retsu",      mass_g: 2.5  },  // [INFERENCE]
+    layerBase:    { id: "lb_slash",      mass_g: 9.1  },  // [FACT]
+    disc:         { id: "disc_blitz",    mass_g: 28.6 },  // [FACT]
+    driver:       { id: "driver_power",  mass_g: 6.4  },  // [FACT]
+  },
+  assembly: {
+    totalMass_g_est: 49.6,       // [INFERENCE — Retsu mass unknown]
+    I_total_kgm2: 2.184e-5,     // [INFERENCE]
+    omega0_rads: 600,
+    L0_kgm2s: 1.310e-2,         // [INFERENCE]
+    tSpin_attack_s: 4.3,         // with Power [INFERENCE]
+    twoUncompetitiveParts: ["retsu_lw", "power_driver"],  // [FACT]
+    optimalLW: "goku",           // [FACT]
+    optimalDriver: ["quick_prime", "xtreme_prime"],        // [FACT]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Gatinko Chip — Fafnir (Wizard Fafnir Ratchet Rise Sen)
+
+The Fafnir Gatinko Chip at **2.7 g [FACT]** is the lightest GC in the current Gatinko analysis set (vs 3.0 g for both Valkyrie and Longinus). The weight delta is small but meaningful for a stamina-type: at r_chip ≈ 8 mm, the 0.3 g mass difference contributes only ~9.6×10⁻⁸ kg·m² less I than Valkyrie — negligible for the assembly. The performance distinction of this chip lies entirely in its burst architecture: **four standard locks [FACT]**, in contrast to Valkyrie and Longinus which use two hard locks only. Standard locks have lower cantilever height than hard locks — reduced k_tab → lower burst resistance threshold. Four locks at standard thickness produces **average burst resistance [FACT]**, positioned below the two-hard-lock chips in the burst hierarchy.
+
+For a stamina-type left-spin combination, average burst resistance is less critical than for an attack type: the Wizard Layer Base's left-spin opposite-to-opponent-spin configuration reduces recoil forces at the layer contact zone, meaning fewer burst-inducing impacts occur per match. However, against left-spin opponents where rubber friction directly stresses the teeth (product text confirms rubber friction can cause self-burst against high-BR opponents [FACT from Wizard LB]), the standard locks become a limiting factor.
+
+I_chip = ½ × 0.0027 × (0.008)² = **8.64 × 10⁻⁷ kg·m² [INFERENCE]**
+
+OWD = 8.64×10⁻⁷ / (0.0027 × 0.008²) = **0.500 [INFERENCE]**
+
+**TypeScript model:**
+```typescript
+const gcFafnir = {
+  id: "gc_fafnir", nameTTJP: "Fafnir",
+  generation: "burst_gatinko", partType: "gatinkoChip",
+  spinDirection: "left", mass_g: 2.7,            // [FACT]
+  lockConfig: { hardLocks: 0, standardLocks: 4 }, // [FACT]
+  burstResistance: "average",                      // [FACT]
+  I_kgm2: 8.64e-7, r_ref_m: 0.008, OWD: 0.500,  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Layer Weight — Sen (Wizard Fafnir Ratchet Rise Sen)
+
+The Sen Layer Weight at **7.7 g [FACT]** sits between the Metsu (8.1 g) and Retsu (~2.5 g) LWs in the current Gatinko analysis. No competitive description has been published for Sen — the product page carries only the placeholder "in-depth information will be placed here once drafting has been completed [UNKNOWN — no competitive data in source text]." Physics assessment is therefore based entirely on the name, mass, and visual geometry from the product imagery.
+
+The name Sen (閃) means flash or gleam in Japanese, which gives no reliable geometry signal. From the product image, Sen presents as a **symmetric X/cross-arm shape with hexagonal nodes at the ends of each arm [INFERENCE from imagery]** — a design philosophy similar to Goku's radial mass concentration but with four arms rather than Goku's heavier build. This geometry places the majority of Sen's 7.7 g mass at the ends of the cross arms rather than in a central ring.
+
+Mass decomposition (4-arm cross, nodes at outer ends [INFERENCE]):
+- Outer hexagonal nodes (~60% at r = 20 mm): I = 0.60 × 0.0077 × (0.020)² = 1.848 × 10⁻⁶ kg·m²
+- Mid-arm sections (~25% at r = 12 mm): I = 0.25 × 0.0077 × (0.012)² = 2.772 × 10⁻⁷ kg·m²
+- Central hub (~15% at r = 6 mm): I = 0.15 × 0.0077 × (0.006)² = 4.158 × 10⁻⁸ kg·m²
+
+**I_Sen = 2.167 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD = 2.167×10⁻⁶ / (0.0077 × 0.023²) = 2.167×10⁻⁶ / 4.075×10⁻⁶ = **0.532 [INFERENCE]**
+
+**TypeScript model:**
+```typescript
+const lwSen = {
+  id: "lw_sen", nameTTJP: "Sen",
+  generation: "burst_gatinko", partType: "layerWeight",
+  mass_g: 7.7,                          // [FACT]
+  shape: "X_cross_4arm_hex_nodes",     // [INFERENCE from imagery]
+  symmetry: "C4",                       // [INFERENCE]
+  competitiveData: "unpublished",       // [UNKNOWN]
+  I_kgm2: 2.167e-6, r_ref_m: 0.023, OWD: 0.532,  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Layer Base — Wizard (Wizard Fafnir Ratchet Rise Sen)
+
+The Wizard Layer Base at **12.6 g [FACT]** is a **left-spin Stamina Type base [FACT]** featuring a **triangular perimeter and three dragon-head side profiles with rubber "F" lettering along the circumference [FACT]**, continuing the Fafnir line's rubber-contact spin-equalization lineage from Drain Fafnir and Geist Fafnir.
+
+**Spin-equalization mechanics (opposite-spin — right-spin opponent):**
+
+When Wizard's left-spin speed falls below its right-spin opponent's speed, the rubber "F"s on the circumference come into frictional contact with the opponent's layer. Because the two layers are spinning in opposite directions, their surfaces are moving in the same direction at the contact point — analogous to meshing gears. Friction at the contact point transfers angular momentum from the faster (right-spin) bey to the slower (left-spin) Wizard, partially recovering Wizard's spin at the cost of the opponent's. The product text states this effect is **more prominent than in Drain Fafnir due to greater exposed rubber surface area [FACT]**, but is **less pronounced against lightweight opponents due to Wizard's greater mass [FACT]** — a heavier bey loses less spin per collision, so there is less spin differential to equalise with.
+
+Rubber contact point spin-steal torque estimate:
+τ_steal = μ_rubber × F_contact × r_contact; μ_rubber ≈ 0.7 [INFERENCE]; r_contact ≈ 32 mm [INFERENCE]
+For a light opponent (40 g × 9.81 = 0.392 N contact under normal force sharing):
+τ ≈ 0.70 × 0.392 × 0.032 = **8.77 × 10⁻³ N·m [INFERENCE]** per sustained contact event
+
+**Same-spin (left-spin opponent):**
+Rubber acts as brakes — friction decelerates both beys [FACT]. If opponent BR < Wizard BR → can burst opponent [FACT]. If opponent BR > Wizard BR → Wizard self-bursts or suffers severe stamina loss [FACT].
+
+Mass decomposition (triangular, rubber F at outer edge):
+- Rubber F shapes (~20% at r = 32 mm): I = 0.20 × 0.0126 × (0.032)² = 2.580 × 10⁻⁶ kg·m²
+- 3 body wings (~55% at r = 25 mm): I = 0.55 × 0.0126 × (0.025)² = 4.331 × 10⁻⁶ kg·m²
+- Hub (~25% at r = 12 mm): I = 0.25 × 0.0126 × (0.012)² = 4.536 × 10⁻⁷ kg·m²
+
+**I_Wizard = 7.365 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD = 7.365×10⁻⁶ / (0.0126 × 0.032²) = 7.365×10⁻⁶ / 1.290×10⁻⁵ = **0.571 [INFERENCE]**
+
+**TypeScript model:**
+```typescript
+const lbWizard = {
+  id: "lb_wizard", nameTTJP: "Wizard",
+  generation: "burst_gatinko", partType: "layerBase",
+  spinDirection: "left", type: "stamina", mass_g: 12.6,  // [FACT]
+  perimeterShape: "triangular",                           // [FACT]
+  rubberFeature: "F_lettering_circumference",             // [FACT]
+  spinEqualization: {
+    vs_opposite: { effect: "more_than_drain_fafnir", limitedByMassVsLight: true }, // [FACT]
+    vs_same: { effect: "brakes", canBurstOpponent: true, selfBurstRisk: true },    // [FACT]
+  },
+  I_kgm2: 7.365e-6, r_ref_m: 0.032, OWD: 0.571,        // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Forge Disc — Ratchet (Wizard Fafnir Ratchet Rise Sen)
+
+The Ratchet Forge Disc at **27.9 g [FACT]** is a **round disc of metal core and plastic outer piece [FACT]**. The plastic piece carries a directional clutch mechanism: it **locks against a right-spin opponent and spins freely against a left-spin opponent [FACT]**, theoretically assisting spin-equalization and shock absorption in the Wizard Fafnir's primary (opposite-spin) use case. In practice, the plastic piece has **little to no effect because it is too small to contact unless Disc-to-Layer contact occurs [FACT]** — a rare event in normal stamina play.
+
+The disc's meaningful competitive property is its **low-hanging profile [FACT]**. A lower disc position on the bey's shaft lowers the centre of gravity (CoG), reducing the effective restoring torque from gravity on a tilted bey. This extends the tilt angle at which the bey can continue precessing before the gyroscopic precession rate falls below the critical spin-out threshold. Drivers that rely on sustained low-tilt precession — **Bearing', Drift, and Mobius [FACT]** — benefit directly from this CoG reduction.
+
+The tradeoff: the low-hanging profile creates **scrape risk in same-spin matchups [FACT]** because the disc rim is closer to the stadium floor during normal spin, and any tilt under attack contact risks stadium contact at the disc rather than the tip. **Sting is explicitly recommended over Ratchet for same-spin matchups [FACT]**.
+
+Mass decomposition (round disc, metal core + plastic [INFERENCE]):
+- Plastic outer ring (~40% at r = 28 mm): I = 0.40 × 0.0279 × (0.028)² = 8.765 × 10⁻⁶ kg·m²
+- Metal core (~50% at r = 17 mm): I = 0.50 × 0.0279 × (0.017)² = 4.033 × 10⁻⁶ kg·m²
+- Central hub (~10% at r = 8 mm): I = 0.10 × 0.0279 × (0.008)² = 1.786 × 10⁻⁷ kg·m²
+
+**I_Ratchet = 1.298 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.298×10⁻⁵ / (0.0279 × 0.033²) = 1.298×10⁻⁵ / 3.038×10⁻⁵ = **0.427 [INFERENCE]**
+
+Round disc with moderate OWD — the uniform perimeter concentrates less mass at the rim than protrusion-heavy discs (7: 0.592, Wall frame: 0.793). The relatively CWD profile is consistent with its stamina use case where sustained rotation matters more than impact resistance.
+
+**TypeScript model:**
+```typescript
+const discRatchet = {
+  id: "disc_ratchet", nameTTJP: "Ratchet",
+  generation: "burst_gatinko", partType: "forgeDisc",
+  mass_g: 27.9, shape: "round",                         // [FACT]
+  construction: "metal_core_plastic_outer",              // [FACT]
+  gimmick: {
+    type: "directional_clutch",
+    locksAgainst: "right_spin", spinsFreely: "left_spin", // [FACT]
+    practicalEffect: "negligible_without_disc_layer_contact", // [FACT]
+  },
+  profile: "low_hanging",                                // [FACT]
+  scrapeRisk: "same_spin_matchup",                       // [FACT]
+  bestUse: "opposite_spin_bearing_drift_mobius",         // [FACT]
+  sameSpin_alternative: "sting",                         // [FACT]
+  I_kgm2: 1.298e-5, r_ref_m: 0.033, OWD: 0.427,        // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Performance Tip — Rise (Wizard Fafnir Ratchet Rise Sen)
+
+The Rise Performance Tip at **6.1 g [FACT]** features a **sharp tip surrounded by a downward-facing non-free-spinning plate [FACT]**. The design intent was a stabilisation mechanism: when the bey is struck and tilts, the plate contacts the stadium floor and acts as brakes, forcing the bey back upright and resisting knock-out [FACT]. In practice, two independent failure modes eliminate both the intended functions:
+
+1. **Tilt-stabilisation failure:** The plate cannot stabilise the combination on the shallow curvature of the Burst System stadium bowl — the geometry of the curved bowl surface means that a downward-facing flat plate contacts the slope at an angle, producing a lateral force component rather than a pure restoring moment [FACT].
+
+2. **Stamina penalty from non-free-spinning plate:** Because the plate does not rotate freely, it drags on the stadium floor during normal spin, generating continuous friction torque across the plate radius rather than only the sharp tip point. This friction loss completely negates the stamina benefit of the sharp central tip and **instead worsens stamina [FACT]**.
+
+3. **Scrape risk:** The plate is positioned so low that it creates a **high scrape risk [FACT]** even during normal upright spin — the plate is closer to the stadium floor than the tip clearance would require.
+
+Friction torque comparison — plate contact vs sharp tip:
+- Sharp tip alone (r_sharp ≈ 0.5 mm): τ = μ × N × r = 0.20 × 0.559 × 0.0005 = **5.6 × 10⁻⁵ N·m [INFERENCE]** (theoretical stamina: L₀/τ ≈ 263 s)
+- Plate contact (r_plate ≈ 11 mm, smooth plastic μ ≈ 0.35): τ = 0.35 × 0.559 × 0.011 = **2.15 × 10⁻³ N·m [INFERENCE]** (theoretical stamina: L₀/τ ≈ 6.8 s)
+
+The plate reduces theoretical stamina by a factor of **~39× relative to the sharp tip alone [INFERENCE]**, transforming a potential stamina champion into an attack-tier spin duration.
+
+**TypeScript model:**
+```typescript
+const driverRise = {
+  id: "driver_rise", nameTTJP: "Rise",
+  generation: "burst_gatinko", partType: "performanceTip",
+  mass_g: 6.1,                                    // [FACT]
+  tipType: "sharp_center_plus_downward_plate",    // [FACT]
+  plateFreeSpinning: false,                        // [FACT]
+  intendedEffect: "stabilize_on_impact_brakes",   // [FACT]
+  actualEffect: {
+    stabilization: "fails_on_shallow_bowl",        // [FACT]
+    stamina: "worse_than_sharp_alone",             // [FACT]
+    scrapeRisk: "high",                            // [FACT]
+  },
+  r_sharp_m: 0.0005, r_plate_m: 0.011,           // [INFERENCE]
+  tau_plate_Nm: 2.15e-3,                          // [INFERENCE]
+  staminaReductionFactor: 39,                      // vs sharp-only [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Full Assembly — Wizard Fafnir Ratchet Rise Sen
+
+Wizard Fafnir Ratchet Rise Sen achieves the distinction of having **all five component masses as manufacturer-stated facts [ALL FACT]**, totalling **57.0 g** — the heaviest complete-FACT assembly in the current Gatinko analysis set (vs Zwei Longinus at 59.7 g and Union Achilles Power at ~56.5 g [INFERENCE]).
+
+**Assembly mass [ALL FACT]:**
+
+| Part | Mass (g) |
+|------|----------|
+| GC Fafnir | 2.7 |
+| LW Sen | 7.7 |
+| LB Wizard | 12.6 |
+| Ratchet | 27.9 |
+| Rise | 6.1 |
+| **Total** | **57.0** |
+
+I_total = I_GC (8.64×10⁻⁷) + I_Sen (2.167×10⁻⁶) + I_Wizard (7.365×10⁻⁶) + I_Ratchet (1.298×10⁻⁵) + I_Rise ≈ 4.0×10⁻⁷
+
+**I_total = 2.363 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 2.363×10⁻⁵ × 600 = **1.418 × 10⁻² kg·m²/s [INFERENCE]**
+
+t_spin (with Rise plate contact) = L₀ / τ_plate = 1.418×10⁻² / 2.15×10⁻³ ≈ **6.6 s [INFERENCE]** — comparable to attack-type assemblies, confirming that Rise negates the stamina intention of this combination.
+
+```
+Dominant contributors to I_total:
+  Ratchet       ████████████████████████████████████  54.9%
+  LB Wizard     █████████████████████                 31.2%
+  LW Sen        █████████                              9.2%
+  GC Fafnir     ████                                   3.7%
+  Rise + other   █                                     1.0%
+```
+
+The optimised Wizard Fafnir competitive build replaces the Rise driver entirely. Per product text: Ratchet pairs best with **Bearing', Drift, or Mobius [FACT]** in opposite-spin matchups — Bearing' provides the free-spinning conical sharp tip that Rise attempted to replicate without the plate liability, sustaining genuine stamina through near-zero floor friction while Ratchet's low CoG extends tilt duration.
+
+**TypeScript model:**
+```typescript
+const wizardFafnirRatchetRiseSen = {
+  id: "wizard_fafnir_ratchet_rise_sen",
+  nameTTJP: "Wizard Fafnir Ratchet Rise Sen",
+  generation: "burst_gatinko", type: "stamina", spinDirection: "left",
+  allMassesFact: true,                     // [FACT]
+  parts: {
+    gatinkoChip: { id: "gc_fafnir",   mass_g: 2.7  },  // [FACT]
+    layerWeight:  { id: "lw_sen",     mass_g: 7.7  },  // [FACT]
+    layerBase:    { id: "lb_wizard",  mass_g: 12.6 },  // [FACT]
+    disc:         { id: "disc_ratchet", mass_g: 27.9 }, // [FACT]
+    driver:       { id: "driver_rise", mass_g: 6.1  },  // [FACT]
+  },
+  assembly: {
+    totalMass_g: 57.0,          // [ALL FACT]
+    I_total_kgm2: 2.363e-5,    // [INFERENCE]
+    omega0_rads: 600,
+    L0_kgm2s: 1.418e-2,        // [INFERENCE]
+    tSpin_stock_s: 6.6,         // with Rise plate [INFERENCE — attack-equivalent stamina]
+    optimalDrivers: ["bearing_prime", "drift", "mobius"],  // [FACT]
+    bestMatchup: "opposite_spin",                          // [FACT]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Bit Chip — Team WHO (Wolfos)
+
+> **Note: Wolfos is an anime-exclusive Beyblade that was never commercially released [FACT]. All physical dimensions and masses beyond those stated on the card are extrapolated from the anime design and standard Spin Gear System part conventions. The bey design is acknowledged to be exaggerated relative to what a real release would look like.**
+
+The Team WHO Bit Chip is the central crest of the Wolfos assembly, bearing the insignia of the anime faction "Team WHO" to which the bey's owner Lupinex belongs. As with all Spin Gear System Bit Chips, the BC sits at the rotational centre (r ≈ 0) and contributes negligibly to total I. Standard BC mass ≈ 1 g [INFERENCE — no mass stated; standard SG-era BC range is 0.8–1.2 g]. The BC carries no gameplay physics beyond aesthetics and the lore function of identifying the bey's Bit Beast or team affiliation [FACT — standard SG BC role].
+
+I_BC ≈ ½ × 0.001 × (0.006)² = **1.8 × 10⁻⁸ kg·m² [INFERENCE]** — effectively zero.
+
+The Team WHO Bit Chip distinguishes Wolfos from the standard Wolborg bey family (which carries the Ice Bit Beast Wolborg) [FACT — anime lore distinction].
+
+**TypeScript model:**
+```typescript
+const bcTeamWHO = {
+  id: "bc_team_who", nameTTJP: "Team WHO",
+  generation: "plastic_sg", partType: "bitChip",
+  mass_g: 1.0,                         // [INFERENCE — not stated]
+  animeExclusive: true,                 // [FACT]
+  I_kgm2: 1.8e-8,                      // [INFERENCE — negligible]
+};
+```
+
+---
+
+## CASE XXXX: Attack Ring — Moon Claws (Wolfos)
+
+The Moon Claws Attack Ring is the defining part of the Wolfos design. From the anime imagery, the AR presents as a **three-blade sweeping design with large crescent-shaped outer claws at the tip of each blade arm [INFERENCE from visual]** — the "Moon" of the name referencing the crescent silhouette of each tip, the "Claws" referencing the jagged serrated teeth running along the inner and outer claw edges. The three-arm sweep gives the AR approximate C₃ rotational symmetry, with each arm curving in the same rotational direction — consistent with either right-spin smash or recoil geometry depending on the claw face orientation relative to spin direction.
+
+Mass [UNKNOWN — not stated; never commercially released]. Estimated from visual scale relative to standard SG-era ARs: approximately **11 g [INFERENCE — large AR with three sweeping blades; typical range 8–14 g for SG large ARs]**. The crescent claw serration pattern implies primarily smash-type contact from the claw face (near-flat contact surface = low φ from radial, high smash fraction) with secondary recoil from the backward-curved claw edges.
+
+Contact angle estimate (crescent claw flat face [INFERENCE]):
+φ ≈ 25° from radial → smash fraction = cos(25°) = **0.906 [INFERENCE]**
+The serrated claw edge adds recoil: each serration tooth acts as a micro-wedge; averaged recoil fraction ≈ sin(25°) = **0.423 [INFERENCE]**
+
+Mass decomposition (3-sweep-arm, crescent outer [INFERENCE]):
+- 3 crescent claw tips (~50% at r = 35 mm): I = 0.50 × 0.0110 × (0.035)² = 6.744 × 10⁻⁶ kg·m²
+- Arm bodies (~35% at r = 23 mm): I = 0.35 × 0.0110 × (0.023)² = 2.030 × 10⁻⁶ kg·m²
+- Central hub (~15% at r = 9 mm): I = 0.15 × 0.0110 × (0.009)² = 1.337 × 10⁻⁷ kg·m²
+
+**I_MoonClaws ≈ 8.908 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD = 8.908×10⁻⁶ / (0.0110 × 0.023²) = 8.908×10⁻⁶ / 5.819×10⁻⁶ = **1.531 [INFERENCE]**
+
+OWD > 1.0 because the crescent tips extend well beyond the r_ref = 23 mm reference radius used for plastic-gen WDs — the AR outer radius significantly exceeds the WD radius, which is the design intent of attack ARs (concentrating contact mass at maximum radius for impact force).
+
+**TypeScript model:**
+```typescript
+const arMoonClaws = {
+  id: "ar_moon_claws", nameTTJP: "Moon Claws",
+  generation: "plastic_sg", partType: "attackRing",
+  animeExclusive: true,                   // [FACT]
+  mass_g: 11,                             // [INFERENCE — not stated; never released]
+  shape: "3arm_crescent_sweep",          // [INFERENCE from visual]
+  symmetry: "C3",                         // [INFERENCE]
+  contactAngle_deg: 25, smashFraction: 0.906,  // [INFERENCE]
+  I_kgm2: 8.908e-6, r_ref_m: 0.035, OWD: 1.531, // [INFERENCE]
+  note: "anime_exclusive_design_exaggerated",    // [FACT]
+};
+```
+
+---
+
+## CASE XXXX: Weight Disk — Eight Balance (Wolfos)
+
+The Eight Balance Weight Disk at **14 g [FACT]** is an 8-sided balance WD — the intermediate mass class between Wide WDs (highest OWD, lowest mass-at-hub) and Heavy WDs (concentrated near-ring mass, lower OWD, higher total mass). The product text states its mass distribution is **between Wide and Heavy WDs [FACT]** and that it is theoretically suited for both Defense and Stamina, but practically outclassed by superior options [FACT]. Among the Balance WD family, **Ten Balance is heavier and is generally preferred over Six and Eight Balance for customisation [FACT]**.
+
+The eight-sided geometry distributes mass in eight equally-spaced radial nodes rather than a continuous ring (Wide) or deep inner ring (Heavy), producing a distribution profile that is partially outer-weighted but not as peripherally concentrated as Wide designs. Eight sides provides better rotational balance than six (Six Balance has larger between-node gaps, producing more angular momentum variation over a rotation cycle).
+
+Annular disc approximation (8-sided, balance profile [INFERENCE]):
+r_inner ≈ 12 mm, r_outer ≈ 22 mm [INFERENCE — between Wide ~24 mm and Heavy ~18 mm]
+
+I = ½ × m × (r_inner² + r_outer²) = ½ × 0.014 × (0.012² + 0.022²)
+= ½ × 0.014 × (1.44×10⁻⁴ + 4.84×10⁻⁴)
+= ½ × 0.014 × 6.28×10⁻⁴
+
+**I_8Balance = 4.396 × 10⁻⁶ kg·m² [INFERENCE]**
+
+OWD = 4.396×10⁻⁶ / (0.014 × 0.023²) = 4.396×10⁻⁶ / 7.406×10⁻⁶ = **0.594 [INFERENCE]**
+
+This OWD of 0.594 sits between the Wide WD range (~0.70–0.75 [INFERENCE for SG era]) and Heavy WD range (~0.45–0.50 [INFERENCE]), consistent with the stated "between Wide and Heavy" [FACT].
+
+**TypeScript model:**
+```typescript
+const wd8Balance = {
+  id: "wd_eight_balance", nameTTJP: "Eight Balance",
+  generation: "plastic_sg", partType: "weightDisk",
+  mass_g: 14, sides: 8,                    // [FACT]
+  distributionType: "balance",             // [FACT]
+  vsWide: "lower_OWD", vsHeavy: "higher_OWD",  // [FACT — stated between both]
+  outclassedBy: "ten_balance",             // [FACT]
+  I_kgm2: 4.396e-6, r_ref_m: 0.023, OWD: 0.594,  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Spin Gear — Right SG (Wolfos)
+
+The Right Spin Gear is the standard right-spin launcher coupling component of the Spin Gear System. It consists of **plastic casing surrounding a metal ring and gear [FACT]** that interfaces with the Blade Base's gear socket and is locked by base clips. Two tabs on the right side of the casing couple to the Right-Spin Shooter, enabling clockwise spin transfer on launch [FACT]. The metal ring and gear within the SG are **not interchangeable in Standard Spin Gears [FACT]** — the core is a fixed assembly.
+
+Standard SG mass ≈ **4 g [INFERENCE — typical SG-era standard SG range]**. The metal ring within the SG sits at r ≈ 6–8 mm (internal gear radius), contributing a small but denser-than-plastic I component.
+
+I_SG = ½ × 0.004 × (0.007)² = **9.8 × 10⁻⁷ kg·m² [INFERENCE — metal ring at inner r]**
+
+The Right SG enables the SG Sharp Base to function as a stamina-type bottom — the two-tab right-spin coupling is compatible with the sharp tip BB and its lack of bottom-side angular features.
+
+**TypeScript model:**
+```typescript
+const sgRight = {
+  id: "sg_right_standard", nameTTJP: "Right SG",
+  generation: "plastic_sg", partType: "spinGear",
+  spinDirection: "right",              // [FACT]
+  mass_g: 4,                           // [INFERENCE]
+  construction: "plastic_casing_metal_ring_gear",  // [FACT]
+  coreInterchangeable: false,          // [FACT — standard SG]
+  I_kgm2: 9.8e-7,                     // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Blade Base — SG Sharp Base (Wolfos)
+
+The SG Sharp Base at **7 g [FACT]** is the standard sharp-tip stamina base of the Spin Gear System. The sharp pointed tip produces **very little friction between the beyblade and the stadium surface [FACT]**, maintaining high spin velocity at the cost of all lateral movement capability [FACT]. The clips of this particular SG Sharp variant **extend far enough to make the outside of the base a perfect circle [FACT]** — distinguishing it from other SG Sharp models where the clips do not complete the circular profile. This circular outer profile reduces the chance of clip-edge contact with the stadium floor during tilt.
+
+The base has two competitive weaknesses [FACT]:
+1. **Easily toppled / thrown off balance** — the sharp tip's single-point contact offers no resistance to lateral perturbation, sacrificing all Defence.
+2. **Better options exist for Stamina** — the perfect circular clip profile is an improvement over other SG Sharps but the base overall is outclassed by superior stamina bases.
+
+Friction torque (sharp tip):
+r_tip ≈ 0.3 mm [INFERENCE — standard plastic sharp tip radius]; N = m_total × g
+τ = μ_plastic × N × r_tip = 0.20 × (0.037 × 9.81) × 0.0003 = 0.20 × 0.363 × 0.0003 = **2.18 × 10⁻⁵ N·m [INFERENCE]**
+
+(m_total ≈ 37 g estimated assembly mass)
+
+Theoretical t_spin = L₀ / τ. With L₀ ≈ 7.6×10⁻³ kg·m²/s [INFERENCE — see full assembly case]:
+t_spin_theoretical ≈ **349 s [INFERENCE]** — near 6 minutes, consistent with sharp-tip stamina potential, but real performance is limited by nutation onset and tilt instability.
+
+**TypeScript model:**
+```typescript
+const bbSGSharpBase = {
+  id: "bb_sg_sharp_base", nameTTJP: "SG Sharp Base",
+  generation: "plastic_sg", partType: "bladeBase",
+  mass_g: 7,                                       // [FACT]
+  tipType: "sharp",                                 // [FACT]
+  tipFriction: "minimal",                           // [FACT]
+  movement: "none",                                 // [FACT]
+  defense: "none_easily_toppled",                   // [FACT]
+  clipProfile: "perfect_circle",                    // [FACT — unique to this variant]
+  r_tip_m: 3e-4, frictionTorque_Nm: 2.18e-5,      // [INFERENCE]
+  tSpin_theoretical_s: 349,                         // [INFERENCE — limited by tilt instability]
+};
+```
+
+---
+
+## CASE XXXX: Full Assembly — Wolfos
+
+Wolfos is an **anime-exclusive Spin Gear System Beyblade that was never commercially released [FACT]**. The physical design as shown in the anime is acknowledged to be exaggerated relative to any hypothetical real release. All masses except the Eight Balance WD (14 g [FACT]) and SG Sharp Base (7 g [FACT]) are inferred.
+
+**Assembly mass:**
+
+| Part | Mass (g) | Status |
+|------|----------|--------|
+| BC Team WHO | ~1.0 | [INFERENCE] |
+| AR Moon Claws | ~11.0 | [INFERENCE] |
+| WD Eight Balance | 14.0 | [FACT] |
+| SG Right | ~4.0 | [INFERENCE] |
+| BB SG Sharp Base | 7.0 | [FACT] |
+| **Total** | **~37.0** | [INFERENCE — only WD+BB FACT] |
+
+Mass decomposition for I (BB housing included):
+- BB base housing (~85% of 7g at r = 15 mm): I = 0.85 × 0.007 × (0.015)² = 1.339 × 10⁻⁶ kg·m²
+
+I_total = I_BC (~0) + I_AR (8.908×10⁻⁶) + I_WD (4.396×10⁻⁶) + I_SG (9.8×10⁻⁷) + I_BB_housing (1.339×10⁻⁶)
+
+**I_total ≈ 1.564 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 1.564×10⁻⁵ × 600 = **9.38 × 10⁻³ kg·m²/s [INFERENCE]**
+
+t_spin_theoretical (sharp tip) = L₀ / τ_sharp = 9.38×10⁻³ / 2.18×10⁻⁵ ≈ **430 s [INFERENCE]** — limited in practice by tilt instability from the SG Sharp Base's topple susceptibility [FACT].
+
+```
+Dominant contributors to I_total:
+  AR Moon Claws   ████████████████████████████████████  57.0%
+  WD Eight Balance ████████████████████████             28.1%
+  BB housing        ██████                               8.6%
+  SG               ████                                  6.3%
+  BC               ~0                                    0.0%
+```
+
+The crescent-claw AR design dominates angular momentum, but the SG Sharp Base's instability prevents this from being competitive: large outer-weighted attack ARs produce recoil during contact, which topples the sharp-tip base before spin-equalization or KO can be completed. The combination is balance-type by card classification but mechanically mismatched — the attack AR generates recoil that the zero-resistance sharp tip cannot absorb.
+
+**TypeScript model:**
+```typescript
+const wolfosSGAssembly = {
+  id: "wolfos_sg",
+  nameTTJP: "Wolfos", animeExclusive: true,  // [FACT]
+  generation: "plastic_sg", type: "balance",
+  parts: {
+    bc:   { id: "bc_team_who",       mass_g: 1.0  },  // [INFERENCE]
+    ar:   { id: "ar_moon_claws",     mass_g: 11.0 },  // [INFERENCE]
+    wd:   { id: "wd_eight_balance",  mass_g: 14.0 },  // [FACT]
+    sg:   { id: "sg_right_standard", mass_g: 4.0  },  // [INFERENCE]
+    bb:   { id: "bb_sg_sharp_base",  mass_g: 7.0  },  // [FACT]
+  },
+  assembly: {
+    totalMass_g_est: 37.0,     // [INFERENCE]
+    I_total_kgm2: 1.564e-5,   // [INFERENCE]
+    omega0_rads: 600,
+    L0_kgm2s: 9.38e-3,        // [INFERENCE]
+    tSpin_theoretical_s: 430, // [INFERENCE — limited by topple instability]
+    mechanicalConflict: "attack_AR_recoil_vs_zero_resist_sharp_base",
+  },
+};
+```
+
+---
+
+> **Correction note — Wolfos Moon Claws:** The white/blue claw elements in the Wolfos design are a **Sub AR (Secondary Attack Ring) [FACT — user clarification, consistent with Gaia Dragoon S Sub AR architecture]**, not the full Attack Ring. The primary purple sweep-arm body is the main AR; Moon Claws is the sub-component that attaches over the primary AR blades. This is analogous to Gaia Dragoon S where the sub-wing clips over the main AR. The I and OWD calculations above for "Moon Claws" therefore describe the sub-AR portion only; the main AR (purple body) carries additional mass and I that was not separately catalogued due to the anime-exclusive nature of the design. Total AR system I is higher than the sub-AR figure alone.
+
+---
+
+## CASE XXXX: Bit Chip — Team WHO + Attack Ring — Hammer Attacker (Frankes)
+
+> **Frankes is an anime-exclusive Spin Gear System Beyblade that was never commercially released [FACT].** The design as shown in the anime is acknowledged to be exaggerated relative to any hypothetical release.
+
+**BC Team WHO** is identical to the Wolfos BC — Team insignia, r ≈ 0, I ≈ 1.8×10⁻¹⁸ kg·m² [INFERENCE — negligible]. See Wolfos BC case.
+
+---
+
+The **Hammer Attacker Attack Ring** is the mechanically extreme centrepiece of the Frankes design. From the anime imagery, the AR presents as a **large flat disc body with two diametrically opposed bolt/screw protrusions extending radially at the 3 o'clock and 9 o'clock positions [INFERENCE from visual]** — giving the AR C₂ rotational symmetry. The bolt protrusions are cylindrical with a hexagonal bolt-head profile at the tips, consistent with the "Hammer" name: the bolt heads are the striking hammers.
+
+Mass [UNKNOWN — anime exclusive, never released]. Estimated from visual scale: approximately **15 g [INFERENCE — large mechanical AR with wide flat disc and two extending bolts; upper range for SG ARs]**.
+
+**Bolt contact physics (user observation confirmed by analysis):**
+
+The bolt geometry produces two distinct contact modes:
+
+1. **Cylindrical bolt body contact (glancing hit):**
+   Contact surface is the curved cylinder sidewall → φ ≈ 85° from radial
+   Smash fraction = cos(85°) = **0.087 [INFERENCE]**, Recoil fraction = sin(85°) = **0.996 [INFERENCE]**
+   → Near-pure recoil → extreme self-burst risk and opponent deflection.
+
+2. **Bolt head face contact (direct hit):**
+   Contact surface is the flat hexagonal end face → φ ≈ 5° from radial
+   Smash fraction = cos(5°) = **0.996 [INFERENCE]**, Recoil fraction = sin(5°) = **0.087 [INFERENCE]**
+   → Near-pure smash → maximum damage transfer.
+
+The user's physical intuition that the bolts produce **massive damage AND massive recoil** is correct [INFERENCE — confirmed by contact angle analysis]: direct bolt-face hits transfer near-maximum kinetic energy (damage), while bolt-body glancing contacts return near-maximum recoil (self-burst risk). The design is inherently high-variance.
+
+Tip velocity at bolt head (r_bolt ≈ 42 mm [INFERENCE — visually extended beyond normal AR]):
+v_tip = ω₀ × r_bolt = 600 × 0.042 = **25.2 m/s [INFERENCE]** — the highest tip speed in the current plastic-gen analysis set, reflecting the anime-exaggerated bolt protrusion radius.
+
+Mass decomposition [INFERENCE]:
+- 2 bolt heads (~30% at r = 42 mm): I = 0.30 × 0.015 × (0.042)² = 7.938 × 10⁻⁶ kg·m²
+- 2 bolt shafts (~20% at r = 32 mm): I = 0.20 × 0.015 × (0.032)² = 3.072 × 10⁻⁶ kg·m²
+- Disc body (~50% at r = 20 mm): I = 0.50 × 0.015 × (0.020)² = 3.000 × 10⁻⁶ kg·m²
+
+**I_HammerAttacker = 1.401 × 10⁻⁵ kg·m² [INFERENCE]**
+
+OWD = 1.401×10⁻⁵ / (0.015 × 0.023²) = 1.401×10⁻⁵ / 7.935×10⁻⁶ = **1.765 [INFERENCE]**
+
+OWD > 1.0 because the bolt heads extend to 42 mm — far beyond the 23 mm WD reference radius. This is the highest OWD AR in the current analysis, reflecting the extreme protrusion of the anime-exaggerated bolt geometry.
+
+**TypeScript model:**
+```typescript
+const arHammerAttacker = {
+  id: "ar_hammer_attacker", nameTTJP: "Hammer Attacker",
+  generation: "plastic_sg", partType: "attackRing",
+  animeExclusive: true, mass_g: 15,          // [INFERENCE]
+  shape: "flat_disc_2bolt_C2",               // [INFERENCE from visual]
+  boltRadius_m: 0.042, vTip_ms: 25.2,       // [INFERENCE]
+  contactModes: {
+    glancing: { phi_deg: 85, smash: 0.087, recoil: 0.996 },  // [INFERENCE]
+    direct:   { phi_deg: 5,  smash: 0.996, recoil: 0.087 },  // [INFERENCE]
+  },
+  I_kgm2: 1.401e-5, r_ref_m: 0.042, OWD: 1.765,  // [INFERENCE]
+  note: "anime_exclusive_exaggerated_bolt_protrusion",
+};
+```
+
+---
+
+## CASE XXXX: Weight Disk — Heavy Attack + SG Right + Blade Base — SG Flat Base (Frankes)
+
+**Weight Disk — Heavy Attack [UNKNOWN mass]**
+
+Heavy Attack is a hexagonal (6-sided) WD with **circular notches on each vertex [FACT]** — the notches are intended to direct mass toward the vertex tips for attack potential. However, the product text states it is **too small to make contact with an opponent under normal circumstances [FACT]**, negating the attack intent entirely. It is **lighter than Ten Heavy [FACT]** and outclassed for Defense, Compact, and KO combinations; only useful for those lacking superior Heavy Series WDs [FACT]. Mass [UNKNOWN — not stated]; estimated **10 g [INFERENCE — lighter than Eight Balance (14 g) and smaller geometry]**.
+
+I_HeavyAttack = ½ × 0.010 × (0.010² + 0.018²) = **2.12 × 10⁻⁶ kg·m² [INFERENCE]**
+OWD = 2.12×10⁻⁶ / (0.010 × 0.023²) = **0.401 [INFERENCE]** — CWD profile consistent with the Heavy WD series.
+
+---
+
+**Spin Gear — Right SG** — identical to Wolfos and Wizard Fafnir. See those entries. I_SG ≈ 9.8×10⁻⁷ kg·m² [INFERENCE].
+
+---
+
+**Blade Base — SG Flat Base with bolt-shaped tip — 5 g [FACT]**
+
+The SG Flat Base produces **high movement speed from the flat tip [FACT]** and **effective Upper Attack from the low height [FACT]**. The "bolt-shaped tip" variant designation in the part title indicates the flat contact surface has a hexagonal cross-section (bolt head profile as viewed from below) rather than a smooth circle — this adds corner edges to the floor contact zone, increasing the tendency to snag the stadium surface at contact corners, potentially stuttering the flower orbit. Combined with the Hammer Attacker AR's high-speed bolt protrusions, the bolt aesthetic is mechanically consistent across both AR and BB in the anime design.
+
+I_BB_flat = 0.85 × 0.005 × (0.015)² = **9.56 × 10⁻⁷ kg·m² [INFERENCE]**
+
+---
+
+## CASE XXXX: Full Assembly — Frankes
+
+Frankes is an **anime-exclusive Spin Gear System Beyblade [FACT]** classified as Attack type on the anime card (攻撃 / Attack, ATK 4000, DEF 3000).
+
+**Assembly mass:**
+
+| Part | Mass (g) | Status |
+|------|----------|--------|
+| BC Team WHO | ~1.0 | [INFERENCE] |
+| AR Hammer Attacker | ~15.0 | [INFERENCE] |
+| WD Heavy Attack | ~10.0 | [INFERENCE] |
+| SG Right | ~4.0 | [INFERENCE] |
+| BB SG Flat Base | 5.0 | [FACT] |
+| **Total** | **~35.0** | [INFERENCE — only BB FACT] |
+
+I_total = I_AR (1.401×10⁻⁵) + I_WD (2.12×10⁻⁶) + I_SG (9.8×10⁻⁷) + I_BB (9.56×10⁻⁷) + I_BC (~0)
+
+**I_total ≈ 1.807 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 1.807×10⁻⁵ × 600 = **1.084 × 10⁻² kg·m²/s [INFERENCE]**
+
+τ_flat = μ × N × r_flat = 0.30 × (0.035 × 9.81) × 0.007 = **7.20 × 10⁻⁴ N·m [INFERENCE]**
+
+t_spin_attack = L₀ / τ = 1.084×10⁻² / 7.20×10⁻⁴ ≈ **15.1 s [INFERENCE]** — short aggressive attack cycle, consistent with SG Flat attack type.
+
+```
+I_total dominance:
+  Hammer Attacker AR  ████████████████████████████████████  77.5%
+  WD Heavy Attack     ████████                              11.7%
+  SG                  █████                                  5.4%
+  BB flat housing     █████                                  5.3%
+  BC                  ~0
+```
+
+**TypeScript model:**
+```typescript
+const frankesSGAssembly = {
+  id: "frankes_sg", nameTTJP: "Frankes",
+  animeExclusive: true, generation: "plastic_sg", type: "attack",
+  parts: {
+    bc: { id: "bc_team_who",        mass_g: 1.0  }, // [INFERENCE]
+    ar: { id: "ar_hammer_attacker", mass_g: 15.0 }, // [INFERENCE]
+    wd: { id: "wd_heavy_attack",    mass_g: 10.0 }, // [INFERENCE]
+    sg: { id: "sg_right_standard",  mass_g: 4.0  }, // [INFERENCE]
+    bb: { id: "bb_sg_flat_base",    mass_g: 5.0  }, // [FACT]
+  },
+  assembly: {
+    totalMass_g_est: 35.0,    // [INFERENCE]
+    I_total_kgm2: 1.807e-5,  // [INFERENCE]
+    L0_kgm2s: 1.084e-2,      // [INFERENCE]
+    tSpin_attack_s: 15.1,    // [INFERENCE]
+  },
+};
+```
+
+---
+
+## CASE XXXX: Attack Ring — Mummy Survivor + Weight Disk — Eight Heavy (Bandaos)
+
+> **Bandaos is an anime-exclusive Spin Gear System Beyblade [FACT]**, owned by Cenotaph. Type: Stamina (持久). ATK 2000 / DEF 3000. All masses except BB SG Sharp Base (7 g [FACT]) are inferred.
+
+**AR — Mummy Survivor [UNKNOWN mass]**
+
+The Mummy Survivor Attack Ring is named after the mummy wrappings of ancient Egyptian burial practice, and the anime imagery confirms this: the AR presents as a **compact cylindrical drum body with multiple bandage strips trailing from it radially [INFERENCE from visual]**, creating an extended zone of soft, deformable contact material beyond the hard AR body. Mass estimated ~9 g [INFERENCE].
+
+The user's analogy to **Barricade Lucifer (Burst BX era)** is physically apt: just as Barricade Lucifer's outer protrusions create a barrier that deflects opponents outward before they reach the core, the Bandaos bandage strips form a **deformable exclusion zone** around the AR body [USER INFERENCE — confirmed by contact mechanics analysis]:
+
+- When an opponent's AR contacts the extended bandage strips: the strip deforms, absorbing kinetic energy from the impact (reducing both recoil to Bandaos and momentum transferred to opponent). This is the same mechanism as rubber Contact Points in later generations — energy absorption via deformation.
+- The centrifugally extended strips also sweep through the space around the bey, physically deflecting opponents that approach the bey's orbital radius before hard AR contact occurs.
+- Unlike rigid ARs where all impact energy converts to smash or recoil with no damping, the bandage strips act as a first-stage energy absorber, making Bandaos more tolerant of aggressive opponent contact.
+
+Mass decomposition [INFERENCE]:
+- Main cylindrical body (~60% at r = 20 mm): I = 0.60 × 0.009 × (0.020)² = 2.160 × 10⁻⁶ kg·m²
+- Extended bandage strips (~40% at r_ext ≈ 28 mm when centrifugally deployed): I = 0.40 × 0.009 × (0.028)² = 2.822 × 10⁻⁶ kg·m²
+
+**I_MummySurvivor ≈ 4.982 × 10⁻⁶ kg·m² [INFERENCE]**
+OWD = 4.982×10⁻⁶ / (0.009 × 0.023²) = **1.046 [INFERENCE]** — OWD > 1.0 due to strip extension beyond WD reference radius.
+
+---
+
+**WD — Eight Heavy [UNKNOWN mass]**
+
+Eight Heavy is part of the **Heavy series — the heaviest WD category [FACT]**, concentrating mass toward the centre for CWD. The CWD profile **increases RPM for a given angular momentum (L = I × ω; lower I at same L → higher ω) [INFERENCE — correct by Euler's equation]**, which benefits Compact combinations. Ten Heavy is the heaviest and preferred; Eight Heavy and Six Heavy are lighter variants chosen when Ten Heavy is unavailable [FACT]. Mass estimated ~14 g [INFERENCE — between Six Heavy ~12 g and Ten Heavy ~16.5 g].
+
+I_8Heavy = ½ × 0.014 × (0.013² + 0.020²) = **3.983 × 10⁻⁶ kg·m² [INFERENCE]**
+OWD = 3.983×10⁻⁶ / (0.014 × 0.023²) = **0.538 [INFERENCE]** — lower than Eight Balance (0.594) [FACT — CWD is more center-concentrated].
+
+**TypeScript models:**
+```typescript
+const arMummySurvivor = {
+  id: "ar_mummy_survivor", nameTTJP: "Mummy Survivor",
+  generation: "plastic_sg", partType: "attackRing", animeExclusive: true,
+  mass_g: 9, shape: "cylinder_bandage_strips",       // [INFERENCE]
+  defenseAnalogy: "barricade_lucifer_exclusion_zone", // [USER INFERENCE]
+  bandageMechanism: "deformable_energy_absorb",       // [INFERENCE]
+  I_kgm2: 4.982e-6, OWD: 1.046,                     // [INFERENCE]
+};
+const wd8Heavy = {
+  id: "wd_eight_heavy", nameTTJP: "Eight Heavy",
+  generation: "plastic_sg", partType: "weightDisk",
+  mass_g: 14, distributionType: "CWD",               // [INFERENCE / FACT type]
+  I_kgm2: 3.983e-6, OWD: 0.538,                     // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: SG Right + BB SG Sharp Base + Full Assembly — Bandaos
+
+**SG Right** — identical to Wolfos/Frankes. I_SG ≈ 9.8×10⁻⁷ kg·m² [INFERENCE].
+
+**BB SG Sharp Base — 7 g [FACT]** — identical to Wolfos. Perfect-circle clip profile [FACT]. Sharp tip: minimal friction, no movement, easily toppled [FACT]. See Wolfos BB case.
+
+**Full Assembly:**
+
+| Part | Mass (g) | Status |
+|------|----------|--------|
+| BC Team WHO | ~1.0 | [INFERENCE] |
+| AR Mummy Survivor | ~9.0 | [INFERENCE] |
+| WD Eight Heavy | ~14.0 | [INFERENCE] |
+| SG Right | ~4.0 | [INFERENCE] |
+| BB SG Sharp Base | 7.0 | [FACT] |
+| **Total** | **~35.0** | [INFERENCE — only BB FACT] |
+
+I_total = I_AR (4.982×10⁻⁶) + I_WD (3.983×10⁻⁶) + I_SG (9.8×10⁻⁷) + I_BB_housing (1.339×10⁻⁶) ≈ **1.130 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 1.130×10⁻⁵ × 600 = **6.78 × 10⁻³ kg·m²/s [INFERENCE]**
+
+t_spin_theoretical (sharp tip) ≈ **311 s [INFERENCE]** — limited by tilt instability. The Eight Heavy CWD maximises ω at a given L (compact design); the Mummy Survivor bandage strips provide passive defense without adding hard recoil.
+
+```typescript
+const bandaosSGAssembly = {
+  id: "bandaos_sg", nameTTJP: "Bandaos",
+  animeExclusive: true, generation: "plastic_sg", type: "stamina",
+  parts: {
+    ar: { id: "ar_mummy_survivor", mass_g: 9.0  }, // [INFERENCE]
+    wd: { id: "wd_eight_heavy",    mass_g: 14.0 }, // [INFERENCE]
+    bb: { id: "bb_sg_sharp_base",  mass_g: 7.0  }, // [FACT]
+  },
+  assembly: { totalMass_g_est: 35.0, I_total_kgm2: 1.130e-5, L0_kgm2s: 6.78e-3,
+    tSpin_theoretical_s: 311 },  // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: Attack Ring — Vamp Defense (Dracuos)
+
+> **Dracuos is an anime-exclusive Spin Gear System Beyblade [FACT]**, owned by Sanguinex. Type: Defense (防御). ATK 3000 / DEF 4000. Wide Defense WD mass 15 g [FACT]; BB 7 g [FACT]; all other masses inferred. Special ability: +500 ATK when opponent has a Holy Beast Bit [FACT from card].
+
+The Vamp Defense AR takes its name and visual motif from the vampire bat — **two large bat wings extending symmetrically from a compact central body [INFERENCE from visual imagery]**, giving the AR C₂ rotational symmetry. The user's description as "like Trypio but not a circle, with 2 powerful wings [USER INFERENCE]" establishes the IRL scale calibration: Trypio is one of the larger SG-era ARs (~38 mm outer radius, ~10–12 g), and Vamp Defense would occupy a similar mass-radius class but replace Trypio's multi-prong geometry with two dominant wing blades.
+
+The bat wing design geometry creates a specific defensive contact profile distinct from standard attack ARs:
+- **Wing leading edge (curved forward sweep):** φ ≈ 45° from radial [INFERENCE from wing curvature] → smash fraction = cos(45°) = 0.707, recoil fraction = sin(45°) = 0.707 [INFERENCE]. Balanced smash/recoil, appropriate for defense-type where neither pure smash nor pure recoil is desired.
+- **Wing surface area (flat underside facing radially):** creates a large deflection surface — opponents that contact the flat wing face are pushed tangentially (deflected around the bey) rather than radially. This is the wing-as-shield behavior that earns the "Defense" classification.
+- The user's comparison to **Barricade Lucifer** applies here too: the wide wing surfaces create a swept barrier zone that deflects opponents before they reach the AR body — the IRL bat wing acts as a passive deflection shield.
+
+Mass ~11 g [INFERENCE from user's Trypio size comparison]; r_outer ≈ 38 mm [INFERENCE]:
+- 2 wing blades (~65% at r = 30 mm): I = 0.65 × 0.011 × (0.030)² = 6.435 × 10⁻⁶ kg·m²
+- Central body (~35% at r = 15 mm): I = 0.35 × 0.011 × (0.015)² = 8.663 × 10⁻⁷ kg·m²
+
+**I_VampDefense = 7.301 × 10⁻⁶ kg·m² [INFERENCE]**
+OWD = 7.301×10⁻⁶ / (0.011 × 0.023²) = 7.301×10⁻⁶ / 5.819×10⁻⁶ = **1.254 [INFERENCE]**
+
+OWD > 1.0 because the bat wings extend beyond 23 mm reference radius, concentrating angular momentum at the wing tips.
+
+**TypeScript model:**
+```typescript
+const arVampDefense = {
+  id: "ar_vamp_defense", nameTTJP: "Vamp Defense",
+  generation: "plastic_sg", partType: "attackRing", animeExclusive: true,
+  mass_g: 11, shape: "2wing_bat_C2",                // [USER INFERENCE + visual]
+  analogTo: "trypio_class_2wing_not_circular",       // [USER INFERENCE]
+  contactAngle_deg: 45, smashFraction: 0.707,        // [INFERENCE]
+  deflectionBarrier: true,                            // [INFERENCE — wing-as-shield]
+  I_kgm2: 7.301e-6, r_ref_m: 0.030, OWD: 1.254,   // [INFERENCE]
+};
+```
+
+---
+
+## CASE XXXX: WD Wide Defense + SG Right + BB SG Semi-Flat Base + Full Assembly — Dracuos
+
+**WD — Wide Defense — 15 g [FACT]**
+
+Wide Defense is a **completely circular shape with six inset notches and one outset notch [FACT]**. The circular profile maximises the effective average radius of the WD, pushing mass toward the periphery. Despite large width, it is **relatively light — roughly equal to Ten Balance and more than 1 g lighter than Ten Heavy [FACT]**. The Wide series prioritises OWD over absolute mass, making it ideal for stamina and defense (LAD) where sustained rotation at high I matters more than raw weight.
+
+I_WD = ½ × 0.015 × (0.017² + 0.027²) = **7.635 × 10⁻⁶ kg·m² [INFERENCE]**
+OWD = 7.635×10⁻⁶ / (0.015 × 0.023²) = **0.962 [INFERENCE]** — highest OWD in the current plastic-gen WD analysis, approaching the theoretical maximum of 1.0 for a thin ring at r_outer. Consistent with the Wide series' peripheral mass design [FACT].
+
+---
+
+**SG Right** — identical to previous entries. I_SG ≈ 9.8×10⁻⁷ kg·m² [INFERENCE].
+
+---
+
+**BB — SG Semi-Flat Base — 7 g [FACT per card]**
+
+The card labels this part "SGセミフラットベース" (SG Semi-Flat Base) [FACT], though the product description provided corresponds to the SG Sharp Base — this appears to be a wiki cross-link error [NOTE]. The anime imagery of Dracuos shows a sharp-pointed tip [INFERENCE from visual], which could indicate either part. This analysis uses the card-stated name (Semi-Flat) as authoritative over the mislinked description.
+
+SG Semi-Flat tip r_tip ≈ 2 mm [INFERENCE]: moderate friction and movement, between sharp (r~0.3 mm) and flat (r~7 mm).
+τ = μ × N × r_tip = 0.25 × (0.038 × 9.81) × 0.002 = **1.86 × 10⁻⁴ N·m [INFERENCE]**
+
+---
+
+**Full Assembly — Dracuos:**
+
+| Part | Mass (g) | Status |
+|------|----------|--------|
+| BC Team WHO | ~1.0 | [INFERENCE] |
+| AR Vamp Defense | ~11.0 | [INFERENCE] |
+| WD Wide Defense | 15.0 | [FACT] |
+| SG Right | ~4.0 | [INFERENCE] |
+| BB SG Semi-Flat | 7.0 | [FACT] |
+| **Total** | **~38.0** | [INFERENCE — WD + BB FACT] |
+
+I_total = I_AR (7.301×10⁻⁶) + I_WD (7.635×10⁻⁶) + I_SG (9.8×10⁻⁷) + I_BB_housing (1.339×10⁻⁶) ≈ **1.727 × 10⁻⁵ kg·m² [INFERENCE]**
+
+L₀ = 1.727×10⁻⁵ × 600 = **1.036 × 10⁻² kg·m²/s [INFERENCE]**
+
+t_spin_semi_flat = L₀ / τ = 1.036×10⁻² / 1.86×10⁻⁴ ≈ **55.7 s [INFERENCE]** — moderate stamina, appropriate for defense type (needs to outlast attacker while deflecting hits with wing AR).
+
+```
+I_total dominance — Dracuos:
+  WD Wide Defense   ████████████████████████████████████  44.2%
+  AR Vamp Defense   █████████████████████████████████     42.3%
+  BB housing        ████████                               7.8%
+  SG               █████                                   5.7%
+```
+
+```typescript
+const dracuosSGAssembly = {
+  id: "dracuos_sg", nameTTJP: "Dracuos",
+  animeExclusive: true, generation: "plastic_sg", type: "defense",
+  parts: {
+    ar: { id: "ar_vamp_defense",   mass_g: 11.0 }, // [INFERENCE]
+    wd: { id: "wd_wide_defense",   mass_g: 15.0 }, // [FACT]
+    bb: { id: "bb_sg_semi_flat",   mass_g: 7.0  }, // [FACT — per card; desc mismatch noted]
+  },
+  assembly: { totalMass_g_est: 38.0, I_total_kgm2: 1.727e-5,
+    L0_kgm2s: 1.036e-2, tSpin_semi_flat_s: 55.7 },  // [INFERENCE]
+  specialAbility: "holy_beast_opponent_atk_plus500",  // [FACT — card text]
+};
+```

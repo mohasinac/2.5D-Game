@@ -94,10 +94,21 @@ function makeBeySpaced(
   };
 }
 
+// Royale 12-color palette — index 0 = player (red), 1-11 = bots.
+// Stored as CSS hex so parseBeyColor() in PixiRenderer picks them up for tinting.
 const PLAYER_COLORS = [
-  '#2288ff', '#ff4466', '#44dd88', '#ffaa22', '#aa44ff',
-  '#ff8800', '#00ccff', '#ff44ff', '#88ff44', '#ffdd00',
-  '#ff2266', '#00ffaa',
+  '#ff4444', // 0 — player (red, always)
+  '#4488ff', // 1 — blue
+  '#44ff44', // 2 — green
+  '#ffaa00', // 3 — orange
+  '#ff44ff', // 4 — magenta
+  '#00ffff', // 5 — cyan
+  '#ffff00', // 6 — yellow
+  '#ff8888', // 7 — pink
+  '#aaff44', // 8 — lime
+  '#8844ff', // 9 — purple
+  '#ff4488', // 10 — hot pink
+  '#44ffaa', // 11 — teal
 ];
 
 // ─── LocalGameSimulation class ────────────────────────────────────────────────
@@ -130,9 +141,17 @@ export interface SimSnapshot {
 
 type OnSnapshotFn = (snap: SimSnapshot) => void;
 
+export type SimGameEvent =
+  | { type: 'collision'; beyId: string; otherBeyId: string; relativeSpeed: number }
+  | { type: 'burst';    beyId: string }
+  | { type: 'ring-out'; beyId: string };
+
+type OnGameEventFn = (event: SimGameEvent) => void;
+
 export class LocalGameSimulation {
   private config: GameRoomConfig;
   private onSnapshot: OnSnapshotFn;
+  private onGameEvent: OnGameEventFn | undefined;
 
   private beyblades = new Map<string, ServerBeyblade>();
   private aiControllers = new Map<string, AIController>();
@@ -150,6 +169,7 @@ export class LocalGameSimulation {
   private elapsed = 0;
   private rafId: number | null = null;
   private lastTs: number | null = null;
+  private paused = false;
   private countdownInterval: ReturnType<typeof setInterval> | null = null;
   private launchInterval: ReturnType<typeof setInterval> | null = null;
   private roundTransitionTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -170,9 +190,10 @@ export class LocalGameSimulation {
   // Per-bot difficulty assignments (variable for royale / escalating for tournament)
   private botDifficulties = new Map<string, AIDifficulty>();
 
-  constructor(config: GameRoomConfig, onSnapshot: OnSnapshotFn) {
+  constructor(config: GameRoomConfig, onSnapshot: OnSnapshotFn, onGameEvent?: OnGameEventFn) {
     this.config = config;
     this.onSnapshot = onSnapshot;
+    this.onGameEvent = onGameEvent;
   }
 
   async start() {
@@ -195,6 +216,20 @@ export class LocalGameSimulation {
     if (this.launchInterval) { clearInterval(this.launchInterval); this.launchInterval = null; }
     if (this.roundTransitionTimeout) { clearTimeout(this.roundTransitionTimeout); this.roundTransitionTimeout = null; }
     this.lastTs = null;
+    this.paused = false;
+  }
+
+  pause() {
+    if (this.paused || this.status !== 'in-progress') return;
+    this.paused = true;
+    if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+    this.lastTs = null;
+  }
+
+  resume() {
+    if (!this.paused || this.status !== 'in-progress') return;
+    this.paused = false;
+    this.rafId = requestAnimationFrame(this.tick);
   }
 
   // ─── Apply player input (called from useGameInput) ────────────────────────
@@ -243,9 +278,11 @@ export class LocalGameSimulation {
     const roomType = this.config.roomType;
 
     // For tournament-ai: only 1 AI per round (sequential 1v1 bracket)
+    // For pvai / story-battle: exactly 1 AI (strict 1v1)
     // For royale-ai: all bots simultaneously (up to 11 for a 12-player free-for-all)
     const aiCountThisRound = roomType === 'tryout' ? 0
       : roomType === 'tournament-ai' ? 1
+      : (roomType === 'pvai' || roomType === 'story-battle') ? 1
       : Math.max(2, Math.min(11, aiCount));
     const total = 1 + aiCountThisRound;
 
@@ -625,6 +662,7 @@ export class LocalGameSimulation {
       if (bey.spin <= 0 && this.config.roomType !== 'tryout') {
         bey.isActive = false;
         bey.spin = 0;
+        this.onGameEvent?.({ type: 'burst', beyId: id });
       }
     }
 
@@ -653,6 +691,9 @@ export class LocalGameSimulation {
             // Spin transfer
             const spinDiff = (a.spin - b.spin) * 0.03;
             a.spin -= spinDiff; b.spin += spinDiff;
+            // Game feel: fire collision event
+            const relSpeed = Math.hypot(dvx, dvy);
+            this.onGameEvent?.({ type: 'collision', beyId: a.id, otherBeyId: b.id, relativeSpeed: relSpeed });
           }
           a.collisions++; b.collisions++;
         }

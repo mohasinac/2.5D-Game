@@ -15,10 +15,11 @@ export interface CarouselCard {
 interface CardCarouselProps {
   cards: CarouselCard[];
   initialIndex?: number;
+  onIndexChange?: (index: number) => void;
   className?: string;
 }
 
-export function CardCarousel({ cards, initialIndex = 0, className = '' }: CardCarouselProps) {
+export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className = '' }: CardCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [isAnimating, setIsAnimating] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -29,10 +30,11 @@ export function CardCarousel({ cards, initialIndex = 0, className = '' }: CardCa
     setIsAnimating(true);
     setActiveIndex(i => {
       const next = (i + dir + cards.length) % cards.length;
+      onIndexChange?.(next);
       return next;
     });
     setTimeout(() => setIsAnimating(false), 280);
-  }, [isAnimating, cards.length]);
+  }, [isAnimating, cards.length, onIndexChange]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {

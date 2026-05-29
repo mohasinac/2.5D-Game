@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db, COLLECTIONS } from '../lib/firebase';
 import { useGame } from '../contexts/GameContext';
+import { useGameStore } from '../stores/gameStore';
 import { CardCarousel, type CarouselCard } from '../components/ui/CardCarousel';
 import type { GameRoomConfig, RoomType } from '../types/gameRoom';
 import toast from 'react-hot-toast';
@@ -30,6 +31,7 @@ const SEP: React.CSSProperties = {
 export function BattleModeCardsPage() {
   const navigate = useNavigate();
   const { settings } = useGame();
+  const setGameConfig = useGameStore(s => s.setGameConfig);
 
   const [beyblades, setBeyblades] = useState<SimpleOption[]>([]);
   const [arenas, setArenas] = useState<SimpleOption[]>([]);
@@ -39,14 +41,28 @@ export function BattleModeCardsPage() {
   const [selectedArena, setSelectedArena] = useState<string>('random');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(1);
-  const [aiCountTournament, setAiCountTournament] = useState(3);  // rounds — 3 = 8-player bracket (QF/SF/F)
-  const [aiCountRoyale, setAiCountRoyale] = useState(11);         // bots — 11 = 12-player free-for-all
+  const [aiCountTournament, setAiCountTournament] = useState(3);
+  const [aiCountRoyale, setAiCountRoyale] = useState(11);
 
   const [drawer, setDrawer] = useState<DrawerState>({ open: false, roomType: null });
 
   // Modes that default to a random arena
   const isRandomDefaultMode = (rt: RoomType | null) =>
     rt === 'tournament-ai' || rt === 'royale-ai' || rt === 'royale';
+
+  // Sync enable25D from Firestore admin settings on mount
+  useEffect(() => {
+    getDoc(doc(db, 'settings', 'game')).then(snap => {
+      if (snap.exists()) {
+        const d = snap.data();
+        // Only disable 2.5D if admin explicitly set enable25D = false
+        const firestoreValue = d.enable25D;
+        if (typeof firestoreValue === 'boolean') {
+          setGameConfig({ enable25D: firestoreValue });
+        }
+      }
+    }).catch(() => {});
+  }, [setGameConfig]);
 
   useEffect(() => {
     const go = settings?.beybladeId ?? '';
@@ -95,6 +111,7 @@ export function BattleModeCardsPage() {
       roomType: rt,
       beybladeId: selectedBey,
       arenaId: selectedArena,
+      is25D: settings?.enable25D ?? true,
       aiDifficulty: (rt === 'pvai' || rt === 'tournament-ai' || rt === 'royale-ai') ? difficulty : undefined,
       aiCount: rt === 'tournament-ai' ? aiCountTournament
         : rt === 'royale-ai' ? aiCountRoyale
@@ -106,13 +123,25 @@ export function BattleModeCardsPage() {
   }, [drawer, selectedBey, selectedArena, difficulty, bestOf, aiCountTournament, aiCountRoyale, navigate]);
 
   const goToPvPLobby = useCallback(() => {
-    if (!selectedBey || !selectedArena) { toast.error('Select a beyblade and arena first'); return; }
-    navigate('/game/2d/battle/lobby');
-  }, [selectedBey, selectedArena, navigate]);
+    navigate('/game/battle/lobby');
+  }, [navigate]);
 
   const goToTournamentLobby = useCallback(() => {
-    navigate('/game/2d/tournament');
+    navigate('/game/tournament/lobby');
   }, [navigate]);
+
+  const goToRoyaleLobby = useCallback(() => {
+    navigate('/game/royale/lobby');
+  }, [navigate]);
+
+  // Restore last-viewed card index from localStorage
+  const initialCardIndex = (() => {
+    try { const v = localStorage.getItem('bey.lastBattleCard'); return v !== null ? parseInt(v, 10) : 0; } catch { return 0; }
+  })();
+
+  const saveCardIndex = useCallback((index: number) => {
+    try { localStorage.setItem('bey.lastBattleCard', String(index)); } catch { /* ignore */ }
+  }, []);
 
   const cards: CarouselCard[] = [
     {
@@ -137,7 +166,7 @@ export function BattleModeCardsPage() {
       id: 'pvp',
       title: 'PvP',
       subtitle: 'Online Multiplayer',
-      description: 'Challenge real players online. Create a private match or join an open room. Requires server.',
+      description: 'Challenge real players online. Random match or invite friends with a room code. Requires server.',
       gradient: 'linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 50%, #1e3a5f 100%)',
       icon: '🌐',
       onSelect: () => goToPvPLobby(),
@@ -146,7 +175,7 @@ export function BattleModeCardsPage() {
       id: 'tournament',
       title: 'Tournament',
       subtitle: 'Bracket Competition',
-      description: 'Join an online bracket or fight through an offline AI gauntlet — no server needed.',
+      description: 'Fight through a bracket. Create a private tournament with friends or go offline vs AI bots.',
       gradient: 'linear-gradient(135deg, #451a03 0%, #b45309 50%, #451a03 100%)',
       icon: '🏆',
       onSelect: () => openDrawer('tournament-ai'),
@@ -155,7 +184,7 @@ export function BattleModeCardsPage() {
       id: 'royale',
       title: 'Battle Royale',
       subtitle: 'Free-for-All',
-      description: 'Last bey spinning wins. Fight online or launch a local AI free-for-all — no server needed.',
+      description: 'Last bey spinning wins. Fight online with 12 players or launch a local AI free-for-all.',
       gradient: 'linear-gradient(135deg, #4a044e 0%, #9d174d 50%, #4a044e 100%)',
       icon: '💥',
       onSelect: () => openDrawer('royale-ai'),
@@ -178,8 +207,8 @@ export function BattleModeCardsPage() {
   const showBestOf = drawer.roomType === 'pvai' || drawer.roomType === 'tournament-ai';
   const showOnlineLink = drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
 
-  const onlineLinkLabel = drawer.roomType === 'tournament-ai' ? 'Join Online Tournament →' : 'Join Online Royale →';
-  const onlineLinkAction = drawer.roomType === 'tournament-ai' ? goToTournamentLobby : goToPvPLobby;
+  const onlineLinkLabel = drawer.roomType === 'tournament-ai' ? 'Create/Join Online Tournament →' : 'Join Online Royale →';
+  const onlineLinkAction = drawer.roomType === 'tournament-ai' ? goToTournamentLobby : goToRoyaleLobby;
 
   const isTournamentDrawer = drawer.roomType === 'tournament-ai';
   const botCountLabel = isTournamentDrawer ? 'Rounds (opponents)' : 'AI Bots (players)';
@@ -225,7 +254,7 @@ export function BattleModeCardsPage() {
       </div>
 
       <div style={{ width: '100%', maxWidth: '700px', height: '440px' }}>
-        <CardCarousel cards={cards} />
+        <CardCarousel cards={cards} initialIndex={initialCardIndex} onIndexChange={saveCardIndex} />
       </div>
 
       {/* Quick-setup drawer */}

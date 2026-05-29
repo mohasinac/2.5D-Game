@@ -1,0 +1,18 @@
+{
+  "name": "Beyblade Battle",
+  "short_name": "Beyblade",
+  "description": "Beyblade battle game — PvP, AI, Tournament, Royale",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0f",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

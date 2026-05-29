@@ -1,26 +1,36 @@
 import { render, screen } from "@testing-library/react";
-import { RouterProvider } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { createMemoryRouter, RouterProvider, Outlet } from "react-router-dom";
+import React from "react";
 
-// ── Mock all pages so the test never imports Firebase / PixiJS directly ────────
+// ── Mock all pages to avoid Firebase/PixiJS imports ───────────────────────────
 
-vi.mock("@/pages/HomePage", () => ({ HomePage: () => <div>HOME</div> }));
+vi.mock("@/pages/GameModeLandingPage", () => ({ GameModeLandingPage: () => <div>LANDING</div> }));
 vi.mock("@/pages/LoginPage", () => ({ LoginPage: () => <div>LOGIN</div> }));
-vi.mock("@/pages/GameSelectPage", () => ({ GameSelectPage: () => <div>GAME</div> }));
-vi.mock("@/pages/TryoutGamePage", () => ({ TryoutGamePage: () => <div>TRYOUT</div> }));
-vi.mock("@/pages/BattleLobbyPage", () => ({ BattleLobbyPage: () => <div>LOBBY</div> }));
-vi.mock("@/pages/BattleGamePage", () => ({ BattleGamePage: () => <div>BATTLE</div> }));
-vi.mock("@/pages/AIBattleSetupPage", () => ({ AIBattleSetupPage: () => <div>AI-SETUP</div> }));
-vi.mock("@/pages/AIBattleGamePage", () => ({ AIBattleGamePage: () => <div>AI-GAME</div> }));
-vi.mock("@/pages/RendererDemoPage", () => ({ RendererDemoPage: () => <div>DEMO</div> }));
 vi.mock("@/pages/RegisterPage", () => ({ RegisterPage: () => <div>REGISTER</div> }));
-vi.mock("@/pages/TryoutSetupPage", () => ({ TryoutSetupPage: () => <div>TRYOUT-SETUP</div> }));
+vi.mock("@/pages/GameModeSelectPage", () => ({ GameModeSelectPage: () => <div>GAME-SELECT</div> }));
+vi.mock("@/pages/BattleModeCardsPage", () => ({ BattleModeCardsPage: () => <div>BATTLE-CARDS</div> }));
+vi.mock("@/pages/StoryModeCardsPage", () => ({ StoryModeCardsPage: () => <div>STORY-CARDS</div> }));
+vi.mock("@/pages/GameRoomPage", () => ({ GameRoomPage: () => <div>GAME-ROOM</div> }));
+vi.mock("@/pages/BattleLobbyPage", () => ({ BattleLobbyPage: () => <div>BATTLE-LOBBY</div> }));
+vi.mock("@/pages/BattleGamePage", () => ({ BattleGamePage: () => <div>BATTLE-GAME</div> }));
 vi.mock("@/pages/TournamentListPage", () => ({ TournamentListPage: () => <div>TOURNAMENT-LIST</div> }));
 vi.mock("@/pages/TournamentLobbyPage", () => ({ TournamentLobbyPage: () => <div>TOURNAMENT-LOBBY</div> }));
 vi.mock("@/pages/TournamentBattleGamePage", () => ({ TournamentBattleGamePage: () => <div>TOURNAMENT-BATTLE</div> }));
 vi.mock("@/pages/LeaderboardPage", () => ({ LeaderboardPage: () => <div>LEADERBOARD</div> }));
+vi.mock("@/pages/RendererDemoPage", () => ({ RendererDemoPage: () => <div>DEMO</div> }));
 vi.mock("@/pages/TeamBattleLobbyPage", () => ({ TeamBattleLobbyPage: () => <div>TEAM-LOBBY</div> }));
 vi.mock("@/pages/TeamBattleGamePage", () => ({ TeamBattleGamePage: () => <div>TEAM-BATTLE</div> }));
+vi.mock("@/pages/MyBeysPage", () => ({ default: () => <div>MY-BEYS</div> }));
+vi.mock("@/pages/SettingsPage", () => ({ default: () => <div>SETTINGS</div> }));
+vi.mock("@/pages/TutorialPage", () => ({ default: () => <div>TUTORIAL</div> }));
+vi.mock("@/pages/StorySelectPage", () => ({ default: () => <div>STORY-SELECT</div> }));
+vi.mock("@/pages/ProfilePage", () => ({ default: () => <div>PROFILE</div> }));
+vi.mock("@/pages/MatchHistoryPage", () => ({ default: () => <div>MATCH-HISTORY</div> }));
+vi.mock("@/pages/SpectatorLobbyPage", () => ({ default: () => <div>SPECTATOR-LOBBY</div> }));
+vi.mock("@/pages/EpisodeIntroPage", () => ({ default: () => <div>EP-INTRO</div> }));
+vi.mock("@/pages/EpisodeOutroPage", () => ({ default: () => <div>EP-OUTRO</div> }));
+vi.mock("@/pages/ReplayViewerPage", () => ({ default: () => <div>REPLAY</div> }));
+vi.mock("@/pages/HomePage", () => ({ HomePage: () => <div>HOME-LEGACY</div> }));
 
 // Admin pages
 vi.mock("@/pages/admin/AdminDashboardPage", () => ({ AdminDashboardPage: () => <div>ADMIN-DASHBOARD</div> }));
@@ -40,7 +50,7 @@ vi.mock("@/pages/admin/assets/SoundAssetsPage", () => ({ SoundAssetsPage: () => 
 vi.mock("@/pages/admin/assets/BitBeastAssetsPage", () => ({ BitBeastAssetsPage: () => <div>BITBEAST-ASSETS</div> }));
 vi.mock("@/pages/admin/assets/ParticlePresetsPage", () => ({ ParticlePresetsPage: () => <div>PARTICLE-PRESETS</div> }));
 vi.mock("@/pages/admin/StatsPage", () => ({ StatsPage: () => <div>STATS</div> }));
-vi.mock("@/pages/admin/SettingsPage", () => ({ SettingsPage: () => <div>SETTINGS</div> }));
+vi.mock("@/pages/admin/SettingsPage", () => ({ SettingsPage: () => <div>ADMIN-SETTINGS</div> }));
 vi.mock("@/pages/admin/ArenaTestPage", () => ({ ArenaTestPage: () => <div>ARENA-TEST</div> }));
 vi.mock("@/pages/admin/TournamentsListPage", () => ({ TournamentsListPage: () => <div>ADMIN-TOURNAMENTS</div> }));
 vi.mock("@/pages/admin/TournamentCreatePage", () => ({ TournamentCreatePage: () => <div>TOURNAMENT-CREATE</div> }));
@@ -77,6 +87,26 @@ vi.mock("@/pages/admin/PartLayerDefsPage", () => ({ PartLayerDefsPage: () => <di
 vi.mock("@/pages/admin/SpecialInteractionDefsPage", () => ({ SpecialInteractionDefsPage: () => <div>SPECIAL-INTERACTION-DEFS</div> }));
 vi.mock("@/pages/admin/ArenaFloorGroupListPage", () => ({ default: () => <div>FLOOR-GROUP-LIST</div> }));
 vi.mock("@/pages/admin/ArenaFloorGroupEditorPage", () => ({ default: () => <div>FLOOR-GROUP-EDITOR</div> }));
+vi.mock("@/pages/admin/TiltPresetDefsPage", () => ({ TiltPresetDefsPage: () => <div>TILT-PRESET-DEFS</div> }));
+vi.mock("@/pages/admin/DifficultyDefsPage", () => ({ DifficultyDefsPage: () => <div>DIFFICULTY-DEFS</div> }));
+vi.mock("@/pages/admin/FeatureAnimationDefsPage", () => ({ FeatureAnimationDefsPage: () => <div>FEATURE-ANIMATION-DEFS</div> }));
+vi.mock("@/pages/admin/PortalColorDefsPage", () => ({ PortalColorDefsPage: () => <div>PORTAL-COLOR-DEFS</div> }));
+vi.mock("@/pages/admin/PartShapeDefsPage", () => ({ PartShapeDefsPage: () => <div>PART-SHAPE-DEFS</div> }));
+vi.mock("@/pages/admin/WearPresetDefsPage", () => ({ WearPresetDefsPage: () => <div>WEAR-PRESET-DEFS</div> }));
+vi.mock("@/pages/admin/ObstacleTagDefsPage", () => ({ ObstacleTagDefsPage: () => <div>OBSTACLE-TAG-DEFS</div> }));
+vi.mock("@/pages/admin/BeyTypeDefsPage", () => ({ BeyTypeDefsPage: () => <div>BEY-TYPE-DEFS</div> }));
+vi.mock("@/pages/admin/ResetConditionDefsPage", () => ({ ResetConditionDefsPage: () => <div>RESET-CONDITION-DEFS</div> }));
+vi.mock("@/pages/admin/LiquidTypeDefsPage", () => ({ LiquidTypeDefsPage: () => <div>LIQUID-TYPE-DEFS</div> }));
+vi.mock("@/pages/admin/HazardTypeDefsPage", () => ({ HazardTypeDefsPage: () => <div>HAZARD-TYPE-DEFS</div> }));
+vi.mock("@/pages/admin/ElementStatDefsPage", () => ({ ElementStatDefsPage: () => <div>ELEMENT-STAT-DEFS</div> }));
+vi.mock("@/pages/admin/ArenaTemplateDefsPage", () => ({ ArenaTemplateDefsPage: () => <div>ARENA-TEMPLATE-DEFS</div> }));
+vi.mock("@/pages/admin/RPGTriggerModeDefsPage", () => ({ RPGTriggerModeDefsPage: () => <div>RPG-TRIGGER-MODE-DEFS</div> }));
+vi.mock("@/pages/admin/RPGFacingDefsPage", () => ({ RPGFacingDefsPage: () => <div>RPG-FACING-DEFS</div> }));
+vi.mock("@/pages/admin/GimmickSynergiesPage", () => ({ GimmickSynergiesPage: () => <div>GIMMICK-SYNERGIES</div> }));
+vi.mock("@/pages/admin/BeyAccessoriesPage", () => ({ BeyAccessoriesPage: () => <div>BEY-ACCESSORIES</div> }));
+vi.mock("@/pages/admin/BeyAccessoryEditPage", () => ({ BeyAccessoryEditPage: () => <div>BEY-ACCESSORY-EDIT</div> }));
+vi.mock("@/pages/admin/BoostPadDefsPage", () => ({ BoostPadDefsPage: () => <div>BOOST-PAD-DEFS</div> }));
+vi.mock("@/pages/admin/StatusConditionDefsPage", () => ({ StatusConditionDefsPage: () => <div>STATUS-CONDITION-DEFS</div> }));
 
 // 2.5D part system pages
 vi.mock("@/pages/admin/2d/PartSearchPage", () => ({ PartSearchPage: () => <div>PART-SEARCH</div> }));
@@ -93,25 +123,52 @@ vi.mock("@/pages/admin/arena-systems/ArenaSystemListPage", () => ({ ArenaSystemL
 vi.mock("@/pages/admin/arena-systems/ArenaSystemCreatePage", () => ({ ArenaSystemCreatePage: () => <div>ARENA-SYS-CREATE</div> }));
 vi.mock("@/pages/admin/arena-systems/ArenaSystemEditPage", () => ({ ArenaSystemEditPage: () => <div>ARENA-SYS-EDIT</div> }));
 
-// ── Mock layouts and auth guards ───────────────────────────────────────────────
+// Preset pages
+vi.mock("@/pages/admin/presets/ArenaPresetsPage", () => ({ default: () => <div>ARENA-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/BeyPresetsPage", () => ({ default: () => <div>BEY-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/ComboPresetsPage", () => ({ default: () => <div>COMBO-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/MechanicPresetsPage", () => ({ default: () => <div>MECHANIC-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/GimmickPresetsPage", () => ({ default: () => <div>GIMMICK-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/SpecialMovePresetsPage", () => ({ default: () => <div>SPECIAL-MOVE-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/PartPresetsPage", () => ({ default: () => <div>PART-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/SystemPresetsPage", () => ({ default: () => <div>SYSTEM-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/ObstaclePresetsPage", () => ({ default: () => <div>OBSTACLE-PRESETS</div> }));
+vi.mock("@/pages/admin/presets/FeatureGroupPresetsPage", () => ({ default: () => <div>FEATURE-GROUP-PRESETS</div> }));
 
+// RPG pages (lazy loaded — mock as suspense-compatible)
+vi.mock("@/pages/rpg/RPGRouteSelectPage", () => ({ RPGRouteSelectPage: () => <div>RPG-SELECT</div> }));
+vi.mock("@/pages/rpg/RPGGamePage", () => ({ RPGGamePage: () => <div>RPG-GAME</div> }));
+vi.mock("@/pages/rpg/RPGWorldMapPage", () => ({ RPGWorldMapPage: () => <div>RPG-WORLD-MAP</div> }));
+vi.mock("@/pages/rpg/StoryBattleGamePage", () => ({ StoryBattleGamePage: () => <div>STORY-BATTLE</div> }));
+
+// Also mock all RPG admin pages to avoid import errors
+vi.mock("@/pages/admin/rpg/RPGDashboardPage", () => ({ default: () => <div>RPG-DASHBOARD</div> }));
+vi.mock("@/pages/admin/rpg/RPGRegionsPage", () => ({ default: () => <div>RPG-REGIONS</div> }));
+vi.mock("@/pages/admin/rpg/RPGMapsPage", () => ({ default: () => <div>RPG-MAPS</div> }));
+vi.mock("@/pages/admin/rpg/RPGNPCsPage", () => ({ default: () => <div>RPG-NPCS</div> }));
+vi.mock("@/pages/admin/rpg/RPGDialoguesPage", () => ({ default: () => <div>RPG-DIALOGUES</div> }));
+vi.mock("@/pages/admin/rpg/RPGQuestsPage", () => ({ default: () => <div>RPG-QUESTS</div> }));
+vi.mock("@/pages/admin/rpg/RPGStoryEventsPage", () => ({ default: () => <div>RPG-STORY-EVENTS</div> }));
+vi.mock("@/pages/admin/rpg/RPGCutscenesPage", () => ({ default: () => <div>RPG-CUTSCENES</div> }));
+vi.mock("@/pages/admin/rpg/RPGItemsPage", () => ({ default: () => <div>RPG-ITEMS</div> }));
+vi.mock("@/pages/admin/rpg/RPGBadgesPage", () => ({ default: () => <div>RPG-BADGES</div> }));
+vi.mock("@/pages/admin/rpg/RPGArcsPage", () => ({ default: () => <div>RPG-ARCS</div> }));
+vi.mock("@/pages/admin/rpg/RPGRoutesPage", () => ({ default: () => <div>RPG-ROUTES</div> }));
+vi.mock("@/pages/admin/rpg/RPGConfigPage", () => ({ default: () => <div>RPG-CONFIG</div> }));
+vi.mock("@/pages/admin/rpg/RPGDefsPage", () => ({ default: () => <div>RPG-DEFS</div> }));
+vi.mock("@/pages/admin/AICharacterProfilesPage", () => ({ default: () => <div>AI-CHARACTER-PROFILES</div> }));
+vi.mock("@/pages/admin/AIBeyPersonalitiesPage", () => ({ default: () => <div>AI-BEY-PERSONALITIES</div> }));
+vi.mock("@/pages/admin/AIDifficultyProfilesPage", () => ({ default: () => <div>AI-DIFFICULTY-PROFILES</div> }));
+
+// Layouts & guards
 vi.mock("@/layouts/RootLayout", () => ({
-  RootLayout: () => (
-    <div>
-      <Outlet />
-    </div>
-  ),
+  RootLayout: () => <div><Outlet /></div>,
 }));
 
 vi.mock("@/layouts/AdminLayout", () => ({
-  AdminLayout: () => (
-    <div>
-      <Outlet />
-    </div>
-  ),
+  AdminLayout: () => <div><Outlet /></div>,
 }));
 
-// Pass-through so protected content is always rendered in tests
 vi.mock("@/components/auth/ProtectedRoute", () => ({
   ProtectedRoute: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -120,7 +177,6 @@ vi.mock("@/components/auth/AdminRoute", () => ({
   AdminRoute: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock contexts so RootLayout / AdminLayout don't blow up
 vi.mock("@/contexts/GameContext", () => ({
   GameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useGame: vi.fn(() => ({})),
@@ -135,29 +191,22 @@ vi.mock("@/styles/theme", () => ({
   C: { bg0: "#000", purple: "#800080", white: "#fff", muted: "#aaa" },
 }));
 
-// ── Import the real router (all pages are already mocked above) ────────────────
+// ── Import the real router ─────────────────────────────────────────────────────
 
 import { router as appRouter } from "@/router";
-import { createMemoryRouter, RouterProvider as _RouterProvider } from "react-router-dom";
-import React from "react";
 
-/**
- * Rebuild a memory router from the same route config but starting at `initialPath`.
- * We must use createMemoryRouter because the exported router is a BrowserRouter and
- * cannot be re-navigated in jsdom.
- */
 function renderAt(initialPath: string) {
-  // Extract the raw routes config from the BrowserRouter's internal state
-  // The exported router has a `.routes` property (React Router v6 data router).
   const routes = (appRouter as unknown as { routes: Parameters<typeof createMemoryRouter>[0] }).routes;
   const memRouter = createMemoryRouter(routes, { initialEntries: [initialPath] });
   render(<RouterProvider router={memRouter} />);
 }
 
-describe("router", () => {
-  it("/ renders HomePage", async () => {
+// ── Public routes ──────────────────────────────────────────────────────────────
+
+describe("router — public routes", () => {
+  it("/ renders GameModeLandingPage", async () => {
     renderAt("/");
-    expect(await screen.findByText("HOME")).toBeInTheDocument();
+    expect(await screen.findByText("LANDING")).toBeInTheDocument();
   });
 
   it("/login renders LoginPage", async () => {
@@ -165,47 +214,153 @@ describe("router", () => {
     expect(await screen.findByText("LOGIN")).toBeInTheDocument();
   });
 
-  it("/game renders GameSelectPage (ProtectedRoute pass-through)", async () => {
+  it("/leaderboard renders LeaderboardPage (no auth required)", async () => {
+    renderAt("/leaderboard");
+    expect(await screen.findByText("LEADERBOARD")).toBeInTheDocument();
+  });
+});
+
+// ── New game flow routes ───────────────────────────────────────────────────────
+
+describe("router — new game flow", () => {
+  it("/game renders GameModeSelectPage", async () => {
     renderAt("/game");
-    expect(await screen.findByText("GAME")).toBeInTheDocument();
+    expect(await screen.findByText("GAME-SELECT")).toBeInTheDocument();
   });
 
-  it("/game/tryout renders TryoutSetupPage", async () => {
-    renderAt("/game/tryout");
-    expect(await screen.findByText("TRYOUT-SETUP")).toBeInTheDocument();
+  it("/game/battle renders BattleModeCardsPage", async () => {
+    renderAt("/game/battle");
+    expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
   });
 
+  it("/game/story renders StoryModeCardsPage", async () => {
+    renderAt("/game/story");
+    expect(await screen.findByText("STORY-CARDS")).toBeInTheDocument();
+  });
+
+  it("/game/room renders GameRoomPage", async () => {
+    renderAt("/game/room");
+    expect(await screen.findByText("GAME-ROOM")).toBeInTheDocument();
+  });
+});
+
+// ── Battle lobby routes ────────────────────────────────────────────────────────
+
+describe("router — lobby routes", () => {
   it("/game/battle/lobby renders BattleLobbyPage", async () => {
     renderAt("/game/battle/lobby");
-    expect(await screen.findByText("LOBBY")).toBeInTheDocument();
+    expect(await screen.findByText("BATTLE-LOBBY")).toBeInTheDocument();
   });
 
-  it("/game/battle/room-123 renders BattleGamePage", async () => {
+  it("/game/royale/lobby renders BattleLobbyPage", async () => {
+    renderAt("/game/royale/lobby");
+    expect(await screen.findByText("BATTLE-LOBBY")).toBeInTheDocument();
+  });
+
+  it("/game/tournament/lobby renders BattleLobbyPage", async () => {
+    renderAt("/game/tournament/lobby");
+    expect(await screen.findByText("BATTLE-LOBBY")).toBeInTheDocument();
+  });
+});
+
+// ── Legacy game routes (still active for Colyseus PvP) ────────────────────────
+
+describe("router — legacy game routes still active", () => {
+  it("/game/battle/room-123 renders BattleGamePage (legacy PvP)", async () => {
     renderAt("/game/battle/room-123");
-    expect(await screen.findByText("BATTLE")).toBeInTheDocument();
+    expect(await screen.findByText("BATTLE-GAME")).toBeInTheDocument();
   });
 
-  it("/game/ai-battle renders AIBattleSetupPage", async () => {
+  it("/game/tournament renders TournamentListPage", async () => {
+    renderAt("/game/tournament");
+    expect(await screen.findByText("TOURNAMENT-LIST")).toBeInTheDocument();
+  });
+});
+
+// ── Legacy redirects ───────────────────────────────────────────────────────────
+
+describe("router — legacy redirects to /game/battle", () => {
+  it("/game/tryout redirects to /game/battle", async () => {
+    renderAt("/game/tryout");
+    expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
+  });
+
+  it("/game/ai-battle redirects to /game/battle", async () => {
     renderAt("/game/ai-battle");
-    expect(await screen.findByText("AI-SETUP")).toBeInTheDocument();
+    expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
   });
 
-  it("/game/ai-battle/play renders AIBattleGamePage", async () => {
-    renderAt("/game/ai-battle/play");
-    expect(await screen.findByText("AI-GAME")).toBeInTheDocument();
+  it("/game/2d/tryout redirects to /game/battle", async () => {
+    renderAt("/game/2d/tryout");
+    expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
   });
 
+  it("/game/2.5d/ai-battle redirects to /game/battle", async () => {
+    renderAt("/game/2.5d/ai-battle");
+    expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
+  });
+});
+
+// ── Player profile/history pages ──────────────────────────────────────────────
+
+describe("router — player pages", () => {
+  it("/game/profile renders ProfilePage", async () => {
+    renderAt("/game/profile");
+    expect(await screen.findByText("PROFILE")).toBeInTheDocument();
+  });
+
+  it("/game/history renders MatchHistoryPage", async () => {
+    renderAt("/game/history");
+    expect(await screen.findByText("MATCH-HISTORY")).toBeInTheDocument();
+  });
+
+  it("/game/spectate renders SpectatorLobbyPage", async () => {
+    renderAt("/game/spectate");
+    expect(await screen.findByText("SPECTATOR-LOBBY")).toBeInTheDocument();
+  });
+
+  it("/game/settings renders PlayerSettingsPage", async () => {
+    renderAt("/game/settings");
+    expect(await screen.findByText("SETTINGS")).toBeInTheDocument();
+  });
+});
+
+// ── Admin routes ──────────────────────────────────────────────────────────────
+
+describe("router — admin routes", () => {
   it("/admin renders AdminDashboardPage", async () => {
     renderAt("/admin");
     expect(await screen.findByText("ADMIN-DASHBOARD")).toBeInTheDocument();
   });
 
-  it("unknown path /xyz does NOT render any known page content", async () => {
+  it("/admin/beyblades renders BeybladesListPage", async () => {
+    renderAt("/admin/beyblades");
+    expect(await screen.findByText("BEYBLADES")).toBeInTheDocument();
+  });
+
+  it("/admin/2.5d/beyblade-systems renders BeybladeSystemListPage", async () => {
+    renderAt("/admin/2.5d/beyblade-systems");
+    expect(await screen.findByText("BEY-SYS-LIST")).toBeInTheDocument();
+  });
+
+  it("/admin/2.5d/parts renders PartSearchPage", async () => {
+    renderAt("/admin/2.5d/parts");
+    expect(await screen.findByText("PART-SEARCH")).toBeInTheDocument();
+  });
+
+  it("/admin/settings renders admin SettingsPage", async () => {
+    renderAt("/admin/settings");
+    expect(await screen.findByText("ADMIN-SETTINGS")).toBeInTheDocument();
+  });
+});
+
+// ── 404 (unknown path) ────────────────────────────────────────────────────────
+
+describe("router — unknown path", () => {
+  it("/xyz does not render any known page", async () => {
     renderAt("/xyz");
-    // All known page labels should be absent — React Router renders nothing / 404
-    expect(screen.queryByText("HOME")).not.toBeInTheDocument();
-    expect(screen.queryByText("LOGIN")).not.toBeInTheDocument();
-    expect(screen.queryByText("GAME")).not.toBeInTheDocument();
+    expect(screen.queryByText("LANDING")).not.toBeInTheDocument();
     expect(screen.queryByText("ADMIN-DASHBOARD")).not.toBeInTheDocument();
+    expect(screen.queryByText("BATTLE-CARDS")).not.toBeInTheDocument();
   });
 });

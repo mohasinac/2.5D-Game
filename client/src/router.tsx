@@ -27,6 +27,9 @@ import MyBeysPage from "./pages/MyBeysPage";
 import PlayerSettingsPage from "./pages/SettingsPage";
 import TutorialPage from "./pages/TutorialPage";
 import StorySelectPage from "./pages/StorySelectPage";
+import ProfilePage from "./pages/ProfilePage";
+import MatchHistoryPage from "./pages/MatchHistoryPage";
+import SpectatorLobbyPage from "./pages/SpectatorLobbyPage";
 import EpisodeIntroPage from "./pages/EpisodeIntroPage";
 import EpisodeOutroPage from "./pages/EpisodeOutroPage";
 import ReplayViewerPage from "./pages/ReplayViewerPage";
@@ -239,6 +242,8 @@ export const router = createBrowserRouter([
       { path: "game/ai-battle/play", element: <Navigate to="/game/battle" replace /> },
       { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
+      { path: "game/royale/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
+      { path: "game/tournament/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
@@ -249,6 +254,10 @@ export const router = createBrowserRouter([
       { path: "game/story/episode/:episodeId/intro", element: <ProtectedRoute><EpisodeIntroPage /></ProtectedRoute> },
       { path: "game/story/episode/:episodeId/outro", element: <ProtectedRoute><EpisodeOutroPage /></ProtectedRoute> },
       { path: "game/replay/:matchId", element: <ProtectedRoute><ReplayViewerPage /></ProtectedRoute> },
+      { path: "game/profile", element: <ProtectedRoute><ProfilePage /></ProtectedRoute> },
+      { path: "game/profile/:userId", element: <ProtectedRoute><ProfilePage /></ProtectedRoute> },
+      { path: "game/history", element: <ProtectedRoute><MatchHistoryPage /></ProtectedRoute> },
+      { path: "game/spectate", element: <ProtectedRoute><SpectatorLobbyPage /></ProtectedRoute> },
 
       // ── Team Battle (Phase K) ──
       { path: "game/2d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },

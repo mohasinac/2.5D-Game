@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -44,6 +44,8 @@ export interface LoadingProgressProps {
   error?: string;
   onRetry?: () => void;
   roomType?: string;
+  /** Per-step timeout in ms. Default: 10 000. If exceeded, shows an error and activates retry. */
+  stepTimeoutMs?: number;
 }
 
 // ── Spinning beyblade canvas animation ──────────────────────────────────────
@@ -138,9 +140,23 @@ function BeybladeSpinner({ color, spinning }: { color: string; spinning: boolean
   );
 }
 
-export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry, roomType }: LoadingProgressProps) {
+export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry, roomType, stepTimeoutMs = 10_000 }: LoadingProgressProps) {
   const { currentUser } = useAuth();
   const loggedRef = useRef<string | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Per-step timeout: reset on step change, fire if step stalls
+  useEffect(() => {
+    setTimedOut(false);
+    if (currentStep === 'warmup-ready' || error) return;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setTimedOut(true), stepTimeoutMs);
+    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+  }, [currentStep, error, stepTimeoutMs]);
+
+  // Clear timeout on any external error (parent already reporting failure)
+  useEffect(() => { if (error && timeoutRef.current) { clearTimeout(timeoutRef.current); setTimedOut(false); } }, [error]);
 
   // Write one error entry to admin_logs when an error first appears
   useEffect(() => {
@@ -167,8 +183,10 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry,
   const completed = idx + Math.min(1, Math.max(0, stepProgress));
   const pct = Math.min(100, Math.round((completed / totalSteps) * 100));
   const isDone = currentStep === "warmup-ready" && stepProgress >= 0.999;
-  const activeColor = error ? "#ef4444" : STEP_COLOR[currentStep];
-  const barColor = error ? "#ef4444" : isDone ? "#22c55e" : activeColor;
+  const hasError = !!(error || timedOut);
+  const activeColor = hasError ? "#ef4444" : STEP_COLOR[currentStep];
+  const barColor = hasError ? "#ef4444" : isDone ? "#22c55e" : activeColor;
+  const displayError = error || (timedOut ? `Failed — ${STEP_LABEL[currentStep]} timed out` : undefined);
 
   return (
     <div data-testid="loading-progress" className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,#0a1428_0%,#050c18_100%)] text-theme-text p-8 overflow-hidden">
@@ -199,10 +217,10 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry,
 
       {/* Status */}
       <div
-        className={`text-[13px] font-bold tracking-[0.1em] uppercase mb-1 text-[color:var(--bc)] ${!error && !isDone ? "[animation:glow_1.4s_ease-in-out_infinite_alternate]" : ""}`}
+        className={`text-[13px] font-bold tracking-[0.1em] uppercase mb-1 text-[color:var(--bc)] ${!hasError && !isDone ? "[animation:glow_1.4s_ease-in-out_infinite_alternate]" : ""}`}
         style={{ "--bc": barColor } as React.CSSProperties}
       >
-        {error ? "Connection Error" : STEP_LABEL[currentStep]}
+        {hasError ? "Connection Error" : STEP_LABEL[currentStep]}
       </div>
       <div className="text-[11px] text-theme-faint mb-5 font-mono">
         Step {idx + 1} / {totalSteps} · {pct}%
@@ -234,14 +252,14 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry,
         })}
       </div>
 
-      {error && (
+      {displayError && (
         <div className="mt-5 px-4 py-[10px] bg-red-10 border border-[rgba(239,68,68,0.35)] rounded-lg text-theme-red text-[12px] max-w-[360px] text-center leading-[1.5]">
-          {error}
+          {displayError}
         </div>
       )}
-      {error && onRetry && (
+      {displayError && onRetry && (
         <button
-          onClick={onRetry}
+          onClick={() => { setTimedOut(false); onRetry(); }}
           className="mt-3 px-6 py-2 bg-[rgba(239,68,68,0.15)] border border-[rgba(239,68,68,0.4)] text-theme-red rounded-lg text-[12px] font-bold uppercase tracking-wider hover:bg-[rgba(239,68,68,0.25)] transition-colors cursor-pointer"
         >
           Retry

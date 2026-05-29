@@ -105,6 +105,8 @@ const SPAWN_OFFSETS = [
 export class BattleRoom extends BaseRoom<GameState> {
   private matchStarted = false;
   private lastInputTime = 0;
+  private isPrivateRoom = false;
+  private idleTimer: ReturnType<typeof setTimeout> | null = null;
   // #9: Per-client input rate limiting — max 10 inputs per 100ms window
   private inputRateMap: Map<string, { count: number; windowStart: number }> = new Map();
   // #9: Per-client special-tap cooldown (800ms minimum between special-tap inputs)
@@ -257,6 +259,7 @@ export class BattleRoom extends BaseRoom<GameState> {
     if (!tryReserveRoom()) throw new Error("Server at capacity (max 20 rooms)");
 
     this.autoDispose = true;
+    this.isPrivateRoom = !!options.private;
     console.log("BattleRoom created", options);
 
     this.globalSettings = await loadGlobalSettings();
@@ -542,6 +545,9 @@ export class BattleRoom extends BaseRoom<GameState> {
       return;
     }
 
+    // Clear idle timer if a player rejoins a private room
+    if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
+
     this.playerSessions.add(client.sessionId);
     this.comboTrackers.set(client.sessionId, createComboTracker());
     this.comboMatchStates.set(client.sessionId, createBeyComboMatchState());
@@ -575,12 +581,31 @@ export class BattleRoom extends BaseRoom<GameState> {
     const spawnOffset = SPAWN_OFFSETS[spawnIndex];
     const arenaHalfW = (this.state.arena.width * 16) / 2;
     const arenaHalfH = (this.state.arena.height * 16) / 2;
-    const spawnRadius = Math.min(arenaHalfW, arenaHalfH) * 0.5;
+    let spawnRadius = Math.min(arenaHalfW, arenaHalfH) * 0.5;
+    let spawnAngle = spawnOffset.angle;
 
-    beyblade.x = arenaHalfW + Math.cos(spawnOffset.angle) * spawnRadius;
-    beyblade.y = arenaHalfH + Math.sin(spawnOffset.angle) * spawnRadius;
+    // Classic Stadium / quadrant-launch arenas: use royaleLaunchRadius + opposite-quadrant angles
+    const ac2 = this.arenaCache as any;
+    if (ac2?.launchMode === "quadrant") {
+      const royaleR = ac2?.royaleLaunchRadius as number | undefined;
+      if (royaleR !== undefined) spawnRadius = royaleR * 16;
+      const maxClients = this.maxClients ?? 4;
+      if (maxClients >= 12) {
+        // Royale: evenly spaced ring
+        spawnAngle = (spawnIndex / 12) * Math.PI * 2;
+      } else if (maxClients >= 4) {
+        // 4 players: each at diagonal opposite quadrant (0°, 90°, 180°, 270°)
+        spawnAngle = (spawnIndex / 4) * Math.PI * 2;
+      } else {
+        // 2 players: top (90°) and bottom (270°) so they face each other
+        spawnAngle = spawnIndex === 0 ? Math.PI / 2 : (3 * Math.PI) / 2;
+      }
+    }
 
-    this.spawnPositions.set(client.sessionId, { x: beyblade.x, y: beyblade.y, angle: spawnOffset.angle });
+    beyblade.x = arenaHalfW + Math.cos(spawnAngle) * spawnRadius;
+    beyblade.y = arenaHalfH + Math.sin(spawnAngle) * spawnRadius;
+
+    this.spawnPositions.set(client.sessionId, { x: beyblade.x, y: beyblade.y, angle: spawnAngle });
 
     const pFlags = resolvePhysicsFlags((beybladeData as any)?.physicsFlags);
     beyblade.collisionWithBeys       = pFlags.collisionWithBeys;
@@ -671,7 +696,15 @@ export class BattleRoom extends BaseRoom<GameState> {
     }
 
     if (this.playerSessions.size === 0) {
-      this.disconnect();
+      if (this.isPrivateRoom) {
+        // Friends Room: idle-close after 60s with zero clients
+        this.idleTimer = setTimeout(() => {
+          this.broadcast('room-closed', { reason: 'idle' });
+          this.disconnect();
+        }, 60_000);
+      } else {
+        this.disconnect();
+      }
     }
   }
 
@@ -2509,6 +2542,55 @@ export class BattleRoom extends BaseRoom<GameState> {
 
       // 2.5D hook: PartSystemManager.tickBey() goes here (no-op in base).
       this.onTickedBey(beyblade, dt);
+
+      // Classic Stadium zone physics (pinkWallRadius / tornado ridge / bowl slope)
+      if (beyblade.isActive && this.state.arena.shape === "circle") {
+        const ac = this.arenaCache as any;
+        const pinkWallR   = ac?.pinkWallRadius   as number | undefined;
+        const ridgeR      = ac?.ridgeRadius       as number | undefined;
+        const ridgeW      = ac?.spinZones?.[0]?.ringWidth as number | undefined;
+        const flatZoneR   = ac?.flatZoneRadius    as number | undefined;
+        const spinStrength = ac?.spinZones?.[0]?.spinStrength as number | undefined;
+        const bounceFactor = ac?.wallBounceFactor as number | undefined;
+
+        if (pinkWallR !== undefined && ridgeR !== undefined && flatZoneR !== undefined) {
+          const cx = (this.state.arena.width  * 16) / 2;
+          const cy = (this.state.arena.height * 16) / 2;
+          const dx = beyblade.x - cx;
+          const dy = beyblade.y - cy;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 0) {
+            const normX = dx / dist;
+            const normY = dy / dist;
+            // Convert Firestore px radii to physics coords (×16)
+            const pinkR  = pinkWallR  * 16;
+            const ridRad = ridgeR     * 16;
+            const ridHW  = ((ridgeW ?? 36) * 16) / 2;
+            const flatR  = flatZoneR  * 16;
+            const ringOutR = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+
+            // 1. Pink wall recoil: bey between pinkWall and KO boundary
+            if (dist >= pinkR && dist < ringOutR) {
+              const bf = bounceFactor ?? 1.2;
+              const recoilMag = (dist - pinkR) / (ringOutR - pinkR) * 0.004 * bf;
+              this.physics.applyForce(beyblade.id, -normX * recoilMag * beyblade.mass, -normY * recoilMag * beyblade.mass);
+            }
+
+            // 2. Tornado ridge spin boost: bey inside the ridge band
+            if (Math.abs(dist - ridRad) <= ridHW) {
+              const boost = (spinStrength ?? 0.35) * dt;
+              beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + boost * beyblade.maxSpin * 0.01);
+            }
+
+            // 3. Bowl slope: inward drift between flatZone and pinkWall
+            if (dist > flatR && dist < pinkR) {
+              const zone = (dist - flatR) / (pinkR - flatR); // 0=flatEdge 1=pinkWall
+              const driftMag = zone * zone * 0.0025 * beyblade.mass;
+              this.physics.applyForce(beyblade.id, -normX * driftMag, -normY * driftMag);
+            }
+          }
+        }
+      }
 
       // Ring-out check
       if (this.state.arena.shape === "circle") {

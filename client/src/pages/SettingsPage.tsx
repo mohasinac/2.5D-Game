@@ -80,8 +80,29 @@ function VolumeSlider({
   );
 }
 
+// ── Overlay theme ────────────────────────────────────────────────────────────
+const OVERLAY_THEMES: { id: string; label: string; bg: string }[] = [
+  { id: 'dark',     label: 'Dark',          bg: 'linear-gradient(155deg,#1f1f2e,#111)' },
+  { id: 'ocean',    label: 'Ocean Blue',    bg: 'linear-gradient(155deg,#0d2d5e,#071a38)' },
+  { id: 'fire',     label: 'Fire Red',      bg: 'linear-gradient(155deg,#5e1a0d,#380707)' },
+  { id: 'forest',   label: 'Forest Green',  bg: 'linear-gradient(155deg,#0d3a1a,#071c0d)' },
+  { id: 'gold',     label: 'Gold',          bg: 'linear-gradient(155deg,#5e4a0d,#38280a)' },
+  { id: 'midnight', label: 'Midnight Black',bg: 'linear-gradient(155deg,#0a0a0f,#000)' },
+  { id: 'neon',     label: 'Neon Pink',     bg: 'linear-gradient(155deg,#5e0d3a,#38071e)' },
+  { id: 'space',    label: 'Space Gray',    bg: 'linear-gradient(155deg,#1a1a2e,#0a0a14)' },
+  { id: 'purple',   label: 'Default',       bg: 'linear-gradient(155deg,#8b5cf6,#5b21b6)' },
+];
+
+function loadOverlayTheme() { try { return localStorage.getItem('bey.overlayTheme') ?? 'purple'; } catch { return 'purple'; } }
+function saveOverlayTheme(id: string) { try { localStorage.setItem('bey.overlayTheme', id); } catch {} }
+function loadCustomBg() { try { return localStorage.getItem('bey.overlayTheme.customBg') ?? ''; } catch { return ''; } }
+function saveCustomBg(v: string) { try { localStorage.setItem('bey.overlayTheme.customBg', v); } catch {} }
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
+  const [overlayTheme, setOverlayTheme] = useState(loadOverlayTheme);
+  const [customColor, setCustomColor] = useState(() => { try { return localStorage.getItem('bey.overlayTheme.customColor') ?? '#1a1a2e'; } catch { return '#1a1a2e'; } });
+  const [customBgPreview, setCustomBgPreview] = useState(loadCustomBg);
   const [showControls, setShowControls] = useState(false);
   const { currentUser, signOutUser } = useAuth();
   const navigate = useNavigate();
@@ -208,6 +229,65 @@ export default function SettingsPage() {
               <Toggle on={settings.reduceMotion} onChange={() => update({ reduceMotion: !settings.reduceMotion })} />
             </div>
 
+          </div>
+        </section>
+
+        {/* Overlay Theme */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-theme-text mb-4">Controller Overlay Theme</h2>
+          <div className="bg-bg2 rounded-2xl border border-border-c p-5 flex flex-col gap-4">
+            <div className="flex flex-wrap gap-2">
+              {OVERLAY_THEMES.map(t => (
+                <button
+                  key={t.id}
+                  title={t.label}
+                  onClick={() => { setOverlayTheme(t.id); saveOverlayTheme(t.id); }}
+                  style={{ background: t.bg, outline: overlayTheme === t.id ? '2px solid #00e5ff' : '2px solid transparent', outlineOffset: 2 }}
+                  className="w-10 h-10 rounded-lg cursor-pointer transition-all border-0"
+                />
+              ))}
+            </div>
+            <div className="text-xs text-theme-muted">{OVERLAY_THEMES.find(t => t.id === overlayTheme)?.label ?? 'Default'}</div>
+
+            {/* Custom color */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-theme-text">Custom Color</span>
+              <input
+                type="color"
+                value={customColor}
+                onChange={e => {
+                  const v = e.target.value;
+                  setCustomColor(v);
+                  try { localStorage.setItem('bey.overlayTheme.customColor', v); } catch {}
+                  setOverlayTheme('custom');
+                  saveOverlayTheme('custom');
+                }}
+                className="w-10 h-8 rounded border border-border-c cursor-pointer"
+              />
+            </div>
+
+            {/* Custom image */}
+            <div className="flex flex-col gap-2">
+              <span className="text-sm text-theme-text">Custom Background Image</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = ev => {
+                    const dataUrl = ev.target?.result as string;
+                    if (dataUrl) { setCustomBgPreview(dataUrl); saveCustomBg(dataUrl); setOverlayTheme('custom-image'); saveOverlayTheme('custom-image'); }
+                  };
+                  reader.readAsDataURL(file);
+                }}
+                className="text-xs text-theme-muted cursor-pointer"
+              />
+              {customBgPreview && (
+                <div style={{ height: 40, backgroundImage: `url(${customBgPreview})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(1px) brightness(0.4)', borderRadius: 8 }} />
+              )}
+            </div>
           </div>
         </section>
 
