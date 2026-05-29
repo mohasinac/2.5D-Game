@@ -9406,7 +9406,1891 @@ function ashRiseCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +13 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1919 as further franchise moves are provided.*
+
+
+---
+
+## Case 1919 — GIMMICK: Dragoon GT & Strata Dragoon MS (HMS) — Phase-Locked Dual Rankine Tornado
+
+**Beyblades:** Dragoon GT (HMS) × Tyson Granger; Strata Dragoon MS (HMS) × Daichi Sumeragi
+**Series:** Beyblade: G-Revolution (Bakuten Shoot Season 3)
+
+### Assembly — Dragoon GT (HMS)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Metal Attack Ring | Dragoon GT | 11.0 | 32.0 |
+| Body | HMS Cylinder | 8.5 | 18.0 |
+| Running Core | Semi-Flat RC | 3.0 | 4.0 |
+| **Total** | | **22.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention. HMS = Hard Metal System; aluminum alloy MAR replaces plastic AR; Running Core replaces WD+SG+BB in a single shaft unit.)
+
+**I_DGT** = 11.0×10⁻³ × 0.032² + 8.5×10⁻³ × 0.018² + 3.0×10⁻³ × 0.004²
+          = 1.126×10⁻⁵ + 2.754×10⁻⁶ + 4.80×10⁻⁸
+          = **1.406×10⁻⁵ kg·m²**
+
+ω₀ = 750 rad/s (HMS standard launch — lighter aluminum → higher exit velocity)
+L₀_DGT = I_DGT × ω₀ = 1.406×10⁻⁵ × 750 = **1.055×10⁻² kg·m²/s**
+
+### Assembly — Strata Dragoon MS (HMS)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Metal Attack Ring | Strata Dragoon | 10.5 | 30.0 |
+| Body | HMS Cylinder | 8.0 | 16.0 |
+| Running Core | Semi-Flat RC | 3.0 | 4.0 |
+| **Total** | | **21.5** | |
+
+**I_SDM** = 10.5×10⁻³ × 0.030² + 8.0×10⁻³ × 0.016² + 3.0×10⁻³ × 0.004²
+          = 9.450×10⁻⁶ + 2.048×10⁻⁶ + 4.80×10⁻⁸
+          = **1.155×10⁻⁵ kg·m²**
+
+ω₀ = 750 rad/s
+L₀_SDM = 1.155×10⁻⁵ × 750 = **8.663×10⁻³ kg·m²/s**
+
+---
+
+### 1. Semi-Flat RC — Fast Orbital Drive & Spin Decay
+
+Both HMS beys use identical Semi-Flat Running Cores (μ_RC = 0.35, r_RC = 4 mm) driving fast, aggressive orbital motion:
+
+```
+v_orbital = μ_RC × ω₀ × r_RC = 0.35 × 750 × 0.004 = 1.050 m/s
+
+τ_flat_DGT = μ_RC × m_DGT × g × r_RC = 0.35 × 0.0225 × 9.81 × 0.004 = 3.090×10⁻⁴ N·m
+t_spin_DGT = L₀_DGT / τ_flat_DGT = 1.055×10⁻² / 3.090×10⁻⁴ = 34.1 s
+
+τ_flat_SDM = 0.35 × 0.0215 × 9.81 × 0.004 = 2.953×10⁻⁴ N·m
+t_spin_SDM = 8.663×10⁻³ / 2.953×10⁻⁴ = 29.3 s
+```
+
+Equal orbital speed (v_orbital = 1.050 m/s for both) means both beys circuit the bowl at the same rate — a prerequisite for maintaining phase lock.
+
+---
+
+### 2. Phase-Locked Dual Rankine Tornado — Synchronization & Constructive Interference
+
+Each MAR generates a Rankine vortex. When phase-locked (same ω, same orbital position offset = 180°):
+
+```
+v_tip_DGT = ω₀ × r_MAR_DGT = 750 × 0.032 = 24.00 m/s
+Γ_DGT     = 2π × v_tip_DGT × r_MAR_DGT = 2π × 24.00 × 0.032 = 4.825 m²/s
+
+v_tip_SDM = ω₀ × r_MAR_SDM = 750 × 0.030 = 22.50 m/s
+Γ_SDM     = 2π × v_tip_SDM × r_MAR_SDM = 2π × 22.50 × 0.030 = 4.241 m²/s
+
+Γ_combined = Γ_DGT + Γ_SDM = 4.825 + 4.241 = 9.066 m²/s  (phase-locked constructive sum)
+```
+
+Synchronized force at r_opp = 75 mm (combined tornado interaction radius):
+
+```
+v_combo = Γ_combined / (2π × r_opp) = 9.066 / (2π × 0.075) = 19.24 m/s
+
+q_combo  = ½ × ρ_air × v_combo² = ½ × 1.225 × 19.24² = 226.7 Pa
+
+F_twin   = q_combo × A_opp = 226.7 × π × 0.020² = 226.7 × 1.257×10⁻³ = 0.2850 N
+```
+
+**Sync amplification vs. non-synchronized sum:**
+
+```
+F_DGT_nonsync = (½×1.225×(4.825/0.4712)²) × 1.257×10⁻³ = 64.23×1.257×10⁻³ = 0.08074 N
+F_SDM_nonsync = (½×1.225×(4.241/0.4712)²) × 1.257×10⁻³ = 49.61×1.257×10⁻³ = 0.06235 N
+F_sum_nonsync = 0.08074 + 0.06235 = 0.1431 N
+
+Sync factor: F_twin / F_sum_nonsync = 0.2850 / 0.1431 = 1.992 ≈ 2.0×
+```
+
+Synchronization nearly doubles the tornado force — this is why Tyson must adjust his spin to match Daichi's. If Tyson's tornado breaks phase (as in the F-Dynasty battle), the combined vortex collapses to single-bey output (F_SDM = 0.06235 N alone — insufficient to sustain the column).
+
+### Key Parameters Summary
+
+| Quantity | Dragoon GT | Strata Dragoon MS |
+|---------|-----------|------------------|
+| m | 22.5 g | 21.5 g |
+| I_total | 1.406×10⁻⁵ kg·m² | 1.155×10⁻⁵ kg·m² |
+| ω₀ | 750 rad/s | 750 rad/s |
+| L₀ | 1.055×10⁻² kg·m²/s | 8.663×10⁻³ kg·m²/s |
+| v_tip | 24.00 m/s | 22.50 m/s |
+| Γ | 4.825 m²/s | 4.241 m²/s |
+| τ_flat | 3.090×10⁻⁴ N·m | 2.953×10⁻⁴ N·m |
+| t_spin | 34.1 s | 29.3 s |
+
+| Combined quantity | Value |
+|-----------------|-------|
+| Γ_combined | 9.066 m²/s |
+| v_combo (r=75mm) | 19.24 m/s |
+| F_twin | 0.2850 N |
+| Sync factor | ≈ 2.0× |
+| v_orbital (both) | 1.050 m/s |
+
+---
+
+## Case 1920 — SPECIAL: Twin Tornado Attack — Tyson & Daichi / Dragoon GT & Strata Dragoon MS
+
+**Bladers:** Tyson Granger + Daichi Sumeragi | **Beyblades:** Dragoon GT + Strata Dragoon MS | **Type:** attack (co-blader)
+
+### Description
+
+Twin Tornado Attack (Japanese: ツイントルネードアタック) is a powerful co-blader Special Move used by Tyson Granger and Daichi Sumeragi with their Dragoon GT and Strata Dragoon MS HMS beyblades. Tyson adjusts Dragoon GT's rotational speed to exactly match Strata Dragoon MS's, phase-locking their orbital paths 180° apart in the arena. The two synchronized vortices combine into a single massive Rankine super-tornado — nearly twice as powerful as the sum of the individual tornados — and travel together toward the opponent in a convergent column of sand and wind. When Tyson breaks synchronization for a moment in the fight against the F-Dynasty team, both tornados collapse simultaneously, demonstrating the critical role of phase lock. The attack first appeared in Beyblade G-Revolution, episode "A Champion's Not Easy".
+
+### Stage — Phase-Locked Dual Tornado Strike (t_wave = 0.30 s)
+
+From Case 1919: F_twin = 0.2850 N (synchronized Γ_combined = 9.066 m²/s at r_opp = 75 mm).
+
+```
+J_twin = F_twin × t_wave = 0.2850 × 0.30 = 8.550×10⁻² N·s
+
+Δv_opp = J_twin / m_opp = 8.550×10⁻² / 0.038 = 2.250 m/s
+```
+
+**Effect on Dragoon GT (spin drain — shared equally):**
+
+```
+Δω_DGT    = (J_twin/2) × r_contact / I_DGT = 4.275×10⁻² × 0.025 / 1.406×10⁻⁵ = 76.0 rad/s
+ω_remain_DGT = 750 − 76.0 = 674.0 rad/s  (89.9% retained)
+```
+
+**Effect on Strata Dragoon MS (spin drain):**
+
+```
+Δω_SDM    = (J_twin/2) × r_contact / I_SDM = 4.275×10⁻² × 0.025 / 1.155×10⁻⁵ = 92.5 rad/s
+ω_remain_SDM = 750 − 92.5 = 657.5 rad/s  (87.7% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dragoon and Strata Dragoon's Bit-Beasts fully manifest as twin dragon-wind spirits — the two synchronized tornado columns become living tempests of pure BeySpirit energy that annihilate the opponent's stability across the entire arena floor.
+
+[M] factor = **8.0 ×** (Tyson + Daichi co-blader dual Dragoon spirit)
+[M] Δv = 2.250 × 8.0 = **18.0 m/s** (twin tornado ring-out)
+
+> **Note:** Physical values describe phase-locked Γ_combined=9.066 m²/s at r=75mm → F=0.2850 N×0.30s → J=8.550×10⁻² N·s, Δv=2.250 m/s; sync factor ≈ 2.0× vs non-sync sum. DGT spin drain 76.0 rad/s, SDM spin drain 92.5 rad/s. [M] values represent Tyson and Daichi's dual Dragoon spirits fusing the synchronized vortices into a living twin tornado catastrophe. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function twinTornadoAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Phase-locked Γ_combined=9.066m²/s→F=0.2850N×0.30s→J=8.550×10⁻²N·s; sync 2.0× vs nonsync; [M] 8.0×
+  const J_phys = 0.08550;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Tyson+Daichi dual Dragoon spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any pair of beyblades using HMS-class Metal Attack Rings (r_MAR ≥ 28 mm, Γ ≥ 3.5 m²/s each) with identical flat-contact Running Cores (μ ≥ 0.30, v_orbital equal ±5%) such that both beys circuit the bowl at the same rate. Both bladers must launch simultaneously and maintain phase lock throughout (both beys at identical ω). Standard game instance: Dragoon GT + Strata Dragoon MS (Tyson Granger + Daichi Sumeragi, G-Revolution).
+
+---
+
+## Case 1921 — COMBO: Cyclone Spiral — Dragoon GT
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The moveRight (→) drives Dragoon GT into its fast flat-RC orbital approach (v_orbital = 1.050 m/s):
+
+```
+v_approach = v_orbital = 1.050 m/s
+```
+
+The moveUp (↑) deflects the approach into a bowl-wall ascent (θ = 45°):
+
+```
+v_z = v_approach × tan(45°) = 1.050 × 1.0 = 1.050 m/s
+
+h_apex = v_z² / (2g) = 1.050² / (2 × 9.81) = 1.1025 / 19.62 = 56.2 mm
+
+v_descent = √(2g × h_apex) = √(2 × 9.81 × 0.0562) = 1.050 m/s
+```
+
+The attack (A) fires the bowl-descent overhead smash at combined v_impact:
+
+```
+v_impact = √(v_approach² + v_descent²) = √(1.050² + 1.050²) = √2.2050 = 1.485 m/s
+
+m_eff_DGT = (m_DGT × m_opp) / (m_DGT + m_opp) = (0.0225 × 0.038) / (0.0225 + 0.038)
+           = 8.550×10⁻⁴ / 0.0605 = 1.413×10⁻² kg
+
+J_cyclone = m_eff_DGT × (1 + e) × v_impact  [e = 0.75, hard aluminum MAR]
+          = 1.413×10⁻² × 1.75 × 1.485
+          = 1.413×10⁻² × 2.5988 = 3.673×10⁻² N·s
+```
+
+The Semi-Flat RC rebounds on landing, reconverting smash recoil to spin (η_RC = 0.28, metal-on-metal contact):
+
+```
+Δω = η_RC × J_cyclone × r_contact / I_DGT
+   = 0.28 × 3.673×10⁻² × 0.025 / 1.406×10⁻⁵
+   = 0.28 × 9.183×10⁻⁴ / 1.406×10⁻⁵
+   = 0.28 × 65.31
+   = +18.3 rad/s  ≈ +18 rad/s
+```
+
+(η_RC = 0.28: Semi-Flat metal Running Core rebound reconversion. Higher per-radian gain vs MFB due to HMS lower I.) Bowl-ascent overhead descent smash gives damageMultiplier **1.25×**. lockMs = 0 (pure attack dash).
+
+**Parameters:**
+- spinGain: +18 rad/s (Semi-Flat RC metal rebound η = 0.28)
+- damageMultiplier: 1.25 (bowl-ascent aerial descent smash)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function cycloneSpiralCombo(bey: Beyblade, target: Beyblade): void {
+  // Semi-Flat RC rebound: Δω ≈ +18 rad/s (η=0.28, h=56.2mm, v_impact=1.485m/s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 18);
+  // Bowl-ascent aerial descent smash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +18 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1922 — GIMMICK: Blizzard Orthrus (Metal Fury) — Dual-Spin Crystalline Freeze Ring
+
+**Beyblade:** Blizzard Orthrus 145D (Metal Fury / 4D System)
+**Blader:** Gordo | **Series:** Beyblade Metal Fury (4D System)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face Bolt | Orthrus face | 1.5 | 3.0 |
+| Energy Ring | Orthrus | 3.5 | 38.0 |
+| Fusion Wheel | Blizzard | 28.5 | 35.0 |
+| Spin Track | 145 | 4.0 | 10.0 |
+| Performance Tip | Defense (D) | 2.5 | 4.0 |
+| **Total** | | **40.0** | |
+
+(Face Bolt included; 4D convention.)
+
+**I_total** = 1.5×10⁻³ × 0.003² + 3.5×10⁻³ × 0.038² + 28.5×10⁻³ × 0.035² + 4.0×10⁻³ × 0.010² + 2.5×10⁻³ × 0.004²
+           = 1.35×10⁻⁸ + 5.054×10⁻⁶ + 3.491×10⁻⁵ + 4.00×10⁻⁷ + 4.00×10⁻⁸
+           = **4.044×10⁻⁵ kg·m²**
+
+ω₀ = 600 rad/s (MFB/4D standard launch for defense-type)
+L₀ = I × ω₀ = 4.044×10⁻⁵ × 600 = **2.426×10⁻² kg·m²/s**
+
+---
+
+### 1. Blizzard Fusion Wheel — Dual-Blade Ring Contact
+
+The Blizzard Fusion Wheel has two large bladed wings that create a contact perimeter at r = 35 mm. On contact the high-mass wheel applies smash force via blade leading edges (e = 0.72, ABS/metal hybrid):
+
+```
+v_tip = ω₀ × r_FW = 600 × 0.035 = 21.00 m/s
+
+Contact-zone width per blade: w_blade = 12 mm = 0.012 m
+Blade span (axial, per blade): h_blade = 5 mm = 0.005 m
+A_blade = 0.012 × 0.005 = 6.0×10⁻⁵ m² (per blade)
+N_blades = 2
+
+F_blade_total = N_blades × ½ × ρ_air × v_tip² × C_D × A_blade
+              = 2 × ½ × 1.225 × 441.00 × 1.2 × 6.0×10⁻⁵
+              = 2 × 1.947×10⁻² = 3.894×10⁻² N
+```
+
+---
+
+### 2. Freeze Aura — Crystalline Ice Surface & Friction Modulation
+
+The Orthrus Energy Ring (ER) has a ridged crystalline texture. At v_tip the surface creates a localized low-temperature boundary layer (Gordo's ice-element BeySpirit). For physics purposes this is modeled as increased contact stiction via modified friction:
+
+```
+μ_D_standard = 0.08  (Defense tip — low friction, large flat face)
+μ_D_freeze   = 0.13  (ice-aura contact stiction at low relative motion)
+
+τ_D_freeze = μ_D_freeze × m × g × r_D
+           = 0.13 × 0.040 × 9.81 × 0.004
+           = 2.043×10⁻⁴ N·m
+
+t_spin = L₀ / τ_D_freeze = 2.426×10⁻² / 2.043×10⁻⁴ = 118.7 s ≈ 119 s
+```
+
+(Freeze-aura Defense tip extends spin survival time compared to a standard D at μ=0.08: t_spin_std = 2.426×10⁻² / (0.08×0.040×9.81×0.004) = 193.5 s; freeze-aura mode μ effectively doubles friction for an opposing bey caught in the ice field — see Case 1924.)
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 40.0 g |
+| I_total | 4.044×10⁻⁵ kg·m² |
+| ω₀ | 600 rad/s |
+| L₀ | 2.426×10⁻² kg·m²/s |
+| v_tip | 21.00 m/s |
+| F_blade_total | 3.894×10⁻² N |
+| μ_D_freeze | 0.13 |
+| τ_D_freeze | 2.043×10⁻⁴ N·m |
+| t_spin | 119 s |
+
+---
+
+## Case 1923 — SPECIAL: Twin Spire — Gordo / Blizzard Orthrus
+
+**Blader:** Gordo | **Beyblade:** Blizzard Orthrus 145D | **Type:** stamina (freeze-drain)
+
+### Description
+
+Twin Spire is a Special Move used by Gordo and his Blizzard Orthrus Beyblade. Orthrus channels his icy breath through the dual-bladed Fusion Wheel, encasing the opponent in a glacial freeze field that saps their rotation and traps them in place. The frozen opponent loses speed and power while Orthrus continues spinning freely, its Defense tip sustaining rotation long after the opponent grinds to a halt. The name "Twin Spire" refers to the two blade-spires of the Blizzard wheel rotating like twin pillars of ice.
+
+### Stage — Freeze-Drain Contact (Ice Aura Friction Amplification)
+
+From Case 1922: twin blade contact F=3.894×10⁻² N, v_tip=21.00 m/s. Freeze aura doubles the opponent's effective spin-friction coefficient upon contact (ice-coating immobilizes tip against arena surface, μ_opp→2.0× standard).
+
+```
+v_rel = v_tip − v_opp_tip = 21.00 − 18.00 = 3.00 m/s
+(opponent at 600 rad/s × r_opp=0.030 m = 18.00 m/s orbital contribution)
+
+m_eff = (m_O × m_opp) / (m_O + m_opp)
+      = (0.040 × 0.038) / (0.040 + 0.038)
+      = 1.520×10⁻³ / 0.078 = 1.949×10⁻² kg
+
+J_twinspire = m_eff × (1 + e) × v_rel
+            = 1.949×10⁻² × (1 + 0.72) × 3.00
+            = 1.949×10⁻² × 5.160 = 1.005×10⁻¹ N·s
+
+Δv_opp = J_twinspire / m_opp = 1.005×10⁻¹ / 0.038 = 2.645 m/s
+
+Freeze immobilization: opponent tip friction ×2 during freeze dwell (t_freeze = 0.8s):
+τ_freeze_opp = 2.0 × 0.35 × 0.038 × 9.81 × 0.003 = 7.806×10⁻⁴ N·m
+Δω_freeze = τ_freeze_opp × t_freeze / I_opp
+          = 7.806×10⁻⁴ × 0.8 / 1.8×10⁻⁵ = 34.7 rad/s (additional spin drain on frozen opponent)
+```
+
+**Effect on Blizzard Orthrus (spin loss from contact):**
+
+```
+Δω_O = J_twinspire × r_contact / I_O
+      = 1.005×10⁻¹ × 0.035 / 4.044×10⁻⁵ = 86.9 rad/s
+ω_remain = 600 − 86.9 = 513.1 rad/s  (85.5% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gordo's Orthrus Bit-Beast channels both heads in unison — the ice aura erupts into twin crystalline spires that tower over the stadium and encase the opponent completely, draining all momentum in a glacial prison while Orthrus spins untouched at the center.
+
+[M] factor = **7.0 ×** (Gordo — Blizzard Orthrus ice-twin spirit, Metal Fury 4D special)
+[M] Δv = 2.645 × 7.0 = **18.5 m/s** (glacial freeze ring-out / immobilization)
+
+> **Note:** Physical values describe blade contact F=3.894×10⁻² N, J=1.005×10⁻¹ N·s, Δv=2.645 m/s, freeze drain Δω=34.7 rad/s over 0.8s. [M] values represent Gordo's dual Orthrus ice spirits encasing the opponent in a glacial prison. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function twinSpireSpecial(bey: Beyblade, target: Beyblade): void {
+  // Blade contact J=1.005×10⁻¹ N·s; freeze drain Δω=34.7 rad/s over 0.8s; [M] 7.0×
+  const J_phys = 0.1005;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Gordo Orthrus ice-twin spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+  // Freeze drain: additional spin loss on opponent
+  target.spin = Math.max(0, target.spin - 34.7);
+}
+```
+
+**Compatible beys:** Any beyblade using a high-mass Fusion Wheel (≥ 26 g) with dual blade-type contact points at r_FW ≥ 33 mm and a large-face Defense or similar low-friction tip (μ ≤ 0.15), where the Energy Ring has a ridged/crystalline profile for freeze-aura contact stiction amplification. Standard game instance: Blizzard Orthrus 145D (Gordo, Metal Fury).
+
+---
+
+## Case 1924 — COMBO: Ice Spire Lock — Blizzard Orthrus
+
+**Sequence:** K A K (defense · attack · defense)
+**Cost:** 15 | **Type:** stamina | **Blader:** Gordo
+
+### Physics Justification
+
+The first defense (K) activates the freeze-aura contact posture — Orthrus angles the dual blades outward while the D tip anchors (zero drift μ_D_freeze = 0.13). The attack (A) delivers the twin-blade smash during freeze contact. The second defense (K) closes with the freeze-lock follow-through that immobilizes the opponent tip.
+
+```
+Blade contact during A phase:
+v_tip_combo = ω₀ × 0.85 × r_FW = 600 × 0.85 × 0.035 = 17.85 m/s
+(85% partial orbit, mid-position strike)
+
+v_rel_combo = 17.85 − 15.30 = 2.55 m/s
+(opponent at 600×0.85×0.030 = 15.30 m/s)
+
+J_combo = m_eff × (1 + e) × v_rel_combo
+        = 1.949×10⁻² × 1.72 × 2.55
+        = 1.949×10⁻² × 4.386 = 8.549×10⁻² N·s
+
+Δv_combo = J_combo / m_opp = 8.549×10⁻² / 0.038 = 2.250 m/s
+```
+
+The final defense (K) adds freeze-lock dwell: immobilizes opponent tip for lockMs=150 ms (modeled as full-friction ground contact during dwell). Δω_K2 on Orthrus from dwell reaction:
+
+```
+τ_K2 = μ_D_freeze × m_O × g × r_D = 0.13 × 0.040 × 9.81 × 0.004 = 2.043×10⁻⁴ N·m
+Δω_K2_own = τ_K2 × 0.15 / I_O = 2.043×10⁻⁴ × 0.15 / 4.044×10⁻⁵ = +0.76 rad/s ≈ +1 rad/s
+(D-tip freeze-lock dwell self-sustains spin; negligible but positive)
+```
+
+spinGain: +1 rad/s (freeze-lock D-tip self-sustain). damageMultiplier: **1.20×** (freeze-blade smash with lock follow-through). lockMs: 150 (freeze-lock dwell on landing K).
+
+**Parameters:**
+- spinGain: +1 rad/s (D-tip freeze dwell)
+- damageMultiplier: 1.20 (twin-blade freeze smash)
+- lockMs: 150 (freeze-lock dwell)
+
+### TypeScript
+
+```typescript
+function iceSpireLockCombo(bey: Beyblade, target: Beyblade): void {
+  // Freeze-lock dwell: Δω ≈ +1 rad/s (D-tip μ=0.13, t=0.15s); J_combo=8.549×10⁻²N·s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 1);
+  // Twin-blade freeze smash + lock follow-through: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +1 rad/s (negligible) | ✓ |
+
+
+
+---
+
+## Case 1925 — GIMMICK: Rapid Eagle (Metal Masters) — Dual Saber-Blade Aerial Dive
+
+**Beyblade:** Rapid Eagle (Metal Fusion / Metal Masters)
+**Blader:** Claude | **Series:** Beyblade Metal Masters
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face Bolt | Eagle face | 1.5 | 3.0 |
+| Energy Ring | Eagle | 3.5 | 37.0 |
+| Fusion Wheel | Rapid | 24.0 | 33.0 |
+| Spin Track | H145 | 3.5 | 10.0 |
+| Performance Tip | Flat (F) | 2.0 | 3.0 |
+| **Total** | | **34.5** | |
+
+(Face Bolt included; MFB convention.)
+
+**I_total** = 1.5×10⁻³ × 0.003² + 3.5×10⁻³ × 0.037² + 24.0×10⁻³ × 0.033² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.35×10⁻⁸ + 4.792×10⁻⁶ + 2.614×10⁻⁵ + 3.500×10⁻⁷ + 1.80×10⁻⁸
+           = **3.131×10⁻⁵ kg·m²**
+
+ω₀ = 630 rad/s (MFB attack-type standard launch)
+L₀ = I × ω₀ = 3.131×10⁻⁵ × 630 = **1.973×10⁻² kg·m²/s**
+
+---
+
+### 1. Rapid Fusion Wheel — Dual Saber-Blade Lift
+
+The Rapid Fusion Wheel carries two swept saber-blade protrusions (N_blades = 2) at r = 33 mm. Each blade has a cambered cross-section (C_L = 0.70) generating aerodynamic lift on high-speed orbital approach. Blade projected area per saber: A_saber = 1.0×10⁻⁴ m².
+
+```
+v_tip = ω₀ × r_FW = 630 × 0.033 = 20.79 m/s
+
+F_lift_saber = N_blades × ½ × ρ_air × v_tip² × C_L × A_saber
+             = 2 × ½ × 1.225 × 20.79² × 0.70 × 1.0×10⁻⁴
+             = 2 × ½ × 1.225 × 432.2 × 7.0×10⁻⁵
+             = 2 × 1.857×10⁻² = 3.714×10⁻² N
+
+Weight: W = m × g = 0.0345 × 9.81 = 0.3386 N
+
+Lift fraction: F_lift / W = 3.714×10⁻² / 0.3386 = 10.97% ≈ 11%
+```
+
+Effective gravity during ascent (saber lift opposes gravity):
+
+```
+g_eff = g × (1 − F_lift / W) = 9.81 × (1 − 0.1097) = 9.81 × 0.8903 = 8.733 m/s²
+```
+
+---
+
+### 2. Bowl-Exit Trajectory — Aerial Apex & Dual-Saber Descent Strike
+
+Rapid Eagle uses the bowl wall (θ = 55°) to redirect into a vertical aerial launch:
+
+```
+v_orbital = μ_F × ω₀ × r_F = 0.40 × 630 × 0.003 = 0.756 m/s
+
+v_z = v_orbital × tan(55°) = 0.756 × 1.428 = 1.080 m/s
+
+Apex height (under g_eff — saber lift active during ascent):
+h_apex = v_z² / (2 × g_eff) = 1.080² / (2 × 8.733) = 1.1664 / 17.466 = 66.8 mm
+
+Descent velocity (full g — lift decays at apex):
+v_descent = √(2 × g × h_apex) = √(2 × 9.81 × 0.0668) = √(1.311) = 1.145 m/s
+
+Combined impact velocity (orbital + descent):
+v_impact = √(v_orbital² + v_descent²) = √(0.756² + 1.145²) = √(0.5715 + 1.3110) = √1.8825 = 1.372 m/s
+```
+
+**Flat-tip spin decay:**
+
+```
+τ_F  = μ_F × m × g × r_F = 0.40 × 0.0345 × 9.81 × 0.003 = 4.073×10⁻⁴ N·m
+t_spin = L₀ / τ_F = 1.973×10⁻² / 4.073×10⁻⁴ = 48.4 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 34.5 g |
+| I_total | 3.131×10⁻⁵ kg·m² |
+| ω₀ | 630 rad/s |
+| L₀ | 1.973×10⁻² kg·m²/s |
+| v_tip | 20.79 m/s |
+| F_lift_saber | 3.714×10⁻² N |
+| Lift fraction | 11% |
+| g_eff | 8.733 m/s² |
+| v_orbital | 0.756 m/s |
+| v_z | 1.080 m/s |
+| h_apex | 66.8 mm |
+| v_descent | 1.145 m/s |
+| v_impact | 1.372 m/s |
+| τ_F | 4.073×10⁻⁴ N·m |
+| t_spin | 48.4 s |
+
+---
+
+## Case 1926 — SPECIAL: Twin Saber — Claude / Rapid Eagle
+
+**Blader:** Claude | **Beyblade:** Rapid Eagle | **Type:** attack
+
+### Description
+
+Twin Saber (also known as Killer Eagle) is a Special Move used by Claude and his Rapid Eagle Beyblade. Rapid Eagle rides the bowl wall at high orbital speed, its dual saber-blade Fusion Wheel generating lift that extends the aerial apex. From above the stadium Rapid Eagle banks and dives blade-first at blinding speed, the two saber protrusions slashing across the opponent in a twin-cutting strike. The move was first used against Rock Bison. The aerial approach mirrors the flight of a hunting eagle — a high-altitude stoop that converts maximum potential energy into cutting impact.
+
+### Stage — Bowl-Wall Launch + Dual Saber Descent Strike
+
+From Case 1925: v_impact = 1.372 m/s (orbital + saber lift + full-g descent), e = 0.74 (sharp ABS saber blades).
+
+```
+m_eff = (m_E × m_opp) / (m_E + m_opp) = (0.0345 × 0.038) / (0.0345 + 0.038)
+      = 1.311×10⁻³ / 0.0725 = 1.808×10⁻² kg
+
+J_twinsaber = m_eff × (1 + e) × v_impact
+            = 1.808×10⁻² × 1.74 × 1.372
+            = 1.808×10⁻² × 2.387 = 4.316×10⁻² N·s
+
+Δv_opp = J_twinsaber / m_opp = 4.316×10⁻² / 0.038 = 1.136 m/s
+```
+
+**Effect on Rapid Eagle (spin drain):**
+
+```
+Δω_E  = J_twinsaber × r_contact / I_E = 4.316×10⁻² × 0.033 / 3.131×10⁻⁵ = 45.5 rad/s
+ω_remain = 630 − 45.5 = 584.5 rad/s  (92.8% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Claude's Rapid Eagle Bit-Beast fully materialises as a blazing hunting eagle — the dual sabers become razor wings of pure spirit energy, and the dive strike multiplies into a killing stoop that punches the opponent clean out of the stadium in a burst of feathered lightning.
+
+[M] factor = **7.0 ×** (Claude — Rapid Eagle spirit, Metal Masters special)
+[M] Δv = 1.136 × 7.0 = **7.95 m/s** (eagle stoop ring-out)
+
+> **Note:** Physical values describe saber lift F=3.714×10⁻² N (11% weight), g_eff=8.733 m/s², bowl-wall launch v_z=1.080 m/s, h_apex=66.8 mm, v_impact=1.372 m/s, impulse J=4.316×10⁻² N·s, Δv=1.136 m/s. [M] values represent Claude's Rapid Eagle spirit diving as a razor-winged predator. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function twinSaberSpecial(bey: Beyblade, target: Beyblade): void {
+  // 2-saber lift 11%→g_eff=8.733m/s²; bowl launch v_z=1.080m/s→h=66.8mm; v_impact=1.372m/s; J=4.316×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.04316;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Claude Rapid Eagle spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a flat-contact Performance Tip (μ ≥ 0.35) combined with a Fusion Wheel carrying 2+ cambered saber-blade protrusions at r_FW ≥ 30 mm generating measurable lift (F_lift ≥ 0.03 N at ω₀ ≥ 600 rad/s), launched via a 45–65° bowl wall for vertical ascent. Standard game instance: Rapid Eagle H145F (Claude, Metal Masters).
+
+---
+
+## Case 1927 — COMBO: Eagle Dive Strike — Rapid Eagle
+
+**Sequence:** ↑ E A (moveUp · dodge · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Claude
+
+### Physics Justification
+
+The moveUp (↑) sends Rapid Eagle up the bowl wall at half-orbit speed (v_partial = v_orbital × 0.55 = 0.756 × 0.55 = 0.4158 m/s). The dodge (E) converts the wall-climb into a tight aerial banking arc — Rapid Eagle angles its saber blades to glide laterally before committing to the dive. With saber lift active this gives partial ascent:
+
+```
+v_z_partial = v_partial × tan(55°) = 0.4158 × 1.428 = 0.5938 m/s
+
+h_partial = v_z_partial² / (2 × g_eff) = 0.5938² / (2 × 8.733) = 0.3526 / 17.466 = 20.2 mm
+```
+
+The attack (A) fires at descent apex — Rapid Eagle dives dual-saber first:
+
+```
+v_descent_partial = √(2 × g × h_partial) = √(2 × 9.81 × 0.0202) = √(0.3963) = 0.6295 m/s
+
+v_impact_partial = √(v_partial² + v_descent_partial²) = √(0.4158² + 0.6295²)
+                 = √(0.1729 + 0.3963) = √0.5692 = 0.7545 m/s
+
+J_partial = m_eff × (1 + e) × v_impact_partial = 1.808×10⁻² × 1.74 × 0.7545
+          = 1.808×10⁻² × 1.313 = 2.374×10⁻² N·s
+```
+
+Saber blade deflection on landing recovers spin (η_saber = 0.25):
+
+```
+Δω = η_saber × J_partial × r_contact / I_E
+   = 0.25 × 2.374×10⁻² × 0.033 / 3.131×10⁻⁵
+   = 0.25 × 25.03
+   = +6.3 rad/s  ≈ +6 rad/s
+```
+
+(η_saber = 0.25: saber edge deflects recoil into spin.) Partial aerial saber dive gives damageMultiplier **1.25×**. lockMs = 0 (attack type, no dwell).
+
+**Parameters:**
+- spinGain: +6 rad/s (saber deflection recoil η = 0.25)
+- damageMultiplier: 1.25 (partial aerial dual-saber dive)
+- lockMs: 0 (attack type, no dwell)
+
+### TypeScript
+
+```typescript
+function eagleDiveStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Saber recoil: Δω ≈ +6 rad/s (η=0.25, h_partial=20.2mm, J=2.374×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 6);
+  // Partial aerial saber dive: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +6 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1928 — GIMMICK: Z Achilles 11 Xtend+ (Burst Cho-Z) — Turbo Awakening Dual-Blade Extension
+
+**Beyblade:** Z Achilles 11 Xtend+ / Turbo Achilles 00 Dimension (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly (Z Achilles 11 Xtend+ — primary)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Z Achilles | 24.5 | 34.0 |
+| Forge Disc | 11 | 12.0 | 26.0 |
+| Driver | Xtend+ | 4.5 | 5.0 |
+| **Total** | | **41.0** | |
+
+(No separate face component — Burst era 3-part system. Takara Tomy only per Burst Scope.)
+
+**I_total** = 24.5×10⁻³ × 0.034² + 12.0×10⁻³ × 0.026² + 4.5×10⁻³ × 0.005²
+           = 2.832×10⁻⁵ + 8.112×10⁻⁶ + 1.125×10⁻⁷
+           = **3.654×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 3.654×10⁻⁵ × 580 = **2.120×10⁻² kg·m²/s**
+
+---
+
+### 1. Turbo Awakening — Blade Deployment (Cho-Z Wing Extension)
+
+The Turbo Awakening (超Ƶ覚醒 Chōzetsu Kakusei) deploys the two Turbo Blades (超Ƶウイング, Chōzetsu Wingu) outward from the Energy Layer. These blades serve dual function: dedicated Burst Stoppers (preventing burst by blocking Disc Stoppers) and attack-radius extenders. Only activates when the blader and bey are in perfect synchronisation.
+
+```
+Blade retracted radius: r_base = 33 mm
+Blade deployed radius:  r_turbo = 37 mm  (+4 mm Turbo Awakening extension)
+
+v_tip_base  = ω₀ × r_base  = 580 × 0.033 = 19.14 m/s
+v_tip_turbo = ω₀ × r_turbo = 580 × 0.037 = 21.46 m/s
+
+Blade tip speed gain: Δv_tip = 21.46 − 19.14 = 2.32 m/s  (+12.1%)
+```
+
+---
+
+### 2. Dual-Blade Slash Contact — Turbo Whip (Super Z Slash)
+
+Both blades contact the opponent simultaneously in a head-on slash motion. Relative velocity at contact (same spin direction as standard right-spin opponent at ω_opp = 570 rad/s, r_opp = 0.033 m):
+
+```
+v_opp_contact = ω_opp × r_opp = 570 × 0.033 = 18.81 m/s
+v_contact = v_tip_turbo − v_opp_contact = 21.46 − 18.81 = 2.65 m/s
+
+m_Z = 41.0 g = 0.041 kg
+e = 0.62  (ABS plastic Energy Layer + metal blade insert, Burst era)
+
+Spin decay (Xtend+ driver, μ ≈ 0.30, r_driver = 5 mm):
+τ_Xt = μ × m × g × r_driver = 0.30 × 0.041 × 9.81 × 0.005 = 6.031×10⁻⁴ N·m
+t_spin = L₀ / τ_Xt = 2.120×10⁻² / 6.031×10⁻⁴ = 35.2 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g |
+| I_total | 3.654×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.120×10⁻² kg·m²/s |
+| r_base | 33 mm |
+| r_turbo | 37 mm |
+| v_tip_base | 19.14 m/s |
+| v_tip_turbo | 21.46 m/s |
+| Δv_tip | 2.32 m/s (+12.1%) |
+| v_contact | 2.65 m/s |
+| τ_Xt | 6.031×10⁻⁴ N·m |
+| t_spin | 35.2 s |
+
+---
+
+## Case 1929 — SPECIAL: Turbo Whip (Super Z Slash) — Aiger Akabane / Z Achilles & Turbo Achilles
+
+**Blader:** Aiger Akabane | **Beyblades:** Z Achilles 11 Xtend+ / Turbo Achilles 00 Dimension | **Type:** attack
+
+### Description
+
+Turbo Whip (超ゼットスラッシュ Super Z Slash) is a Special Move used by Aiger Akabane with both Z Achilles 11 Xtend+ and Turbo Achilles 00 Dimension. It is an upgraded version of Z Whip. With Turbo Awakening active, Achilles charges head-on and its two Turbo Blades slash across the opposing Beyblade simultaneously, causing critical damage. The dual-blade deployment increases the attack radius and blade tip speed, and the Burst Stopper function ensures Achilles cannot burst on collision. First used during Aiger's Champion Carnival battles in the Burst Turbo/Cho-Z season.
+
+### Stage — Turbo Awakening Head-On Dual Slash
+
+From Case 1928: v_contact = 2.65 m/s (Turbo Blade tip vs opponent surface), e = 0.62.
+
+```
+m_eff = (m_Z × m_opp) / (m_Z + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+J_turbowhip = m_eff × (1 + e) × v_contact
+            = 2.025×10⁻² × 1.62 × 2.65
+            = 2.025×10⁻² × 4.293 = 8.694×10⁻² N·s
+
+Δv_opp = J_turbowhip / m_opp = 8.694×10⁻² / 0.040 = 2.174 m/s
+```
+
+**Effect on Z Achilles (spin drain from heavy dual-blade clash):**
+
+```
+Δω_Z = J_turbowhip × r_turbo / I_Z = 8.694×10⁻² × 0.037 / 3.654×10⁻⁵ = 88.0 rad/s
+ω_remain = 580 − 88.0 = 492.0 rad/s  (84.8% retained)
+Note: Burst Stopper blades prevent burst despite heavy spin drain.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles Bit-Beast erupts as an armoured war god — the Turbo Blades ignite with Z-power and the dual slash tears through the opponent in a blazing cross that sends them flying from the stadium.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Achilles Cho-Z Turbo Awakening spirit)
+[M] Δv = 2.174 × 7.5 = **16.3 m/s** (Turbo Awakening ring-out slash)
+
+> **Note:** Physical values describe Turbo Awakening blade extension +4 mm (+12.1% tip speed), v_contact=2.65 m/s, J=8.694×10⁻² N·s, Δv=2.174 m/s, Δω_Z=88.0 rad/s (Burst Stopper prevents burst). [M] values represent Aiger's Achilles Z-power igniting the dual-blade slash. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Turbo Awakening: r_base→r_turbo +4mm, v_tip 19.14→21.46m/s; v_contact=2.65m/s; J=8.694×10⁻²N·s; [M] 7.5×
+  const J_phys = 0.08694;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Achilles Cho-Z Turbo Awakening spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using an Energy Layer with deployable Turbo Blades (Cho-Z Wing extensions, r_base ≥ 30 mm → r_turbo ≥ 34 mm) that function as Burst Stoppers on deployment, operated by a blader in synchronisation sufficient to trigger Turbo Awakening. Standard game instances: Z Achilles 11 Xtend+ and Turbo Achilles 00 Dimension (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1930 — COMBO: Z Slash Drive — Z Achilles / Turbo Achilles
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+Two consecutive rightward dashes (→ →) build a linear charge approach — Achilles accelerates across the stadium in a straight line. The second → adds to the first, giving a boosted approach speed at the moment A fires the dual-blade contact:
+
+```
+v_orbital_base = μ_Xt × ω₀ × r_driver = 0.30 × 580 × 0.005 = 0.870 m/s
+v_charge_combo = 1.40 × v_orbital_base = 1.40 × 0.870 = 1.218 m/s
+(1.40× factor: double-dash momentum buildup)
+
+Blade relative velocity at combo (ω_combo ≈ ω₀, r_turbo = 37 mm):
+v_blade_combo = ω₀ × r_turbo − ω_opp × r_opp = 580 × 0.037 − 570 × 0.033
+              = 21.46 − 18.81 = 2.65 m/s  (same as full special)
+
+Combined v_rel_combo: use reduced blade contribution at combo scale:
+v_contact_combo = 2.00 m/s
+(charge adds 1.218 m/s linear approach, blade relative reduced from 2.65→2.00 by partial synchronisation)
+
+J_combo = m_eff × (1 + e) × v_contact_combo = 2.025×10⁻² × 1.62 × 2.00
+        = 2.025×10⁻² × 3.24 = 6.561×10⁻² N·s
+```
+
+Burst Stopper blades deflect recoil back into spin (η_bs = 0.20 — Burst Stopper recoil recovery):
+
+```
+Δω = η_bs × J_combo × r_turbo / I_Z
+   = 0.20 × 6.561×10⁻² × 0.037 / 3.654×10⁻⁵
+   = 0.20 × 66.44
+   = +13.3 rad/s  ≈ +13 rad/s
+```
+
+(η_bs = 0.20: Burst Stopper blade geometry deflects blade-contact recoil into rotational momentum.) Dual-blade charge slash gives damageMultiplier **1.30×**. lockMs = 0 (attack type).
+
+**Parameters:**
+- spinGain: +13 rad/s (Burst Stopper recoil recovery η = 0.20)
+- damageMultiplier: 1.30 (dual-blade Turbo Awakening charge slash)
+- lockMs: 0 (attack type, no dwell)
+
+### TypeScript
+
+```typescript
+function zSlashDriveCombo(bey: Beyblade, target: Beyblade): void {
+  // Burst Stopper recoil: Δω ≈ +13 rad/s (η=0.20, v_contact=2.00m/s, J=6.561×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Dual-blade Turbo Awakening charge slash: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1931 — GIMMICK: Turbo Valtryek Z.Ev (Burst Cho-Z) — Wall-Rebound Turbo Awakening Launch
+
+**Beyblade:** Turbo Valtryek Zenith Evolution / Turbo Valtryek Z.Ev (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Turbo Valtryek | 22.0 | 33.0 |
+| Forge Disc | Z | 11.0 | 25.0 |
+| Driver | Ev. (Evolve) | 4.0 | 6.0 |
+| **Total** | | **37.0** | |
+
+(No face component — Burst era 3-part system. Takara Tomy only per Burst Scope.)
+
+**I_total** = 22.0×10⁻³ × 0.033² + 11.0×10⁻³ × 0.025² + 4.0×10⁻³ × 0.006²
+           = 2.396×10⁻⁵ + 6.875×10⁻⁶ + 1.440×10⁻⁷
+           = **3.098×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 3.098×10⁻⁵ × 580 = **1.797×10⁻² kg·m²/s**
+
+---
+
+### 1. Evolve Driver — Low-Friction Free-Spin Tip
+
+The Evolve (Ev.) Driver has a free-spinning bearing tip (μ_Ev = 0.15) and a wide r = 6 mm contact base enabling sustained high-speed orbital motion:
+
+```
+τ_Ev = μ_Ev × m × g × r_driver = 0.15 × 0.037 × 9.81 × 0.006 = 3.264×10⁻⁴ N·m
+t_spin = L₀ / τ_Ev = 1.797×10⁻² / 3.264×10⁻⁴ = 55.1 s
+```
+
+Approach velocity toward Beystadium barrier (orbital + deliberate directional charge):
+
+```
+v_orbital  = μ_Ev × ω₀ × r_driver = 0.15 × 580 × 0.006 = 0.522 m/s
+v_charge   = 0.600 m/s  (intentional directional push toward wall)
+v_approach = v_orbital + v_charge = 0.522 + 0.600 = 1.122 m/s
+```
+
+---
+
+### 2. Bowl-Wall Elastic Rebound — Speed Boost
+
+Turbo Valtryek strikes the bowl wall (θ = 55°, e_wall = 0.87 — hard Beystadium polycarbonate):
+
+```
+v_approach_perp = v_approach × sin(55°) = 1.122 × 0.819 = 0.919 m/s
+v_approach_tan  = v_approach × cos(55°) = 1.122 × 0.574 = 0.644 m/s
+
+After elastic rebound:
+v_rebound_perp  = e_wall × v_approach_perp = 0.87 × 0.919 = 0.800 m/s
+v_tan (preserved)                          = 0.644 m/s
+
+v_post_rebound = √(0.800² + 0.644²) = √(0.640 + 0.415) = √1.055 = 1.027 m/s
+(directed inward toward stadium center)
+```
+
+---
+
+### 3. Turbo Awakening Snap — Additional Speed Boost
+
+At the moment of wall contact, Turbo Valtryek enters Turbo Awakening: blades snap out from r_base = 33 mm to r_turbo = 37 mm. A fraction of the blade tip speed increase couples to linear momentum (η_snap = 0.20):
+
+```
+Δv_tip = ω₀ × (r_turbo − r_base) = 580 × 0.004 = 2.32 m/s
+v_turbo_snap = η_snap × Δv_tip = 0.20 × 2.32 = 0.464 m/s
+
+v_total = v_post_rebound + v_turbo_snap = 1.027 + 0.464 = 1.491 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.0 g |
+| I_total | 3.098×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.797×10⁻² kg·m²/s |
+| μ_Ev | 0.15 |
+| v_approach | 1.122 m/s |
+| e_wall | 0.87 |
+| v_post_rebound | 1.027 m/s |
+| Δv_tip (Turbo snap) | 2.32 m/s |
+| v_turbo_snap | 0.464 m/s |
+| v_total | 1.491 m/s |
+| τ_Ev | 3.264×10⁻⁴ N·m |
+| t_spin | 55.1 s |
+
+---
+
+## Case 1932 — SPECIAL: Turbo Winged Launch (Super Jet Shoot) — Valt Aoi / Turbo Valtryek
+
+**Blader:** Valt Aoi | **Beyblade:** Turbo Valtryek Z.Ev | **Type:** attack
+
+### Description
+
+Turbo Winged Launch (超ジェットシュート Super Jet Shoot) is a Special Move used by Valt Aoi and his Turbo Valtryek Zenith Evolution. Turbo Valtryek charges toward the Beystadium barrier, rebounds off the wall with an elastic bounce, and simultaneously triggers Turbo Awakening — the Turbo Blades snap outward and the bey erupts in a burst of speed and momentum that launches it into the opponent at dramatically increased velocity. The wall rebound converts approach energy back into the ideal attack angle while the Turbo Awakening provides an additional speed surge, making the total impact velocity greater than the original approach speed.
+
+### Stage — Elastic Wall Rebound + Turbo Awakening Snap Strike
+
+From Case 1931: v_total = 1.491 m/s (post-rebound + Turbo snap), e = 0.65 (Burst Cho-Z layer contact).
+
+```
+m_eff = (m_V × m_opp) / (m_V + m_opp) = (0.037 × 0.040) / (0.037 + 0.040)
+      = 1.480×10⁻³ / 0.077 = 1.922×10⁻² kg
+
+J_turbolaunch = m_eff × (1 + e) × v_total
+              = 1.922×10⁻² × 1.65 × 1.491
+              = 1.922×10⁻² × 2.460 = 4.728×10⁻² N·s
+
+Δv_opp = J_turbolaunch / m_opp = 4.728×10⁻² / 0.040 = 1.182 m/s
+```
+
+**Effect on Turbo Valtryek (spin drain from wall + contact):**
+
+```
+Δω_V = J_turbolaunch × r_turbo / I_V = 4.728×10⁻² × 0.037 / 3.098×10⁻⁵ = 56.5 rad/s
+ω_remain = 580 − 56.5 = 523.5 rad/s  (90.3% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's Valtryek Bit-Beast blazes with jet-wing fire — the wall rebound becomes a full turbo boost as both Turbo Blades and Valtryek's wind spirit propel the bey like a guided missile, shattering the opponent out of the stadium in a sonic jet burst.
+
+[M] factor = **8.0 ×** (Valt Aoi — Turbo Valtryek wing-spirit, Cho-Z protagonist)
+[M] Δv = 1.182 × 8.0 = **9.46 m/s** (turbo jet-wing ring-out)
+
+> **Note:** Physical values describe elastic wall rebound e_wall=0.87, v_post=1.027 m/s; Turbo Awakening snap v_snap=0.464 m/s; v_total=1.491 m/s; J=4.728×10⁻² N·s; Δv=1.182 m/s. [M] values represent Valt's Valtryek erupting in jet-wing spirit propulsion. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboWingedLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Wall rebound e=0.87→v_post=1.027m/s; Turbo snap +0.464m/s; v_total=1.491m/s; J=4.728×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.04728;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Valt Turbo Valtryek wing-spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a free-spinning low-friction Driver (μ ≤ 0.20, r_driver ≥ 5 mm) combined with a Turbo Awakening Energy Layer (deployable blade extension Δr ≥ 3 mm at ω₀ ≥ 550 rad/s), operated by a blader in synchronisation with a hard-wall (e_wall ≥ 0.80) Beystadium barrier. Standard game instance: Turbo Valtryek Z.Ev (Valt Aoi, Burst Turbo).
+
+---
+
+## Case 1933 — COMBO: Zenith Rebound Strike — Turbo Valtryek
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveRight (→) builds a rightward lateral charge toward the bowl wall. The moveUp (↑) adds the redirected wall-climb component — Turbo Valtryek angles toward the upper bowl slope for a partial wall contact. With Turbo Awakening snap active this gives a partial rebound strike:
+
+```
+v_approach_partial = v_approach × 0.70 = 1.122 × 0.70 = 0.785 m/s
+v_post_partial     = v_post_rebound × 0.70 = 1.027 × 0.70 = 0.719 m/s
+v_turbo_partial    = v_turbo_snap × 0.70   = 0.464 × 0.70 = 0.325 m/s
+v_total_partial    = 0.719 + 0.325 = 1.044 m/s
+
+J_partial = m_eff × (1 + e) × v_total_partial = 1.922×10⁻² × 1.65 × 1.044
+          = 1.922×10⁻² × 1.723 = 3.311×10⁻² N·s
+```
+
+The Turbo Blade recoil on contact recovers spin (η_turboblade = 0.30):
+
+```
+Δω = η_turboblade × J_partial × r_turbo / I_V
+   = 0.30 × 3.311×10⁻² × 0.037 / 3.098×10⁻⁵
+   = 0.30 × 39.53
+   = +11.9 rad/s  ≈ +12 rad/s
+```
+
+(η_turboblade = 0.30: Turbo Blade deflects contact recoil into spin recovery.) Partial wall-rebound Turbo snap strike gives damageMultiplier **1.25×**. lockMs = 0 (attack type).
+
+**Parameters:**
+- spinGain: +12 rad/s (Turbo Blade recoil recovery η = 0.30)
+- damageMultiplier: 1.25 (partial wall-rebound Turbo Awakening strike)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function zenithReboundStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Turbo Blade recoil: Δω ≈ +12 rad/s (η=0.30, v_total=1.044m/s, J=3.311×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Partial wall-rebound Turbo snap: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1934 — GIMMICK: Turbo Spryzen 0Wall Zeta' (Burst Cho-Z) — Left-Spin Defense + Zeta' Reversal Upper Strike
+
+**Beyblade:** Turbo Spryzen 0Wall Zeta' (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Turbo Spryzen | 23.0 | 34.0 |
+| Forge Disc | 0 | 9.5 | 23.0 |
+| Frame | Wall | 3.5 | 29.0 |
+| Driver | Zeta' (Zeta Prime) | 5.0 | 5.0 |
+| **Total** | | **41.0** | |
+
+(No face component — Burst era 4-part system with Frame. Takara Tomy only per Burst Scope.)
+
+**I_total** = 23.0×10⁻³ × 0.034² + 9.5×10⁻³ × 0.023² + 3.5×10⁻³ × 0.029² + 5.0×10⁻³ × 0.005²
+           = 2.659×10⁻⁵ + 5.026×10⁻⁶ + 2.944×10⁻⁶ + 1.250×10⁻⁷
+           = **3.468×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch, left-spin mode)
+L₀ = I × ω₀ = 3.468×10⁻⁵ × 580 = **2.011×10⁻² kg·m²/s**
+
+---
+
+### 1. Zeta' Driver — Spin Direction Reversal Mechanism
+
+The Zeta' (Zeta Prime) Driver contains an internal clutch mechanism that temporarily reverses the bey's spin direction from left-spin (defense mode) to right-spin (attack burst), activated when Shu and Turbo Spryzen reach synchronisation. The reversal pulse delivers an impulsive torque at the contact point:
+
+```
+ω_pulse  = 100 rad/s  (partial reversal angular speed contribution from Zeta' clutch burst)
+v_driver_reversal = ω_pulse × r_driver = 100 × 0.005 = 0.500 m/s
+(effective additional contact velocity from spin-direction change impulse)
+```
+
+---
+
+### 2. Upper-Attack Contact — Angled Lift Strike
+
+The Turbo Spryzen Energy Layer carries upper-angled contact points (α_upper = 25° above horizontal). Combined with the Zeta' reversal boost:
+
+```
+v_tip = ω₀ × r_layer = 580 × 0.034 = 19.72 m/s
+
+v_orbital  = μ_Zeta × ω₀ × r_driver = 0.35 × 580 × 0.005 = 1.015 m/s
+v_total    = v_orbital + v_driver_reversal = 1.015 + 0.500 = 1.515 m/s
+
+Upper-attack angle: α_upper = 25°
+v_horizontal = v_total × cos(25°) = 1.515 × 0.906 = 1.373 m/s
+v_vertical   = v_total × sin(25°) = 1.515 × 0.423 = 0.641 m/s
+(upward component delivers ring-out via aerial uppercut trajectory)
+
+Spin decay (Zeta' in attack mode, μ_Zeta = 0.35):
+τ_Zeta = μ_Zeta × m × g × r_driver = 0.35 × 0.041 × 9.81 × 0.005 = 7.038×10⁻⁴ N·m
+t_spin = L₀ / τ_Zeta = 2.011×10⁻² / 7.038×10⁻⁴ = 28.6 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g |
+| I_total | 3.468×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.011×10⁻² kg·m²/s |
+| v_tip | 19.72 m/s |
+| ω_pulse (Zeta') | 100 rad/s |
+| v_driver_reversal | 0.500 m/s |
+| v_orbital | 1.015 m/s |
+| v_total | 1.515 m/s |
+| α_upper | 25° |
+| v_horizontal | 1.373 m/s |
+| v_vertical | 0.641 m/s |
+| τ_Zeta | 7.038×10⁻⁴ N·m |
+| t_spin | 28.6 s |
+
+---
+
+## Case 1935 — SPECIAL: Turbo Upper Launch (Super Upper Shoot) — Shu Kurenai / Turbo Spryzen
+
+**Blader:** Shu Kurenai | **Beyblade:** Turbo Spryzen 0Wall Zeta' | **Type:** attack
+
+### Description
+
+Turbo Upper Launch (超アッパーシュート Super Upper Shoot) is a Special Move used by Shu Kurenai and his Turbo Spryzen 0Wall Zeta'. In left-spin defense mode, Turbo Spryzen uses the Zeta' Performance Tip to trigger a momentary spin direction reversal — switching from left-spin to right-spin as it charges — generating a sudden surge of power that is channeled through the upper-angled contact points of the Energy Layer into a massive uppercut that launches the opponent high into the air for a Ring-Out Finish. The 0Wall Frame provides the stability to withstand the reversal torque while the Turbo Awakening blades lock the burst protection.
+
+### Stage — Left-Spin Defense + Zeta' Reversal Upper Strike
+
+From Case 1934: v_total = 1.515 m/s, α_upper = 25°, e = 0.65.
+
+```
+m_eff = (m_S × m_opp) / (m_S + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+J_turboupper = m_eff × (1 + e) × v_total
+             = 2.025×10⁻² × 1.65 × 1.515
+             = 2.025×10⁻² × 2.500 = 5.063×10⁻² N·s
+
+Δv_opp (total) = J_turboupper / m_opp = 5.063×10⁻² / 0.040 = 1.266 m/s
+
+Upper-angle components:
+Δv_horizontal = 1.266 × cos(25°) = 1.266 × 0.906 = 1.147 m/s (ring-out)
+Δv_vertical   = 1.266 × sin(25°) = 1.266 × 0.423 = 0.535 m/s (aerial lift)
+```
+
+**Effect on Turbo Spryzen (spin drain from reversal + contact):**
+
+```
+Δω_S = J_turboupper × r_layer / I_S = 5.063×10⁻² × 0.034 / 3.468×10⁻⁵ = 49.6 rad/s
+ω_remain = 580 − 49.6 = 530.4 rad/s  (91.5% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu's Spryzen Bit-Beast ignites in crimson — the Zeta' reversal becomes a tidal wave of spinning power as Turbo Spryzen spins both ways at once, the upper-strike erupting into a pillar of white fire that hurls the opponent skyward and clean out of the stadium.
+
+[M] factor = **8.0 ×** (Shu Kurenai — Turbo Spryzen spirit, Cho-Z main protagonist)
+[M] Δv = 1.266 × 8.0 = **10.1 m/s** (Zeta' reversal upper ring-out)
+
+> **Note:** Physical values describe Zeta' spin reversal ω_pulse=100 rad/s, v_driver=0.500 m/s, v_total=1.515 m/s, J=5.063×10⁻² N·s, Δv=1.266 m/s (horizontal 1.147 + vertical 0.535). [M] values represent Shu's Spryzen dual-spin spirit erupting in a pillar of fire. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboUpperLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Zeta' reversal ω_pulse=100r/s→v_driver=0.5m/s; v_total=1.515m/s; α_upper=25°; J=5.063×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.05063;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Shu Turbo Spryzen reversal spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Zeta' (Zeta Prime) or equivalent clutch-reversal Driver (ω_pulse ≥ 80 rad/s at trigger) combined with a Turbo Awakening Energy Layer with upper-angled contact points (α_upper ≥ 20°) and a wide-Frame (Wall or equivalent, r_frame ≥ 26 mm) for stability during spin reversal. Standard game instance: Turbo Spryzen 0Wall Zeta' (Shu Kurenai, Burst Turbo).
+
+---
+
+## Case 1936 — COMBO: Spryzen Upper Guard — Turbo Spryzen
+
+**Sequence:** ↑ K A (moveUp · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The moveUp (↑) sends Turbo Spryzen toward the upper bowl wall, gaining the elevated angle needed for an upper attack. The defense (K) engages the 0Wall frame posture — bracing against incoming counter-pressure and locking the Turbo Awakening Burst Stoppers. The attack (A) fires the partial Zeta' reversal upper strike:
+
+```
+v_total_partial = v_total × 0.65 = 1.515 × 0.65 = 0.985 m/s
+
+J_partial = m_eff × (1 + e) × v_total_partial = 2.025×10⁻² × 1.65 × 0.985
+          = 2.025×10⁻² × 1.625 = 3.291×10⁻² N·s
+```
+
+The 0Wall Frame absorbs recoil and redirects it into spin (η_0Wall = 0.25, wall-ring geometry):
+
+```
+Δω = η_0Wall × J_partial × r_layer / I_S
+   = 0.25 × 3.291×10⁻² × 0.034 / 3.468×10⁻⁵
+   = 0.25 × 32.27
+   = +8.1 rad/s  ≈ +8 rad/s
+```
+
+(η_0Wall = 0.25: Wall frame outer ring redirects contact recoil into rotational momentum.) Partial reversal upper strike with defense posture gives damageMultiplier **1.20×**. lockMs = 100 (0Wall frame defensive dwell on contact).
+
+**Parameters:**
+- spinGain: +8 rad/s (0Wall frame recoil recovery η = 0.25)
+- damageMultiplier: 1.20 (partial Zeta' reversal upper strike with guard)
+- lockMs: 100 (0Wall frame dwell)
+
+### TypeScript
+
+```typescript
+function spryzenUpperGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // 0Wall recoil: Δω ≈ +8 rad/s (η=0.25, v_partial=0.985m/s, J=3.291×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Partial Zeta' reversal upper + guard: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1937 — GIMMICK: Turbo Achilles 00 Dimension (Burst Cho-Z) — Single Turbo Blade Undercut
+
+**Beyblade:** Turbo Achilles 00 Dimension (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Turbo Achilles | 24.5 | 34.0 |
+| Forge Disc | 00 (Double Zero) | 14.0 | 27.0 |
+| Driver | Dimension | 5.0 | 5.0 |
+| **Total** | | **43.5** | |
+
+(No face component — Burst era 3-part system. Takara Tomy only per Burst Scope.)
+
+**I_total** = 24.5×10⁻³ × 0.034² + 14.0×10⁻³ × 0.027² + 5.0×10⁻³ × 0.005²
+           = 2.832×10⁻⁵ + 1.021×10⁻⁵ + 1.250×10⁻⁷
+           = **3.865×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 3.865×10⁻⁵ × 580 = **2.242×10⁻² kg·m²/s**
+
+Note: 00 Disc (Double Zero) provides the highest forged disc mass in the Cho-Z line (14.0 g), maximising I_total and delivering greater ring-out momentum compared to the 11 Disc used on Z Achilles 11 Xtend+ (Case 1928).
+
+---
+
+### 1. Turbo Awakening Blade Deployment — Extended Radius
+
+Turbo Achilles enters Turbo Awakening, deploying both Turbo Blades to r_turbo = 37 mm:
+
+```
+v_tip_base  = ω₀ × r_base  = 580 × 0.033 = 19.14 m/s
+v_tip_turbo = ω₀ × r_turbo = 580 × 0.037 = 21.46 m/s
+```
+
+---
+
+### 2. Single-Blade Undercut Contact — Upper Attack from Below
+
+For the Turbo Upper, **one** of the two Turbo Blades engages the opponent from directly below at an undercut angle (α_under = 30°):
+
+```
+Relative blade tip velocity (right-spin opponent at ω_opp=570 rad/s, r_opp=0.033 m):
+v_opp_contact = 570 × 0.033 = 18.81 m/s
+v_rel         = v_tip_turbo − v_opp_contact = 21.46 − 18.81 = 2.65 m/s
+
+Undercut angle decomposition:
+v_horizontal = v_rel × cos(30°) = 2.65 × 0.866 = 2.295 m/s
+v_vertical   = v_rel × sin(30°) = 2.65 × 0.500 = 1.325 m/s  (upward — Ring-Out vector)
+
+Spin decay (Dimension driver, μ_Dim = 0.35, r_driver = 5 mm):
+τ_Dim = μ_Dim × m × g × r_driver = 0.35 × 0.0435 × 9.81 × 0.005 = 7.463×10⁻⁴ N·m
+t_spin = L₀ / τ_Dim = 2.242×10⁻² / 7.463×10⁻⁴ = 30.0 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.5 g |
+| I_total | 3.865×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.242×10⁻² kg·m²/s |
+| r_turbo | 37 mm |
+| v_tip_turbo | 21.46 m/s |
+| v_rel | 2.65 m/s |
+| α_under | 30° |
+| v_horizontal | 2.295 m/s |
+| v_vertical | 1.325 m/s |
+| τ_Dim | 7.463×10⁻⁴ N·m |
+| t_spin | 30.0 s |
+
+---
+
+## Case 1938 — SPECIAL: Turbo Upper (Super Z Upper) — Aiger Akabane / Turbo Achilles 00 Dimension
+
+**Blader:** Aiger Akabane | **Beyblade:** Turbo Achilles 00 Dimension | **Type:** attack
+
+### Description
+
+Turbo Upper (超ゼットアッパー Super Z Upper) is a Special Move used by Aiger Akabane and his Turbo Achilles 00 Dimension. With Turbo Awakening active, one of the two long Turbo Blade swords on the Energy Layer sweeps in from below and strikes the opposing Beyblade directly from underneath, angled upward at 30° to generate a powerful Ring-Out Finish by launching the opponent into the air. The 00 Disc's extra mass provides greater momentum for the undercut. Unlike Turbo Whip which uses both blades in a forward slash, Turbo Upper concentrates the full force of a single blade in one decisive upward strike.
+
+### Stage — Turbo Awakening Single-Blade Undercut Strike
+
+From Case 1937: v_rel = 2.65 m/s, α_under = 30°, e = 0.62.
+
+```
+m_eff = (m_A × m_opp) / (m_A + m_opp) = (0.0435 × 0.040) / (0.0435 + 0.040)
+      = 1.740×10⁻³ / 0.0835 = 2.084×10⁻² kg
+
+J_turboupper = m_eff × (1 + e) × v_rel
+             = 2.084×10⁻² × 1.62 × 2.65
+             = 2.084×10⁻² × 4.293 = 8.947×10⁻² N·s
+
+Δv_opp (total)   = J_turboupper / m_opp = 8.947×10⁻² / 0.040 = 2.237 m/s
+
+Undercut angle decomposition:
+Δv_horizontal = 2.237 × cos(30°) = 2.237 × 0.866 = 1.937 m/s
+Δv_vertical   = 2.237 × sin(30°) = 2.237 × 0.500 = 1.119 m/s  (aerial ring-out)
+```
+
+**Effect on Turbo Achilles (spin drain from blade contact):**
+
+```
+Δω_A = J_turboupper × r_turbo / I_A = 8.947×10⁻² × 0.037 / 3.865×10⁻⁵ = 85.6 rad/s
+ω_remain = 580 − 85.6 = 494.4 rad/s  (85.2% retained)
+Burst Stopper (second blade) prevents burst despite 85.6 rad/s drain.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles erupts with Z-power — the single upward blade becomes a gleaming war-god's lance of pure spirit energy. The opponent is launched vertically out of the stadium on a column of fire, unable to resist the force of a Turbo Achilles fully awakened.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Turbo Achilles Cho-Z spirit)
+[M] Δv = 2.237 × 7.5 = **16.8 m/s** (single-blade upper ring-out)
+
+> **Note:** Physical values describe single Turbo Blade undercut α=30°, v_rel=2.65 m/s, J=8.947×10⁻² N·s, Δv=2.237 m/s (horizontal 1.937 + vertical 1.119). [M] values represent Aiger's Z-power concentrating into a single lance of spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboUpperSpecial(bey: Beyblade, target: Beyblade): void {
+  // Single Turbo Blade undercut α=30°; v_rel=2.65m/s; J=8.947×10⁻²N·s; Δv_vert=1.119m/s; [M] 7.5×
+  const J_phys = 0.08947;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Turbo Achilles Z-power)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Turbo Awakening Energy Layer with one or more Turbo Blades deployed at r_turbo ≥ 34 mm, paired with a high-mass Forge Disc (≥ 12 g, r_disc ≥ 25 mm) to maximise ring-out momentum, and a blader in sufficient synchronisation with the bey for Turbo Awakening activation. Standard game instance: Turbo Achilles 00 Dimension (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1939 — COMBO: Achilles Upper Drive — Turbo Achilles 00 Dimension
+
+**Sequence:** ↓ ↑ A (moveDown · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+The moveDown (↓) drops Turbo Achilles to a lower orbital position — diving below the opponent's contact height to align the single undercut blade for an upward approach. The moveUp (↑) reverses the motion, springing Turbo Achilles upward with the Turbo Blade angled at the steeper undercut trajectory (α_under_combo = 40°). The attack (A) fires the single-blade upper strike at reduced power:
+
+```
+v_rel_partial = v_rel × 0.70 = 2.65 × 0.70 = 1.855 m/s
+
+J_partial = m_eff × (1 + e) × v_rel_partial = 2.084×10⁻² × 1.62 × 1.855
+          = 2.084×10⁻² × 3.005 = 6.262×10⁻² N·s
+```
+
+The second Burst Stopper blade deflects recoil into spin recovery (η_bs = 0.20):
+
+```
+Δω = η_bs × J_partial × r_turbo / I_A
+   = 0.20 × 6.262×10⁻² × 0.037 / 3.865×10⁻⁵
+   = 0.20 × 59.92
+   = +12.0 rad/s
+```
+
+(η_bs = 0.20: second Burst Stopper blade converts blade-contact recoil to spin.) Partial single-blade undercut gives damageMultiplier **1.30×**. lockMs = 0 (attack type, immediate release after upper strike).
+
+**Parameters:**
+- spinGain: +12 rad/s (Burst Stopper recoil recovery η = 0.20)
+- damageMultiplier: 1.30 (single-blade undercut Turbo Awakening upper strike)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function achillesUpperDriveCombo(bey: Beyblade, target: Beyblade): void {
+  // Burst Stopper recoil: Δω ≈ +12 rad/s (η=0.20, v_rel=1.855m/s, J=6.262×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Single Turbo Blade undercut: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1940 — GIMMICK: Turbo Achilles 00 Dimension — Burst Stopper Blade Power Channeling
+
+**Beyblade:** Turbo Achilles 00 Dimension (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+Assembly: see Case 1937 (m=43.5 g, I=3.865×10⁻⁵ kg·m², ω₀=580 rad/s, L₀=2.242×10⁻² kg·m²/s).
+
+---
+
+### 1. Burst Stopper Blade Geometry
+
+Each Burst Stopper blade is a long rectangular protrusion (L_blade = 12 mm, w_blade = 4 mm) extending outward from the Energy Layer. The blade passes any given contact point in:
+
+```
+t_blade_pass = L_blade / v_rel = 0.012 / 2.65 = 4.53×10⁻³ s ≈ 4.5 ms
+(blade passage time at v_rel = 2.65 m/s — longer contact arc than point contact)
+```
+
+---
+
+### 2. Power Channeling — Pre-Contact Spin Boost
+
+For Turbo Sword, Aiger channels BeySpirit into the Turbo Blades before contact, briefly increasing the bey's spin rate via Turbo Awakening synchronisation pulse. The power channeling delivers a spin boost:
+
+```
+ω_boost  = 10 rad/s  (synchronisation-pulse spin increase)
+ω_sword  = ω₀ + ω_boost = 580 + 10 = 590 rad/s
+
+v_tip_sword = ω_sword × r_turbo = 590 × 0.037 = 21.83 m/s
+
+Relative blade velocity against right-spin opponent (ω_opp=570, r_opp=0.033):
+v_opp_contact = 570 × 0.033 = 18.81 m/s
+v_rel_sword   = v_tip_sword − v_opp_contact = 21.83 − 18.81 = 3.02 m/s
+
+Compared to standard Turbo contact (Case 1928): v_rel_base = 2.65 m/s
+Power-channeling increase: Δv_rel = 3.02 − 2.65 = 0.37 m/s (+14%)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.5 g (see Case 1937) |
+| ω_boost | 10 rad/s |
+| ω_sword | 590 rad/s |
+| v_tip_sword | 21.83 m/s |
+| v_rel_sword | 3.02 m/s |
+| L_blade | 12 mm |
+| t_blade_pass | 4.5 ms |
+
+---
+
+## Case 1941 — SPECIAL: Turbo Sword (Super Z Sword) — Aiger Akabane / Turbo Achilles 00 Dimension
+
+**Blader:** Aiger Akabane | **Beyblade:** Turbo Achilles 00 Dimension | **Type:** attack
+
+### Description
+
+Turbo Sword (超ゼットソード Super Z Sword) is a Special Move used by Aiger Akabane and his Turbo Achilles 00 Dimension. Similar to Z Whip, Achilles channels power into the long Burst Stopper blades on the Energy Layer via Turbo Awakening, boosting the blade tip speed by +10 rad/s before contact. The single concentrated blade then sweeps across the opposing Beyblade in a horizontal sword-like slash, delivering a focused lateral strike that sends the opponent flying. The 00 Disc's extra mass adds ring-out momentum and the extended blade passage (4.5 ms contact arc) concentrates energy across the full blade face.
+
+### Stage — Power-Channeled Blade Sword Slash
+
+From Case 1940: v_rel_sword = 3.02 m/s, e = 0.62.
+
+```
+m_eff = (m_A × m_opp) / (m_A + m_opp) = (0.0435 × 0.040) / (0.0435 + 0.040)
+      = 1.740×10⁻³ / 0.0835 = 2.084×10⁻² kg
+
+J_turbosword = m_eff × (1 + e) × v_rel_sword
+             = 2.084×10⁻² × 1.62 × 3.02
+             = 2.084×10⁻² × 4.892 = 1.020×10⁻¹ N·s
+
+Δv_opp = J_turbosword / m_opp = 1.020×10⁻¹ / 0.040 = 2.550 m/s
+```
+
+**Effect on Turbo Achilles (spin drain from power channeling + blade contact):**
+
+```
+Δω_A = J_turbosword × r_turbo / I_A = 1.020×10⁻¹ × 0.037 / 3.865×10⁻⁵ = 97.7 rad/s
+ω_remain = 580 − 97.7 = 482.3 rad/s  (83.2% retained)
+Burst Stopper prevents burst despite 97.7 rad/s drain from power-channeled strike.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles ignites with concentrated Z-power — the Burst Stopper blade becomes a blazing war-god's longsword, the sword slash erupting in a column of golden fire that cuts clean through the opponent's rotation and punches them out of the stadium.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Turbo Achilles Cho-Z power-channeled blade spirit)
+[M] Δv = 2.550 × 7.5 = **19.1 m/s** (power-channeled sword ring-out)
+
+> **Note:** Physical values describe power-channeling spin boost ω_boost=10 rad/s, v_rel_sword=3.02 m/s (vs standard 2.65), J=1.020×10⁻¹ N·s, Δv=2.550 m/s, blade contact arc 4.5 ms. [M] values represent Aiger's Z-power igniting the blade into a longsword of spirit fire. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboSwordSpecial(bey: Beyblade, target: Beyblade): void {
+  // Power-channel ω_boost=10r/s→v_rel=3.02m/s; J=1.020×10⁻¹N·s; blade_pass=4.5ms; [M] 7.5×
+  const J_phys = 0.1020;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Turbo Achilles power-channeled sword)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Turbo Awakening Energy Layer with long Burst Stopper blade protrusions (L_blade ≥ 10 mm, r_turbo ≥ 34 mm) capable of receiving a synchronisation-pulse spin boost (ω_boost ≥ 8 rad/s) from a fully synchronised blader, paired with a heavy Forge Disc (≥ 12 g) for maximum ring-out momentum. Standard game instance: Turbo Achilles 00 Dimension (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1942 — COMBO: Z Sword Cross — Turbo Achilles 00 Dimension
+
+**Sequence:** → ← A (moveRight · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+The moveRight (→) sends Turbo Achilles on a rightward orbital arc, then moveLeft (←) immediately reverses direction — a lateral feint that creates a momentum reversal at the contact point. The direction change adds a Coriolis-like lateral component to the contact velocity, then A fires the power-channeled sword slash at the crossover point:
+
+```
+v_orbital = μ_Dim × ω₀ × r_driver = 0.35 × 580 × 0.005 = 1.015 m/s
+v_lateral_reversal = v_orbital × 2 × sin(45°) = 1.015 × 2 × 0.707 = 1.435 m/s
+(momentum from rapid direction reversal at 45° crossing angle)
+
+v_contact_combo = 0.50 × v_lateral_reversal + 0.50 × v_rel_sword
+               = 0.50 × 1.435 + 0.50 × 3.02 = 0.718 + 1.510 = 2.228 m/s
+
+J_combo = m_eff × (1 + e) × v_contact_combo = 2.084×10⁻² × 1.62 × 2.228
+        = 2.084×10⁻² × 3.609 = 7.522×10⁻² N·s
+```
+
+Burst Stopper blade deflects contact recoil into spin recovery (η_bs = 0.20):
+
+```
+Δω = η_bs × J_combo × r_turbo / I_A
+   = 0.20 × 7.522×10⁻² × 0.037 / 3.865×10⁻⁵
+   = 0.20 × 71.98
+   = +14.4 rad/s  ≈ +14 rad/s
+```
+
+(η_bs = 0.20: Burst Stopper blade geometry converts cross-slash recoil to spin.) Lateral cross-slash gives damageMultiplier **1.30×**. lockMs = 0 (attack type, lateral slash with no dwell).
+
+**Parameters:**
+- spinGain: +14 rad/s (Burst Stopper recoil recovery η = 0.20)
+- damageMultiplier: 1.30 (power-channeled lateral sword cross-slash)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function zSwordCrossCombo(bey: Beyblade, target: Beyblade): void {
+  // Burst Stopper recoil: Δω ≈ +14 rad/s (η=0.20, v_combo=2.228m/s, J=7.522×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 14);
+  // Power-channeled lateral cross-slash: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +14 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1943 — GIMMICK: Z Achilles 11 Xtend+ — Gyroscopic Shield + Combined Crush Approach
+
+**Beyblade:** Z Achilles 11 Xtend+ (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+Assembly: see Case 1928 (m=41.0 g, I=3.654×10⁻⁵ kg·m², ω₀=580 rad/s, L₀=2.120×10⁻² kg·m²/s, r_turbo=37 mm).
+
+---
+
+### 1. Gyroscopic Shield — Xtend+ Extended Defense Posture
+
+With Xtend+ extended to its maximum height (defense posture), Z Achilles presents maximum gyroscopic stability. The gyroscopic rigidity of the high-spin bey acts as a defensive shield:
+
+```
+Gyroscopic rigidity: G_gyro = I × ω₀² = 3.654×10⁻⁵ × 580² = 3.654×10⁻⁵ × 336400 = 12.29 N·m
+
+For an incoming contact force F_in at r_impact = 35 mm:
+τ_in = F_in × r_impact
+
+Precession threshold (below which gyroscopic resistance deflects the hit):
+F_threshold = ω_tilt × L₀ / r_impact = 2.0 × 2.120×10⁻² / 0.035 = 1.211 N
+
+Shield attenuation: incoming impulse ≤ (F_threshold × t_c) is fully deflected;
+Z Achilles retains near-full ω₀ during the shield phase.
+```
+
+---
+
+### 2. Combined Crush Approach — Orbital + Turbo Blade Contact
+
+For the crush phase, Z Achilles charges from its high-spin defense posture directly into the opponent, combining orbital approach velocity with Turbo Blade blade contact velocity:
+
+```
+Orbital approach:
+v_orbital = μ_Xt × ω₀ × r_driver = 0.30 × 580 × 0.005 = 0.870 m/s
+
+Turbo Blade contact (same as Case 1928):
+v_tip_turbo = ω₀ × r_turbo = 580 × 0.037 = 21.46 m/s
+v_opp_contact = ω_opp × r_opp = 570 × 0.033 = 18.81 m/s
+v_rel_blades  = 21.46 − 18.81 = 2.65 m/s
+
+Combined crush velocity:
+v_crush_total = v_orbital + v_rel_blades = 0.870 + 2.65 = 3.52 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g (see Case 1928) |
+| G_gyro | 12.29 N·m |
+| F_threshold | 1.211 N |
+| v_orbital | 0.870 m/s |
+| v_rel_blades | 2.65 m/s |
+| v_crush_total | 3.52 m/s |
+
+---
+
+## Case 1944 — SPECIAL: Turbo Crush (Super Z Press) — Aiger Akabane / Z Achilles 11 Xtend+
+
+**Blader:** Aiger Akabane | **Beyblade:** Z Achilles 11 Xtend+ | **Type:** attack
+
+### Description
+
+Turbo Crush (超ゼットプレス Super Z Press) is a Special Move used by Aiger Akabane and his Z Achilles 11 Xtend+. Z Achilles increases its defense power via Turbo Awakening, entering a gyroscopic shield posture that deflects incoming attacks while sustaining near-full spin. The Xtend+ driver locks into its extended defense height for maximum stability. Then, from this fortified high-spin state, Achilles charges directly into the opponent — combining its full orbital approach speed with the Turbo Blade tip velocity in a concentrated full-body press that smashes the opponent with serious damage. The Burst Stopper Turbo Blades protect against burst during the high-drain contact.
+
+### Stage — Gyroscopic Shield Defense → Full-Body Crush Contact
+
+From Case 1943: v_crush_total = 3.52 m/s, e = 0.55 (Xtend+ in defense posture — deliberate heavy contact).
+
+```
+m_eff = (m_Z × m_opp) / (m_Z + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+J_turbocrush = m_eff × (1 + e) × v_crush_total
+             = 2.025×10⁻² × 1.55 × 3.52
+             = 2.025×10⁻² × 5.456 = 1.105×10⁻¹ N·s
+
+Δv_opp = J_turbocrush / m_opp = 1.105×10⁻¹ / 0.040 = 2.763 m/s
+```
+
+**Effect on Z Achilles (spin drain from shield-into-crush contact):**
+
+```
+Δω_Z = J_turbocrush × r_turbo / I_Z = 1.105×10⁻¹ × 0.037 / 3.654×10⁻⁵ = 111.9 rad/s
+ω_remain = 580 − 111.9 = 468.1 rad/s  (80.7% retained)
+Burst Stopper Turbo Blades prevent burst despite 111.9 rad/s drain from press contact.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles erupts in a full-body Z-power explosion — the shield becomes an impenetrable war-god's fortress that then transforms into a comet of concentrated energy, smashing into the opponent with such force that the bey is obliterated out of the stadium in a shockwave of compressed Z-power.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Turbo Achilles Cho-Z shield-crush spirit)
+[M] Δv = 2.763 × 7.5 = **20.7 m/s** (gyroscopic shield crush ring-out)
+
+> **Note:** Physical values describe gyroscopic shield G_gyro=12.29 N·m, F_threshold=1.211 N; crush v_orbital=0.870 + v_rel_blades=2.65 → v_total=3.52 m/s; J=1.105×10⁻¹ N·s; Δv=2.763 m/s; Burst Stopper prevents burst at Δω=111.9 rad/s. [M] values represent Aiger's Z-power shield fortress detonating into a full-body crush. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboCrushSpecial(bey: Beyblade, target: Beyblade): void {
+  // Gyro shield G=12.29N·m; v_orbital=0.870+v_blade=2.65=3.52m/s total; J=1.105×10⁻¹N·s; [M] 7.5×
+  const J_phys = 0.1105;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Turbo Achilles gyro-shield crush spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a variable-height Driver (Xtend+ or equivalent, switchable to defense height for gyroscopic stability) combined with a Turbo Awakening Energy Layer (Burst Stopper, r_turbo ≥ 34 mm), where the blader can sustain gyroscopic shield posture before committing to a full-mass orbital+blade crush approach. Standard game instance: Z Achilles 11 Xtend+ (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1945 — COMBO: Achilles Press — Z Achilles 11 Xtend+
+
+**Sequence:** K K A (defense · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+Two consecutive defense inputs (K K) activate the Xtend+ shield phase — Z Achilles enters maximum gyroscopic stability posture, deflecting any incoming contact and sustaining spin. The second K compounds the stability, locking the Xtend+ at extended height. The attack (A) releases the shield momentum into a partial crush:
+
+```
+v_crush_partial = v_crush_total × 0.65 = 3.52 × 0.65 = 2.288 m/s
+
+J_partial = m_eff × (1 + e) × v_crush_partial = 2.025×10⁻² × 1.55 × 2.288
+          = 2.025×10⁻² × 3.546 = 7.181×10⁻² N·s
+```
+
+Gyroscopic stability during shield phase converts spin-drain suppression into effective spin gain (η_gyro = 0.15 — gyro damping redirects residual precession energy to spin):
+
+```
+Δω = η_gyro × J_partial × r_turbo / I_Z
+   = 0.15 × 7.181×10⁻² × 0.037 / 3.654×10⁻⁵
+   = 0.15 × 72.68
+   = +10.9 rad/s  ≈ +11 rad/s
+```
+
+(η_gyro = 0.15: gyroscopic shield suppresses spin drain during K K phase; net effect is a spin preservation boost before A fires.) Shield-into-crush gives damageMultiplier **1.35×**. lockMs = 50 (Xtend+ press hold at extended height during crush contact).
+
+**Parameters:**
+- spinGain: +11 rad/s (gyroscopic spin-drain suppression η = 0.15)
+- damageMultiplier: 1.35 (defense shield press-crush smash)
+- lockMs: 50 (Xtend+ extended press dwell)
+
+### TypeScript
+
+```typescript
+function achillesPressCombo(bey: Beyblade, target: Beyblade): void {
+  // Gyro spin retention: Δω ≈ +11 rad/s (η=0.15, v_crush=2.288m/s, J=7.181×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Defense shield press-crush: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1946 as further franchise moves are provided.*
 
 
 
@@ -17627,4 +19511,1888 @@ function ashRiseCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +13 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1919 as further franchise moves are provided.*
+
+
+---
+
+## Case 1919 — GIMMICK: Dragoon GT & Strata Dragoon MS (HMS) — Phase-Locked Dual Rankine Tornado
+
+**Beyblades:** Dragoon GT (HMS) × Tyson Granger; Strata Dragoon MS (HMS) × Daichi Sumeragi
+**Series:** Beyblade: G-Revolution (Bakuten Shoot Season 3)
+
+### Assembly — Dragoon GT (HMS)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Metal Attack Ring | Dragoon GT | 11.0 | 32.0 |
+| Body | HMS Cylinder | 8.5 | 18.0 |
+| Running Core | Semi-Flat RC | 3.0 | 4.0 |
+| **Total** | | **22.5** | |
+
+(Bit Chip ~1.0 g excluded per plastic-gen convention. HMS = Hard Metal System; aluminum alloy MAR replaces plastic AR; Running Core replaces WD+SG+BB in a single shaft unit.)
+
+**I_DGT** = 11.0×10⁻³ × 0.032² + 8.5×10⁻³ × 0.018² + 3.0×10⁻³ × 0.004²
+          = 1.126×10⁻⁵ + 2.754×10⁻⁶ + 4.80×10⁻⁸
+          = **1.406×10⁻⁵ kg·m²**
+
+ω₀ = 750 rad/s (HMS standard launch — lighter aluminum → higher exit velocity)
+L₀_DGT = I_DGT × ω₀ = 1.406×10⁻⁵ × 750 = **1.055×10⁻² kg·m²/s**
+
+### Assembly — Strata Dragoon MS (HMS)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Metal Attack Ring | Strata Dragoon | 10.5 | 30.0 |
+| Body | HMS Cylinder | 8.0 | 16.0 |
+| Running Core | Semi-Flat RC | 3.0 | 4.0 |
+| **Total** | | **21.5** | |
+
+**I_SDM** = 10.5×10⁻³ × 0.030² + 8.0×10⁻³ × 0.016² + 3.0×10⁻³ × 0.004²
+          = 9.450×10⁻⁶ + 2.048×10⁻⁶ + 4.80×10⁻⁸
+          = **1.155×10⁻⁵ kg·m²**
+
+ω₀ = 750 rad/s
+L₀_SDM = 1.155×10⁻⁵ × 750 = **8.663×10⁻³ kg·m²/s**
+
+---
+
+### 1. Semi-Flat RC — Fast Orbital Drive & Spin Decay
+
+Both HMS beys use identical Semi-Flat Running Cores (μ_RC = 0.35, r_RC = 4 mm) driving fast, aggressive orbital motion:
+
+```
+v_orbital = μ_RC × ω₀ × r_RC = 0.35 × 750 × 0.004 = 1.050 m/s
+
+τ_flat_DGT = μ_RC × m_DGT × g × r_RC = 0.35 × 0.0225 × 9.81 × 0.004 = 3.090×10⁻⁴ N·m
+t_spin_DGT = L₀_DGT / τ_flat_DGT = 1.055×10⁻² / 3.090×10⁻⁴ = 34.1 s
+
+τ_flat_SDM = 0.35 × 0.0215 × 9.81 × 0.004 = 2.953×10⁻⁴ N·m
+t_spin_SDM = 8.663×10⁻³ / 2.953×10⁻⁴ = 29.3 s
+```
+
+Equal orbital speed (v_orbital = 1.050 m/s for both) means both beys circuit the bowl at the same rate — a prerequisite for maintaining phase lock.
+
+---
+
+### 2. Phase-Locked Dual Rankine Tornado — Synchronization & Constructive Interference
+
+Each MAR generates a Rankine vortex. When phase-locked (same ω, same orbital position offset = 180°):
+
+```
+v_tip_DGT = ω₀ × r_MAR_DGT = 750 × 0.032 = 24.00 m/s
+Γ_DGT     = 2π × v_tip_DGT × r_MAR_DGT = 2π × 24.00 × 0.032 = 4.825 m²/s
+
+v_tip_SDM = ω₀ × r_MAR_SDM = 750 × 0.030 = 22.50 m/s
+Γ_SDM     = 2π × v_tip_SDM × r_MAR_SDM = 2π × 22.50 × 0.030 = 4.241 m²/s
+
+Γ_combined = Γ_DGT + Γ_SDM = 4.825 + 4.241 = 9.066 m²/s  (phase-locked constructive sum)
+```
+
+Synchronized force at r_opp = 75 mm (combined tornado interaction radius):
+
+```
+v_combo = Γ_combined / (2π × r_opp) = 9.066 / (2π × 0.075) = 19.24 m/s
+
+q_combo  = ½ × ρ_air × v_combo² = ½ × 1.225 × 19.24² = 226.7 Pa
+
+F_twin   = q_combo × A_opp = 226.7 × π × 0.020² = 226.7 × 1.257×10⁻³ = 0.2850 N
+```
+
+**Sync amplification vs. non-synchronized sum:**
+
+```
+F_DGT_nonsync = (½×1.225×(4.825/0.4712)²) × 1.257×10⁻³ = 64.23×1.257×10⁻³ = 0.08074 N
+F_SDM_nonsync = (½×1.225×(4.241/0.4712)²) × 1.257×10⁻³ = 49.61×1.257×10⁻³ = 0.06235 N
+F_sum_nonsync = 0.08074 + 0.06235 = 0.1431 N
+
+Sync factor: F_twin / F_sum_nonsync = 0.2850 / 0.1431 = 1.992 ≈ 2.0×
+```
+
+Synchronization nearly doubles the tornado force — this is why Tyson must adjust his spin to match Daichi's. If Tyson's tornado breaks phase (as in the F-Dynasty battle), the combined vortex collapses to single-bey output (F_SDM = 0.06235 N alone — insufficient to sustain the column).
+
+### Key Parameters Summary
+
+| Quantity | Dragoon GT | Strata Dragoon MS |
+|---------|-----------|------------------|
+| m | 22.5 g | 21.5 g |
+| I_total | 1.406×10⁻⁵ kg·m² | 1.155×10⁻⁵ kg·m² |
+| ω₀ | 750 rad/s | 750 rad/s |
+| L₀ | 1.055×10⁻² kg·m²/s | 8.663×10⁻³ kg·m²/s |
+| v_tip | 24.00 m/s | 22.50 m/s |
+| Γ | 4.825 m²/s | 4.241 m²/s |
+| τ_flat | 3.090×10⁻⁴ N·m | 2.953×10⁻⁴ N·m |
+| t_spin | 34.1 s | 29.3 s |
+
+| Combined quantity | Value |
+|-----------------|-------|
+| Γ_combined | 9.066 m²/s |
+| v_combo (r=75mm) | 19.24 m/s |
+| F_twin | 0.2850 N |
+| Sync factor | ≈ 2.0× |
+| v_orbital (both) | 1.050 m/s |
+
+---
+
+## Case 1920 — SPECIAL: Twin Tornado Attack — Tyson & Daichi / Dragoon GT & Strata Dragoon MS
+
+**Bladers:** Tyson Granger + Daichi Sumeragi | **Beyblades:** Dragoon GT + Strata Dragoon MS | **Type:** attack (co-blader)
+
+### Description
+
+Twin Tornado Attack (Japanese: ツイントルネードアタック) is a powerful co-blader Special Move used by Tyson Granger and Daichi Sumeragi with their Dragoon GT and Strata Dragoon MS HMS beyblades. Tyson adjusts Dragoon GT's rotational speed to exactly match Strata Dragoon MS's, phase-locking their orbital paths 180° apart in the arena. The two synchronized vortices combine into a single massive Rankine super-tornado — nearly twice as powerful as the sum of the individual tornados — and travel together toward the opponent in a convergent column of sand and wind. When Tyson breaks synchronization for a moment in the fight against the F-Dynasty team, both tornados collapse simultaneously, demonstrating the critical role of phase lock. The attack first appeared in Beyblade G-Revolution, episode "A Champion's Not Easy".
+
+### Stage — Phase-Locked Dual Tornado Strike (t_wave = 0.30 s)
+
+From Case 1919: F_twin = 0.2850 N (synchronized Γ_combined = 9.066 m²/s at r_opp = 75 mm).
+
+```
+J_twin = F_twin × t_wave = 0.2850 × 0.30 = 8.550×10⁻² N·s
+
+Δv_opp = J_twin / m_opp = 8.550×10⁻² / 0.038 = 2.250 m/s
+```
+
+**Effect on Dragoon GT (spin drain — shared equally):**
+
+```
+Δω_DGT    = (J_twin/2) × r_contact / I_DGT = 4.275×10⁻² × 0.025 / 1.406×10⁻⁵ = 76.0 rad/s
+ω_remain_DGT = 750 − 76.0 = 674.0 rad/s  (89.9% retained)
+```
+
+**Effect on Strata Dragoon MS (spin drain):**
+
+```
+Δω_SDM    = (J_twin/2) × r_contact / I_SDM = 4.275×10⁻² × 0.025 / 1.155×10⁻⁵ = 92.5 rad/s
+ω_remain_SDM = 750 − 92.5 = 657.5 rad/s  (87.7% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dragoon and Strata Dragoon's Bit-Beasts fully manifest as twin dragon-wind spirits — the two synchronized tornado columns become living tempests of pure BeySpirit energy that annihilate the opponent's stability across the entire arena floor.
+
+[M] factor = **8.0 ×** (Tyson + Daichi co-blader dual Dragoon spirit)
+[M] Δv = 2.250 × 8.0 = **18.0 m/s** (twin tornado ring-out)
+
+> **Note:** Physical values describe phase-locked Γ_combined=9.066 m²/s at r=75mm → F=0.2850 N×0.30s → J=8.550×10⁻² N·s, Δv=2.250 m/s; sync factor ≈ 2.0× vs non-sync sum. DGT spin drain 76.0 rad/s, SDM spin drain 92.5 rad/s. [M] values represent Tyson and Daichi's dual Dragoon spirits fusing the synchronized vortices into a living twin tornado catastrophe. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function twinTornadoAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Phase-locked Γ_combined=9.066m²/s→F=0.2850N×0.30s→J=8.550×10⁻²N·s; sync 2.0× vs nonsync; [M] 8.0×
+  const J_phys = 0.08550;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Tyson+Daichi dual Dragoon spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any pair of beyblades using HMS-class Metal Attack Rings (r_MAR ≥ 28 mm, Γ ≥ 3.5 m²/s each) with identical flat-contact Running Cores (μ ≥ 0.30, v_orbital equal ±5%) such that both beys circuit the bowl at the same rate. Both bladers must launch simultaneously and maintain phase lock throughout (both beys at identical ω). Standard game instance: Dragoon GT + Strata Dragoon MS (Tyson Granger + Daichi Sumeragi, G-Revolution).
+
+---
+
+## Case 1921 — COMBO: Cyclone Spiral — Dragoon GT
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The moveRight (→) drives Dragoon GT into its fast flat-RC orbital approach (v_orbital = 1.050 m/s):
+
+```
+v_approach = v_orbital = 1.050 m/s
+```
+
+The moveUp (↑) deflects the approach into a bowl-wall ascent (θ = 45°):
+
+```
+v_z = v_approach × tan(45°) = 1.050 × 1.0 = 1.050 m/s
+
+h_apex = v_z² / (2g) = 1.050² / (2 × 9.81) = 1.1025 / 19.62 = 56.2 mm
+
+v_descent = √(2g × h_apex) = √(2 × 9.81 × 0.0562) = 1.050 m/s
+```
+
+The attack (A) fires the bowl-descent overhead smash at combined v_impact:
+
+```
+v_impact = √(v_approach² + v_descent²) = √(1.050² + 1.050²) = √2.2050 = 1.485 m/s
+
+m_eff_DGT = (m_DGT × m_opp) / (m_DGT + m_opp) = (0.0225 × 0.038) / (0.0225 + 0.038)
+           = 8.550×10⁻⁴ / 0.0605 = 1.413×10⁻² kg
+
+J_cyclone = m_eff_DGT × (1 + e) × v_impact  [e = 0.75, hard aluminum MAR]
+          = 1.413×10⁻² × 1.75 × 1.485
+          = 1.413×10⁻² × 2.5988 = 3.673×10⁻² N·s
+```
+
+The Semi-Flat RC rebounds on landing, reconverting smash recoil to spin (η_RC = 0.28, metal-on-metal contact):
+
+```
+Δω = η_RC × J_cyclone × r_contact / I_DGT
+   = 0.28 × 3.673×10⁻² × 0.025 / 1.406×10⁻⁵
+   = 0.28 × 9.183×10⁻⁴ / 1.406×10⁻⁵
+   = 0.28 × 65.31
+   = +18.3 rad/s  ≈ +18 rad/s
+```
+
+(η_RC = 0.28: Semi-Flat metal Running Core rebound reconversion. Higher per-radian gain vs MFB due to HMS lower I.) Bowl-ascent overhead descent smash gives damageMultiplier **1.25×**. lockMs = 0 (pure attack dash).
+
+**Parameters:**
+- spinGain: +18 rad/s (Semi-Flat RC metal rebound η = 0.28)
+- damageMultiplier: 1.25 (bowl-ascent aerial descent smash)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function cycloneSpiralCombo(bey: Beyblade, target: Beyblade): void {
+  // Semi-Flat RC rebound: Δω ≈ +18 rad/s (η=0.28, h=56.2mm, v_impact=1.485m/s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 18);
+  // Bowl-ascent aerial descent smash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +18 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1922 — GIMMICK: Blizzard Orthrus (Metal Fury) — Dual-Spin Crystalline Freeze Ring
+
+**Beyblade:** Blizzard Orthrus 145D (Metal Fury / 4D System)
+**Blader:** Gordo | **Series:** Beyblade Metal Fury (4D System)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face Bolt | Orthrus face | 1.5 | 3.0 |
+| Energy Ring | Orthrus | 3.5 | 38.0 |
+| Fusion Wheel | Blizzard | 28.5 | 35.0 |
+| Spin Track | 145 | 4.0 | 10.0 |
+| Performance Tip | Defense (D) | 2.5 | 4.0 |
+| **Total** | | **40.0** | |
+
+(Face Bolt included; 4D convention.)
+
+**I_total** = 1.5×10⁻³ × 0.003² + 3.5×10⁻³ × 0.038² + 28.5×10⁻³ × 0.035² + 4.0×10⁻³ × 0.010² + 2.5×10⁻³ × 0.004²
+           = 1.35×10⁻⁸ + 5.054×10⁻⁶ + 3.491×10⁻⁵ + 4.00×10⁻⁷ + 4.00×10⁻⁸
+           = **4.044×10⁻⁵ kg·m²**
+
+ω₀ = 600 rad/s (MFB/4D standard launch for defense-type)
+L₀ = I × ω₀ = 4.044×10⁻⁵ × 600 = **2.426×10⁻² kg·m²/s**
+
+---
+
+### 1. Blizzard Fusion Wheel — Dual-Blade Ring Contact
+
+The Blizzard Fusion Wheel has two large bladed wings that create a contact perimeter at r = 35 mm. On contact the high-mass wheel applies smash force via blade leading edges (e = 0.72, ABS/metal hybrid):
+
+```
+v_tip = ω₀ × r_FW = 600 × 0.035 = 21.00 m/s
+
+Contact-zone width per blade: w_blade = 12 mm = 0.012 m
+Blade span (axial, per blade): h_blade = 5 mm = 0.005 m
+A_blade = 0.012 × 0.005 = 6.0×10⁻⁵ m² (per blade)
+N_blades = 2
+
+F_blade_total = N_blades × ½ × ρ_air × v_tip² × C_D × A_blade
+              = 2 × ½ × 1.225 × 441.00 × 1.2 × 6.0×10⁻⁵
+              = 2 × 1.947×10⁻² = 3.894×10⁻² N
+```
+
+---
+
+### 2. Freeze Aura — Crystalline Ice Surface & Friction Modulation
+
+The Orthrus Energy Ring (ER) has a ridged crystalline texture. At v_tip the surface creates a localized low-temperature boundary layer (Gordo's ice-element BeySpirit). For physics purposes this is modeled as increased contact stiction via modified friction:
+
+```
+μ_D_standard = 0.08  (Defense tip — low friction, large flat face)
+μ_D_freeze   = 0.13  (ice-aura contact stiction at low relative motion)
+
+τ_D_freeze = μ_D_freeze × m × g × r_D
+           = 0.13 × 0.040 × 9.81 × 0.004
+           = 2.043×10⁻⁴ N·m
+
+t_spin = L₀ / τ_D_freeze = 2.426×10⁻² / 2.043×10⁻⁴ = 118.7 s ≈ 119 s
+```
+
+(Freeze-aura Defense tip extends spin survival time compared to a standard D at μ=0.08: t_spin_std = 2.426×10⁻² / (0.08×0.040×9.81×0.004) = 193.5 s; freeze-aura mode μ effectively doubles friction for an opposing bey caught in the ice field — see Case 1924.)
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 40.0 g |
+| I_total | 4.044×10⁻⁵ kg·m² |
+| ω₀ | 600 rad/s |
+| L₀ | 2.426×10⁻² kg·m²/s |
+| v_tip | 21.00 m/s |
+| F_blade_total | 3.894×10⁻² N |
+| μ_D_freeze | 0.13 |
+| τ_D_freeze | 2.043×10⁻⁴ N·m |
+| t_spin | 119 s |
+
+---
+
+## Case 1923 — SPECIAL: Twin Spire — Gordo / Blizzard Orthrus
+
+**Blader:** Gordo | **Beyblade:** Blizzard Orthrus 145D | **Type:** stamina (freeze-drain)
+
+### Description
+
+Twin Spire is a Special Move used by Gordo and his Blizzard Orthrus Beyblade. Orthrus channels his icy breath through the dual-bladed Fusion Wheel, encasing the opponent in a glacial freeze field that saps their rotation and traps them in place. The frozen opponent loses speed and power while Orthrus continues spinning freely, its Defense tip sustaining rotation long after the opponent grinds to a halt. The name "Twin Spire" refers to the two blade-spires of the Blizzard wheel rotating like twin pillars of ice.
+
+### Stage — Freeze-Drain Contact (Ice Aura Friction Amplification)
+
+From Case 1922: twin blade contact F=3.894×10⁻² N, v_tip=21.00 m/s. Freeze aura doubles the opponent's effective spin-friction coefficient upon contact (ice-coating immobilizes tip against arena surface, μ_opp→2.0× standard).
+
+```
+v_rel = v_tip − v_opp_tip = 21.00 − 18.00 = 3.00 m/s
+(opponent at 600 rad/s × r_opp=0.030 m = 18.00 m/s orbital contribution)
+
+m_eff = (m_O × m_opp) / (m_O + m_opp)
+      = (0.040 × 0.038) / (0.040 + 0.038)
+      = 1.520×10⁻³ / 0.078 = 1.949×10⁻² kg
+
+J_twinspire = m_eff × (1 + e) × v_rel
+            = 1.949×10⁻² × (1 + 0.72) × 3.00
+            = 1.949×10⁻² × 5.160 = 1.005×10⁻¹ N·s
+
+Δv_opp = J_twinspire / m_opp = 1.005×10⁻¹ / 0.038 = 2.645 m/s
+
+Freeze immobilization: opponent tip friction ×2 during freeze dwell (t_freeze = 0.8s):
+τ_freeze_opp = 2.0 × 0.35 × 0.038 × 9.81 × 0.003 = 7.806×10⁻⁴ N·m
+Δω_freeze = τ_freeze_opp × t_freeze / I_opp
+          = 7.806×10⁻⁴ × 0.8 / 1.8×10⁻⁵ = 34.7 rad/s (additional spin drain on frozen opponent)
+```
+
+**Effect on Blizzard Orthrus (spin loss from contact):**
+
+```
+Δω_O = J_twinspire × r_contact / I_O
+      = 1.005×10⁻¹ × 0.035 / 4.044×10⁻⁵ = 86.9 rad/s
+ω_remain = 600 − 86.9 = 513.1 rad/s  (85.5% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gordo's Orthrus Bit-Beast channels both heads in unison — the ice aura erupts into twin crystalline spires that tower over the stadium and encase the opponent completely, draining all momentum in a glacial prison while Orthrus spins untouched at the center.
+
+[M] factor = **7.0 ×** (Gordo — Blizzard Orthrus ice-twin spirit, Metal Fury 4D special)
+[M] Δv = 2.645 × 7.0 = **18.5 m/s** (glacial freeze ring-out / immobilization)
+
+> **Note:** Physical values describe blade contact F=3.894×10⁻² N, J=1.005×10⁻¹ N·s, Δv=2.645 m/s, freeze drain Δω=34.7 rad/s over 0.8s. [M] values represent Gordo's dual Orthrus ice spirits encasing the opponent in a glacial prison. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function twinSpireSpecial(bey: Beyblade, target: Beyblade): void {
+  // Blade contact J=1.005×10⁻¹ N·s; freeze drain Δω=34.7 rad/s over 0.8s; [M] 7.0×
+  const J_phys = 0.1005;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Gordo Orthrus ice-twin spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+  // Freeze drain: additional spin loss on opponent
+  target.spin = Math.max(0, target.spin - 34.7);
+}
+```
+
+**Compatible beys:** Any beyblade using a high-mass Fusion Wheel (≥ 26 g) with dual blade-type contact points at r_FW ≥ 33 mm and a large-face Defense or similar low-friction tip (μ ≤ 0.15), where the Energy Ring has a ridged/crystalline profile for freeze-aura contact stiction amplification. Standard game instance: Blizzard Orthrus 145D (Gordo, Metal Fury).
+
+---
+
+## Case 1924 — COMBO: Ice Spire Lock — Blizzard Orthrus
+
+**Sequence:** K A K (defense · attack · defense)
+**Cost:** 15 | **Type:** stamina | **Blader:** Gordo
+
+### Physics Justification
+
+The first defense (K) activates the freeze-aura contact posture — Orthrus angles the dual blades outward while the D tip anchors (zero drift μ_D_freeze = 0.13). The attack (A) delivers the twin-blade smash during freeze contact. The second defense (K) closes with the freeze-lock follow-through that immobilizes the opponent tip.
+
+```
+Blade contact during A phase:
+v_tip_combo = ω₀ × 0.85 × r_FW = 600 × 0.85 × 0.035 = 17.85 m/s
+(85% partial orbit, mid-position strike)
+
+v_rel_combo = 17.85 − 15.30 = 2.55 m/s
+(opponent at 600×0.85×0.030 = 15.30 m/s)
+
+J_combo = m_eff × (1 + e) × v_rel_combo
+        = 1.949×10⁻² × 1.72 × 2.55
+        = 1.949×10⁻² × 4.386 = 8.549×10⁻² N·s
+
+Δv_combo = J_combo / m_opp = 8.549×10⁻² / 0.038 = 2.250 m/s
+```
+
+The final defense (K) adds freeze-lock dwell: immobilizes opponent tip for lockMs=150 ms (modeled as full-friction ground contact during dwell). Δω_K2 on Orthrus from dwell reaction:
+
+```
+τ_K2 = μ_D_freeze × m_O × g × r_D = 0.13 × 0.040 × 9.81 × 0.004 = 2.043×10⁻⁴ N·m
+Δω_K2_own = τ_K2 × 0.15 / I_O = 2.043×10⁻⁴ × 0.15 / 4.044×10⁻⁵ = +0.76 rad/s ≈ +1 rad/s
+(D-tip freeze-lock dwell self-sustains spin; negligible but positive)
+```
+
+spinGain: +1 rad/s (freeze-lock D-tip self-sustain). damageMultiplier: **1.20×** (freeze-blade smash with lock follow-through). lockMs: 150 (freeze-lock dwell on landing K).
+
+**Parameters:**
+- spinGain: +1 rad/s (D-tip freeze dwell)
+- damageMultiplier: 1.20 (twin-blade freeze smash)
+- lockMs: 150 (freeze-lock dwell)
+
+### TypeScript
+
+```typescript
+function iceSpireLockCombo(bey: Beyblade, target: Beyblade): void {
+  // Freeze-lock dwell: Δω ≈ +1 rad/s (D-tip μ=0.13, t=0.15s); J_combo=8.549×10⁻²N·s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 1);
+  // Twin-blade freeze smash + lock follow-through: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +1 rad/s (negligible) | ✓ |
+
+
+
+---
+
+## Case 1925 — GIMMICK: Rapid Eagle (Metal Masters) — Dual Saber-Blade Aerial Dive
+
+**Beyblade:** Rapid Eagle (Metal Fusion / Metal Masters)
+**Blader:** Claude | **Series:** Beyblade Metal Masters
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face Bolt | Eagle face | 1.5 | 3.0 |
+| Energy Ring | Eagle | 3.5 | 37.0 |
+| Fusion Wheel | Rapid | 24.0 | 33.0 |
+| Spin Track | H145 | 3.5 | 10.0 |
+| Performance Tip | Flat (F) | 2.0 | 3.0 |
+| **Total** | | **34.5** | |
+
+(Face Bolt included; MFB convention.)
+
+**I_total** = 1.5×10⁻³ × 0.003² + 3.5×10⁻³ × 0.037² + 24.0×10⁻³ × 0.033² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.35×10⁻⁸ + 4.792×10⁻⁶ + 2.614×10⁻⁵ + 3.500×10⁻⁷ + 1.80×10⁻⁸
+           = **3.131×10⁻⁵ kg·m²**
+
+ω₀ = 630 rad/s (MFB attack-type standard launch)
+L₀ = I × ω₀ = 3.131×10⁻⁵ × 630 = **1.973×10⁻² kg·m²/s**
+
+---
+
+### 1. Rapid Fusion Wheel — Dual Saber-Blade Lift
+
+The Rapid Fusion Wheel carries two swept saber-blade protrusions (N_blades = 2) at r = 33 mm. Each blade has a cambered cross-section (C_L = 0.70) generating aerodynamic lift on high-speed orbital approach. Blade projected area per saber: A_saber = 1.0×10⁻⁴ m².
+
+```
+v_tip = ω₀ × r_FW = 630 × 0.033 = 20.79 m/s
+
+F_lift_saber = N_blades × ½ × ρ_air × v_tip² × C_L × A_saber
+             = 2 × ½ × 1.225 × 20.79² × 0.70 × 1.0×10⁻⁴
+             = 2 × ½ × 1.225 × 432.2 × 7.0×10⁻⁵
+             = 2 × 1.857×10⁻² = 3.714×10⁻² N
+
+Weight: W = m × g = 0.0345 × 9.81 = 0.3386 N
+
+Lift fraction: F_lift / W = 3.714×10⁻² / 0.3386 = 10.97% ≈ 11%
+```
+
+Effective gravity during ascent (saber lift opposes gravity):
+
+```
+g_eff = g × (1 − F_lift / W) = 9.81 × (1 − 0.1097) = 9.81 × 0.8903 = 8.733 m/s²
+```
+
+---
+
+### 2. Bowl-Exit Trajectory — Aerial Apex & Dual-Saber Descent Strike
+
+Rapid Eagle uses the bowl wall (θ = 55°) to redirect into a vertical aerial launch:
+
+```
+v_orbital = μ_F × ω₀ × r_F = 0.40 × 630 × 0.003 = 0.756 m/s
+
+v_z = v_orbital × tan(55°) = 0.756 × 1.428 = 1.080 m/s
+
+Apex height (under g_eff — saber lift active during ascent):
+h_apex = v_z² / (2 × g_eff) = 1.080² / (2 × 8.733) = 1.1664 / 17.466 = 66.8 mm
+
+Descent velocity (full g — lift decays at apex):
+v_descent = √(2 × g × h_apex) = √(2 × 9.81 × 0.0668) = √(1.311) = 1.145 m/s
+
+Combined impact velocity (orbital + descent):
+v_impact = √(v_orbital² + v_descent²) = √(0.756² + 1.145²) = √(0.5715 + 1.3110) = √1.8825 = 1.372 m/s
+```
+
+**Flat-tip spin decay:**
+
+```
+τ_F  = μ_F × m × g × r_F = 0.40 × 0.0345 × 9.81 × 0.003 = 4.073×10⁻⁴ N·m
+t_spin = L₀ / τ_F = 1.973×10⁻² / 4.073×10⁻⁴ = 48.4 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 34.5 g |
+| I_total | 3.131×10⁻⁵ kg·m² |
+| ω₀ | 630 rad/s |
+| L₀ | 1.973×10⁻² kg·m²/s |
+| v_tip | 20.79 m/s |
+| F_lift_saber | 3.714×10⁻² N |
+| Lift fraction | 11% |
+| g_eff | 8.733 m/s² |
+| v_orbital | 0.756 m/s |
+| v_z | 1.080 m/s |
+| h_apex | 66.8 mm |
+| v_descent | 1.145 m/s |
+| v_impact | 1.372 m/s |
+| τ_F | 4.073×10⁻⁴ N·m |
+| t_spin | 48.4 s |
+
+---
+
+## Case 1926 — SPECIAL: Twin Saber — Claude / Rapid Eagle
+
+**Blader:** Claude | **Beyblade:** Rapid Eagle | **Type:** attack
+
+### Description
+
+Twin Saber (also known as Killer Eagle) is a Special Move used by Claude and his Rapid Eagle Beyblade. Rapid Eagle rides the bowl wall at high orbital speed, its dual saber-blade Fusion Wheel generating lift that extends the aerial apex. From above the stadium Rapid Eagle banks and dives blade-first at blinding speed, the two saber protrusions slashing across the opponent in a twin-cutting strike. The move was first used against Rock Bison. The aerial approach mirrors the flight of a hunting eagle — a high-altitude stoop that converts maximum potential energy into cutting impact.
+
+### Stage — Bowl-Wall Launch + Dual Saber Descent Strike
+
+From Case 1925: v_impact = 1.372 m/s (orbital + saber lift + full-g descent), e = 0.74 (sharp ABS saber blades).
+
+```
+m_eff = (m_E × m_opp) / (m_E + m_opp) = (0.0345 × 0.038) / (0.0345 + 0.038)
+      = 1.311×10⁻³ / 0.0725 = 1.808×10⁻² kg
+
+J_twinsaber = m_eff × (1 + e) × v_impact
+            = 1.808×10⁻² × 1.74 × 1.372
+            = 1.808×10⁻² × 2.387 = 4.316×10⁻² N·s
+
+Δv_opp = J_twinsaber / m_opp = 4.316×10⁻² / 0.038 = 1.136 m/s
+```
+
+**Effect on Rapid Eagle (spin drain):**
+
+```
+Δω_E  = J_twinsaber × r_contact / I_E = 4.316×10⁻² × 0.033 / 3.131×10⁻⁵ = 45.5 rad/s
+ω_remain = 630 − 45.5 = 584.5 rad/s  (92.8% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Claude's Rapid Eagle Bit-Beast fully materialises as a blazing hunting eagle — the dual sabers become razor wings of pure spirit energy, and the dive strike multiplies into a killing stoop that punches the opponent clean out of the stadium in a burst of feathered lightning.
+
+[M] factor = **7.0 ×** (Claude — Rapid Eagle spirit, Metal Masters special)
+[M] Δv = 1.136 × 7.0 = **7.95 m/s** (eagle stoop ring-out)
+
+> **Note:** Physical values describe saber lift F=3.714×10⁻² N (11% weight), g_eff=8.733 m/s², bowl-wall launch v_z=1.080 m/s, h_apex=66.8 mm, v_impact=1.372 m/s, impulse J=4.316×10⁻² N·s, Δv=1.136 m/s. [M] values represent Claude's Rapid Eagle spirit diving as a razor-winged predator. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function twinSaberSpecial(bey: Beyblade, target: Beyblade): void {
+  // 2-saber lift 11%→g_eff=8.733m/s²; bowl launch v_z=1.080m/s→h=66.8mm; v_impact=1.372m/s; J=4.316×10⁻²N·s; [M] 7.0×
+  const J_phys = 0.04316;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Claude Rapid Eagle spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a flat-contact Performance Tip (μ ≥ 0.35) combined with a Fusion Wheel carrying 2+ cambered saber-blade protrusions at r_FW ≥ 30 mm generating measurable lift (F_lift ≥ 0.03 N at ω₀ ≥ 600 rad/s), launched via a 45–65° bowl wall for vertical ascent. Standard game instance: Rapid Eagle H145F (Claude, Metal Masters).
+
+---
+
+## Case 1927 — COMBO: Eagle Dive Strike — Rapid Eagle
+
+**Sequence:** ↑ E A (moveUp · dodge · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Claude
+
+### Physics Justification
+
+The moveUp (↑) sends Rapid Eagle up the bowl wall at half-orbit speed (v_partial = v_orbital × 0.55 = 0.756 × 0.55 = 0.4158 m/s). The dodge (E) converts the wall-climb into a tight aerial banking arc — Rapid Eagle angles its saber blades to glide laterally before committing to the dive. With saber lift active this gives partial ascent:
+
+```
+v_z_partial = v_partial × tan(55°) = 0.4158 × 1.428 = 0.5938 m/s
+
+h_partial = v_z_partial² / (2 × g_eff) = 0.5938² / (2 × 8.733) = 0.3526 / 17.466 = 20.2 mm
+```
+
+The attack (A) fires at descent apex — Rapid Eagle dives dual-saber first:
+
+```
+v_descent_partial = √(2 × g × h_partial) = √(2 × 9.81 × 0.0202) = √(0.3963) = 0.6295 m/s
+
+v_impact_partial = √(v_partial² + v_descent_partial²) = √(0.4158² + 0.6295²)
+                 = √(0.1729 + 0.3963) = √0.5692 = 0.7545 m/s
+
+J_partial = m_eff × (1 + e) × v_impact_partial = 1.808×10⁻² × 1.74 × 0.7545
+          = 1.808×10⁻² × 1.313 = 2.374×10⁻² N·s
+```
+
+Saber blade deflection on landing recovers spin (η_saber = 0.25):
+
+```
+Δω = η_saber × J_partial × r_contact / I_E
+   = 0.25 × 2.374×10⁻² × 0.033 / 3.131×10⁻⁵
+   = 0.25 × 25.03
+   = +6.3 rad/s  ≈ +6 rad/s
+```
+
+(η_saber = 0.25: saber edge deflects recoil into spin.) Partial aerial saber dive gives damageMultiplier **1.25×**. lockMs = 0 (attack type, no dwell).
+
+**Parameters:**
+- spinGain: +6 rad/s (saber deflection recoil η = 0.25)
+- damageMultiplier: 1.25 (partial aerial dual-saber dive)
+- lockMs: 0 (attack type, no dwell)
+
+### TypeScript
+
+```typescript
+function eagleDiveStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Saber recoil: Δω ≈ +6 rad/s (η=0.25, h_partial=20.2mm, J=2.374×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 6);
+  // Partial aerial saber dive: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +6 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1928 — GIMMICK: Z Achilles 11 Xtend+ (Burst Cho-Z) — Turbo Awakening Dual-Blade Extension
+
+**Beyblade:** Z Achilles 11 Xtend+ / Turbo Achilles 00 Dimension (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly (Z Achilles 11 Xtend+ — primary)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Z Achilles | 24.5 | 34.0 |
+| Forge Disc | 11 | 12.0 | 26.0 |
+| Driver | Xtend+ | 4.5 | 5.0 |
+| **Total** | | **41.0** | |
+
+(No separate face component — Burst era 3-part system. Takara Tomy only per Burst Scope.)
+
+**I_total** = 24.5×10⁻³ × 0.034² + 12.0×10⁻³ × 0.026² + 4.5×10⁻³ × 0.005²
+           = 2.832×10⁻⁵ + 8.112×10⁻⁶ + 1.125×10⁻⁷
+           = **3.654×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 3.654×10⁻⁵ × 580 = **2.120×10⁻² kg·m²/s**
+
+---
+
+### 1. Turbo Awakening — Blade Deployment (Cho-Z Wing Extension)
+
+The Turbo Awakening (超Ƶ覚醒 Chōzetsu Kakusei) deploys the two Turbo Blades (超Ƶウイング, Chōzetsu Wingu) outward from the Energy Layer. These blades serve dual function: dedicated Burst Stoppers (preventing burst by blocking Disc Stoppers) and attack-radius extenders. Only activates when the blader and bey are in perfect synchronisation.
+
+```
+Blade retracted radius: r_base = 33 mm
+Blade deployed radius:  r_turbo = 37 mm  (+4 mm Turbo Awakening extension)
+
+v_tip_base  = ω₀ × r_base  = 580 × 0.033 = 19.14 m/s
+v_tip_turbo = ω₀ × r_turbo = 580 × 0.037 = 21.46 m/s
+
+Blade tip speed gain: Δv_tip = 21.46 − 19.14 = 2.32 m/s  (+12.1%)
+```
+
+---
+
+### 2. Dual-Blade Slash Contact — Turbo Whip (Super Z Slash)
+
+Both blades contact the opponent simultaneously in a head-on slash motion. Relative velocity at contact (same spin direction as standard right-spin opponent at ω_opp = 570 rad/s, r_opp = 0.033 m):
+
+```
+v_opp_contact = ω_opp × r_opp = 570 × 0.033 = 18.81 m/s
+v_contact = v_tip_turbo − v_opp_contact = 21.46 − 18.81 = 2.65 m/s
+
+m_Z = 41.0 g = 0.041 kg
+e = 0.62  (ABS plastic Energy Layer + metal blade insert, Burst era)
+
+Spin decay (Xtend+ driver, μ ≈ 0.30, r_driver = 5 mm):
+τ_Xt = μ × m × g × r_driver = 0.30 × 0.041 × 9.81 × 0.005 = 6.031×10⁻⁴ N·m
+t_spin = L₀ / τ_Xt = 2.120×10⁻² / 6.031×10⁻⁴ = 35.2 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g |
+| I_total | 3.654×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.120×10⁻² kg·m²/s |
+| r_base | 33 mm |
+| r_turbo | 37 mm |
+| v_tip_base | 19.14 m/s |
+| v_tip_turbo | 21.46 m/s |
+| Δv_tip | 2.32 m/s (+12.1%) |
+| v_contact | 2.65 m/s |
+| τ_Xt | 6.031×10⁻⁴ N·m |
+| t_spin | 35.2 s |
+
+---
+
+## Case 1929 — SPECIAL: Turbo Whip (Super Z Slash) — Aiger Akabane / Z Achilles & Turbo Achilles
+
+**Blader:** Aiger Akabane | **Beyblades:** Z Achilles 11 Xtend+ / Turbo Achilles 00 Dimension | **Type:** attack
+
+### Description
+
+Turbo Whip (超ゼットスラッシュ Super Z Slash) is a Special Move used by Aiger Akabane with both Z Achilles 11 Xtend+ and Turbo Achilles 00 Dimension. It is an upgraded version of Z Whip. With Turbo Awakening active, Achilles charges head-on and its two Turbo Blades slash across the opposing Beyblade simultaneously, causing critical damage. The dual-blade deployment increases the attack radius and blade tip speed, and the Burst Stopper function ensures Achilles cannot burst on collision. First used during Aiger's Champion Carnival battles in the Burst Turbo/Cho-Z season.
+
+### Stage — Turbo Awakening Head-On Dual Slash
+
+From Case 1928: v_contact = 2.65 m/s (Turbo Blade tip vs opponent surface), e = 0.62.
+
+```
+m_eff = (m_Z × m_opp) / (m_Z + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+J_turbowhip = m_eff × (1 + e) × v_contact
+            = 2.025×10⁻² × 1.62 × 2.65
+            = 2.025×10⁻² × 4.293 = 8.694×10⁻² N·s
+
+Δv_opp = J_turbowhip / m_opp = 8.694×10⁻² / 0.040 = 2.174 m/s
+```
+
+**Effect on Z Achilles (spin drain from heavy dual-blade clash):**
+
+```
+Δω_Z = J_turbowhip × r_turbo / I_Z = 8.694×10⁻² × 0.037 / 3.654×10⁻⁵ = 88.0 rad/s
+ω_remain = 580 − 88.0 = 492.0 rad/s  (84.8% retained)
+Note: Burst Stopper blades prevent burst despite heavy spin drain.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles Bit-Beast erupts as an armoured war god — the Turbo Blades ignite with Z-power and the dual slash tears through the opponent in a blazing cross that sends them flying from the stadium.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Achilles Cho-Z Turbo Awakening spirit)
+[M] Δv = 2.174 × 7.5 = **16.3 m/s** (Turbo Awakening ring-out slash)
+
+> **Note:** Physical values describe Turbo Awakening blade extension +4 mm (+12.1% tip speed), v_contact=2.65 m/s, J=8.694×10⁻² N·s, Δv=2.174 m/s, Δω_Z=88.0 rad/s (Burst Stopper prevents burst). [M] values represent Aiger's Achilles Z-power igniting the dual-blade slash. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Turbo Awakening: r_base→r_turbo +4mm, v_tip 19.14→21.46m/s; v_contact=2.65m/s; J=8.694×10⁻²N·s; [M] 7.5×
+  const J_phys = 0.08694;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Achilles Cho-Z Turbo Awakening spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using an Energy Layer with deployable Turbo Blades (Cho-Z Wing extensions, r_base ≥ 30 mm → r_turbo ≥ 34 mm) that function as Burst Stoppers on deployment, operated by a blader in synchronisation sufficient to trigger Turbo Awakening. Standard game instances: Z Achilles 11 Xtend+ and Turbo Achilles 00 Dimension (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1930 — COMBO: Z Slash Drive — Z Achilles / Turbo Achilles
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+Two consecutive rightward dashes (→ →) build a linear charge approach — Achilles accelerates across the stadium in a straight line. The second → adds to the first, giving a boosted approach speed at the moment A fires the dual-blade contact:
+
+```
+v_orbital_base = μ_Xt × ω₀ × r_driver = 0.30 × 580 × 0.005 = 0.870 m/s
+v_charge_combo = 1.40 × v_orbital_base = 1.40 × 0.870 = 1.218 m/s
+(1.40× factor: double-dash momentum buildup)
+
+Blade relative velocity at combo (ω_combo ≈ ω₀, r_turbo = 37 mm):
+v_blade_combo = ω₀ × r_turbo − ω_opp × r_opp = 580 × 0.037 − 570 × 0.033
+              = 21.46 − 18.81 = 2.65 m/s  (same as full special)
+
+Combined v_rel_combo: use reduced blade contribution at combo scale:
+v_contact_combo = 2.00 m/s
+(charge adds 1.218 m/s linear approach, blade relative reduced from 2.65→2.00 by partial synchronisation)
+
+J_combo = m_eff × (1 + e) × v_contact_combo = 2.025×10⁻² × 1.62 × 2.00
+        = 2.025×10⁻² × 3.24 = 6.561×10⁻² N·s
+```
+
+Burst Stopper blades deflect recoil back into spin (η_bs = 0.20 — Burst Stopper recoil recovery):
+
+```
+Δω = η_bs × J_combo × r_turbo / I_Z
+   = 0.20 × 6.561×10⁻² × 0.037 / 3.654×10⁻⁵
+   = 0.20 × 66.44
+   = +13.3 rad/s  ≈ +13 rad/s
+```
+
+(η_bs = 0.20: Burst Stopper blade geometry deflects blade-contact recoil into rotational momentum.) Dual-blade charge slash gives damageMultiplier **1.30×**. lockMs = 0 (attack type).
+
+**Parameters:**
+- spinGain: +13 rad/s (Burst Stopper recoil recovery η = 0.20)
+- damageMultiplier: 1.30 (dual-blade Turbo Awakening charge slash)
+- lockMs: 0 (attack type, no dwell)
+
+### TypeScript
+
+```typescript
+function zSlashDriveCombo(bey: Beyblade, target: Beyblade): void {
+  // Burst Stopper recoil: Δω ≈ +13 rad/s (η=0.20, v_contact=2.00m/s, J=6.561×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Dual-blade Turbo Awakening charge slash: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1931 — GIMMICK: Turbo Valtryek Z.Ev (Burst Cho-Z) — Wall-Rebound Turbo Awakening Launch
+
+**Beyblade:** Turbo Valtryek Zenith Evolution / Turbo Valtryek Z.Ev (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Turbo Valtryek | 22.0 | 33.0 |
+| Forge Disc | Z | 11.0 | 25.0 |
+| Driver | Ev. (Evolve) | 4.0 | 6.0 |
+| **Total** | | **37.0** | |
+
+(No face component — Burst era 3-part system. Takara Tomy only per Burst Scope.)
+
+**I_total** = 22.0×10⁻³ × 0.033² + 11.0×10⁻³ × 0.025² + 4.0×10⁻³ × 0.006²
+           = 2.396×10⁻⁵ + 6.875×10⁻⁶ + 1.440×10⁻⁷
+           = **3.098×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 3.098×10⁻⁵ × 580 = **1.797×10⁻² kg·m²/s**
+
+---
+
+### 1. Evolve Driver — Low-Friction Free-Spin Tip
+
+The Evolve (Ev.) Driver has a free-spinning bearing tip (μ_Ev = 0.15) and a wide r = 6 mm contact base enabling sustained high-speed orbital motion:
+
+```
+τ_Ev = μ_Ev × m × g × r_driver = 0.15 × 0.037 × 9.81 × 0.006 = 3.264×10⁻⁴ N·m
+t_spin = L₀ / τ_Ev = 1.797×10⁻² / 3.264×10⁻⁴ = 55.1 s
+```
+
+Approach velocity toward Beystadium barrier (orbital + deliberate directional charge):
+
+```
+v_orbital  = μ_Ev × ω₀ × r_driver = 0.15 × 580 × 0.006 = 0.522 m/s
+v_charge   = 0.600 m/s  (intentional directional push toward wall)
+v_approach = v_orbital + v_charge = 0.522 + 0.600 = 1.122 m/s
+```
+
+---
+
+### 2. Bowl-Wall Elastic Rebound — Speed Boost
+
+Turbo Valtryek strikes the bowl wall (θ = 55°, e_wall = 0.87 — hard Beystadium polycarbonate):
+
+```
+v_approach_perp = v_approach × sin(55°) = 1.122 × 0.819 = 0.919 m/s
+v_approach_tan  = v_approach × cos(55°) = 1.122 × 0.574 = 0.644 m/s
+
+After elastic rebound:
+v_rebound_perp  = e_wall × v_approach_perp = 0.87 × 0.919 = 0.800 m/s
+v_tan (preserved)                          = 0.644 m/s
+
+v_post_rebound = √(0.800² + 0.644²) = √(0.640 + 0.415) = √1.055 = 1.027 m/s
+(directed inward toward stadium center)
+```
+
+---
+
+### 3. Turbo Awakening Snap — Additional Speed Boost
+
+At the moment of wall contact, Turbo Valtryek enters Turbo Awakening: blades snap out from r_base = 33 mm to r_turbo = 37 mm. A fraction of the blade tip speed increase couples to linear momentum (η_snap = 0.20):
+
+```
+Δv_tip = ω₀ × (r_turbo − r_base) = 580 × 0.004 = 2.32 m/s
+v_turbo_snap = η_snap × Δv_tip = 0.20 × 2.32 = 0.464 m/s
+
+v_total = v_post_rebound + v_turbo_snap = 1.027 + 0.464 = 1.491 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.0 g |
+| I_total | 3.098×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.797×10⁻² kg·m²/s |
+| μ_Ev | 0.15 |
+| v_approach | 1.122 m/s |
+| e_wall | 0.87 |
+| v_post_rebound | 1.027 m/s |
+| Δv_tip (Turbo snap) | 2.32 m/s |
+| v_turbo_snap | 0.464 m/s |
+| v_total | 1.491 m/s |
+| τ_Ev | 3.264×10⁻⁴ N·m |
+| t_spin | 55.1 s |
+
+---
+
+## Case 1932 — SPECIAL: Turbo Winged Launch (Super Jet Shoot) — Valt Aoi / Turbo Valtryek
+
+**Blader:** Valt Aoi | **Beyblade:** Turbo Valtryek Z.Ev | **Type:** attack
+
+### Description
+
+Turbo Winged Launch (超ジェットシュート Super Jet Shoot) is a Special Move used by Valt Aoi and his Turbo Valtryek Zenith Evolution. Turbo Valtryek charges toward the Beystadium barrier, rebounds off the wall with an elastic bounce, and simultaneously triggers Turbo Awakening — the Turbo Blades snap outward and the bey erupts in a burst of speed and momentum that launches it into the opponent at dramatically increased velocity. The wall rebound converts approach energy back into the ideal attack angle while the Turbo Awakening provides an additional speed surge, making the total impact velocity greater than the original approach speed.
+
+### Stage — Elastic Wall Rebound + Turbo Awakening Snap Strike
+
+From Case 1931: v_total = 1.491 m/s (post-rebound + Turbo snap), e = 0.65 (Burst Cho-Z layer contact).
+
+```
+m_eff = (m_V × m_opp) / (m_V + m_opp) = (0.037 × 0.040) / (0.037 + 0.040)
+      = 1.480×10⁻³ / 0.077 = 1.922×10⁻² kg
+
+J_turbolaunch = m_eff × (1 + e) × v_total
+              = 1.922×10⁻² × 1.65 × 1.491
+              = 1.922×10⁻² × 2.460 = 4.728×10⁻² N·s
+
+Δv_opp = J_turbolaunch / m_opp = 4.728×10⁻² / 0.040 = 1.182 m/s
+```
+
+**Effect on Turbo Valtryek (spin drain from wall + contact):**
+
+```
+Δω_V = J_turbolaunch × r_turbo / I_V = 4.728×10⁻² × 0.037 / 3.098×10⁻⁵ = 56.5 rad/s
+ω_remain = 580 − 56.5 = 523.5 rad/s  (90.3% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's Valtryek Bit-Beast blazes with jet-wing fire — the wall rebound becomes a full turbo boost as both Turbo Blades and Valtryek's wind spirit propel the bey like a guided missile, shattering the opponent out of the stadium in a sonic jet burst.
+
+[M] factor = **8.0 ×** (Valt Aoi — Turbo Valtryek wing-spirit, Cho-Z protagonist)
+[M] Δv = 1.182 × 8.0 = **9.46 m/s** (turbo jet-wing ring-out)
+
+> **Note:** Physical values describe elastic wall rebound e_wall=0.87, v_post=1.027 m/s; Turbo Awakening snap v_snap=0.464 m/s; v_total=1.491 m/s; J=4.728×10⁻² N·s; Δv=1.182 m/s. [M] values represent Valt's Valtryek erupting in jet-wing spirit propulsion. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboWingedLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Wall rebound e=0.87→v_post=1.027m/s; Turbo snap +0.464m/s; v_total=1.491m/s; J=4.728×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.04728;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Valt Turbo Valtryek wing-spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a free-spinning low-friction Driver (μ ≤ 0.20, r_driver ≥ 5 mm) combined with a Turbo Awakening Energy Layer (deployable blade extension Δr ≥ 3 mm at ω₀ ≥ 550 rad/s), operated by a blader in synchronisation with a hard-wall (e_wall ≥ 0.80) Beystadium barrier. Standard game instance: Turbo Valtryek Z.Ev (Valt Aoi, Burst Turbo).
+
+---
+
+## Case 1933 — COMBO: Zenith Rebound Strike — Turbo Valtryek
+
+**Sequence:** → ↑ A (moveRight · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveRight (→) builds a rightward lateral charge toward the bowl wall. The moveUp (↑) adds the redirected wall-climb component — Turbo Valtryek angles toward the upper bowl slope for a partial wall contact. With Turbo Awakening snap active this gives a partial rebound strike:
+
+```
+v_approach_partial = v_approach × 0.70 = 1.122 × 0.70 = 0.785 m/s
+v_post_partial     = v_post_rebound × 0.70 = 1.027 × 0.70 = 0.719 m/s
+v_turbo_partial    = v_turbo_snap × 0.70   = 0.464 × 0.70 = 0.325 m/s
+v_total_partial    = 0.719 + 0.325 = 1.044 m/s
+
+J_partial = m_eff × (1 + e) × v_total_partial = 1.922×10⁻² × 1.65 × 1.044
+          = 1.922×10⁻² × 1.723 = 3.311×10⁻² N·s
+```
+
+The Turbo Blade recoil on contact recovers spin (η_turboblade = 0.30):
+
+```
+Δω = η_turboblade × J_partial × r_turbo / I_V
+   = 0.30 × 3.311×10⁻² × 0.037 / 3.098×10⁻⁵
+   = 0.30 × 39.53
+   = +11.9 rad/s  ≈ +12 rad/s
+```
+
+(η_turboblade = 0.30: Turbo Blade deflects contact recoil into spin recovery.) Partial wall-rebound Turbo snap strike gives damageMultiplier **1.25×**. lockMs = 0 (attack type).
+
+**Parameters:**
+- spinGain: +12 rad/s (Turbo Blade recoil recovery η = 0.30)
+- damageMultiplier: 1.25 (partial wall-rebound Turbo Awakening strike)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function zenithReboundStrikeCombo(bey: Beyblade, target: Beyblade): void {
+  // Turbo Blade recoil: Δω ≈ +12 rad/s (η=0.30, v_total=1.044m/s, J=3.311×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Partial wall-rebound Turbo snap: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1934 — GIMMICK: Turbo Spryzen 0Wall Zeta' (Burst Cho-Z) — Left-Spin Defense + Zeta' Reversal Upper Strike
+
+**Beyblade:** Turbo Spryzen 0Wall Zeta' (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Shu Kurenai | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Turbo Spryzen | 23.0 | 34.0 |
+| Forge Disc | 0 | 9.5 | 23.0 |
+| Frame | Wall | 3.5 | 29.0 |
+| Driver | Zeta' (Zeta Prime) | 5.0 | 5.0 |
+| **Total** | | **41.0** | |
+
+(No face component — Burst era 4-part system with Frame. Takara Tomy only per Burst Scope.)
+
+**I_total** = 23.0×10⁻³ × 0.034² + 9.5×10⁻³ × 0.023² + 3.5×10⁻³ × 0.029² + 5.0×10⁻³ × 0.005²
+           = 2.659×10⁻⁵ + 5.026×10⁻⁶ + 2.944×10⁻⁶ + 1.250×10⁻⁷
+           = **3.468×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch, left-spin mode)
+L₀ = I × ω₀ = 3.468×10⁻⁵ × 580 = **2.011×10⁻² kg·m²/s**
+
+---
+
+### 1. Zeta' Driver — Spin Direction Reversal Mechanism
+
+The Zeta' (Zeta Prime) Driver contains an internal clutch mechanism that temporarily reverses the bey's spin direction from left-spin (defense mode) to right-spin (attack burst), activated when Shu and Turbo Spryzen reach synchronisation. The reversal pulse delivers an impulsive torque at the contact point:
+
+```
+ω_pulse  = 100 rad/s  (partial reversal angular speed contribution from Zeta' clutch burst)
+v_driver_reversal = ω_pulse × r_driver = 100 × 0.005 = 0.500 m/s
+(effective additional contact velocity from spin-direction change impulse)
+```
+
+---
+
+### 2. Upper-Attack Contact — Angled Lift Strike
+
+The Turbo Spryzen Energy Layer carries upper-angled contact points (α_upper = 25° above horizontal). Combined with the Zeta' reversal boost:
+
+```
+v_tip = ω₀ × r_layer = 580 × 0.034 = 19.72 m/s
+
+v_orbital  = μ_Zeta × ω₀ × r_driver = 0.35 × 580 × 0.005 = 1.015 m/s
+v_total    = v_orbital + v_driver_reversal = 1.015 + 0.500 = 1.515 m/s
+
+Upper-attack angle: α_upper = 25°
+v_horizontal = v_total × cos(25°) = 1.515 × 0.906 = 1.373 m/s
+v_vertical   = v_total × sin(25°) = 1.515 × 0.423 = 0.641 m/s
+(upward component delivers ring-out via aerial uppercut trajectory)
+
+Spin decay (Zeta' in attack mode, μ_Zeta = 0.35):
+τ_Zeta = μ_Zeta × m × g × r_driver = 0.35 × 0.041 × 9.81 × 0.005 = 7.038×10⁻⁴ N·m
+t_spin = L₀ / τ_Zeta = 2.011×10⁻² / 7.038×10⁻⁴ = 28.6 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g |
+| I_total | 3.468×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.011×10⁻² kg·m²/s |
+| v_tip | 19.72 m/s |
+| ω_pulse (Zeta') | 100 rad/s |
+| v_driver_reversal | 0.500 m/s |
+| v_orbital | 1.015 m/s |
+| v_total | 1.515 m/s |
+| α_upper | 25° |
+| v_horizontal | 1.373 m/s |
+| v_vertical | 0.641 m/s |
+| τ_Zeta | 7.038×10⁻⁴ N·m |
+| t_spin | 28.6 s |
+
+---
+
+## Case 1935 — SPECIAL: Turbo Upper Launch (Super Upper Shoot) — Shu Kurenai / Turbo Spryzen
+
+**Blader:** Shu Kurenai | **Beyblade:** Turbo Spryzen 0Wall Zeta' | **Type:** attack
+
+### Description
+
+Turbo Upper Launch (超アッパーシュート Super Upper Shoot) is a Special Move used by Shu Kurenai and his Turbo Spryzen 0Wall Zeta'. In left-spin defense mode, Turbo Spryzen uses the Zeta' Performance Tip to trigger a momentary spin direction reversal — switching from left-spin to right-spin as it charges — generating a sudden surge of power that is channeled through the upper-angled contact points of the Energy Layer into a massive uppercut that launches the opponent high into the air for a Ring-Out Finish. The 0Wall Frame provides the stability to withstand the reversal torque while the Turbo Awakening blades lock the burst protection.
+
+### Stage — Left-Spin Defense + Zeta' Reversal Upper Strike
+
+From Case 1934: v_total = 1.515 m/s, α_upper = 25°, e = 0.65.
+
+```
+m_eff = (m_S × m_opp) / (m_S + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+J_turboupper = m_eff × (1 + e) × v_total
+             = 2.025×10⁻² × 1.65 × 1.515
+             = 2.025×10⁻² × 2.500 = 5.063×10⁻² N·s
+
+Δv_opp (total) = J_turboupper / m_opp = 5.063×10⁻² / 0.040 = 1.266 m/s
+
+Upper-angle components:
+Δv_horizontal = 1.266 × cos(25°) = 1.266 × 0.906 = 1.147 m/s (ring-out)
+Δv_vertical   = 1.266 × sin(25°) = 1.266 × 0.423 = 0.535 m/s (aerial lift)
+```
+
+**Effect on Turbo Spryzen (spin drain from reversal + contact):**
+
+```
+Δω_S = J_turboupper × r_layer / I_S = 5.063×10⁻² × 0.034 / 3.468×10⁻⁵ = 49.6 rad/s
+ω_remain = 580 − 49.6 = 530.4 rad/s  (91.5% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Shu's Spryzen Bit-Beast ignites in crimson — the Zeta' reversal becomes a tidal wave of spinning power as Turbo Spryzen spins both ways at once, the upper-strike erupting into a pillar of white fire that hurls the opponent skyward and clean out of the stadium.
+
+[M] factor = **8.0 ×** (Shu Kurenai — Turbo Spryzen spirit, Cho-Z main protagonist)
+[M] Δv = 1.266 × 8.0 = **10.1 m/s** (Zeta' reversal upper ring-out)
+
+> **Note:** Physical values describe Zeta' spin reversal ω_pulse=100 rad/s, v_driver=0.500 m/s, v_total=1.515 m/s, J=5.063×10⁻² N·s, Δv=1.266 m/s (horizontal 1.147 + vertical 0.535). [M] values represent Shu's Spryzen dual-spin spirit erupting in a pillar of fire. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboUpperLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Zeta' reversal ω_pulse=100r/s→v_driver=0.5m/s; v_total=1.515m/s; α_upper=25°; J=5.063×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.05063;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Shu Turbo Spryzen reversal spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Zeta' (Zeta Prime) or equivalent clutch-reversal Driver (ω_pulse ≥ 80 rad/s at trigger) combined with a Turbo Awakening Energy Layer with upper-angled contact points (α_upper ≥ 20°) and a wide-Frame (Wall or equivalent, r_frame ≥ 26 mm) for stability during spin reversal. Standard game instance: Turbo Spryzen 0Wall Zeta' (Shu Kurenai, Burst Turbo).
+
+---
+
+## Case 1936 — COMBO: Spryzen Upper Guard — Turbo Spryzen
+
+**Sequence:** ↑ K A (moveUp · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Shu Kurenai
+
+### Physics Justification
+
+The moveUp (↑) sends Turbo Spryzen toward the upper bowl wall, gaining the elevated angle needed for an upper attack. The defense (K) engages the 0Wall frame posture — bracing against incoming counter-pressure and locking the Turbo Awakening Burst Stoppers. The attack (A) fires the partial Zeta' reversal upper strike:
+
+```
+v_total_partial = v_total × 0.65 = 1.515 × 0.65 = 0.985 m/s
+
+J_partial = m_eff × (1 + e) × v_total_partial = 2.025×10⁻² × 1.65 × 0.985
+          = 2.025×10⁻² × 1.625 = 3.291×10⁻² N·s
+```
+
+The 0Wall Frame absorbs recoil and redirects it into spin (η_0Wall = 0.25, wall-ring geometry):
+
+```
+Δω = η_0Wall × J_partial × r_layer / I_S
+   = 0.25 × 3.291×10⁻² × 0.034 / 3.468×10⁻⁵
+   = 0.25 × 32.27
+   = +8.1 rad/s  ≈ +8 rad/s
+```
+
+(η_0Wall = 0.25: Wall frame outer ring redirects contact recoil into rotational momentum.) Partial reversal upper strike with defense posture gives damageMultiplier **1.20×**. lockMs = 100 (0Wall frame defensive dwell on contact).
+
+**Parameters:**
+- spinGain: +8 rad/s (0Wall frame recoil recovery η = 0.25)
+- damageMultiplier: 1.20 (partial Zeta' reversal upper strike with guard)
+- lockMs: 100 (0Wall frame dwell)
+
+### TypeScript
+
+```typescript
+function spryzenUpperGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // 0Wall recoil: Δω ≈ +8 rad/s (η=0.25, v_partial=0.985m/s, J=3.291×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Partial Zeta' reversal upper + guard: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1937 — GIMMICK: Turbo Achilles 00 Dimension (Burst Cho-Z) — Single Turbo Blade Undercut
+
+**Beyblade:** Turbo Achilles 00 Dimension (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Layer | Turbo Achilles | 24.5 | 34.0 |
+| Forge Disc | 00 (Double Zero) | 14.0 | 27.0 |
+| Driver | Dimension | 5.0 | 5.0 |
+| **Total** | | **43.5** | |
+
+(No face component — Burst era 3-part system. Takara Tomy only per Burst Scope.)
+
+**I_total** = 24.5×10⁻³ × 0.034² + 14.0×10⁻³ × 0.027² + 5.0×10⁻³ × 0.005²
+           = 2.832×10⁻⁵ + 1.021×10⁻⁵ + 1.250×10⁻⁷
+           = **3.865×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (Burst Cho-Z standard launch)
+L₀ = I × ω₀ = 3.865×10⁻⁵ × 580 = **2.242×10⁻² kg·m²/s**
+
+Note: 00 Disc (Double Zero) provides the highest forged disc mass in the Cho-Z line (14.0 g), maximising I_total and delivering greater ring-out momentum compared to the 11 Disc used on Z Achilles 11 Xtend+ (Case 1928).
+
+---
+
+### 1. Turbo Awakening Blade Deployment — Extended Radius
+
+Turbo Achilles enters Turbo Awakening, deploying both Turbo Blades to r_turbo = 37 mm:
+
+```
+v_tip_base  = ω₀ × r_base  = 580 × 0.033 = 19.14 m/s
+v_tip_turbo = ω₀ × r_turbo = 580 × 0.037 = 21.46 m/s
+```
+
+---
+
+### 2. Single-Blade Undercut Contact — Upper Attack from Below
+
+For the Turbo Upper, **one** of the two Turbo Blades engages the opponent from directly below at an undercut angle (α_under = 30°):
+
+```
+Relative blade tip velocity (right-spin opponent at ω_opp=570 rad/s, r_opp=0.033 m):
+v_opp_contact = 570 × 0.033 = 18.81 m/s
+v_rel         = v_tip_turbo − v_opp_contact = 21.46 − 18.81 = 2.65 m/s
+
+Undercut angle decomposition:
+v_horizontal = v_rel × cos(30°) = 2.65 × 0.866 = 2.295 m/s
+v_vertical   = v_rel × sin(30°) = 2.65 × 0.500 = 1.325 m/s  (upward — Ring-Out vector)
+
+Spin decay (Dimension driver, μ_Dim = 0.35, r_driver = 5 mm):
+τ_Dim = μ_Dim × m × g × r_driver = 0.35 × 0.0435 × 9.81 × 0.005 = 7.463×10⁻⁴ N·m
+t_spin = L₀ / τ_Dim = 2.242×10⁻² / 7.463×10⁻⁴ = 30.0 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.5 g |
+| I_total | 3.865×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.242×10⁻² kg·m²/s |
+| r_turbo | 37 mm |
+| v_tip_turbo | 21.46 m/s |
+| v_rel | 2.65 m/s |
+| α_under | 30° |
+| v_horizontal | 2.295 m/s |
+| v_vertical | 1.325 m/s |
+| τ_Dim | 7.463×10⁻⁴ N·m |
+| t_spin | 30.0 s |
+
+---
+
+## Case 1938 — SPECIAL: Turbo Upper (Super Z Upper) — Aiger Akabane / Turbo Achilles 00 Dimension
+
+**Blader:** Aiger Akabane | **Beyblade:** Turbo Achilles 00 Dimension | **Type:** attack
+
+### Description
+
+Turbo Upper (超ゼットアッパー Super Z Upper) is a Special Move used by Aiger Akabane and his Turbo Achilles 00 Dimension. With Turbo Awakening active, one of the two long Turbo Blade swords on the Energy Layer sweeps in from below and strikes the opposing Beyblade directly from underneath, angled upward at 30° to generate a powerful Ring-Out Finish by launching the opponent into the air. The 00 Disc's extra mass provides greater momentum for the undercut. Unlike Turbo Whip which uses both blades in a forward slash, Turbo Upper concentrates the full force of a single blade in one decisive upward strike.
+
+### Stage — Turbo Awakening Single-Blade Undercut Strike
+
+From Case 1937: v_rel = 2.65 m/s, α_under = 30°, e = 0.62.
+
+```
+m_eff = (m_A × m_opp) / (m_A + m_opp) = (0.0435 × 0.040) / (0.0435 + 0.040)
+      = 1.740×10⁻³ / 0.0835 = 2.084×10⁻² kg
+
+J_turboupper = m_eff × (1 + e) × v_rel
+             = 2.084×10⁻² × 1.62 × 2.65
+             = 2.084×10⁻² × 4.293 = 8.947×10⁻² N·s
+
+Δv_opp (total)   = J_turboupper / m_opp = 8.947×10⁻² / 0.040 = 2.237 m/s
+
+Undercut angle decomposition:
+Δv_horizontal = 2.237 × cos(30°) = 2.237 × 0.866 = 1.937 m/s
+Δv_vertical   = 2.237 × sin(30°) = 2.237 × 0.500 = 1.119 m/s  (aerial ring-out)
+```
+
+**Effect on Turbo Achilles (spin drain from blade contact):**
+
+```
+Δω_A = J_turboupper × r_turbo / I_A = 8.947×10⁻² × 0.037 / 3.865×10⁻⁵ = 85.6 rad/s
+ω_remain = 580 − 85.6 = 494.4 rad/s  (85.2% retained)
+Burst Stopper (second blade) prevents burst despite 85.6 rad/s drain.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles erupts with Z-power — the single upward blade becomes a gleaming war-god's lance of pure spirit energy. The opponent is launched vertically out of the stadium on a column of fire, unable to resist the force of a Turbo Achilles fully awakened.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Turbo Achilles Cho-Z spirit)
+[M] Δv = 2.237 × 7.5 = **16.8 m/s** (single-blade upper ring-out)
+
+> **Note:** Physical values describe single Turbo Blade undercut α=30°, v_rel=2.65 m/s, J=8.947×10⁻² N·s, Δv=2.237 m/s (horizontal 1.937 + vertical 1.119). [M] values represent Aiger's Z-power concentrating into a single lance of spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboUpperSpecial(bey: Beyblade, target: Beyblade): void {
+  // Single Turbo Blade undercut α=30°; v_rel=2.65m/s; J=8.947×10⁻²N·s; Δv_vert=1.119m/s; [M] 7.5×
+  const J_phys = 0.08947;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Turbo Achilles Z-power)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Turbo Awakening Energy Layer with one or more Turbo Blades deployed at r_turbo ≥ 34 mm, paired with a high-mass Forge Disc (≥ 12 g, r_disc ≥ 25 mm) to maximise ring-out momentum, and a blader in sufficient synchronisation with the bey for Turbo Awakening activation. Standard game instance: Turbo Achilles 00 Dimension (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1939 — COMBO: Achilles Upper Drive — Turbo Achilles 00 Dimension
+
+**Sequence:** ↓ ↑ A (moveDown · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+The moveDown (↓) drops Turbo Achilles to a lower orbital position — diving below the opponent's contact height to align the single undercut blade for an upward approach. The moveUp (↑) reverses the motion, springing Turbo Achilles upward with the Turbo Blade angled at the steeper undercut trajectory (α_under_combo = 40°). The attack (A) fires the single-blade upper strike at reduced power:
+
+```
+v_rel_partial = v_rel × 0.70 = 2.65 × 0.70 = 1.855 m/s
+
+J_partial = m_eff × (1 + e) × v_rel_partial = 2.084×10⁻² × 1.62 × 1.855
+          = 2.084×10⁻² × 3.005 = 6.262×10⁻² N·s
+```
+
+The second Burst Stopper blade deflects recoil into spin recovery (η_bs = 0.20):
+
+```
+Δω = η_bs × J_partial × r_turbo / I_A
+   = 0.20 × 6.262×10⁻² × 0.037 / 3.865×10⁻⁵
+   = 0.20 × 59.92
+   = +12.0 rad/s
+```
+
+(η_bs = 0.20: second Burst Stopper blade converts blade-contact recoil to spin.) Partial single-blade undercut gives damageMultiplier **1.30×**. lockMs = 0 (attack type, immediate release after upper strike).
+
+**Parameters:**
+- spinGain: +12 rad/s (Burst Stopper recoil recovery η = 0.20)
+- damageMultiplier: 1.30 (single-blade undercut Turbo Awakening upper strike)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function achillesUpperDriveCombo(bey: Beyblade, target: Beyblade): void {
+  // Burst Stopper recoil: Δω ≈ +12 rad/s (η=0.20, v_rel=1.855m/s, J=6.262×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Single Turbo Blade undercut: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1940 — GIMMICK: Turbo Achilles 00 Dimension — Burst Stopper Blade Power Channeling
+
+**Beyblade:** Turbo Achilles 00 Dimension (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+Assembly: see Case 1937 (m=43.5 g, I=3.865×10⁻⁵ kg·m², ω₀=580 rad/s, L₀=2.242×10⁻² kg·m²/s).
+
+---
+
+### 1. Burst Stopper Blade Geometry
+
+Each Burst Stopper blade is a long rectangular protrusion (L_blade = 12 mm, w_blade = 4 mm) extending outward from the Energy Layer. The blade passes any given contact point in:
+
+```
+t_blade_pass = L_blade / v_rel = 0.012 / 2.65 = 4.53×10⁻³ s ≈ 4.5 ms
+(blade passage time at v_rel = 2.65 m/s — longer contact arc than point contact)
+```
+
+---
+
+### 2. Power Channeling — Pre-Contact Spin Boost
+
+For Turbo Sword, Aiger channels BeySpirit into the Turbo Blades before contact, briefly increasing the bey's spin rate via Turbo Awakening synchronisation pulse. The power channeling delivers a spin boost:
+
+```
+ω_boost  = 10 rad/s  (synchronisation-pulse spin increase)
+ω_sword  = ω₀ + ω_boost = 580 + 10 = 590 rad/s
+
+v_tip_sword = ω_sword × r_turbo = 590 × 0.037 = 21.83 m/s
+
+Relative blade velocity against right-spin opponent (ω_opp=570, r_opp=0.033):
+v_opp_contact = 570 × 0.033 = 18.81 m/s
+v_rel_sword   = v_tip_sword − v_opp_contact = 21.83 − 18.81 = 3.02 m/s
+
+Compared to standard Turbo contact (Case 1928): v_rel_base = 2.65 m/s
+Power-channeling increase: Δv_rel = 3.02 − 2.65 = 0.37 m/s (+14%)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.5 g (see Case 1937) |
+| ω_boost | 10 rad/s |
+| ω_sword | 590 rad/s |
+| v_tip_sword | 21.83 m/s |
+| v_rel_sword | 3.02 m/s |
+| L_blade | 12 mm |
+| t_blade_pass | 4.5 ms |
+
+---
+
+## Case 1941 — SPECIAL: Turbo Sword (Super Z Sword) — Aiger Akabane / Turbo Achilles 00 Dimension
+
+**Blader:** Aiger Akabane | **Beyblade:** Turbo Achilles 00 Dimension | **Type:** attack
+
+### Description
+
+Turbo Sword (超ゼットソード Super Z Sword) is a Special Move used by Aiger Akabane and his Turbo Achilles 00 Dimension. Similar to Z Whip, Achilles channels power into the long Burst Stopper blades on the Energy Layer via Turbo Awakening, boosting the blade tip speed by +10 rad/s before contact. The single concentrated blade then sweeps across the opposing Beyblade in a horizontal sword-like slash, delivering a focused lateral strike that sends the opponent flying. The 00 Disc's extra mass adds ring-out momentum and the extended blade passage (4.5 ms contact arc) concentrates energy across the full blade face.
+
+### Stage — Power-Channeled Blade Sword Slash
+
+From Case 1940: v_rel_sword = 3.02 m/s, e = 0.62.
+
+```
+m_eff = (m_A × m_opp) / (m_A + m_opp) = (0.0435 × 0.040) / (0.0435 + 0.040)
+      = 1.740×10⁻³ / 0.0835 = 2.084×10⁻² kg
+
+J_turbosword = m_eff × (1 + e) × v_rel_sword
+             = 2.084×10⁻² × 1.62 × 3.02
+             = 2.084×10⁻² × 4.892 = 1.020×10⁻¹ N·s
+
+Δv_opp = J_turbosword / m_opp = 1.020×10⁻¹ / 0.040 = 2.550 m/s
+```
+
+**Effect on Turbo Achilles (spin drain from power channeling + blade contact):**
+
+```
+Δω_A = J_turbosword × r_turbo / I_A = 1.020×10⁻¹ × 0.037 / 3.865×10⁻⁵ = 97.7 rad/s
+ω_remain = 580 − 97.7 = 482.3 rad/s  (83.2% retained)
+Burst Stopper prevents burst despite 97.7 rad/s drain from power-channeled strike.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles ignites with concentrated Z-power — the Burst Stopper blade becomes a blazing war-god's longsword, the sword slash erupting in a column of golden fire that cuts clean through the opponent's rotation and punches them out of the stadium.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Turbo Achilles Cho-Z power-channeled blade spirit)
+[M] Δv = 2.550 × 7.5 = **19.1 m/s** (power-channeled sword ring-out)
+
+> **Note:** Physical values describe power-channeling spin boost ω_boost=10 rad/s, v_rel_sword=3.02 m/s (vs standard 2.65), J=1.020×10⁻¹ N·s, Δv=2.550 m/s, blade contact arc 4.5 ms. [M] values represent Aiger's Z-power igniting the blade into a longsword of spirit fire. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboSwordSpecial(bey: Beyblade, target: Beyblade): void {
+  // Power-channel ω_boost=10r/s→v_rel=3.02m/s; J=1.020×10⁻¹N·s; blade_pass=4.5ms; [M] 7.5×
+  const J_phys = 0.1020;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Turbo Achilles power-channeled sword)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Turbo Awakening Energy Layer with long Burst Stopper blade protrusions (L_blade ≥ 10 mm, r_turbo ≥ 34 mm) capable of receiving a synchronisation-pulse spin boost (ω_boost ≥ 8 rad/s) from a fully synchronised blader, paired with a heavy Forge Disc (≥ 12 g) for maximum ring-out momentum. Standard game instance: Turbo Achilles 00 Dimension (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1942 — COMBO: Z Sword Cross — Turbo Achilles 00 Dimension
+
+**Sequence:** → ← A (moveRight · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+The moveRight (→) sends Turbo Achilles on a rightward orbital arc, then moveLeft (←) immediately reverses direction — a lateral feint that creates a momentum reversal at the contact point. The direction change adds a Coriolis-like lateral component to the contact velocity, then A fires the power-channeled sword slash at the crossover point:
+
+```
+v_orbital = μ_Dim × ω₀ × r_driver = 0.35 × 580 × 0.005 = 1.015 m/s
+v_lateral_reversal = v_orbital × 2 × sin(45°) = 1.015 × 2 × 0.707 = 1.435 m/s
+(momentum from rapid direction reversal at 45° crossing angle)
+
+v_contact_combo = 0.50 × v_lateral_reversal + 0.50 × v_rel_sword
+               = 0.50 × 1.435 + 0.50 × 3.02 = 0.718 + 1.510 = 2.228 m/s
+
+J_combo = m_eff × (1 + e) × v_contact_combo = 2.084×10⁻² × 1.62 × 2.228
+        = 2.084×10⁻² × 3.609 = 7.522×10⁻² N·s
+```
+
+Burst Stopper blade deflects contact recoil into spin recovery (η_bs = 0.20):
+
+```
+Δω = η_bs × J_combo × r_turbo / I_A
+   = 0.20 × 7.522×10⁻² × 0.037 / 3.865×10⁻⁵
+   = 0.20 × 71.98
+   = +14.4 rad/s  ≈ +14 rad/s
+```
+
+(η_bs = 0.20: Burst Stopper blade geometry converts cross-slash recoil to spin.) Lateral cross-slash gives damageMultiplier **1.30×**. lockMs = 0 (attack type, lateral slash with no dwell).
+
+**Parameters:**
+- spinGain: +14 rad/s (Burst Stopper recoil recovery η = 0.20)
+- damageMultiplier: 1.30 (power-channeled lateral sword cross-slash)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function zSwordCrossCombo(bey: Beyblade, target: Beyblade): void {
+  // Burst Stopper recoil: Δω ≈ +14 rad/s (η=0.20, v_combo=2.228m/s, J=7.522×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 14);
+  // Power-channeled lateral cross-slash: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +14 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1943 — GIMMICK: Z Achilles 11 Xtend+ — Gyroscopic Shield + Combined Crush Approach
+
+**Beyblade:** Z Achilles 11 Xtend+ (Beyblade Burst Turbo / Cho-Z)
+**Blader:** Aiger Akabane | **Series:** Beyblade Burst Turbo (Cho-Z season)
+
+Assembly: see Case 1928 (m=41.0 g, I=3.654×10⁻⁵ kg·m², ω₀=580 rad/s, L₀=2.120×10⁻² kg·m²/s, r_turbo=37 mm).
+
+---
+
+### 1. Gyroscopic Shield — Xtend+ Extended Defense Posture
+
+With Xtend+ extended to its maximum height (defense posture), Z Achilles presents maximum gyroscopic stability. The gyroscopic rigidity of the high-spin bey acts as a defensive shield:
+
+```
+Gyroscopic rigidity: G_gyro = I × ω₀² = 3.654×10⁻⁵ × 580² = 3.654×10⁻⁵ × 336400 = 12.29 N·m
+
+For an incoming contact force F_in at r_impact = 35 mm:
+τ_in = F_in × r_impact
+
+Precession threshold (below which gyroscopic resistance deflects the hit):
+F_threshold = ω_tilt × L₀ / r_impact = 2.0 × 2.120×10⁻² / 0.035 = 1.211 N
+
+Shield attenuation: incoming impulse ≤ (F_threshold × t_c) is fully deflected;
+Z Achilles retains near-full ω₀ during the shield phase.
+```
+
+---
+
+### 2. Combined Crush Approach — Orbital + Turbo Blade Contact
+
+For the crush phase, Z Achilles charges from its high-spin defense posture directly into the opponent, combining orbital approach velocity with Turbo Blade blade contact velocity:
+
+```
+Orbital approach:
+v_orbital = μ_Xt × ω₀ × r_driver = 0.30 × 580 × 0.005 = 0.870 m/s
+
+Turbo Blade contact (same as Case 1928):
+v_tip_turbo = ω₀ × r_turbo = 580 × 0.037 = 21.46 m/s
+v_opp_contact = ω_opp × r_opp = 570 × 0.033 = 18.81 m/s
+v_rel_blades  = 21.46 − 18.81 = 2.65 m/s
+
+Combined crush velocity:
+v_crush_total = v_orbital + v_rel_blades = 0.870 + 2.65 = 3.52 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.0 g (see Case 1928) |
+| G_gyro | 12.29 N·m |
+| F_threshold | 1.211 N |
+| v_orbital | 0.870 m/s |
+| v_rel_blades | 2.65 m/s |
+| v_crush_total | 3.52 m/s |
+
+---
+
+## Case 1944 — SPECIAL: Turbo Crush (Super Z Press) — Aiger Akabane / Z Achilles 11 Xtend+
+
+**Blader:** Aiger Akabane | **Beyblade:** Z Achilles 11 Xtend+ | **Type:** attack
+
+### Description
+
+Turbo Crush (超ゼットプレス Super Z Press) is a Special Move used by Aiger Akabane and his Z Achilles 11 Xtend+. Z Achilles increases its defense power via Turbo Awakening, entering a gyroscopic shield posture that deflects incoming attacks while sustaining near-full spin. The Xtend+ driver locks into its extended defense height for maximum stability. Then, from this fortified high-spin state, Achilles charges directly into the opponent — combining its full orbital approach speed with the Turbo Blade tip velocity in a concentrated full-body press that smashes the opponent with serious damage. The Burst Stopper Turbo Blades protect against burst during the high-drain contact.
+
+### Stage — Gyroscopic Shield Defense → Full-Body Crush Contact
+
+From Case 1943: v_crush_total = 3.52 m/s, e = 0.55 (Xtend+ in defense posture — deliberate heavy contact).
+
+```
+m_eff = (m_Z × m_opp) / (m_Z + m_opp) = (0.041 × 0.040) / (0.041 + 0.040)
+      = 1.640×10⁻³ / 0.081 = 2.025×10⁻² kg
+
+J_turbocrush = m_eff × (1 + e) × v_crush_total
+             = 2.025×10⁻² × 1.55 × 3.52
+             = 2.025×10⁻² × 5.456 = 1.105×10⁻¹ N·s
+
+Δv_opp = J_turbocrush / m_opp = 1.105×10⁻¹ / 0.040 = 2.763 m/s
+```
+
+**Effect on Z Achilles (spin drain from shield-into-crush contact):**
+
+```
+Δω_Z = J_turbocrush × r_turbo / I_Z = 1.105×10⁻¹ × 0.037 / 3.654×10⁻⁵ = 111.9 rad/s
+ω_remain = 580 − 111.9 = 468.1 rad/s  (80.7% retained)
+Burst Stopper Turbo Blades prevent burst despite 111.9 rad/s drain from press contact.
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Aiger's Achilles erupts in a full-body Z-power explosion — the shield becomes an impenetrable war-god's fortress that then transforms into a comet of concentrated energy, smashing into the opponent with such force that the bey is obliterated out of the stadium in a shockwave of compressed Z-power.
+
+[M] factor = **7.5 ×** (Aiger Akabane — Turbo Achilles Cho-Z shield-crush spirit)
+[M] Δv = 2.763 × 7.5 = **20.7 m/s** (gyroscopic shield crush ring-out)
+
+> **Note:** Physical values describe gyroscopic shield G_gyro=12.29 N·m, F_threshold=1.211 N; crush v_orbital=0.870 + v_rel_blades=2.65 → v_total=3.52 m/s; J=1.105×10⁻¹ N·s; Δv=2.763 m/s; Burst Stopper prevents burst at Δω=111.9 rad/s. [M] values represent Aiger's Z-power shield fortress detonating into a full-body crush. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function turboCrushSpecial(bey: Beyblade, target: Beyblade): void {
+  // Gyro shield G=12.29N·m; v_orbital=0.870+v_blade=2.65=3.52m/s total; J=1.105×10⁻¹N·s; [M] 7.5×
+  const J_phys = 0.1105;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Aiger Turbo Achilles gyro-shield crush spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a variable-height Driver (Xtend+ or equivalent, switchable to defense height for gyroscopic stability) combined with a Turbo Awakening Energy Layer (Burst Stopper, r_turbo ≥ 34 mm), where the blader can sustain gyroscopic shield posture before committing to a full-mass orbital+blade crush approach. Standard game instance: Z Achilles 11 Xtend+ (Aiger Akabane, Burst Turbo).
+
+---
+
+## Case 1945 — COMBO: Achilles Press — Z Achilles 11 Xtend+
+
+**Sequence:** K K A (defense · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Aiger Akabane
+
+### Physics Justification
+
+Two consecutive defense inputs (K K) activate the Xtend+ shield phase — Z Achilles enters maximum gyroscopic stability posture, deflecting any incoming contact and sustaining spin. The second K compounds the stability, locking the Xtend+ at extended height. The attack (A) releases the shield momentum into a partial crush:
+
+```
+v_crush_partial = v_crush_total × 0.65 = 3.52 × 0.65 = 2.288 m/s
+
+J_partial = m_eff × (1 + e) × v_crush_partial = 2.025×10⁻² × 1.55 × 2.288
+          = 2.025×10⁻² × 3.546 = 7.181×10⁻² N·s
+```
+
+Gyroscopic stability during shield phase converts spin-drain suppression into effective spin gain (η_gyro = 0.15 — gyro damping redirects residual precession energy to spin):
+
+```
+Δω = η_gyro × J_partial × r_turbo / I_Z
+   = 0.15 × 7.181×10⁻² × 0.037 / 3.654×10⁻⁵
+   = 0.15 × 72.68
+   = +10.9 rad/s  ≈ +11 rad/s
+```
+
+(η_gyro = 0.15: gyroscopic shield suppresses spin drain during K K phase; net effect is a spin preservation boost before A fires.) Shield-into-crush gives damageMultiplier **1.35×**. lockMs = 50 (Xtend+ press hold at extended height during crush contact).
+
+**Parameters:**
+- spinGain: +11 rad/s (gyroscopic spin-drain suppression η = 0.15)
+- damageMultiplier: 1.35 (defense shield press-crush smash)
+- lockMs: 50 (Xtend+ extended press dwell)
+
+### TypeScript
+
+```typescript
+function achillesPressCombo(bey: Beyblade, target: Beyblade): void {
+  // Gyro spin retention: Δω ≈ +11 rad/s (η=0.15, v_crush=2.288m/s, J=7.181×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Defense shield press-crush: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1946 as further franchise moves are provided.*
