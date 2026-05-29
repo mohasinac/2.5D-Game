@@ -131,12 +131,12 @@ input[type=range] { cursor: pointer; width: 100%; }
 }
 
 /* ─── Game Shell ─────────────────────────────────────────────────────────────
-   Full-screen GBA-like container. The game viewport occupies the vmin square;
-   controls sit in the gutters outside the viewport.                          */
+   Full-screen GBA console wrapper. The console body is centred;
+   the screen bezel contains the game viewport.                               */
 .game-shell {
   position: fixed;
   inset: 0;
-  background: #04060f;
+  background: radial-gradient(ellipse at center, #0d0f1c 0%, #060810 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,17 +145,13 @@ input[type=range] { cursor: pointer; width: 100%; }
   user-select: none;
 }
 
-/* The viewport slot: a perfect vmin square, centred. */
+/* The viewport slot fills its containing bezel exactly — no fixed vmin. */
 .game-viewport-slot {
   position: relative;
-  width: 100vmin;
-  height: 100vmin;
-  max-width: 100vmin;
-  max-height: 100vmin;
-  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   border-radius: 4px;
-  box-shadow: 0 0 60px rgba(99,102,241,0.12), 0 0 0 1px rgba(255,255,255,0.06);
 }
 
 /* The PixiJS canvas fills the viewport slot exactly — no stretching. */
@@ -176,26 +172,6 @@ input[type=range] { cursor: pointer; width: 100%; }
 }
 .game-overlay-layer > * {
   pointer-events: auto;
-}
-
-/* Left and right gutter areas (where controls live) */
-.game-gutter {
-  flex: 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 16px 8px;
-  position: relative;
-  min-width: 0;
-}
-
-/* On very small screens (< 400px wide viewport), hide gutters and let controls
-   overlay the bottom of the screen outside the game area. */
-@media (max-width: 399px) {
-  .game-gutter { display: none; }
 }
 
 /* ─── Card Carousel ──────────────────────────────────────────────────────────*/
