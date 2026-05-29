@@ -42993,3 +42993,451 @@ function tornadoStallLaunchWindow(
 //   -> { omegaMin:~6.6 rad/s, omegaMax:~8.1 rad/s, window:1.23 }  — narrow window
 // Note: actual launch omega is ~620 rad/s; the ridge self-selects by centrifugal dynamics
 ```
+
+---
+
+## CASE XXXX — Mad Cancer CH120FS: Face Bolt — Gasher / Cancer (MFB Standard System, zodiac naming cross-reference)
+
+**Thesis:** The Gasher Face Bolt carries the Cancer zodiac motif — a crab rendered in black line art — printed on a translucent red hexagonal PC disc. The Takara Tomy Japan (TT JP) release retains the word "Cancer" on the face design; Hasbro's localised release replaces this with the name "Gasher", enlarges the crab body, and adds decorative spheres to the background. The face bolt contributes a moment of inertia of approximately 9.6×10⁻⁹ kg·m² [INFERENCE], which is less than 0.6% of the full assembly budget and therefore negligible in all spin-decay and angular momentum calculations. Its primary function is cosmetic and assembly-keying (the six-flat hex profile keys to the metal shaft at centre, preventing relative rotation); its mass and geometry contribute no measurable performance differential. The Cancer naming is retained in TT JP materials through all Metal Fusion era releases; Dark Cancer CH120SF uses the same face bolt redesigned for the Dark Nebula aesthetic.
+
+**Moment of Inertia — Face Bolt:**
+
+```
+I_FB = ½ × m × r²
+m_FB ≈ 0.0012 kg  [INFERENCE — standard MFB Face Bolt mass class, 1.0–1.5 g range]
+r ≈ 0.004 m (outer radius of hexagonal disc)  [INFERENCE]
+
+I_FB = ½ × 0.0012 × (0.004)²
+     = ½ × 0.0012 × 1.6×10⁻⁵
+     = 9.6×10⁻⁹ kg·m²
+```
+
+Fraction of assembly I: 9.6×10⁻⁹ / 1.60×10⁻⁶ ≈ 0.6% [INFERENCE] — negligible.
+
+**Part Identification:**
+- TT JP name: Cancer Face Bolt [FACT]
+- Hasbro name: Gasher Face Bolt [FACT]
+- Released: BB-31 Random Booster Light Vol. 1 (prize Beyblade) [FACT]
+- Shape: hexagonal nut (6-sided, bolt-head profile) [FACT]
+- Material: polycarbonate (PC), translucent red [INFERENCE]
+
+**TypeScript model:**
+```typescript
+const gasherFaceBolt = {
+  id: "face_bolt_gasher",
+  nameTTJP: "Cancer",
+  nameHasbro: "Gasher",
+  generation: "mfb_standard",
+  shape: "hexagonal_nut",
+  mass_g: 1.2,          // [INFERENCE]
+  r_outer_mm: 4,        // [INFERENCE]
+  I_kgm2: 9.6e-9,       // [INFERENCE]
+  contribution_pct: 0.6, // fraction of full-assembly I [INFERENCE]
+  competitive_value: "cosmetic_only",
+};
+```
+
+---
+
+## CASE XXXX — Mad Cancer CH120FS: Energy Ring — Gasher / Cancer (~4.0 g, round crab-claw slopes, defense-utility weight distribution)
+
+**Thesis:** The Gasher (Cancer) Energy Ring is a round-profiled MFB Energy Ring whose outer surface is sculpted with two large claw-slope features representing crab pincers, separated by two flatter bridge sections. The product description explicitly characterises it as heavy relative to the MFB Energy Ring field, and notes that its slopes and weight are useful in Defense Type combinations. The round outer profile means contact normals are approximately tangential rather than radial: the contact face angle from radial φ approaches 80–85°, giving smash fraction cos(85°) ≈ 0.087 and recoil fraction sin(85°) ≈ 0.996. This near-total recoil geometry limits Gasher's attack contribution to nearly zero while also causing self-recoil spin waste on every contact — an unfavourable characteristic when used under a poor attack wheel like Mad. The ring's comparative advantage lies in its mass and its slope profile: the claw slopes act as low-angle deflectors that redirect incoming contact force partially upward along the z-axis, reducing lateral destabilisation. In Defense Type custom combinations (paired with a heavy metal Fusion Wheel and a Defense or Semi-Flat Performance Tip), the Gasher ER's mass adds peripheral inertia and its slopes provide passive LAD (Life After Death) geometry. Its moment of inertia is approximately 3.40×10⁻⁷ kg·m² [INFERENCE], contributing about 21% of the Mad Cancer full-assembly inertia budget.
+
+**Moment of Inertia — Gasher ER:**
+
+```
+I_ER = ½ × m × (r_i² + r_o²)
+m_ER ≈ 0.004 kg  [INFERENCE — "heavy" per product description; MFB ER range 2–5 g]
+r_i ≈ 0.007 m (inner seat radius, fits over Fusion Wheel hub)  [INFERENCE]
+r_o ≈ 0.011 m (outer claw-tip radius)  [INFERENCE]
+
+I_ER = ½ × 0.004 × (0.007² + 0.011²)
+     = ½ × 0.004 × (4.90×10⁻⁵ + 1.21×10⁻⁴)
+     = ½ × 0.004 × 1.700×10⁻⁴
+     = 3.40×10⁻⁷ kg·m²  [INFERENCE]
+```
+
+**OWD (r_ref = 23 mm):**
+```
+OWD = I_ER / (m_ER × r_ref²)
+    = 3.40×10⁻⁷ / (0.004 × 0.023²)
+    = 3.40×10⁻⁷ / 2.116×10⁻⁶
+    = 0.161  [INFERENCE]
+```
+
+OWD of 0.161 reflects that the ER's mass is concentrated at small radius (r_o = 11 mm < r_ref = 23 mm). The ER is dominated by the Fusion/Light Wheel in peripheral inertia in all MFB assemblies — it is an inertia-secondary part in standard configurations.
+
+**Contact Angle Analysis:**
+```
+Round outer profile → surface tangent ≈ perpendicular to radius
+Contact face angle from radial: φ ≈ 85°  [INFERENCE from round geometry]
+
+Smash fraction:  cos(85°) ≈ 0.087  — approximately 9% of contact impulse delivered as smash
+Recoil fraction: sin(85°) ≈ 0.996  — approximately 99% returned as self-recoil
+
+→ Gasher ER is essentially a round-recoil ring; smash delivery is negligible
+→ In defense combinations, this high recoil actually helps: incoming attack force
+  is redirected back toward the attacker rather than absorbed as destabilising torque
+```
+
+**Custom Combination Value:**
+Gasher ER is considered a marginal but usable defense/stamina ER in competitive MFB custom combinations. Its heavy weight adds I to mid-radius combinations, and its slope profile provides passive LAD. It is not a top-tier ER but is preferred over very light or flimsy ERs when mass and slope geometry are required. The "Cancer" name used in the TT JP community is standard; Hasbro users know it as "Gasher."
+
+**TypeScript model:**
+```typescript
+const gasherER = {
+  id: "er_gasher",
+  nameTTJP: "Cancer",
+  nameHasbro: "Gasher",
+  generation: "mfb_standard",
+  mass_g: 4.0,           // [INFERENCE — "heavy" per product text]
+  r_inner_mm: 7,         // [INFERENCE]
+  r_outer_mm: 11,        // [INFERENCE]
+  I_kgm2: 3.40e-7,       // [INFERENCE]
+  OWD: 0.161,            // r_ref = 23 mm [INFERENCE]
+  profile: "round_claw_slope",
+  contactAngle_deg: 85,  // [INFERENCE from round outer profile]
+  smashFraction: 0.087,  // [INFERENCE]
+  recoilFraction: 0.996, // [INFERENCE]
+  ladGeometry: true,     // claw slopes deflect upward
+  competitive_value: "marginal_defense_stamina_ER",
+};
+```
+
+---
+
+## CASE XXXX — Mad Cancer CH120FS: Light Wheel — Mad (6.0 g, plastic, round twelve-protrusion profile, collector-only classification)
+
+**Thesis:** Mad is the Light Wheel counterpart to the Dark Fusion Wheel and represents the foundational failure mode of the Light Wheel class: a plastic construction that mimics a metal wheel's outer radius but delivers neither the inertia nor the contact geometry required for competitive play. The product description provides the mass explicitly at 6.0 g and describes twelve protrusions "closely packed together with minimal space between each, resulting in a round shape." This round outer geometry is the central physical deficiency: when protrusions are sufficiently dense and uniformly distributed that the outer profile approximates a circle, the contact face at any collision point is tangential to that circle rather than radially oriented. The contact face angle from radial φ approaches 85°, yielding smash fraction cos(85°) ≈ 0.087 — only 9% of the contact impulse reaches the opponent as smash force. The remaining 99% is returned as self-recoil, wasting the beyblade's own angular momentum per collision. A metal Attack Fusion Wheel such as Galaxy or Gravity achieves φ ≈ 30–40°, delivering cos(35°) ≈ 0.82 smash fraction — roughly nine times Mad's smash delivery per contact. Mad's second structural weakness is material: ABS plastic rather than zinc alloy, reducing mass to 6.0 g [FACT] against typical metal Fusion Wheel masses of 20–30 g. The inertia consequence is severe: I_Mad = 1.191×10⁻⁶ kg·m² [INFERENCE], yielding OWD = 0.375 at r_ref = 23 mm — less than one-third the OWD of a mid-tier metal Fusion Wheel. The plastic construction also creates breakage risk: at the Hertzian contact stresses generated during a high-speed inter-beyblade collision, ABS yields plastically and cracks at the protrusion roots, particularly under oblique loading. The Dark Fusion Wheel (metal, ~24 g) has twelve protrusions facing the clockwise direction with pronounced tip relief, giving φ ≈ 30° and smash fraction 0.87; Mad replaces this with equal-spacing and zero tip relief in plastic, eliminating both the smash advantage and the inertia advantage simultaneously. Mad is therefore correctly classified as collector-only: it functions for casual play but cannot sustain competitive match physics.
+
+**Moment of Inertia — Mad (Light Wheel):**
+
+```
+I_Mad = ½ × m × (r_i² + r_o²)
+m_Mad = 0.006 kg  [FACT — stated in product description]
+r_i ≈ 0.006 m (hub bore, seats on Spin Track shaft)  [INFERENCE]
+r_o ≈ 0.019 m (protrusion tip radius; Light Wheels slightly smaller than full FW)  [INFERENCE]
+
+I_Mad = ½ × 0.006 × (0.006² + 0.019²)
+      = ½ × 0.006 × (3.60×10⁻⁵ + 3.610×10⁻⁴)
+      = ½ × 0.006 × 3.970×10⁻⁴
+      = 1.191×10⁻⁶ kg·m²  [INFERENCE]
+```
+
+**OWD (r_ref = 23 mm):**
+```
+OWD = I_Mad / (m_Mad × r_ref²)
+    = 1.191×10⁻⁶ / (0.006 × 0.023²)
+    = 1.191×10⁻⁶ / 3.174×10⁻⁶
+    = 0.375  [INFERENCE]
+
+Comparison class:
+  Metal FW (mid-tier, ~22 g, r_o~23 mm): OWD ≈ 0.96–1.05
+  Mad (plastic, 6.0 g, r_o~19 mm):        OWD = 0.375
+  → Mad delivers ~39% of a mid-tier metal FW's peripheral inertia density
+```
+
+**Contact Geometry — Round Profile:**
+```
+ASCII: Mad protrusion cross-section (one of 12 segments, ~30° arc each)
+
+         ←— protrusion tip (nearly tangential surface) —→
+        /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
+       /                                              \
+ ←hub→ |       ABS plastic fill (minimal gap)         | ←← outer rim
+       \                                              /
+        \____________________________________________/
+
+Protrusion-to-protrusion gap ≈ 0°–5°  [INFERENCE from "closely packed, minimal space"]
+Outer rim approximates circle of r_o ≈ 19 mm
+
+Contact scenario at point P on outer rim:
+  Normal to circle surface at P = radial vector (outward from centre)
+  Contact face at P is TANGENT to the circle
+  → Contact face angle from radial φ ≈ 85°–90°
+
+  Smash fraction:  cos(85°) ≈ 0.087  [INFERENCE]
+  Recoil fraction: sin(85°) ≈ 0.996  [INFERENCE]
+
+For reference — Dark FW (metal, angled protrusions):
+  φ ≈ 30° → smash fraction cos(30°) ≈ 0.866  [INFERENCE]
+  Mad delivers ~10% of Dark's smash per contact at equal approach velocity
+```
+
+**Material and Breakage Physics:**
+ABS has tensile strength ~40 MPa and flexural modulus ~2.3 GPa. At a Hertzian contact stress during collision between a metal FW (E₁ ≈ 70 GPa, zinc) and Mad (E₂ ≈ 2.3 GPa), the reduced modulus E* is dominated by ABS: 1/E* = 1/E₁ + 1/E₂ ≈ 1/2.3 GPa → E* ≈ 2.3 GPa. Contact patch half-width a = (3WR/4E*)^(1/3). At a collision impulse of ~5 N (typical low-speed inter-bey contact) and contact radius R ≈ 1 mm (protrusion tip): a ≈ (3×5×0.001 / (4×2.3×10⁹))^(1/3) ≈ (1.5×10⁻²/9.2×10⁹)^(1/3) ≈ 1.18×10⁻⁴ m. Peak Hertzian stress p₀ = 3W/(2πa²) ≈ 3×5/(2π×(1.18×10⁻⁴)²) ≈ 544 MPa [INFERENCE]. This exceeds the ABS tensile strength of ~40 MPa by a factor of ~13 — the protrusion base will fracture under a single hard contact with a metal Fusion Wheel at competitive spin rates. This confirms the product text's warning: "Mad is prone to breakage when used in battles and should be considered as a collector's item only." [FACT]
+
+**TypeScript model:**
+```typescript
+const madLightWheel = {
+  id: "lw_mad",
+  name: "Mad",
+  generation: "mfb_standard",
+  type: "light_wheel",           // plastic, not metal Fusion Wheel
+  mass_g: 6.0,                   // [FACT]
+  massRange_g: [6, 8],           // Light Wheel class range [FACT]
+  r_inner_mm: 6,                 // [INFERENCE]
+  r_outer_mm: 19,                // [INFERENCE]
+  I_kgm2: 1.191e-6,              // [INFERENCE]
+  OWD: 0.375,                    // r_ref = 23 mm [INFERENCE]
+  protrusions: 12,               // [FACT]
+  protrusion_spacing: "minimal", // [FACT — "minimal space between each"]
+  outer_profile: "near_circular",// [FACT — "resulting in a round shape"]
+  contactAngle_deg: 85,          // [INFERENCE from round profile]
+  smashFraction: 0.087,          // [INFERENCE]
+  recoilFraction: 0.996,         // [INFERENCE]
+  material: "ABS_plastic",       // [INFERENCE — "plastic instead of metal"]
+  breakageRisk: "high",          // [FACT — product description explicit warning]
+  competitive_class: "collector_only", // [FACT]
+  metalEquivalent: "dark_fw",    // same protrusion count, metal version [FACT]
+};
+```
+
+---
+
+## CASE XXXX — Mad Cancer CH120FS: Spin Track — CH120 (Change Height 120, dual-height gimmick, 120 ↔ 145 mm, between-round adjustment)
+
+**Thesis:** Change Height 120 (CH120) is the only MFB Spin Track that provides the 120 height setting [FACT], which is the lowest standard height in the MFB Spin Track catalogue. The track achieves dual height by a pull-push-rotate-lock mechanism: the central pillar is pulled outward to disengage the locking tabs, the lower barrel is rotated to align the alternate set of locking grooves, and the pillar is pushed back to engage the new lock. This adjustment does not require part separation and can be performed between rounds of a match [FACT], enabling the Blader to switch from 120 (low attack profile, r_tip closer to floor, lower centre of mass, reduced opponent contact height) to 145 (mid-height profile, increased layer-to-layer contact height, moderate stability) without changing any part. The strategic value is legitimate: a Blader running an attack configuration at 120 can raise to 145 to reduce the opponent's Attack Type beyblade's ability to make effective layer contact in subsequent rounds. The primary weakness is mechanical fragility: at 145 mode, the lock relies on a narrower engagement section of the pillar groove, and a sufficiently hard lateral impact can dislodge the pillar entirely, causing the track to collapse during battle [FACT]. This failure mode does not permanently damage the part and is "usually fixable by simply locking the parts back into place" [FACT], but the collapse in-battle constitutes an effective ring-out or spin-out event. CH120 is a mechanically interesting track with genuine competitive applications in Attack combinations (e.g., paired with RF or R²F and a strong metal Fusion Wheel at 120 height); in the stock Mad Cancer assembly it is paired with a Light Wheel and FS, which limits its contribution to a height-adjustment option on an otherwise non-competitive combo.
+
+**Moment of Inertia — CH120:**
+
+```
+I_CH120 = ½ × m × (r_i² + r_o²)
+m_CH120 ≈ 0.003 kg  [INFERENCE — mechanism adds mass vs simple track; MFB track range 2–4 g]
+r_i ≈ 0.003 m (shaft bore)  [INFERENCE]
+r_o ≈ 0.005 m (outer barrel)  [INFERENCE]
+
+I_CH120 = ½ × 0.003 × (0.003² + 0.005²)
+        = ½ × 0.003 × (9×10⁻⁶ + 2.5×10⁻⁵)
+        = ½ × 0.003 × 3.4×10⁻⁵
+        = 5.1×10⁻⁸ kg·m²  [INFERENCE]
+```
+
+Fraction of assembly I: 5.1×10⁻⁸ / 1.60×10⁻⁶ ≈ 3.2% [INFERENCE] — minor contribution.
+
+**Height-Mode Physics:**
+```
+Mode 120 (low):
+  Height 12.0 mm from tip base to layer floor  [FACT]
+  → Lower CoM: improved gyroscopic stability [INFERENCE]
+  → Layer contacts opponent at lower height: more likely to catch FW-to-FW contact
+     versus ER-only or tip-only contact
+  → Tip-to-floor moment arm unchanged (r_tip determined by PT, not track height)
+
+Mode 145 (mid):
+  Height 14.5 mm from tip base to layer floor  [FACT]
+  Δh = +2.5 mm relative to 120 mode  [FACT]
+  → Higher CoM: slightly reduced gyroscopic stability [INFERENCE]
+  → Raises the AR/ER contact zone: may force opponent Attack type to under-contact
+     (hitting the track or lower wheel rather than the ER/AR) [INFERENCE]
+
+Collapse risk at 145:
+  Lock groove engagement length: shorter in 145 position [INFERENCE from fragility pattern]
+  Lateral impact during spin → pillar ejects → height collapses to track-only contact
+  Self-correctable: re-insert and lock between rounds [FACT]
+```
+
+**Competitive Use Outside Stock Combo:**
+CH120 at 120 height is used in Attack custom combinations in MFB competitive formats. The 120 height keeps the Fusion Wheel layer low relative to the opponent's ER, maximising the probability of upper-attack wheel-to-wheel contact when the attacker's wheel is angled. Paired with RF (Rubber Flat) or R²F (Right Rubber Flat) and Galaxy or Gravity Fusion Wheel, CH120 provides the unique 120 height that 125 and higher cannot replicate. The breakage risk at 145 is managed by competing at 120 exclusively in those configurations.
+
+**TypeScript model:**
+```typescript
+const ch120SpinTrack = {
+  id: "st_ch120",
+  name: "Change Height 120",
+  abbreviation: "CH120",
+  generation: "mfb_standard",
+  mass_g: 3.0,                    // [INFERENCE]
+  r_inner_mm: 3,                  // [INFERENCE]
+  r_outer_mm: 5,                  // [INFERENCE]
+  I_kgm2: 5.1e-8,                 // [INFERENCE]
+  heights_mm: [12.0, 14.5],       // [FACT]
+  mechanism: "pull_push_rotate_lock",
+  betweenRoundAdjustable: true,   // [FACT]
+  requiresPartSwap: false,        // [FACT]
+  collapseRisk: "145_mode_hard_impact", // [FACT]
+  selfRepairable: true,           // [FACT]
+  uniqueHeight: 120,              // only track providing 120 mm height [FACT]
+  competitive_value: "attack_custom_combos", // CH120 in non-stock attack builds
+};
+```
+
+---
+
+## CASE XXXX — Mad Cancer CH120FS: Performance Tip — FS (Flat Spike / Flat Sharp, ~1.5 g, dual-mode balance tip, mediocre in both fields)
+
+**Thesis:** Flat Spike (FS), also referred to as Flat Sharp in some product materials, is a Balance Type Performance Tip that attempts to combine the near-stationary stamina of a Sharp tip with the mobile aggression of a Flat tip by nesting a central pointed spike within a flat annular outer contact surface. The product description accurately characterises the outcome: when launched at a straight angle, the beyblade rests on the spike tip alone and behaves as a high-stamina near-stationary spinner; when tilted — either by the launch angle or by contact with an opposing beyblade — the outer flat engages the floor and the beyblade transitions to an offensive wandering pattern. The physics underlying this dual mode are determined by two separate friction torque regimes. In spike mode, the contact radius is r_spike ≈ 0.5 mm [INFERENCE], giving τ_spike ≈ 1.33×10⁻⁵ N·m for the full 16 g Mad Cancer assembly; the theoretical spike-mode spin time is approximately 72 s [INFERENCE]. In flat mode, the full outer flat disc of radius r_flat ≈ 3 mm [INFERENCE] engages the floor: τ_flat ranges from 5.3×10⁻⁵ N·m (centred disc contact) to 8.0×10⁻⁵ N·m (tilted rim contact), giving flat-mode spin times of 12–18 s [INFERENCE]. The problem is mode stability: the transition from spike to flat is triggered by any tilt perturbation, and in a competitive match any opponent contact will force that transition. Once in flat mode, the 16 g Mad Cancer has only ~12–18 s of spin remaining — not enough to outlast a stamina opponent or to deliver sustained attack pressure. A dedicated Sharp tip (DS, MS, ES) achieves stable spike contact without the flat-mode fallback; a dedicated Flat tip (RF, R²F, F) maintains flat mode without the spike-mode spin waste risk. FS falls between both poles, which, combined with the Light Wheel's already depleted angular momentum budget, makes it non-competitive in stock form. The tip itself (without Mad's mass penalty) retains niche custom-combo use in specific Balance-type builds.
+
+**Friction Torque — Spike Mode:**
+
+```
+τ_spike = μ_hard × m_total × g × r_spike
+μ_hard = 0.17 (hard ABS tip on stadium floor)
+m_total = 0.016 kg (full assembly)  [INFERENCE]
+g = 9.81 m/s²
+r_spike ≈ 0.0005 m  [INFERENCE]
+
+τ_spike = 0.17 × 0.016 × 9.81 × 0.0005
+        = 0.17 × 0.1570 × 0.0005
+        = 1.33×10⁻⁵ N·m  [INFERENCE]
+
+t_spin_spike = L₀ / τ_spike = 9.59×10⁻⁴ / 1.33×10⁻⁵ ≈ 72 s  [INFERENCE]
+```
+
+**Friction Torque — Flat Mode:**
+
+```
+Centred disc contact (flat tip horizontal, full face engagement):
+τ_flat_disc = (2/3) × μ_hard × N × r_flat
+N = m_total × g = 0.016 × 9.81 = 0.157 N
+r_flat ≈ 0.003 m  [INFERENCE]
+
+τ_flat_disc = (2/3) × 0.17 × 0.157 × 0.003
+            = (2/3) × 8.0×10⁻⁵
+            = 5.33×10⁻⁵ N·m  [INFERENCE]
+
+Tilted / rim contact (outer flat edge only):
+τ_flat_rim = μ_hard × N × r_flat
+           = 0.17 × 0.157 × 0.003
+           = 8.0×10⁻⁵ N·m  [INFERENCE]
+
+t_spin_flat_lower = L₀ / τ_flat_rim  = 9.59×10⁻⁴ / 8.0×10⁻⁵ ≈ 12 s  [INFERENCE]
+t_spin_flat_upper = L₀ / τ_flat_disc = 9.59×10⁻⁴ / 5.33×10⁻⁵ ≈ 18 s  [INFERENCE]
+```
+
+**Mode Transition Physics:**
+Any lateral impulse ΔL_x (from opponent contact or launch tilt) that rotates the beyblade's spin axis away from vertical by θ > θ_critical will shift floor contact from the spike tip to the flat outer rim. θ_critical is approximately the angle at which r_flat × cos(θ) > r_spike: θ_critical = arctan(r_flat/r_spike) = arctan(3/0.5) = arctan(6) ≈ 81° from horizontal = 9° from vertical. Any tilt beyond ~9° from upright engages the flat [INFERENCE]. In a contested match, any direct wheel-to-wheel contact will easily impose 9° of tilt — flat mode engagement is effectively guaranteed once opponent contact occurs.
+
+**TypeScript model:**
+```typescript
+const flatSpikePerformanceTip = {
+  id: "pt_fs",
+  name: "Flat Spike",
+  alias: "Flat Sharp",
+  abbreviation: "FS",
+  generation: "mfb_standard",
+  type: "balance",
+  mass_g: 1.5,                    // [INFERENCE]
+  r_spike_mm: 0.5,                // [INFERENCE]
+  r_flat_mm: 3.0,                 // [INFERENCE]
+  mu_k: 0.17,                     // hard ABS on stadium
+  tauSpike_Nm: 1.33e-5,           // for 16 g Mad Cancer assembly [INFERENCE]
+  tauFlatDisc_Nm: 5.33e-5,        // centred disc contact [INFERENCE]
+  tauFlatRim_Nm: 8.0e-5,          // tilted rim contact [INFERENCE]
+  thetaCritical_deg: 9,           // tilt angle triggering flat-mode [INFERENCE]
+  tSpinSpike_s: 72,               // theoretical spike mode, 16 g assembly [INFERENCE]
+  tSpinFlat_s: [12, 18],          // flat mode lower/upper bound [INFERENCE]
+  competitive_value: "non_competitive_stock_niche_custom",
+};
+```
+
+---
+
+## CASE XXXX — Mad Cancer CH120FS: Full Assembly (~16 g, lowest angular momentum in MFB Standard analysis, collector item with two salvageable components)
+
+**Thesis:** Mad Cancer CH120FS is a 16 g Balance Type assembly [INFERENCE] built around a plastic Light Wheel (Mad, 6.0 g [FACT]) that cannot deliver competitive smash attack, a round Energy Ring (Gasher, ~4.0 g [INFERENCE]) with near-total contact recoil, a height-switching Spin Track (CH120, ~3.0 g [INFERENCE]) that provides the exclusive 120 height, and a dual-mode Balance Tip (FS, ~1.5 g [INFERENCE]) that commits fully to neither stamina nor attack. The total moment of inertia of approximately 1.60×10⁻⁶ kg·m² [INFERENCE] is the lowest in the MFB Standard beyblade analysis set: a typical MFB beyblade with a mid-tier metal Fusion Wheel carries I_total ≈ 4–6×10⁻⁶ kg·m², and even lightweight metal FW assemblies reach 2.5×10⁻⁶ kg·m². At launch, L₀ = I × ω₀ = 1.60×10⁻⁶ × 600 = 9.59×10⁻⁴ kg·m²/s, approximately 25–40% of a standard metal-FW assembly's angular momentum. This angular momentum deficit is the primary determinant of all competitive outcomes: Mad Cancer loses a spin-out race to any metal-FW opponent with a comparable tip, loses an attack race because its 9% smash fraction cannot destabilise a heavier opponent in fewer contacts than it loses spin, and cannot outlast defenders or stamina types for the same reason. In the Beyblade Metal Fusion anime, Mad Cancer is used by Tetsuya Watarigani as a mid-tier antagonist bey with an aggressive sidewinder crab-attack style; physically, the assembly's anime characterisation (fast lateral movement, surprise attack angles) maps loosely onto the FS flat-mode trajectory — though at competitive spin rates, the spin time budget forecloses this strategy. Dark Cancer CH120SF, the remodelled version, retains CH120 and swaps Mad for a metal-equivalent Dark Fusion Wheel and FS for SF (Semi-Flat), partially addressing both deficiencies. The two parts of Mad Cancer CH120FS with genuine salvage value for custom combinations are CH120 (unique 120 height, between-round height adjustment) and Gasher ER (mass-class heavy, passive LAD slopes, usable in defense/stamina combos). Mad Light Wheel has no competitive salvage application.
+
+**Full Assembly Inertia Budget:**
+
+```
+Part                  Mass (g)   r_i (mm)  r_o (mm)  I (kg·m²)      Share
+───────────────────────────────────────────────────────────────────────────
+Face Bolt (Gasher)     1.2 [I]     —          4        9.6×10⁻⁹       0.6%
+Energy Ring (Gasher)   4.0 [I]     7         11        3.40×10⁻⁷      21.2%
+Light Wheel (Mad)      6.0 [F]     6         19        1.191×10⁻⁶     74.4%
+Spin Track (CH120)     3.0 [I]     3          5        5.1×10⁻⁸        3.2%
+Perf. Tip (FS)         1.5 [I]     —          1        7.5×10⁻⁹        0.5%
+───────────────────────────────────────────────────────────────────────────
+Total                 15.7 ≈ 16 g            I_total = 1.601×10⁻⁶ kg·m²
+
+[F] = FACT  [I] = INFERENCE
+```
+
+**Angular Momentum at Launch:**
+```
+ω₀ = 600 rad/s (standard MFB launcher launch rate)  [INFERENCE]
+L₀ = I_total × ω₀
+   = 1.601×10⁻⁶ × 600
+   = 9.61×10⁻⁴ kg·m²/s  [INFERENCE]
+
+Comparison:
+  Metal FW mid-tier (~30 g total, I ≈ 5×10⁻⁶):  L₀ ≈ 3.0×10⁻³ kg·m²/s
+  Metal FW lightweight (~22 g total, I ≈ 3×10⁻⁶): L₀ ≈ 1.8×10⁻³ kg·m²/s
+  Mad Cancer CH120FS (~16 g, I ≈ 1.6×10⁻⁶):      L₀ ≈ 9.6×10⁻⁴ kg·m²/s
+
+  Mad Cancer L₀ = 32% of mid-tier metal FW assembly
+                = 53% of lightweight metal FW assembly
+```
+
+**Spin-Time Envelope:**
+```
+Mode                  τ (N·m)      t_spin (s)
+────────────────────────────────────────────
+Spike (upright)       1.33×10⁻⁵    72         [INFERENCE]
+Flat disc (centred)   5.33×10⁻⁵    18         [INFERENCE]
+Flat rim (tilted)     8.0×10⁻⁵     12         [INFERENCE]
+
+Operational note: spike mode is maintained only while |θ_tilt| < 9° from vertical.
+Any opponent contact forces θ > 9° → flat mode engagement → spin time collapses
+from ~72 s theoretical to 12–18 s actual.
+```
+
+**Angular Momentum per Collision:**
+```
+Mad's round profile: smash fraction = cos(85°) ≈ 0.087
+Per collision, fraction of L₀ delivered as smash impulse to opponent:
+  ΔL_smash ≈ 0.087 × (contact impulse) / ω₀  [INFERENCE]
+
+At ω₀ = 600 rad/s and contact impulse ~5 N·s (soft contact), ΔL delivered to opponent ≈ 0.087 × 5/600 ≈ 7.25×10⁻⁴ kg·m²/s — less than Mad Cancer's entire L₀ = 9.6×10⁻⁴ kg·m²/s. Mad cannot knock out a same-mass metal-FW opponent with a single contact; that opponent would require Mad to sustain 13+ contacts in flat mode, which exhausts Mad's 12–18 s flat-mode window in approximately 1–2 s of sustained engagement. [INFERENCE — order of magnitude]
+```
+
+**Competitive Classification:**
+- Stock combo: collector-only [FACT per product description regarding Mad breakage]
+- CH120 component: competitive in Attack custom combos at 120 height [INFERENCE from community use]
+- Gasher ER: marginal Defense/Stamina custom combo utility [INFERENCE]
+- Mad LW: no competitive salvage application; breakage risk [FACT]
+
+**TypeScript model:**
+```typescript
+const madCancerCH120FS = {
+  id: "mad_cancer_ch120fs",
+  nameTTJP: "Mad Cancer CH120FS",
+  nameAnime: "Mad Cancer",
+  blader: "Tetsuya Watarigani",
+  releaseCode: "BB-31",
+  releaseType: "Random Booster Light Vol. 1 (prize)",  // [FACT]
+  generation: "mfb_standard",
+  type: "balance",
+  remodelled_as: "Dark Cancer CH120SF",  // [FACT]
+
+  parts: {
+    faceBolt:     { id: "face_bolt_gasher",  mass_g: 1.2 },   // [INFERENCE]
+    energyRing:   { id: "er_gasher",          mass_g: 4.0 },   // [INFERENCE]
+    lightWheel:   { id: "lw_mad",             mass_g: 6.0 },   // [FACT]
+    spinTrack:    { id: "st_ch120",           mass_g: 3.0 },   // [INFERENCE]
+    performanceTip:{ id: "pt_fs",             mass_g: 1.5 },   // [INFERENCE]
+  },
+
+  assembly: {
+    totalMass_g:      15.7,         // [INFERENCE]
+    I_total_kgm2:     1.601e-6,     // [INFERENCE]
+    omega0_rads:      600,          // [INFERENCE]
+    L0_kgm2s:         9.61e-4,      // [INFERENCE]
+    L0_vs_midMetal_pct: 32,         // [INFERENCE]
+
+    spinTime_spike_s:     72,       // [INFERENCE — spike contact, upright]
+    spinTime_flat_s:    [12, 18],   // [INFERENCE — flat contact, tilted]
+    tiltThreshold_deg:    9,        // spike-to-flat transition [INFERENCE]
+
+    dominantPart:    "lw_mad",      // 74.4% of I_total
+    smashFraction:    0.087,        // from Mad round profile [INFERENCE]
+  },
+
+  competitiveRating: {
+    stock:       "collector_only",
+    ch120:       "attack_custom_viable",
+    gasherER:    "marginal_defense_stamina",
+    madLW:       "no_salvage_breakage_risk",
+  },
+};
+```

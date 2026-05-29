@@ -11290,7 +11290,843 @@ function achillesPressCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +11 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1946 as further franchise moves are provided.*
+
+
+---
+
+## Case 1946 — GIMMICK: Triumph Dragon Charge Metal 1A (Burst Sparking) — Triumph Ring Spring-Blade Awakening
+
+**Beyblade:** Triumph Dragon Charge Metal 1A / テンペストドラゴン Charge Metal 1A (Beyblade Burst Surge / Sparking)
+**Blader:** Dante Koryu | **Series:** Beyblade Burst Surge (Sparking season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Triumph Dragon (incl. Triumph Ring spring assembly) | 45.0 | 32.0 |
+| Ratchet | 1A | 22.0 | 22.0 |
+| Bit | Charge Metal | 10.9 | 6.0 |
+| **Total** | | **77.9** | |
+
+(No face component — Burst Sparking 3-part system. Takara Tomy only per Burst Scope. 77.9 g confirmed via CS9 Case 501–504.)
+
+**I_total** = 45.0×10⁻³ × 0.032² + 22.0×10⁻³ × 0.022² + 10.9×10⁻³ × 0.006²
+           = 4.608×10⁻⁵ + 1.065×10⁻⁵ + 3.924×10⁻⁷
+           = **5.712×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Sparking standard launch)
+L₀ = I × ω₀ = 5.712×10⁻⁵ × 700 = **3.998×10⁻² kg·m²/s**
+
+---
+
+### 1. Triumph Ring — Spring-Blade Awakening
+
+The Triumph Ring is the outer section of the Triumph Dragon Blade, carrying 3 spring-loaded blade protrusions that lie flat (retracted) during normal spin and snap outward at r_ring = 32 mm when the "Awakened" state is triggered. Each spring is pre-compressed:
+
+```
+Spring constant per blade: k = 100 N/m
+Compression: x = 6 mm = 0.006 m
+PE per blade: PE_spring = ½ × k × x² = ½ × 100 × 0.006² = 1.800×10⁻³ J
+N_spring_blades = 3
+PE_total = 3 × 1.800×10⁻³ = 5.400×10⁻³ J
+
+Spring-ring deployment velocity (η_spring = 0.75 coupling efficiency):
+v_spring_deploy = √(2 × PE_total / m_ring) = √(2 × 5.400×10⁻³ / 0.045) = √0.2400 = 0.490 m/s
+v_spring_eff    = η_spring × v_spring_deploy = 0.75 × 0.490 = 0.368 m/s
+```
+
+---
+
+### 2. Awakened Contact — Spring Blade Tip Speed
+
+Once Awakened, the blade tips operate at the full Triumph Ring radius r_ring = 32 mm:
+
+```
+v_tip = ω₀ × r_ring = 700 × 0.032 = 22.40 m/s
+
+Relative contact velocity (right-spin opponent, ω_opp=690 rad/s, r_opp=0.028 m):
+v_opp_contact = 690 × 0.028 = 19.32 m/s
+v_rel_blade   = v_tip − v_opp_contact = 22.40 − 19.32 = 3.08 m/s
+
+Combined contact velocity with spring contribution:
+v_contact = v_rel_blade + v_spring_eff = 3.08 + 0.368 = 3.448 m/s
+
+Charge Metal spin decay (μ_CM = 0.30, r_bit = 6 mm):
+τ_CM = μ_CM × m × g × r_bit = 0.30 × 0.0779 × 9.81 × 0.006 = 1.375×10⁻³ N·m
+t_spin = L₀ / τ_CM = 3.998×10⁻² / 1.375×10⁻³ = 29.1 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 77.9 g |
+| I_total | 5.712×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 3.998×10⁻² kg·m²/s |
+| r_ring | 32 mm |
+| v_tip | 22.40 m/s |
+| PE_total | 5.400×10⁻³ J (3 blades) |
+| v_spring_eff | 0.368 m/s |
+| v_contact | 3.448 m/s |
+| τ_CM | 1.375×10⁻³ N·m |
+| t_spin | 29.1 s |
+
+---
+
+## Case 1947 — SPECIAL: Triumph Break (Tempest Break) — Dante Koryu / Triumph Dragon
+
+**Blader:** Dante Koryu | **Beyblade:** Triumph Dragon Charge Metal 1A | **Type:** attack
+
+### Description
+
+Triumph Break (テンペストブレイク Tempest Break) is a Special Move used by Dante Koryu and his Triumph Dragon Charge Metal 1A. While in its Awakened form, Dragon uses the Triumph Ring's spring blades to deal massive damage to its opponent. The spring blades snap outward from the Triumph Ring as the bey enters the Awakened state, dramatically increasing the effective blade radius and delivering an explosive contact that combines the full tip speed of the extended blades with the spring-release energy. Triumph Dragon's exceptional mass (77.9 g) amplifies the ring-out momentum beyond any standard Sparking-era beyblade.
+
+### Stage — Awakened Spring-Blade Contact Strike
+
+From Case 1946: v_contact = 3.448 m/s, e = 0.65 (ABS/metal hybrid Sparking blade contact).
+
+```
+m_eff = (m_D × m_opp) / (m_D + m_opp) = (0.0779 × 0.040) / (0.0779 + 0.040)
+      = 3.116×10⁻³ / 0.1179 = 2.643×10⁻² kg
+
+J_triumphbreak = m_eff × (1 + e) × v_contact
+               = 2.643×10⁻² × 1.65 × 3.448
+               = 2.643×10⁻² × 5.689 = 1.503×10⁻¹ N·s
+
+Δv_opp = J_triumphbreak / m_opp = 1.503×10⁻¹ / 0.040 = 3.758 m/s
+```
+
+**Effect on Triumph Dragon (spin drain from Awakened contact):**
+
+```
+Δω_D = J_triumphbreak × r_ring / I_D = 1.503×10⁻¹ × 0.032 / 5.712×10⁻⁵ = 84.2 rad/s
+ω_remain = 700 − 84.2 = 615.8 rad/s  (88.0% retained)
+(High I_total = 5.712×10⁻⁵ gives excellent spin retention vs heavy contact drain)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dante's Dragon Bit-Beast erupts in full tempest fury — the Triumph Ring spring blades ignite in golden fire and the entire Triumph Dragon transforms into a whirling storm of dragon wings, the strike detonating the opponent clean out of the stadium in a cascade of lightning and thunder.
+
+[M] factor = **7.5 ×** (Dante Koryu — Triumph Dragon tempest-spirit, Burst Surge protagonist)
+[M] Δv = 3.758 × 7.5 = **28.2 m/s** (Awakened spring-blade tempest ring-out)
+
+> **Note:** Physical values describe Triumph Ring spring deployment PE=5.400×10⁻³ J, v_spring=0.368 m/s; Awakened blade v_tip=22.40 m/s; v_contact=3.448 m/s; J=1.503×10⁻¹ N·s; Δv=3.758 m/s (mass-amplified by 77.9 g — 1.84× heavier than standard Sparking bey). [M] values represent Dante's Dragon erupting in tempest-wing fire. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function triumphBreakSpecial(bey: Beyblade, target: Beyblade): void {
+  // Triumph Ring spring PE=5.4×10⁻³J, v_spring=0.368m/s; v_contact=3.448m/s; J=1.503×10⁻¹N·s; [M] 7.5×
+  const J_phys = 0.1503;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Dante Koryu Triumph Dragon tempest spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Sparking-era beyblade using a Blade with a spring-loaded outer ring (Triumph Ring equivalent) carrying 3+ spring blades (PE ≥ 1.0×10⁻³ J per blade, r_ring ≥ 28 mm) capable of Awakened deployment at ω₀ ≥ 650 rad/s, paired with a Ratchet-Bit combination totalling ≥ 30 g for maximum mass-driven ring-out momentum. Standard game instance: Triumph Dragon Charge Metal 1A (Dante Koryu, Burst Surge).
+
+---
+
+## Case 1948 — COMBO: Triumph Guard — Triumph Dragon
+
+**Sequence:** J A K (jump · attack · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Dante Koryu
+
+### Physics Justification
+
+The jump (J) triggers a partial spring-blade pre-deployment — Triumph Dragon's Triumph Ring springs partially release, priming the blades at an intermediate radius. The attack (A) fires the Awakened strike at partial spring energy. The defense (K) closes with the spring-guard follow-through — partially-deployed blades fold back and absorb recoil, converting it to spin:
+
+```
+v_contact_partial = v_contact × 0.65 = 3.448 × 0.65 = 2.241 m/s
+
+J_partial = m_eff × (1 + e) × v_contact_partial = 2.643×10⁻² × 1.65 × 2.241
+          = 2.643×10⁻² × 3.698 = 9.773×10⁻² N·s
+```
+
+Spring-guard recoil recovery on K follow-through (η_spring = 0.15):
+
+```
+Δω = η_spring × J_partial × r_ring / I_D
+   = 0.15 × 9.773×10⁻² × 0.032 / 5.712×10⁻⁵
+   = 0.15 × 54.74
+   = +8.2 rad/s  ≈ +8 rad/s
+```
+
+(η_spring = 0.15: spring-guard blade fold converts contact recoil into rotational momentum.) Partial Awakened spring-blade strike with guard gives damageMultiplier **1.35×**. lockMs = 100 (spring-guard dwell on landing K).
+
+**Parameters:**
+- spinGain: +8 rad/s (spring-guard blade-fold recoil η = 0.15)
+- damageMultiplier: 1.35 (partial Awakened spring-blade strike + guard)
+- lockMs: 100 (spring-guard dwell)
+
+### TypeScript
+
+```typescript
+function triumphGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // Spring-guard recoil: Δω ≈ +8 rad/s (η=0.15, v_partial=2.241m/s, J=9.773×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Partial Awakened spring-blade strike + guard: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1949 — GIMMICK: Curse Satomb Hurricane Universe 1D — Three-Ring Deflection System
+
+**Beyblade:** Curse Satomb Hurricane Universe 1D (Beyblade Burst Surge / Sparking)
+**Blader:** Silas Karlisle | **Series:** Beyblade Burst Surge (Sparking season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Chip | SK Chip | 2.9 | 4.0 |
+| Blade | Curse Ring (outer ring + roller assembly) | 8.6 | 30.0 |
+| Chassis | 1D | 11.4 | 20.0 |
+| Disc | Hurricane (free-spinning outer disc) | 9.5 | 28.0 |
+| Bit | Universe | 8.7 | 5.0 |
+| **Total** | | **41.1** | |
+
+(Burst Sparking 5-part system. TT only. 41.1 g from CS9 Case assembly table.)
+
+**I_total** = 2.9×10⁻³ × 0.004² + 8.6×10⁻³ × 0.030² + 11.4×10⁻³ × 0.020² + 9.5×10⁻³ × 0.028² + 8.7×10⁻³ × 0.005²
+           = 4.640×10⁻⁸ + 7.740×10⁻⁶ + 4.560×10⁻⁶ + 7.448×10⁻⁶ + 2.175×10⁻⁷
+           = **1.999×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Sparking standard launch)
+L₀ = I × ω₀ = 1.999×10⁻⁵ × 700 = **1.399×10⁻² kg·m²/s**
+
+---
+
+### 1. Curse Ring — Roller Spin Transfer
+
+The Curse Ring carries 3 symmetrically-placed free-spinning rubber rollers at r_roller = 30 mm. On contact, each roller absorbs the opponent's tangential blade energy and transfers a fraction back as spin:
+
+```
+Roller contact radius:  r_roller = 30 mm
+Roller coefficient of restitution: e_roller = 0.30 (rubber — high energy absorption)
+Spin-transfer efficiency: η_roller = 0.40
+
+For each roller contact at v_contact:
+  J_roller = m_eff_roller × (1 + e_roller) × v_rel
+  ΔL_transfer = η_roller × J_roller × r_roller   (returned as spin angular momentum)
+```
+
+---
+
+### 2. Hurricane Disc — Free-Spin Angular Decoupling
+
+The Hurricane Disc outer ring free-spins independently of the bey body. On side contact, the free-spinning disc absorbs tangential impulse without transmitting it to the core chassis:
+
+```
+I_hurricane = 9.5×10⁻³ × 0.028² = 7.448×10⁻⁶ kg·m²
+ω_disc_independent (at ω₀): corotating at 700 rad/s before contact
+
+Angular decoupling factor: η_decouple = 0.65
+  → 65% of tangential contact impulse is absorbed by the freely-spinning disc,
+    reducing spin drain on the core 1D Chassis.
+```
+
+---
+
+### 3. Universe Driver — Curved-Edge Deflection
+
+The Universe Driver's curved hemispherical bottom edge acts as a deflector. Any incoming contact below the horizontal midplane strikes the curved face at deflection angle β:
+
+```
+β = 35°  (Universe Driver curvature angle vs flat contact plane)
+v_def_normal  = v_incoming × cos(β) = v_incoming × cos(35°) = 0.819 × v_incoming
+v_def_tangent = v_incoming × sin(β) = v_incoming × sin(35°) = 0.574 × v_incoming
+
+Net deflection: incoming attack redirected; normal component imparts ring-out risk
+on attacker, tangential component retained as Satomb orbital velocity boost.
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.1 g |
+| I_total | 1.999×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 1.399×10⁻² kg·m²/s |
+| r_roller | 30 mm |
+| e_roller | 0.30 (rubber) |
+| η_decouple | 0.65 (Hurricane free-spin) |
+| β | 35° (Universe deflection angle) |
+| v_def_normal fraction | 0.819 |
+
+---
+
+## Case 1950 — SPECIAL: Triple Spin (Triple Twister) — Silas Karlisle / Curse Satomb Hurricane Universe 1D
+
+**Blader:** Silas Karlisle | **Beyblade:** Curse Satomb Hurricane Universe 1D | **Type:** defense/stamina
+
+### Description
+
+Triple Spin (トリプルツイスター Triple Twister) is a Special Move used by Silas Karlisle and his Curse Satomb Hurricane Universe 1D. Satomb exploits its three-layer deflection architecture — the Curse Ring's spinning rollers, the Hurricane Disc's free-spinning outer ring, and the Universe Driver's curved bottom edge — to create three simultaneous rings of defense capable of deflecting opposing Beyblades. Any attacker is caught between the outward-spinning roller contact (Curse Ring), the freely decoupled disc body (Hurricane), and the curved bottom deflection angle (Universe), absorbing the attack's energy and returning it as Satomb's continued spin.
+
+### Stage — Three-Ring Deflection Against Single Attacker
+
+Attacker at ω_att = 690 rad/s, r_att = 0.028 m:
+
+```
+v_att_contact = ω_att × r_att = 690 × 0.028 = 19.32 m/s
+v_Satomb_tip  = ω₀ × r_roller = 700 × 0.030 = 21.00 m/s
+
+v_rel_contact = v_Satomb_tip − v_att_contact = 21.00 − 19.32 = 1.68 m/s
+(low v_rel confirms defensive engagement — Satomb does not chase; it deflects)
+
+m_eff = (m_S × m_att) / (m_S + m_att) = (0.0411 × 0.040) / (0.0411 + 0.040)
+      = 1.644×10⁻³ / 0.0811 = 2.027×10⁻² kg
+
+Layer 1 — Curse Ring roller absorption:
+  e_roller = 0.30; J_roller = m_eff × (1 + e_roller) × v_rel_contact
+           = 2.027×10⁻² × 1.30 × 1.68 = 4.427×10⁻² N·s
+  ΔL_spin_gain = η_roller × J_roller × r_roller = 0.40 × 4.427×10⁻² × 0.030
+               = 5.312×10⁻⁴ kg·m²/s
+  Δω_layer1 = ΔL_spin_gain / I_total = 5.312×10⁻⁴ / 1.999×10⁻⁵ = 26.6 rad/s
+
+Layer 2 — Hurricane Disc angular decoupling:
+  Tangential impulse absorbed by disc: J_disc = η_decouple × J_roller = 0.65 × 4.427×10⁻²
+           = 2.878×10⁻² N·s  (attacker spin drain amplified; Satomb core shielded)
+
+Layer 3 — Universe Driver curved deflection:
+  Δv_att_deflect = J_roller / m_att × v_def_normal_fraction / (1 + e_roller)
+  Redirect force on attacker: F_redirect = J_roller × sin(β) / t_contact
+  t_contact = 0.005 s; F_redirect = 4.427×10⁻² × 0.574 / 0.005 = 5.082 N
+  Δv_att_ring_out = J_roller × (1 + 0) / m_att × 0.819 = 4.427×10⁻² × 0.819 / 0.040
+                  = 0.906 m/s  (attacker pushed outward at deflection angle)
+```
+
+**Net effect on Curse Satomb:**
+
+```
+Δω_Satomb = Δω_layer1 = 26.6 rad/s  (spin gain from roller absorption)
+ω_remain   = 700 + 26.6 = 726.6 rad/s  (deflection gives spin boost to defender)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Silas's cold mechanical mastery crystallises into three rings of absolute zero — the Curse Ring rollers ignite with deep-blue ice fire, the Hurricane Disc becomes an impenetrable spinning wall, and the Universe Driver's curved face sends the attacker spiraling outward in a storm of triple-twisters that threaten to carry it right out of the stadium.
+
+[M] factor = **6.5 ×** (Silas Karlisle — supporting antagonist, three-ring ice deflection spirit)
+[M] Δv_att = 0.906 × 6.5 = **5.89 m/s** (triple-ring deflection ring-out redirect)
+
+> **Note:** Physical values describe three-ring defense: J_roller=4.427×10⁻²N·s (e=0.30), Δω_Satomb=+26.6 rad/s spin gain; F_redirect=5.082 N; Δv_att=0.906 m/s at β=35° Universe deflection. Hurricane disc η_decouple=0.65 absorbs 2.878×10⁻² N·s from attacker. [M] values represent Silas's triple-twister spirit amplification. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tripleSpinSpecial(bey: Beyblade, target: Beyblade): void {
+  // 3-ring defense: J_roller=4.427×10⁻²N·s(e=0.30), Δω_Satomb=+26.6r/s, Δv_att=0.906m/s; [M] 6.5×
+  const J_roller = 0.04427;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 27); // Δω=+26.6 rad/s roller spin gain
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_roller * 6.5; // [M] BeySpirit 6.5× (Silas triple-ring deflection)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Blade or Chassis with free-spinning rubber roller contact elements (≥ 3 rollers at r ≥ 28 mm) combined with a free-spinning Disc (angular decoupling η ≥ 0.50) and a curved-edge Driver (hemispherical or tapered profile, deflection β ≥ 25°) capable of spin-transfer absorption under sustained attack. Standard game instance: Curse Satomb Hurricane Universe 1D (Silas Karlisle, Burst Surge).
+
+---
+
+## Case 1951 — COMBO: Satomb Reflect — Curse Satomb Hurricane Universe 1D
+
+**Sequence:** K A K (defense · attack · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Silas Karlisle
+
+### Physics Justification
+
+The first defense (K) engages the Curse Ring roller absorb — Satomb receives an incoming hit, roller contact absorbs and partially stores energy. The attack (A) fires the reflected impulse outward via the Universe Driver curved deflection (returning the stored redirect force). The final defense (K) re-engages the roller spin-gain close — Satomb re-locks roller contact and converts recoil into spin:
+
+```
+v_contact_combo = v_rel_contact × 0.60 = 1.68 × 0.60 = 1.008 m/s
+
+J_reflect = m_eff × (1 + e_roller) × v_contact_combo = 2.027×10⁻² × 1.30 × 1.008
+          = 2.656×10⁻² N·s
+```
+
+Hurricane Disc free-spin decoupling converts residual contact energy to spin on the K close (η_decouple = 0.20 for combo):
+
+```
+Δω = η_decouple × J_reflect × r_roller / I_total
+   = 0.20 × 2.656×10⁻² × 0.030 / 1.999×10⁻⁵
+   = 0.20 × 39.87
+   = +8.0 rad/s  ≈ +8 rad/s
+```
+
+(η_decouple = 0.20: Hurricane Disc free-spin absorbs residual after reflect and converts to spin on re-engagement.) Roller reflect gives damageMultiplier **1.25×**. lockMs = 150 (roller dwell on K-close contact absorption).
+
+**Parameters:**
+- spinGain: +8 rad/s (Hurricane disc decoupling η = 0.20)
+- damageMultiplier: 1.25 (roller-deflect reflect counter)
+- lockMs: 150 (roller absorb dwell on close)
+
+### TypeScript
+
+```typescript
+function satombReflectCombo(bey: Beyblade, target: Beyblade): void {
+  // Hurricane disc recoil: Δω ≈ +8 rad/s (η=0.20, v_combo=1.008m/s, J=2.656×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Roller-deflect reflect counter: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1952 — GIMMICK: Rock Orso D125B (×3) — Coordinated Three-Bear Surround Push
+
+**Beyblade:** Rock Orso D125B (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Bladers:** Kumasuke Kumade, Kumata Kumade, Kumaji Kumade | **Series:** Beyblade Metal Fusion
+
+### Assembly (single Rock Orso D125B)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt | 1.0 | 0.0 |
+| Energy Ring | Orso | 7.0 | 33.0 |
+| Fusion Wheel | Rock | 30.0 | 29.0 |
+| Spin Track | D125 (Defense 125) | 4.5 | 15.0 |
+| Performance Tip | B (Ball) | 3.5 | 1.0 |
+| **Total** | | **46.0** | |
+
+(MFB 5-part system. Rock Fusion Wheel: wide, flat contact surface, high m at outer radius — stamina/defense type. D125 adds height for ground contact avoidance. Ball tip: low friction, wide wandering.)
+
+**I_single** = 1.0×10⁻³ × 0.0² + 7.0×10⁻³ × 0.033² + 30.0×10⁻³ × 0.029² + 4.5×10⁻³ × 0.015² + 3.5×10⁻³ × 0.001²
+            = 0 + 7.623×10⁻⁶ + 2.523×10⁻⁵ + 1.013×10⁻⁶ + 3.500×10⁻⁹
+            = **3.388×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.388×10⁻⁵ × 580 = **1.965×10⁻² kg·m²/s**
+
+---
+
+### Three-Bey Coordinated Surround
+
+All three Rock Orso units launch simultaneously with equal spin and are steered into a triangular formation surrounding the opponent at r_surround = 80 mm from the opponent's centre. Each Orso approaches along a radial vector separated by 120°.
+
+```
+Three surround approach vectors (120° spacing):
+  θ₁ = 0°,   θ₂ = 120°,  θ₃ = 240°
+
+Approach velocity from Ball tip wandering (μ_B = 0.05, high orbital range):
+  v_approach = μ_B × ω₀ × r_tip = 0.05 × 580 × 0.001 = 0.029 m/s (natural wander)
+
+Blader-guided vector push (bladers steer all three simultaneously):
+  v_push_guided = 0.25 m/s  (blader redirects bey by tilting launcher post-launch)
+
+Net approach velocity per bey toward target:
+  v_per_bey = v_approach + v_push_guided = 0.029 + 0.25 = 0.279 m/s ≈ 0.28 m/s
+```
+
+---
+
+### Surround Push Geometry
+
+```
+With 3 Orso beys at 120° spacing, each pushing inward radially, the net force on the
+opponent is zero only when the target is centred. Any asymmetry concentrates force
+along the axis with largest net imbalance — so the triple push drives the opponent
+toward the nearest wall (not toward any single Orso).
+
+Net impulse per contact (all 3 fire at once):
+  J_total = N_beys × m_eff_each × (1 + e) × v_per_bey
+  where N_beys = 3, e = 0.55 (Rock Fusion Wheel flat face — stamina/defense contact)
+
+  m_eff_each = (m_Orso × m_opp) / (m_Orso + m_opp) = (0.046 × 0.040) / (0.046 + 0.040)
+             = 1.840×10⁻³ / 0.086 = 2.140×10⁻² kg
+
+  J_per_hit = m_eff_each × (1 + e) × v_per_bey = 2.140×10⁻² × 1.55 × 0.28
+            = 2.140×10⁻² × 0.434 = 9.288×10⁻³ N·s
+
+  J_total = 3 × 9.288×10⁻³ = 2.786×10⁻² N·s
+
+Net Δv_opp = J_total / m_opp = 2.786×10⁻² / 0.040 = 0.697 m/s
+(Net radial push; opponent displaced toward nearest wall)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m (single Orso) | 46.0 g |
+| I_single | 3.388×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.965×10⁻² kg·m²/s |
+| N_beys | 3 |
+| v_per_bey | 0.28 m/s |
+| J_per_hit | 9.288×10⁻³ N·s |
+| J_total (×3) | 2.786×10⁻² N·s |
+| Δv_opp | 0.697 m/s |
+
+---
+
+## Case 1953 — SPECIAL: Triple Orso Step — Kumade Brothers / Rock Orso D125B ×3
+
+**Bladers:** Kumasuke Kumade, Kumata Kumade, Kumaji Kumade | **Beyblade:** Rock Orso D125B ×3 | **Type:** attack (joint)
+
+### Description
+
+Triple Orso Step is a Joint Special Move used by Kumasuke Kumade and his brothers Kumata and Kumaji Kumade and their Rock Orso D125B beyblades. All three brothers simultaneously push the opponent's beyblade to the edge of the stadium, working in coordinated triangular formation. Each Orso charges inward along one of three radial push axes (120° apart), creating a net displacement force that drives the opponent toward the nearest wall. This technique was first used against Tsubasa and his Earth Eagle 145WD.
+
+### Stage — Coordinated Triple Surround Push
+
+From Case 1952: J_total = 2.786×10⁻² N·s, Δv_opp = 0.697 m/s (net radial toward nearest wall).
+
+```
+Opponent initial position: at arena centre; arena radius R_arena = 400 mm (MFB standard)
+Net displacement per push phase: Δx = Δv_opp × t_push = 0.697 × 0.8 = 0.558 m  (too large — clamp to 60% arena)
+
+Realistic push: 3 × hits over 0.8s with natural deceleration friction
+  Effective cumulative Δv = J_total / m_opp × η_push = 0.697 × 0.80 = 0.557 m/s
+  (η_push = 0.80: friction and reaction offset during guided push)
+
+Repeat cycle: brothers execute 2 push cycles before opponent reaches wall:
+  Cycle 1: Δv_1 = 0.557 m/s; Cycle 2 (residual, tighter formation): Δv_2 = 0.557 × 0.70 = 0.390 m/s
+  Total push velocity before wall: Δv_total = 0.557 + 0.390 = 0.947 m/s
+
+Wall impact (arena wall, e_wall = 0.50):
+  v_wall = Δv_total = 0.947 m/s
+  If opponent at wall edge: 0.947 m/s > ring-out escape threshold (0.60 m/s for 40g bey)
+  → ring-out achieved by combined push
+```
+
+---
+
+**[M] BeySpirit amplification:**
+The three Kumade brothers' bear spirits rise together — three massive grizzlies erupting in earth-shaking unison, their Rock Wheels crashing inward from all sides and the ground itself trembling under the Orso Step. The opponent's bey is engulfed in a wall of brown-gold spirit fire and crushed straight out of the arena in a single coordinated bear-rush.
+
+[M] factor = **5.5 ×** (Kumade brothers — supporting comic-relief trio, bear-spirit team bond)
+[M] Δv_total = 0.947 × 5.5 = **5.21 m/s** (coordinated triple bear-push ring-out)
+
+> **Note:** Physical values describe 3-bey surround push: J_per_hit=9.288×10⁻³ N·s, J_total=2.786×10⁻² N·s; two push cycles Δv_total=0.947 m/s; exceeds 40g ring-out escape threshold 0.60 m/s. [M] values represent the three brothers' grizzly bear-spirits erupting in unison. Combos do not receive [M] amplification. This is a joint move requiring all 3 brothers' beys on the field simultaneously.
+
+### TypeScript
+
+```typescript
+function tripleOrsoStepSpecial(bey: Beyblade, target: Beyblade): void {
+  // 3-bey surround: J_total=2.786×10⁻²N·s(3×), 2 push cycles Δv=0.947m/s; [M] 5.5×
+  const J_total = 0.02786;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 5.5; // [M] BeySpirit 5.5× (Kumade brothers bear-spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using a wide flat-contact Fusion Wheel (defense/stamina type, r_CoM ≥ 27 mm) and a wandering Performance Tip (Ball or equivalent, μ ≤ 0.10) that can be blader-guided post-launch via tilt, used in a 3-bey coordinated surround formation at 120° spacing. Standard game instance: Rock Orso D125B ×3 (Kumade brothers, Metal Fusion). Joint move — requires 3 beys of the same type on the field simultaneously.
+
+---
+
+## Case 1954 — COMBO: Orso Triangle — Rock Orso D125B
+
+**Sequence:** → ↑ ← (moveRight · moveUp · moveLeft)
+**Cost:** 15 | **Type:** attack | **Blader:** Kumasuke Kumade (lead brother)
+
+### Physics Justification
+
+The three directional moves simulate the three legs of the triangular surround approach: moveRight (→) sends the lead Orso clockwise; moveUp (↑) drives the approach inward toward the centre; moveLeft (←) completes the triangular arc. At the crossover of all three vectors, the Rock Wheel's flat wide face delivers the concentrated three-leg-contact push impulse:
+
+```
+v_orbital_lead = μ_B × ω₀ × r_tip = 0.05 × 580 × 0.001 = 0.029 m/s (Ball tip orbital)
+v_guided_push  = 0.25 m/s  (blader-guided push, same as Case 1952)
+v_arc_bonus    = v_orbital_lead × 2 × sin(60°) = 0.029 × 2 × 0.866 = 0.0503 m/s
+(triangular arc momentum at 60° per leg)
+
+v_contact_combo = v_guided_push + v_arc_bonus = 0.25 + 0.0503 = 0.300 m/s
+
+J_combo = m_eff_each × (1 + e) × v_contact_combo = 2.140×10⁻² × 1.55 × 0.300
+        = 2.140×10⁻² × 0.465 = 9.951×10⁻³ N·s
+```
+
+Ball tip wide orbital converts triangle arc into a spin retention loop (η_B = 0.10):
+
+```
+Δω = η_B × J_combo × r_tip / I_single
+   = 0.10 × 9.951×10⁻³ × 0.001 / 3.388×10⁻⁵
+   = 0.10 × 0.2937
+   = +0.029 rad/s  → round to +1 rad/s minimum (floor)
+```
+
+(η_B = 0.10: Ball tip orbital momentum loop; negligible spin gain, purely positional. Flat Rock Wheel gives consistent moderate damageMultiplier.) Triangle arc push gives damageMultiplier **1.20×**. lockMs = 0 (attack type, continuous orbital sweep).
+
+**Parameters:**
+- spinGain: +1 rad/s (Ball tip orbital minimum)
+- damageMultiplier: 1.20 (triangular arc flat-face push)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function orsoTriangleCombo(bey: Beyblade, target: Beyblade): void {
+  // Ball orbital arc: Δω ≈ +1 rad/s minimum (η=0.10, v_combo=0.300m/s, J=9.951×10⁻³N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 1);
+  // Triangle arc flat-face push: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +1 rad/s (minimum) | ✓ |
+
+
+
+---
+
+## Case 1955 — GIMMICK: Blade Sharks Formation — Triangle Attack Geometry (Bakuten Shoot / G-Revolution)
+
+**Beyblade:** Blade Sharks plastic-generation attack beys (representative: Dranzer S-type equivalent)
+**Bladers:** Blade Sharks gang members (3) | **Series:** Beyblade (Bakuten Shoot / G-Revolution)
+
+### Assembly (representative single Blade Sharks bey — sharp attack type)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Standard | 1.0 | 0.0 |
+| Attack Ring | Sharp 4-wing (narrow, aggressive contact) | 9.0 | 35.0 |
+| Weight Disk | Wide (standard) | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | Flat Base (aggressive wandering) | 6.0 | 2.0 |
+| **Total** | | **35.0** | |
+
+(Plastic generation 5-part system. Representative of Blade Sharks attack-type beys used in group scenes. Flat Base gives high orbital speed for coordinated strike. 35.0 g estimated — standard plastic-gen light attack type.)
+
+**I_single** = 1.0×10⁻³ × 0.0² + 9.0×10⁻³ × 0.035² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 6.0×10⁻³ × 0.002²
+            = 0 + 1.103×10⁻⁵ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 2.400×10⁻⁸
+            = **2.097×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 2.097×10⁻⁵ × 500 = **1.049×10⁻² kg·m²/s**
+
+---
+
+### Triangle Attack — Coordinated Strike Formation
+
+Three beys positioned at triangle vertices (equilateral, side = 120 mm) surrounding the target at formation radius r_formation = 70 mm from the opponent's centre:
+
+```
+Formation geometry: equilateral triangle, r_formation = 70 mm
+  θ₁ = 90°,  θ₂ = 210°,  θ₃ = 330°  (vertex positions)
+
+Each Blade Sharks bey charges inward along its radial vector simultaneously.
+Flat Base high-speed wandering provides natural orbital approach:
+  v_flat = μ_flat × ω₀ × r_tip = 0.70 × 500 × 0.002 = 0.700 m/s
+  (μ_flat = 0.70 — aggressive plastic Flat Base friction; high translational velocity)
+
+Coordinated charge approach velocity per bey:
+  v_attack = v_flat = 0.700 m/s (Flat Base drives direct aggressive dash to target)
+```
+
+---
+
+### Contact Physics — Sharp Attack Ring Impact
+
+Each of the 3 Blade Sharks beys delivers a concentrated sharp-wing attack ring blow:
+
+```
+m_eff_each = (m_BS × m_opp) / (m_BS + m_opp) = (0.035 × 0.040) / (0.035 + 0.040)
+           = 1.400×10⁻³ / 0.075 = 1.867×10⁻² kg
+
+e_sharp = 0.70 (sharp plastic attack ring — high restitution, less energy absorption)
+
+J_per_hit = m_eff_each × (1 + e_sharp) × v_attack = 1.867×10⁻² × 1.70 × 0.700
+          = 1.867×10⁻² × 1.190 = 2.222×10⁻² N·s
+
+J_triangle = 3 × J_per_hit = 3 × 2.222×10⁻² = 6.666×10⁻² N·s
+(simultaneous three-point impact; net resultant pushes opponent toward nearest wall)
+
+Δv_opp = J_triangle / m_opp = 6.666×10⁻² / 0.040 = 1.667 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m (single) | 35.0 g |
+| I_single | 2.097×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| L₀ | 1.049×10⁻² kg·m²/s |
+| N_beys | 3 |
+| v_attack | 0.700 m/s |
+| e_sharp | 0.70 |
+| J_per_hit | 2.222×10⁻² N·s |
+| J_triangle (×3) | 6.666×10⁻² N·s |
+| Δv_opp | 1.667 m/s |
+
+---
+
+## Case 1956 — SPECIAL: Triangle Attack — Blade Sharks ×3
+
+**Bladers:** Blade Sharks gang members (3) | **Beyblade:** Plastic attack-type beys ×3 | **Type:** attack (joint)
+
+### Description
+
+Triangle Attack is a Joint Special Move used by the Blade Sharks gang and their plastic-generation attack-type beyblades. Three beys are coordinated into an equilateral triangle formation surrounding the target, then all charge inward simultaneously along their radial vectors. The simultaneous three-point impact overwhelms the opponent's ability to react — each hit comes from a different direction, with the combined impulse driving the opponent's bey toward the wall or into a ring-out. Unlike the Orso Step's sustained push, the Triangle Attack is a single concentrated burst — all three beys crash in and strike at the same instant.
+
+### Stage — Simultaneous Three-Point Triangle Strike
+
+From Case 1955: J_triangle = 6.666×10⁻² N·s, Δv_opp = 1.667 m/s.
+
+```
+Net impulse direction: net resultant depends on formation asymmetry vs opponent position.
+For opponent displaced d = 30 mm from exact centre of the triangle:
+  Net J_resultant = √(J_triangle² × asymmetry_factor) ≈ J_triangle × 0.90
+  (0.90: slight off-centre reduces perfect cancellation; 90% of peak J translates as net push)
+  J_net = 0.90 × 6.666×10⁻² = 5.999×10⁻² N·s
+
+  Δv_net = J_net / m_opp = 5.999×10⁻² / 0.040 = 1.500 m/s
+
+Spin drain per Blade Sharks bey from sharp contact:
+  Δω_each = J_per_hit × r_AR / I_single = 2.222×10⁻² × 0.035 / 2.097×10⁻⁵ = 37.1 rad/s
+  ω_remain_each = 500 − 37.1 = 462.9 rad/s  (92.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+The Blade Sharks' predatory gang-spirit ignites — three beyblades transform into charging sharks, all converging at once from three directions in a triangular flash of teeth and blades. The opponent's bey is engulfed in a spinning triangle of force and smashed out of the stadium before it can react.
+
+[M] factor = **4.5 ×** (Blade Sharks — minor gang antagonists, plastic-gen; lowered for non-protagonist trio)
+[M] Δv_net = 1.500 × 4.5 = **6.75 m/s** (triangle strike ring-out)
+
+> **Note:** Physical values describe 3-bey triangle formation: J_per_hit=2.222×10⁻²N·s (e=0.70 sharp AR), J_triangle=6.666×10⁻²N·s; net Δv=1.500 m/s (90% transfer at 30mm offset). Each Blade Sharks bey loses 37.1 rad/s per strike. [M] values represent the gang's shark-spirit predator charge. Combos do not receive [M] amplification. Joint move — requires all 3 beys on field simultaneously.
+
+### TypeScript
+
+```typescript
+function triangleAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // 3-bey triangle strike: J_triangle=6.666×10⁻²N·s(×3), J_net=5.999×10⁻²N·s, Δv=1.500m/s; [M] 4.5×
+  const J_net = 0.05999;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_net * 4.5; // [M] BeySpirit 4.5× (Blade Sharks gang predator triangle)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a sharp or aggressive wide-contact Attack Ring (r_AR ≥ 32 mm, e ≥ 0.60) and a high-speed wandering Blade Base (Flat Base or equivalent, μ ≥ 0.50, v_flat ≥ 0.60 m/s) capable of coordinated blader-guided simultaneous approach in a triangle formation. Standard game instance: Blade Sharks plastic attack-type beys ×3 (Blade Sharks gang, Bakuten Shoot). Joint move — requires 3 beys of the same type on the field simultaneously.
+
+---
+
+## Case 1957 — COMBO: Shark Triangle — Blade Sharks plastic attack bey
+
+**Sequence:** ↑ ↓ A (moveUp · moveDown · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Blade Sharks lead member
+
+### Physics Justification
+
+The moveUp (↑) drives the lead Blade Sharks bey straight at the opponent, building approach momentum. The moveDown (↓) reverses briefly — the lead bey pulls back and angled wide, simulating the shark's classic feint-and-bite. The attack (A) fires the sharp attack ring strike at the pull-back snap point:
+
+```
+v_approach  = v_flat = 0.700 m/s  (Flat Base from Case 1955)
+v_feint_pullback = v_flat × 0.50 = 0.350 m/s  (partial reversal)
+v_snap_bite = v_approach + v_feint_pullback = 0.700 + 0.350 = 1.050 m/s
+(snap-back creates a whip-like closing velocity as bey reverses into attack arc)
+
+J_snap = m_eff_each × (1 + e_sharp) × v_snap_bite = 1.867×10⁻² × 1.70 × 1.050
+       = 1.867×10⁻² × 1.785 = 3.333×10⁻² N·s
+```
+
+Flat Base orbital rotation converts snap recoil into spin recovery (η_flat = 0.05 — minimal for attack type):
+
+```
+Δω = η_flat × J_snap × r_AR / I_single
+   = 0.05 × 3.333×10⁻² × 0.035 / 2.097×10⁻⁵
+   = 0.05 × 55.58
+   = +2.8 rad/s  ≈ +3 rad/s
+```
+
+(η_flat = 0.05: Flat Base dissipates most momentum as translational movement, minimal spin recovery.) Shark feint-snap gives damageMultiplier **1.30×**. lockMs = 0 (attack type, snap bite with no dwell).
+
+**Parameters:**
+- spinGain: +3 rad/s (Flat Base snap-back minimal recovery)
+- damageMultiplier: 1.30 (sharp AR feint-snap bite)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function sharkTriangleCombo(bey: Beyblade, target: Beyblade): void {
+  // Flat Base snap: Δω ≈ +3 rad/s (η=0.05, v_snap=1.050m/s, J=3.333×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Sharp AR feint-snap bite: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (minimal) | ✓ |
+
+*Cases continue from Case 1958 as further franchise moves are provided.*
 
 
 
@@ -21395,4 +22231,840 @@ function achillesPressCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +11 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1946 as further franchise moves are provided.*
+
+
+---
+
+## Case 1946 — GIMMICK: Triumph Dragon Charge Metal 1A (Burst Sparking) — Triumph Ring Spring-Blade Awakening
+
+**Beyblade:** Triumph Dragon Charge Metal 1A / テンペストドラゴン Charge Metal 1A (Beyblade Burst Surge / Sparking)
+**Blader:** Dante Koryu | **Series:** Beyblade Burst Surge (Sparking season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Triumph Dragon (incl. Triumph Ring spring assembly) | 45.0 | 32.0 |
+| Ratchet | 1A | 22.0 | 22.0 |
+| Bit | Charge Metal | 10.9 | 6.0 |
+| **Total** | | **77.9** | |
+
+(No face component — Burst Sparking 3-part system. Takara Tomy only per Burst Scope. 77.9 g confirmed via CS9 Case 501–504.)
+
+**I_total** = 45.0×10⁻³ × 0.032² + 22.0×10⁻³ × 0.022² + 10.9×10⁻³ × 0.006²
+           = 4.608×10⁻⁵ + 1.065×10⁻⁵ + 3.924×10⁻⁷
+           = **5.712×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Sparking standard launch)
+L₀ = I × ω₀ = 5.712×10⁻⁵ × 700 = **3.998×10⁻² kg·m²/s**
+
+---
+
+### 1. Triumph Ring — Spring-Blade Awakening
+
+The Triumph Ring is the outer section of the Triumph Dragon Blade, carrying 3 spring-loaded blade protrusions that lie flat (retracted) during normal spin and snap outward at r_ring = 32 mm when the "Awakened" state is triggered. Each spring is pre-compressed:
+
+```
+Spring constant per blade: k = 100 N/m
+Compression: x = 6 mm = 0.006 m
+PE per blade: PE_spring = ½ × k × x² = ½ × 100 × 0.006² = 1.800×10⁻³ J
+N_spring_blades = 3
+PE_total = 3 × 1.800×10⁻³ = 5.400×10⁻³ J
+
+Spring-ring deployment velocity (η_spring = 0.75 coupling efficiency):
+v_spring_deploy = √(2 × PE_total / m_ring) = √(2 × 5.400×10⁻³ / 0.045) = √0.2400 = 0.490 m/s
+v_spring_eff    = η_spring × v_spring_deploy = 0.75 × 0.490 = 0.368 m/s
+```
+
+---
+
+### 2. Awakened Contact — Spring Blade Tip Speed
+
+Once Awakened, the blade tips operate at the full Triumph Ring radius r_ring = 32 mm:
+
+```
+v_tip = ω₀ × r_ring = 700 × 0.032 = 22.40 m/s
+
+Relative contact velocity (right-spin opponent, ω_opp=690 rad/s, r_opp=0.028 m):
+v_opp_contact = 690 × 0.028 = 19.32 m/s
+v_rel_blade   = v_tip − v_opp_contact = 22.40 − 19.32 = 3.08 m/s
+
+Combined contact velocity with spring contribution:
+v_contact = v_rel_blade + v_spring_eff = 3.08 + 0.368 = 3.448 m/s
+
+Charge Metal spin decay (μ_CM = 0.30, r_bit = 6 mm):
+τ_CM = μ_CM × m × g × r_bit = 0.30 × 0.0779 × 9.81 × 0.006 = 1.375×10⁻³ N·m
+t_spin = L₀ / τ_CM = 3.998×10⁻² / 1.375×10⁻³ = 29.1 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 77.9 g |
+| I_total | 5.712×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 3.998×10⁻² kg·m²/s |
+| r_ring | 32 mm |
+| v_tip | 22.40 m/s |
+| PE_total | 5.400×10⁻³ J (3 blades) |
+| v_spring_eff | 0.368 m/s |
+| v_contact | 3.448 m/s |
+| τ_CM | 1.375×10⁻³ N·m |
+| t_spin | 29.1 s |
+
+---
+
+## Case 1947 — SPECIAL: Triumph Break (Tempest Break) — Dante Koryu / Triumph Dragon
+
+**Blader:** Dante Koryu | **Beyblade:** Triumph Dragon Charge Metal 1A | **Type:** attack
+
+### Description
+
+Triumph Break (テンペストブレイク Tempest Break) is a Special Move used by Dante Koryu and his Triumph Dragon Charge Metal 1A. While in its Awakened form, Dragon uses the Triumph Ring's spring blades to deal massive damage to its opponent. The spring blades snap outward from the Triumph Ring as the bey enters the Awakened state, dramatically increasing the effective blade radius and delivering an explosive contact that combines the full tip speed of the extended blades with the spring-release energy. Triumph Dragon's exceptional mass (77.9 g) amplifies the ring-out momentum beyond any standard Sparking-era beyblade.
+
+### Stage — Awakened Spring-Blade Contact Strike
+
+From Case 1946: v_contact = 3.448 m/s, e = 0.65 (ABS/metal hybrid Sparking blade contact).
+
+```
+m_eff = (m_D × m_opp) / (m_D + m_opp) = (0.0779 × 0.040) / (0.0779 + 0.040)
+      = 3.116×10⁻³ / 0.1179 = 2.643×10⁻² kg
+
+J_triumphbreak = m_eff × (1 + e) × v_contact
+               = 2.643×10⁻² × 1.65 × 3.448
+               = 2.643×10⁻² × 5.689 = 1.503×10⁻¹ N·s
+
+Δv_opp = J_triumphbreak / m_opp = 1.503×10⁻¹ / 0.040 = 3.758 m/s
+```
+
+**Effect on Triumph Dragon (spin drain from Awakened contact):**
+
+```
+Δω_D = J_triumphbreak × r_ring / I_D = 1.503×10⁻¹ × 0.032 / 5.712×10⁻⁵ = 84.2 rad/s
+ω_remain = 700 − 84.2 = 615.8 rad/s  (88.0% retained)
+(High I_total = 5.712×10⁻⁵ gives excellent spin retention vs heavy contact drain)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dante's Dragon Bit-Beast erupts in full tempest fury — the Triumph Ring spring blades ignite in golden fire and the entire Triumph Dragon transforms into a whirling storm of dragon wings, the strike detonating the opponent clean out of the stadium in a cascade of lightning and thunder.
+
+[M] factor = **7.5 ×** (Dante Koryu — Triumph Dragon tempest-spirit, Burst Surge protagonist)
+[M] Δv = 3.758 × 7.5 = **28.2 m/s** (Awakened spring-blade tempest ring-out)
+
+> **Note:** Physical values describe Triumph Ring spring deployment PE=5.400×10⁻³ J, v_spring=0.368 m/s; Awakened blade v_tip=22.40 m/s; v_contact=3.448 m/s; J=1.503×10⁻¹ N·s; Δv=3.758 m/s (mass-amplified by 77.9 g — 1.84× heavier than standard Sparking bey). [M] values represent Dante's Dragon erupting in tempest-wing fire. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function triumphBreakSpecial(bey: Beyblade, target: Beyblade): void {
+  // Triumph Ring spring PE=5.4×10⁻³J, v_spring=0.368m/s; v_contact=3.448m/s; J=1.503×10⁻¹N·s; [M] 7.5×
+  const J_phys = 0.1503;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.5; // [M] BeySpirit 7.5× (Dante Koryu Triumph Dragon tempest spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Sparking-era beyblade using a Blade with a spring-loaded outer ring (Triumph Ring equivalent) carrying 3+ spring blades (PE ≥ 1.0×10⁻³ J per blade, r_ring ≥ 28 mm) capable of Awakened deployment at ω₀ ≥ 650 rad/s, paired with a Ratchet-Bit combination totalling ≥ 30 g for maximum mass-driven ring-out momentum. Standard game instance: Triumph Dragon Charge Metal 1A (Dante Koryu, Burst Surge).
+
+---
+
+## Case 1948 — COMBO: Triumph Guard — Triumph Dragon
+
+**Sequence:** J A K (jump · attack · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Dante Koryu
+
+### Physics Justification
+
+The jump (J) triggers a partial spring-blade pre-deployment — Triumph Dragon's Triumph Ring springs partially release, priming the blades at an intermediate radius. The attack (A) fires the Awakened strike at partial spring energy. The defense (K) closes with the spring-guard follow-through — partially-deployed blades fold back and absorb recoil, converting it to spin:
+
+```
+v_contact_partial = v_contact × 0.65 = 3.448 × 0.65 = 2.241 m/s
+
+J_partial = m_eff × (1 + e) × v_contact_partial = 2.643×10⁻² × 1.65 × 2.241
+          = 2.643×10⁻² × 3.698 = 9.773×10⁻² N·s
+```
+
+Spring-guard recoil recovery on K follow-through (η_spring = 0.15):
+
+```
+Δω = η_spring × J_partial × r_ring / I_D
+   = 0.15 × 9.773×10⁻² × 0.032 / 5.712×10⁻⁵
+   = 0.15 × 54.74
+   = +8.2 rad/s  ≈ +8 rad/s
+```
+
+(η_spring = 0.15: spring-guard blade fold converts contact recoil into rotational momentum.) Partial Awakened spring-blade strike with guard gives damageMultiplier **1.35×**. lockMs = 100 (spring-guard dwell on landing K).
+
+**Parameters:**
+- spinGain: +8 rad/s (spring-guard blade-fold recoil η = 0.15)
+- damageMultiplier: 1.35 (partial Awakened spring-blade strike + guard)
+- lockMs: 100 (spring-guard dwell)
+
+### TypeScript
+
+```typescript
+function triumphGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // Spring-guard recoil: Δω ≈ +8 rad/s (η=0.15, v_partial=2.241m/s, J=9.773×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Partial Awakened spring-blade strike + guard: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1949 — GIMMICK: Curse Satomb Hurricane Universe 1D — Three-Ring Deflection System
+
+**Beyblade:** Curse Satomb Hurricane Universe 1D (Beyblade Burst Surge / Sparking)
+**Blader:** Silas Karlisle | **Series:** Beyblade Burst Surge (Sparking season)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Chip | SK Chip | 2.9 | 4.0 |
+| Blade | Curse Ring (outer ring + roller assembly) | 8.6 | 30.0 |
+| Chassis | 1D | 11.4 | 20.0 |
+| Disc | Hurricane (free-spinning outer disc) | 9.5 | 28.0 |
+| Bit | Universe | 8.7 | 5.0 |
+| **Total** | | **41.1** | |
+
+(Burst Sparking 5-part system. TT only. 41.1 g from CS9 Case assembly table.)
+
+**I_total** = 2.9×10⁻³ × 0.004² + 8.6×10⁻³ × 0.030² + 11.4×10⁻³ × 0.020² + 9.5×10⁻³ × 0.028² + 8.7×10⁻³ × 0.005²
+           = 4.640×10⁻⁸ + 7.740×10⁻⁶ + 4.560×10⁻⁶ + 7.448×10⁻⁶ + 2.175×10⁻⁷
+           = **1.999×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Sparking standard launch)
+L₀ = I × ω₀ = 1.999×10⁻⁵ × 700 = **1.399×10⁻² kg·m²/s**
+
+---
+
+### 1. Curse Ring — Roller Spin Transfer
+
+The Curse Ring carries 3 symmetrically-placed free-spinning rubber rollers at r_roller = 30 mm. On contact, each roller absorbs the opponent's tangential blade energy and transfers a fraction back as spin:
+
+```
+Roller contact radius:  r_roller = 30 mm
+Roller coefficient of restitution: e_roller = 0.30 (rubber — high energy absorption)
+Spin-transfer efficiency: η_roller = 0.40
+
+For each roller contact at v_contact:
+  J_roller = m_eff_roller × (1 + e_roller) × v_rel
+  ΔL_transfer = η_roller × J_roller × r_roller   (returned as spin angular momentum)
+```
+
+---
+
+### 2. Hurricane Disc — Free-Spin Angular Decoupling
+
+The Hurricane Disc outer ring free-spins independently of the bey body. On side contact, the free-spinning disc absorbs tangential impulse without transmitting it to the core chassis:
+
+```
+I_hurricane = 9.5×10⁻³ × 0.028² = 7.448×10⁻⁶ kg·m²
+ω_disc_independent (at ω₀): corotating at 700 rad/s before contact
+
+Angular decoupling factor: η_decouple = 0.65
+  → 65% of tangential contact impulse is absorbed by the freely-spinning disc,
+    reducing spin drain on the core 1D Chassis.
+```
+
+---
+
+### 3. Universe Driver — Curved-Edge Deflection
+
+The Universe Driver's curved hemispherical bottom edge acts as a deflector. Any incoming contact below the horizontal midplane strikes the curved face at deflection angle β:
+
+```
+β = 35°  (Universe Driver curvature angle vs flat contact plane)
+v_def_normal  = v_incoming × cos(β) = v_incoming × cos(35°) = 0.819 × v_incoming
+v_def_tangent = v_incoming × sin(β) = v_incoming × sin(35°) = 0.574 × v_incoming
+
+Net deflection: incoming attack redirected; normal component imparts ring-out risk
+on attacker, tangential component retained as Satomb orbital velocity boost.
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.1 g |
+| I_total | 1.999×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 1.399×10⁻² kg·m²/s |
+| r_roller | 30 mm |
+| e_roller | 0.30 (rubber) |
+| η_decouple | 0.65 (Hurricane free-spin) |
+| β | 35° (Universe deflection angle) |
+| v_def_normal fraction | 0.819 |
+
+---
+
+## Case 1950 — SPECIAL: Triple Spin (Triple Twister) — Silas Karlisle / Curse Satomb Hurricane Universe 1D
+
+**Blader:** Silas Karlisle | **Beyblade:** Curse Satomb Hurricane Universe 1D | **Type:** defense/stamina
+
+### Description
+
+Triple Spin (トリプルツイスター Triple Twister) is a Special Move used by Silas Karlisle and his Curse Satomb Hurricane Universe 1D. Satomb exploits its three-layer deflection architecture — the Curse Ring's spinning rollers, the Hurricane Disc's free-spinning outer ring, and the Universe Driver's curved bottom edge — to create three simultaneous rings of defense capable of deflecting opposing Beyblades. Any attacker is caught between the outward-spinning roller contact (Curse Ring), the freely decoupled disc body (Hurricane), and the curved bottom deflection angle (Universe), absorbing the attack's energy and returning it as Satomb's continued spin.
+
+### Stage — Three-Ring Deflection Against Single Attacker
+
+Attacker at ω_att = 690 rad/s, r_att = 0.028 m:
+
+```
+v_att_contact = ω_att × r_att = 690 × 0.028 = 19.32 m/s
+v_Satomb_tip  = ω₀ × r_roller = 700 × 0.030 = 21.00 m/s
+
+v_rel_contact = v_Satomb_tip − v_att_contact = 21.00 − 19.32 = 1.68 m/s
+(low v_rel confirms defensive engagement — Satomb does not chase; it deflects)
+
+m_eff = (m_S × m_att) / (m_S + m_att) = (0.0411 × 0.040) / (0.0411 + 0.040)
+      = 1.644×10⁻³ / 0.0811 = 2.027×10⁻² kg
+
+Layer 1 — Curse Ring roller absorption:
+  e_roller = 0.30; J_roller = m_eff × (1 + e_roller) × v_rel_contact
+           = 2.027×10⁻² × 1.30 × 1.68 = 4.427×10⁻² N·s
+  ΔL_spin_gain = η_roller × J_roller × r_roller = 0.40 × 4.427×10⁻² × 0.030
+               = 5.312×10⁻⁴ kg·m²/s
+  Δω_layer1 = ΔL_spin_gain / I_total = 5.312×10⁻⁴ / 1.999×10⁻⁵ = 26.6 rad/s
+
+Layer 2 — Hurricane Disc angular decoupling:
+  Tangential impulse absorbed by disc: J_disc = η_decouple × J_roller = 0.65 × 4.427×10⁻²
+           = 2.878×10⁻² N·s  (attacker spin drain amplified; Satomb core shielded)
+
+Layer 3 — Universe Driver curved deflection:
+  Δv_att_deflect = J_roller / m_att × v_def_normal_fraction / (1 + e_roller)
+  Redirect force on attacker: F_redirect = J_roller × sin(β) / t_contact
+  t_contact = 0.005 s; F_redirect = 4.427×10⁻² × 0.574 / 0.005 = 5.082 N
+  Δv_att_ring_out = J_roller × (1 + 0) / m_att × 0.819 = 4.427×10⁻² × 0.819 / 0.040
+                  = 0.906 m/s  (attacker pushed outward at deflection angle)
+```
+
+**Net effect on Curse Satomb:**
+
+```
+Δω_Satomb = Δω_layer1 = 26.6 rad/s  (spin gain from roller absorption)
+ω_remain   = 700 + 26.6 = 726.6 rad/s  (deflection gives spin boost to defender)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Silas's cold mechanical mastery crystallises into three rings of absolute zero — the Curse Ring rollers ignite with deep-blue ice fire, the Hurricane Disc becomes an impenetrable spinning wall, and the Universe Driver's curved face sends the attacker spiraling outward in a storm of triple-twisters that threaten to carry it right out of the stadium.
+
+[M] factor = **6.5 ×** (Silas Karlisle — supporting antagonist, three-ring ice deflection spirit)
+[M] Δv_att = 0.906 × 6.5 = **5.89 m/s** (triple-ring deflection ring-out redirect)
+
+> **Note:** Physical values describe three-ring defense: J_roller=4.427×10⁻²N·s (e=0.30), Δω_Satomb=+26.6 rad/s spin gain; F_redirect=5.082 N; Δv_att=0.906 m/s at β=35° Universe deflection. Hurricane disc η_decouple=0.65 absorbs 2.878×10⁻² N·s from attacker. [M] values represent Silas's triple-twister spirit amplification. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tripleSpinSpecial(bey: Beyblade, target: Beyblade): void {
+  // 3-ring defense: J_roller=4.427×10⁻²N·s(e=0.30), Δω_Satomb=+26.6r/s, Δv_att=0.906m/s; [M] 6.5×
+  const J_roller = 0.04427;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 27); // Δω=+26.6 rad/s roller spin gain
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_roller * 6.5; // [M] BeySpirit 6.5× (Silas triple-ring deflection)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst-era beyblade using a Blade or Chassis with free-spinning rubber roller contact elements (≥ 3 rollers at r ≥ 28 mm) combined with a free-spinning Disc (angular decoupling η ≥ 0.50) and a curved-edge Driver (hemispherical or tapered profile, deflection β ≥ 25°) capable of spin-transfer absorption under sustained attack. Standard game instance: Curse Satomb Hurricane Universe 1D (Silas Karlisle, Burst Surge).
+
+---
+
+## Case 1951 — COMBO: Satomb Reflect — Curse Satomb Hurricane Universe 1D
+
+**Sequence:** K A K (defense · attack · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Silas Karlisle
+
+### Physics Justification
+
+The first defense (K) engages the Curse Ring roller absorb — Satomb receives an incoming hit, roller contact absorbs and partially stores energy. The attack (A) fires the reflected impulse outward via the Universe Driver curved deflection (returning the stored redirect force). The final defense (K) re-engages the roller spin-gain close — Satomb re-locks roller contact and converts recoil into spin:
+
+```
+v_contact_combo = v_rel_contact × 0.60 = 1.68 × 0.60 = 1.008 m/s
+
+J_reflect = m_eff × (1 + e_roller) × v_contact_combo = 2.027×10⁻² × 1.30 × 1.008
+          = 2.656×10⁻² N·s
+```
+
+Hurricane Disc free-spin decoupling converts residual contact energy to spin on the K close (η_decouple = 0.20 for combo):
+
+```
+Δω = η_decouple × J_reflect × r_roller / I_total
+   = 0.20 × 2.656×10⁻² × 0.030 / 1.999×10⁻⁵
+   = 0.20 × 39.87
+   = +8.0 rad/s  ≈ +8 rad/s
+```
+
+(η_decouple = 0.20: Hurricane Disc free-spin absorbs residual after reflect and converts to spin on re-engagement.) Roller reflect gives damageMultiplier **1.25×**. lockMs = 150 (roller dwell on K-close contact absorption).
+
+**Parameters:**
+- spinGain: +8 rad/s (Hurricane disc decoupling η = 0.20)
+- damageMultiplier: 1.25 (roller-deflect reflect counter)
+- lockMs: 150 (roller absorb dwell on close)
+
+### TypeScript
+
+```typescript
+function satombReflectCombo(bey: Beyblade, target: Beyblade): void {
+  // Hurricane disc recoil: Δω ≈ +8 rad/s (η=0.20, v_combo=1.008m/s, J=2.656×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Roller-deflect reflect counter: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1952 — GIMMICK: Rock Orso D125B (×3) — Coordinated Three-Bear Surround Push
+
+**Beyblade:** Rock Orso D125B (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Bladers:** Kumasuke Kumade, Kumata Kumade, Kumaji Kumade | **Series:** Beyblade Metal Fusion
+
+### Assembly (single Rock Orso D125B)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt | 1.0 | 0.0 |
+| Energy Ring | Orso | 7.0 | 33.0 |
+| Fusion Wheel | Rock | 30.0 | 29.0 |
+| Spin Track | D125 (Defense 125) | 4.5 | 15.0 |
+| Performance Tip | B (Ball) | 3.5 | 1.0 |
+| **Total** | | **46.0** | |
+
+(MFB 5-part system. Rock Fusion Wheel: wide, flat contact surface, high m at outer radius — stamina/defense type. D125 adds height for ground contact avoidance. Ball tip: low friction, wide wandering.)
+
+**I_single** = 1.0×10⁻³ × 0.0² + 7.0×10⁻³ × 0.033² + 30.0×10⁻³ × 0.029² + 4.5×10⁻³ × 0.015² + 3.5×10⁻³ × 0.001²
+            = 0 + 7.623×10⁻⁶ + 2.523×10⁻⁵ + 1.013×10⁻⁶ + 3.500×10⁻⁹
+            = **3.388×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.388×10⁻⁵ × 580 = **1.965×10⁻² kg·m²/s**
+
+---
+
+### Three-Bey Coordinated Surround
+
+All three Rock Orso units launch simultaneously with equal spin and are steered into a triangular formation surrounding the opponent at r_surround = 80 mm from the opponent's centre. Each Orso approaches along a radial vector separated by 120°.
+
+```
+Three surround approach vectors (120° spacing):
+  θ₁ = 0°,   θ₂ = 120°,  θ₃ = 240°
+
+Approach velocity from Ball tip wandering (μ_B = 0.05, high orbital range):
+  v_approach = μ_B × ω₀ × r_tip = 0.05 × 580 × 0.001 = 0.029 m/s (natural wander)
+
+Blader-guided vector push (bladers steer all three simultaneously):
+  v_push_guided = 0.25 m/s  (blader redirects bey by tilting launcher post-launch)
+
+Net approach velocity per bey toward target:
+  v_per_bey = v_approach + v_push_guided = 0.029 + 0.25 = 0.279 m/s ≈ 0.28 m/s
+```
+
+---
+
+### Surround Push Geometry
+
+```
+With 3 Orso beys at 120° spacing, each pushing inward radially, the net force on the
+opponent is zero only when the target is centred. Any asymmetry concentrates force
+along the axis with largest net imbalance — so the triple push drives the opponent
+toward the nearest wall (not toward any single Orso).
+
+Net impulse per contact (all 3 fire at once):
+  J_total = N_beys × m_eff_each × (1 + e) × v_per_bey
+  where N_beys = 3, e = 0.55 (Rock Fusion Wheel flat face — stamina/defense contact)
+
+  m_eff_each = (m_Orso × m_opp) / (m_Orso + m_opp) = (0.046 × 0.040) / (0.046 + 0.040)
+             = 1.840×10⁻³ / 0.086 = 2.140×10⁻² kg
+
+  J_per_hit = m_eff_each × (1 + e) × v_per_bey = 2.140×10⁻² × 1.55 × 0.28
+            = 2.140×10⁻² × 0.434 = 9.288×10⁻³ N·s
+
+  J_total = 3 × 9.288×10⁻³ = 2.786×10⁻² N·s
+
+Net Δv_opp = J_total / m_opp = 2.786×10⁻² / 0.040 = 0.697 m/s
+(Net radial push; opponent displaced toward nearest wall)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m (single Orso) | 46.0 g |
+| I_single | 3.388×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.965×10⁻² kg·m²/s |
+| N_beys | 3 |
+| v_per_bey | 0.28 m/s |
+| J_per_hit | 9.288×10⁻³ N·s |
+| J_total (×3) | 2.786×10⁻² N·s |
+| Δv_opp | 0.697 m/s |
+
+---
+
+## Case 1953 — SPECIAL: Triple Orso Step — Kumade Brothers / Rock Orso D125B ×3
+
+**Bladers:** Kumasuke Kumade, Kumata Kumade, Kumaji Kumade | **Beyblade:** Rock Orso D125B ×3 | **Type:** attack (joint)
+
+### Description
+
+Triple Orso Step is a Joint Special Move used by Kumasuke Kumade and his brothers Kumata and Kumaji Kumade and their Rock Orso D125B beyblades. All three brothers simultaneously push the opponent's beyblade to the edge of the stadium, working in coordinated triangular formation. Each Orso charges inward along one of three radial push axes (120° apart), creating a net displacement force that drives the opponent toward the nearest wall. This technique was first used against Tsubasa and his Earth Eagle 145WD.
+
+### Stage — Coordinated Triple Surround Push
+
+From Case 1952: J_total = 2.786×10⁻² N·s, Δv_opp = 0.697 m/s (net radial toward nearest wall).
+
+```
+Opponent initial position: at arena centre; arena radius R_arena = 400 mm (MFB standard)
+Net displacement per push phase: Δx = Δv_opp × t_push = 0.697 × 0.8 = 0.558 m  (too large — clamp to 60% arena)
+
+Realistic push: 3 × hits over 0.8s with natural deceleration friction
+  Effective cumulative Δv = J_total / m_opp × η_push = 0.697 × 0.80 = 0.557 m/s
+  (η_push = 0.80: friction and reaction offset during guided push)
+
+Repeat cycle: brothers execute 2 push cycles before opponent reaches wall:
+  Cycle 1: Δv_1 = 0.557 m/s; Cycle 2 (residual, tighter formation): Δv_2 = 0.557 × 0.70 = 0.390 m/s
+  Total push velocity before wall: Δv_total = 0.557 + 0.390 = 0.947 m/s
+
+Wall impact (arena wall, e_wall = 0.50):
+  v_wall = Δv_total = 0.947 m/s
+  If opponent at wall edge: 0.947 m/s > ring-out escape threshold (0.60 m/s for 40g bey)
+  → ring-out achieved by combined push
+```
+
+---
+
+**[M] BeySpirit amplification:**
+The three Kumade brothers' bear spirits rise together — three massive grizzlies erupting in earth-shaking unison, their Rock Wheels crashing inward from all sides and the ground itself trembling under the Orso Step. The opponent's bey is engulfed in a wall of brown-gold spirit fire and crushed straight out of the arena in a single coordinated bear-rush.
+
+[M] factor = **5.5 ×** (Kumade brothers — supporting comic-relief trio, bear-spirit team bond)
+[M] Δv_total = 0.947 × 5.5 = **5.21 m/s** (coordinated triple bear-push ring-out)
+
+> **Note:** Physical values describe 3-bey surround push: J_per_hit=9.288×10⁻³ N·s, J_total=2.786×10⁻² N·s; two push cycles Δv_total=0.947 m/s; exceeds 40g ring-out escape threshold 0.60 m/s. [M] values represent the three brothers' grizzly bear-spirits erupting in unison. Combos do not receive [M] amplification. This is a joint move requiring all 3 brothers' beys on the field simultaneously.
+
+### TypeScript
+
+```typescript
+function tripleOrsoStepSpecial(bey: Beyblade, target: Beyblade): void {
+  // 3-bey surround: J_total=2.786×10⁻²N·s(3×), 2 push cycles Δv=0.947m/s; [M] 5.5×
+  const J_total = 0.02786;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 5.5; // [M] BeySpirit 5.5× (Kumade brothers bear-spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using a wide flat-contact Fusion Wheel (defense/stamina type, r_CoM ≥ 27 mm) and a wandering Performance Tip (Ball or equivalent, μ ≤ 0.10) that can be blader-guided post-launch via tilt, used in a 3-bey coordinated surround formation at 120° spacing. Standard game instance: Rock Orso D125B ×3 (Kumade brothers, Metal Fusion). Joint move — requires 3 beys of the same type on the field simultaneously.
+
+---
+
+## Case 1954 — COMBO: Orso Triangle — Rock Orso D125B
+
+**Sequence:** → ↑ ← (moveRight · moveUp · moveLeft)
+**Cost:** 15 | **Type:** attack | **Blader:** Kumasuke Kumade (lead brother)
+
+### Physics Justification
+
+The three directional moves simulate the three legs of the triangular surround approach: moveRight (→) sends the lead Orso clockwise; moveUp (↑) drives the approach inward toward the centre; moveLeft (←) completes the triangular arc. At the crossover of all three vectors, the Rock Wheel's flat wide face delivers the concentrated three-leg-contact push impulse:
+
+```
+v_orbital_lead = μ_B × ω₀ × r_tip = 0.05 × 580 × 0.001 = 0.029 m/s (Ball tip orbital)
+v_guided_push  = 0.25 m/s  (blader-guided push, same as Case 1952)
+v_arc_bonus    = v_orbital_lead × 2 × sin(60°) = 0.029 × 2 × 0.866 = 0.0503 m/s
+(triangular arc momentum at 60° per leg)
+
+v_contact_combo = v_guided_push + v_arc_bonus = 0.25 + 0.0503 = 0.300 m/s
+
+J_combo = m_eff_each × (1 + e) × v_contact_combo = 2.140×10⁻² × 1.55 × 0.300
+        = 2.140×10⁻² × 0.465 = 9.951×10⁻³ N·s
+```
+
+Ball tip wide orbital converts triangle arc into a spin retention loop (η_B = 0.10):
+
+```
+Δω = η_B × J_combo × r_tip / I_single
+   = 0.10 × 9.951×10⁻³ × 0.001 / 3.388×10⁻⁵
+   = 0.10 × 0.2937
+   = +0.029 rad/s  → round to +1 rad/s minimum (floor)
+```
+
+(η_B = 0.10: Ball tip orbital momentum loop; negligible spin gain, purely positional. Flat Rock Wheel gives consistent moderate damageMultiplier.) Triangle arc push gives damageMultiplier **1.20×**. lockMs = 0 (attack type, continuous orbital sweep).
+
+**Parameters:**
+- spinGain: +1 rad/s (Ball tip orbital minimum)
+- damageMultiplier: 1.20 (triangular arc flat-face push)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function orsoTriangleCombo(bey: Beyblade, target: Beyblade): void {
+  // Ball orbital arc: Δω ≈ +1 rad/s minimum (η=0.10, v_combo=0.300m/s, J=9.951×10⁻³N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 1);
+  // Triangle arc flat-face push: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +1 rad/s (minimum) | ✓ |
+
+
+
+---
+
+## Case 1955 — GIMMICK: Blade Sharks Formation — Triangle Attack Geometry (Bakuten Shoot / G-Revolution)
+
+**Beyblade:** Blade Sharks plastic-generation attack beys (representative: Dranzer S-type equivalent)
+**Bladers:** Blade Sharks gang members (3) | **Series:** Beyblade (Bakuten Shoot / G-Revolution)
+
+### Assembly (representative single Blade Sharks bey — sharp attack type)
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Standard | 1.0 | 0.0 |
+| Attack Ring | Sharp 4-wing (narrow, aggressive contact) | 9.0 | 35.0 |
+| Weight Disk | Wide (standard) | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | Flat Base (aggressive wandering) | 6.0 | 2.0 |
+| **Total** | | **35.0** | |
+
+(Plastic generation 5-part system. Representative of Blade Sharks attack-type beys used in group scenes. Flat Base gives high orbital speed for coordinated strike. 35.0 g estimated — standard plastic-gen light attack type.)
+
+**I_single** = 1.0×10⁻³ × 0.0² + 9.0×10⁻³ × 0.035² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 6.0×10⁻³ × 0.002²
+            = 0 + 1.103×10⁻⁵ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 2.400×10⁻⁸
+            = **2.097×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 2.097×10⁻⁵ × 500 = **1.049×10⁻² kg·m²/s**
+
+---
+
+### Triangle Attack — Coordinated Strike Formation
+
+Three beys positioned at triangle vertices (equilateral, side = 120 mm) surrounding the target at formation radius r_formation = 70 mm from the opponent's centre:
+
+```
+Formation geometry: equilateral triangle, r_formation = 70 mm
+  θ₁ = 90°,  θ₂ = 210°,  θ₃ = 330°  (vertex positions)
+
+Each Blade Sharks bey charges inward along its radial vector simultaneously.
+Flat Base high-speed wandering provides natural orbital approach:
+  v_flat = μ_flat × ω₀ × r_tip = 0.70 × 500 × 0.002 = 0.700 m/s
+  (μ_flat = 0.70 — aggressive plastic Flat Base friction; high translational velocity)
+
+Coordinated charge approach velocity per bey:
+  v_attack = v_flat = 0.700 m/s (Flat Base drives direct aggressive dash to target)
+```
+
+---
+
+### Contact Physics — Sharp Attack Ring Impact
+
+Each of the 3 Blade Sharks beys delivers a concentrated sharp-wing attack ring blow:
+
+```
+m_eff_each = (m_BS × m_opp) / (m_BS + m_opp) = (0.035 × 0.040) / (0.035 + 0.040)
+           = 1.400×10⁻³ / 0.075 = 1.867×10⁻² kg
+
+e_sharp = 0.70 (sharp plastic attack ring — high restitution, less energy absorption)
+
+J_per_hit = m_eff_each × (1 + e_sharp) × v_attack = 1.867×10⁻² × 1.70 × 0.700
+          = 1.867×10⁻² × 1.190 = 2.222×10⁻² N·s
+
+J_triangle = 3 × J_per_hit = 3 × 2.222×10⁻² = 6.666×10⁻² N·s
+(simultaneous three-point impact; net resultant pushes opponent toward nearest wall)
+
+Δv_opp = J_triangle / m_opp = 6.666×10⁻² / 0.040 = 1.667 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m (single) | 35.0 g |
+| I_single | 2.097×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| L₀ | 1.049×10⁻² kg·m²/s |
+| N_beys | 3 |
+| v_attack | 0.700 m/s |
+| e_sharp | 0.70 |
+| J_per_hit | 2.222×10⁻² N·s |
+| J_triangle (×3) | 6.666×10⁻² N·s |
+| Δv_opp | 1.667 m/s |
+
+---
+
+## Case 1956 — SPECIAL: Triangle Attack — Blade Sharks ×3
+
+**Bladers:** Blade Sharks gang members (3) | **Beyblade:** Plastic attack-type beys ×3 | **Type:** attack (joint)
+
+### Description
+
+Triangle Attack is a Joint Special Move used by the Blade Sharks gang and their plastic-generation attack-type beyblades. Three beys are coordinated into an equilateral triangle formation surrounding the target, then all charge inward simultaneously along their radial vectors. The simultaneous three-point impact overwhelms the opponent's ability to react — each hit comes from a different direction, with the combined impulse driving the opponent's bey toward the wall or into a ring-out. Unlike the Orso Step's sustained push, the Triangle Attack is a single concentrated burst — all three beys crash in and strike at the same instant.
+
+### Stage — Simultaneous Three-Point Triangle Strike
+
+From Case 1955: J_triangle = 6.666×10⁻² N·s, Δv_opp = 1.667 m/s.
+
+```
+Net impulse direction: net resultant depends on formation asymmetry vs opponent position.
+For opponent displaced d = 30 mm from exact centre of the triangle:
+  Net J_resultant = √(J_triangle² × asymmetry_factor) ≈ J_triangle × 0.90
+  (0.90: slight off-centre reduces perfect cancellation; 90% of peak J translates as net push)
+  J_net = 0.90 × 6.666×10⁻² = 5.999×10⁻² N·s
+
+  Δv_net = J_net / m_opp = 5.999×10⁻² / 0.040 = 1.500 m/s
+
+Spin drain per Blade Sharks bey from sharp contact:
+  Δω_each = J_per_hit × r_AR / I_single = 2.222×10⁻² × 0.035 / 2.097×10⁻⁵ = 37.1 rad/s
+  ω_remain_each = 500 − 37.1 = 462.9 rad/s  (92.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+The Blade Sharks' predatory gang-spirit ignites — three beyblades transform into charging sharks, all converging at once from three directions in a triangular flash of teeth and blades. The opponent's bey is engulfed in a spinning triangle of force and smashed out of the stadium before it can react.
+
+[M] factor = **4.5 ×** (Blade Sharks — minor gang antagonists, plastic-gen; lowered for non-protagonist trio)
+[M] Δv_net = 1.500 × 4.5 = **6.75 m/s** (triangle strike ring-out)
+
+> **Note:** Physical values describe 3-bey triangle formation: J_per_hit=2.222×10⁻²N·s (e=0.70 sharp AR), J_triangle=6.666×10⁻²N·s; net Δv=1.500 m/s (90% transfer at 30mm offset). Each Blade Sharks bey loses 37.1 rad/s per strike. [M] values represent the gang's shark-spirit predator charge. Combos do not receive [M] amplification. Joint move — requires all 3 beys on field simultaneously.
+
+### TypeScript
+
+```typescript
+function triangleAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // 3-bey triangle strike: J_triangle=6.666×10⁻²N·s(×3), J_net=5.999×10⁻²N·s, Δv=1.500m/s; [M] 4.5×
+  const J_net = 0.05999;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_net * 4.5; // [M] BeySpirit 4.5× (Blade Sharks gang predator triangle)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a sharp or aggressive wide-contact Attack Ring (r_AR ≥ 32 mm, e ≥ 0.60) and a high-speed wandering Blade Base (Flat Base or equivalent, μ ≥ 0.50, v_flat ≥ 0.60 m/s) capable of coordinated blader-guided simultaneous approach in a triangle formation. Standard game instance: Blade Sharks plastic attack-type beys ×3 (Blade Sharks gang, Bakuten Shoot). Joint move — requires 3 beys of the same type on the field simultaneously.
+
+---
+
+## Case 1957 — COMBO: Shark Triangle — Blade Sharks plastic attack bey
+
+**Sequence:** ↑ ↓ A (moveUp · moveDown · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Blade Sharks lead member
+
+### Physics Justification
+
+The moveUp (↑) drives the lead Blade Sharks bey straight at the opponent, building approach momentum. The moveDown (↓) reverses briefly — the lead bey pulls back and angled wide, simulating the shark's classic feint-and-bite. The attack (A) fires the sharp attack ring strike at the pull-back snap point:
+
+```
+v_approach  = v_flat = 0.700 m/s  (Flat Base from Case 1955)
+v_feint_pullback = v_flat × 0.50 = 0.350 m/s  (partial reversal)
+v_snap_bite = v_approach + v_feint_pullback = 0.700 + 0.350 = 1.050 m/s
+(snap-back creates a whip-like closing velocity as bey reverses into attack arc)
+
+J_snap = m_eff_each × (1 + e_sharp) × v_snap_bite = 1.867×10⁻² × 1.70 × 1.050
+       = 1.867×10⁻² × 1.785 = 3.333×10⁻² N·s
+```
+
+Flat Base orbital rotation converts snap recoil into spin recovery (η_flat = 0.05 — minimal for attack type):
+
+```
+Δω = η_flat × J_snap × r_AR / I_single
+   = 0.05 × 3.333×10⁻² × 0.035 / 2.097×10⁻⁵
+   = 0.05 × 55.58
+   = +2.8 rad/s  ≈ +3 rad/s
+```
+
+(η_flat = 0.05: Flat Base dissipates most momentum as translational movement, minimal spin recovery.) Shark feint-snap gives damageMultiplier **1.30×**. lockMs = 0 (attack type, snap bite with no dwell).
+
+**Parameters:**
+- spinGain: +3 rad/s (Flat Base snap-back minimal recovery)
+- damageMultiplier: 1.30 (sharp AR feint-snap bite)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function sharkTriangleCombo(bey: Beyblade, target: Beyblade): void {
+  // Flat Base snap: Δω ≈ +3 rad/s (η=0.05, v_snap=1.050m/s, J=3.333×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Sharp AR feint-snap bite: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (minimal) | ✓ |
+
+*Cases continue from Case 1958 as further franchise moves are provided.*
