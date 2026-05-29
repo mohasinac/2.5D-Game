@@ -21,8 +21,8 @@ export default defineConfig({
   ],
 
   // ── Global timeouts ────────────────────────────────────────────────────────
-  timeout: 90_000,               // 90 s per test (up from 60 s)
-  expect: { timeout: 20_000 },   // 20 s per assertion (up from 15 s)
+  timeout: 180_000,              // 180 s — game-modes-comprehensive has 150s tests
+  expect: { timeout: 20_000 },   // 20 s per assertion
 
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3001",
@@ -46,6 +46,9 @@ export default defineConfig({
         "**/*.prod.spec.ts",
         "**/ai-vs-ai-full-battle.spec.ts",
         "**/server-load-test.spec.ts",
+        // The multi-browser tests in game-modes-comprehensive use the `browser` fixture
+        // which is only available when not running with workers: 1 in parallel — they
+        // still run here; Playwright handles the fixture automatically.
       ],
     },
 
@@ -115,6 +118,7 @@ export default defineConfig({
         "**/server-load-test.spec.ts",
         "**/hud-and-qte-tests.spec.ts",
         "**/tournament-pvai-gauntlet.spec.ts",
+        "**/game-modes-comprehensive.spec.ts",
       ],
     },
   ],

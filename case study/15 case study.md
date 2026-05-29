@@ -6136,7 +6136,514 @@ function dustRushCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +32 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1877 as further franchise moves are provided.*
+
+
+---
+
+## Case 1877 — GIMMICK: Grand Capricorn 145D — Horn Tip Contact Pressure & Red Tornado Vortex
+
+**Beyblade:** Grand Capricorn 145D (TT JP: グランドカプリコーンD; Hasbro EN: Grand Capricorn 145D)
+**Blader:** Klaus | **Series:** Beyblade: Metal Masters (BB-73)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Fusion Wheel | Grand | 35.0 | 31.0 |
+| Energy Ring | Capricorn | 4.0 | 24.0 |
+| Spin Track | 145 | 1.5 | 6.0 |
+| Performance Tip | D (Defense) | 1.0 | 5.0 |
+| **Total** | | **41.5** | |
+
+**I_total** = 35.0×10⁻³ × 0.031² + 4.0×10⁻³ × 0.024² + 1.5×10⁻³ × 0.006² + 1.0×10⁻³ × 0.005²
+           = 3.364×10⁻⁵ + 2.304×10⁻⁶ + 5.4×10⁻⁸ + 2.5×10⁻⁸
+           = **3.602×10⁻⁵ kg·m²**
+
+ω₀ = 680 rad/s (standard MFB Metal Masters launch)
+L₀ = I × ω₀ = 3.602×10⁻⁵ × 680 = **2.449×10⁻² kg·m²/s**
+
+---
+
+### 1. Grand AR — Horn Tip Velocity & Near-Yield Contact Pressure
+
+The Grand Fusion Wheel's two large curved horn protrusions extend to r_AR = 31 mm. At ω₀ the horn tips sweep at:
+
+```
+v_horn_tip = ω₀ × r_AR = 680 × 0.031 = 21.08 m/s
+```
+
+**Horn tip contact stress (during direct strike):**
+
+The horn section constitutes approximately 10% of the AR mass:
+
+```
+m_horn = 0.10 × m_AR = 0.10 × 35.0×10⁻³ = 3.5×10⁻³ kg
+
+Contact duration (horn width w_horn = 4 mm sweeping at v_tip):
+Δt_horn = w_horn / v_tip = 4×10⁻³ / 21.08 = 1.897×10⁻⁴ s
+
+Impact impulse (e_horn = 0.60 — stiff ABS horn):
+J_horn = m_horn × (1 + e_horn) × v_tip = 3.5×10⁻³ × 1.60 × 21.08 = 0.1181 N·s
+
+Peak contact force:
+F_horn_peak = J_horn / Δt_horn = 0.1181 / 1.897×10⁻⁴ = 622.6 N
+
+Horn tip contact area:
+A_horn = 4×10⁻³ × 3×10⁻³ = 1.2×10⁻⁵ m²
+
+Contact stress:
+P_horn = F_horn_peak / A_horn = 622.6 / 1.2×10⁻⁵ = 51.9 MPa
+(ABS yield strength σ_y ≈ 55 MPa → P / σ_y = 0.94× — near-yield, "seemingly metallic" feel)
+```
+
+→ Grand Capricorn's horn tips apply sub-yield elastic contact stress that feels metallic — the horn doesn't pierce (unlike Falborg 2 at 5.03× yield, Case 1821) but creates high-energy elastic deformation on the opponent's AR surface.
+
+---
+
+### 2. Red Tornado Vortex (Rankine Model)
+
+The spinning horn profile generates a broad vortex wake at radius r_AR. Using the Rankine circulation model:
+
+```
+Γ_bey = 2π × v_horn_tip × r_AR = 2π × 21.08 × 0.031 = 4.108 m²/s
+
+At opponent position r_opp = 45 mm from centre:
+v_vortex = Γ_bey / (2π × r_opp) = 4.108 / (2π × 0.045) = 14.54 m/s
+
+Dynamic pressure at r_opp:
+q_vortex = ½ × ρ_air × v_vortex² = ½ × 1.225 × 14.54² = 129.4 Pa
+```
+
+**Radial suction force on opponent (inward, toward Grand Capricorn):**
+
+```
+A_opp = π × r_opp_cross² = π × 0.020² = 1.257×10⁻³ m²
+F_vortex = q_vortex × A_opp = 129.4 × 1.257×10⁻³ = 0.1627 N  (inward suction)
+```
+
+→ This is the "red tornado" — a sustained inward suction force that gradually draws opponents toward Grand Capricorn's horn strike range.
+
+---
+
+### 3. D Tip — Wide Defense Gyroscopic Platform
+
+The Defense tip provides a wide plastic contact base (r_D = 5 mm, μ_D = 0.15) with low friction:
+
+```
+τ_D    = μ_D × m × g × r_D = 0.15 × 0.0415 × 9.81 × 0.005 = 3.053×10⁻⁴ N·m
+t_spin = L₀ / τ_D = 2.449×10⁻² / 3.053×10⁻⁴ = 80.2 s
+
+v_D_orbital = μ_D × ω₀ × r_D = 0.15 × 680 × 0.005 = 0.510 m/s  (slow, stable patrol orbit)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.5 g |
+| I_total | 3.602×10⁻⁵ kg·m² |
+| ω₀ | 680 rad/s |
+| L₀ | 2.449×10⁻² kg·m²/s |
+| v_horn_tip | 21.08 m/s |
+| P_horn | 51.9 MPa (0.94× ABS yield) |
+| Γ_bey | 4.108 m²/s |
+| v_vortex (r=45 mm) | 14.54 m/s |
+| q_vortex | 129.4 Pa |
+| F_vortex (suction) | 0.1627 N |
+| τ_D | 3.053×10⁻⁴ N·m |
+| t_spin | 80.2 s |
+
+---
+
+## Case 1878 — SPECIAL: Steel Darkness / Eisenschwarz — Klaus / Grand Capricorn 145D
+
+**Blader:** Klaus | **Beyblade:** Grand Capricorn 145D | **Type:** attack
+
+### Description
+
+Steel Darkness (Eisenschwarz, アイゼンシュヴァルツ) is the second Special Move used by Klaus and Grand Capricorn 145D. Capricorn jerks its head forward in order to bend its seemingly metallic horns so that the sharp ends point forward, then rams into the opponent while covered in a red tornado. The red tornado shrouds Grand Capricorn and creates a sustained suction vortex that draws the opponent inward before the horn strike is delivered at point-blank range.
+
+### Stage 1 — Red Tornado Suction Draw (from Case 1877)
+
+F_vortex = 0.1627 N (inward). Opponent drawn from r = 45 mm to horn contact at r = 31 mm (Δr = 14 mm):
+
+```
+W_suction = F_vortex × Δr = 0.1627 × 0.014 = 2.278×10⁻³ J
+
+v_approach = √(2 × W_suction / m_opp) = √(2 × 2.278×10⁻³ / 0.038) = √(0.1199) = 0.346 m/s
+```
+
+### Stage 2 — Horn Ram at Point-Blank Range
+
+Grand Capricorn's D-tip orbital velocity and the opponent's suction-driven approach combine at contact:
+
+```
+v_rel = v_D_orbital + v_approach = 0.510 + 0.346 = 0.856 m/s
+```
+
+**Collision model (horn tip strike, e = 0.75):**
+
+Parameters:
+- m_GC = 41.5 g, v_GC = 0.510 m/s
+- m_opp = 38 g, v_opp = −0.346 m/s (approaching)
+
+```
+m_eff = (0.0415 × 0.038) / (0.0415 + 0.038) = 1.577×10⁻³ / 0.0795 = 1.983×10⁻² kg
+
+J_steel = m_eff × (1 + e) × v_rel = 1.983×10⁻² × 1.75 × 0.856 = 2.970×10⁻² N·s
+```
+
+**Effect on opponent:**
+```
+Δv_opp  = J_steel / m_opp = 2.970×10⁻² / 0.038 = 0.782 m/s
+```
+
+**Effect on Grand Capricorn (spin drain — minimal; D tip absorbs recoil):**
+```
+Δω_GC    = J_steel × r_contact / I_GC = 2.970×10⁻² × 0.025 / 3.602×10⁻⁵ = 20.6 rad/s
+ω_remain = 680 − 20.6 = 659.4 rad/s  (97.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Klaus channels the iron darkness of Capricorn's bull spirit — the horns physically reshape under BeySpirit force (angular→linear momentum redirection: Δv_kick = m_horn × v_tip / m_total = 3.5×10⁻³ × 21.08 / 0.0415 = 1.78 m/s) and the tornado becomes a true steel vortex that tears through anything in its path.
+
+[M] factor = **7.0 ×**
+[M] Δv = 0.782 × 7.0 = **5.5 m/s** (ring-out, steel darkness ring-out)
+
+> **Note:** Physical values describe red tornado vortex suction draw, combined D-orbital + suction-approach relative velocity, and near-yield horn tip contact mechanics. [M] values represent Klaus's BeySpirit horn reorientation (angular momentum converted to linear kick, 1.78 m/s boost) amplified by the iron bull darkness spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function steelDarknessSpecial(bey: Beyblade, target: Beyblade): void {
+  // Red tornado suction: F=0.1627 N, draws opponent 14mm → v_approach=0.346 m/s
+  // Horn ram v_rel=0.856 m/s, J_steel=2.970×10⁻² N·s; [M] 7.0×
+  const J_phys = 0.02970;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Stage 1: suction pull toward bey
+  applyForce(target.id, -(dx / dist) * 0.1627, -(dy / dist) * 0.1627);
+  // Stage 2: horn ram — [M] 7.0×
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (iron darkness horn snap)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Grand Fusion Wheel (or equivalent large-diameter defense wheel with prominent horn protrusions at r ≥ 28 mm) combined with a D (Defense) or equivalent low-friction wide-base tip for stable patrol orbit during vortex formation. The red tornado requires horn tip velocity v_tip ≥ 18 m/s to generate sufficient Rankine circulation for inward suction. Standard game instance: Grand Capricorn 145D (Klaus, Metal Masters).
+
+---
+
+## Case 1879 — COMBO: Iron Ram — Grand Capricorn
+
+**Sequence:** K E K (defense · dodge · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Klaus
+
+### Physics Justification
+
+The first defense stance (K) activates Grand Capricorn's vortex field for a partial dwell window (t_suction = 0.10 s), drawing the opponent inward:
+
+```
+J_suction_partial = F_vortex × t_suction = 0.1627 × 0.10 = 1.627×10⁻² N·s
+
+v_approach_partial = J_suction_partial / m_opp = 1.627×10⁻² / 0.038 = 0.428 m/s  (opponent pulled in)
+```
+
+The dodge (E) represents Grand Capricorn's short angular pivot — the D tip steps into the opponent's closing path, converting the combined approach velocity to a point-blank contact:
+
+```
+v_contact = v_D_orbital + v_approach_partial = 0.510 + 0.428 = 0.938 m/s
+```
+
+The second defense stance (K) is the D-tip ground re-contact after the brief pivot, reconverting the rebound force back to spin:
+
+```
+Δω = η × m_GC × v_contact × r_contact / I_GC
+   = 0.50 × 0.0415 × 0.938 × 0.025 / 3.602×10⁻⁵
+   = 0.50 × (9.732×10⁻⁴) / 3.602×10⁻⁵
+   = 0.50 × 27.01
+   = +13.5 rad/s  ≈ +14 rad/s
+```
+
+(η = 0.50: D tip wide-contact spin reconversion after partial vortex ram pivot.) The vortex-assisted approach with horn contact gives damageMultiplier **1.20×**. lockMs = 150 represents the suction dwell window during the K stance.
+
+**Parameters:**
+- spinGain: +14 rad/s (D tip rebound spin reconversion η = 0.50)
+- damageMultiplier: 1.20 (vortex-assisted approach point-blank horn contact)
+- lockMs: 150 (suction vortex dwell during K₁ defense stance)
+
+### TypeScript
+
+```typescript
+function ironRamCombo(bey: Beyblade, target: Beyblade): void {
+  // D tip rebound reconversion: Δω ≈ +14 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 14);
+  // Vortex-assisted approach: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 150: suction vortex dwell
+  bey.lockMs = 150;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +14 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1880 — GIMMICK: Dragoon Storm — Upper Dragoon Blade Lift & Vertical Vortex Column
+
+**Beyblade:** Dragoon Storm (TT JP: ドラグーンストーム; Hasbro EN: Dragoon Storm)
+**Blader:** Tyson Granger | **Series:** Beyblade (Bakuten Shoot, Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Upper Dragoon (4-blade) | 14.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | SG Sharp | 2.0 | 3.0 |
+| **Total** | | **37.5** | |
+
+(Bit Chip Dragoon ~1 g at r ≈ 0 excluded per convention.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.434×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 1.8×10⁻⁸
+           = **3.657×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (standard plastic-gen Bakuten Shoot launch)
+L₀ = I × ω₀ = 3.657×10⁻⁵ × 700 = **2.560×10⁻² kg·m²/s**
+
+---
+
+### 1. Upper Dragoon AR — Four-Blade Upward Lift & Vortex Column Formation
+
+The Upper Dragoon Attack Ring carries four upward-angled blades. As Dragoon spins, these blades act as rotor elements — generating upward aerodynamic lift (like helicopter rotor blades) and driving a vertical vortex column (landspout) above the stadium.
+
+**Blade tip velocity:**
+
+```
+v_blade = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+```
+
+**Aerodynamic lift per blade (upward-angled, C_L = 0.65):**
+
+```
+A_blade = 4×10⁻³ × 15×10⁻³ = 6.0×10⁻⁵ m²  (single blade area)
+
+F_lift_blade = ½ × ρ_air × C_L × A_blade × v_blade²
+             = ½ × 1.225 × 0.65 × 6.0×10⁻⁵ × 22.40²
+             = 1.199×10⁻² N
+
+F_lift_total (4 blades) = 4 × 1.199×10⁻² = 4.796×10⁻² N
+
+W = m × g = 0.0375 × 9.81 = 0.368 N
+
+Lift / Weight = 4.796×10⁻² / 0.368 = 13.0%  (measurable rotor effect; BeySpirit for full vortex)
+```
+
+**Vertical vortex column (Rankine circulation model):**
+
+```
+Γ_vortex = 2π × v_blade × r_AR = 2π × 22.40 × 0.032 = 4.500 m²/s
+
+At r_opp = 50 mm from centre:
+v_column = Γ_vortex / (2π × r_opp) = 4.500 / (2π × 0.050) = 14.32 m/s  (tangential wind speed)
+
+q_column = ½ × ρ_air × v_column² = ½ × 1.225 × 14.32² = 125.8 Pa
+```
+
+**Upward ejection force on opponent:**
+
+```
+A_opp = π × 0.020² = 1.257×10⁻³ m²
+F_eject = q_column × A_opp = 125.8 × 1.257×10⁻³ = 0.1582 N  (upward)
+```
+
+**Defensive barrier force** (opposing any bey moving radially through the vortex column):
+
+```
+F_barrier = F_eject = 0.1582 N  (opposes inward approach at the vortex wall)
+```
+
+→ The vortex column simultaneously ejects opponents upward AND presents a radial pressure barrier against incoming attacks.
+
+---
+
+### 2. SG Sharp BB — Stationary Vortex Platform
+
+The Sharp Blade Base contacts the arena at a single point (r_sharp = 3 mm, μ_sharp = 0.08). This allows Dragoon to sustain a nearly stationary spin for the duration of Storm Attack:
+
+```
+τ_sharp = μ × m × g × r_sharp = 0.08 × 0.0375 × 9.81 × 0.003 = 8.831×10⁻⁵ N·m
+t_spin   = L₀ / τ_sharp = 2.560×10⁻² / 8.831×10⁻⁵ = 290.1 s
+```
+
+→ The sharp tip provides near-frictionless ground contact, allowing Dragoon to remain stationary in the stadium centre while the Upper Dragoon AR generates the vortex column. This is the physical mechanism behind Storm Attack's "decreases mobility" effect.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.5 g |
+| I_total | 3.657×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.560×10⁻² kg·m²/s |
+| v_blade | 22.40 m/s |
+| F_lift_total | 4.796×10⁻² N |
+| Lift / Weight | 13.0% |
+| Γ_vortex | 4.500 m²/s |
+| v_column (r=50 mm) | 14.32 m/s |
+| q_column | 125.8 Pa |
+| F_eject / F_barrier | 0.1582 N |
+| τ_sharp | 8.831×10⁻⁵ N·m |
+| t_spin | 290.1 s |
+
+---
+
+## Case 1881 — SPECIAL: Storm Attack — Tyson Granger / Dragoon Storm
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon Storm | **Type:** defense
+
+### Description
+
+Storm Attack is a Special Move used by Tyson Granger and Dragoon Storm. Dragoon generates a rapidly rotating column of air — a tornado similar to a landspout — using the four upward-angled blades of the Upper Dragoon AR at high-speed rotation. The vortex column forms a defensive barrier between Dragoon and the enemy Beyblade, repelling incoming attacks. In most instances the column then ejects opponents skyward. This action usually decreases the mobility of Dragoon (even becoming stationary) while Storm Attack is in effect, as all rotational energy is directed into the vortex. The move occurs together with the emergence of the Bit-Beast Dragoon. It was used in both the manga and anime.
+
+### Stage 1 — Vortex Barrier (Defensive Interception)
+
+When an opponent approaches through the vortex column, F_barrier = 0.1582 N opposes their movement over the vortex wall depth Δr_wall = 20 mm:
+
+```
+W_absorbed = F_barrier × Δr_wall = 0.1582 × 0.020 = 3.164×10⁻³ J
+
+v_attack_post = √(v_attack² − 2 × W_absorbed / m_opp)
+              = √(2.0² − 2 × 3.164×10⁻³ / 0.038)
+              = √(4.000 − 0.1665)
+              = √3.834 = 1.958 m/s  (attack speed reduced by 2.1% at vortex wall)
+```
+
+→ The barrier effect is modest at physical level; BeySpirit amplifies it to a full deflection.
+
+### Stage 2 — Upward Ejection
+
+The vortex column sustains F_eject = 0.1582 N upward on the opponent for t_vortex = 0.5 s:
+
+```
+J_eject = F_eject × t_vortex = 0.1582 × 0.5 = 7.910×10⁻² N·s
+
+Δv_opp_up = J_eject / m_opp = 7.910×10⁻² / 0.038 = 2.082 m/s  (upward ring-out)
+```
+
+**Effect on Dragoon Storm (spin drain — sustained vortex):**
+```
+Δω_DS    = J_eject × r_contact / I_DS = 7.910×10⁻² × 0.025 / 3.657×10⁻⁵ = 54.1 rad/s
+ω_remain = 700 − 54.1 = 645.9 rad/s  (92.3% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dragoon's beast materialises fully from the Bit Chip, transforming the physical vortex into a true elemental storm. The tornado column expands to fill the entire stadium, ejecting everything in its path.
+
+[M] factor = **8.0 ×**
+[M] Δv = 2.082 × 8.0 = **16.7 m/s** (full-stadium storm ejection)
+
+> **Note:** Physical values describe Upper Dragoon four-blade rotor lift, Rankine vortex column ejection at F = 0.1582 N over 0.5 s, and 2.1% barrier attenuation of incoming attack. [M] values represent Dragoon's full BeySpirit materialisation that amplifies the vortex to elemental storm scale. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function stormAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Vortex column: F_eject=0.1582 N × 0.5s → J_eject=7.910×10⁻² N·s upward; [M] 8.0×
+  const J_phys = 0.07910;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Barrier: partial opposing force on incoming target
+  applyForce(target.id, (dx / dist) * -0.1582, (dy / dist) * -0.1582);
+  // Vortex ejection — [M] 8.0×
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Dragoon full storm materialisation)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using an Attack Ring with 4+ upward-angled blade protrusions (C_L ≥ 0.50, v_blade ≥ 20 m/s) combined with a Sharp or Metal Sharp Blade Base that enables near-stationary spin. The vortex column requires the bey to remain stationary (or near-stationary) while generating circulation — any high-orbital-speed tip would dissipate the column. Standard game instance: Dragoon Storm (Tyson Granger, Bakuten Shoot plastic generation).
+
+---
+
+## Case 1882 — COMBO: Tornado Guard — Dragoon Storm
+
+**Sequence:** K ↑ K (defense · moveUp · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The first defense stance (K) locks Dragoon on its sharp tip (near-stationary), initiating the vortex column for a partial window (t_partial = 0.15 s):
+
+```
+J_eject_partial = F_eject × t_partial = 0.1582 × 0.15 = 2.373×10⁻² N·s
+```
+
+The moveUp (↑) represents a partial orbital arc away from the opponent — Dragoon briefly shifts position in the stadium, redirecting the vortex column exit direction while the vortex energy accumulates. The second defense stance (K) returns Dragoon to stationary, releasing the accumulated partial vortex as a directed upward blast, while the sharp tip re-contact reconverts the reaction force to spin:
+
+```
+Δω = η × J_eject_partial × r_contact / I_DS
+   = 0.60 × 2.373×10⁻² × 0.025 / 3.657×10⁻⁵
+   = 0.60 × (5.933×10⁻⁴) / 3.657×10⁻⁵
+   = 0.60 × 16.22
+   = +9.7 rad/s  ≈ +10 rad/s
+```
+
+(η = 0.60: sharp tip point-contact vortex counter-reaction spin reconversion.) The directed partial vortex blast gives damageMultiplier **1.20×**. lockMs = 250 represents the stationary vortex column dwell spanning K₁ and ↑ inputs.
+
+**Parameters:**
+- spinGain: +10 rad/s (sharp tip vortex counter-reaction reconversion η = 0.60)
+- damageMultiplier: 1.20 (directed partial vortex upward blast)
+- lockMs: 250 (stationary column dwell K₁ + ↑ phase)
+
+### TypeScript
+
+```typescript
+function tornadoGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // Sharp tip vortex counter-reaction reconversion: Δω ≈ +10 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Directed partial vortex blast: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 250: stationary column dwell
+  bey.lockMs = 250;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 250 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1883 as further franchise moves are provided.*
 
 
 
@@ -11087,4 +11594,511 @@ function dustRushCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +32 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1877 as further franchise moves are provided.*
+
+
+---
+
+## Case 1877 — GIMMICK: Grand Capricorn 145D — Horn Tip Contact Pressure & Red Tornado Vortex
+
+**Beyblade:** Grand Capricorn 145D (TT JP: グランドカプリコーンD; Hasbro EN: Grand Capricorn 145D)
+**Blader:** Klaus | **Series:** Beyblade: Metal Masters (BB-73)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Fusion Wheel | Grand | 35.0 | 31.0 |
+| Energy Ring | Capricorn | 4.0 | 24.0 |
+| Spin Track | 145 | 1.5 | 6.0 |
+| Performance Tip | D (Defense) | 1.0 | 5.0 |
+| **Total** | | **41.5** | |
+
+**I_total** = 35.0×10⁻³ × 0.031² + 4.0×10⁻³ × 0.024² + 1.5×10⁻³ × 0.006² + 1.0×10⁻³ × 0.005²
+           = 3.364×10⁻⁵ + 2.304×10⁻⁶ + 5.4×10⁻⁸ + 2.5×10⁻⁸
+           = **3.602×10⁻⁵ kg·m²**
+
+ω₀ = 680 rad/s (standard MFB Metal Masters launch)
+L₀ = I × ω₀ = 3.602×10⁻⁵ × 680 = **2.449×10⁻² kg·m²/s**
+
+---
+
+### 1. Grand AR — Horn Tip Velocity & Near-Yield Contact Pressure
+
+The Grand Fusion Wheel's two large curved horn protrusions extend to r_AR = 31 mm. At ω₀ the horn tips sweep at:
+
+```
+v_horn_tip = ω₀ × r_AR = 680 × 0.031 = 21.08 m/s
+```
+
+**Horn tip contact stress (during direct strike):**
+
+The horn section constitutes approximately 10% of the AR mass:
+
+```
+m_horn = 0.10 × m_AR = 0.10 × 35.0×10⁻³ = 3.5×10⁻³ kg
+
+Contact duration (horn width w_horn = 4 mm sweeping at v_tip):
+Δt_horn = w_horn / v_tip = 4×10⁻³ / 21.08 = 1.897×10⁻⁴ s
+
+Impact impulse (e_horn = 0.60 — stiff ABS horn):
+J_horn = m_horn × (1 + e_horn) × v_tip = 3.5×10⁻³ × 1.60 × 21.08 = 0.1181 N·s
+
+Peak contact force:
+F_horn_peak = J_horn / Δt_horn = 0.1181 / 1.897×10⁻⁴ = 622.6 N
+
+Horn tip contact area:
+A_horn = 4×10⁻³ × 3×10⁻³ = 1.2×10⁻⁵ m²
+
+Contact stress:
+P_horn = F_horn_peak / A_horn = 622.6 / 1.2×10⁻⁵ = 51.9 MPa
+(ABS yield strength σ_y ≈ 55 MPa → P / σ_y = 0.94× — near-yield, "seemingly metallic" feel)
+```
+
+→ Grand Capricorn's horn tips apply sub-yield elastic contact stress that feels metallic — the horn doesn't pierce (unlike Falborg 2 at 5.03× yield, Case 1821) but creates high-energy elastic deformation on the opponent's AR surface.
+
+---
+
+### 2. Red Tornado Vortex (Rankine Model)
+
+The spinning horn profile generates a broad vortex wake at radius r_AR. Using the Rankine circulation model:
+
+```
+Γ_bey = 2π × v_horn_tip × r_AR = 2π × 21.08 × 0.031 = 4.108 m²/s
+
+At opponent position r_opp = 45 mm from centre:
+v_vortex = Γ_bey / (2π × r_opp) = 4.108 / (2π × 0.045) = 14.54 m/s
+
+Dynamic pressure at r_opp:
+q_vortex = ½ × ρ_air × v_vortex² = ½ × 1.225 × 14.54² = 129.4 Pa
+```
+
+**Radial suction force on opponent (inward, toward Grand Capricorn):**
+
+```
+A_opp = π × r_opp_cross² = π × 0.020² = 1.257×10⁻³ m²
+F_vortex = q_vortex × A_opp = 129.4 × 1.257×10⁻³ = 0.1627 N  (inward suction)
+```
+
+→ This is the "red tornado" — a sustained inward suction force that gradually draws opponents toward Grand Capricorn's horn strike range.
+
+---
+
+### 3. D Tip — Wide Defense Gyroscopic Platform
+
+The Defense tip provides a wide plastic contact base (r_D = 5 mm, μ_D = 0.15) with low friction:
+
+```
+τ_D    = μ_D × m × g × r_D = 0.15 × 0.0415 × 9.81 × 0.005 = 3.053×10⁻⁴ N·m
+t_spin = L₀ / τ_D = 2.449×10⁻² / 3.053×10⁻⁴ = 80.2 s
+
+v_D_orbital = μ_D × ω₀ × r_D = 0.15 × 680 × 0.005 = 0.510 m/s  (slow, stable patrol orbit)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.5 g |
+| I_total | 3.602×10⁻⁵ kg·m² |
+| ω₀ | 680 rad/s |
+| L₀ | 2.449×10⁻² kg·m²/s |
+| v_horn_tip | 21.08 m/s |
+| P_horn | 51.9 MPa (0.94× ABS yield) |
+| Γ_bey | 4.108 m²/s |
+| v_vortex (r=45 mm) | 14.54 m/s |
+| q_vortex | 129.4 Pa |
+| F_vortex (suction) | 0.1627 N |
+| τ_D | 3.053×10⁻⁴ N·m |
+| t_spin | 80.2 s |
+
+---
+
+## Case 1878 — SPECIAL: Steel Darkness / Eisenschwarz — Klaus / Grand Capricorn 145D
+
+**Blader:** Klaus | **Beyblade:** Grand Capricorn 145D | **Type:** attack
+
+### Description
+
+Steel Darkness (Eisenschwarz, アイゼンシュヴァルツ) is the second Special Move used by Klaus and Grand Capricorn 145D. Capricorn jerks its head forward in order to bend its seemingly metallic horns so that the sharp ends point forward, then rams into the opponent while covered in a red tornado. The red tornado shrouds Grand Capricorn and creates a sustained suction vortex that draws the opponent inward before the horn strike is delivered at point-blank range.
+
+### Stage 1 — Red Tornado Suction Draw (from Case 1877)
+
+F_vortex = 0.1627 N (inward). Opponent drawn from r = 45 mm to horn contact at r = 31 mm (Δr = 14 mm):
+
+```
+W_suction = F_vortex × Δr = 0.1627 × 0.014 = 2.278×10⁻³ J
+
+v_approach = √(2 × W_suction / m_opp) = √(2 × 2.278×10⁻³ / 0.038) = √(0.1199) = 0.346 m/s
+```
+
+### Stage 2 — Horn Ram at Point-Blank Range
+
+Grand Capricorn's D-tip orbital velocity and the opponent's suction-driven approach combine at contact:
+
+```
+v_rel = v_D_orbital + v_approach = 0.510 + 0.346 = 0.856 m/s
+```
+
+**Collision model (horn tip strike, e = 0.75):**
+
+Parameters:
+- m_GC = 41.5 g, v_GC = 0.510 m/s
+- m_opp = 38 g, v_opp = −0.346 m/s (approaching)
+
+```
+m_eff = (0.0415 × 0.038) / (0.0415 + 0.038) = 1.577×10⁻³ / 0.0795 = 1.983×10⁻² kg
+
+J_steel = m_eff × (1 + e) × v_rel = 1.983×10⁻² × 1.75 × 0.856 = 2.970×10⁻² N·s
+```
+
+**Effect on opponent:**
+```
+Δv_opp  = J_steel / m_opp = 2.970×10⁻² / 0.038 = 0.782 m/s
+```
+
+**Effect on Grand Capricorn (spin drain — minimal; D tip absorbs recoil):**
+```
+Δω_GC    = J_steel × r_contact / I_GC = 2.970×10⁻² × 0.025 / 3.602×10⁻⁵ = 20.6 rad/s
+ω_remain = 680 − 20.6 = 659.4 rad/s  (97.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Klaus channels the iron darkness of Capricorn's bull spirit — the horns physically reshape under BeySpirit force (angular→linear momentum redirection: Δv_kick = m_horn × v_tip / m_total = 3.5×10⁻³ × 21.08 / 0.0415 = 1.78 m/s) and the tornado becomes a true steel vortex that tears through anything in its path.
+
+[M] factor = **7.0 ×**
+[M] Δv = 0.782 × 7.0 = **5.5 m/s** (ring-out, steel darkness ring-out)
+
+> **Note:** Physical values describe red tornado vortex suction draw, combined D-orbital + suction-approach relative velocity, and near-yield horn tip contact mechanics. [M] values represent Klaus's BeySpirit horn reorientation (angular momentum converted to linear kick, 1.78 m/s boost) amplified by the iron bull darkness spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function steelDarknessSpecial(bey: Beyblade, target: Beyblade): void {
+  // Red tornado suction: F=0.1627 N, draws opponent 14mm → v_approach=0.346 m/s
+  // Horn ram v_rel=0.856 m/s, J_steel=2.970×10⁻² N·s; [M] 7.0×
+  const J_phys = 0.02970;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Stage 1: suction pull toward bey
+  applyForce(target.id, -(dx / dist) * 0.1627, -(dy / dist) * 0.1627);
+  // Stage 2: horn ram — [M] 7.0×
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (iron darkness horn snap)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Grand Fusion Wheel (or equivalent large-diameter defense wheel with prominent horn protrusions at r ≥ 28 mm) combined with a D (Defense) or equivalent low-friction wide-base tip for stable patrol orbit during vortex formation. The red tornado requires horn tip velocity v_tip ≥ 18 m/s to generate sufficient Rankine circulation for inward suction. Standard game instance: Grand Capricorn 145D (Klaus, Metal Masters).
+
+---
+
+## Case 1879 — COMBO: Iron Ram — Grand Capricorn
+
+**Sequence:** K E K (defense · dodge · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Klaus
+
+### Physics Justification
+
+The first defense stance (K) activates Grand Capricorn's vortex field for a partial dwell window (t_suction = 0.10 s), drawing the opponent inward:
+
+```
+J_suction_partial = F_vortex × t_suction = 0.1627 × 0.10 = 1.627×10⁻² N·s
+
+v_approach_partial = J_suction_partial / m_opp = 1.627×10⁻² / 0.038 = 0.428 m/s  (opponent pulled in)
+```
+
+The dodge (E) represents Grand Capricorn's short angular pivot — the D tip steps into the opponent's closing path, converting the combined approach velocity to a point-blank contact:
+
+```
+v_contact = v_D_orbital + v_approach_partial = 0.510 + 0.428 = 0.938 m/s
+```
+
+The second defense stance (K) is the D-tip ground re-contact after the brief pivot, reconverting the rebound force back to spin:
+
+```
+Δω = η × m_GC × v_contact × r_contact / I_GC
+   = 0.50 × 0.0415 × 0.938 × 0.025 / 3.602×10⁻⁵
+   = 0.50 × (9.732×10⁻⁴) / 3.602×10⁻⁵
+   = 0.50 × 27.01
+   = +13.5 rad/s  ≈ +14 rad/s
+```
+
+(η = 0.50: D tip wide-contact spin reconversion after partial vortex ram pivot.) The vortex-assisted approach with horn contact gives damageMultiplier **1.20×**. lockMs = 150 represents the suction dwell window during the K stance.
+
+**Parameters:**
+- spinGain: +14 rad/s (D tip rebound spin reconversion η = 0.50)
+- damageMultiplier: 1.20 (vortex-assisted approach point-blank horn contact)
+- lockMs: 150 (suction vortex dwell during K₁ defense stance)
+
+### TypeScript
+
+```typescript
+function ironRamCombo(bey: Beyblade, target: Beyblade): void {
+  // D tip rebound reconversion: Δω ≈ +14 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 14);
+  // Vortex-assisted approach: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 150: suction vortex dwell
+  bey.lockMs = 150;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +14 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1880 — GIMMICK: Dragoon Storm — Upper Dragoon Blade Lift & Vertical Vortex Column
+
+**Beyblade:** Dragoon Storm (TT JP: ドラグーンストーム; Hasbro EN: Dragoon Storm)
+**Blader:** Tyson Granger | **Series:** Beyblade (Bakuten Shoot, Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Upper Dragoon (4-blade) | 14.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | SG Sharp | 2.0 | 3.0 |
+| **Total** | | **37.5** | |
+
+(Bit Chip Dragoon ~1 g at r ≈ 0 excluded per convention.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.003²
+           = 1.434×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 1.8×10⁻⁸
+           = **3.657×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (standard plastic-gen Bakuten Shoot launch)
+L₀ = I × ω₀ = 3.657×10⁻⁵ × 700 = **2.560×10⁻² kg·m²/s**
+
+---
+
+### 1. Upper Dragoon AR — Four-Blade Upward Lift & Vortex Column Formation
+
+The Upper Dragoon Attack Ring carries four upward-angled blades. As Dragoon spins, these blades act as rotor elements — generating upward aerodynamic lift (like helicopter rotor blades) and driving a vertical vortex column (landspout) above the stadium.
+
+**Blade tip velocity:**
+
+```
+v_blade = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+```
+
+**Aerodynamic lift per blade (upward-angled, C_L = 0.65):**
+
+```
+A_blade = 4×10⁻³ × 15×10⁻³ = 6.0×10⁻⁵ m²  (single blade area)
+
+F_lift_blade = ½ × ρ_air × C_L × A_blade × v_blade²
+             = ½ × 1.225 × 0.65 × 6.0×10⁻⁵ × 22.40²
+             = 1.199×10⁻² N
+
+F_lift_total (4 blades) = 4 × 1.199×10⁻² = 4.796×10⁻² N
+
+W = m × g = 0.0375 × 9.81 = 0.368 N
+
+Lift / Weight = 4.796×10⁻² / 0.368 = 13.0%  (measurable rotor effect; BeySpirit for full vortex)
+```
+
+**Vertical vortex column (Rankine circulation model):**
+
+```
+Γ_vortex = 2π × v_blade × r_AR = 2π × 22.40 × 0.032 = 4.500 m²/s
+
+At r_opp = 50 mm from centre:
+v_column = Γ_vortex / (2π × r_opp) = 4.500 / (2π × 0.050) = 14.32 m/s  (tangential wind speed)
+
+q_column = ½ × ρ_air × v_column² = ½ × 1.225 × 14.32² = 125.8 Pa
+```
+
+**Upward ejection force on opponent:**
+
+```
+A_opp = π × 0.020² = 1.257×10⁻³ m²
+F_eject = q_column × A_opp = 125.8 × 1.257×10⁻³ = 0.1582 N  (upward)
+```
+
+**Defensive barrier force** (opposing any bey moving radially through the vortex column):
+
+```
+F_barrier = F_eject = 0.1582 N  (opposes inward approach at the vortex wall)
+```
+
+→ The vortex column simultaneously ejects opponents upward AND presents a radial pressure barrier against incoming attacks.
+
+---
+
+### 2. SG Sharp BB — Stationary Vortex Platform
+
+The Sharp Blade Base contacts the arena at a single point (r_sharp = 3 mm, μ_sharp = 0.08). This allows Dragoon to sustain a nearly stationary spin for the duration of Storm Attack:
+
+```
+τ_sharp = μ × m × g × r_sharp = 0.08 × 0.0375 × 9.81 × 0.003 = 8.831×10⁻⁵ N·m
+t_spin   = L₀ / τ_sharp = 2.560×10⁻² / 8.831×10⁻⁵ = 290.1 s
+```
+
+→ The sharp tip provides near-frictionless ground contact, allowing Dragoon to remain stationary in the stadium centre while the Upper Dragoon AR generates the vortex column. This is the physical mechanism behind Storm Attack's "decreases mobility" effect.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.5 g |
+| I_total | 3.657×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.560×10⁻² kg·m²/s |
+| v_blade | 22.40 m/s |
+| F_lift_total | 4.796×10⁻² N |
+| Lift / Weight | 13.0% |
+| Γ_vortex | 4.500 m²/s |
+| v_column (r=50 mm) | 14.32 m/s |
+| q_column | 125.8 Pa |
+| F_eject / F_barrier | 0.1582 N |
+| τ_sharp | 8.831×10⁻⁵ N·m |
+| t_spin | 290.1 s |
+
+---
+
+## Case 1881 — SPECIAL: Storm Attack — Tyson Granger / Dragoon Storm
+
+**Blader:** Tyson Granger | **Beyblade:** Dragoon Storm | **Type:** defense
+
+### Description
+
+Storm Attack is a Special Move used by Tyson Granger and Dragoon Storm. Dragoon generates a rapidly rotating column of air — a tornado similar to a landspout — using the four upward-angled blades of the Upper Dragoon AR at high-speed rotation. The vortex column forms a defensive barrier between Dragoon and the enemy Beyblade, repelling incoming attacks. In most instances the column then ejects opponents skyward. This action usually decreases the mobility of Dragoon (even becoming stationary) while Storm Attack is in effect, as all rotational energy is directed into the vortex. The move occurs together with the emergence of the Bit-Beast Dragoon. It was used in both the manga and anime.
+
+### Stage 1 — Vortex Barrier (Defensive Interception)
+
+When an opponent approaches through the vortex column, F_barrier = 0.1582 N opposes their movement over the vortex wall depth Δr_wall = 20 mm:
+
+```
+W_absorbed = F_barrier × Δr_wall = 0.1582 × 0.020 = 3.164×10⁻³ J
+
+v_attack_post = √(v_attack² − 2 × W_absorbed / m_opp)
+              = √(2.0² − 2 × 3.164×10⁻³ / 0.038)
+              = √(4.000 − 0.1665)
+              = √3.834 = 1.958 m/s  (attack speed reduced by 2.1% at vortex wall)
+```
+
+→ The barrier effect is modest at physical level; BeySpirit amplifies it to a full deflection.
+
+### Stage 2 — Upward Ejection
+
+The vortex column sustains F_eject = 0.1582 N upward on the opponent for t_vortex = 0.5 s:
+
+```
+J_eject = F_eject × t_vortex = 0.1582 × 0.5 = 7.910×10⁻² N·s
+
+Δv_opp_up = J_eject / m_opp = 7.910×10⁻² / 0.038 = 2.082 m/s  (upward ring-out)
+```
+
+**Effect on Dragoon Storm (spin drain — sustained vortex):**
+```
+Δω_DS    = J_eject × r_contact / I_DS = 7.910×10⁻² × 0.025 / 3.657×10⁻⁵ = 54.1 rad/s
+ω_remain = 700 − 54.1 = 645.9 rad/s  (92.3% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dragoon's beast materialises fully from the Bit Chip, transforming the physical vortex into a true elemental storm. The tornado column expands to fill the entire stadium, ejecting everything in its path.
+
+[M] factor = **8.0 ×**
+[M] Δv = 2.082 × 8.0 = **16.7 m/s** (full-stadium storm ejection)
+
+> **Note:** Physical values describe Upper Dragoon four-blade rotor lift, Rankine vortex column ejection at F = 0.1582 N over 0.5 s, and 2.1% barrier attenuation of incoming attack. [M] values represent Dragoon's full BeySpirit materialisation that amplifies the vortex to elemental storm scale. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function stormAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Vortex column: F_eject=0.1582 N × 0.5s → J_eject=7.910×10⁻² N·s upward; [M] 8.0×
+  const J_phys = 0.07910;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Barrier: partial opposing force on incoming target
+  applyForce(target.id, (dx / dist) * -0.1582, (dy / dist) * -0.1582);
+  // Vortex ejection — [M] 8.0×
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Dragoon full storm materialisation)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using an Attack Ring with 4+ upward-angled blade protrusions (C_L ≥ 0.50, v_blade ≥ 20 m/s) combined with a Sharp or Metal Sharp Blade Base that enables near-stationary spin. The vortex column requires the bey to remain stationary (or near-stationary) while generating circulation — any high-orbital-speed tip would dissipate the column. Standard game instance: Dragoon Storm (Tyson Granger, Bakuten Shoot plastic generation).
+
+---
+
+## Case 1882 — COMBO: Tornado Guard — Dragoon Storm
+
+**Sequence:** K ↑ K (defense · moveUp · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Tyson Granger
+
+### Physics Justification
+
+The first defense stance (K) locks Dragoon on its sharp tip (near-stationary), initiating the vortex column for a partial window (t_partial = 0.15 s):
+
+```
+J_eject_partial = F_eject × t_partial = 0.1582 × 0.15 = 2.373×10⁻² N·s
+```
+
+The moveUp (↑) represents a partial orbital arc away from the opponent — Dragoon briefly shifts position in the stadium, redirecting the vortex column exit direction while the vortex energy accumulates. The second defense stance (K) returns Dragoon to stationary, releasing the accumulated partial vortex as a directed upward blast, while the sharp tip re-contact reconverts the reaction force to spin:
+
+```
+Δω = η × J_eject_partial × r_contact / I_DS
+   = 0.60 × 2.373×10⁻² × 0.025 / 3.657×10⁻⁵
+   = 0.60 × (5.933×10⁻⁴) / 3.657×10⁻⁵
+   = 0.60 × 16.22
+   = +9.7 rad/s  ≈ +10 rad/s
+```
+
+(η = 0.60: sharp tip point-contact vortex counter-reaction spin reconversion.) The directed partial vortex blast gives damageMultiplier **1.20×**. lockMs = 250 represents the stationary vortex column dwell spanning K₁ and ↑ inputs.
+
+**Parameters:**
+- spinGain: +10 rad/s (sharp tip vortex counter-reaction reconversion η = 0.60)
+- damageMultiplier: 1.20 (directed partial vortex upward blast)
+- lockMs: 250 (stationary column dwell K₁ + ↑ phase)
+
+### TypeScript
+
+```typescript
+function tornadoGuardCombo(bey: Beyblade, target: Beyblade): void {
+  // Sharp tip vortex counter-reaction reconversion: Δω ≈ +10 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Directed partial vortex blast: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 250: stationary column dwell
+  bey.lockMs = 250;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 250 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1883 as further franchise moves are provided.*
