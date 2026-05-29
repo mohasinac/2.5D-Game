@@ -42,11 +42,17 @@ type BestOf = 1 | 3 | 5;
 
 type Phase =
   | 'choose'          // Phase 1: Random vs Friends
+  | 'random-prefs'    // Preference picker before random match
   | 'random-connect'  // Connecting to random match
   | 'friends-choose'  // Friends: Create vs Join sub-choice
   | 'friends-create'  // Waiting for room creation (connecting)
   | 'friends-join'    // Input room code
   | 'in-lobby';       // Phase 2: in the room
+
+// Matchmaking size options per mode
+type PvPSize   = '1v1' | 'ffa';
+type RoyaleSize = '4' | '8' | '12';
+type MatchSize = PvPSize | RoyaleSize;
 
 // ─── Colour helpers ───────────────────────────────────────────────────────────
 
@@ -201,6 +207,23 @@ export function BattleLobbyPage() {
   const [joinCode, setJoinCode]     = useState('');
   const [isPrivate, setIsPrivate]   = useState(false);
 
+  // Random match preferences (persisted per mode)
+  const prefsKey = `bey.randomPrefs.${lobbyMode}`;
+  const savedPrefs = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem(prefsKey) ?? '{}'); } catch { return {}; }
+  }, [prefsKey]);
+
+  const defaultSize: MatchSize = lobbyMode === 'royale'
+    ? (savedPrefs.size ?? '4') as RoyaleSize
+    : (savedPrefs.size ?? '1v1') as PvPSize;
+
+  const [matchSize, setMatchSize]       = useState<MatchSize>(defaultSize);
+  const [randomBestOf, setRandomBestOf] = useState<BestOf>((savedPrefs.bestOf ?? 1) as BestOf);
+
+  const savePrefs = (size: MatchSize, bo: BestOf) => {
+    try { localStorage.setItem(prefsKey, JSON.stringify({ size, bestOf: bo })); } catch {}
+  };
+
   // Lobby controls
   const [bestOf, setBestOf]         = useState<BestOf>(1);
   const [bracketSize, setBracketSize] = useState<4 | 8 | 16>(4);
@@ -222,15 +245,18 @@ export function BattleLobbyPage() {
   }, []);
 
   const colyseusOptions = useMemo(() => ({
-    beybladeId: settings.beybladeId ?? 'default',
-    arenaId:    settings.arenaId    ?? 'default',
-    username:   settings.username   ?? 'Player',
-    userId:     settings.userId,
-    private:    isPrivate,
+    beybladeId:  settings.beybladeId ?? 'default',
+    arenaId:     settings.arenaId    ?? 'default',
+    username:    settings.username   ?? 'Player',
+    userId:      settings.userId,
+    private:     isPrivate,
     modifierIds: selectedModifierIds,
     bracketSize: lobbyMode === 'tournament' ? bracketSize : undefined,
+    // filterBy fields — segregate matchmaking pools by size + bestOf
+    size:    matchSize,
+    bestOf:  isPrivate ? bestOf : randomBestOf,
   }), [settings.beybladeId, settings.arenaId, settings.username, settings.userId,
-       isPrivate, selectedModifierIds, lobbyMode, bracketSize]);
+       isPrivate, selectedModifierIds, lobbyMode, bracketSize, matchSize, bestOf, randomBestOf]);
 
   const { connectionState, gameState, beyblades, room, connect, disconnect } =
     useColyseus({
@@ -347,12 +373,7 @@ export function BattleLobbyPage() {
                 label="Find Match"
                 primary
                 disabled={modeDisabled}
-                onClick={() => {
-                  setIsPrivate(false);
-                  setConnectRoomId(undefined);
-                  setPhase('random-connect');
-                  setTriggerConnect(true);
-                }}
+                onClick={() => setPhase('random-prefs')}
               />
             </PhaseCard>
 
@@ -383,6 +404,131 @@ export function BattleLobbyPage() {
               </div>
             </PhaseCard>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Phase: random-prefs (matchmaking preference picker) ─────────────────────
+
+  if (phase === 'random-prefs') {
+    const isPvP     = lobbyMode === 'pvp';
+    const isRoyale  = lobbyMode === 'royale';
+    const pvpSizes: PvPSize[]     = ['1v1', 'ffa'];
+    const royaleSizes: RoyaleSize[] = ['4', '8', '12'];
+    const pvpSizeLabels: Record<PvPSize, string>     = { '1v1': '1v1', 'ffa': 'Free-for-All' };
+    const royaleSizeLabels: Record<RoyaleSize, string> = { '4': '4 Players', '8': '8 Players', '12': '12 Players' };
+
+    return (
+      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-[420px]">
+          <button
+            onClick={() => setPhase('choose')}
+            className="text-white/40 text-[13px] mb-6 flex items-center gap-1 hover:text-white/60 transition-colors"
+          >
+            ← Back
+          </button>
+
+          <h1 className="text-[24px] font-black text-white tracking-tight mb-1">
+            Match Preferences
+          </h1>
+          <p className="text-white/45 text-[13px] mb-6">
+            Choose your preferred format. You'll be matched with players who chose the same settings.
+          </p>
+
+          <PhaseCard className="mb-4">
+            {/* Battle format / size */}
+            <p className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.08em] mb-3">
+              {isRoyale ? 'Room Size' : 'Battle Format'}
+            </p>
+            <div className="flex gap-2 mb-5">
+              {isPvP && pvpSizes.map(s => (
+                <button
+                  key={s}
+                  onClick={() => setMatchSize(s)}
+                  className={cn(
+                    'flex-1 py-3 rounded-xl text-[14px] font-bold border transition-all cursor-pointer',
+                    matchSize === s
+                      ? 'border-[#00e5ff] bg-[#00e5ff]/10 text-[#00e5ff]'
+                      : 'border-white/[.1] bg-transparent text-white/50 hover:border-white/25',
+                  )}
+                >
+                  {pvpSizeLabels[s]}
+                </button>
+              ))}
+              {isRoyale && royaleSizes.map(s => (
+                <button
+                  key={s}
+                  onClick={() => setMatchSize(s)}
+                  className={cn(
+                    'flex-1 py-3 rounded-xl text-[13px] font-bold border transition-all cursor-pointer',
+                    matchSize === s
+                      ? 'border-[#00e5ff] bg-[#00e5ff]/10 text-[#00e5ff]'
+                      : 'border-white/[.1] bg-transparent text-white/50 hover:border-white/25',
+                  )}
+                >
+                  {royaleSizeLabels[s as RoyaleSize]}
+                </button>
+              ))}
+              {!isPvP && !isRoyale && pvpSizes.map(s => (
+                <button
+                  key={s}
+                  onClick={() => setMatchSize(s)}
+                  className={cn(
+                    'flex-1 py-3 rounded-xl text-[14px] font-bold border transition-all cursor-pointer',
+                    matchSize === s
+                      ? 'border-[#00e5ff] bg-[#00e5ff]/10 text-[#00e5ff]'
+                      : 'border-white/[.1] bg-transparent text-white/50 hover:border-white/25',
+                  )}
+                >
+                  {pvpSizeLabels[s as PvPSize]}
+                </button>
+              ))}
+            </div>
+
+            {/* Best-of (PvP / tournament, not royale) */}
+            {!isRoyale && (
+              <>
+                <p className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.08em] mb-3">Best-of</p>
+                <div className="flex gap-2">
+                  {([1, 3, 5] as BestOf[]).map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setRandomBestOf(n)}
+                      className={cn(
+                        'flex-1 py-3 rounded-xl text-[14px] font-bold border transition-all cursor-pointer',
+                        randomBestOf === n
+                          ? 'border-[#00e5ff] bg-[#00e5ff]/10 text-[#00e5ff]'
+                          : 'border-white/[.1] bg-transparent text-white/50 hover:border-white/25',
+                      )}
+                    >
+                      BO{n}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </PhaseCard>
+
+          <p className="text-white/30 text-[12px] text-center mb-5">
+            {isRoyale
+              ? `You'll join a ${matchSize}-player public room.`
+              : matchSize === '1v1'
+              ? `You'll be matched in a 1-on-1 Best of ${randomBestOf} battle.`
+              : `You'll join a free-for-all room (up to 4 players), Best of ${randomBestOf}.`}
+          </p>
+
+          <ActionBtn
+            label="Find Match →"
+            primary
+            onClick={() => {
+              savePrefs(matchSize, randomBestOf);
+              setIsPrivate(false);
+              setConnectRoomId(undefined);
+              setPhase('random-connect');
+              setTriggerConnect(true);
+            }}
+          />
         </div>
       </div>
     );

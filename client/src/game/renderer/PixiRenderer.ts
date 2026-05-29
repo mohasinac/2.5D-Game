@@ -188,6 +188,8 @@ export class BeybladeGameRenderer {
   protected readonly FADE_START_CM    = 24;
   /** Subclass overrides to true to enable LOS culling. */
   protected get is25D(): boolean { return false; }
+  /** Default tilt angle (degrees) when arena hasn't set one. 2.5D subclass overrides to 28. */
+  protected get defaultTiltAngle(): number { return 0; }
 
   // World background — full-canvas layer rendered behind the arena and everything else.
   private worldBgLayer!: PIXI.Container;
@@ -561,7 +563,9 @@ export class BeybladeGameRenderer {
   private updateArenaTilt(gameState: ServerGameState | null) {
     if (!this.arenaTiltOuter) return;
     const arena = gameState?.arena as any;
-    const tiltAngle: number = (arena && typeof arena.tiltAngle === "number") ? arena.tiltAngle : 0;
+    // Use server-set tiltAngle, falling back to subclass default (2.5D = 28°, 2D = 0°).
+    const serverTilt: number = (arena && typeof arena.tiltAngle === "number") ? arena.tiltAngle : 0;
+    const tiltAngle = serverTilt !== 0 ? serverTilt : this.defaultTiltAngle;
     const tiltDir:   number = (arena && typeof arena.tiltDirection === "number") ? arena.tiltDirection : 0;
 
     // Configurable pivot for tilt (cm → worldPx). Setting pivot + matching position
@@ -730,40 +734,148 @@ export class BeybladeGameRenderer {
     const rimColor = (((bgColor >> 16 & 0xff) + 80) & 0xff) << 16
                    | (((bgColor >>  8 & 0xff) + 80) & 0xff) <<  8
                    | (( bgColor        & 0xff) + 80) & 0xff;
+
+    const arena = gameState.arena as any;
+    // Classic Stadium zone radii in arena-px (same numeric space as this.arenaRadius).
+    const pinkWallR  = (arena.pinkWallRadius  > 0) ? arena.pinkWallRadius  : 0;
+    const ridgeR     = (arena.ridgeRadius     > 0) ? arena.ridgeRadius     : 0;
+    const flatZoneR  = (arena.flatZoneRadius  > 0) ? arena.flatZoneRadius  : 0;
+    const hasZones   = pinkWallR > 0 && ridgeR > 0 && flatZoneR > 0;
+    const ridgeWidth = hasZones ? Math.max(10, this.arenaRadius * 0.074) : 0;
+
     const g = new PIXI.Graphics();
 
     if (shape === "circle") {
-      // Outer glow halo (visible even on dark backgrounds)
-      g.circle(0, 0, this.arenaRadius + 20);
-      g.fill({ color: bgColor, alpha: 0.35 });
-      g.circle(0, 0, this.arenaRadius + 8);
-      g.fill({ color: bgColor, alpha: 0.5 });
+      if (hasZones) {
+        // ── Classic Stadium layout (back to front) ──────────────────────────────
+        // 1. Full arena floor — dark charcoal base
+        g.circle(0, 0, this.arenaRadius);
+        g.fill({ color: 0x1a1018 });
 
-      const floorGradient = new PIXI.Graphics();
-      floorGradient.circle(0, 0, this.arenaRadius);
-      floorGradient.fill({ color: bgColor });
+        // 2. Outer glow halo around the whole arena
+        g.circle(0, 0, this.arenaRadius + 22);
+        g.fill({ color: 0x000000, alpha: 0 });
+        g.circle(0, 0, this.arenaRadius + 22);
+        g.stroke({ color: 0xcc2244, width: 22, alpha: 0.25 });
 
-      // Inner highlight ring — gives depth
-      const innerHighlight = new PIXI.Graphics();
-      innerHighlight.circle(0, 0, this.arenaRadius * 0.55);
-      innerHighlight.fill({ color: 0xffffff, alpha: 0.04 });
+        // 3. Pink wall zone — the ring from pinkWallR to arenaRadius (red/danger area)
+        const pinkWallZone = new PIXI.Graphics();
+        pinkWallZone.circle(0, 0, this.arenaRadius);
+        pinkWallZone.fill({ color: 0x5a0820 });                // dark red wall zone
+        pinkWallZone.circle(0, 0, pinkWallR);
+        pinkWallZone.fill({ color: 0x1a1018 });                // cut out the inner part
 
-      const innerRing = new PIXI.Graphics();
-      innerRing.circle(0, 0, this.arenaRadius + 3);
-      innerRing.stroke({ color: BeybladeGameRenderer.complementaryColor(bgColor), width: 3, alpha: 0.8 });
-      innerRing.circle(0, 0, this.arenaRadius);
-      innerRing.stroke({ color: rimColor, width: 4, alpha: 0.9 });
+        // 4. Pink wall ring stroke (bright) + KO-zone outer glow
+        const pinkWall = new PIXI.Graphics();
+        pinkWall.circle(0, 0, pinkWallR + 4);
+        pinkWall.stroke({ color: 0xff2255, width: 8, alpha: 0.9 });
+        pinkWall.circle(0, 0, pinkWallR);
+        pinkWall.stroke({ color: 0xff6688, width: 3, alpha: 0.7 });
 
-      const boundaryRing = new PIXI.Graphics();
-      boundaryRing.circle(0, 0, this.arenaRadius * 0.90);
-      boundaryRing.stroke({ color: 0xff4444, width: 1.5, alpha: 0.35 });
+        // 5. Arena interior floor (inside pink wall) — subtle slate grey
+        const innerFloor = new PIXI.Graphics();
+        innerFloor.circle(0, 0, pinkWallR);
+        innerFloor.fill({ color: 0x201820 });
 
-      // Phase V3: dynamic shrink ring — redrawn each frame when effectiveRadius changes
-      this.shrinkRingGraphics = new PIXI.Graphics();
-      this.shrinkRingGraphics.visible = false;
-      this.lastShrinkRadiusPx = -1;
+        // 6. Sky-blue tornado ridge ring (bright band)
+        const ridge = new PIXI.Graphics();
+        ridge.circle(0, 0, ridgeR + ridgeWidth / 2);
+        ridge.stroke({ color: 0x00ccff, width: ridgeWidth, alpha: 0.85 });
+        ridge.circle(0, 0, ridgeR + ridgeWidth / 2);
+        ridge.stroke({ color: 0x66eeff, width: ridgeWidth * 0.35, alpha: 0.6 });
 
-      this.arenaLayer.addChild(g, floorGradient, innerHighlight, innerRing, boundaryRing, this.shrinkRingGraphics);
+        // 7. Flat zone circle — yellow inner boundary ring
+        const flatZone = new PIXI.Graphics();
+        flatZone.circle(0, 0, flatZoneR + 3);
+        flatZone.stroke({ color: 0xffdd00, width: 6, alpha: 0.9 });
+        flatZone.circle(0, 0, flatZoneR);
+        flatZone.stroke({ color: 0xffff88, width: 2, alpha: 0.5 });
+
+        // 8. Flat zone floor (inside yellow ring) — slightly lighter, defense territory
+        const flatFloor = new PIXI.Graphics();
+        flatFloor.circle(0, 0, flatZoneR);
+        flatFloor.fill({ color: 0x282030 });
+
+        // 9. Launch quadrant crosshair — red semi-transparent lines
+        const crosshair = new PIXI.Graphics();
+        const cr = pinkWallR;
+        crosshair.moveTo(-cr, 0).lineTo(cr, 0)
+          .stroke({ color: 0xff3333, width: 2, alpha: 0.35 });
+        crosshair.moveTo(0, -cr).lineTo(0, cr)
+          .stroke({ color: 0xff3333, width: 2, alpha: 0.35 });
+
+        // 10. Centre dot
+        const centerDot = new PIXI.Graphics();
+        centerDot.circle(0, 0, 4).fill({ color: 0xff3333, alpha: 0.7 });
+
+        // 11. 2.5D bezel — thick dark outer ring that creates visual depth/stadium wall
+        const bezel = new PIXI.Graphics();
+        if (this.is25D) {
+          const bezelW = Math.max(18, this.arenaRadius * 0.08);
+          bezel.circle(0, 0, this.arenaRadius + bezelW);
+          bezel.fill({ color: 0x0d0d0d });
+          bezel.circle(0, 0, this.arenaRadius);
+          bezel.fill({ color: 0x0d0d0d });                    // punch out centre
+          // Inner shadow gradient to sell the "bowl" depth
+          bezel.circle(0, 0, this.arenaRadius + 2);
+          bezel.stroke({ color: 0x444444, width: 3, alpha: 0.8 });
+          bezel.circle(0, 0, this.arenaRadius + bezelW);
+          bezel.stroke({ color: 0x222222, width: 2, alpha: 0.6 });
+          // Notch marks at 0°, 90°, 180°, 270° (stadium entry points)
+          for (let deg = 0; deg < 360; deg += 90) {
+            const rad = (deg * Math.PI) / 180;
+            const nx = Math.cos(rad) * (this.arenaRadius + bezelW * 0.5);
+            const ny = Math.sin(rad) * (this.arenaRadius + bezelW * 0.5);
+            bezel.circle(nx, ny, bezelW * 0.25).fill({ color: 0x383838 });
+          }
+          // Top highlight (light source from above-left) — thin bright arc at top of bezel
+          bezel.arc(0, 0, this.arenaRadius + bezelW * 0.5, -2.2, -0.9);
+          bezel.stroke({ color: 0x666666, width: Math.max(3, bezelW * 0.3), alpha: 0.5 });
+        }
+
+        // Phase V3: dynamic shrink ring
+        this.shrinkRingGraphics = new PIXI.Graphics();
+        this.shrinkRingGraphics.visible = false;
+        this.lastShrinkRadiusPx = -1;
+
+        this.arenaLayer.addChild(
+          this.is25D ? bezel : new PIXI.Container(),
+          g, pinkWallZone, pinkWall, innerFloor,
+          ridge, flatFloor, flatZone,
+          crosshair, centerDot,
+          this.shrinkRingGraphics,
+        );
+      } else {
+        // ── Generic arena (no zone data) ────────────────────────────────────────
+        g.circle(0, 0, this.arenaRadius + 20);
+        g.fill({ color: bgColor, alpha: 0.35 });
+        g.circle(0, 0, this.arenaRadius + 8);
+        g.fill({ color: bgColor, alpha: 0.5 });
+
+        const floorGradient = new PIXI.Graphics();
+        floorGradient.circle(0, 0, this.arenaRadius);
+        floorGradient.fill({ color: bgColor });
+
+        const innerHighlight = new PIXI.Graphics();
+        innerHighlight.circle(0, 0, this.arenaRadius * 0.55);
+        innerHighlight.fill({ color: 0xffffff, alpha: 0.04 });
+
+        const innerRing = new PIXI.Graphics();
+        innerRing.circle(0, 0, this.arenaRadius + 3);
+        innerRing.stroke({ color: BeybladeGameRenderer.complementaryColor(bgColor), width: 3, alpha: 0.8 });
+        innerRing.circle(0, 0, this.arenaRadius);
+        innerRing.stroke({ color: rimColor, width: 4, alpha: 0.9 });
+
+        const boundaryRing = new PIXI.Graphics();
+        boundaryRing.circle(0, 0, this.arenaRadius * 0.90);
+        boundaryRing.stroke({ color: 0xff4444, width: 1.5, alpha: 0.35 });
+
+        this.shrinkRingGraphics = new PIXI.Graphics();
+        this.shrinkRingGraphics.visible = false;
+        this.lastShrinkRadiusPx = -1;
+
+        this.arenaLayer.addChild(g, floorGradient, innerHighlight, innerRing, boundaryRing, this.shrinkRingGraphics);
+      }
     } else {
       const arenaW = this.arenaRadius * 2;
       const arenaH = this.arenaRadius * 2;

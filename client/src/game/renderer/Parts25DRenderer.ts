@@ -15,4 +15,6 @@ import { BeybladeGameRenderer } from "./PixiRenderer";
 export class Parts25DRenderer extends BeybladeGameRenderer {
   readonly mode = "2.5d" as const;
   protected override get is25D(): boolean { return true; }
+  /** When the arena hasn't configured a tilt, show a 28° perspective by default in 2.5D. */
+  protected override get defaultTiltAngle(): number { return 28; }
 }

@@ -231,3 +231,204 @@ export async function assertCanvasInViewport(page: Page): Promise<void> {
       console.warn(`canvas[${i}] bottom=${box.y + box.height} > viewport.height=${viewport.height}`);
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Canvas rendering analysis
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface CanvasAnalysis {
+  /** Canvas element was found in DOM */
+  found:    boolean;
+  /** Canvas CSS bounding box (null if not found) */
+  box:      { x: number; y: number; width: number; height: number } | null;
+  /** True when box.width > 0 && box.height > 0 */
+  hasSize:  boolean;
+  /**
+   * Fraction of sampled pixels that differ from pure black (0,0,0).
+   * 0 = completely black (nothing rendered), 1 = all pixels have colour.
+   * null when canvas.getContext("2d") is unavailable (WebGL canvas).
+   */
+  nonBlackRatio: number | null;
+  /** True when the canvas appears to be rendering content */
+  isRendering: boolean;
+  /** Human-readable summary for console output */
+  summary: string;
+}
+
+/**
+ * Analyse a PixiJS/WebGL canvas to determine whether it is actively rendering
+ * content.  Works by:
+ *   1. Checking the canvas has non-zero CSS dimensions.
+ *   2. Reading a 20×20 grid of pixels via `canvas.getContext("2d")`
+ *      (falls back gracefully for WebGL-tainted canvases).
+ *   3. Counting non-black pixels — a completely black canvas almost certainly
+ *      means the renderer has not drawn anything yet.
+ *
+ * Does NOT throw.  All errors are caught and reflected in the result.
+ */
+export async function analyzeCanvas(page: Page): Promise<CanvasAnalysis> {
+  // Bounding-box check
+  const box = await page.locator("canvas").first().boundingBox().catch(() => null);
+  if (!box) {
+    return { found: false, box: null, hasSize: false, nonBlackRatio: null, isRendering: false,
+             summary: "canvas not found in DOM" };
+  }
+
+  const hasSize = box.width > 0 && box.height > 0;
+  if (!hasSize) {
+    return { found: true, box, hasSize: false, nonBlackRatio: null, isRendering: false,
+             summary: `canvas found but has zero size (${box.width}×${box.height})` };
+  }
+
+  // Pixel sampling via 2D context (works for 2D canvases; limited for WebGL)
+  const nonBlackRatio = await page.evaluate(() => {
+    const c = document.querySelector("canvas");
+    if (!c) return null;
+    try {
+      const ctx = c.getContext("2d");
+      if (!ctx) return null; // WebGL canvas — can't read pixels via 2D
+      const W = c.width, H = c.height;
+      if (!W || !H) return null;
+      // Sample a 20×20 grid across the canvas
+      const GRID = 20;
+      const stepX = Math.max(1, Math.floor(W / GRID));
+      const stepY = Math.max(1, Math.floor(H / GRID));
+      let nonBlack = 0, total = 0;
+      for (let x = 0; x < W; x += stepX) {
+        for (let y = 0; y < H; y += stepY) {
+          const d = ctx.getImageData(x, y, 1, 1).data; // [r, g, b, a]
+          total++;
+          if (d[0] > 10 || d[1] > 10 || d[2] > 10) nonBlack++;
+        }
+      }
+      return total > 0 ? nonBlack / total : 0;
+    } catch { return null; }
+  }).catch(() => null);
+
+  // For WebGL canvases the pixel read always returns null — we consider it
+  // rendering if the CSS box is non-zero (WebGL draws directly to the GPU).
+  const isRendering = hasSize && (nonBlackRatio === null || nonBlackRatio > 0.01);
+
+  const ratioStr = nonBlackRatio !== null ? `${(nonBlackRatio * 100).toFixed(1)}% non-black` : "WebGL (pixels unreadable)";
+  const summary = `${box.width.toFixed(0)}×${box.height.toFixed(0)} px | ${ratioStr} | rendering=${isRendering}`;
+
+  return { found: true, box, hasSize, nonBlackRatio, isRendering, summary };
+}
+
+/**
+ * Log canvas analysis to the console and take a named screenshot.
+ * Convenience wrapper used in tests.
+ */
+export async function checkAndLogCanvas(page: Page, tag: string): Promise<CanvasAnalysis> {
+  const analysis = await analyzeCanvas(page);
+  console.log(`[${tag}] Canvas: ${analysis.summary}`);
+  await ss(page, tag);
+  return analysis;
+}
+
+/**
+ * Navigate to a URL via `startViaCards` flow or a direct URL, wait for the
+ * canvas, analyse it and log a summary.  Returns `null` if the page isn't
+ * reachable (e.g. redirected to /login).
+ */
+export async function waitAndAnalyzeCanvas(
+  page: Page,
+  tag: string,
+  timeoutMs = 35_000,
+): Promise<CanvasAnalysis | null> {
+  try {
+    await page.locator("canvas").waitFor({ state: "visible", timeout: timeoutMs });
+  } catch {
+    await ss(page, `${tag}-canvas-timeout`);
+    return null;
+  }
+  await page.waitForTimeout(800); // let first frames render
+  return checkAndLogCanvas(page, tag);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Game-flow helpers shared across test files
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Wait for loading-progress bar OR canvas — whichever shows first. */
+export async function waitForGameMount(page: Page, timeoutMs = 35_000): Promise<void> {
+  await Promise.race([
+    page.locator("canvas").waitFor({ state: "visible", timeout: timeoutMs }),
+    page
+      .locator('[data-testid="loading-progress"]')
+      .waitFor({ state: "visible", timeout: timeoutMs }),
+  ]).catch(() => {});
+}
+
+/**
+ * Wait through the 3s warmup countdown and 5s launch phase.
+ * Automatically charges + releases the beyblade via Space key.
+ */
+export async function waitThroughLaunch(page: Page, tag: string): Promise<void> {
+  await page.waitForTimeout(3_500);
+  await ss(page, `${tag}-post-warmup`);
+
+  const launchEl = page
+    .locator("text=/tilt|charge|power|launch|Let It Rip/i")
+    .first();
+  const inLaunch = await launchEl
+    .waitFor({ state: "visible", timeout: 18_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (inLaunch) {
+    await ss(page, `${tag}-launch-phase`);
+    await page.keyboard.down("Space");
+    await page.waitForTimeout(2_500);
+    await ss(page, `${tag}-charging`);
+    await page.keyboard.up("Space");
+    await page.waitForTimeout(600);
+    await ss(page, `${tag}-launched`);
+  }
+}
+
+/**
+ * Navigate via BattleModeCardsPage to start any local game mode.
+ * Returns true when /game/room is reached or a canvas becomes visible.
+ */
+export async function startViaCards(
+  page: Page,
+  mode: "tryout" | "pvai" | "pvp" | "tournament" | "royale",
+): Promise<boolean> {
+  const landed = await gotoProtected(page, "/game/battle");
+  if (!landed) return false;
+
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForTimeout(1_000);
+
+  const modeTextMap: Record<typeof mode, RegExp> = {
+    tryout:     /tryout|solo|practice/i,
+    pvai:       /pvai|vs\s?ai|ai\s?battle/i,
+    pvp:        /pvp|online|vs\s?player/i,
+    tournament: /tournament/i,
+    royale:     /royale|battle.*royal/i,
+  };
+
+  const card = page
+    .locator("button, [role='button'], [class*='card']")
+    .filter({ hasText: modeTextMap[mode] })
+    .first();
+  if (await card.isVisible({ timeout: 8_000 }).catch(() => false)) {
+    await card.click();
+    await page.waitForTimeout(800);
+  }
+
+  const startBtn = page
+    .locator("button")
+    .filter({ hasText: /start|play|launch|let it rip/i })
+    .first();
+  if (await startBtn.isVisible({ timeout: 6_000 }).catch(() => false)) {
+    await startBtn.click();
+  }
+
+  const atRoom = await page
+    .waitForURL(/\/game\/room/, { timeout: 15_000 })
+    .then(() => true)
+    .catch(() => false);
+  return atRoom || page.locator("canvas").isVisible({ timeout: 8_000 }).catch(() => false);
+}

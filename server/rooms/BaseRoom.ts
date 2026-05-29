@@ -226,6 +226,12 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
     this.state.arena.arenaFriendlyFireEnabled  = arenaData.friendlyFireEnabled  ?? true;
     this.state.arena.arenaPhaseObstacles       = arenaData.phaseObstacles       ?? false;
 
+    // Classic Stadium zone radii
+    this.state.arena.arenaPixelRadius = (arenaData as any).arenaPixelRadius ?? 0;
+    this.state.arena.pinkWallRadius   = (arenaData as any).pinkWallRadius   ?? 0;
+    this.state.arena.ridgeRadius      = (arenaData as any).ridgeRadius      ?? 0;
+    this.state.arena.flatZoneRadius   = (arenaData as any).flatZoneRadius   ?? 0;
+
     // World background (Phase BG)
     const wb = (arenaData as any).worldBackground;
     if (wb !== undefined) {

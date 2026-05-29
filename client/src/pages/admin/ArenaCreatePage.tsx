@@ -45,7 +45,7 @@ const FALLBACK_SHAPES: { value: string; label: string }[] = [
 export function ArenaCreatePage() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name:"", shape:"circle" as ArenaShape, theme:"metrocity", widthCm:45, heightCm:45 });
+  const [form, setForm] = useState({ name:"", shape:"circle" as ArenaShape, theme:"default", widthCm:45, heightCm:45 });
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]:v }));
 
   const { items: shapeDefs } = useArenaShapeDefs();
@@ -64,6 +64,8 @@ export function ArenaCreatePage() {
     try {
       const widthPx  = Math.round(form.widthCm  * PX_PER_CM_BASE);
       const heightPx = Math.round(form.heightCm * PX_PER_CM_BASE);
+      // Scale zone radii proportionally to the chosen arena size (Classic Stadium = 1080px wide).
+      const zoneScale = widthPx / 1080;
       const docRef = await addDoc(collection(db, COLLECTIONS.ARENAS), {
         ...DEFAULT_ARENA_CONFIG,
         name: form.name.trim(),
@@ -71,6 +73,10 @@ export function ArenaCreatePage() {
         theme: form.theme as ArenaTheme,
         wall: initializeWallConfig(form.shape as ArenaShape),
         width: widthPx, height: heightPx,
+        arenaPixelRadius: Math.round(486 * zoneScale),
+        pinkWallRadius:   Math.round(432 * zoneScale),
+        ridgeRadius:      Math.round(360 * zoneScale),
+        flatZoneRadius:   Math.round(216 * zoneScale),
         obstacles: [], waterBodies: [], speedPaths: [], turrets: [], portals: [], pits: [],
         createdAt: serverTimestamp(),
       });

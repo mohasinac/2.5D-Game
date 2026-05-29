@@ -36,6 +36,7 @@ export type ArenaShape =
   | "rectangle";  // Gen1 Infinity Stadium, Robert's Olympia Coliseum
 
 export type ArenaTheme =
+  | "default"   // Classic Stadium — no special theme
   | "forest"
   | "mountains"
   | "grasslands"
@@ -3666,6 +3667,14 @@ export interface ArenaConfig {
   height: number; // Deprecated: use ARENA_RESOLUTION instead
   shape: ArenaShape;
 
+  // ===== CLASSIC STADIUM ZONE RADII =====
+  // All in arena-px (same coordinate space as width/height).
+  // 0 = not set; renderer falls back to generic concentric rings.
+  arenaPixelRadius?: number;  // outer KO boundary — outside this = ring-out
+  pinkWallRadius?:   number;  // inner edge of the pink recoil wall
+  ridgeRadius?:      number;  // sky-blue tornado ridge centre-line
+  flatZoneRadius?:   number;  // yellow flat-defense zone inner boundary
+
   // ===== BOWL / CROSS-SECTION =====
   // Controls the curvature of the stadium walls (the bowl shape seen in cross-section).
   // wallAngle: degrees from vertical (0=flat/vertical, 75=near-horizontal cup).
@@ -4091,10 +4100,15 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
 export const DEFAULT_ARENA_CONFIG: ArenaConfig = {
   name: "New Arena",
   description: "",
-  width: 50,
-  height: 50,
+  width: 1080,
+  height: 1080,
   shape: "circle",
-  theme: "metrocity",
+  theme: "default",
+  // Classic Stadium zone radii — carried into every new arena as sensible defaults
+  arenaPixelRadius: 486,
+  pinkWallRadius:   432,
+  ridgeRadius:      360,
+  flatZoneRadius:   216,
   autoRotate: false,
   rotationSpeed: 6,
   rotationDirection: "clockwise",

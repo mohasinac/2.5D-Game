@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db, COLLECTIONS } from '../lib/firebase';
 import { useGame } from '../contexts/GameContext';
-import { useGameStore } from '../stores/gameStore';
+import { useGameStore, DEFAULT_ARENA_ID, DEFAULT_BEYBLADE_ID } from '../stores/gameStore';
 import { CardCarousel, type CarouselCard } from '../components/ui/CardCarousel';
 import type { GameRoomConfig, RoomType } from '../types/gameRoom';
 import toast from 'react-hot-toast';
 
 type Difficulty = 'medium' | 'hard' | 'hell';
 
-interface SimpleOption { id: string; name: string; }
+interface SimpleOption { id: string; name: string; isDefault?: boolean; }
 
 interface DrawerState {
   open: boolean;
@@ -37,8 +37,8 @@ export function BattleModeCardsPage() {
   const [arenas, setArenas] = useState<SimpleOption[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedBey, setSelectedBey] = useState<string>('');
-  const [selectedArena, setSelectedArena] = useState<string>('random');
+  const [selectedBey, setSelectedBey] = useState<string>(DEFAULT_BEYBLADE_ID);
+  const [selectedArena, setSelectedArena] = useState<string>(DEFAULT_ARENA_ID);
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(1);
   const [aiCountTournament, setAiCountTournament] = useState(3);
@@ -76,18 +76,30 @@ export function BattleModeCardsPage() {
       getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS)),
       getDocs(collection(db, COLLECTIONS.ARENAS)),
     ]).then(([beySnap, arenaSnap]) => {
-      const beys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id }));
+      const beys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id, isDefault: !!(d.data().isDefault) }));
       const arns = arenaSnap.docs.map(d => ({ id: d.id, name: (d.data().name as string) || d.id }));
-      setBeyblades(beys.length ? beys : [{ id: 'default', name: 'Default Beyblade' }]);
+      setBeyblades(beys.length ? beys : [{ id: DEFAULT_BEYBLADE_ID, name: 'Ultimate Dragoon', isDefault: true }]);
       // Prepend the random option — always available
-      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...(arns.length ? arns : [{ id: 'default', name: 'Default Arena' }])]);
-      if (!selectedBey && beys.length) setSelectedBey(beys[0].id);
-      // selectedArena is already 'random' by default — only override if user has a saved preference
-      if (settings?.arenaId) setSelectedArena(settings.arenaId);
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...(arns.length ? arns : [{ id: DEFAULT_ARENA_ID, name: 'Classic Stadium' }])]);
+
+      // Bey: prefer saved preference → isDefault flag → known default ID → first in list
+      if (!settings?.beybladeId) {
+        const defaultBey = beys.find(b => b.isDefault) ?? beys.find(b => b.id === DEFAULT_BEYBLADE_ID) ?? beys[0];
+        if (defaultBey) setSelectedBey(defaultBey.id);
+      } else {
+        setSelectedBey(settings.beybladeId);
+      }
+
+      // Arena: prefer saved preference → classic_stadium (if present in list) → first real arena
+      if (!settings?.arenaId) {
+        const hasClassic = arns.some(a => a.id === DEFAULT_ARENA_ID);
+        setSelectedArena(hasClassic ? DEFAULT_ARENA_ID : (arns[0]?.id ?? DEFAULT_ARENA_ID));
+      } else {
+        setSelectedArena(settings.arenaId);
+      }
     }).catch(() => {
-      setBeyblades([{ id: 'default', name: 'Default Beyblade' }]);
-      setArenas([{ id: 'random', name: '🎲 Random Arena' }, { id: 'default', name: 'Default Arena' }]);
-      if (!selectedBey) setSelectedBey('default');
+      setBeyblades([{ id: DEFAULT_BEYBLADE_ID, name: 'Ultimate Dragoon', isDefault: true }]);
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, { id: DEFAULT_ARENA_ID, name: 'Classic Stadium' }]);
     }).finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -219,7 +231,7 @@ export function BattleModeCardsPage() {
 
   return (
     <div style={{
-      height: '100vh',
+      height: '100dvh',
       background: '#050814',
       display: 'flex',
       flexDirection: 'column',

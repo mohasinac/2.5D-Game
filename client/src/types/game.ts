@@ -26,6 +26,11 @@ export interface ServerArenaState {
   safeZoneY?: number;
   safeZoneTimer?: number;
   safeZonePhase?: number;
+  /** Classic Stadium zone radii in arena-px (0 = not set, draw generic) */
+  arenaPixelRadius?: number;
+  pinkWallRadius?:   number;
+  ridgeRadius?:      number;
+  flatZoneRadius?:   number;
   /** World background — rendered behind the arena, synced once on join */
   worldBgType?: "none" | "color" | "image";
   worldBgColor?: string;

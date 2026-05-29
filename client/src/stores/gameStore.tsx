@@ -100,9 +100,13 @@ const encryptedStorage = {
 
 // ─── Default state ───────────────────────────────────────────────────────────
 
+// Known Firestore document IDs set by the seed scripts.
+export const DEFAULT_ARENA_ID    = "classic_stadium";
+export const DEFAULT_BEYBLADE_ID = "ultimate-dragoon";
+
 export const defaultSettings: GameSettings = {
-  beybladeId: null,
-  arenaId: null,
+  beybladeId: DEFAULT_BEYBLADE_ID,
+  arenaId: DEFAULT_ARENA_ID,
   gameMode: null,
   difficulty: undefined,
   opponentId: undefined,

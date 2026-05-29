@@ -641,6 +641,12 @@ export class ArenaState extends Schema {
   @type("number") waterBodyCount: number = 0; // Multiple water bodies now
   @type("number") portalCount: number = 0;
 
+  // ── Classic Stadium zone radii (arena-px; 0 = not set / generic arena) ────────
+  @type("number") arenaPixelRadius: number = 0;   // outer KO boundary
+  @type("number") pinkWallRadius:   number = 0;   // inner edge of recoil wall
+  @type("number") ridgeRadius:      number = 0;   // sky-blue tornado ridge centre-line
+  @type("number") flatZoneRadius:   number = 0;   // yellow flat-defense zone inner ring
+
   // ── Arena Shrink (Phase V) ────────────────────────────────────────────────────
   @type("number") effectiveRadius: number = 0;    // 0 = use full arena radius; set during shrink
 

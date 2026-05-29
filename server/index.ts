@@ -47,7 +47,10 @@ gameServer.define(ROOM_NAMES["2d"].aiBattle, AIBattleRoom);
 gameServer.define(ROOM_NAMES["2d"].tournament, TournamentBattleRoom);
 
 gameServer.define(ROOM_NAMES["2.5d"].tryout, Parts25DTryoutRoom);
-gameServer.define(ROOM_NAMES["2.5d"].battle, Parts25DBattleRoom);
+// filterBy(['size','bestOf']) creates separate matchmaking pools per preference
+// so 1v1 players never land in FFA rooms and vice-versa.
+gameServer.define(ROOM_NAMES["2.5d"].battle, Parts25DBattleRoom)
+  .filterBy(["size", "bestOf"]);
 gameServer.define(ROOM_NAMES["2.5d"].aiBattle, Parts25DAIBattleRoom);
 gameServer.define(ROOM_NAMES["2.5d"].tournament, Parts25DTournamentBattleRoom);
 
@@ -55,8 +58,9 @@ gameServer.define(ROOM_NAMES["2.5d"].tournament, Parts25DTournamentBattleRoom);
 gameServer.define("team_battle_room", TeamBattleRoom);
 gameServer.define("parts25d_team_battle_room", Parts25DTeamBattleRoom);
 
-// Royale Battle room (Phase 25)
-gameServer.define("royale_battle_room", RoyaleBattleRoom);
+// Royale Battle room — filterBy size so 4/8/12-player lobbies don't mix
+gameServer.define("royale_battle_room", RoyaleBattleRoom)
+  .filterBy(["size"]);
 
 // RPG Story Battle room — extends AIBattleRoom with RPG narrative context
 gameServer.define("story_battle_room", StoryBattleRoom);

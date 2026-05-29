@@ -159,8 +159,8 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
           <div
             className="carousel-card"
             style={{
-              width: '280px',
-              height: '360px',
+              width: 'min(280px, 72vmin)',
+              height: 'min(360px, calc(100svh - 140px))',
               borderRadius: '16px',
               background: card.gradient,
               border: idx === activeIndex ? '2px solid rgba(255,255,255,0.4)' : '2px solid rgba(255,255,255,0.1)',

@@ -71,7 +71,7 @@ export function StoryModeCardsPage() {
 
   return (
     <div style={{
-      height: '100vh',
+      height: '100dvh',
       background: '#050814',
       display: 'flex',
       flexDirection: 'column',
