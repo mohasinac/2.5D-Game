@@ -427,9 +427,9 @@ export class BeybladeGameRenderer {
       // lock that occurs when setScreen hasn't fired yet on the very first frame).
       if (!this.cameraInitialized && this.world.screenW > 0 && this.world.screenH > 0) {
         this.world.snapTo(cm.x, cm.y);
-        // Start at 1.5× fit-arena so beyblades fill ~2/3 of the viewport and are clearly
-        // visible without the user needing to manually zoom in.
-        this.world.setZoom(this.world.limits.minZoom * 1.5, true);
+        // Start at fit-arena zoom so the entire arena is always visible — all beys
+        // (including 12-player royale) are in frame from the first frame.
+        this.world.setZoom(this.world.limits.minZoom, true);
         this.cameraInitialized = true;
       }
     }

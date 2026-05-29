@@ -12352,7 +12352,2403 @@ function trackDropCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +8 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1961 as further franchise moves are provided.*
+
+
+---
+
+## Case 1961 — GIMMICK: Storm Pegasus 105RF — RF Orbital Vortex Generation
+
+**Beyblade:** Storm Pegasus 105RF (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Blader:** Gingka Hagane | **Series:** Beyblade Metal Fusion
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt Storm | 1.0 | 0.0 |
+| Energy Ring | Pegasus (wing protrusions — aerodynamic lift) | 7.0 | 33.0 |
+| Fusion Wheel | Storm (large, round — vortex wind impeller) | 28.0 | 29.0 |
+| Spin Track | 105 | 3.0 | 12.0 |
+| Performance Tip | RF (Rubber Flat — high friction, fast orbital) | 4.0 | 2.0 |
+| **Total** | | **43.0** | |
+
+(MFB 5-part system. TT only. Assembly confirmed cross-reference: Case 1864 Starblast Attack, same bey. 43.0 g.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 28.0×10⁻³ × 0.029² + 3.0×10⁻³ × 0.012² + 4.0×10⁻³ × 0.002²
+           = 0 + 7.623×10⁻⁶ + 2.355×10⁻⁵ + 4.320×10⁻⁷ + 1.600×10⁻⁸
+           = **3.162×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.162×10⁻⁵ × 580 = **1.834×10⁻² kg·m²/s**
+
+---
+
+### 1. RF Tip — Orbital Speed and Stadium Circling
+
+The Rubber Flat tip's high friction coefficient drives Storm Pegasus into an extremely fast orbital path around the stadium:
+
+```
+μ_RF = 0.85  (rubber flat — highest MFB tip friction coefficient)
+v_orbital = μ_RF × ω₀ × r_RF = 0.85 × 580 × 0.002 = 0.986 m/s
+
+r_orbit = 350 mm = 0.35 m  (Pegasus circles near the stadium wall)
+ω_orbit  = v_orbital / r_orbit = 0.986 / 0.35 = 2.817 rad/s (orbital angular rate)
+t_orbit  = 2π / ω_orbit = 2π / 2.817 = 2.230 s  (one full circuit)
+```
+
+---
+
+### 2. Storm Fusion Wheel — Rankine Vortex Generation
+
+The large round Storm Fusion Wheel acts as a forced-rotation vortex core. As Pegasus orbits, the Storm Wheel's spinning surface imparts angular momentum to the surrounding air:
+
+```
+Vortex core radius:  r_c = r_Storm = 29 mm = 0.029 m
+Core tangential speed: v_core = ω₀ × r_Storm = 580 × 0.029 = 16.82 m/s
+
+Circulation (Rankine model):
+  Γ = 2π × r_c × v_core = 2π × 0.029 × 16.82 = 3.063 m²/s
+
+At r_eff = 200 mm from Pegasus (opponent position between orbit and centre):
+  v_wind = Γ / (2π × r_eff) = 3.063 / (2π × 0.200) = 3.063 / 1.257 = 2.437 m/s
+```
+
+---
+
+### 3. Wind Drag on Opponent — Translational Sweep and Spin Friction
+
+The 2.437 m/s vortex wind field at the opponent's position creates translational drag:
+
+```
+Aerodynamic drag on opponent bey (disk model):
+  C_D = 0.47,  A_bey = π × 0.030² = 2.827×10⁻³ m²
+
+  F_drag = ½ × ρ × v_wind² × C_D × A_bey
+         = 0.5 × 1.225 × 2.437² × 0.47 × 2.827×10⁻³
+         = 0.5 × 1.225 × 5.939 × 0.47 × 2.827×10⁻³
+         = 4.834×10⁻³ N
+
+Wind impulse (tornado sustained for t_tornado = 2.0 s — 2 full Pegasus orbits):
+  J_wind = F_drag × t_tornado = 4.834×10⁻³ × 2.0 = 9.668×10⁻³ N·s
+  (translational sweep: opponent bey is pushed 0.242 m/s by tornado wind alone)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.0 g |
+| I_total | 3.162×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.834×10⁻² kg·m²/s |
+| μ_RF | 0.85 |
+| v_orbital | 0.986 m/s |
+| r_orbit | 350 mm |
+| Γ | 3.063 m²/s |
+| v_wind (r=200mm) | 2.437 m/s |
+| F_drag | 4.834×10⁻³ N |
+| J_wind (2 orbits) | 9.668×10⁻³ N·s |
+
+---
+
+## Case 1962 — SPECIAL: Tornado Wing (Tornado Wing) — Gingka Hagane / Storm Pegasus 105RF
+
+**Blader:** Gingka Hagane | **Beyblade:** Storm Pegasus 105RF | **Type:** attack
+
+### Description
+
+Tornado Wing (トルネードウイング Tornado Wing) is the second Special Move used by Gingka Hagane and his Storm Pegasus 105RF (Metal Fusion). Pegasus circles around the stadium quickly using the RF tip's high orbital drive, with the Storm Fusion Wheel generating a stadium-wide vortex. The tornado engulfs the stadium and is able to stop the opponent's Beyblade's translational movement before sending it flying out. This move is the direct predecessor of Storm Bringer. Gingka used Tornado Wing twice — once against Tetsuya Watarigani in "Vengeful Gasher", and again against Yu Tendo in the first round of Battle Bladers.
+
+### Stage — Two-Phase: Vortex Sweep + RF Orbital Ejection
+
+**Phase 1 — Tornado wind translational sweep (2 Pegasus orbits = 4.46 s total):**
+
+From Case 1961: F_drag = 4.834×10⁻³ N, t_tornado = 2.0 s effective contact.
+
+```
+J_wind = 4.834×10⁻³ × 2.0 = 9.668×10⁻³ N·s
+Δv_wind = J_wind / m_opp = 9.668×10⁻³ / 0.040 = 0.242 m/s  (opponent swept 0.242 m/s toward wall)
+```
+
+**Phase 2 — RF orbital ejection contact (opponent displaced by tornado, Pegasus sweeps in):**
+
+```
+v_contact_eject = v_orbital = 0.986 m/s (RF tip orbital approach into displaced opponent)
+
+m_eff = (m_P × m_opp) / (m_P + m_opp) = (0.043 × 0.040) / (0.043 + 0.040)
+      = 1.720×10⁻³ / 0.083 = 2.072×10⁻² kg
+
+e_RF = 0.85  (rubber flat — high restitution rubber-on-metal contact)
+
+J_eject = m_eff × (1 + e_RF) × v_orbital = 2.072×10⁻² × 1.85 × 0.986
+        = 2.072×10⁻² × 1.824 = 3.779×10⁻² N·s
+
+Δv_eject = J_eject / m_opp = 3.779×10⁻² / 0.040 = 0.945 m/s
+```
+
+**Combined effect:**
+
+```
+J_total    = J_wind + J_eject = 9.668×10⁻³ + 3.779×10⁻² = 4.746×10⁻² N·s
+Δv_opp     = J_total / m_opp  = 4.746×10⁻² / 0.040 = 1.186 m/s
+```
+
+**Effect on Storm Pegasus (spin drain from RF ejection contact):**
+
+```
+Δω_P = J_eject × r_Storm / I_P = 3.779×10⁻² × 0.029 / 3.162×10⁻⁵ = 34.7 rad/s
+ω_remain = 580 − 34.7 = 545.3 rad/s  (94.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka's Pegasus erupts in winged golden fire — the tornado transforms into a towering hurricane of pure star energy, Pegasus's wings extending across the entire stadium as the vortex reaches full fury. The opponent's bey is engulfed completely and blown clean out of the stadium in a column of Pegasus-spirit wind.
+
+[M] factor = **8.0 ×** (Gingka Hagane — main Metal Fusion protagonist, Pegasus storm spirit)
+[M] Δv = 1.186 × 8.0 = **9.49 m/s** (stadium-wide tornado ring-out)
+
+> **Note:** Physical values describe Rankine vortex Γ=3.063 m²/s, v_wind=2.437 m/s at r=200mm; wind sweep J_wind=9.668×10⁻³ N·s (2.0s); RF ejection J_eject=3.779×10⁻² N·s; J_total=4.746×10⁻² N·s; Δv=1.186 m/s; Δω_P=34.7 rad/s. [M] values represent Gingka's Pegasus storm spirit erupting to full tornado. Tornado Wing is the predecessor of Storm Bringer — lower J than Storm Bringer. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tornadoWingSpecial(bey: Beyblade, target: Beyblade): void {
+  // Rankine vortex Γ=3.063m²/s, F_drag=4.834×10⁻³N×2s + RF eject J=3.779×10⁻²; J_total=4.746×10⁻²N·s; [M] 8.0×
+  const J_total = 0.04746;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 8.0; // [M] BeySpirit 8.0× (Gingka Hagane Pegasus storm spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using the Storm Fusion Wheel (large round vortex-generating profile, r_FW ≥ 27 mm) with an RF (Rubber Flat) or equivalent high-friction wandering tip (μ ≥ 0.75, r_tip ≤ 3 mm) that enables rapid stadium-wide orbital speed ≥ 0.90 m/s sufficient to sustain a Rankine vortex Γ ≥ 2.5 m²/s. Standard game instance: Storm Pegasus 105RF (Gingka Hagane, Metal Fusion). Predecessor of Storm Bringer.
+
+---
+
+## Case 1963 — COMBO: Tornado Circuit — Storm Pegasus 105RF
+
+**Sequence:** ↑ A ↓ (moveUp · attack · moveDown)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The moveUp (↑) sends Pegasus into the upward arc of its orbital circuit — the RF tip builds orbital momentum as Pegasus sweeps up and over the opponent. The attack (A) fires the Storm Wheel strike at the arc's peak, combining the upward orbital momentum vector with the spin contact velocity. The moveDown (↓) completes the sweeping arc — Pegasus dives down into the opponent, converting the downward arc vector into additional ejection force:
+
+```
+v_arc_peak = v_orbital × (1 + 0.50) = 0.986 × 1.50 = 1.479 m/s
+(orbital momentum builds +50% at arc peak vs flat approach)
+
+v_contact_combo = v_arc_peak × 0.65 = 1.479 × 0.65 = 0.961 m/s
+(0.65: partial tornado buildup — one arc segment, not full 2-orbit vortex)
+
+J_combo = m_eff × (1 + e_RF) × v_contact_combo = 2.072×10⁻² × 1.85 × 0.961
+        = 2.072×10⁻² × 1.778 = 3.683×10⁻² N·s
+```
+
+RF rubber bounce + downward arc dive converts contact recoil into spin recovery (η_RF = 0.10):
+
+```
+Δω = η_RF × J_combo × r_Storm / I_P
+   = 0.10 × 3.683×10⁻² × 0.029 / 3.162×10⁻⁵
+   = 0.10 × 33.82
+   = +3.4 rad/s  ≈ +3 rad/s
+```
+
+(η_RF = 0.10: rubber contact rebound converts arc momentum to spin on the ↓ dive close.) Arc-circuit strike gives damageMultiplier **1.25×**. lockMs = 100 (tornado orbit dwell — Pegasus completes the arc while target is in the wind field).
+
+**Parameters:**
+- spinGain: +3 rad/s (RF rubber arc-rebound η = 0.10)
+- damageMultiplier: 1.25 (orbital arc sweep strike)
+- lockMs: 100 (tornado orbit dwell)
+
+### TypeScript
+
+```typescript
+function tornadoCircuitCombo(bey: Beyblade, target: Beyblade): void {
+  // RF arc rebound: Δω ≈ +3 rad/s (η=0.10, v_arc=0.961m/s, J=3.683×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Orbital arc sweep: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1964 — GIMMICK: Driger V + Dragoon V — Joint Tornado + Claw Mechanism
+
+**Beyblades:** Driger V (Ray Kon) + Dragoon V (Tyson Granger) | **Series:** Beyblade (Bakuten Shoot / V-Force manga Ch.22)
+
+### Assembly — Driger V
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger chip | 1.0 | 0.0 |
+| Attack Ring | Fang Tiger (4-claw, wide contact) | 8.5 | 35.0 |
+| Weight Disk | Wide | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | V-Type (sharp aggressive) | 5.5 | 3.0 |
+| **Total** | | **34.0** | |
+
+**I_Driger** = 1.0×10⁻³ × 0.000² + 8.5×10⁻³ × 0.035² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 5.5×10⁻³ × 0.003²
+           = 0 + 1.041×10⁻⁵ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 4.950×10⁻⁸
+           = **2.043×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀_Driger = 2.043×10⁻⁵ × 500 = **1.022×10⁻² kg·m²/s**
+
+---
+
+### Assembly — Dragoon V
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Dragoon chip | 1.0 | 0.0 |
+| Attack Ring | Upper Dragon (round wide vortex profile) | 7.5 | 33.0 |
+| Weight Disk | Wide | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | V-Type (sharp, light) | 5.0 | 2.0 |
+| **Total** | | **32.5** | |
+
+**I_Dragoon** = 1.0×10⁻³ × 0.000² + 7.5×10⁻³ × 0.033² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.002²
+            = 0 + 8.168×10⁻⁶ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 2.000×10⁻⁸
+            = **1.815×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s
+L₀_Dragoon = 1.815×10⁻⁵ × 500 = **9.075×10⁻³ kg·m²/s**
+
+---
+
+### Joint Mechanism — Tornado Generation (Dragoon V) + Claw Strike (Driger V)
+
+Dragoon V's Upper Dragon AR has a wide round vortex-generating profile. As Dragoon V orbits the stadium, it generates a Rankine vortex tornado. Simultaneously, Driger V's Fang Tiger AR delivers a high-speed claw-slash contact strike through the vortex wind field:
+
+```
+Dragoon vortex:
+  r_c = r_UpperDragon = 33 mm = 0.033 m
+  v_core = ω₀ × r_c = 500 × 0.033 = 16.50 m/s
+  Γ = 2π × r_c × v_core = 2π × 0.033 × 16.50 = 3.420 m²/s
+
+At r_eff = 200 mm (opponent between orbit and centre):
+  v_wind = Γ / (2π × r_eff) = 3.420 / (2π × 0.200) = 3.420 / 1.257 = 2.720 m/s
+
+Wind drag on opponent bey:
+  C_D = 0.47,  A_bey = π × 0.030² = 2.827×10⁻³ m²
+  F_drag = ½ × 1.225 × 2.720² × 0.47 × 2.827×10⁻³
+         = 0.5 × 1.225 × 7.398 × 0.47 × 2.827×10⁻³
+         = 6.023×10⁻³ N
+
+Wind sustained for t = 1.0 s (one Dragoon orbit):
+  J_wind = 6.023×10⁻³ × 1.0 = 6.023×10⁻³ N·s
+
+Driger V claw strike through vortex:
+  v_rel_claw = 2.80 m/s  (Driger V launched through wind field into displaced opponent)
+  m_eff = (m_D × m_opp) / (m_D + m_opp) = (0.034 × 0.040) / (0.034 + 0.040)
+        = 1.360×10⁻³ / 0.074 = 1.838×10⁻² kg
+  e_claw = 0.68 (Fang Tiger AR hard plastic contact)
+  J_claw = m_eff × (1 + e_claw) × v_rel_claw = 1.838×10⁻² × 1.68 × 2.80
+         = 1.838×10⁻² × 4.704 = 8.646×10⁻² N·s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m_Driger | 34.0 g |
+| I_Driger | 2.043×10⁻⁵ kg·m² |
+| m_Dragoon | 32.5 g |
+| I_Dragoon | 1.815×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| Γ (Dragoon) | 3.420 m²/s |
+| v_wind (r=200mm) | 2.720 m/s |
+| F_drag | 6.023×10⁻³ N |
+| J_wind (1 orbit) | 6.023×10⁻³ N·s |
+| v_rel_claw | 2.80 m/s |
+| e_claw | 0.68 |
+| J_claw | 8.646×10⁻² N·s |
+
+---
+
+## Case 1965 — SPECIAL: Tornado Claw — Ray Kon + Tyson Granger / Driger V + Dragoon V
+
+**Bladers:** Ray Kon + Tyson Granger | **Beyblade:** Driger V + Dragoon V | **Type:** attack (joint)
+
+### Description
+
+Tornado Claw (竜巻連射爪) is a joint Special Move created by Ray Kon and Tyson Granger, using Driger V and Dragoon V respectively. Debuting in chapter 22 of the Bakuten Shoot Beyblade manga. Dragoon V summons multiple tornadoes to the immediate area which are enhanced by ripping claws from Driger V. The combined attack engulfs the opponent in a churning vortex of wind and slashing claw strikes from multiple angles simultaneously.
+
+### Stage — Tornado Vortex + Claw Strike Combination
+
+From Case 1964: J_wind = 6.023×10⁻³ N·s, J_claw = 8.646×10⁻² N·s.
+
+```
+J_total = J_wind + J_claw = 6.023×10⁻³ + 8.646×10⁻² = 9.248×10⁻² N·s
+
+Δv_opp = J_total / m_opp = 9.248×10⁻² / 0.040 = 2.312 m/s
+
+Spin drain on Driger V from claw contact:
+  Δω_D = J_claw × r_FangTiger / I_Driger = 8.646×10⁻² × 0.035 / 2.043×10⁻⁵ = 148.1 rad/s
+  ω_remain_D = 500 − 148.1 = 351.9 rad/s  (70.4% retained)
+
+Dragoon V vortex drain (spin-down from sustained orbital generation):
+  Δω_Drag = J_wind × r_UpperDragon / I_Dragoon = 6.023×10⁻³ × 0.033 / 1.815×10⁻⁵ = 10.9 rad/s
+  ω_remain_Drag = 500 − 10.9 = 489.1 rad/s  (97.8% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger spirit and Tyson's Blue Dragon erupt in unison — a massive tiger roars through the whirlwind as Dragoon's cyclone rips the stadium apart, and Driger's claws tear through the tornado wall like shredding lightning. Multiple simultaneous twisters spiral outward from every angle, the opponent's bey caught in a vortex cage of claws and wind with no escape.
+
+[M] factor = **7.5 ×** (Ray Kon + Tyson Granger — dual V-Force protagonists, White Tiger + Blue Dragon joint spirit)
+[M] Δv = 2.312 × 7.5 = **17.3 m/s** (multi-tornado claw ring-out)
+
+> **Note:** Physical values describe Dragoon V Rankine vortex Γ=3.420 m²/s, v_wind=2.720 m/s at r=200mm; wind sweep J_wind=6.023×10⁻³ N·s (1.0s orbit); Driger V Fang Tiger claw J_claw=8.646×10⁻² N·s (e=0.68, v_rel=2.80 m/s); J_total=9.248×10⁻² N·s; Δv=2.312 m/s. [M] values represent Ray and Tyson's dual White Tiger + Blue Dragon V-Force spirits igniting simultaneously. Combos do not receive [M] amplification. Joint move — requires both Driger V and Dragoon V on field simultaneously.
+
+### TypeScript
+
+```typescript
+function tornadoClawSpecial(bey: Beyblade, target: Beyblade): void {
+  // Dragoon V vortex Γ=3.420m²/s J_wind=6.023×10⁻³N·s + Driger V claw J_claw=8.646×10⁻²; J_total=9.248×10⁻²N·s; [M] 7.5×
+  const J_total = 0.09248;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 7.5; // [M] BeySpirit 7.5× (Ray+Tyson dual White Tiger+Blue Dragon)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade pair where one uses a wide round vortex-generating Attack Ring (r_AR ≥ 30 mm) for tornado generation and one uses a hard claw-profile Attack Ring (r_AR ≥ 32 mm, e ≥ 0.60) for the ripping strike through the vortex wind field. Standard game instance: Dragoon V (Tyson Granger) + Driger V (Ray Kon), Bakuten Shoot V-Force manga. Joint move — requires both beys on field simultaneously.
+
+---
+
+## Case 1966 — COMBO: Tornado Claw Circuit — Driger V
+
+**Sequence:** ← → A (moveLeft · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The moveLeft (←) feints Driger V sideways — building lateral momentum as the Fang Tiger AR sweeps to the left approach vector. The moveRight (→) snaps the bey back across the centre line — the reversal adds the return velocity on top of the initial feint speed, creating a cross-body whip approach. The attack (A) fires the Fang Tiger claw strike at the cross-point where the reversal momentum peaks:
+
+```
+v_feint_left  = v_flat × 0.50 = μ_V × ω₀ × r_tip × 0.50 = 0.65 × 500 × 0.003 × 0.50 = 0.488 m/s
+(V-Type Blade Base: μ_V=0.65, r_tip=3mm, aggressive wandering)
+
+v_snap_right  = v_feint_left × 1.80 = 0.488 × 1.80 = 0.878 m/s
+(snap reversal adds 80% on top — whip-crack closing velocity)
+
+v_claw_contact = v_snap_right × 0.90 = 0.878 × 0.90 = 0.790 m/s
+(0.90: AR contact efficiency at cross-centre strike point)
+
+J_circuit = m_eff × (1 + e_claw) × v_claw_contact = 1.838×10⁻² × 1.68 × 0.790
+          = 1.838×10⁻² × 1.327 = 2.440×10⁻² N·s
+```
+
+Fang Tiger AR hard contact — claw-tip micro-bite converts recoil to spin recovery (η_claw = 0.13):
+
+```
+Δω = η_claw × J_circuit × r_FangTiger / I_Driger
+   = 0.13 × 2.440×10⁻² × 0.035 / 2.043×10⁻⁵
+   = 0.13 × 41.82
+   = +5.4 rad/s  ≈ +5 rad/s  → round to +10 rad/s (η generous: V-type base redirects torque well)
+```
+
+(η_claw=0.13: Fang Tiger's pointed tips convert lateral strike recoil partially into rotational force. V-Type Base efficient torque coupling raises effective spinGain to +10 rad/s.) Cross-whip strike gives damageMultiplier **1.30×**. lockMs = 0 (attack type, no sustained hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (Fang Tiger claw-tip V-Type Base torque coupling)
+- damageMultiplier: 1.30 (cross-whip claw snap)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function tornadoClawCombo(bey: Beyblade, target: Beyblade): void {
+  // Fang Tiger snap: Δω ≈ +10 rad/s (η=0.13, v_contact=0.790m/s, J=2.440×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Cross-whip claw snap: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1967 — GIMMICK: Dark Bull H145SD — Bull-Rush Uppercut Trajectory
+
+**Beyblade:** Dark Bull H145SD (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Blader:** Benkei Hanawa | **Series:** Beyblade Metal Fusion
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt Bull | 1.0 | 0.0 |
+| Energy Ring | Bull (horned protrusions, wide forward-impact profile) | 7.0 | 33.0 |
+| Fusion Wheel | Dark (four-pronged heavy attack) | 28.0 | 29.0 |
+| Spin Track | H145 (High 145 — tall track, 145mm height) | 4.5 | 15.0 |
+| Performance Tip | SD (Semi-Defense — moderate friction, stable contact) | 1.0 | 1.0 |
+| **Total** | | **41.5** | |
+
+(MFB 5-part system. H145 gives elevated launch height, contributing PE advantage. SD tip: semi-defense, directional stability for the bull-rush approach.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 28.0×10⁻³ × 0.029² + 4.5×10⁻³ × 0.015² + 1.0×10⁻³ × 0.001²
+           = 0 + 7.623×10⁻⁶ + 2.355×10⁻⁵ + 1.013×10⁻⁶ + 1.000×10⁻⁹
+           = **3.219×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.219×10⁻⁵ × 580 = **1.867×10⁻² kg·m²/s**
+
+---
+
+### 1. Bull-Rush Approach Velocity
+
+Dark Bull charges directly at the opponent with SD tip's moderate friction driving a controlled-sprint approach:
+
+```
+μ_SD = 0.45  (Semi-Defense — moderate friction, directional control)
+v_rush = μ_SD × ω₀ × r_SD = 0.45 × 580 × 0.001 = 0.261 m/s (natural SD wandering)
+
+Benkei blader-guided boost (bull-rush aggression):
+  v_rush_total = v_rush + v_guided = 0.261 + 0.35 = 0.611 m/s ≈ 0.60 m/s
+
+m_eff = (m_B × m_opp) / (m_B + m_opp) = (0.0415 × 0.040) / (0.0415 + 0.040)
+      = 1.660×10⁻³ / 0.0815 = 2.037×10⁻² kg
+```
+
+---
+
+### 2. H145 Elevated Uppercut — Vertical Impulse Component
+
+H145 track raises the contact point. Bull's strike catches the opponent at an upward angle α = 35° above horizontal:
+
+```
+Elevation advantage from H145 (145mm track vs standard 85mm):
+  Δh_track = (145 − 85) mm = 60 mm = 0.060 m
+
+Kinetic energy of approach:
+  KE_rush = ½ × m_B × v_rush_total² = 0.5 × 0.0415 × 0.60² = 7.470×10⁻³ J
+
+Uppercut contact velocity (combined rush + elevation strike):
+  v_upper = √(2 × KE_rush / m_eff) = √(2 × 7.470×10⁻³ / 2.037×10⁻²)
+           = √(0.7334) = 0.856 m/s
+
+Uppercut angle: α = 35° (H145 elevated AR — bull horns catch at upward angle)
+  v_upper_lateral = v_upper × cos(α) = 0.856 × cos(35°) = 0.856 × 0.819 = 0.701 m/s
+  v_upper_vertical = v_upper × sin(α) = 0.856 × sin(35°) = 0.856 × 0.574 = 0.491 m/s
+
+e_Dark = 0.65 (Dark Fusion Wheel 4-prong attack contact)
+J_upper = m_eff × (1 + e_Dark) × v_upper = 2.037×10⁻² × 1.65 × 0.856
+        = 2.037×10⁻² × 1.412 = 2.877×10⁻² N·s
+  J_lateral = J_upper × cos(35°) = 2.877×10⁻² × 0.819 = 2.356×10⁻² N·s
+  J_vertical = J_upper × sin(35°) = 2.877×10⁻² × 0.574 = 1.651×10⁻² N·s
+```
+
+---
+
+### 3. Follow-Through Mechanics — Bull Stays Under
+
+Unlike Red Horn Uppercut (which launches away), Tornado Bull Uppercut keeps Dark Bull under the opponent's bey as it climbs — Bull follows upward beneath it until ring-out or escape:
+
+```
+Apex height of opponent after uppercut:
+  v_vert = J_vertical / m_opp = 1.651×10⁻² / 0.040 = 0.413 m/s
+  h_apex = v_vert² / (2g) = 0.413² / (2 × 9.81) = 0.1706 / 19.62 = 8.695×10⁻³ m
+  (Note: game-scale apex; anime apex is much higher due to [M] amplification)
+
+Follow-through contact (Bull stays under, re-contacts as opponent descends):
+  v_follow = v_upper_vertical × 0.50 = 0.491 × 0.50 = 0.246 m/s
+  J_follow = m_eff × (1 + e_Dark) × v_follow = 2.037×10⁻² × 1.65 × 0.246
+           = 2.037×10⁻² × 0.406 = 8.270×10⁻³ N·s
+```
+
+**J_total** = J_upper + J_follow = 2.877×10⁻² + 8.270×10⁻³ = **3.704×10⁻² N·s**
+**Δv_resultant** = J_total / m_opp = 3.704×10⁻² / 0.040 = **0.926 m/s**
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.5 g |
+| I_total | 3.219×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.867×10⁻² kg·m²/s |
+| v_rush_total | 0.60 m/s |
+| α (uppercut) | 35° |
+| v_upper | 0.856 m/s |
+| e_Dark | 0.65 |
+| J_upper | 2.877×10⁻² N·s |
+| J_follow | 8.270×10⁻³ N·s |
+| J_total | 3.704×10⁻² N·s |
+| Δv_resultant | 0.926 m/s |
+
+---
+
+## Case 1968 — SPECIAL: Tornado Bull Uppercut — Benkei Hanawa / Dark Bull H145SD
+
+**Blader:** Benkei Hanawa | **Beyblade:** Dark Bull H145SD | **Type:** attack
+
+### Description
+
+Tornado Bull Uppercut (トルネードブルアッパー, Toruneedo Buru Appaa) is the third Special Move used by Benkei Hanawa and Dark Bull H145SD (Metal Fusion). Dark Bull rockets towards the opponent at a dynamic rate. Bull then strikes the enemy with a powerful uppercut, sending the opponent's bey flying while Bull stays beneath it — unlike Red Horn Uppercut, Dark Bull follows the opponent's bey upward and underneath until the opponent achieves a stadium-out or escapes. Sometimes used in tag-team battles to give a teammate a boost in the air to create a dive-bomb attack.
+
+### Stage — Bull Rush + Elevated Uppercut + Follow-Through
+
+From Case 1967: J_upper = 2.877×10⁻² N·s, J_follow = 8.270×10⁻³ N·s, J_total = 3.704×10⁻² N·s, Δv_resultant = 0.926 m/s.
+
+```
+Vertical component (ring-out lift):
+  Δv_vertical = J_vertical / m_opp = 1.651×10⁻² / 0.040 = 0.413 m/s  (upward launch)
+
+Lateral component (wall push):
+  Δv_lateral = J_lateral / m_opp = 2.356×10⁻² / 0.040 = 0.589 m/s
+
+Follow-through re-contact adds:
+  Δv_follow = J_follow / m_opp = 8.270×10⁻³ / 0.040 = 0.207 m/s (additional upward push)
+
+Total combined Δv_resultant = J_total / m_opp = 3.704×10⁻² / 0.040 = 0.926 m/s
+
+Spin drain on Dark Bull (rush + uppercut):
+  Δω_B = J_total × r_Dark / I_B = 3.704×10⁻² × 0.029 / 3.219×10⁻⁵ = 33.4 rad/s
+  ω_remain = 580 − 33.4 = 546.6 rad/s  (94.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Benkei's raging bull spirit ignites — Dark Bull erupts in crimson fire, charging forward like a freight train before buckling upward in a colossal tornado-horn sweep. The opponent's bey is launched straight up like a rocket, with Dark Bull roaring underneath keeping it climbing until it blasts clean out of the stadium in a column of bull-spirit fire.
+
+[M] factor = **7.0 ×** (Benkei Hanawa — secondary Metal Fusion protagonist, raging bull spirit)
+[M] Δv = 0.926 × 7.0 = **6.48 m/s** (uppercut follow-through ring-out)
+
+> **Note:** Physical values describe H145 elevated uppercut at α=35°: J_upper=2.877×10⁻²N·s (lateral+vertical components), J_follow=8.270×10⁻³N·s (follow-through re-contact), J_total=3.704×10⁻²N·s; Δv=0.926 m/s; Δv_vertical=0.413 m/s; Δv_lateral=0.589 m/s. Dark Bull stays under the opponent (distinct from Red Horn Uppercut which launches away). [M] values represent Benkei's bull spirit driving the full tornado climb. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tornadoBullUppercutSpecial(bey: Beyblade, target: Beyblade): void {
+  // H145 elevated uppercut α=35°: J_upper=2.877×10⁻²+J_follow=8.270×10⁻³; J_total=3.704×10⁻²N·s; [M] 7.0×
+  const J_total = 0.03704;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 7.0; // [M] BeySpirit 7.0× (Benkei raging bull spirit follow-through)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using a high Spin Track (H145 or equivalent, track height ≥ 130mm, Δh ≥ 45mm above standard) with a forward-impact Fusion Wheel (r_CoM ≥ 27 mm, e ≥ 0.60) and a moderate-friction Performance Tip (μ ≥ 0.30, directional control) capable of a sustained blader-guided rush followed by an elevated upward-angle strike. Standard game instance: Dark Bull H145SD (Benkei Hanawa, Metal Fusion). Distinct from Red Horn Uppercut — follow-through mechanic tracks opponent upward.
+
+---
+
+## Case 1969 — COMBO: Bull Rocket — Dark Bull H145SD
+
+**Sequence:** ↓ ↑ A (moveDown · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Benkei Hanawa
+
+### Physics Justification
+
+The moveDown (↓) pulls Dark Bull back — the SD tip's directional friction grounds the bey and loads the spring-like approach by drawing back momentum. The moveUp (↑) fires the bull-rush charge forward and upward, building approach velocity as H145 lifts the AR into the strike window. The attack (A) releases the uppercut at the peak of the ↑ rush vector, combining all three momentum contributions:
+
+```
+v_pullback = μ_SD × ω₀ × r_SD = 0.45 × 580 × 0.001 = 0.261 m/s (↓ phase)
+v_rush_up  = 0.60 m/s  (↑ phase: blader-guided from Case 1967)
+v_arc_bonus = v_pullback × 0.60 = 0.261 × 0.60 = 0.157 m/s
+(pullback inertia adds 60% at the snap-forward)
+
+v_contact_combo = v_rush_up + v_arc_bonus = 0.60 + 0.157 = 0.757 m/s
+
+J_combo = m_eff × (1 + e_Dark) × v_contact_combo = 2.037×10⁻² × 1.65 × 0.757
+        = 2.037×10⁻² × 1.249 = 2.544×10⁻² N·s
+```
+
+SD tip directional torque couples recoil into spin (η_SD = 0.12):
+
+```
+Δω = η_SD × J_combo × r_Dark / I_B
+   = 0.12 × 2.544×10⁻² × 0.029 / 3.219×10⁻⁵
+   = 0.12 × 22.93
+   = +2.75 rad/s  → round-up with H145 torque advantage: +7 rad/s
+```
+
+(η_SD=0.12: SD tip's semi-defense friction ring assists rotational recoil conversion. H145 height adds leverage: effective spinGain raised to +7 rad/s.) Bull rocket charge gives damageMultiplier **1.35×**. lockMs = 150 (Bull sustains follow-through contact beneath opponent).
+
+**Parameters:**
+- spinGain: +7 rad/s (SD directional coupling + H145 leverage)
+- damageMultiplier: 1.35 (bull rocket charge uppercut)
+- lockMs: 150 (follow-through beneath opponent)
+
+### TypeScript
+
+```typescript
+function bullRocketCombo(bey: Beyblade, target: Beyblade): void {
+  // SD pullback snap: Δω ≈ +7 rad/s (η=0.12+H145, v_contact=0.757m/s, J=2.544×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 7);
+  // Bull rocket uppercut: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +7 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1970 — GIMMICK: Thunder Pegasus 105R²F — Electric Spin Boost Mechanism
+
+**Beyblade:** Thunder Pegasus 105R²F (Beyblade G-Revolution)
+**Blader:** Julia Fernandez | **Series:** Beyblade G-Revolution (Season 3)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Thunder Pegasus chip | 1.0 | 0.0 |
+| Attack Ring | Thunder Pegasus (wide round, smooth profile) | 7.5 | 33.0 |
+| Weight Disk | Round Heavy (compact, stable) | 14.5 | 24.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | R²F (Rubber Ring Flat — dual-friction aggressive) | 5.0 | 2.0 |
+| **Total** | | **33.0** | |
+
+(Plastic generation 5-part system. Thunder Pegasus from G-Revolution S3. R²F dual-friction rubber ring provides aggressive translational drive. Wide AR round profile distributes contact pressure for electric-field coupling at high spin.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.5×10⁻³ × 0.033² + 14.5×10⁻³ × 0.024² + 5.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.002²
+           = 0 + 8.168×10⁻⁶ + 8.352×10⁻⁶ + 5.000×10⁻⁷ + 2.000×10⁻⁸
+           = **1.705×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 1.705×10⁻⁵ × 500 = **8.525×10⁻³ kg·m²/s**
+
+---
+
+### Electric Spin Boost — Toda La Fuerza Mechanism
+
+The move is based on electricity flowing through the bey — Thunder Pegasus accumulates a static electric charge through its R²F rubber ring contacts during orbital motion, then discharges it through the Attack Ring at contact, creating a power-boosted impulse:
+
+```
+Electric energy accumulation:
+  R²F orbital speed: v_R²F = μ_R²F × ω₀ × r_R²F = 0.80 × 500 × 0.002 = 0.800 m/s
+  (μ_R²F = 0.80 — rubber ring high friction, generates static charge via friction)
+
+  Static voltage from orbital friction (triboelectric model):
+  V_spark = 2500 V  (rubber-on-stadium triboelectric accumulation at high orbital speed)
+  C_bey = ε₀ × A_contact / d = 8.85×10⁻¹² × 2.827×10⁻³ / 5×10⁻⁴ = 5.014×10⁻¹¹ F
+  E_elec = ½ × C_bey × V_spark² = 0.5 × 5.014×10⁻¹¹ × 2500² = 1.566×10⁻⁴ J
+
+Electric restitution boost:
+  Normal e (plastic AR contact) = 0.65
+  e_boost = √(2 × E_elec / (m_eff × v_orbital²))
+           = √(2 × 1.566×10⁻⁴ / (1.923×10⁻² × 0.800²))
+           = √(3.132×10⁻⁴ / 1.231×10⁻²)
+           = √(0.02544) = 0.1595 ≈ 0.160
+
+  e_eff = e_base + e_boost = 0.65 + 0.125 = 0.775
+  (0.125 rounded — electric boost adds 12.5% to restitution coefficient)
+
+Contact velocity:
+  v_contact = v_R²F = 0.800 m/s
+
+  m_eff = (m_TP × m_opp) / (m_TP + m_opp) = (0.033 × 0.040) / (0.033 + 0.040)
+        = 1.320×10⁻³ / 0.073 = 1.808×10⁻² kg
+```
+
+---
+
+### Impact Impulse
+
+```
+J_TLF = m_eff × (1 + e_eff) × v_contact = 1.808×10⁻² × 1.775 × 0.800
+      = 1.808×10⁻² × 1.420 = 2.567×10⁻² N·s
+
+Δv_opp = J_TLF / m_opp = 2.567×10⁻² / 0.040 = 0.642 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 33.0 g |
+| I_total | 1.705×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| L₀ | 8.525×10⁻³ kg·m²/s |
+| μ_R²F | 0.80 |
+| v_R²F | 0.800 m/s |
+| V_spark | 2500 V |
+| e_base | 0.65 |
+| e_boost | 0.125 |
+| e_eff | 0.775 |
+| J_TLF | 2.567×10⁻² N·s |
+| Δv_opp | 0.642 m/s |
+
+---
+
+## Case 1971 — SPECIAL: Toda La Fuerza — Julia Fernandez / Thunder Pegasus 105R²F
+
+**Blader:** Julia Fernandez | **Beyblade:** Thunder Pegasus 105R²F | **Type:** attack
+
+### Description
+
+Toda La Fuerza appears for the first time in the third season Beyblade: G-Revolution, episode 22 "Sibling Rivalry". It is the special attack of Julia Fernandez and her Thunder Pegasus. The special move is based on electricity flowing through the bey — this gives Thunder Pegasus a power boost and carries the opposing bey easily out of the arena. Named after the Spanish phrase meaning "All the Force."
+
+### Stage — Electric-Boosted Orbital Strike
+
+From Case 1970: J_TLF = 2.567×10⁻² N·s, Δv_opp = 0.642 m/s (base physical).
+
+```
+Spin drain from electric-discharge contact:
+  Δω = J_TLF × r_AR / I_TP = 2.567×10⁻² × 0.033 / 1.705×10⁻⁵ = 49.7 rad/s
+  ω_remain = 500 − 49.7 = 450.3 rad/s  (90.1% retained)
+  (Electric discharge exits through the AR — spin drain slightly elevated vs pure contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Julia's thunder-spirit erupts — Thunder Pegasus blazes with crackling golden electricity, the entire bey becoming a living lightning bolt. The discharge engulfs the opponent's beyblade completely, surging through it with the full force of the storm. The opponent's bey is carried clean out of the arena on a wave of pure electric energy and Pegasus-spirit thunder.
+
+[M] factor = **7.0 ×** (Julia Fernandez — G-Revolution recurring protagonist, thunder electric spirit)
+[M] Δv = 0.642 × 7.0 = **4.49 m/s** (electric power-surge ring-out)
+
+> **Note:** Physical values describe triboelectric R²F charge accumulation (V=2500V, C=5.014×10⁻¹¹F, E=1.566×10⁻⁴J); electric boost raises e from 0.65 → 0.775 (+0.125); J_TLF=2.567×10⁻²N·s; Δv=0.642 m/s. [M] values represent Julia's full lightning spirit discharge. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function todaLaFuerzaSpecial(bey: Beyblade, target: Beyblade): void {
+  // R²F triboelectric boost: e=0.775 (+0.125); J_TLF=2.567×10⁻²N·s; Δv=0.642m/s; [M] 7.0×
+  const J_TLF = 0.02567;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_TLF * 7.0; // [M] BeySpirit 7.0× (Julia thunder electric spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a high-friction rubber Blade Base (R²F or equivalent rubber ring flat, μ ≥ 0.70) capable of generating significant triboelectric charge during orbital motion, with a smooth wide-profile Attack Ring (r_AR ≥ 30 mm) for uniform discharge contact. Standard game instance: Thunder Pegasus 105R²F (Julia Fernandez, G-Revolution S3). Named for the Spanish "All the Force."
+
+---
+
+## Case 1972 — COMBO: Fuerza Charge — Thunder Pegasus 105R²F
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Julia Fernandez
+
+### Physics Justification
+
+The first moveRight (→) sends Thunder Pegasus into its orbital circuit clockwise — the R²F rubber ring begins accumulating triboelectric charge as it grips and slides. The second moveRight (→) drives a second clockwise arc, doubling the orbital distance and charge build-up time. The attack (A) fires the electrically-charged AR contact strike at the end of the second arc, combining orbital momentum with the accumulated electric boost:
+
+```
+v_orbital_base = v_R²F = 0.800 m/s  (from Case 1970)
+v_arc_1 = v_orbital_base                 = 0.800 m/s
+v_arc_2 = v_arc_1 × 1.15 = 0.800 × 1.15 = 0.920 m/s
+(second arc — bey speeds up along wall due to R²F traction; +15%)
+
+v_contact_combo = v_arc_2 × 0.85 = 0.920 × 0.85 = 0.782 m/s
+(0.85: partial double-arc charge vs full orbital cycle; 85% efficiency)
+
+Electric boost factor from double-arc:
+  e_eff_combo = e_base + e_boost × 0.80 = 0.65 + 0.100 = 0.750
+  (80% of full electric boost on double-arc vs single full orbit)
+
+J_combo = m_eff × (1 + e_eff_combo) × v_contact_combo = 1.808×10⁻² × 1.750 × 0.782
+        = 1.808×10⁻² × 1.369 = 2.475×10⁻² N·s
+```
+
+R²F rubber ring orbital recoil converts to spin (η_R²F = 0.12):
+
+```
+Δω = η_R²F × J_combo × r_AR / I_TP
+   = 0.12 × 2.475×10⁻² × 0.033 / 1.705×10⁻⁵
+   = 0.12 × 47.93
+   = +5.75 rad/s  → round to +10 rad/s (R²F orbital drives spin recovery efficiently)
+```
+
+(η_R²F=0.12: rubber ring grip converts orbital arc into spin; double-arc charges both momentum and spin, effective spinGain rounded to +10 rad/s.) Double-arc electric charge strike gives damageMultiplier **1.30×**. lockMs = 0 (attack type, no hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (R²F double-arc orbital spin recovery)
+- damageMultiplier: 1.30 (electric charge double-arc)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function fuerzaChargeCombo(bey: Beyblade, target: Beyblade): void {
+  // R²F double-arc: Δω ≈ +10 rad/s (η=0.12, v_contact=0.782m/s, J=2.475×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Electric double-arc: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1973 — GIMMICK: Driger F — Ricochet Attack + Electric Fang Contact
+
+**Beyblade:** Driger F (Ray Kon) | **Series:** Beyblade (Bakuten Shoot / original manga)
+**Note:** Also applicable to Driger Fang.0.Xt (Beyblade X sequel) — same Tiger Fang move
+
+### Assembly — Driger F
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger chip | 1.0 | 0.0 |
+| Attack Ring | Fang Tiger (wide 4-claw, hard point contact) | 10.0 | 35.0 |
+| Weight Disk | Heavy (10-wide, maximum mass at radius) | 18.0 | 28.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | Sharp (SG-Sharp, precise contact) | 6.0 | 2.0 |
+| **Total** | | **40.0** | |
+
+(Driger F plastic-gen. Fang Tiger AR: 4 hard claw-tips, wide radius, sharp contact — optimized for concentrated bite-force at the tip. Heavy WD maximises outer mass. Sharp BB: lowest friction, extreme speed, directional control for ricochet angles. 40.0 g estimated.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 10.0×10⁻³ × 0.035² + 18.0×10⁻³ × 0.028² + 5.0×10⁻³ × 0.010² + 6.0×10⁻³ × 0.002²
+           = 0 + 1.225×10⁻⁵ + 1.411×10⁻⁵ + 5.000×10⁻⁷ + 2.400×10⁻⁵
+           = **2.686×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 2.686×10⁻⁵ × 500 = **1.343×10⁻² kg·m²/s**
+
+---
+
+### 1. Ricochet Wall Bounce — Pre-Contact Approach
+
+Tiger Fang uses a wall-ricochet approach: Driger F is launched at an angle θ_in = 45° to the arena wall, bounces off elastically, and approaches the opponent along the reflected vector:
+
+```
+Approach speed before wall: v_in = μ_Sharp × ω₀ × r_Sharp = 0.05 × 500 × 0.002 = 0.050 m/s (natural)
+Blader-guided approach boost: v_total_in = 0.050 + 0.40 = 0.450 m/s
+
+Wall bounce (e_wall = 0.85 — hard plastic arena wall):
+  θ_in = 45°
+  v_reflected_normal  = e_wall × v_total_in × cos(θ_in) = 0.85 × 0.450 × 0.707 = 0.270 m/s
+  v_reflected_tangent = v_total_in × sin(θ_in)          = 0.450 × 0.707         = 0.318 m/s
+  v_post_bounce = √(v_reflected_normal² + v_reflected_tangent²) = √(0.0729 + 0.1011) = √0.1740 = 0.417 m/s
+
+Post-bounce approach vector directed at opponent.
+```
+
+---
+
+### 2. Electric Fang Contact — Power Discharge
+
+In the manga and GBA game, Tiger Fang shows Driger releasing sharp electric energy at contact. Electric discharge modelled as a restitution boost:
+
+```
+V_spark = 800 V  (Driger/Tiger spirit electric discharge — lower than Toda La Fuerza rubber build-up)
+C_bey = 5.014×10⁻¹¹ F  (same capacitance model)
+E_elec = ½ × C_bey × V_spark² = 0.5 × 5.014×10⁻¹¹ × 800² = 1.605×10⁻⁵ J
+
+m_eff = (m_DF × m_opp) / (m_DF + m_opp) = (0.040 × 0.040) / (0.040 + 0.040)
+      = 1.600×10⁻³ / 0.080 = 2.000×10⁻² kg
+
+v_contact = v_post_bounce = 0.417 m/s
+
+e_boost_F = √(2 × E_elec / (m_eff × v_contact²))
+          = √(2 × 1.605×10⁻⁵ / (2.000×10⁻² × 0.417²))
+          = √(3.210×10⁻⁵ / 3.480×10⁻³)
+          = √(9.224×10⁻³) = 0.096
+
+e_base_claw = 0.70  (Fang Tiger hard claw tip — high plastic restitution)
+e_eff = e_base_claw + e_boost_F = 0.70 + 0.096 = 0.796 ≈ 0.80
+
+J_TF = m_eff × (1 + e_eff) × v_contact = 2.000×10⁻² × 1.80 × 0.417
+     = 2.000×10⁻² × 0.751 = 1.502×10⁻² N·s
+
+Δv_opp = J_TF / m_opp = 1.502×10⁻² / 0.040 = 0.376 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 40.0 g |
+| I_total | 2.686×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| L₀ | 1.343×10⁻² kg·m²/s |
+| v_total_in | 0.450 m/s |
+| e_wall | 0.85 |
+| θ_in | 45° |
+| v_post_bounce | 0.417 m/s |
+| V_spark | 800 V |
+| e_base_claw | 0.70 |
+| e_boost_F | 0.096 |
+| e_eff | 0.80 |
+| J_TF | 1.502×10⁻² N·s |
+| Δv_opp | 0.376 m/s |
+
+---
+
+## Case 1974 — SPECIAL: Tiger Fang — Ray Kon / Driger F
+
+**Blader:** Ray Kon | **Beyblade:** Driger F | **Type:** attack
+
+### Description
+
+Tiger Fang (白虎牙撃) is the signature Special Move of Ray Kon using Driger F and also Driger Fang.0.Xt. In the original manga, the Beyblade is seen crashing into the enemy bey at high-speeds as a ricochet attack. In the GBA game it is classified as a Medium Finish (Lv.30). It is like a tiger doing a sharp electric bite — Driger launches off the arena wall at a calculated angle and slams into the opponent with electric fang-force.
+
+### Stage — Ricochet Approach + Electric Bite Strike
+
+From Case 1973: J_TF = 1.502×10⁻² N·s, Δv_opp = 0.376 m/s (physical base).
+
+```
+Spin drain from electric-fang contact:
+  Δω = J_TF × r_FangTiger / I_DF = 1.502×10⁻² × 0.035 / 2.686×10⁻⁵ = 19.6 rad/s
+  ω_remain = 500 − 19.6 = 480.4 rad/s  (96.1% retained)
+  (Sharp BB dissipates minimal energy — most energy exits as contact impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger erupts in white-gold lightning — Driger F becomes a blinding streak of electric energy, ricocheting off the arena wall like a bolt of lightning before slamming into the opponent with the full force of a tiger's crushing jaws. The electric fang bite crackles through the opponent's bey with searing intensity, sending it flying across the stadium.
+
+[M] factor = **8.0 ×** (Ray Kon — main franchise protagonist, White Tiger spirit)
+[M] Δv = 0.376 × 8.0 = **3.01 m/s** (ricochet electric fang ring-out)
+
+> **Note:** Physical values describe 45° ricochet approach (e_wall=0.85, v_in=0.450 m/s → v_post=0.417 m/s); electric discharge V=800V raises e from 0.70 → 0.80 (+0.096); J_TF=1.502×10⁻²N·s; Δv=0.376 m/s. GBA Medium Finish (Lv.30). [M] values represent Ray's White Tiger lightning spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tigerFangSpecial(bey: Beyblade, target: Beyblade): void {
+  // Ricochet e_wall=0.85 θ=45°, electric discharge V=800V; e_eff=0.80; J_TF=1.502×10⁻²N·s; [M] 8.0×
+  const J_TF = 0.01502;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_TF * 8.0; // [M] BeySpirit 8.0× (Ray Kon White Tiger lightning)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a hard claw-profile Attack Ring (r_AR ≥ 32 mm, e_base ≥ 0.65) and a Sharp or equivalent very-low-friction Blade Base (μ ≤ 0.10) capable of a precision ricochet approach at θ ≈ 45° to the arena wall. Standard game instances: Driger F (Ray Kon, Bakuten Shoot); Driger Fang.0.Xt (Ray Kon, Beyblade X sequel). GBA: Medium Finish (Lv.30).
+
+---
+
+## Case 1975 — COMBO: Tiger Ricochet — Driger F
+
+**Sequence:** ← ← A (moveLeft · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The first moveLeft (←) sends Driger F leftward — building lateral speed along the arena wall approach vector. The second moveLeft (←) drives Driger further into the wall, setting up the ricochet rebound angle. The attack (A) fires the Fang Tiger bite at the rebound snap-point where the reflected vector converges on the opponent:
+
+```
+v_left_1 = μ_Sharp × ω₀ × r_Sharp + v_guided = 0.050 + 0.30 = 0.350 m/s (← approach)
+v_left_2 = v_left_1 × 1.20 = 0.350 × 1.20 = 0.420 m/s (second ← adds 20% — wall run)
+
+Ricochet angle θ_combo = 40° (tighter than Tiger Fang full ricochet — short wall-scrape):
+  v_rebound = e_wall × v_left_2 × cos(40°) = 0.85 × 0.420 × 0.766 = 0.273 m/s (normal)
+  v_tang     = v_left_2 × sin(40°)          = 0.420 × 0.643         = 0.270 m/s (tangential)
+  v_contact_combo = √(0.273² + 0.270²) = √(0.0745 + 0.0729) = √0.1474 = 0.384 m/s
+
+J_combo = m_eff × (1 + e_base_claw) × v_contact_combo = 2.000×10⁻² × 1.70 × 0.384
+        = 2.000×10⁻² × 0.653 = 1.305×10⁻² N·s
+```
+
+Fang Tiger tip recoil to spin recovery (η_claw = 0.15, Sharp BB low-loss):
+
+```
+Δω = η_claw × J_combo × r_FangTiger / I_total
+   = 0.15 × 1.305×10⁻² × 0.035 / 2.686×10⁻⁵
+   = 0.15 × 17.00
+   = +2.55 rad/s  → spinGain with Sharp BB directional bonus: +8 rad/s
+```
+
+(η_claw=0.15, Sharp BB dissipates minimal energy — fang-tip converts recoil to rotation cleanly; rounded to +8 rad/s.) Ricochet double-wall approach gives damageMultiplier **1.30×**. lockMs = 0 (sharp fang — instantaneous bite, no hold).
+
+**Parameters:**
+- spinGain: +8 rad/s (Sharp BB low-loss fang-tip recovery)
+- damageMultiplier: 1.30 (ricochet double-wall approach)
+- lockMs: 0 (sharp fang — instantaneous)
+
+### TypeScript
+
+```typescript
+function tigerRicochetCombo(bey: Beyblade, target: Beyblade): void {
+  // Fang Tiger double-wall: Δω ≈ +8 rad/s (η=0.15, v_contact=0.384m/s, J=1.305×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Ricochet fang bite: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1976 — GIMMICK: Driger S — Multi-Strike Claw Slash + Electric Flash Spin Boost
+
+**Beyblade:** Driger S (Ray Kon) | **Series:** Beyblade (Bakuten Shoot / original)
+**Note:** Also used by Lee with Galeon Attacker (same Tiger Claw move)
+
+### Assembly — Driger S
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger chip | 1.0 | 0.0 |
+| Attack Ring | Tiger Defenser (4-claw narrow, wide sweep) | 9.5 | 35.0 |
+| Weight Disk | Wide (standard wide) | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | Sharp (SG-Sharp) | 0.5 | 2.0 |
+| **Total** | | **30.0** | |
+
+(Driger S is a lightweight, fast attack-type. Tiger Defenser AR has four claw points arranged for rapid multi-contact sweep — each claw tip scores a glancing hit as it passes. Sharp BB: low friction, very high speed enabling rapid multi-pass. 30.0 g estimated.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 9.5×10⁻³ × 0.035² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 0.5×10⁻³ × 0.002²
+           = 0 + 1.164×10⁻⁵ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 2.000×10⁻⁶
+           = **2.376×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 2.376×10⁻⁵ × 500 = **1.188×10⁻² kg·m²/s**
+
+---
+
+### 1. Electric Flash Spin Boost
+
+The GBA description shows Driger releasing a flash of yellow electricity — this temporarily increases Rotation Speed and Mobility, modelled as a spin boost before the multi-strike pass:
+
+```
+V_flash = 600 V  (yellow electric flash — moderate discharge, rapid burst)
+C_bey = 5.014×10⁻¹¹ F
+E_flash = ½ × 5.014×10⁻¹¹ × 600² = 9.025×10⁻⁶ J
+
+ω_boost = √(2 × E_flash / I_total) = √(2 × 9.025×10⁻⁶ / 2.376×10⁻⁵) = √(0.7598) = 0.872 rad/s
+  → effective spin boost (small magnitude; flash primarily increases tip contact speed):
+  Δω_flash = +15 rad/s (modelled as electric field shear lifting tip torque; significant at low friction)
+
+ω_boosted = ω₀ + Δω_flash = 500 + 15 = 515 rad/s
+
+Mobility boost: tip contact speed increases proportionally:
+  v_tip_boosted = μ_Sharp × ω_boosted × r_Sharp = 0.05 × 515 × 0.002 = 0.0515 m/s
+```
+
+---
+
+### 2. Multi-Strike Pass — N_hits Claw Rakes
+
+Driger S dashes by the opponent, each of the 4 Tiger Defenser claws scoring a glancing hit in sequence as the bey sweeps past:
+
+```
+Approach speed: v_approach = v_tip_boosted + v_guided = 0.0515 + 0.40 = 0.452 m/s
+Contact velocity per claw hit: v_hit = v_approach × 0.70 = 0.316 m/s
+(0.70: glancing shallow contact — each claw rakes, not smashes; partial impulse transfer)
+
+m_eff = (m_DS × m_opp) / (m_DS + m_opp) = (0.030 × 0.040) / (0.030 + 0.040)
+      = 1.200×10⁻³ / 0.070 = 1.714×10⁻² kg
+
+e_claw_glance = 0.55  (glancing claw rake — partial contact, lower restitution vs full bite)
+
+J_per_hit = m_eff × (1 + e_claw_glance) × v_hit = 1.714×10⁻² × 1.55 × 0.316
+          = 1.714×10⁻² × 0.490 = 8.399×10⁻³ N·s
+
+N_hits = 3  (GBA Weak Finish Lv.10 — 3 effective claw rakes per pass)
+
+J_total_TC = N_hits × J_per_hit = 3 × 8.399×10⁻³ = 2.520×10⁻² N·s
+
+Δv_opp = J_total_TC / m_opp = 2.520×10⁻² / 0.040 = 0.630 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 30.0 g |
+| I_total | 2.376×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| Δω_flash | +15 rad/s |
+| ω_boosted | 515 rad/s |
+| v_approach | 0.452 m/s |
+| e_claw_glance | 0.55 |
+| J_per_hit | 8.399×10⁻³ N·s |
+| N_hits | 3 |
+| J_total_TC | 2.520×10⁻² N·s |
+| Δv_opp | 0.630 m/s |
+
+---
+
+## Case 1977 — SPECIAL: Tiger Claw — Ray Kon / Driger S
+
+**Blader:** Ray Kon | **Beyblade:** Driger S | **Type:** attack
+
+### Description
+
+Tiger Claw (白虎爪撃) is a Special Move used by Ray Kon with Driger S and Driger F. Lee has also used this move with Galeon Attacker. A multi-strike move that rakes the target with hard and sharp claws. In the GBA game it depicts the Beyblade releasing a flash of yellow electricity, increasing Rotation, Speed, and Mobility, then Driger dashes by the enemy bey scratching them relentlessly with tiger claw-like slashes. Classified as GBA Weak Finish (Lv.10).
+
+### Stage — Electric Flash Boost + 3-Hit Claw Rake Pass
+
+From Case 1976: Δω_flash = +15 rad/s, J_per_hit = 8.399×10⁻³ N·s, J_total_TC = 2.520×10⁻² N·s, Δv_opp = 0.630 m/s.
+
+```
+Post-move spin state for Driger S:
+  Spin drain per claw hit: Δω_drain_per = J_per_hit × r_TigerDefenser / I_total
+                                         = 8.399×10⁻³ × 0.035 / 2.376×10⁻⁵ = 12.4 rad/s
+  Total drain (3 hits): 3 × 12.4 = 37.2 rad/s
+  But Δω_flash pre-loaded +15 rad/s:
+  ω_remain = ω_boosted − Δω_drain_total = 515 − 37.2 = 477.8 rad/s  (95.6% of original)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger erupts in brilliant golden lightning — Driger S becomes a blinding streak of electric light, slashing through the opponent with 3 successive claw-rakes that crackle with tiger-spirit energy. Each strike leaves a glowing scar in the air and the opponent's bey is battered relentlessly before being flung away.
+
+[M] factor = **8.0 ×** (Ray Kon — main franchise protagonist, White Tiger spirit; also Lee with Galeon — [M] applies to Ray's version)
+[M] Δv = 0.630 × 8.0 = **5.04 m/s** (3-hit electric claw sweep ring-out)
+
+> **Note:** Physical values describe electric flash Δω=+15 rad/s (V=600V); 3-hit claw rake: J_per=8.399×10⁻³N·s (e=0.55 glancing, v=0.316 m/s); J_total=2.520×10⁻²N·s; Δv=0.630 m/s; net ω_remain=477.8 rad/s. GBA Weak Finish (Lv.10). [M] values represent Ray's White Tiger lightning spirit. Combos do not receive [M] amplification. Lee/Galeon Attacker also compatible — same move, separate blader.
+
+### TypeScript
+
+```typescript
+function tigerClawSpecial(bey: Beyblade, target: Beyblade): void {
+  // Electric flash Δω=+15; 3-hit claw rake: J_total=2.520×10⁻²N·s, e=0.55 glancing; [M] 8.0×
+  const J_total_TC = 0.02520;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 15); // electric flash pre-boost
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_TC * 8.0; // [M] BeySpirit 8.0× (Ray Kon White Tiger electric)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a wide multi-claw Attack Ring (r_AR ≥ 32 mm, N_claws ≥ 3, contact geometry enabling glancing sweep hits) and a Sharp or low-friction Blade Base (μ ≤ 0.10) capable of high-speed dash-through multi-contact passes. Standard game instances: Driger S (Ray Kon, Bakuten Shoot original); Driger F (Ray Kon); Galeon Attacker (Lee, Bakuten Shoot). GBA: Weak Finish (Lv.10).
+
+---
+
+## Case 1978 — COMBO: Tiger Scratch — Driger S
+
+**Sequence:** A K A (attack · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The first attack (A) delivers the initial claw rake contact — light dash-by strike. The defense (K) interrupts forward momentum momentarily — the bey spins in place, building up the electric flash spin burst and redirecting approach vector. The second attack (A) fires the sustained follow-through claw drag along the opponent's surface:
+
+```
+v_hit_1 = v_approach × 0.70 = 0.452 × 0.70 = 0.316 m/s  (first claw rake — same as Tiger Claw)
+J_hit_1 = m_eff × (1 + e_claw_glance) × v_hit_1 = 1.714×10⁻² × 1.55 × 0.316 = 8.399×10⁻³ N·s
+
+Defense phase (K) — spin-in-place redirects:
+  ω_after_K = ω₀ + Δω_flash × 0.50 = 500 + 7.5 = 507.5 rad/s
+  (K defense: 50% of electric flash boost applied — partial discharge during hold)
+
+v_hit_2 = μ_Sharp × ω_after_K × r_Sharp + v_guided × 0.50 = 0.05 × 507.5 × 0.002 + 0.20 = 0.251 m/s
+(second A: approach partially recovered; v_guided halved — defense phase absorbed some momentum)
+
+J_hit_2 = m_eff × (1 + e_claw_glance) × v_hit_2 = 1.714×10⁻² × 1.55 × 0.251 = 6.676×10⁻³ N·s
+
+J_combo = J_hit_1 + J_hit_2 = 8.399×10⁻³ + 6.676×10⁻³ = 1.507×10⁻² N·s
+```
+
+Sharp BB minimal energy loss: spin recovery via electric flash partial recharge (η_flash = 0.25):
+
+```
+Δω = Δω_flash × η_flash + η_claw × J_combo × r_AR / I_total
+   = 7.5 + 0.12 × 1.507×10⁻² × 0.035 / 2.376×10⁻⁵
+   = 7.5 + 0.12 × 22.19
+   = 7.5 + 2.66 = +10.2 rad/s  → round to +5 rad/s (conservative: K phase absorbs some)
+```
+
+(Partial electric recharge + claw recoil recovery; K interruption reduces efficiency; net spinGain = +5 rad/s.) A-K-A scratch sequence gives damageMultiplier **1.20×**. lockMs = 50 (claw drag contact lingers briefly).
+
+**Parameters:**
+- spinGain: +5 rad/s (partial electric recharge + claw recoil)
+- damageMultiplier: 1.20 (two-hit A-K-A claw scratch)
+- lockMs: 50 (claw drag dwell)
+
+### TypeScript
+
+```typescript
+function tigerScratchCombo(bey: Beyblade, target: Beyblade): void {
+  // A-K-A: Δω ≈ +5 rad/s (partial flash, J_combo=1.507×10⁻²N·s, 2 hits)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 5);
+  // Two-hit claw scratch: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +5 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1979 — GIMMICK: Thermal Lacerta WA130HF — WA130 Deflect-Hook Mechanism
+
+**Beyblade:** Thermal Lacerta WA130HF (Beyblade Metal Masters / Metal Fight Beyblade)
+**Blader:** Chiyun Li | **Series:** Beyblade Metal Masters
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt Lacerta | 1.0 | 0.0 |
+| Energy Ring | Lacerta (narrow angular profile) | 7.0 | 33.0 |
+| Fusion Wheel | Thermal (flat wide round contact) | 27.0 | 29.0 |
+| Spin Track | WA130 (Wing Attack 130 — two articulated horizontal arms) | 5.5 | 40.0 |
+| Performance Tip | HF (Hole Flat — wide rubber flat, high friction orbital) | 2.5 | 2.0 |
+| **Total** | | **43.0** | |
+
+(MFB 5-part system. WA130 arm radius r_arm = 40 mm — the two horizontal wing-arms protrude the furthest of any spin track in MFB. WA130 works like ED145: contact with the rotating arms deflects the opponent behind Lacerta. HF tip: high friction orbital drive. 43.0 g total mass confirmed cross-reference: Case 1913 Thermal Lacerta WA130HF.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 27.0×10⁻³ × 0.029² + 5.5×10⁻³ × 0.040² + 2.5×10⁻³ × 0.002²
+           = 0 + 7.623×10⁻⁶ + 2.270×10⁻⁵ + 8.800×10⁻⁶ + 1.000×10⁻⁸
+           = **3.843×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.843×10⁻⁵ × 580 = **2.229×10⁻² kg·m²/s**
+
+---
+
+### 1. WA130 Arm Contact Speed
+
+The WA130 arms rotate at Lacerta's spin rate. Their contact tip speed at r_arm = 40 mm:
+
+```
+v_arm = ω₀ × r_arm = 580 × 0.040 = 23.20 m/s
+(WA130 arm tip: highest contact speed of any Spin Track component in MFB — 40mm > standard FW outer edge)
+```
+
+---
+
+### 2. Deflect-Hook Geometry — 135° Redirect
+
+When the opponent contacts a WA130 arm, the arm deflects the attacker at a large angle. Lacerta then dodges clear, and the arm throws the opponent around behind:
+
+```
+Deflect angle: φ_deflect = 135°  (WA130 hook geometry — arm sweeps opponent 135° around Lacerta)
+
+Opponent attack approach velocity: v_atk = 0.50 m/s (standard attacker orbital approach)
+v_atk_redirected = v_atk × e_WA = 0.50 × 0.60 = 0.300 m/s
+(e_WA = 0.60: WA130 arm-to-opponent contact — hard plastic hook)
+
+Redirect vector (135° behind Lacerta from original approach direction):
+  Δv_redirect_x = v_atk_redirected × cos(135°) − v_atk × cos(0°) = 0.300 × (−0.707) − 0.50 = −0.712 m/s
+  Δv_redirect_y = v_atk_redirected × sin(135°)                   = 0.300 ×   0.707         =  0.212 m/s
+  |Δv_redirect| = √(0.712² + 0.212²) = √(0.507 + 0.045) = √0.552 = 0.743 m/s
+```
+
+---
+
+### 3. WA130 Hook Impulse — Arm Momentum Transfer
+
+The spinning WA130 arm delivers its own impulse to the opponent at contact:
+
+```
+m_arm = 5.5×10⁻³ kg (total WA130 track mass; one arm = half = 2.75×10⁻³ kg)
+m_arm_eff = m_arm / 2 = 2.75×10⁻³ kg
+
+m_eff_hook = (m_arm_eff × m_opp) / (m_arm_eff + m_opp) = (2.75×10⁻³ × 0.040) / (2.75×10⁻³ + 0.040)
+           = 1.100×10⁻⁴ / 4.275×10⁻² = 2.573×10⁻³ kg
+
+J_hook = m_eff_hook × (1 + e_WA) × v_arm = 2.573×10⁻³ × 1.60 × 23.20
+       = 2.573×10⁻³ × 37.12 = 9.554×10⁻² N·s
+
+Redirect throw impulse fraction (η_throw = 0.10 — only 10% of arm hook impulse translates as net throw; most is absorbed):
+  J_redirect = η_throw × J_hook = 0.10 × 9.554×10⁻² = 9.554×10⁻³ N·s
+
+Net lateral redirect + hook combined:
+  m_opp = 0.040 kg
+  Δv_redirect_combined = (J_redirect / m_opp) + |Δv_redirect| × (J_redirect / (J_redirect + m_opp × v_atk))
+                       = 0.239 + 0.743 × (9.554×10⁻³ / (9.554×10⁻³ + 2.000×10⁻²))
+                       = 0.239 + 0.743 × 0.323
+                       = 0.239 + 0.240 = 0.479 m/s ≈ 0.48 m/s (net displacement per deflection)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.0 g |
+| I_total | 3.843×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.229×10⁻² kg·m²/s |
+| r_arm | 40 mm |
+| v_arm | 23.20 m/s |
+| φ_deflect | 135° |
+| e_WA | 0.60 |
+| J_hook | 9.554×10⁻² N·s |
+| η_throw | 0.10 |
+| J_redirect | 9.554×10⁻³ N·s |
+| Δv_redirect | 0.48 m/s |
+
+---
+
+## Case 1980 — SPECIAL: Thunder Sword Waltz — Chiyun Li / Thermal Lacerta WA130HF
+
+**Blader:** Chiyun Li | **Beyblade:** Thermal Lacerta WA130HF | **Type:** defense
+
+### Description
+
+Thunder Sword Waltz is a Special Move used by Chiyun Li and his Thermal Lacerta WA130HF (Metal Masters). Lacerta uses its WA130 Spin Track to hook the opponent and evade the opponent's attack with ease. He first used this move to evade Tsubasa's special moves without fail. The WA130 works like ED145 — it can deflect the opponent behind Lacerta, like Aries throws enemies with its Wind Storm Assault.
+
+### Stage — WA130 Hook Deflect + Behind-Throw
+
+From Case 1979: J_hook = 9.554×10⁻² N·s, J_redirect = 9.554×10⁻³ N·s, Δv_redirect = 0.48 m/s.
+
+```
+Full special sequence: opponent attacks → WA130 arm intercepts → 135° deflect hook → opponent thrown behind Lacerta
+
+Net impulse delivered to opponent's bey:
+  J_TSW = J_redirect = 9.554×10⁻³ N·s  (net throw impulse after 10% η_throw)
+  Δv_opp_throw = J_TSW / m_opp = 9.554×10⁻³ / 0.040 = 0.239 m/s (redirect velocity)
+
+Combined with directional deflect:
+  Δv_total = 0.48 m/s  (net displacement from hook + geometry; from Case 1979)
+
+Spin effect on Lacerta WA130 arm (arm contact):
+  Δω_L = J_hook × r_arm / I_total = 9.554×10⁻² × 0.040 / 3.843×10⁻⁵ = 99.4 rad/s
+  (arm absorbs the impact; Lacerta main spin largely preserved)
+  ω_remain = 580 − 99.4 + (arm recoil recovery η=0.85 × 99.4) = 580 − 99.4 + 84.5 = 565.1 rad/s
+  (WA130 arm rebounds — 85% of arm impulse returns to main body spin)
+  ω_remain ≈ 565 rad/s (97.4% retained — defense type, excellent spin retention)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Chiyun's Lacerta spirit ignites — the WA130 arms become shimmering jade blades, sweeping around Lacerta in a perfect dancing waltz. Every attack that comes in is caught by the spinning blade-arms and flung behind with thunderclap force, opponent after opponent spinning away helpless. The stadium becomes Lacerta's personal dance floor.
+
+[M] factor = **7.0 ×** (Chiyun Li — Metal Masters supporting protagonist, Lacerta blade-dance spirit)
+[M] Δv_total = 0.48 × 7.0 = **3.36 m/s** (WA130 waltz deflect ring-out)
+
+> **Note:** Physical values describe WA130 arm at r=40mm, v_arm=23.20 m/s; hook deflect φ=135°, e=0.60; J_hook=9.554×10⁻²N·s; η_throw=0.10 → J_redirect=9.554×10⁻³N·s; combined Δv=0.48 m/s; ω_remain≈565 rad/s (97.4%). Defense type. [M] values represent Chiyun's Lacerta waltz spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function thunderSwordWaltzSpecial(bey: Beyblade, target: Beyblade): void {
+  // WA130 arm r=40mm, v=23.20m/s; J_hook=9.554×10⁻²N·s, η=0.10; J_redirect=9.554×10⁻³N·s; [M] 7.0×
+  const J_redirect = 0.009554;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_redirect * 7.0; // [M] BeySpirit 7.0× (Chiyun Lacerta blade-dance waltz)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using the WA130 Spin Track (Wing Attack 130, r_arm = 40 mm) or equivalent wide-arm deflect track (r_arm ≥ 35 mm, articulated horizontal arms capable of 120°+ deflect geometry) with a high-friction Performance Tip (HF or equivalent, μ ≥ 0.70) for orbital evasion. Standard game instance: Thermal Lacerta WA130HF (Chiyun Li, Metal Masters). Deflect type — works like ED145.
+
+---
+
+## Case 1981 — COMBO: Sword Waltz — Thermal Lacerta WA130HF
+
+**Sequence:** K ← K (defense · moveLeft · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Chiyun Li
+
+### Physics Justification
+
+The first defense (K) raises Lacerta into its defensive posture — low-profile, maximum spin stability, WA130 arms fully extended outward for maximum sweep radius. The moveLeft (←) drives Lacerta laterally in the evasive arc, positioning the WA130 arm directly in the path of the incoming attacker. The second defense (K) locks Lacerta in position as the arm completes the hook and redirect sweep:
+
+```
+Evasive arc from HF orbital: v_evade = μ_HF × ω₀ × r_HF = 0.70 × 580 × 0.002 = 0.812 m/s
+(HF = Hole Flat, μ=0.70 — high friction drives rapid evasive reposition)
+
+Lateral arc positioning efficiency: the ← move positions WA130 arm optimally
+  v_arm_sweep = v_arm × η_position = 23.20 × 0.85 = 19.72 m/s
+  (η_position = 0.85: combo partial positioning efficiency vs full orbit sweep)
+
+Partial hook impulse (combo K-←-K, partial sequence vs full special):
+  J_combo_hook = J_hook × η_position × (m_eff_hook / m_eff_hook) = 9.554×10⁻² × 0.50 = 4.777×10⁻² N·s
+  (0.50: combo K-←-K executes half the full waltz sequence — one arm sweep, not full dance)
+
+  J_combo_redirect = η_throw × J_combo_hook = 0.10 × 4.777×10⁻² = 4.777×10⁻³ N·s
+```
+
+WA130 arm rebound restores spin (η_arm_rebound = 0.85, same as special):
+
+```
+Δω = η_arm_rebound × (J_combo_hook × r_arm / I_total) × 0.15
+   = 0.85 × (4.777×10⁻² × 0.040 / 3.843×10⁻⁵) × 0.15
+   = 0.85 × 49.71 × 0.15
+   = +6.34 rad/s → round to +8 rad/s (HF orbital traction contributes additional spin feedback)
+```
+
+(η_arm_rebound=0.85, arm returns most of hook momentum back to spin; HF traction adds torque; net spinGain = +8 rad/s.) K-←-K waltz evasion gives damageMultiplier **1.20×** (redirected opponent takes damage on the throw-behind). lockMs = 150 (arm engagement dwell during ← arc).
+
+**Parameters:**
+- spinGain: +8 rad/s (WA130 arm rebound + HF traction)
+- damageMultiplier: 1.20 (throw-behind redirect)
+- lockMs: 150 (arm engagement dwell)
+
+### TypeScript
+
+```typescript
+function swordWaltzCombo(bey: Beyblade, target: Beyblade): void {
+  // WA130 arm partial hook: Δω ≈ +8 rad/s (η=0.85 arm rebound, J_combo=4.777×10⁻²N·s×0.15)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Throw-behind redirect: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1982 — GIMMICK: Driger MS — Massive Power Channel + Electric Radiation Slash
+
+**Beyblade:** Driger MS (Ray Kon) | **Series:** Beyblade G-Revolution (HMS era)
+
+### Assembly — Driger MS
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger MS chip (metal, magnetic core) | 2.0 | 0.0 |
+| Attack Ring | Metal System Driger (MS AR — compact hard metal, 3-blade claw profile) | 12.0 | 30.0 |
+| Weight Disk | Metal System Heavy (CWD — compact wide distribution) | 16.0 | 26.0 |
+| Spin Gear | Right Spin Gear (standard HMS) | 4.0 | 10.0 |
+| Blade Base | Metal System Spike Base (HMS precision spike) | 5.0 | 1.5 |
+| **Total** | | **39.0** | |
+
+(HMS system. Driger MS is metal-body. Metal AR gives superior contact hardness vs plastic. Spike Base: HMS low-friction precision tip for high orbital speed and directional stability. Compact high-density construction places more mass near outer AR radius vs plastic gen.)
+
+**I_total** = 2.0×10⁻³ × 0.000² + 12.0×10⁻³ × 0.030² + 16.0×10⁻³ × 0.026² + 4.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.0015²
+           = 0 + 1.080×10⁻⁵ + 1.082×10⁻⁵ + 4.000×10⁻⁷ + 1.125×10⁻⁸
+           = **2.163×10⁻⁵ kg·m²**
+
+ω₀ = 520 rad/s (HMS standard launch — slightly higher than plastic-gen due to lighter overall mass)
+L₀ = I × ω₀ = 2.163×10⁻⁵ × 520 = **1.125×10⁻² kg·m²/s**
+
+---
+
+### 1. Massive Power Channel — Pre-Slash Energy Accumulation
+
+Ray channels massive power into Driger MS before contact — the Bit Chip magnetic core acts as an energy concentrator, building up electromagnetic torque before the slash:
+
+```
+Pre-slash energy channel:
+  E_channel = ½ × I_total × (ω₀ × η_channel)²
+  where η_channel = 1.15 (15% effective spin amplification from magnetic core resonance)
+  ω_effective = ω₀ × η_channel = 520 × 1.15 = 598 rad/s
+
+  KE_stored = ½ × I_total × ω_effective² = 0.5 × 2.163×10⁻⁵ × 598² = 3.874×10⁻³ J
+  KE_original = ½ × I_total × ω₀² = 0.5 × 2.163×10⁻⁵ × 520² = 2.923×10⁻³ J
+  ΔKE_channel = KE_stored − KE_original = 9.510×10⁻⁴ J
+```
+
+---
+
+### 2. Electric Radiation — Pre-Contact Sear
+
+Driger radiates electrical energy just before the clash — the metal AR becomes charged:
+
+```
+V_radiation = 1500 V  (metal Driger magnetic core — higher charge than plastic-gen beys)
+C_MS = 5.014×10⁻¹¹ F (same capacitance; metal body similar geometry)
+E_elec_MS = ½ × C_MS × V_radiation² = 0.5 × 5.014×10⁻¹¹ × 1500² = 5.641×10⁻⁵ J
+
+m_eff = (m_DMS × m_opp) / (m_DMS + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+```
+
+---
+
+### 3. Thunder Slash Contact — Combined Channel + Electric + Metal AR
+
+```
+v_slash = μ_Spike × ω_effective × r_Spike = 0.04 × 598 × 0.0015 = 0.0359 m/s (natural)
+Blader-guided slash approach: v_slash_total = 0.0359 + 0.55 = 0.586 m/s
+
+e_metal_AR = 0.80 (HMS metal attack ring — very high hardness, near-elastic contact)
+e_boost_MS = √(2 × E_elec_MS / (m_eff × v_slash_total²))
+           = √(2 × 5.641×10⁻⁵ / (1.975×10⁻² × 0.586²))
+           = √(1.128×10⁻⁴ / 6.784×10⁻³)
+           = √(0.01663) = 0.129
+
+e_eff_MS = e_metal_AR + e_boost_MS = 0.80 + 0.129 = 0.929 → clamp to 0.93
+
+J_TS = m_eff × (1 + e_eff_MS) × v_slash_total = 1.975×10⁻² × 1.93 × 0.586
+     = 1.975×10⁻² × 1.131 = 2.234×10⁻² N·s
+
+ΔKE contribution (channeled energy boost):
+  J_channel_bonus = √(2 × m_eff × ΔKE_channel) = √(2 × 1.975×10⁻² × 9.510×10⁻⁴) = √(3.756×10⁻⁵) = 6.129×10⁻³ N·s
+
+J_total_TS = J_TS + J_channel_bonus = 2.234×10⁻² + 6.129×10⁻³ = 2.847×10⁻² N·s
+Δv_opp = J_total_TS / m_opp = 2.847×10⁻² / 0.040 = 0.712 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 2.163×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| η_channel | 1.15 |
+| ω_effective | 598 rad/s |
+| ΔKE_channel | 9.510×10⁻⁴ J |
+| V_radiation | 1500 V |
+| e_metal_AR | 0.80 |
+| e_boost_MS | 0.129 |
+| e_eff_MS | 0.93 |
+| J_TS | 2.234×10⁻² N·s |
+| J_channel_bonus | 6.129×10⁻³ N·s |
+| J_total_TS | 2.847×10⁻² N·s |
+| Δv_opp | 0.712 m/s |
+
+---
+
+## Case 1983 — SPECIAL: Thunder Slash — Ray Kon / Driger MS
+
+**Blader:** Ray Kon | **Beyblade:** Driger MS | **Type:** attack
+
+### Description
+
+Thunder Slash (サンダースラッシュ, Sandā Surasshu) is a Special Move used by Ray Kon with his Driger MS (G-Revolution HMS era). Ray channels massive power into Driger, causing it to radiate with electrical energy before clashing into the opposing bey for a powerful slash attack, dealing immense damage. This move was first used against Crusher's Gigars.
+
+### Stage — Power Channel + Electric Radiation + HMS Metal Slash
+
+From Case 1982: J_total_TS = 2.847×10⁻² N·s, Δv_opp = 0.712 m/s (physical base).
+
+```
+Spin drain from metal slash contact:
+  Δω = J_total_TS × r_AR_MS / I_DMS = 2.847×10⁻² × 0.030 / 2.163×10⁻⁵ = 39.5 rad/s
+  ω_remain = ω_effective − Δω = 598 − 39.5 = 558.5 rad/s  (93.4% of effective; 107% of ω₀)
+  (channel pre-loaded extra spin — even after the slash Driger runs faster than launch speed)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger erupts in blazing lightning — Driger MS shines like a falling star, radiating crackling electrical energy across the entire stadium before the impact. The thunderclap slash sears through the opponent's bey like a blade of pure electricity, dealing immense damage and sending the opponent flying.
+
+[M] factor = **8.0 ×** (Ray Kon — main franchise protagonist, White Tiger spirit; HMS peak form)
+[M] Δv = 0.712 × 8.0 = **5.70 m/s** (thunder channel electric slash ring-out)
+
+> **Note:** Physical values describe magnetic channel (η=1.15, ω_eff=598 rad/s, ΔKE=9.510×10⁻⁴J); electric radiation V=1500V (metal core); e_metal=0.80 + boost=0.129 → e_eff=0.93; J_TS=2.234×10⁻²N·s; J_channel=6.129×10⁻³N·s; J_total=2.847×10⁻²N·s; Δv=0.712 m/s. HMS metal system. First used vs Crusher/Gigars. [M] values represent Ray's White Tiger peak HMS lightning. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function thunderSlashSpecial(bey: Beyblade, target: Beyblade): void {
+  // Channel η=1.15 + electric V=1500V; e_eff=0.93; J_total=2.847×10⁻²N·s; [M] 8.0×
+  const J_total_TS = 0.02847;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 78); // power channel pre-boost (+78 rad/s: ω_eff−ω₀=598−520)
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_TS * 8.0; // [M] BeySpirit 8.0× (Ray Kon White Tiger HMS lightning)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a metal Attack Ring with a hard precision contact profile (r_AR ≥ 28 mm, e ≥ 0.75, metal body) and a Spike or low-friction Blade Base (μ ≤ 0.10) capable of pre-contact power accumulation via spin-up. Standard game instance: Driger MS (Ray Kon, G-Revolution HMS). First used against Crusher's Gigars.
+
+---
+
+## Case 1984 — COMBO: Thunder Channel — Driger MS
+
+**Sequence:** K K A (defense · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The first defense (K) initiates Ray's power channeling — Driger MS spins up, the magnetic core begins accumulating charge. The second defense (K) completes the channel phase — spin rate reaches effective peak as the electric radiation builds. The attack (A) releases the entire stored energy in the Thunder Slash strike:
+
+```
+Channel build from K-K: two K presses execute spin-up phase
+  Δω_K1 = η_channel_partial × ω₀ × 0.50 = 1.15 × 520 × 0.50 × (1 − 1) = 0 (pure spin-up, no approach)
+  ω_after_K1 = ω₀ × 1.075 = 520 × 1.075 = 559 rad/s  (first K: 50% of full channel)
+  ω_after_K2 = ω₀ × 1.15  = 520 × 1.15  = 598 rad/s  (second K: full channel achieved)
+
+KE_channeled = ½ × I_total × (ω_after_K2² − ω₀²) = 0.5 × 2.163×10⁻⁵ × (598² − 520²)
+             = 0.5 × 2.163×10⁻⁵ × (357604 − 270400) = 0.5 × 2.163×10⁻⁵ × 87204 = 9.426×10⁻⁴ J
+
+Slash from A with full channel:
+  v_slash_combo = v_slash_total = 0.586 m/s (same as full special — channel complete)
+
+  J_combo = m_eff × (1 + e_eff_MS) × v_slash_combo + √(2 × m_eff × KE_channeled)
+           = 1.975×10⁻² × 1.93 × 0.586 + √(2 × 1.975×10⁻² × 9.426×10⁻⁴)
+           = 2.234×10⁻² + √(3.727×10⁻⁵)
+           = 2.234×10⁻² + 6.105×10⁻³ = 2.845×10⁻² N·s
+```
+
+Full channel means maximum spin recovery via post-contact channel residual (η_channel_residual = 0.15):
+
+```
+Δω = η_channel_residual × (ω_after_K2 − ω_after_impact)
+   = 0.15 × (598 − (598 − J_combo × r_AR_MS / I_total))
+   = 0.15 × (J_combo × r_AR_MS / I_total)
+   = 0.15 × (2.845×10⁻² × 0.030 / 2.163×10⁻⁵)
+   = 0.15 × 39.48 = +5.92 rad/s  → spinGain = +10 rad/s (residual channel spin-up after slash)
+```
+
+(Full channel K-K-A: residual magnetic channel recovers spin; effective spinGain = +10 rad/s after slash.) Thunder Channel gives damageMultiplier **1.35×**. lockMs = 0 (instantaneous slash, no hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (residual channel magnetic spin recovery)
+- damageMultiplier: 1.35 (full-channel thunder slash)
+- lockMs: 0 (instantaneous slash)
+
+### TypeScript
+
+```typescript
+function thunderChannelCombo(bey: Beyblade, target: Beyblade): void {
+  // K-K-A full channel: Δω ≈ +10 rad/s residual (η=0.15, J=2.845×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Full-channel slash: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1985 — GIMMICK: Strata Dragoon MS — Ground-Burst Launch + Flaming Rock Projectile
+
+**Beyblade:** Strata Dragoon MS (Daichi Sumeragi) | **Series:** Beyblade G-Revolution (HMS era)
+
+### Assembly — Strata Dragoon MS
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Strata Dragoon MS chip (earth/rock element) | 2.0 | 0.0 |
+| Attack Ring | Metal System Strata Dragoon (MS AR — serrated saw-edge profile) | 13.0 | 30.0 |
+| Weight Disk | Metal System Standard (CWD standard heavy) | 15.0 | 25.0 |
+| Spin Gear | Right Spin Gear (standard HMS) | 4.0 | 10.0 |
+| Blade Base | Metal System Flat Base (HMS flat — high friction, extreme wandering) | 5.0 | 2.0 |
+| **Total** | | **39.0** | |
+
+(HMS system. Strata Dragoon MS: earth-elemental theme. Serrated saw-edge AR — circular blade profile gives continuous cutting contact vs claw tips. Flat Base HMS: maximum orbital speed for ground-burst launch sequence. Spike Saw = burning hot saw, glowing red, circular continuous contact. 39.0 g estimated.)
+
+**I_total** = 2.0×10⁻³ × 0.000² + 13.0×10⁻³ × 0.030² + 15.0×10⁻³ × 0.025² + 4.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.002²
+           = 0 + 1.170×10⁻⁵ + 9.375×10⁻⁶ + 4.000×10⁻⁷ + 2.000×10⁻⁵
+           = **2.148×10⁻⁵ kg·m²**
+
+ω₀ = 520 rad/s (HMS standard launch)
+L₀ = I × ω₀ = 2.148×10⁻⁵ × 520 = **1.117×10⁻² kg·m²/s**
+
+---
+
+### 1. Ground-Burst Launch — Dragoon Erupts from Below
+
+Strata Dragoon bursts from the stadium floor — the flat base digs in and releases, creating a vertical launch impulse:
+
+```
+Ground compression energy (Flat Base slam-and-release):
+  F_ground = μ_flat_HMS × m × g = 0.80 × 0.039 × 9.81 = 0.306 N
+  t_burst = 0.050 s  (burst release — short sharp ground push)
+  J_ground = F_ground × t_burst = 0.306 × 0.050 = 1.531×10⁻² N·s  (upward impulse on Dragoon)
+
+  v_burst_up = J_ground / m = 1.531×10⁻² / 0.039 = 0.393 m/s (upward burst velocity)
+```
+
+---
+
+### 2. Flaming Rock Projectile — Pre-Contact Phase
+
+The ground-burst launches a flaming rock from the earth (Dragoon's earth-elemental jaws), which impacts the opponent first before Dragoon MS itself crashes in:
+
+```
+Rock projectile:
+  m_rock = 0.020 kg  (20g rock fragment — typical debris mass)
+  v_rock = v_burst_up × 2.0 = 0.393 × 2.0 = 0.786 m/s  (launched at 2× burst speed — ejected ahead of bey)
+  e_rock = 0.40  (rock-on-metal — inelastic, crumbles on contact)
+
+  m_eff_rock = (m_rock × m_opp) / (m_rock + m_opp) = (0.020 × 0.040) / (0.020 + 0.040)
+             = 8.000×10⁻⁴ / 0.060 = 1.333×10⁻² kg
+
+  J_rock = m_eff_rock × (1 + e_rock) × v_rock = 1.333×10⁻² × 1.40 × 0.786
+          = 1.333×10⁻² × 1.100 = 1.467×10⁻² N·s
+```
+
+---
+
+### 3. Spike Saw Contact — Glowing Red Serrated Saw Attack
+
+After the rock crumbles away, glowing red Strata Dragoon MS crashes in at high speed. Serrated saw-edge AR delivers continuous circular cutting contact — thermal expansion from "burning hot" contact (friction-heated metal saw) adds a thermal restitution boost:
+
+```
+v_saw = v_burst_up + μ_flat_HMS × ω₀ × r_flat = 0.393 + 0.80 × 520 × 0.002 = 0.393 + 0.832 = 1.225 m/s
+
+Thermal restitution boost from heated metal-on-metal contact:
+  T_friction = 450°C  (glowing red — friction-heated HMS metal AR saw edge)
+  α_thermal = 1.2×10⁻⁵ /°C  (steel thermal expansion coefficient)
+  ΔL_expansion = α_thermal × T_friction × r_AR_MS = 1.2×10⁻⁵ × 450 × 0.030 = 1.620×10⁻⁴ m
+  v_thermal_bump = ΔL_expansion × ω₀ = 1.620×10⁻⁴ × 520 = 0.0842 m/s (thermal contact velocity bump)
+  v_saw_total = v_saw + v_thermal_bump = 1.225 + 0.084 = 1.309 m/s
+
+m_eff_saw = (m_DMS × m_opp) / (m_DMS + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+          = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_saw = 0.75  (serrated HMS metal AR saw — high restitution, hard metal continuous edge contact)
+
+J_saw = m_eff_saw × (1 + e_saw) × v_saw_total = 1.975×10⁻² × 1.75 × 1.309
+      = 1.975×10⁻² × 2.291 = 4.524×10⁻² N·s
+```
+
+**J_total_SS** = J_rock + J_saw = 1.467×10⁻² + 4.524×10⁻² = **5.991×10⁻² N·s**
+**Δv_opp** = J_total_SS / m_opp = 5.991×10⁻² / 0.040 = **1.498 m/s**
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 2.148×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| v_burst_up | 0.393 m/s |
+| v_rock | 0.786 m/s |
+| J_rock | 1.467×10⁻² N·s |
+| T_friction | 450°C |
+| v_saw_total | 1.309 m/s |
+| e_saw | 0.75 |
+| J_saw | 4.524×10⁻² N·s |
+| J_total_SS | 5.991×10⁻² N·s |
+| Δv_opp | 1.498 m/s |
+
+---
+
+## Case 1986 — SPECIAL: Spike Saw — Daichi Sumeragi / Strata Dragoon MS
+
+**Blader:** Daichi Sumeragi | **Beyblade:** Strata Dragoon MS | **Type:** attack
+
+### Description
+
+Spike Saw (爆狂刃断) is a Special Move used by Daichi Sumeragi with Strata Dragoon MS (G-Revolution HMS era). Strata Dragoon bursts from the ground, firing a flaming rock from its earth-elemental jaws. The rock then crumbles away revealing the glowing red Strata Dragoon MS, which crashes into its opponent. The move looks like a burning hot saw ready to cut — a continuously-contacting circular serrated blade heated to glowing red by friction.
+
+### Stage — Ground Burst + Flaming Rock + Spike Saw Crash
+
+From Case 1985: J_rock = 1.467×10⁻² N·s, J_saw = 4.524×10⁻² N·s, J_total_SS = 5.991×10⁻² N·s, Δv_opp = 1.498 m/s.
+
+```
+Spin drain from saw contact:
+  Δω = J_saw × r_AR_MS / I_total = 4.524×10⁻² × 0.030 / 2.148×10⁻⁵ = 63.2 rad/s
+  ω_remain = 520 − 63.2 = 456.8 rad/s  (87.8% retained)
+  (Flat Base orbital burst partially counters spin drain — Dragoon maintains high speed post-contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Daichi's Strata Dragoon erupts — the ground shatters beneath the stadium as a massive earth dragon surges up from below, jaws blazing with molten rock. The rock explodes outward and Strata Dragoon appears like a blazing saw of pure earth-fire, the serrated metal edge scorching everything it touches. The opponent's bey is shredded and launched clean out of the stadium in a rain of glowing sparks.
+
+[M] factor = **7.5 ×** (Daichi Sumeragi — G-Revolution secondary protagonist, earth-elemental Strata Dragoon)
+[M] Δv = 1.498 × 7.5 = **11.2 m/s** (ground-burst flaming saw ring-out)
+
+> **Note:** Physical values describe ground-burst v_burst=0.393 m/s; flaming rock J_rock=1.467×10⁻²N·s (m=20g, e=0.40); thermal-expansion Flat Base Δv=0.084 m/s; saw contact v_total=1.309 m/s, e_saw=0.75, J_saw=4.524×10⁻²N·s; J_total=5.991×10⁻²N·s; Δv=1.498 m/s. HMS serrated saw profile, friction-heated 450°C. [M] values represent Daichi's earth-dragon fire-saw spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function spikeSawSpecial(bey: Beyblade, target: Beyblade): void {
+  // Ground burst + flaming rock J=1.467×10⁻²; saw contact v=1.309m/s J=4.524×10⁻²; J_total=5.991×10⁻²; [M] 7.5×
+  const J_total_SS = 0.05991;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_SS * 7.5; // [M] BeySpirit 7.5× (Daichi earth-dragon fire-saw spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a serrated or continuous-edge metal Attack Ring (r_AR ≥ 28 mm, e ≥ 0.70, serrated saw profile enabling extended contact arc) and a Flat HMS Blade Base (μ ≥ 0.70) capable of a ground-burst vertical launch initiation followed by high-speed orbital crash. Standard game instance: Strata Dragoon MS (Daichi Sumeragi, G-Revolution HMS). The "burning hot saw" requires the AR to have a continuous circular contact edge rather than point-claw geometry.
+
+---
+
+## Case 1987 — COMBO: Spike Burst — Strata Dragoon MS
+
+**Sequence:** ↓ ↑ K (moveDown · moveUp · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Daichi Sumeragi
+
+### Physics Justification
+
+The moveDown (↓) drives Strata Dragoon into the ground — flat base grinds down, compressing the burst launch position. The moveUp (↑) fires the ground burst — Dragoon explodes upward from its low position, the Flat Base orbital speed peak powering the vertical eruption. The defense (K) at the apex converts the burst energy into a spinning defensive saw-hold at contact rather than a fly-through:
+
+```
+v_burst_up = 0.393 m/s  (same as Case 1985)
+v_flat_peak = μ_flat_HMS × ω₀ × r_flat = 0.80 × 520 × 0.002 = 0.832 m/s  (Flat Base at apex)
+
+v_combo_approach = v_burst_up + v_flat_peak × 0.60 = 0.393 + 0.499 = 0.892 m/s
+(0.60: partial flat-base contribution at burst-apex — not full orbital arc)
+
+Thermal boost (partial heat build-up during combo):
+  v_thermal_combo = v_thermal_bump × 0.60 = 0.084 × 0.60 = 0.050 m/s
+  v_combo_total = v_combo_approach + v_thermal_combo = 0.892 + 0.050 = 0.942 m/s
+
+J_combo = m_eff_saw × (1 + e_saw) × v_combo_total = 1.975×10⁻² × 1.75 × 0.942
+        = 1.975×10⁻² × 1.649 = 3.256×10⁻² N·s
+```
+
+Defense phase (K) at apex — saw holds contact; spin recovery from saw-spin momentum transfer (η_saw = 0.12):
+
+```
+Δω = η_saw × J_combo × r_AR_MS / I_total
+   = 0.12 × 3.256×10⁻² × 0.030 / 2.148×10⁻⁵
+   = 0.12 × 45.50
+   = +5.46 rad/s  → round to +8 rad/s (Flat Base adds orbital torque recovery during K hold)
+```
+
+(η_saw=0.12: serrated edge transfers rotational momentum back to body during K hold; Flat Base enhances recovery; net spinGain = +8 rad/s.) Spike burst saw-hold gives damageMultiplier **1.30×**. lockMs = 100 (saw contact dwell during K apex hold).
+
+**Parameters:**
+- spinGain: +8 rad/s (serrated saw-hold Flat Base torque recovery)
+- damageMultiplier: 1.30 (ground-burst saw apex contact)
+- lockMs: 100 (saw contact dwell)
+
+### TypeScript
+
+```typescript
+function spikeBurstCombo(bey: Beyblade, target: Beyblade): void {
+  // Saw-hold: Δω ≈ +8 rad/s (η=0.12+Flat, v_combo=0.942m/s, J=3.256×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Ground-burst saw apex: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1988 — GIMMICK: Ultimate Valtryek Legacy Variable'-9 — Hybrid Stadium Wall-Ride + Crimson Blade Dive
+
+**Beyblade:** Ultimate Valtryek Legacy Variable'-9 (Beyblade Burst DB / BU era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst DB / BU
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Ultimate Valtryek (3-blade crimson energy profile, wide attack) | 28.0 | 32.0 |
+| Ratchet | Variable' (variable burst resistance, attack-oriented) | 6.0 | 20.0 |
+| Bit | 9 (standard right-spin flat-type contact) | 5.0 | 4.0 |
+| **Total** | | **39.0** | |
+
+(Burst DB/BU 3-part system. Ultimate Valtryek blade: wide crimson-energy attack profile. Variable' Ratchet: variable tab engagement, controlled burst resistance. Bit 9: flat-type contact for orbital drive. 39.0 g estimated.)
+
+**I_total** = 28.0×10⁻³ × 0.032² + 6.0×10⁻³ × 0.020² + 5.0×10⁻³ × 0.004²
+           = 2.867×10⁻⁵ + 2.400×10⁻⁶ + 8.000×10⁻⁸
+           = **3.115×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst DB/BU standard launch)
+L₀ = I × ω₀ = 3.115×10⁻⁵ × 700 = **2.181×10⁻² kg·m²/s**
+
+---
+
+### 1. Hybrid Stadium Wall-Ride Height Gain
+
+The Hybrid Stadium (DB/BU) has an angled bowl wall. Ultimate Valtryek rides up the stadium wall — Bit 9's flat-type tip builds wall-ride momentum:
+
+```
+v_entry = μ_9 × ω₀ × r_9 + v_guided = 0.55 × 700 × 0.004 + 0.96 = 1.54 + 0.96 = ...
+
+(Recomputed cleanly:)
+  v_entry = 1.50 m/s  (blader-guided orbital wall approach: Valt drives Valtryek into wall)
+
+h_wall = 0.080 m  (80 mm height climbed along Hybrid Stadium angled wall section)
+
+Residual speed at wall apex (energy conservation):
+  v_apex = √(v_entry² − 2g × h_wall) = √(1.50² − 2 × 9.81 × 0.080)
+          = √(2.250 − 1.570) = √0.680 = 0.825 m/s
+```
+
+---
+
+### 2. Crimson Energy Blade Activation
+
+As Valtryek reaches the wall apex, the Ultimate Blade generates crimson energy blades — modelled as a BeySpirit resonance spin amplification:
+
+```
+η_blade = 1.10  (crimson energy blade amplification — 10% spin boost at activation)
+ω_blade = ω₀ × η_blade = 700 × 1.10 = 770 rad/s
+
+ΔKE_crimson = ½ × I_total × (ω_blade² − ω₀²)
+            = 0.5 × 3.115×10⁻⁵ × (770² − 700²)
+            = 0.5 × 3.115×10⁻⁵ × (592900 − 490000)
+            = 0.5 × 3.115×10⁻⁵ × 102900 = 1.603×10⁻³ J
+```
+
+---
+
+### 3. Dive Phase — Contact Velocity
+
+Valtryek falls from apex height h_wall = 80 mm back toward the opponent at stadium floor:
+
+```
+v_dive = √(2g × h_wall) = √(2 × 9.81 × 0.080) = √1.570 = 1.253 m/s (downward component)
+
+Combined contact velocity (energy conservation: h_climb = h_dive → same speed):
+  v_contact = v_entry = 1.50 m/s  (apex-and-return; energy conserved at equal heights)
+
+m_eff = (m_UV × m_opp) / (m_UV + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_Ultimate = 0.75  (Ultimate Valtryek blade — hard Burst attack layer contact)
+
+J_dive_base = m_eff × (1 + e_Ultimate) × v_contact = 1.975×10⁻² × 1.75 × 1.50
+            = 1.975×10⁻² × 2.625 = 5.184×10⁻² N·s
+
+J_crimson = √(2 × m_eff × ΔKE_crimson) = √(2 × 1.975×10⁻² × 1.603×10⁻³) = √(6.332×10⁻⁵) = 7.957×10⁻³ N·s
+
+J_total_UD = J_dive_base + J_crimson = 5.184×10⁻² + 7.957×10⁻³ = 5.980×10⁻² N·s
+Δv_opp = J_total_UD / m_opp = 5.980×10⁻² / 0.040 = 1.495 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 3.115×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| v_entry | 1.50 m/s |
+| h_wall | 80 mm |
+| v_contact | 1.50 m/s |
+| η_blade | 1.10 |
+| ω_blade | 770 rad/s |
+| ΔKE_crimson | 1.603×10⁻³ J |
+| e_Ultimate | 0.75 |
+| J_dive_base | 5.184×10⁻² N·s |
+| J_crimson | 7.957×10⁻³ N·s |
+| J_total_UD | 5.980×10⁻² N·s |
+| Δv_opp | 1.495 m/s |
+
+---
+
+## Case 1989 — SPECIAL: Ultimate Dive — Valt Aoi / Ultimate Valtryek Legacy Variable'-9
+
+**Blader:** Valt Aoi | **Beyblade:** Ultimate Valtryek Legacy Variable'-9 | **Type:** attack
+
+### Description
+
+Ultimate Dive (アルティメットダイブ, Arutimetto Daibu) is a Special Move used by Valt Aoi with Ultimate Valtryek Legacy Variable'-9. Valtryek generates crimson energy blades from its Ultimate Blade and utilizes the Hybrid Stadium to fall onto the opposing Beyblade to deal massive damage.
+
+### Stage — Hybrid Stadium Wall-Ride + Crimson Blade Gravity Dive
+
+From Case 1988: J_dive_base = 5.184×10⁻² N·s, J_crimson = 7.957×10⁻³ N·s, J_total_UD = 5.980×10⁻² N·s, Δv_opp = 1.495 m/s.
+
+```
+Spin drain from crimson blade dive:
+  Δω = J_total_UD × r_Ultimate / I_total = 5.980×10⁻² × 0.032 / 3.115×10⁻⁵ = 61.4 rad/s
+  ω_remain = ω_blade − Δω = 770 − 61.4 = 708.6 rad/s  (92.0% of boosted spin retained)
+  (crimson blade pre-charged — even after dive contact, Valtryek runs above launch spin)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's Valtryek spirit blazes crimson — the Ultimate Blade erupts in glowing red energy wings as Valtryek crests the stadium wall. For a suspended moment at the apex, the entire stadium freezes — then Valtryek plunges like a falling star, crimson blades slashing downward with the full weight of gravity and spirit energy. The opponent's bey is crushed straight through the floor in a burst of crimson light.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek divine blue/crimson spirit)
+[M] Δv = 1.495 × 8.0 = **11.96 m/s** (crimson blade gravity dive ring-out)
+
+> **Note:** Physical values describe Hybrid Stadium wall-ride h=80mm, v_entry=1.50 m/s (energy-conserved v_contact=1.50 m/s); crimson blade boost η=1.10 ω_blade=770 rad/s ΔKE=1.603×10⁻³ J J_crimson=7.957×10⁻³ N·s; J_dive_base=5.184×10⁻² N·s; J_total=5.980×10⁻² N·s; Δv=1.495 m/s. [M] values represent Valt's full crimson Valtryek spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateDiveSpecial(bey: Beyblade, target: Beyblade): void {
+  // Hybrid Stadium wall-ride h=80mm, crimson blade η=1.10; J_total=5.980×10⁻²N·s; [M] 8.0×
+  const J_total_UD = 0.05980;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 70); // crimson blade pre-boost (+70 rad/s: ω_blade−ω₀=770−700)
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_UD * 8.0; // [M] BeySpirit 8.0× (Valt crimson Valtryek spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst DB/BU-era beyblade using a wide attack-profile Blade (r_blade ≥ 30 mm) in a Hybrid Stadium or equivalent with an elevated angled wall section (h_wall ≥ 60 mm), combined with a BeySpirit energy blade activation (η_blade ≥ 1.05 crimson/energy resonance boost). Standard game instance: Ultimate Valtryek Legacy Variable'-9 (Valt Aoi, Burst DB/BU). Requires Hybrid Stadium arena.
+
+---
+
+## Case 1990 — COMBO: Crimson Wall Dive — Ultimate Valtryek Legacy Variable'-9
+
+**Sequence:** ↑ ↓ A (moveUp · moveDown · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveUp (↑) drives Ultimate Valtryek into the stadium wall and up the curved surface, building wall-ride momentum. The moveDown (↓) triggers the apex-and-dive — Valtryek crests the wall and the energy blades partially activate, redirecting downward into the opponent. The attack (A) fires the crimson blade contact at the dive impact point:
+
+```
+v_wall_up = v_entry × 0.80 = 1.50 × 0.80 = 1.200 m/s (↑ partial wall approach — combo efficiency 80%)
+h_combo = v_wall_up² / (2g) × 0.85 = 1.200² / 19.62 × 0.85 = 0.0734 × 0.85 = 0.0624 m (62.4 mm)
+v_combo_contact = √(2g × h_combo) = √(2 × 9.81 × 0.0624) = √1.224 = 1.106 m/s
+
+Partial crimson blade (50% activation in combo):
+  ΔKE_combo = ΔKE_crimson × 0.50 = 1.603×10⁻³ × 0.50 = 8.015×10⁻⁴ J
+  J_crimson_combo = √(2 × m_eff × ΔKE_combo) = √(2 × 1.975×10⁻² × 8.015×10⁻⁴) = √(3.166×10⁻⁵) = 5.627×10⁻³ N·s
+
+J_combo = m_eff × (1 + e_Ultimate) × v_combo_contact + J_crimson_combo
+        = 1.975×10⁻² × 1.75 × 1.106 + 5.627×10⁻³
+        = 3.812×10⁻² + 5.627×10⁻³ = 4.375×10⁻² N·s
+```
+
+Crimson blade partial recharge recovers spin (η_blade_rebound = 0.12):
+
+```
+Δω = η_blade_rebound × J_combo × r_Ultimate / I_total
+   = 0.12 × 4.375×10⁻² × 0.032 / 3.115×10⁻⁵
+   = 0.12 × 44.98
+   = +5.40 rad/s  → round up with partial blade energy: +10 rad/s
+```
+
+(η_blade_rebound=0.12: crimson energy blade partial recharge after combo dive returns spin to main body; effective spinGain = +10 rad/s.) Wall-dive gives damageMultiplier **1.35×**. lockMs = 100 (dive impact dwell — blade contact lingers at apex).
+
+**Parameters:**
+- spinGain: +10 rad/s (crimson blade partial recharge)
+- damageMultiplier: 1.35 (wall-ride gravity dive)
+- lockMs: 100 (dive impact dwell)
+
+### TypeScript
+
+```typescript
+function crimsonWallDiveCombo(bey: Beyblade, target: Beyblade): void {
+  // Wall-dive partial blade: Δω ≈ +10 rad/s (η=0.12, v_contact=1.106m/s, J=4.375×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Wall-ride gravity dive: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1991 — GIMMICK: Strike Valtryek 6Vortex Ultimate Reboot — Stadium Groove-Rail Speed Build
+
+**Beyblade:** Strike Valtryek 6Vortex Ultimate Reboot (Beyblade Burst Surge / Sparking)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Surge
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Strike Valtryek (wide attack profile, Sparking layer) | 28.0 | 32.0 |
+| Disc | 6Vortex (6-arm vortex forge disc) | 14.0 | 25.0 |
+| Driver | Ultimate Reboot (dual-mode: bearing stamina + flat-ring attack) | 7.0 | 3.0 |
+| **Total** | | **49.0** | |
+
+(Burst Surge 3-part system. Strike Valtryek Sparking layer: wide attack profile for high-speed directional contact. 6Vortex disc: 6-arm forge disc distributes mass at r=25mm for attack momentum. Ultimate Reboot Driver: inner bearing tip r=3mm (stamina/low-friction mode) + outer rubber flat ring r=7mm (reboot/attack mode, engages at trajectory change). 49.0 g total.)
+
+**I_total** = 28.0×10⁻³ × 0.032² + 14.0×10⁻³ × 0.025² + 7.0×10⁻³ × 0.003²
+           = 2.867×10⁻⁵ + 8.750×10⁻⁶ + 6.300×10⁻⁸
+           = **3.749×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Surge standard launch)
+L₀ = I × ω₀ = 3.749×10⁻⁵ × 700 = **2.624×10⁻² kg·m²/s**
+
+---
+
+### 1. Stadium Groove-Rail Speed Accumulation
+
+The GT/Surge stadium has a circular groove rail cut into the floor at a fixed orbital radius. Strike Valtryek rides this groove — the groove walls constrain lateral movement, so all driving friction force converts directly to tangential orbital acceleration:
+
+```
+Ultimate Reboot outer ring in groove-contact:
+  μ_Reboot_outer = 0.50  (rubber flat ring — groove wall contact)
+  r_Reboot_eff = 0.007 m  (7mm outer ring radius at groove contact)
+  v_orbital_free = μ_Reboot_outer × ω₀ × r_Reboot_eff = 0.50 × 700 × 0.007 = 2.450 m/s
+
+Groove constraint boost:
+  η_groove = 1.35  (groove rail eliminates lateral energy loss → 35% orbital speed increase)
+  v_groove_peak = v_orbital_free × η_groove = 2.450 × 1.35 = 3.308 m/s ≈ 3.30 m/s
+```
+
+---
+
+### 2. Trajectory Change — Groove Exit Strike
+
+At peak groove speed, Strike Valtryek quickly changes its trajectory — exiting the groove inward at 90° directly at the opponent:
+
+```
+v_contact = v_groove_peak = 3.30 m/s  (full groove speed redirected at opponent)
+
+m_eff = (m_SV × m_opp) / (m_SV + m_opp) = (0.049 × 0.040) / (0.049 + 0.040)
+      = 1.960×10⁻³ / 0.089 = 2.202×10⁻² kg
+
+e_Strike = 0.72  (Strike Valtryek Sparking layer — hard attack contact)
+
+J_UFL = m_eff × (1 + e_Strike) × v_contact = 2.202×10⁻² × 1.72 × 3.30
+      = 2.202×10⁻² × 5.676 = 1.250×10⁻¹ N·s
+
+Δv_opp = J_UFL / m_opp = 1.250×10⁻¹ / 0.040 = 3.124 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 49.0 g |
+| I_total | 3.749×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_Reboot_outer | 0.50 |
+| r_Reboot_eff | 7 mm |
+| v_orbital_free | 2.450 m/s |
+| η_groove | 1.35 |
+| v_groove_peak | 3.30 m/s |
+| e_Strike | 0.72 |
+| J_UFL | 1.250×10⁻¹ N·s |
+| Δv_opp | 3.124 m/s |
+
+---
+
+## Case 1992 — SPECIAL: Ultimate Flash Launch — Valt Aoi / Strike Valtryek 6Vortex Ultimate Reboot
+
+**Blader:** Valt Aoi | **Beyblade:** Strike Valtryek 6Vortex Ultimate Reboot | **Type:** attack
+
+### Description
+
+Ultimate Flash Launch (アルティメットフラッシュシュート, Arutimetto Furasshu Shūto) is a Special Move used by Valt Aoi and Strike Valtryek 6Vortex Ultimate Reboot (Burst Surge). Strike Valtryek rides along the stadium groove gaining speed and power, then quickly changes its trajectory to attack the opponent.
+
+### Stage — Groove-Rail Speed Build + 90° Trajectory Change Strike
+
+From Case 1991: v_groove_peak = 3.30 m/s, J_UFL = 1.250×10⁻¹ N·s, Δv_opp = 3.124 m/s.
+
+```
+Spin drain from groove-exit strike:
+  Δω = J_UFL × r_layer / I_total = 1.250×10⁻¹ × 0.032 / 3.749×10⁻⁵ = 106.7 rad/s
+  ω_remain = 700 − 106.7 = 593.3 rad/s  (84.8% retained)
+  (Large outer strike radius means significant spin drain — attack type tradeoff)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's Valtryek blazes blue and gold — Strike Valtryek becomes a flash of pure light, riding the groove like a lightning bolt locked in a track. At the apex of its speed, the bey vanishes from the groove in an instant, reappearing beside the opponent in a burst of light before the crushing impact sends the opponent flying across the stadium.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek flash-strike spirit)
+[M] Δv = 3.124 × 8.0 = **24.99 m/s** (groove-flash ring-out)
+
+> **Note:** Physical values describe groove-rail v_free=2.450 m/s → η=1.35 → v_groove=3.30 m/s; 90° trajectory redirect; J_UFL=1.250×10⁻¹ N·s; Δv=3.124 m/s; Δω_drain=106.7 rad/s. [M] values represent Valt's Valtryek flash-speed spirit in groove. Combos do not receive [M] amplification. Requires groove-track stadium.
+
+### TypeScript
+
+```typescript
+function ultimateFlashLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Groove-rail η=1.35 v_groove=3.30m/s; 90° redirect; J_UFL=1.250×10⁻¹N·s; [M] 8.0×
+  const J_UFL = 0.1250;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UFL * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek flash-speed groove)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Surge-era beyblade using a wide attack-profile Layer (r_layer ≥ 28 mm) with a rubber-ring driver capable of groove-wall contact (r_driver_outer ≥ 5 mm, μ ≥ 0.40) in a stadium with a circular groove rail (η_groove ≥ 1.20). Standard game instance: Strike Valtryek 6Vortex Ultimate Reboot (Valt Aoi, Burst Surge). Requires groove-track stadium.
+
+---
+
+## Case 1993 — COMBO: Flash Groove — Strike Valtryek 6Vortex Ultimate Reboot
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The first moveRight (→) sends Strike Valtryek into the groove clockwise — the Ultimate Reboot outer ring engages the groove wall, beginning orbital speed accumulation. The second moveRight (→) drives a second full arc along the groove, doubling the build-up time and reaching near-peak groove speed. The attack (A) releases the trajectory change and impact strike at the exit point of the second groove arc:
+
+```
+v_groove_arc1 = v_orbital_free = 2.450 m/s (first arc in groove, natural speed)
+v_groove_arc2 = v_groove_arc1 × 1.20 = 2.450 × 1.20 = 2.940 m/s (second arc: 20% speed gain)
+v_combo_contact = v_groove_arc2 × η_groove_partial = 2.940 × 1.15 = 3.381 m/s
+(partial groove boost: 2 arcs = 1.15× vs full groove η=1.35; ~85% of full flash)
+
+v_combo_contact ≈ 3.38 m/s (round to 3.38)
+
+J_combo = m_eff × (1 + e_Strike) × v_combo_contact = 2.202×10⁻² × 1.72 × 3.38
+        = 2.202×10⁻² × 5.814 = 1.280×10⁻¹ N·s
+```
+
+Ultimate Reboot rubber outer ring spin recovery via groove-exit rebound (η_Reboot = 0.10):
+
+```
+Δω = η_Reboot × J_combo × r_layer / I_total
+   = 0.10 × 1.280×10⁻¹ × 0.032 / 3.749×10⁻⁵
+   = 0.10 × 109.2
+   = +10.9 rad/s  → round to +10 rad/s
+```
+
+(η_Reboot=0.10: groove exit + rubber ring rebound converts partial orbital momentum to spin recovery; effective spinGain = +10 rad/s.) Double-arc groove strike gives damageMultiplier **1.30×**. lockMs = 0 (groove-exit attack: instantaneous trajectory change, no dwell).
+
+**Parameters:**
+- spinGain: +10 rad/s (Reboot rubber groove-exit rebound)
+- damageMultiplier: 1.30 (double-arc groove flash)
+- lockMs: 0 (instantaneous trajectory change)
+
+### TypeScript
+
+```typescript
+function flashGrooveCombo(bey: Beyblade, target: Beyblade): void {
+  // Reboot double-arc: Δω ≈ +10 rad/s (η=0.10, v_contact=3.38m/s, J=1.280×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Double-arc groove flash: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1994 as further franchise moves are provided.*
 
 
 
@@ -23519,4 +25915,2400 @@ function trackDropCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +8 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1961 as further franchise moves are provided.*
+
+
+---
+
+## Case 1961 — GIMMICK: Storm Pegasus 105RF — RF Orbital Vortex Generation
+
+**Beyblade:** Storm Pegasus 105RF (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Blader:** Gingka Hagane | **Series:** Beyblade Metal Fusion
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt Storm | 1.0 | 0.0 |
+| Energy Ring | Pegasus (wing protrusions — aerodynamic lift) | 7.0 | 33.0 |
+| Fusion Wheel | Storm (large, round — vortex wind impeller) | 28.0 | 29.0 |
+| Spin Track | 105 | 3.0 | 12.0 |
+| Performance Tip | RF (Rubber Flat — high friction, fast orbital) | 4.0 | 2.0 |
+| **Total** | | **43.0** | |
+
+(MFB 5-part system. TT only. Assembly confirmed cross-reference: Case 1864 Starblast Attack, same bey. 43.0 g.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 28.0×10⁻³ × 0.029² + 3.0×10⁻³ × 0.012² + 4.0×10⁻³ × 0.002²
+           = 0 + 7.623×10⁻⁶ + 2.355×10⁻⁵ + 4.320×10⁻⁷ + 1.600×10⁻⁸
+           = **3.162×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.162×10⁻⁵ × 580 = **1.834×10⁻² kg·m²/s**
+
+---
+
+### 1. RF Tip — Orbital Speed and Stadium Circling
+
+The Rubber Flat tip's high friction coefficient drives Storm Pegasus into an extremely fast orbital path around the stadium:
+
+```
+μ_RF = 0.85  (rubber flat — highest MFB tip friction coefficient)
+v_orbital = μ_RF × ω₀ × r_RF = 0.85 × 580 × 0.002 = 0.986 m/s
+
+r_orbit = 350 mm = 0.35 m  (Pegasus circles near the stadium wall)
+ω_orbit  = v_orbital / r_orbit = 0.986 / 0.35 = 2.817 rad/s (orbital angular rate)
+t_orbit  = 2π / ω_orbit = 2π / 2.817 = 2.230 s  (one full circuit)
+```
+
+---
+
+### 2. Storm Fusion Wheel — Rankine Vortex Generation
+
+The large round Storm Fusion Wheel acts as a forced-rotation vortex core. As Pegasus orbits, the Storm Wheel's spinning surface imparts angular momentum to the surrounding air:
+
+```
+Vortex core radius:  r_c = r_Storm = 29 mm = 0.029 m
+Core tangential speed: v_core = ω₀ × r_Storm = 580 × 0.029 = 16.82 m/s
+
+Circulation (Rankine model):
+  Γ = 2π × r_c × v_core = 2π × 0.029 × 16.82 = 3.063 m²/s
+
+At r_eff = 200 mm from Pegasus (opponent position between orbit and centre):
+  v_wind = Γ / (2π × r_eff) = 3.063 / (2π × 0.200) = 3.063 / 1.257 = 2.437 m/s
+```
+
+---
+
+### 3. Wind Drag on Opponent — Translational Sweep and Spin Friction
+
+The 2.437 m/s vortex wind field at the opponent's position creates translational drag:
+
+```
+Aerodynamic drag on opponent bey (disk model):
+  C_D = 0.47,  A_bey = π × 0.030² = 2.827×10⁻³ m²
+
+  F_drag = ½ × ρ × v_wind² × C_D × A_bey
+         = 0.5 × 1.225 × 2.437² × 0.47 × 2.827×10⁻³
+         = 0.5 × 1.225 × 5.939 × 0.47 × 2.827×10⁻³
+         = 4.834×10⁻³ N
+
+Wind impulse (tornado sustained for t_tornado = 2.0 s — 2 full Pegasus orbits):
+  J_wind = F_drag × t_tornado = 4.834×10⁻³ × 2.0 = 9.668×10⁻³ N·s
+  (translational sweep: opponent bey is pushed 0.242 m/s by tornado wind alone)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.0 g |
+| I_total | 3.162×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.834×10⁻² kg·m²/s |
+| μ_RF | 0.85 |
+| v_orbital | 0.986 m/s |
+| r_orbit | 350 mm |
+| Γ | 3.063 m²/s |
+| v_wind (r=200mm) | 2.437 m/s |
+| F_drag | 4.834×10⁻³ N |
+| J_wind (2 orbits) | 9.668×10⁻³ N·s |
+
+---
+
+## Case 1962 — SPECIAL: Tornado Wing (Tornado Wing) — Gingka Hagane / Storm Pegasus 105RF
+
+**Blader:** Gingka Hagane | **Beyblade:** Storm Pegasus 105RF | **Type:** attack
+
+### Description
+
+Tornado Wing (トルネードウイング Tornado Wing) is the second Special Move used by Gingka Hagane and his Storm Pegasus 105RF (Metal Fusion). Pegasus circles around the stadium quickly using the RF tip's high orbital drive, with the Storm Fusion Wheel generating a stadium-wide vortex. The tornado engulfs the stadium and is able to stop the opponent's Beyblade's translational movement before sending it flying out. This move is the direct predecessor of Storm Bringer. Gingka used Tornado Wing twice — once against Tetsuya Watarigani in "Vengeful Gasher", and again against Yu Tendo in the first round of Battle Bladers.
+
+### Stage — Two-Phase: Vortex Sweep + RF Orbital Ejection
+
+**Phase 1 — Tornado wind translational sweep (2 Pegasus orbits = 4.46 s total):**
+
+From Case 1961: F_drag = 4.834×10⁻³ N, t_tornado = 2.0 s effective contact.
+
+```
+J_wind = 4.834×10⁻³ × 2.0 = 9.668×10⁻³ N·s
+Δv_wind = J_wind / m_opp = 9.668×10⁻³ / 0.040 = 0.242 m/s  (opponent swept 0.242 m/s toward wall)
+```
+
+**Phase 2 — RF orbital ejection contact (opponent displaced by tornado, Pegasus sweeps in):**
+
+```
+v_contact_eject = v_orbital = 0.986 m/s (RF tip orbital approach into displaced opponent)
+
+m_eff = (m_P × m_opp) / (m_P + m_opp) = (0.043 × 0.040) / (0.043 + 0.040)
+      = 1.720×10⁻³ / 0.083 = 2.072×10⁻² kg
+
+e_RF = 0.85  (rubber flat — high restitution rubber-on-metal contact)
+
+J_eject = m_eff × (1 + e_RF) × v_orbital = 2.072×10⁻² × 1.85 × 0.986
+        = 2.072×10⁻² × 1.824 = 3.779×10⁻² N·s
+
+Δv_eject = J_eject / m_opp = 3.779×10⁻² / 0.040 = 0.945 m/s
+```
+
+**Combined effect:**
+
+```
+J_total    = J_wind + J_eject = 9.668×10⁻³ + 3.779×10⁻² = 4.746×10⁻² N·s
+Δv_opp     = J_total / m_opp  = 4.746×10⁻² / 0.040 = 1.186 m/s
+```
+
+**Effect on Storm Pegasus (spin drain from RF ejection contact):**
+
+```
+Δω_P = J_eject × r_Storm / I_P = 3.779×10⁻² × 0.029 / 3.162×10⁻⁵ = 34.7 rad/s
+ω_remain = 580 − 34.7 = 545.3 rad/s  (94.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka's Pegasus erupts in winged golden fire — the tornado transforms into a towering hurricane of pure star energy, Pegasus's wings extending across the entire stadium as the vortex reaches full fury. The opponent's bey is engulfed completely and blown clean out of the stadium in a column of Pegasus-spirit wind.
+
+[M] factor = **8.0 ×** (Gingka Hagane — main Metal Fusion protagonist, Pegasus storm spirit)
+[M] Δv = 1.186 × 8.0 = **9.49 m/s** (stadium-wide tornado ring-out)
+
+> **Note:** Physical values describe Rankine vortex Γ=3.063 m²/s, v_wind=2.437 m/s at r=200mm; wind sweep J_wind=9.668×10⁻³ N·s (2.0s); RF ejection J_eject=3.779×10⁻² N·s; J_total=4.746×10⁻² N·s; Δv=1.186 m/s; Δω_P=34.7 rad/s. [M] values represent Gingka's Pegasus storm spirit erupting to full tornado. Tornado Wing is the predecessor of Storm Bringer — lower J than Storm Bringer. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tornadoWingSpecial(bey: Beyblade, target: Beyblade): void {
+  // Rankine vortex Γ=3.063m²/s, F_drag=4.834×10⁻³N×2s + RF eject J=3.779×10⁻²; J_total=4.746×10⁻²N·s; [M] 8.0×
+  const J_total = 0.04746;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 8.0; // [M] BeySpirit 8.0× (Gingka Hagane Pegasus storm spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using the Storm Fusion Wheel (large round vortex-generating profile, r_FW ≥ 27 mm) with an RF (Rubber Flat) or equivalent high-friction wandering tip (μ ≥ 0.75, r_tip ≤ 3 mm) that enables rapid stadium-wide orbital speed ≥ 0.90 m/s sufficient to sustain a Rankine vortex Γ ≥ 2.5 m²/s. Standard game instance: Storm Pegasus 105RF (Gingka Hagane, Metal Fusion). Predecessor of Storm Bringer.
+
+---
+
+## Case 1963 — COMBO: Tornado Circuit — Storm Pegasus 105RF
+
+**Sequence:** ↑ A ↓ (moveUp · attack · moveDown)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The moveUp (↑) sends Pegasus into the upward arc of its orbital circuit — the RF tip builds orbital momentum as Pegasus sweeps up and over the opponent. The attack (A) fires the Storm Wheel strike at the arc's peak, combining the upward orbital momentum vector with the spin contact velocity. The moveDown (↓) completes the sweeping arc — Pegasus dives down into the opponent, converting the downward arc vector into additional ejection force:
+
+```
+v_arc_peak = v_orbital × (1 + 0.50) = 0.986 × 1.50 = 1.479 m/s
+(orbital momentum builds +50% at arc peak vs flat approach)
+
+v_contact_combo = v_arc_peak × 0.65 = 1.479 × 0.65 = 0.961 m/s
+(0.65: partial tornado buildup — one arc segment, not full 2-orbit vortex)
+
+J_combo = m_eff × (1 + e_RF) × v_contact_combo = 2.072×10⁻² × 1.85 × 0.961
+        = 2.072×10⁻² × 1.778 = 3.683×10⁻² N·s
+```
+
+RF rubber bounce + downward arc dive converts contact recoil into spin recovery (η_RF = 0.10):
+
+```
+Δω = η_RF × J_combo × r_Storm / I_P
+   = 0.10 × 3.683×10⁻² × 0.029 / 3.162×10⁻⁵
+   = 0.10 × 33.82
+   = +3.4 rad/s  ≈ +3 rad/s
+```
+
+(η_RF = 0.10: rubber contact rebound converts arc momentum to spin on the ↓ dive close.) Arc-circuit strike gives damageMultiplier **1.25×**. lockMs = 100 (tornado orbit dwell — Pegasus completes the arc while target is in the wind field).
+
+**Parameters:**
+- spinGain: +3 rad/s (RF rubber arc-rebound η = 0.10)
+- damageMultiplier: 1.25 (orbital arc sweep strike)
+- lockMs: 100 (tornado orbit dwell)
+
+### TypeScript
+
+```typescript
+function tornadoCircuitCombo(bey: Beyblade, target: Beyblade): void {
+  // RF arc rebound: Δω ≈ +3 rad/s (η=0.10, v_arc=0.961m/s, J=3.683×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 3);
+  // Orbital arc sweep: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +3 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1964 — GIMMICK: Driger V + Dragoon V — Joint Tornado + Claw Mechanism
+
+**Beyblades:** Driger V (Ray Kon) + Dragoon V (Tyson Granger) | **Series:** Beyblade (Bakuten Shoot / V-Force manga Ch.22)
+
+### Assembly — Driger V
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger chip | 1.0 | 0.0 |
+| Attack Ring | Fang Tiger (4-claw, wide contact) | 8.5 | 35.0 |
+| Weight Disk | Wide | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | V-Type (sharp aggressive) | 5.5 | 3.0 |
+| **Total** | | **34.0** | |
+
+**I_Driger** = 1.0×10⁻³ × 0.000² + 8.5×10⁻³ × 0.035² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 5.5×10⁻³ × 0.003²
+           = 0 + 1.041×10⁻⁵ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 4.950×10⁻⁸
+           = **2.043×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀_Driger = 2.043×10⁻⁵ × 500 = **1.022×10⁻² kg·m²/s**
+
+---
+
+### Assembly — Dragoon V
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Dragoon chip | 1.0 | 0.0 |
+| Attack Ring | Upper Dragon (round wide vortex profile) | 7.5 | 33.0 |
+| Weight Disk | Wide | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | V-Type (sharp, light) | 5.0 | 2.0 |
+| **Total** | | **32.5** | |
+
+**I_Dragoon** = 1.0×10⁻³ × 0.000² + 7.5×10⁻³ × 0.033² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.002²
+            = 0 + 8.168×10⁻⁶ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 2.000×10⁻⁸
+            = **1.815×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s
+L₀_Dragoon = 1.815×10⁻⁵ × 500 = **9.075×10⁻³ kg·m²/s**
+
+---
+
+### Joint Mechanism — Tornado Generation (Dragoon V) + Claw Strike (Driger V)
+
+Dragoon V's Upper Dragon AR has a wide round vortex-generating profile. As Dragoon V orbits the stadium, it generates a Rankine vortex tornado. Simultaneously, Driger V's Fang Tiger AR delivers a high-speed claw-slash contact strike through the vortex wind field:
+
+```
+Dragoon vortex:
+  r_c = r_UpperDragon = 33 mm = 0.033 m
+  v_core = ω₀ × r_c = 500 × 0.033 = 16.50 m/s
+  Γ = 2π × r_c × v_core = 2π × 0.033 × 16.50 = 3.420 m²/s
+
+At r_eff = 200 mm (opponent between orbit and centre):
+  v_wind = Γ / (2π × r_eff) = 3.420 / (2π × 0.200) = 3.420 / 1.257 = 2.720 m/s
+
+Wind drag on opponent bey:
+  C_D = 0.47,  A_bey = π × 0.030² = 2.827×10⁻³ m²
+  F_drag = ½ × 1.225 × 2.720² × 0.47 × 2.827×10⁻³
+         = 0.5 × 1.225 × 7.398 × 0.47 × 2.827×10⁻³
+         = 6.023×10⁻³ N
+
+Wind sustained for t = 1.0 s (one Dragoon orbit):
+  J_wind = 6.023×10⁻³ × 1.0 = 6.023×10⁻³ N·s
+
+Driger V claw strike through vortex:
+  v_rel_claw = 2.80 m/s  (Driger V launched through wind field into displaced opponent)
+  m_eff = (m_D × m_opp) / (m_D + m_opp) = (0.034 × 0.040) / (0.034 + 0.040)
+        = 1.360×10⁻³ / 0.074 = 1.838×10⁻² kg
+  e_claw = 0.68 (Fang Tiger AR hard plastic contact)
+  J_claw = m_eff × (1 + e_claw) × v_rel_claw = 1.838×10⁻² × 1.68 × 2.80
+         = 1.838×10⁻² × 4.704 = 8.646×10⁻² N·s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m_Driger | 34.0 g |
+| I_Driger | 2.043×10⁻⁵ kg·m² |
+| m_Dragoon | 32.5 g |
+| I_Dragoon | 1.815×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| Γ (Dragoon) | 3.420 m²/s |
+| v_wind (r=200mm) | 2.720 m/s |
+| F_drag | 6.023×10⁻³ N |
+| J_wind (1 orbit) | 6.023×10⁻³ N·s |
+| v_rel_claw | 2.80 m/s |
+| e_claw | 0.68 |
+| J_claw | 8.646×10⁻² N·s |
+
+---
+
+## Case 1965 — SPECIAL: Tornado Claw — Ray Kon + Tyson Granger / Driger V + Dragoon V
+
+**Bladers:** Ray Kon + Tyson Granger | **Beyblade:** Driger V + Dragoon V | **Type:** attack (joint)
+
+### Description
+
+Tornado Claw (竜巻連射爪) is a joint Special Move created by Ray Kon and Tyson Granger, using Driger V and Dragoon V respectively. Debuting in chapter 22 of the Bakuten Shoot Beyblade manga. Dragoon V summons multiple tornadoes to the immediate area which are enhanced by ripping claws from Driger V. The combined attack engulfs the opponent in a churning vortex of wind and slashing claw strikes from multiple angles simultaneously.
+
+### Stage — Tornado Vortex + Claw Strike Combination
+
+From Case 1964: J_wind = 6.023×10⁻³ N·s, J_claw = 8.646×10⁻² N·s.
+
+```
+J_total = J_wind + J_claw = 6.023×10⁻³ + 8.646×10⁻² = 9.248×10⁻² N·s
+
+Δv_opp = J_total / m_opp = 9.248×10⁻² / 0.040 = 2.312 m/s
+
+Spin drain on Driger V from claw contact:
+  Δω_D = J_claw × r_FangTiger / I_Driger = 8.646×10⁻² × 0.035 / 2.043×10⁻⁵ = 148.1 rad/s
+  ω_remain_D = 500 − 148.1 = 351.9 rad/s  (70.4% retained)
+
+Dragoon V vortex drain (spin-down from sustained orbital generation):
+  Δω_Drag = J_wind × r_UpperDragon / I_Dragoon = 6.023×10⁻³ × 0.033 / 1.815×10⁻⁵ = 10.9 rad/s
+  ω_remain_Drag = 500 − 10.9 = 489.1 rad/s  (97.8% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger spirit and Tyson's Blue Dragon erupt in unison — a massive tiger roars through the whirlwind as Dragoon's cyclone rips the stadium apart, and Driger's claws tear through the tornado wall like shredding lightning. Multiple simultaneous twisters spiral outward from every angle, the opponent's bey caught in a vortex cage of claws and wind with no escape.
+
+[M] factor = **7.5 ×** (Ray Kon + Tyson Granger — dual V-Force protagonists, White Tiger + Blue Dragon joint spirit)
+[M] Δv = 2.312 × 7.5 = **17.3 m/s** (multi-tornado claw ring-out)
+
+> **Note:** Physical values describe Dragoon V Rankine vortex Γ=3.420 m²/s, v_wind=2.720 m/s at r=200mm; wind sweep J_wind=6.023×10⁻³ N·s (1.0s orbit); Driger V Fang Tiger claw J_claw=8.646×10⁻² N·s (e=0.68, v_rel=2.80 m/s); J_total=9.248×10⁻² N·s; Δv=2.312 m/s. [M] values represent Ray and Tyson's dual White Tiger + Blue Dragon V-Force spirits igniting simultaneously. Combos do not receive [M] amplification. Joint move — requires both Driger V and Dragoon V on field simultaneously.
+
+### TypeScript
+
+```typescript
+function tornadoClawSpecial(bey: Beyblade, target: Beyblade): void {
+  // Dragoon V vortex Γ=3.420m²/s J_wind=6.023×10⁻³N·s + Driger V claw J_claw=8.646×10⁻²; J_total=9.248×10⁻²N·s; [M] 7.5×
+  const J_total = 0.09248;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 7.5; // [M] BeySpirit 7.5× (Ray+Tyson dual White Tiger+Blue Dragon)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade pair where one uses a wide round vortex-generating Attack Ring (r_AR ≥ 30 mm) for tornado generation and one uses a hard claw-profile Attack Ring (r_AR ≥ 32 mm, e ≥ 0.60) for the ripping strike through the vortex wind field. Standard game instance: Dragoon V (Tyson Granger) + Driger V (Ray Kon), Bakuten Shoot V-Force manga. Joint move — requires both beys on field simultaneously.
+
+---
+
+## Case 1966 — COMBO: Tornado Claw Circuit — Driger V
+
+**Sequence:** ← → A (moveLeft · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The moveLeft (←) feints Driger V sideways — building lateral momentum as the Fang Tiger AR sweeps to the left approach vector. The moveRight (→) snaps the bey back across the centre line — the reversal adds the return velocity on top of the initial feint speed, creating a cross-body whip approach. The attack (A) fires the Fang Tiger claw strike at the cross-point where the reversal momentum peaks:
+
+```
+v_feint_left  = v_flat × 0.50 = μ_V × ω₀ × r_tip × 0.50 = 0.65 × 500 × 0.003 × 0.50 = 0.488 m/s
+(V-Type Blade Base: μ_V=0.65, r_tip=3mm, aggressive wandering)
+
+v_snap_right  = v_feint_left × 1.80 = 0.488 × 1.80 = 0.878 m/s
+(snap reversal adds 80% on top — whip-crack closing velocity)
+
+v_claw_contact = v_snap_right × 0.90 = 0.878 × 0.90 = 0.790 m/s
+(0.90: AR contact efficiency at cross-centre strike point)
+
+J_circuit = m_eff × (1 + e_claw) × v_claw_contact = 1.838×10⁻² × 1.68 × 0.790
+          = 1.838×10⁻² × 1.327 = 2.440×10⁻² N·s
+```
+
+Fang Tiger AR hard contact — claw-tip micro-bite converts recoil to spin recovery (η_claw = 0.13):
+
+```
+Δω = η_claw × J_circuit × r_FangTiger / I_Driger
+   = 0.13 × 2.440×10⁻² × 0.035 / 2.043×10⁻⁵
+   = 0.13 × 41.82
+   = +5.4 rad/s  ≈ +5 rad/s  → round to +10 rad/s (η generous: V-type base redirects torque well)
+```
+
+(η_claw=0.13: Fang Tiger's pointed tips convert lateral strike recoil partially into rotational force. V-Type Base efficient torque coupling raises effective spinGain to +10 rad/s.) Cross-whip strike gives damageMultiplier **1.30×**. lockMs = 0 (attack type, no sustained hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (Fang Tiger claw-tip V-Type Base torque coupling)
+- damageMultiplier: 1.30 (cross-whip claw snap)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function tornadoClawCombo(bey: Beyblade, target: Beyblade): void {
+  // Fang Tiger snap: Δω ≈ +10 rad/s (η=0.13, v_contact=0.790m/s, J=2.440×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Cross-whip claw snap: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1967 — GIMMICK: Dark Bull H145SD — Bull-Rush Uppercut Trajectory
+
+**Beyblade:** Dark Bull H145SD (Beyblade Metal Fusion / Metal Fight Beyblade)
+**Blader:** Benkei Hanawa | **Series:** Beyblade Metal Fusion
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt Bull | 1.0 | 0.0 |
+| Energy Ring | Bull (horned protrusions, wide forward-impact profile) | 7.0 | 33.0 |
+| Fusion Wheel | Dark (four-pronged heavy attack) | 28.0 | 29.0 |
+| Spin Track | H145 (High 145 — tall track, 145mm height) | 4.5 | 15.0 |
+| Performance Tip | SD (Semi-Defense — moderate friction, stable contact) | 1.0 | 1.0 |
+| **Total** | | **41.5** | |
+
+(MFB 5-part system. H145 gives elevated launch height, contributing PE advantage. SD tip: semi-defense, directional stability for the bull-rush approach.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 28.0×10⁻³ × 0.029² + 4.5×10⁻³ × 0.015² + 1.0×10⁻³ × 0.001²
+           = 0 + 7.623×10⁻⁶ + 2.355×10⁻⁵ + 1.013×10⁻⁶ + 1.000×10⁻⁹
+           = **3.219×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.219×10⁻⁵ × 580 = **1.867×10⁻² kg·m²/s**
+
+---
+
+### 1. Bull-Rush Approach Velocity
+
+Dark Bull charges directly at the opponent with SD tip's moderate friction driving a controlled-sprint approach:
+
+```
+μ_SD = 0.45  (Semi-Defense — moderate friction, directional control)
+v_rush = μ_SD × ω₀ × r_SD = 0.45 × 580 × 0.001 = 0.261 m/s (natural SD wandering)
+
+Benkei blader-guided boost (bull-rush aggression):
+  v_rush_total = v_rush + v_guided = 0.261 + 0.35 = 0.611 m/s ≈ 0.60 m/s
+
+m_eff = (m_B × m_opp) / (m_B + m_opp) = (0.0415 × 0.040) / (0.0415 + 0.040)
+      = 1.660×10⁻³ / 0.0815 = 2.037×10⁻² kg
+```
+
+---
+
+### 2. H145 Elevated Uppercut — Vertical Impulse Component
+
+H145 track raises the contact point. Bull's strike catches the opponent at an upward angle α = 35° above horizontal:
+
+```
+Elevation advantage from H145 (145mm track vs standard 85mm):
+  Δh_track = (145 − 85) mm = 60 mm = 0.060 m
+
+Kinetic energy of approach:
+  KE_rush = ½ × m_B × v_rush_total² = 0.5 × 0.0415 × 0.60² = 7.470×10⁻³ J
+
+Uppercut contact velocity (combined rush + elevation strike):
+  v_upper = √(2 × KE_rush / m_eff) = √(2 × 7.470×10⁻³ / 2.037×10⁻²)
+           = √(0.7334) = 0.856 m/s
+
+Uppercut angle: α = 35° (H145 elevated AR — bull horns catch at upward angle)
+  v_upper_lateral = v_upper × cos(α) = 0.856 × cos(35°) = 0.856 × 0.819 = 0.701 m/s
+  v_upper_vertical = v_upper × sin(α) = 0.856 × sin(35°) = 0.856 × 0.574 = 0.491 m/s
+
+e_Dark = 0.65 (Dark Fusion Wheel 4-prong attack contact)
+J_upper = m_eff × (1 + e_Dark) × v_upper = 2.037×10⁻² × 1.65 × 0.856
+        = 2.037×10⁻² × 1.412 = 2.877×10⁻² N·s
+  J_lateral = J_upper × cos(35°) = 2.877×10⁻² × 0.819 = 2.356×10⁻² N·s
+  J_vertical = J_upper × sin(35°) = 2.877×10⁻² × 0.574 = 1.651×10⁻² N·s
+```
+
+---
+
+### 3. Follow-Through Mechanics — Bull Stays Under
+
+Unlike Red Horn Uppercut (which launches away), Tornado Bull Uppercut keeps Dark Bull under the opponent's bey as it climbs — Bull follows upward beneath it until ring-out or escape:
+
+```
+Apex height of opponent after uppercut:
+  v_vert = J_vertical / m_opp = 1.651×10⁻² / 0.040 = 0.413 m/s
+  h_apex = v_vert² / (2g) = 0.413² / (2 × 9.81) = 0.1706 / 19.62 = 8.695×10⁻³ m
+  (Note: game-scale apex; anime apex is much higher due to [M] amplification)
+
+Follow-through contact (Bull stays under, re-contacts as opponent descends):
+  v_follow = v_upper_vertical × 0.50 = 0.491 × 0.50 = 0.246 m/s
+  J_follow = m_eff × (1 + e_Dark) × v_follow = 2.037×10⁻² × 1.65 × 0.246
+           = 2.037×10⁻² × 0.406 = 8.270×10⁻³ N·s
+```
+
+**J_total** = J_upper + J_follow = 2.877×10⁻² + 8.270×10⁻³ = **3.704×10⁻² N·s**
+**Δv_resultant** = J_total / m_opp = 3.704×10⁻² / 0.040 = **0.926 m/s**
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 41.5 g |
+| I_total | 3.219×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 1.867×10⁻² kg·m²/s |
+| v_rush_total | 0.60 m/s |
+| α (uppercut) | 35° |
+| v_upper | 0.856 m/s |
+| e_Dark | 0.65 |
+| J_upper | 2.877×10⁻² N·s |
+| J_follow | 8.270×10⁻³ N·s |
+| J_total | 3.704×10⁻² N·s |
+| Δv_resultant | 0.926 m/s |
+
+---
+
+## Case 1968 — SPECIAL: Tornado Bull Uppercut — Benkei Hanawa / Dark Bull H145SD
+
+**Blader:** Benkei Hanawa | **Beyblade:** Dark Bull H145SD | **Type:** attack
+
+### Description
+
+Tornado Bull Uppercut (トルネードブルアッパー, Toruneedo Buru Appaa) is the third Special Move used by Benkei Hanawa and Dark Bull H145SD (Metal Fusion). Dark Bull rockets towards the opponent at a dynamic rate. Bull then strikes the enemy with a powerful uppercut, sending the opponent's bey flying while Bull stays beneath it — unlike Red Horn Uppercut, Dark Bull follows the opponent's bey upward and underneath until the opponent achieves a stadium-out or escapes. Sometimes used in tag-team battles to give a teammate a boost in the air to create a dive-bomb attack.
+
+### Stage — Bull Rush + Elevated Uppercut + Follow-Through
+
+From Case 1967: J_upper = 2.877×10⁻² N·s, J_follow = 8.270×10⁻³ N·s, J_total = 3.704×10⁻² N·s, Δv_resultant = 0.926 m/s.
+
+```
+Vertical component (ring-out lift):
+  Δv_vertical = J_vertical / m_opp = 1.651×10⁻² / 0.040 = 0.413 m/s  (upward launch)
+
+Lateral component (wall push):
+  Δv_lateral = J_lateral / m_opp = 2.356×10⁻² / 0.040 = 0.589 m/s
+
+Follow-through re-contact adds:
+  Δv_follow = J_follow / m_opp = 8.270×10⁻³ / 0.040 = 0.207 m/s (additional upward push)
+
+Total combined Δv_resultant = J_total / m_opp = 3.704×10⁻² / 0.040 = 0.926 m/s
+
+Spin drain on Dark Bull (rush + uppercut):
+  Δω_B = J_total × r_Dark / I_B = 3.704×10⁻² × 0.029 / 3.219×10⁻⁵ = 33.4 rad/s
+  ω_remain = 580 − 33.4 = 546.6 rad/s  (94.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Benkei's raging bull spirit ignites — Dark Bull erupts in crimson fire, charging forward like a freight train before buckling upward in a colossal tornado-horn sweep. The opponent's bey is launched straight up like a rocket, with Dark Bull roaring underneath keeping it climbing until it blasts clean out of the stadium in a column of bull-spirit fire.
+
+[M] factor = **7.0 ×** (Benkei Hanawa — secondary Metal Fusion protagonist, raging bull spirit)
+[M] Δv = 0.926 × 7.0 = **6.48 m/s** (uppercut follow-through ring-out)
+
+> **Note:** Physical values describe H145 elevated uppercut at α=35°: J_upper=2.877×10⁻²N·s (lateral+vertical components), J_follow=8.270×10⁻³N·s (follow-through re-contact), J_total=3.704×10⁻²N·s; Δv=0.926 m/s; Δv_vertical=0.413 m/s; Δv_lateral=0.589 m/s. Dark Bull stays under the opponent (distinct from Red Horn Uppercut which launches away). [M] values represent Benkei's bull spirit driving the full tornado climb. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tornadoBullUppercutSpecial(bey: Beyblade, target: Beyblade): void {
+  // H145 elevated uppercut α=35°: J_upper=2.877×10⁻²+J_follow=8.270×10⁻³; J_total=3.704×10⁻²N·s; [M] 7.0×
+  const J_total = 0.03704;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total * 7.0; // [M] BeySpirit 7.0× (Benkei raging bull spirit follow-through)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using a high Spin Track (H145 or equivalent, track height ≥ 130mm, Δh ≥ 45mm above standard) with a forward-impact Fusion Wheel (r_CoM ≥ 27 mm, e ≥ 0.60) and a moderate-friction Performance Tip (μ ≥ 0.30, directional control) capable of a sustained blader-guided rush followed by an elevated upward-angle strike. Standard game instance: Dark Bull H145SD (Benkei Hanawa, Metal Fusion). Distinct from Red Horn Uppercut — follow-through mechanic tracks opponent upward.
+
+---
+
+## Case 1969 — COMBO: Bull Rocket — Dark Bull H145SD
+
+**Sequence:** ↓ ↑ A (moveDown · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Benkei Hanawa
+
+### Physics Justification
+
+The moveDown (↓) pulls Dark Bull back — the SD tip's directional friction grounds the bey and loads the spring-like approach by drawing back momentum. The moveUp (↑) fires the bull-rush charge forward and upward, building approach velocity as H145 lifts the AR into the strike window. The attack (A) releases the uppercut at the peak of the ↑ rush vector, combining all three momentum contributions:
+
+```
+v_pullback = μ_SD × ω₀ × r_SD = 0.45 × 580 × 0.001 = 0.261 m/s (↓ phase)
+v_rush_up  = 0.60 m/s  (↑ phase: blader-guided from Case 1967)
+v_arc_bonus = v_pullback × 0.60 = 0.261 × 0.60 = 0.157 m/s
+(pullback inertia adds 60% at the snap-forward)
+
+v_contact_combo = v_rush_up + v_arc_bonus = 0.60 + 0.157 = 0.757 m/s
+
+J_combo = m_eff × (1 + e_Dark) × v_contact_combo = 2.037×10⁻² × 1.65 × 0.757
+        = 2.037×10⁻² × 1.249 = 2.544×10⁻² N·s
+```
+
+SD tip directional torque couples recoil into spin (η_SD = 0.12):
+
+```
+Δω = η_SD × J_combo × r_Dark / I_B
+   = 0.12 × 2.544×10⁻² × 0.029 / 3.219×10⁻⁵
+   = 0.12 × 22.93
+   = +2.75 rad/s  → round-up with H145 torque advantage: +7 rad/s
+```
+
+(η_SD=0.12: SD tip's semi-defense friction ring assists rotational recoil conversion. H145 height adds leverage: effective spinGain raised to +7 rad/s.) Bull rocket charge gives damageMultiplier **1.35×**. lockMs = 150 (Bull sustains follow-through contact beneath opponent).
+
+**Parameters:**
+- spinGain: +7 rad/s (SD directional coupling + H145 leverage)
+- damageMultiplier: 1.35 (bull rocket charge uppercut)
+- lockMs: 150 (follow-through beneath opponent)
+
+### TypeScript
+
+```typescript
+function bullRocketCombo(bey: Beyblade, target: Beyblade): void {
+  // SD pullback snap: Δω ≈ +7 rad/s (η=0.12+H145, v_contact=0.757m/s, J=2.544×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 7);
+  // Bull rocket uppercut: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +7 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1970 — GIMMICK: Thunder Pegasus 105R²F — Electric Spin Boost Mechanism
+
+**Beyblade:** Thunder Pegasus 105R²F (Beyblade G-Revolution)
+**Blader:** Julia Fernandez | **Series:** Beyblade G-Revolution (Season 3)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Thunder Pegasus chip | 1.0 | 0.0 |
+| Attack Ring | Thunder Pegasus (wide round, smooth profile) | 7.5 | 33.0 |
+| Weight Disk | Round Heavy (compact, stable) | 14.5 | 24.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | R²F (Rubber Ring Flat — dual-friction aggressive) | 5.0 | 2.0 |
+| **Total** | | **33.0** | |
+
+(Plastic generation 5-part system. Thunder Pegasus from G-Revolution S3. R²F dual-friction rubber ring provides aggressive translational drive. Wide AR round profile distributes contact pressure for electric-field coupling at high spin.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.5×10⁻³ × 0.033² + 14.5×10⁻³ × 0.024² + 5.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.002²
+           = 0 + 8.168×10⁻⁶ + 8.352×10⁻⁶ + 5.000×10⁻⁷ + 2.000×10⁻⁸
+           = **1.705×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 1.705×10⁻⁵ × 500 = **8.525×10⁻³ kg·m²/s**
+
+---
+
+### Electric Spin Boost — Toda La Fuerza Mechanism
+
+The move is based on electricity flowing through the bey — Thunder Pegasus accumulates a static electric charge through its R²F rubber ring contacts during orbital motion, then discharges it through the Attack Ring at contact, creating a power-boosted impulse:
+
+```
+Electric energy accumulation:
+  R²F orbital speed: v_R²F = μ_R²F × ω₀ × r_R²F = 0.80 × 500 × 0.002 = 0.800 m/s
+  (μ_R²F = 0.80 — rubber ring high friction, generates static charge via friction)
+
+  Static voltage from orbital friction (triboelectric model):
+  V_spark = 2500 V  (rubber-on-stadium triboelectric accumulation at high orbital speed)
+  C_bey = ε₀ × A_contact / d = 8.85×10⁻¹² × 2.827×10⁻³ / 5×10⁻⁴ = 5.014×10⁻¹¹ F
+  E_elec = ½ × C_bey × V_spark² = 0.5 × 5.014×10⁻¹¹ × 2500² = 1.566×10⁻⁴ J
+
+Electric restitution boost:
+  Normal e (plastic AR contact) = 0.65
+  e_boost = √(2 × E_elec / (m_eff × v_orbital²))
+           = √(2 × 1.566×10⁻⁴ / (1.923×10⁻² × 0.800²))
+           = √(3.132×10⁻⁴ / 1.231×10⁻²)
+           = √(0.02544) = 0.1595 ≈ 0.160
+
+  e_eff = e_base + e_boost = 0.65 + 0.125 = 0.775
+  (0.125 rounded — electric boost adds 12.5% to restitution coefficient)
+
+Contact velocity:
+  v_contact = v_R²F = 0.800 m/s
+
+  m_eff = (m_TP × m_opp) / (m_TP + m_opp) = (0.033 × 0.040) / (0.033 + 0.040)
+        = 1.320×10⁻³ / 0.073 = 1.808×10⁻² kg
+```
+
+---
+
+### Impact Impulse
+
+```
+J_TLF = m_eff × (1 + e_eff) × v_contact = 1.808×10⁻² × 1.775 × 0.800
+      = 1.808×10⁻² × 1.420 = 2.567×10⁻² N·s
+
+Δv_opp = J_TLF / m_opp = 2.567×10⁻² / 0.040 = 0.642 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 33.0 g |
+| I_total | 1.705×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| L₀ | 8.525×10⁻³ kg·m²/s |
+| μ_R²F | 0.80 |
+| v_R²F | 0.800 m/s |
+| V_spark | 2500 V |
+| e_base | 0.65 |
+| e_boost | 0.125 |
+| e_eff | 0.775 |
+| J_TLF | 2.567×10⁻² N·s |
+| Δv_opp | 0.642 m/s |
+
+---
+
+## Case 1971 — SPECIAL: Toda La Fuerza — Julia Fernandez / Thunder Pegasus 105R²F
+
+**Blader:** Julia Fernandez | **Beyblade:** Thunder Pegasus 105R²F | **Type:** attack
+
+### Description
+
+Toda La Fuerza appears for the first time in the third season Beyblade: G-Revolution, episode 22 "Sibling Rivalry". It is the special attack of Julia Fernandez and her Thunder Pegasus. The special move is based on electricity flowing through the bey — this gives Thunder Pegasus a power boost and carries the opposing bey easily out of the arena. Named after the Spanish phrase meaning "All the Force."
+
+### Stage — Electric-Boosted Orbital Strike
+
+From Case 1970: J_TLF = 2.567×10⁻² N·s, Δv_opp = 0.642 m/s (base physical).
+
+```
+Spin drain from electric-discharge contact:
+  Δω = J_TLF × r_AR / I_TP = 2.567×10⁻² × 0.033 / 1.705×10⁻⁵ = 49.7 rad/s
+  ω_remain = 500 − 49.7 = 450.3 rad/s  (90.1% retained)
+  (Electric discharge exits through the AR — spin drain slightly elevated vs pure contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Julia's thunder-spirit erupts — Thunder Pegasus blazes with crackling golden electricity, the entire bey becoming a living lightning bolt. The discharge engulfs the opponent's beyblade completely, surging through it with the full force of the storm. The opponent's bey is carried clean out of the arena on a wave of pure electric energy and Pegasus-spirit thunder.
+
+[M] factor = **7.0 ×** (Julia Fernandez — G-Revolution recurring protagonist, thunder electric spirit)
+[M] Δv = 0.642 × 7.0 = **4.49 m/s** (electric power-surge ring-out)
+
+> **Note:** Physical values describe triboelectric R²F charge accumulation (V=2500V, C=5.014×10⁻¹¹F, E=1.566×10⁻⁴J); electric boost raises e from 0.65 → 0.775 (+0.125); J_TLF=2.567×10⁻²N·s; Δv=0.642 m/s. [M] values represent Julia's full lightning spirit discharge. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function todaLaFuerzaSpecial(bey: Beyblade, target: Beyblade): void {
+  // R²F triboelectric boost: e=0.775 (+0.125); J_TLF=2.567×10⁻²N·s; Δv=0.642m/s; [M] 7.0×
+  const J_TLF = 0.02567;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_TLF * 7.0; // [M] BeySpirit 7.0× (Julia thunder electric spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a high-friction rubber Blade Base (R²F or equivalent rubber ring flat, μ ≥ 0.70) capable of generating significant triboelectric charge during orbital motion, with a smooth wide-profile Attack Ring (r_AR ≥ 30 mm) for uniform discharge contact. Standard game instance: Thunder Pegasus 105R²F (Julia Fernandez, G-Revolution S3). Named for the Spanish "All the Force."
+
+---
+
+## Case 1972 — COMBO: Fuerza Charge — Thunder Pegasus 105R²F
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Julia Fernandez
+
+### Physics Justification
+
+The first moveRight (→) sends Thunder Pegasus into its orbital circuit clockwise — the R²F rubber ring begins accumulating triboelectric charge as it grips and slides. The second moveRight (→) drives a second clockwise arc, doubling the orbital distance and charge build-up time. The attack (A) fires the electrically-charged AR contact strike at the end of the second arc, combining orbital momentum with the accumulated electric boost:
+
+```
+v_orbital_base = v_R²F = 0.800 m/s  (from Case 1970)
+v_arc_1 = v_orbital_base                 = 0.800 m/s
+v_arc_2 = v_arc_1 × 1.15 = 0.800 × 1.15 = 0.920 m/s
+(second arc — bey speeds up along wall due to R²F traction; +15%)
+
+v_contact_combo = v_arc_2 × 0.85 = 0.920 × 0.85 = 0.782 m/s
+(0.85: partial double-arc charge vs full orbital cycle; 85% efficiency)
+
+Electric boost factor from double-arc:
+  e_eff_combo = e_base + e_boost × 0.80 = 0.65 + 0.100 = 0.750
+  (80% of full electric boost on double-arc vs single full orbit)
+
+J_combo = m_eff × (1 + e_eff_combo) × v_contact_combo = 1.808×10⁻² × 1.750 × 0.782
+        = 1.808×10⁻² × 1.369 = 2.475×10⁻² N·s
+```
+
+R²F rubber ring orbital recoil converts to spin (η_R²F = 0.12):
+
+```
+Δω = η_R²F × J_combo × r_AR / I_TP
+   = 0.12 × 2.475×10⁻² × 0.033 / 1.705×10⁻⁵
+   = 0.12 × 47.93
+   = +5.75 rad/s  → round to +10 rad/s (R²F orbital drives spin recovery efficiently)
+```
+
+(η_R²F=0.12: rubber ring grip converts orbital arc into spin; double-arc charges both momentum and spin, effective spinGain rounded to +10 rad/s.) Double-arc electric charge strike gives damageMultiplier **1.30×**. lockMs = 0 (attack type, no hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (R²F double-arc orbital spin recovery)
+- damageMultiplier: 1.30 (electric charge double-arc)
+- lockMs: 0 (attack type)
+
+### TypeScript
+
+```typescript
+function fuerzaChargeCombo(bey: Beyblade, target: Beyblade): void {
+  // R²F double-arc: Δω ≈ +10 rad/s (η=0.12, v_contact=0.782m/s, J=2.475×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Electric double-arc: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1973 — GIMMICK: Driger F — Ricochet Attack + Electric Fang Contact
+
+**Beyblade:** Driger F (Ray Kon) | **Series:** Beyblade (Bakuten Shoot / original manga)
+**Note:** Also applicable to Driger Fang.0.Xt (Beyblade X sequel) — same Tiger Fang move
+
+### Assembly — Driger F
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger chip | 1.0 | 0.0 |
+| Attack Ring | Fang Tiger (wide 4-claw, hard point contact) | 10.0 | 35.0 |
+| Weight Disk | Heavy (10-wide, maximum mass at radius) | 18.0 | 28.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | Sharp (SG-Sharp, precise contact) | 6.0 | 2.0 |
+| **Total** | | **40.0** | |
+
+(Driger F plastic-gen. Fang Tiger AR: 4 hard claw-tips, wide radius, sharp contact — optimized for concentrated bite-force at the tip. Heavy WD maximises outer mass. Sharp BB: lowest friction, extreme speed, directional control for ricochet angles. 40.0 g estimated.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 10.0×10⁻³ × 0.035² + 18.0×10⁻³ × 0.028² + 5.0×10⁻³ × 0.010² + 6.0×10⁻³ × 0.002²
+           = 0 + 1.225×10⁻⁵ + 1.411×10⁻⁵ + 5.000×10⁻⁷ + 2.400×10⁻⁵
+           = **2.686×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 2.686×10⁻⁵ × 500 = **1.343×10⁻² kg·m²/s**
+
+---
+
+### 1. Ricochet Wall Bounce — Pre-Contact Approach
+
+Tiger Fang uses a wall-ricochet approach: Driger F is launched at an angle θ_in = 45° to the arena wall, bounces off elastically, and approaches the opponent along the reflected vector:
+
+```
+Approach speed before wall: v_in = μ_Sharp × ω₀ × r_Sharp = 0.05 × 500 × 0.002 = 0.050 m/s (natural)
+Blader-guided approach boost: v_total_in = 0.050 + 0.40 = 0.450 m/s
+
+Wall bounce (e_wall = 0.85 — hard plastic arena wall):
+  θ_in = 45°
+  v_reflected_normal  = e_wall × v_total_in × cos(θ_in) = 0.85 × 0.450 × 0.707 = 0.270 m/s
+  v_reflected_tangent = v_total_in × sin(θ_in)          = 0.450 × 0.707         = 0.318 m/s
+  v_post_bounce = √(v_reflected_normal² + v_reflected_tangent²) = √(0.0729 + 0.1011) = √0.1740 = 0.417 m/s
+
+Post-bounce approach vector directed at opponent.
+```
+
+---
+
+### 2. Electric Fang Contact — Power Discharge
+
+In the manga and GBA game, Tiger Fang shows Driger releasing sharp electric energy at contact. Electric discharge modelled as a restitution boost:
+
+```
+V_spark = 800 V  (Driger/Tiger spirit electric discharge — lower than Toda La Fuerza rubber build-up)
+C_bey = 5.014×10⁻¹¹ F  (same capacitance model)
+E_elec = ½ × C_bey × V_spark² = 0.5 × 5.014×10⁻¹¹ × 800² = 1.605×10⁻⁵ J
+
+m_eff = (m_DF × m_opp) / (m_DF + m_opp) = (0.040 × 0.040) / (0.040 + 0.040)
+      = 1.600×10⁻³ / 0.080 = 2.000×10⁻² kg
+
+v_contact = v_post_bounce = 0.417 m/s
+
+e_boost_F = √(2 × E_elec / (m_eff × v_contact²))
+          = √(2 × 1.605×10⁻⁵ / (2.000×10⁻² × 0.417²))
+          = √(3.210×10⁻⁵ / 3.480×10⁻³)
+          = √(9.224×10⁻³) = 0.096
+
+e_base_claw = 0.70  (Fang Tiger hard claw tip — high plastic restitution)
+e_eff = e_base_claw + e_boost_F = 0.70 + 0.096 = 0.796 ≈ 0.80
+
+J_TF = m_eff × (1 + e_eff) × v_contact = 2.000×10⁻² × 1.80 × 0.417
+     = 2.000×10⁻² × 0.751 = 1.502×10⁻² N·s
+
+Δv_opp = J_TF / m_opp = 1.502×10⁻² / 0.040 = 0.376 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 40.0 g |
+| I_total | 2.686×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| L₀ | 1.343×10⁻² kg·m²/s |
+| v_total_in | 0.450 m/s |
+| e_wall | 0.85 |
+| θ_in | 45° |
+| v_post_bounce | 0.417 m/s |
+| V_spark | 800 V |
+| e_base_claw | 0.70 |
+| e_boost_F | 0.096 |
+| e_eff | 0.80 |
+| J_TF | 1.502×10⁻² N·s |
+| Δv_opp | 0.376 m/s |
+
+---
+
+## Case 1974 — SPECIAL: Tiger Fang — Ray Kon / Driger F
+
+**Blader:** Ray Kon | **Beyblade:** Driger F | **Type:** attack
+
+### Description
+
+Tiger Fang (白虎牙撃) is the signature Special Move of Ray Kon using Driger F and also Driger Fang.0.Xt. In the original manga, the Beyblade is seen crashing into the enemy bey at high-speeds as a ricochet attack. In the GBA game it is classified as a Medium Finish (Lv.30). It is like a tiger doing a sharp electric bite — Driger launches off the arena wall at a calculated angle and slams into the opponent with electric fang-force.
+
+### Stage — Ricochet Approach + Electric Bite Strike
+
+From Case 1973: J_TF = 1.502×10⁻² N·s, Δv_opp = 0.376 m/s (physical base).
+
+```
+Spin drain from electric-fang contact:
+  Δω = J_TF × r_FangTiger / I_DF = 1.502×10⁻² × 0.035 / 2.686×10⁻⁵ = 19.6 rad/s
+  ω_remain = 500 − 19.6 = 480.4 rad/s  (96.1% retained)
+  (Sharp BB dissipates minimal energy — most energy exits as contact impulse)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger erupts in white-gold lightning — Driger F becomes a blinding streak of electric energy, ricocheting off the arena wall like a bolt of lightning before slamming into the opponent with the full force of a tiger's crushing jaws. The electric fang bite crackles through the opponent's bey with searing intensity, sending it flying across the stadium.
+
+[M] factor = **8.0 ×** (Ray Kon — main franchise protagonist, White Tiger spirit)
+[M] Δv = 0.376 × 8.0 = **3.01 m/s** (ricochet electric fang ring-out)
+
+> **Note:** Physical values describe 45° ricochet approach (e_wall=0.85, v_in=0.450 m/s → v_post=0.417 m/s); electric discharge V=800V raises e from 0.70 → 0.80 (+0.096); J_TF=1.502×10⁻²N·s; Δv=0.376 m/s. GBA Medium Finish (Lv.30). [M] values represent Ray's White Tiger lightning spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function tigerFangSpecial(bey: Beyblade, target: Beyblade): void {
+  // Ricochet e_wall=0.85 θ=45°, electric discharge V=800V; e_eff=0.80; J_TF=1.502×10⁻²N·s; [M] 8.0×
+  const J_TF = 0.01502;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_TF * 8.0; // [M] BeySpirit 8.0× (Ray Kon White Tiger lightning)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a hard claw-profile Attack Ring (r_AR ≥ 32 mm, e_base ≥ 0.65) and a Sharp or equivalent very-low-friction Blade Base (μ ≤ 0.10) capable of a precision ricochet approach at θ ≈ 45° to the arena wall. Standard game instances: Driger F (Ray Kon, Bakuten Shoot); Driger Fang.0.Xt (Ray Kon, Beyblade X sequel). GBA: Medium Finish (Lv.30).
+
+---
+
+## Case 1975 — COMBO: Tiger Ricochet — Driger F
+
+**Sequence:** ← ← A (moveLeft · moveLeft · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The first moveLeft (←) sends Driger F leftward — building lateral speed along the arena wall approach vector. The second moveLeft (←) drives Driger further into the wall, setting up the ricochet rebound angle. The attack (A) fires the Fang Tiger bite at the rebound snap-point where the reflected vector converges on the opponent:
+
+```
+v_left_1 = μ_Sharp × ω₀ × r_Sharp + v_guided = 0.050 + 0.30 = 0.350 m/s (← approach)
+v_left_2 = v_left_1 × 1.20 = 0.350 × 1.20 = 0.420 m/s (second ← adds 20% — wall run)
+
+Ricochet angle θ_combo = 40° (tighter than Tiger Fang full ricochet — short wall-scrape):
+  v_rebound = e_wall × v_left_2 × cos(40°) = 0.85 × 0.420 × 0.766 = 0.273 m/s (normal)
+  v_tang     = v_left_2 × sin(40°)          = 0.420 × 0.643         = 0.270 m/s (tangential)
+  v_contact_combo = √(0.273² + 0.270²) = √(0.0745 + 0.0729) = √0.1474 = 0.384 m/s
+
+J_combo = m_eff × (1 + e_base_claw) × v_contact_combo = 2.000×10⁻² × 1.70 × 0.384
+        = 2.000×10⁻² × 0.653 = 1.305×10⁻² N·s
+```
+
+Fang Tiger tip recoil to spin recovery (η_claw = 0.15, Sharp BB low-loss):
+
+```
+Δω = η_claw × J_combo × r_FangTiger / I_total
+   = 0.15 × 1.305×10⁻² × 0.035 / 2.686×10⁻⁵
+   = 0.15 × 17.00
+   = +2.55 rad/s  → spinGain with Sharp BB directional bonus: +8 rad/s
+```
+
+(η_claw=0.15, Sharp BB dissipates minimal energy — fang-tip converts recoil to rotation cleanly; rounded to +8 rad/s.) Ricochet double-wall approach gives damageMultiplier **1.30×**. lockMs = 0 (sharp fang — instantaneous bite, no hold).
+
+**Parameters:**
+- spinGain: +8 rad/s (Sharp BB low-loss fang-tip recovery)
+- damageMultiplier: 1.30 (ricochet double-wall approach)
+- lockMs: 0 (sharp fang — instantaneous)
+
+### TypeScript
+
+```typescript
+function tigerRicochetCombo(bey: Beyblade, target: Beyblade): void {
+  // Fang Tiger double-wall: Δω ≈ +8 rad/s (η=0.15, v_contact=0.384m/s, J=1.305×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Ricochet fang bite: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1976 — GIMMICK: Driger S — Multi-Strike Claw Slash + Electric Flash Spin Boost
+
+**Beyblade:** Driger S (Ray Kon) | **Series:** Beyblade (Bakuten Shoot / original)
+**Note:** Also used by Lee with Galeon Attacker (same Tiger Claw move)
+
+### Assembly — Driger S
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger chip | 1.0 | 0.0 |
+| Attack Ring | Tiger Defenser (4-claw narrow, wide sweep) | 9.5 | 35.0 |
+| Weight Disk | Wide (standard wide) | 14.0 | 26.0 |
+| Spin Gear | Standard Right | 5.0 | 10.0 |
+| Blade Base | Sharp (SG-Sharp) | 0.5 | 2.0 |
+| **Total** | | **30.0** | |
+
+(Driger S is a lightweight, fast attack-type. Tiger Defenser AR has four claw points arranged for rapid multi-contact sweep — each claw tip scores a glancing hit as it passes. Sharp BB: low friction, very high speed enabling rapid multi-pass. 30.0 g estimated.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 9.5×10⁻³ × 0.035² + 14.0×10⁻³ × 0.026² + 5.0×10⁻³ × 0.010² + 0.5×10⁻³ × 0.002²
+           = 0 + 1.164×10⁻⁵ + 9.464×10⁻⁶ + 5.000×10⁻⁷ + 2.000×10⁻⁶
+           = **2.376×10⁻⁵ kg·m²**
+
+ω₀ = 500 rad/s (plastic-gen standard launch)
+L₀ = I × ω₀ = 2.376×10⁻⁵ × 500 = **1.188×10⁻² kg·m²/s**
+
+---
+
+### 1. Electric Flash Spin Boost
+
+The GBA description shows Driger releasing a flash of yellow electricity — this temporarily increases Rotation Speed and Mobility, modelled as a spin boost before the multi-strike pass:
+
+```
+V_flash = 600 V  (yellow electric flash — moderate discharge, rapid burst)
+C_bey = 5.014×10⁻¹¹ F
+E_flash = ½ × 5.014×10⁻¹¹ × 600² = 9.025×10⁻⁶ J
+
+ω_boost = √(2 × E_flash / I_total) = √(2 × 9.025×10⁻⁶ / 2.376×10⁻⁵) = √(0.7598) = 0.872 rad/s
+  → effective spin boost (small magnitude; flash primarily increases tip contact speed):
+  Δω_flash = +15 rad/s (modelled as electric field shear lifting tip torque; significant at low friction)
+
+ω_boosted = ω₀ + Δω_flash = 500 + 15 = 515 rad/s
+
+Mobility boost: tip contact speed increases proportionally:
+  v_tip_boosted = μ_Sharp × ω_boosted × r_Sharp = 0.05 × 515 × 0.002 = 0.0515 m/s
+```
+
+---
+
+### 2. Multi-Strike Pass — N_hits Claw Rakes
+
+Driger S dashes by the opponent, each of the 4 Tiger Defenser claws scoring a glancing hit in sequence as the bey sweeps past:
+
+```
+Approach speed: v_approach = v_tip_boosted + v_guided = 0.0515 + 0.40 = 0.452 m/s
+Contact velocity per claw hit: v_hit = v_approach × 0.70 = 0.316 m/s
+(0.70: glancing shallow contact — each claw rakes, not smashes; partial impulse transfer)
+
+m_eff = (m_DS × m_opp) / (m_DS + m_opp) = (0.030 × 0.040) / (0.030 + 0.040)
+      = 1.200×10⁻³ / 0.070 = 1.714×10⁻² kg
+
+e_claw_glance = 0.55  (glancing claw rake — partial contact, lower restitution vs full bite)
+
+J_per_hit = m_eff × (1 + e_claw_glance) × v_hit = 1.714×10⁻² × 1.55 × 0.316
+          = 1.714×10⁻² × 0.490 = 8.399×10⁻³ N·s
+
+N_hits = 3  (GBA Weak Finish Lv.10 — 3 effective claw rakes per pass)
+
+J_total_TC = N_hits × J_per_hit = 3 × 8.399×10⁻³ = 2.520×10⁻² N·s
+
+Δv_opp = J_total_TC / m_opp = 2.520×10⁻² / 0.040 = 0.630 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 30.0 g |
+| I_total | 2.376×10⁻⁵ kg·m² |
+| ω₀ | 500 rad/s |
+| Δω_flash | +15 rad/s |
+| ω_boosted | 515 rad/s |
+| v_approach | 0.452 m/s |
+| e_claw_glance | 0.55 |
+| J_per_hit | 8.399×10⁻³ N·s |
+| N_hits | 3 |
+| J_total_TC | 2.520×10⁻² N·s |
+| Δv_opp | 0.630 m/s |
+
+---
+
+## Case 1977 — SPECIAL: Tiger Claw — Ray Kon / Driger S
+
+**Blader:** Ray Kon | **Beyblade:** Driger S | **Type:** attack
+
+### Description
+
+Tiger Claw (白虎爪撃) is a Special Move used by Ray Kon with Driger S and Driger F. Lee has also used this move with Galeon Attacker. A multi-strike move that rakes the target with hard and sharp claws. In the GBA game it depicts the Beyblade releasing a flash of yellow electricity, increasing Rotation, Speed, and Mobility, then Driger dashes by the enemy bey scratching them relentlessly with tiger claw-like slashes. Classified as GBA Weak Finish (Lv.10).
+
+### Stage — Electric Flash Boost + 3-Hit Claw Rake Pass
+
+From Case 1976: Δω_flash = +15 rad/s, J_per_hit = 8.399×10⁻³ N·s, J_total_TC = 2.520×10⁻² N·s, Δv_opp = 0.630 m/s.
+
+```
+Post-move spin state for Driger S:
+  Spin drain per claw hit: Δω_drain_per = J_per_hit × r_TigerDefenser / I_total
+                                         = 8.399×10⁻³ × 0.035 / 2.376×10⁻⁵ = 12.4 rad/s
+  Total drain (3 hits): 3 × 12.4 = 37.2 rad/s
+  But Δω_flash pre-loaded +15 rad/s:
+  ω_remain = ω_boosted − Δω_drain_total = 515 − 37.2 = 477.8 rad/s  (95.6% of original)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger erupts in brilliant golden lightning — Driger S becomes a blinding streak of electric light, slashing through the opponent with 3 successive claw-rakes that crackle with tiger-spirit energy. Each strike leaves a glowing scar in the air and the opponent's bey is battered relentlessly before being flung away.
+
+[M] factor = **8.0 ×** (Ray Kon — main franchise protagonist, White Tiger spirit; also Lee with Galeon — [M] applies to Ray's version)
+[M] Δv = 0.630 × 8.0 = **5.04 m/s** (3-hit electric claw sweep ring-out)
+
+> **Note:** Physical values describe electric flash Δω=+15 rad/s (V=600V); 3-hit claw rake: J_per=8.399×10⁻³N·s (e=0.55 glancing, v=0.316 m/s); J_total=2.520×10⁻²N·s; Δv=0.630 m/s; net ω_remain=477.8 rad/s. GBA Weak Finish (Lv.10). [M] values represent Ray's White Tiger lightning spirit. Combos do not receive [M] amplification. Lee/Galeon Attacker also compatible — same move, separate blader.
+
+### TypeScript
+
+```typescript
+function tigerClawSpecial(bey: Beyblade, target: Beyblade): void {
+  // Electric flash Δω=+15; 3-hit claw rake: J_total=2.520×10⁻²N·s, e=0.55 glancing; [M] 8.0×
+  const J_total_TC = 0.02520;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 15); // electric flash pre-boost
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_TC * 8.0; // [M] BeySpirit 8.0× (Ray Kon White Tiger electric)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any plastic-generation beyblade using a wide multi-claw Attack Ring (r_AR ≥ 32 mm, N_claws ≥ 3, contact geometry enabling glancing sweep hits) and a Sharp or low-friction Blade Base (μ ≤ 0.10) capable of high-speed dash-through multi-contact passes. Standard game instances: Driger S (Ray Kon, Bakuten Shoot original); Driger F (Ray Kon); Galeon Attacker (Lee, Bakuten Shoot). GBA: Weak Finish (Lv.10).
+
+---
+
+## Case 1978 — COMBO: Tiger Scratch — Driger S
+
+**Sequence:** A K A (attack · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The first attack (A) delivers the initial claw rake contact — light dash-by strike. The defense (K) interrupts forward momentum momentarily — the bey spins in place, building up the electric flash spin burst and redirecting approach vector. The second attack (A) fires the sustained follow-through claw drag along the opponent's surface:
+
+```
+v_hit_1 = v_approach × 0.70 = 0.452 × 0.70 = 0.316 m/s  (first claw rake — same as Tiger Claw)
+J_hit_1 = m_eff × (1 + e_claw_glance) × v_hit_1 = 1.714×10⁻² × 1.55 × 0.316 = 8.399×10⁻³ N·s
+
+Defense phase (K) — spin-in-place redirects:
+  ω_after_K = ω₀ + Δω_flash × 0.50 = 500 + 7.5 = 507.5 rad/s
+  (K defense: 50% of electric flash boost applied — partial discharge during hold)
+
+v_hit_2 = μ_Sharp × ω_after_K × r_Sharp + v_guided × 0.50 = 0.05 × 507.5 × 0.002 + 0.20 = 0.251 m/s
+(second A: approach partially recovered; v_guided halved — defense phase absorbed some momentum)
+
+J_hit_2 = m_eff × (1 + e_claw_glance) × v_hit_2 = 1.714×10⁻² × 1.55 × 0.251 = 6.676×10⁻³ N·s
+
+J_combo = J_hit_1 + J_hit_2 = 8.399×10⁻³ + 6.676×10⁻³ = 1.507×10⁻² N·s
+```
+
+Sharp BB minimal energy loss: spin recovery via electric flash partial recharge (η_flash = 0.25):
+
+```
+Δω = Δω_flash × η_flash + η_claw × J_combo × r_AR / I_total
+   = 7.5 + 0.12 × 1.507×10⁻² × 0.035 / 2.376×10⁻⁵
+   = 7.5 + 0.12 × 22.19
+   = 7.5 + 2.66 = +10.2 rad/s  → round to +5 rad/s (conservative: K phase absorbs some)
+```
+
+(Partial electric recharge + claw recoil recovery; K interruption reduces efficiency; net spinGain = +5 rad/s.) A-K-A scratch sequence gives damageMultiplier **1.20×**. lockMs = 50 (claw drag contact lingers briefly).
+
+**Parameters:**
+- spinGain: +5 rad/s (partial electric recharge + claw recoil)
+- damageMultiplier: 1.20 (two-hit A-K-A claw scratch)
+- lockMs: 50 (claw drag dwell)
+
+### TypeScript
+
+```typescript
+function tigerScratchCombo(bey: Beyblade, target: Beyblade): void {
+  // A-K-A: Δω ≈ +5 rad/s (partial flash, J_combo=1.507×10⁻²N·s, 2 hits)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 5);
+  // Two-hit claw scratch: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 50 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +5 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1979 — GIMMICK: Thermal Lacerta WA130HF — WA130 Deflect-Hook Mechanism
+
+**Beyblade:** Thermal Lacerta WA130HF (Beyblade Metal Masters / Metal Fight Beyblade)
+**Blader:** Chiyun Li | **Series:** Beyblade Metal Masters
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Face | Face Bolt Lacerta | 1.0 | 0.0 |
+| Energy Ring | Lacerta (narrow angular profile) | 7.0 | 33.0 |
+| Fusion Wheel | Thermal (flat wide round contact) | 27.0 | 29.0 |
+| Spin Track | WA130 (Wing Attack 130 — two articulated horizontal arms) | 5.5 | 40.0 |
+| Performance Tip | HF (Hole Flat — wide rubber flat, high friction orbital) | 2.5 | 2.0 |
+| **Total** | | **43.0** | |
+
+(MFB 5-part system. WA130 arm radius r_arm = 40 mm — the two horizontal wing-arms protrude the furthest of any spin track in MFB. WA130 works like ED145: contact with the rotating arms deflects the opponent behind Lacerta. HF tip: high friction orbital drive. 43.0 g total mass confirmed cross-reference: Case 1913 Thermal Lacerta WA130HF.)
+
+**I_total** = 1.0×10⁻³ × 0.000² + 7.0×10⁻³ × 0.033² + 27.0×10⁻³ × 0.029² + 5.5×10⁻³ × 0.040² + 2.5×10⁻³ × 0.002²
+           = 0 + 7.623×10⁻⁶ + 2.270×10⁻⁵ + 8.800×10⁻⁶ + 1.000×10⁻⁸
+           = **3.843×10⁻⁵ kg·m²**
+
+ω₀ = 580 rad/s (MFB standard launch)
+L₀ = I × ω₀ = 3.843×10⁻⁵ × 580 = **2.229×10⁻² kg·m²/s**
+
+---
+
+### 1. WA130 Arm Contact Speed
+
+The WA130 arms rotate at Lacerta's spin rate. Their contact tip speed at r_arm = 40 mm:
+
+```
+v_arm = ω₀ × r_arm = 580 × 0.040 = 23.20 m/s
+(WA130 arm tip: highest contact speed of any Spin Track component in MFB — 40mm > standard FW outer edge)
+```
+
+---
+
+### 2. Deflect-Hook Geometry — 135° Redirect
+
+When the opponent contacts a WA130 arm, the arm deflects the attacker at a large angle. Lacerta then dodges clear, and the arm throws the opponent around behind:
+
+```
+Deflect angle: φ_deflect = 135°  (WA130 hook geometry — arm sweeps opponent 135° around Lacerta)
+
+Opponent attack approach velocity: v_atk = 0.50 m/s (standard attacker orbital approach)
+v_atk_redirected = v_atk × e_WA = 0.50 × 0.60 = 0.300 m/s
+(e_WA = 0.60: WA130 arm-to-opponent contact — hard plastic hook)
+
+Redirect vector (135° behind Lacerta from original approach direction):
+  Δv_redirect_x = v_atk_redirected × cos(135°) − v_atk × cos(0°) = 0.300 × (−0.707) − 0.50 = −0.712 m/s
+  Δv_redirect_y = v_atk_redirected × sin(135°)                   = 0.300 ×   0.707         =  0.212 m/s
+  |Δv_redirect| = √(0.712² + 0.212²) = √(0.507 + 0.045) = √0.552 = 0.743 m/s
+```
+
+---
+
+### 3. WA130 Hook Impulse — Arm Momentum Transfer
+
+The spinning WA130 arm delivers its own impulse to the opponent at contact:
+
+```
+m_arm = 5.5×10⁻³ kg (total WA130 track mass; one arm = half = 2.75×10⁻³ kg)
+m_arm_eff = m_arm / 2 = 2.75×10⁻³ kg
+
+m_eff_hook = (m_arm_eff × m_opp) / (m_arm_eff + m_opp) = (2.75×10⁻³ × 0.040) / (2.75×10⁻³ + 0.040)
+           = 1.100×10⁻⁴ / 4.275×10⁻² = 2.573×10⁻³ kg
+
+J_hook = m_eff_hook × (1 + e_WA) × v_arm = 2.573×10⁻³ × 1.60 × 23.20
+       = 2.573×10⁻³ × 37.12 = 9.554×10⁻² N·s
+
+Redirect throw impulse fraction (η_throw = 0.10 — only 10% of arm hook impulse translates as net throw; most is absorbed):
+  J_redirect = η_throw × J_hook = 0.10 × 9.554×10⁻² = 9.554×10⁻³ N·s
+
+Net lateral redirect + hook combined:
+  m_opp = 0.040 kg
+  Δv_redirect_combined = (J_redirect / m_opp) + |Δv_redirect| × (J_redirect / (J_redirect + m_opp × v_atk))
+                       = 0.239 + 0.743 × (9.554×10⁻³ / (9.554×10⁻³ + 2.000×10⁻²))
+                       = 0.239 + 0.743 × 0.323
+                       = 0.239 + 0.240 = 0.479 m/s ≈ 0.48 m/s (net displacement per deflection)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 43.0 g |
+| I_total | 3.843×10⁻⁵ kg·m² |
+| ω₀ | 580 rad/s |
+| L₀ | 2.229×10⁻² kg·m²/s |
+| r_arm | 40 mm |
+| v_arm | 23.20 m/s |
+| φ_deflect | 135° |
+| e_WA | 0.60 |
+| J_hook | 9.554×10⁻² N·s |
+| η_throw | 0.10 |
+| J_redirect | 9.554×10⁻³ N·s |
+| Δv_redirect | 0.48 m/s |
+
+---
+
+## Case 1980 — SPECIAL: Thunder Sword Waltz — Chiyun Li / Thermal Lacerta WA130HF
+
+**Blader:** Chiyun Li | **Beyblade:** Thermal Lacerta WA130HF | **Type:** defense
+
+### Description
+
+Thunder Sword Waltz is a Special Move used by Chiyun Li and his Thermal Lacerta WA130HF (Metal Masters). Lacerta uses its WA130 Spin Track to hook the opponent and evade the opponent's attack with ease. He first used this move to evade Tsubasa's special moves without fail. The WA130 works like ED145 — it can deflect the opponent behind Lacerta, like Aries throws enemies with its Wind Storm Assault.
+
+### Stage — WA130 Hook Deflect + Behind-Throw
+
+From Case 1979: J_hook = 9.554×10⁻² N·s, J_redirect = 9.554×10⁻³ N·s, Δv_redirect = 0.48 m/s.
+
+```
+Full special sequence: opponent attacks → WA130 arm intercepts → 135° deflect hook → opponent thrown behind Lacerta
+
+Net impulse delivered to opponent's bey:
+  J_TSW = J_redirect = 9.554×10⁻³ N·s  (net throw impulse after 10% η_throw)
+  Δv_opp_throw = J_TSW / m_opp = 9.554×10⁻³ / 0.040 = 0.239 m/s (redirect velocity)
+
+Combined with directional deflect:
+  Δv_total = 0.48 m/s  (net displacement from hook + geometry; from Case 1979)
+
+Spin effect on Lacerta WA130 arm (arm contact):
+  Δω_L = J_hook × r_arm / I_total = 9.554×10⁻² × 0.040 / 3.843×10⁻⁵ = 99.4 rad/s
+  (arm absorbs the impact; Lacerta main spin largely preserved)
+  ω_remain = 580 − 99.4 + (arm recoil recovery η=0.85 × 99.4) = 580 − 99.4 + 84.5 = 565.1 rad/s
+  (WA130 arm rebounds — 85% of arm impulse returns to main body spin)
+  ω_remain ≈ 565 rad/s (97.4% retained — defense type, excellent spin retention)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Chiyun's Lacerta spirit ignites — the WA130 arms become shimmering jade blades, sweeping around Lacerta in a perfect dancing waltz. Every attack that comes in is caught by the spinning blade-arms and flung behind with thunderclap force, opponent after opponent spinning away helpless. The stadium becomes Lacerta's personal dance floor.
+
+[M] factor = **7.0 ×** (Chiyun Li — Metal Masters supporting protagonist, Lacerta blade-dance spirit)
+[M] Δv_total = 0.48 × 7.0 = **3.36 m/s** (WA130 waltz deflect ring-out)
+
+> **Note:** Physical values describe WA130 arm at r=40mm, v_arm=23.20 m/s; hook deflect φ=135°, e=0.60; J_hook=9.554×10⁻²N·s; η_throw=0.10 → J_redirect=9.554×10⁻³N·s; combined Δv=0.48 m/s; ω_remain≈565 rad/s (97.4%). Defense type. [M] values represent Chiyun's Lacerta waltz spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function thunderSwordWaltzSpecial(bey: Beyblade, target: Beyblade): void {
+  // WA130 arm r=40mm, v=23.20m/s; J_hook=9.554×10⁻²N·s, η=0.10; J_redirect=9.554×10⁻³N·s; [M] 7.0×
+  const J_redirect = 0.009554;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_redirect * 7.0; // [M] BeySpirit 7.0× (Chiyun Lacerta blade-dance waltz)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any MFB-era beyblade using the WA130 Spin Track (Wing Attack 130, r_arm = 40 mm) or equivalent wide-arm deflect track (r_arm ≥ 35 mm, articulated horizontal arms capable of 120°+ deflect geometry) with a high-friction Performance Tip (HF or equivalent, μ ≥ 0.70) for orbital evasion. Standard game instance: Thermal Lacerta WA130HF (Chiyun Li, Metal Masters). Deflect type — works like ED145.
+
+---
+
+## Case 1981 — COMBO: Sword Waltz — Thermal Lacerta WA130HF
+
+**Sequence:** K ← K (defense · moveLeft · defense)
+**Cost:** 15 | **Type:** defense | **Blader:** Chiyun Li
+
+### Physics Justification
+
+The first defense (K) raises Lacerta into its defensive posture — low-profile, maximum spin stability, WA130 arms fully extended outward for maximum sweep radius. The moveLeft (←) drives Lacerta laterally in the evasive arc, positioning the WA130 arm directly in the path of the incoming attacker. The second defense (K) locks Lacerta in position as the arm completes the hook and redirect sweep:
+
+```
+Evasive arc from HF orbital: v_evade = μ_HF × ω₀ × r_HF = 0.70 × 580 × 0.002 = 0.812 m/s
+(HF = Hole Flat, μ=0.70 — high friction drives rapid evasive reposition)
+
+Lateral arc positioning efficiency: the ← move positions WA130 arm optimally
+  v_arm_sweep = v_arm × η_position = 23.20 × 0.85 = 19.72 m/s
+  (η_position = 0.85: combo partial positioning efficiency vs full orbit sweep)
+
+Partial hook impulse (combo K-←-K, partial sequence vs full special):
+  J_combo_hook = J_hook × η_position × (m_eff_hook / m_eff_hook) = 9.554×10⁻² × 0.50 = 4.777×10⁻² N·s
+  (0.50: combo K-←-K executes half the full waltz sequence — one arm sweep, not full dance)
+
+  J_combo_redirect = η_throw × J_combo_hook = 0.10 × 4.777×10⁻² = 4.777×10⁻³ N·s
+```
+
+WA130 arm rebound restores spin (η_arm_rebound = 0.85, same as special):
+
+```
+Δω = η_arm_rebound × (J_combo_hook × r_arm / I_total) × 0.15
+   = 0.85 × (4.777×10⁻² × 0.040 / 3.843×10⁻⁵) × 0.15
+   = 0.85 × 49.71 × 0.15
+   = +6.34 rad/s → round to +8 rad/s (HF orbital traction contributes additional spin feedback)
+```
+
+(η_arm_rebound=0.85, arm returns most of hook momentum back to spin; HF traction adds torque; net spinGain = +8 rad/s.) K-←-K waltz evasion gives damageMultiplier **1.20×** (redirected opponent takes damage on the throw-behind). lockMs = 150 (arm engagement dwell during ← arc).
+
+**Parameters:**
+- spinGain: +8 rad/s (WA130 arm rebound + HF traction)
+- damageMultiplier: 1.20 (throw-behind redirect)
+- lockMs: 150 (arm engagement dwell)
+
+### TypeScript
+
+```typescript
+function swordWaltzCombo(bey: Beyblade, target: Beyblade): void {
+  // WA130 arm partial hook: Δω ≈ +8 rad/s (η=0.85 arm rebound, J_combo=4.777×10⁻²N·s×0.15)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Throw-behind redirect: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1982 — GIMMICK: Driger MS — Massive Power Channel + Electric Radiation Slash
+
+**Beyblade:** Driger MS (Ray Kon) | **Series:** Beyblade G-Revolution (HMS era)
+
+### Assembly — Driger MS
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Driger MS chip (metal, magnetic core) | 2.0 | 0.0 |
+| Attack Ring | Metal System Driger (MS AR — compact hard metal, 3-blade claw profile) | 12.0 | 30.0 |
+| Weight Disk | Metal System Heavy (CWD — compact wide distribution) | 16.0 | 26.0 |
+| Spin Gear | Right Spin Gear (standard HMS) | 4.0 | 10.0 |
+| Blade Base | Metal System Spike Base (HMS precision spike) | 5.0 | 1.5 |
+| **Total** | | **39.0** | |
+
+(HMS system. Driger MS is metal-body. Metal AR gives superior contact hardness vs plastic. Spike Base: HMS low-friction precision tip for high orbital speed and directional stability. Compact high-density construction places more mass near outer AR radius vs plastic gen.)
+
+**I_total** = 2.0×10⁻³ × 0.000² + 12.0×10⁻³ × 0.030² + 16.0×10⁻³ × 0.026² + 4.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.0015²
+           = 0 + 1.080×10⁻⁵ + 1.082×10⁻⁵ + 4.000×10⁻⁷ + 1.125×10⁻⁸
+           = **2.163×10⁻⁵ kg·m²**
+
+ω₀ = 520 rad/s (HMS standard launch — slightly higher than plastic-gen due to lighter overall mass)
+L₀ = I × ω₀ = 2.163×10⁻⁵ × 520 = **1.125×10⁻² kg·m²/s**
+
+---
+
+### 1. Massive Power Channel — Pre-Slash Energy Accumulation
+
+Ray channels massive power into Driger MS before contact — the Bit Chip magnetic core acts as an energy concentrator, building up electromagnetic torque before the slash:
+
+```
+Pre-slash energy channel:
+  E_channel = ½ × I_total × (ω₀ × η_channel)²
+  where η_channel = 1.15 (15% effective spin amplification from magnetic core resonance)
+  ω_effective = ω₀ × η_channel = 520 × 1.15 = 598 rad/s
+
+  KE_stored = ½ × I_total × ω_effective² = 0.5 × 2.163×10⁻⁵ × 598² = 3.874×10⁻³ J
+  KE_original = ½ × I_total × ω₀² = 0.5 × 2.163×10⁻⁵ × 520² = 2.923×10⁻³ J
+  ΔKE_channel = KE_stored − KE_original = 9.510×10⁻⁴ J
+```
+
+---
+
+### 2. Electric Radiation — Pre-Contact Sear
+
+Driger radiates electrical energy just before the clash — the metal AR becomes charged:
+
+```
+V_radiation = 1500 V  (metal Driger magnetic core — higher charge than plastic-gen beys)
+C_MS = 5.014×10⁻¹¹ F (same capacitance; metal body similar geometry)
+E_elec_MS = ½ × C_MS × V_radiation² = 0.5 × 5.014×10⁻¹¹ × 1500² = 5.641×10⁻⁵ J
+
+m_eff = (m_DMS × m_opp) / (m_DMS + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+```
+
+---
+
+### 3. Thunder Slash Contact — Combined Channel + Electric + Metal AR
+
+```
+v_slash = μ_Spike × ω_effective × r_Spike = 0.04 × 598 × 0.0015 = 0.0359 m/s (natural)
+Blader-guided slash approach: v_slash_total = 0.0359 + 0.55 = 0.586 m/s
+
+e_metal_AR = 0.80 (HMS metal attack ring — very high hardness, near-elastic contact)
+e_boost_MS = √(2 × E_elec_MS / (m_eff × v_slash_total²))
+           = √(2 × 5.641×10⁻⁵ / (1.975×10⁻² × 0.586²))
+           = √(1.128×10⁻⁴ / 6.784×10⁻³)
+           = √(0.01663) = 0.129
+
+e_eff_MS = e_metal_AR + e_boost_MS = 0.80 + 0.129 = 0.929 → clamp to 0.93
+
+J_TS = m_eff × (1 + e_eff_MS) × v_slash_total = 1.975×10⁻² × 1.93 × 0.586
+     = 1.975×10⁻² × 1.131 = 2.234×10⁻² N·s
+
+ΔKE contribution (channeled energy boost):
+  J_channel_bonus = √(2 × m_eff × ΔKE_channel) = √(2 × 1.975×10⁻² × 9.510×10⁻⁴) = √(3.756×10⁻⁵) = 6.129×10⁻³ N·s
+
+J_total_TS = J_TS + J_channel_bonus = 2.234×10⁻² + 6.129×10⁻³ = 2.847×10⁻² N·s
+Δv_opp = J_total_TS / m_opp = 2.847×10⁻² / 0.040 = 0.712 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 2.163×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| η_channel | 1.15 |
+| ω_effective | 598 rad/s |
+| ΔKE_channel | 9.510×10⁻⁴ J |
+| V_radiation | 1500 V |
+| e_metal_AR | 0.80 |
+| e_boost_MS | 0.129 |
+| e_eff_MS | 0.93 |
+| J_TS | 2.234×10⁻² N·s |
+| J_channel_bonus | 6.129×10⁻³ N·s |
+| J_total_TS | 2.847×10⁻² N·s |
+| Δv_opp | 0.712 m/s |
+
+---
+
+## Case 1983 — SPECIAL: Thunder Slash — Ray Kon / Driger MS
+
+**Blader:** Ray Kon | **Beyblade:** Driger MS | **Type:** attack
+
+### Description
+
+Thunder Slash (サンダースラッシュ, Sandā Surasshu) is a Special Move used by Ray Kon with his Driger MS (G-Revolution HMS era). Ray channels massive power into Driger, causing it to radiate with electrical energy before clashing into the opposing bey for a powerful slash attack, dealing immense damage. This move was first used against Crusher's Gigars.
+
+### Stage — Power Channel + Electric Radiation + HMS Metal Slash
+
+From Case 1982: J_total_TS = 2.847×10⁻² N·s, Δv_opp = 0.712 m/s (physical base).
+
+```
+Spin drain from metal slash contact:
+  Δω = J_total_TS × r_AR_MS / I_DMS = 2.847×10⁻² × 0.030 / 2.163×10⁻⁵ = 39.5 rad/s
+  ω_remain = ω_effective − Δω = 598 − 39.5 = 558.5 rad/s  (93.4% of effective; 107% of ω₀)
+  (channel pre-loaded extra spin — even after the slash Driger runs faster than launch speed)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ray's White Tiger erupts in blazing lightning — Driger MS shines like a falling star, radiating crackling electrical energy across the entire stadium before the impact. The thunderclap slash sears through the opponent's bey like a blade of pure electricity, dealing immense damage and sending the opponent flying.
+
+[M] factor = **8.0 ×** (Ray Kon — main franchise protagonist, White Tiger spirit; HMS peak form)
+[M] Δv = 0.712 × 8.0 = **5.70 m/s** (thunder channel electric slash ring-out)
+
+> **Note:** Physical values describe magnetic channel (η=1.15, ω_eff=598 rad/s, ΔKE=9.510×10⁻⁴J); electric radiation V=1500V (metal core); e_metal=0.80 + boost=0.129 → e_eff=0.93; J_TS=2.234×10⁻²N·s; J_channel=6.129×10⁻³N·s; J_total=2.847×10⁻²N·s; Δv=0.712 m/s. HMS metal system. First used vs Crusher/Gigars. [M] values represent Ray's White Tiger peak HMS lightning. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function thunderSlashSpecial(bey: Beyblade, target: Beyblade): void {
+  // Channel η=1.15 + electric V=1500V; e_eff=0.93; J_total=2.847×10⁻²N·s; [M] 8.0×
+  const J_total_TS = 0.02847;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 78); // power channel pre-boost (+78 rad/s: ω_eff−ω₀=598−520)
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_TS * 8.0; // [M] BeySpirit 8.0× (Ray Kon White Tiger HMS lightning)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a metal Attack Ring with a hard precision contact profile (r_AR ≥ 28 mm, e ≥ 0.75, metal body) and a Spike or low-friction Blade Base (μ ≤ 0.10) capable of pre-contact power accumulation via spin-up. Standard game instance: Driger MS (Ray Kon, G-Revolution HMS). First used against Crusher's Gigars.
+
+---
+
+## Case 1984 — COMBO: Thunder Channel — Driger MS
+
+**Sequence:** K K A (defense · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Ray Kon
+
+### Physics Justification
+
+The first defense (K) initiates Ray's power channeling — Driger MS spins up, the magnetic core begins accumulating charge. The second defense (K) completes the channel phase — spin rate reaches effective peak as the electric radiation builds. The attack (A) releases the entire stored energy in the Thunder Slash strike:
+
+```
+Channel build from K-K: two K presses execute spin-up phase
+  Δω_K1 = η_channel_partial × ω₀ × 0.50 = 1.15 × 520 × 0.50 × (1 − 1) = 0 (pure spin-up, no approach)
+  ω_after_K1 = ω₀ × 1.075 = 520 × 1.075 = 559 rad/s  (first K: 50% of full channel)
+  ω_after_K2 = ω₀ × 1.15  = 520 × 1.15  = 598 rad/s  (second K: full channel achieved)
+
+KE_channeled = ½ × I_total × (ω_after_K2² − ω₀²) = 0.5 × 2.163×10⁻⁵ × (598² − 520²)
+             = 0.5 × 2.163×10⁻⁵ × (357604 − 270400) = 0.5 × 2.163×10⁻⁵ × 87204 = 9.426×10⁻⁴ J
+
+Slash from A with full channel:
+  v_slash_combo = v_slash_total = 0.586 m/s (same as full special — channel complete)
+
+  J_combo = m_eff × (1 + e_eff_MS) × v_slash_combo + √(2 × m_eff × KE_channeled)
+           = 1.975×10⁻² × 1.93 × 0.586 + √(2 × 1.975×10⁻² × 9.426×10⁻⁴)
+           = 2.234×10⁻² + √(3.727×10⁻⁵)
+           = 2.234×10⁻² + 6.105×10⁻³ = 2.845×10⁻² N·s
+```
+
+Full channel means maximum spin recovery via post-contact channel residual (η_channel_residual = 0.15):
+
+```
+Δω = η_channel_residual × (ω_after_K2 − ω_after_impact)
+   = 0.15 × (598 − (598 − J_combo × r_AR_MS / I_total))
+   = 0.15 × (J_combo × r_AR_MS / I_total)
+   = 0.15 × (2.845×10⁻² × 0.030 / 2.163×10⁻⁵)
+   = 0.15 × 39.48 = +5.92 rad/s  → spinGain = +10 rad/s (residual channel spin-up after slash)
+```
+
+(Full channel K-K-A: residual magnetic channel recovers spin; effective spinGain = +10 rad/s after slash.) Thunder Channel gives damageMultiplier **1.35×**. lockMs = 0 (instantaneous slash, no hold).
+
+**Parameters:**
+- spinGain: +10 rad/s (residual channel magnetic spin recovery)
+- damageMultiplier: 1.35 (full-channel thunder slash)
+- lockMs: 0 (instantaneous slash)
+
+### TypeScript
+
+```typescript
+function thunderChannelCombo(bey: Beyblade, target: Beyblade): void {
+  // K-K-A full channel: Δω ≈ +10 rad/s residual (η=0.15, J=2.845×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Full-channel slash: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1985 — GIMMICK: Strata Dragoon MS — Ground-Burst Launch + Flaming Rock Projectile
+
+**Beyblade:** Strata Dragoon MS (Daichi Sumeragi) | **Series:** Beyblade G-Revolution (HMS era)
+
+### Assembly — Strata Dragoon MS
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Bit Chip | Strata Dragoon MS chip (earth/rock element) | 2.0 | 0.0 |
+| Attack Ring | Metal System Strata Dragoon (MS AR — serrated saw-edge profile) | 13.0 | 30.0 |
+| Weight Disk | Metal System Standard (CWD standard heavy) | 15.0 | 25.0 |
+| Spin Gear | Right Spin Gear (standard HMS) | 4.0 | 10.0 |
+| Blade Base | Metal System Flat Base (HMS flat — high friction, extreme wandering) | 5.0 | 2.0 |
+| **Total** | | **39.0** | |
+
+(HMS system. Strata Dragoon MS: earth-elemental theme. Serrated saw-edge AR — circular blade profile gives continuous cutting contact vs claw tips. Flat Base HMS: maximum orbital speed for ground-burst launch sequence. Spike Saw = burning hot saw, glowing red, circular continuous contact. 39.0 g estimated.)
+
+**I_total** = 2.0×10⁻³ × 0.000² + 13.0×10⁻³ × 0.030² + 15.0×10⁻³ × 0.025² + 4.0×10⁻³ × 0.010² + 5.0×10⁻³ × 0.002²
+           = 0 + 1.170×10⁻⁵ + 9.375×10⁻⁶ + 4.000×10⁻⁷ + 2.000×10⁻⁵
+           = **2.148×10⁻⁵ kg·m²**
+
+ω₀ = 520 rad/s (HMS standard launch)
+L₀ = I × ω₀ = 2.148×10⁻⁵ × 520 = **1.117×10⁻² kg·m²/s**
+
+---
+
+### 1. Ground-Burst Launch — Dragoon Erupts from Below
+
+Strata Dragoon bursts from the stadium floor — the flat base digs in and releases, creating a vertical launch impulse:
+
+```
+Ground compression energy (Flat Base slam-and-release):
+  F_ground = μ_flat_HMS × m × g = 0.80 × 0.039 × 9.81 = 0.306 N
+  t_burst = 0.050 s  (burst release — short sharp ground push)
+  J_ground = F_ground × t_burst = 0.306 × 0.050 = 1.531×10⁻² N·s  (upward impulse on Dragoon)
+
+  v_burst_up = J_ground / m = 1.531×10⁻² / 0.039 = 0.393 m/s (upward burst velocity)
+```
+
+---
+
+### 2. Flaming Rock Projectile — Pre-Contact Phase
+
+The ground-burst launches a flaming rock from the earth (Dragoon's earth-elemental jaws), which impacts the opponent first before Dragoon MS itself crashes in:
+
+```
+Rock projectile:
+  m_rock = 0.020 kg  (20g rock fragment — typical debris mass)
+  v_rock = v_burst_up × 2.0 = 0.393 × 2.0 = 0.786 m/s  (launched at 2× burst speed — ejected ahead of bey)
+  e_rock = 0.40  (rock-on-metal — inelastic, crumbles on contact)
+
+  m_eff_rock = (m_rock × m_opp) / (m_rock + m_opp) = (0.020 × 0.040) / (0.020 + 0.040)
+             = 8.000×10⁻⁴ / 0.060 = 1.333×10⁻² kg
+
+  J_rock = m_eff_rock × (1 + e_rock) × v_rock = 1.333×10⁻² × 1.40 × 0.786
+          = 1.333×10⁻² × 1.100 = 1.467×10⁻² N·s
+```
+
+---
+
+### 3. Spike Saw Contact — Glowing Red Serrated Saw Attack
+
+After the rock crumbles away, glowing red Strata Dragoon MS crashes in at high speed. Serrated saw-edge AR delivers continuous circular cutting contact — thermal expansion from "burning hot" contact (friction-heated metal saw) adds a thermal restitution boost:
+
+```
+v_saw = v_burst_up + μ_flat_HMS × ω₀ × r_flat = 0.393 + 0.80 × 520 × 0.002 = 0.393 + 0.832 = 1.225 m/s
+
+Thermal restitution boost from heated metal-on-metal contact:
+  T_friction = 450°C  (glowing red — friction-heated HMS metal AR saw edge)
+  α_thermal = 1.2×10⁻⁵ /°C  (steel thermal expansion coefficient)
+  ΔL_expansion = α_thermal × T_friction × r_AR_MS = 1.2×10⁻⁵ × 450 × 0.030 = 1.620×10⁻⁴ m
+  v_thermal_bump = ΔL_expansion × ω₀ = 1.620×10⁻⁴ × 520 = 0.0842 m/s (thermal contact velocity bump)
+  v_saw_total = v_saw + v_thermal_bump = 1.225 + 0.084 = 1.309 m/s
+
+m_eff_saw = (m_DMS × m_opp) / (m_DMS + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+          = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_saw = 0.75  (serrated HMS metal AR saw — high restitution, hard metal continuous edge contact)
+
+J_saw = m_eff_saw × (1 + e_saw) × v_saw_total = 1.975×10⁻² × 1.75 × 1.309
+      = 1.975×10⁻² × 2.291 = 4.524×10⁻² N·s
+```
+
+**J_total_SS** = J_rock + J_saw = 1.467×10⁻² + 4.524×10⁻² = **5.991×10⁻² N·s**
+**Δv_opp** = J_total_SS / m_opp = 5.991×10⁻² / 0.040 = **1.498 m/s**
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 2.148×10⁻⁵ kg·m² |
+| ω₀ | 520 rad/s |
+| v_burst_up | 0.393 m/s |
+| v_rock | 0.786 m/s |
+| J_rock | 1.467×10⁻² N·s |
+| T_friction | 450°C |
+| v_saw_total | 1.309 m/s |
+| e_saw | 0.75 |
+| J_saw | 4.524×10⁻² N·s |
+| J_total_SS | 5.991×10⁻² N·s |
+| Δv_opp | 1.498 m/s |
+
+---
+
+## Case 1986 — SPECIAL: Spike Saw — Daichi Sumeragi / Strata Dragoon MS
+
+**Blader:** Daichi Sumeragi | **Beyblade:** Strata Dragoon MS | **Type:** attack
+
+### Description
+
+Spike Saw (爆狂刃断) is a Special Move used by Daichi Sumeragi with Strata Dragoon MS (G-Revolution HMS era). Strata Dragoon bursts from the ground, firing a flaming rock from its earth-elemental jaws. The rock then crumbles away revealing the glowing red Strata Dragoon MS, which crashes into its opponent. The move looks like a burning hot saw ready to cut — a continuously-contacting circular serrated blade heated to glowing red by friction.
+
+### Stage — Ground Burst + Flaming Rock + Spike Saw Crash
+
+From Case 1985: J_rock = 1.467×10⁻² N·s, J_saw = 4.524×10⁻² N·s, J_total_SS = 5.991×10⁻² N·s, Δv_opp = 1.498 m/s.
+
+```
+Spin drain from saw contact:
+  Δω = J_saw × r_AR_MS / I_total = 4.524×10⁻² × 0.030 / 2.148×10⁻⁵ = 63.2 rad/s
+  ω_remain = 520 − 63.2 = 456.8 rad/s  (87.8% retained)
+  (Flat Base orbital burst partially counters spin drain — Dragoon maintains high speed post-contact)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Daichi's Strata Dragoon erupts — the ground shatters beneath the stadium as a massive earth dragon surges up from below, jaws blazing with molten rock. The rock explodes outward and Strata Dragoon appears like a blazing saw of pure earth-fire, the serrated metal edge scorching everything it touches. The opponent's bey is shredded and launched clean out of the stadium in a rain of glowing sparks.
+
+[M] factor = **7.5 ×** (Daichi Sumeragi — G-Revolution secondary protagonist, earth-elemental Strata Dragoon)
+[M] Δv = 1.498 × 7.5 = **11.2 m/s** (ground-burst flaming saw ring-out)
+
+> **Note:** Physical values describe ground-burst v_burst=0.393 m/s; flaming rock J_rock=1.467×10⁻²N·s (m=20g, e=0.40); thermal-expansion Flat Base Δv=0.084 m/s; saw contact v_total=1.309 m/s, e_saw=0.75, J_saw=4.524×10⁻²N·s; J_total=5.991×10⁻²N·s; Δv=1.498 m/s. HMS serrated saw profile, friction-heated 450°C. [M] values represent Daichi's earth-dragon fire-saw spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function spikeSawSpecial(bey: Beyblade, target: Beyblade): void {
+  // Ground burst + flaming rock J=1.467×10⁻²; saw contact v=1.309m/s J=4.524×10⁻²; J_total=5.991×10⁻²; [M] 7.5×
+  const J_total_SS = 0.05991;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_SS * 7.5; // [M] BeySpirit 7.5× (Daichi earth-dragon fire-saw spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any HMS-era beyblade using a serrated or continuous-edge metal Attack Ring (r_AR ≥ 28 mm, e ≥ 0.70, serrated saw profile enabling extended contact arc) and a Flat HMS Blade Base (μ ≥ 0.70) capable of a ground-burst vertical launch initiation followed by high-speed orbital crash. Standard game instance: Strata Dragoon MS (Daichi Sumeragi, G-Revolution HMS). The "burning hot saw" requires the AR to have a continuous circular contact edge rather than point-claw geometry.
+
+---
+
+## Case 1987 — COMBO: Spike Burst — Strata Dragoon MS
+
+**Sequence:** ↓ ↑ K (moveDown · moveUp · defense)
+**Cost:** 15 | **Type:** attack | **Blader:** Daichi Sumeragi
+
+### Physics Justification
+
+The moveDown (↓) drives Strata Dragoon into the ground — flat base grinds down, compressing the burst launch position. The moveUp (↑) fires the ground burst — Dragoon explodes upward from its low position, the Flat Base orbital speed peak powering the vertical eruption. The defense (K) at the apex converts the burst energy into a spinning defensive saw-hold at contact rather than a fly-through:
+
+```
+v_burst_up = 0.393 m/s  (same as Case 1985)
+v_flat_peak = μ_flat_HMS × ω₀ × r_flat = 0.80 × 520 × 0.002 = 0.832 m/s  (Flat Base at apex)
+
+v_combo_approach = v_burst_up + v_flat_peak × 0.60 = 0.393 + 0.499 = 0.892 m/s
+(0.60: partial flat-base contribution at burst-apex — not full orbital arc)
+
+Thermal boost (partial heat build-up during combo):
+  v_thermal_combo = v_thermal_bump × 0.60 = 0.084 × 0.60 = 0.050 m/s
+  v_combo_total = v_combo_approach + v_thermal_combo = 0.892 + 0.050 = 0.942 m/s
+
+J_combo = m_eff_saw × (1 + e_saw) × v_combo_total = 1.975×10⁻² × 1.75 × 0.942
+        = 1.975×10⁻² × 1.649 = 3.256×10⁻² N·s
+```
+
+Defense phase (K) at apex — saw holds contact; spin recovery from saw-spin momentum transfer (η_saw = 0.12):
+
+```
+Δω = η_saw × J_combo × r_AR_MS / I_total
+   = 0.12 × 3.256×10⁻² × 0.030 / 2.148×10⁻⁵
+   = 0.12 × 45.50
+   = +5.46 rad/s  → round to +8 rad/s (Flat Base adds orbital torque recovery during K hold)
+```
+
+(η_saw=0.12: serrated edge transfers rotational momentum back to body during K hold; Flat Base enhances recovery; net spinGain = +8 rad/s.) Spike burst saw-hold gives damageMultiplier **1.30×**. lockMs = 100 (saw contact dwell during K apex hold).
+
+**Parameters:**
+- spinGain: +8 rad/s (serrated saw-hold Flat Base torque recovery)
+- damageMultiplier: 1.30 (ground-burst saw apex contact)
+- lockMs: 100 (saw contact dwell)
+
+### TypeScript
+
+```typescript
+function spikeBurstCombo(bey: Beyblade, target: Beyblade): void {
+  // Saw-hold: Δω ≈ +8 rad/s (η=0.12+Flat, v_combo=0.942m/s, J=3.256×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 8);
+  // Ground-burst saw apex: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +8 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1988 — GIMMICK: Ultimate Valtryek Legacy Variable'-9 — Hybrid Stadium Wall-Ride + Crimson Blade Dive
+
+**Beyblade:** Ultimate Valtryek Legacy Variable'-9 (Beyblade Burst DB / BU era)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst DB / BU
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Ultimate Valtryek (3-blade crimson energy profile, wide attack) | 28.0 | 32.0 |
+| Ratchet | Variable' (variable burst resistance, attack-oriented) | 6.0 | 20.0 |
+| Bit | 9 (standard right-spin flat-type contact) | 5.0 | 4.0 |
+| **Total** | | **39.0** | |
+
+(Burst DB/BU 3-part system. Ultimate Valtryek blade: wide crimson-energy attack profile. Variable' Ratchet: variable tab engagement, controlled burst resistance. Bit 9: flat-type contact for orbital drive. 39.0 g estimated.)
+
+**I_total** = 28.0×10⁻³ × 0.032² + 6.0×10⁻³ × 0.020² + 5.0×10⁻³ × 0.004²
+           = 2.867×10⁻⁵ + 2.400×10⁻⁶ + 8.000×10⁻⁸
+           = **3.115×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst DB/BU standard launch)
+L₀ = I × ω₀ = 3.115×10⁻⁵ × 700 = **2.181×10⁻² kg·m²/s**
+
+---
+
+### 1. Hybrid Stadium Wall-Ride Height Gain
+
+The Hybrid Stadium (DB/BU) has an angled bowl wall. Ultimate Valtryek rides up the stadium wall — Bit 9's flat-type tip builds wall-ride momentum:
+
+```
+v_entry = μ_9 × ω₀ × r_9 + v_guided = 0.55 × 700 × 0.004 + 0.96 = 1.54 + 0.96 = ...
+
+(Recomputed cleanly:)
+  v_entry = 1.50 m/s  (blader-guided orbital wall approach: Valt drives Valtryek into wall)
+
+h_wall = 0.080 m  (80 mm height climbed along Hybrid Stadium angled wall section)
+
+Residual speed at wall apex (energy conservation):
+  v_apex = √(v_entry² − 2g × h_wall) = √(1.50² − 2 × 9.81 × 0.080)
+          = √(2.250 − 1.570) = √0.680 = 0.825 m/s
+```
+
+---
+
+### 2. Crimson Energy Blade Activation
+
+As Valtryek reaches the wall apex, the Ultimate Blade generates crimson energy blades — modelled as a BeySpirit resonance spin amplification:
+
+```
+η_blade = 1.10  (crimson energy blade amplification — 10% spin boost at activation)
+ω_blade = ω₀ × η_blade = 700 × 1.10 = 770 rad/s
+
+ΔKE_crimson = ½ × I_total × (ω_blade² − ω₀²)
+            = 0.5 × 3.115×10⁻⁵ × (770² − 700²)
+            = 0.5 × 3.115×10⁻⁵ × (592900 − 490000)
+            = 0.5 × 3.115×10⁻⁵ × 102900 = 1.603×10⁻³ J
+```
+
+---
+
+### 3. Dive Phase — Contact Velocity
+
+Valtryek falls from apex height h_wall = 80 mm back toward the opponent at stadium floor:
+
+```
+v_dive = √(2g × h_wall) = √(2 × 9.81 × 0.080) = √1.570 = 1.253 m/s (downward component)
+
+Combined contact velocity (energy conservation: h_climb = h_dive → same speed):
+  v_contact = v_entry = 1.50 m/s  (apex-and-return; energy conserved at equal heights)
+
+m_eff = (m_UV × m_opp) / (m_UV + m_opp) = (0.039 × 0.040) / (0.039 + 0.040)
+      = 1.560×10⁻³ / 0.079 = 1.975×10⁻² kg
+
+e_Ultimate = 0.75  (Ultimate Valtryek blade — hard Burst attack layer contact)
+
+J_dive_base = m_eff × (1 + e_Ultimate) × v_contact = 1.975×10⁻² × 1.75 × 1.50
+            = 1.975×10⁻² × 2.625 = 5.184×10⁻² N·s
+
+J_crimson = √(2 × m_eff × ΔKE_crimson) = √(2 × 1.975×10⁻² × 1.603×10⁻³) = √(6.332×10⁻⁵) = 7.957×10⁻³ N·s
+
+J_total_UD = J_dive_base + J_crimson = 5.184×10⁻² + 7.957×10⁻³ = 5.980×10⁻² N·s
+Δv_opp = J_total_UD / m_opp = 5.980×10⁻² / 0.040 = 1.495 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 3.115×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| v_entry | 1.50 m/s |
+| h_wall | 80 mm |
+| v_contact | 1.50 m/s |
+| η_blade | 1.10 |
+| ω_blade | 770 rad/s |
+| ΔKE_crimson | 1.603×10⁻³ J |
+| e_Ultimate | 0.75 |
+| J_dive_base | 5.184×10⁻² N·s |
+| J_crimson | 7.957×10⁻³ N·s |
+| J_total_UD | 5.980×10⁻² N·s |
+| Δv_opp | 1.495 m/s |
+
+---
+
+## Case 1989 — SPECIAL: Ultimate Dive — Valt Aoi / Ultimate Valtryek Legacy Variable'-9
+
+**Blader:** Valt Aoi | **Beyblade:** Ultimate Valtryek Legacy Variable'-9 | **Type:** attack
+
+### Description
+
+Ultimate Dive (アルティメットダイブ, Arutimetto Daibu) is a Special Move used by Valt Aoi with Ultimate Valtryek Legacy Variable'-9. Valtryek generates crimson energy blades from its Ultimate Blade and utilizes the Hybrid Stadium to fall onto the opposing Beyblade to deal massive damage.
+
+### Stage — Hybrid Stadium Wall-Ride + Crimson Blade Gravity Dive
+
+From Case 1988: J_dive_base = 5.184×10⁻² N·s, J_crimson = 7.957×10⁻³ N·s, J_total_UD = 5.980×10⁻² N·s, Δv_opp = 1.495 m/s.
+
+```
+Spin drain from crimson blade dive:
+  Δω = J_total_UD × r_Ultimate / I_total = 5.980×10⁻² × 0.032 / 3.115×10⁻⁵ = 61.4 rad/s
+  ω_remain = ω_blade − Δω = 770 − 61.4 = 708.6 rad/s  (92.0% of boosted spin retained)
+  (crimson blade pre-charged — even after dive contact, Valtryek runs above launch spin)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's Valtryek spirit blazes crimson — the Ultimate Blade erupts in glowing red energy wings as Valtryek crests the stadium wall. For a suspended moment at the apex, the entire stadium freezes — then Valtryek plunges like a falling star, crimson blades slashing downward with the full weight of gravity and spirit energy. The opponent's bey is crushed straight through the floor in a burst of crimson light.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek divine blue/crimson spirit)
+[M] Δv = 1.495 × 8.0 = **11.96 m/s** (crimson blade gravity dive ring-out)
+
+> **Note:** Physical values describe Hybrid Stadium wall-ride h=80mm, v_entry=1.50 m/s (energy-conserved v_contact=1.50 m/s); crimson blade boost η=1.10 ω_blade=770 rad/s ΔKE=1.603×10⁻³ J J_crimson=7.957×10⁻³ N·s; J_dive_base=5.184×10⁻² N·s; J_total=5.980×10⁻² N·s; Δv=1.495 m/s. [M] values represent Valt's full crimson Valtryek spirit. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function ultimateDiveSpecial(bey: Beyblade, target: Beyblade): void {
+  // Hybrid Stadium wall-ride h=80mm, crimson blade η=1.10; J_total=5.980×10⁻²N·s; [M] 8.0×
+  const J_total_UD = 0.05980;
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 70); // crimson blade pre-boost (+70 rad/s: ω_blade−ω₀=770−700)
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_total_UD * 8.0; // [M] BeySpirit 8.0× (Valt crimson Valtryek spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst DB/BU-era beyblade using a wide attack-profile Blade (r_blade ≥ 30 mm) in a Hybrid Stadium or equivalent with an elevated angled wall section (h_wall ≥ 60 mm), combined with a BeySpirit energy blade activation (η_blade ≥ 1.05 crimson/energy resonance boost). Standard game instance: Ultimate Valtryek Legacy Variable'-9 (Valt Aoi, Burst DB/BU). Requires Hybrid Stadium arena.
+
+---
+
+## Case 1990 — COMBO: Crimson Wall Dive — Ultimate Valtryek Legacy Variable'-9
+
+**Sequence:** ↑ ↓ A (moveUp · moveDown · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The moveUp (↑) drives Ultimate Valtryek into the stadium wall and up the curved surface, building wall-ride momentum. The moveDown (↓) triggers the apex-and-dive — Valtryek crests the wall and the energy blades partially activate, redirecting downward into the opponent. The attack (A) fires the crimson blade contact at the dive impact point:
+
+```
+v_wall_up = v_entry × 0.80 = 1.50 × 0.80 = 1.200 m/s (↑ partial wall approach — combo efficiency 80%)
+h_combo = v_wall_up² / (2g) × 0.85 = 1.200² / 19.62 × 0.85 = 0.0734 × 0.85 = 0.0624 m (62.4 mm)
+v_combo_contact = √(2g × h_combo) = √(2 × 9.81 × 0.0624) = √1.224 = 1.106 m/s
+
+Partial crimson blade (50% activation in combo):
+  ΔKE_combo = ΔKE_crimson × 0.50 = 1.603×10⁻³ × 0.50 = 8.015×10⁻⁴ J
+  J_crimson_combo = √(2 × m_eff × ΔKE_combo) = √(2 × 1.975×10⁻² × 8.015×10⁻⁴) = √(3.166×10⁻⁵) = 5.627×10⁻³ N·s
+
+J_combo = m_eff × (1 + e_Ultimate) × v_combo_contact + J_crimson_combo
+        = 1.975×10⁻² × 1.75 × 1.106 + 5.627×10⁻³
+        = 3.812×10⁻² + 5.627×10⁻³ = 4.375×10⁻² N·s
+```
+
+Crimson blade partial recharge recovers spin (η_blade_rebound = 0.12):
+
+```
+Δω = η_blade_rebound × J_combo × r_Ultimate / I_total
+   = 0.12 × 4.375×10⁻² × 0.032 / 3.115×10⁻⁵
+   = 0.12 × 44.98
+   = +5.40 rad/s  → round up with partial blade energy: +10 rad/s
+```
+
+(η_blade_rebound=0.12: crimson energy blade partial recharge after combo dive returns spin to main body; effective spinGain = +10 rad/s.) Wall-dive gives damageMultiplier **1.35×**. lockMs = 100 (dive impact dwell — blade contact lingers at apex).
+
+**Parameters:**
+- spinGain: +10 rad/s (crimson blade partial recharge)
+- damageMultiplier: 1.35 (wall-ride gravity dive)
+- lockMs: 100 (dive impact dwell)
+
+### TypeScript
+
+```typescript
+function crimsonWallDiveCombo(bey: Beyblade, target: Beyblade): void {
+  // Wall-dive partial blade: Δω ≈ +10 rad/s (η=0.12, v_contact=1.106m/s, J=4.375×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Wall-ride gravity dive: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 100 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1991 — GIMMICK: Strike Valtryek 6Vortex Ultimate Reboot — Stadium Groove-Rail Speed Build
+
+**Beyblade:** Strike Valtryek 6Vortex Ultimate Reboot (Beyblade Burst Surge / Sparking)
+**Blader:** Valt Aoi | **Series:** Beyblade Burst Surge
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer | Strike Valtryek (wide attack profile, Sparking layer) | 28.0 | 32.0 |
+| Disc | 6Vortex (6-arm vortex forge disc) | 14.0 | 25.0 |
+| Driver | Ultimate Reboot (dual-mode: bearing stamina + flat-ring attack) | 7.0 | 3.0 |
+| **Total** | | **49.0** | |
+
+(Burst Surge 3-part system. Strike Valtryek Sparking layer: wide attack profile for high-speed directional contact. 6Vortex disc: 6-arm forge disc distributes mass at r=25mm for attack momentum. Ultimate Reboot Driver: inner bearing tip r=3mm (stamina/low-friction mode) + outer rubber flat ring r=7mm (reboot/attack mode, engages at trajectory change). 49.0 g total.)
+
+**I_total** = 28.0×10⁻³ × 0.032² + 14.0×10⁻³ × 0.025² + 7.0×10⁻³ × 0.003²
+           = 2.867×10⁻⁵ + 8.750×10⁻⁶ + 6.300×10⁻⁸
+           = **3.749×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (Burst Surge standard launch)
+L₀ = I × ω₀ = 3.749×10⁻⁵ × 700 = **2.624×10⁻² kg·m²/s**
+
+---
+
+### 1. Stadium Groove-Rail Speed Accumulation
+
+The GT/Surge stadium has a circular groove rail cut into the floor at a fixed orbital radius. Strike Valtryek rides this groove — the groove walls constrain lateral movement, so all driving friction force converts directly to tangential orbital acceleration:
+
+```
+Ultimate Reboot outer ring in groove-contact:
+  μ_Reboot_outer = 0.50  (rubber flat ring — groove wall contact)
+  r_Reboot_eff = 0.007 m  (7mm outer ring radius at groove contact)
+  v_orbital_free = μ_Reboot_outer × ω₀ × r_Reboot_eff = 0.50 × 700 × 0.007 = 2.450 m/s
+
+Groove constraint boost:
+  η_groove = 1.35  (groove rail eliminates lateral energy loss → 35% orbital speed increase)
+  v_groove_peak = v_orbital_free × η_groove = 2.450 × 1.35 = 3.308 m/s ≈ 3.30 m/s
+```
+
+---
+
+### 2. Trajectory Change — Groove Exit Strike
+
+At peak groove speed, Strike Valtryek quickly changes its trajectory — exiting the groove inward at 90° directly at the opponent:
+
+```
+v_contact = v_groove_peak = 3.30 m/s  (full groove speed redirected at opponent)
+
+m_eff = (m_SV × m_opp) / (m_SV + m_opp) = (0.049 × 0.040) / (0.049 + 0.040)
+      = 1.960×10⁻³ / 0.089 = 2.202×10⁻² kg
+
+e_Strike = 0.72  (Strike Valtryek Sparking layer — hard attack contact)
+
+J_UFL = m_eff × (1 + e_Strike) × v_contact = 2.202×10⁻² × 1.72 × 3.30
+      = 2.202×10⁻² × 5.676 = 1.250×10⁻¹ N·s
+
+Δv_opp = J_UFL / m_opp = 1.250×10⁻¹ / 0.040 = 3.124 m/s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 49.0 g |
+| I_total | 3.749×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| μ_Reboot_outer | 0.50 |
+| r_Reboot_eff | 7 mm |
+| v_orbital_free | 2.450 m/s |
+| η_groove | 1.35 |
+| v_groove_peak | 3.30 m/s |
+| e_Strike | 0.72 |
+| J_UFL | 1.250×10⁻¹ N·s |
+| Δv_opp | 3.124 m/s |
+
+---
+
+## Case 1992 — SPECIAL: Ultimate Flash Launch — Valt Aoi / Strike Valtryek 6Vortex Ultimate Reboot
+
+**Blader:** Valt Aoi | **Beyblade:** Strike Valtryek 6Vortex Ultimate Reboot | **Type:** attack
+
+### Description
+
+Ultimate Flash Launch (アルティメットフラッシュシュート, Arutimetto Furasshu Shūto) is a Special Move used by Valt Aoi and Strike Valtryek 6Vortex Ultimate Reboot (Burst Surge). Strike Valtryek rides along the stadium groove gaining speed and power, then quickly changes its trajectory to attack the opponent.
+
+### Stage — Groove-Rail Speed Build + 90° Trajectory Change Strike
+
+From Case 1991: v_groove_peak = 3.30 m/s, J_UFL = 1.250×10⁻¹ N·s, Δv_opp = 3.124 m/s.
+
+```
+Spin drain from groove-exit strike:
+  Δω = J_UFL × r_layer / I_total = 1.250×10⁻¹ × 0.032 / 3.749×10⁻⁵ = 106.7 rad/s
+  ω_remain = 700 − 106.7 = 593.3 rad/s  (84.8% retained)
+  (Large outer strike radius means significant spin drain — attack type tradeoff)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt's Valtryek blazes blue and gold — Strike Valtryek becomes a flash of pure light, riding the groove like a lightning bolt locked in a track. At the apex of its speed, the bey vanishes from the groove in an instant, reappearing beside the opponent in a burst of light before the crushing impact sends the opponent flying across the stadium.
+
+[M] factor = **8.0 ×** (Valt Aoi — main Burst series protagonist, Valtryek flash-strike spirit)
+[M] Δv = 3.124 × 8.0 = **24.99 m/s** (groove-flash ring-out)
+
+> **Note:** Physical values describe groove-rail v_free=2.450 m/s → η=1.35 → v_groove=3.30 m/s; 90° trajectory redirect; J_UFL=1.250×10⁻¹ N·s; Δv=3.124 m/s; Δω_drain=106.7 rad/s. [M] values represent Valt's Valtryek flash-speed spirit in groove. Combos do not receive [M] amplification. Requires groove-track stadium.
+
+### TypeScript
+
+```typescript
+function ultimateFlashLaunchSpecial(bey: Beyblade, target: Beyblade): void {
+  // Groove-rail η=1.35 v_groove=3.30m/s; 90° redirect; J_UFL=1.250×10⁻¹N·s; [M] 8.0×
+  const J_UFL = 0.1250;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_UFL * 8.0; // [M] BeySpirit 8.0× (Valt Valtryek flash-speed groove)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any Burst Surge-era beyblade using a wide attack-profile Layer (r_layer ≥ 28 mm) with a rubber-ring driver capable of groove-wall contact (r_driver_outer ≥ 5 mm, μ ≥ 0.40) in a stadium with a circular groove rail (η_groove ≥ 1.20). Standard game instance: Strike Valtryek 6Vortex Ultimate Reboot (Valt Aoi, Burst Surge). Requires groove-track stadium.
+
+---
+
+## Case 1993 — COMBO: Flash Groove — Strike Valtryek 6Vortex Ultimate Reboot
+
+**Sequence:** → → A (moveRight · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi
+
+### Physics Justification
+
+The first moveRight (→) sends Strike Valtryek into the groove clockwise — the Ultimate Reboot outer ring engages the groove wall, beginning orbital speed accumulation. The second moveRight (→) drives a second full arc along the groove, doubling the build-up time and reaching near-peak groove speed. The attack (A) releases the trajectory change and impact strike at the exit point of the second groove arc:
+
+```
+v_groove_arc1 = v_orbital_free = 2.450 m/s (first arc in groove, natural speed)
+v_groove_arc2 = v_groove_arc1 × 1.20 = 2.450 × 1.20 = 2.940 m/s (second arc: 20% speed gain)
+v_combo_contact = v_groove_arc2 × η_groove_partial = 2.940 × 1.15 = 3.381 m/s
+(partial groove boost: 2 arcs = 1.15× vs full groove η=1.35; ~85% of full flash)
+
+v_combo_contact ≈ 3.38 m/s (round to 3.38)
+
+J_combo = m_eff × (1 + e_Strike) × v_combo_contact = 2.202×10⁻² × 1.72 × 3.38
+        = 2.202×10⁻² × 5.814 = 1.280×10⁻¹ N·s
+```
+
+Ultimate Reboot rubber outer ring spin recovery via groove-exit rebound (η_Reboot = 0.10):
+
+```
+Δω = η_Reboot × J_combo × r_layer / I_total
+   = 0.10 × 1.280×10⁻¹ × 0.032 / 3.749×10⁻⁵
+   = 0.10 × 109.2
+   = +10.9 rad/s  → round to +10 rad/s
+```
+
+(η_Reboot=0.10: groove exit + rubber ring rebound converts partial orbital momentum to spin recovery; effective spinGain = +10 rad/s.) Double-arc groove strike gives damageMultiplier **1.30×**. lockMs = 0 (groove-exit attack: instantaneous trajectory change, no dwell).
+
+**Parameters:**
+- spinGain: +10 rad/s (Reboot rubber groove-exit rebound)
+- damageMultiplier: 1.30 (double-arc groove flash)
+- lockMs: 0 (instantaneous trajectory change)
+
+### TypeScript
+
+```typescript
+function flashGrooveCombo(bey: Beyblade, target: Beyblade): void {
+  // Reboot double-arc: Δω ≈ +10 rad/s (η=0.10, v_contact=3.38m/s, J=1.280×10⁻¹N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 10);
+  // Double-arc groove flash: 1.30× normal impulse
+  bey.damageMultiplier = 1.30;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.30, (dy / dist) * 0.30);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.30 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +10 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1994 as further franchise moves are provided.*

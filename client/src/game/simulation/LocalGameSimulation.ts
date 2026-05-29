@@ -136,6 +136,9 @@ export class LocalGameSimulation {
 
   private beyblades = new Map<string, ServerBeyblade>();
   private aiControllers = new Map<string, AIController>();
+  // Tracks the elapsed-time threshold (seconds) until which each bey has spawn immunity.
+  // During immunity: position overlap is resolved but velocity impulse is skipped.
+  private spawnImmunity = new Map<string, number>();
   private arena: ServerArenaState = defaultArena();
   private arenaRadius = DEFAULT_ARENA_W * 0.45;
   private winner = '';
@@ -393,6 +396,7 @@ export class LocalGameSimulation {
     this.aiControllers.set(id, new AIController(botDiff));
     this.winner = '';
     this.elapsed = 0;
+    this.spawnImmunity.clear(); // fresh immunity applied when next applyLaunchParams runs
   }
 
   // ─── Countdown → Launch → Playing ────────────────────────────────────────
@@ -444,6 +448,13 @@ export class LocalGameSimulation {
     const total = beyArr.length;
     // Spawn ring radius — wide enough so 12 beys don't start overlapping
     const spawnR = total > 4 ? this.arenaRadius * 0.52 : this.arenaRadius * 0.40;
+
+    // Grant every bey 5.2 seconds of spawn immunity for all competitive modes.
+    // Tryout (solo practice) skips immunity so the bey feels responsive immediately.
+    this.spawnImmunity.clear();
+    if (this.config.roomType !== 'tryout') {
+      beyArr.forEach(bey => this.spawnImmunity.set(bey.id, 5.2));
+    }
 
     beyArr.forEach((bey, idx) => {
       const isPlayer = bey.id === 'player';
@@ -516,37 +527,50 @@ export class LocalGameSimulation {
     // Process each beyblade
     for (const [id, bey] of this.beyblades) {
       if (!bey.isActive) continue;
+      // Reflect current immunity state on the snapshot for the renderer (e.g. flash/tint).
+      bey.isInvulnerable = this.elapsed < (this.spawnImmunity.get(id) ?? 0);
 
       // AI input
       if (bey.isAI) {
-        const controller = this.aiControllers.get(id);
-        if (controller) {
-          const snapshot: BeybladeSnapshot = {
-            id, x: bey.x, y: bey.y,
-            velocityX: bey.velocityX, velocityY: bey.velocityY,
-            rotation: bey.rotation, spin: bey.spin, maxSpin: bey.maxSpin,
-            isAirborne: bey.isAirborne, inPit: false,
-            power: bey.power, spinDirection: bey.spinDirection, type: bey.type,
-          };
-          const others = Array.from(this.beyblades.values())
-            .filter(b => b.id !== id && b.isActive)
-            .map(b => ({
-              id: b.id, x: b.x, y: b.y,
-              velocityX: b.velocityX, velocityY: b.velocityY,
-              rotation: b.rotation, spin: b.spin, maxSpin: b.maxSpin,
-              isAirborne: b.isAirborne, inPit: false,
-              power: b.power, spinDirection: b.spinDirection, type: b.type,
-            }));
-          const aiInput = controller.computeInput(snapshot, others, cx, cy, r);
-          // Apply AI input
-          if (aiInput.moveLeft)  bey.velocityX -= MOVE_ACCEL;
-          if (aiInput.moveRight) bey.velocityX += MOVE_ACCEL;
-          if (aiInput.moveUp)    bey.velocityY -= MOVE_ACCEL;
-          if (aiInput.moveDown)  bey.velocityY += MOVE_ACCEL;
-          if (aiInput.chargeHeld) bey.power = Math.min(150, bey.power + POWER_REGEN * 60);
-          if (aiInput.specialTap && bey.power >= 100) {
-            bey.power -= 100;
-            bey.spin = Math.min(bey.maxSpin, bey.spin + bey.maxSpin * 0.08);
+        if (bey.isInvulnerable) {
+          // During spawn immunity: orbit the arena center clockwise so beys stay spread
+          // around the ring instead of all converging to the center at once.
+          const rdx = bey.x - cx, rdy = bey.y - cy;
+          const rdist = Math.sqrt(rdx * rdx + rdy * rdy) || 1;
+          const tx = -rdy / rdist, ty = rdx / rdist; // clockwise tangent
+          // Tangential orbit + very gentle inward drift so they ease toward center
+          bey.velocityX = tx * 1.8 - (rdx / rdist) * 0.25;
+          bey.velocityY = ty * 1.8 - (rdy / rdist) * 0.25;
+        } else {
+          const controller = this.aiControllers.get(id);
+          if (controller) {
+            const snapshot: BeybladeSnapshot = {
+              id, x: bey.x, y: bey.y,
+              velocityX: bey.velocityX, velocityY: bey.velocityY,
+              rotation: bey.rotation, spin: bey.spin, maxSpin: bey.maxSpin,
+              isAirborne: bey.isAirborne, inPit: false,
+              power: bey.power, spinDirection: bey.spinDirection, type: bey.type,
+            };
+            const others = Array.from(this.beyblades.values())
+              .filter(b => b.id !== id && b.isActive)
+              .map(b => ({
+                id: b.id, x: b.x, y: b.y,
+                velocityX: b.velocityX, velocityY: b.velocityY,
+                rotation: b.rotation, spin: b.spin, maxSpin: b.maxSpin,
+                isAirborne: b.isAirborne, inPit: false,
+                power: b.power, spinDirection: b.spinDirection, type: b.type,
+              }));
+            const aiInput = controller.computeInput(snapshot, others, cx, cy, r);
+            // Apply AI input
+            if (aiInput.moveLeft)  bey.velocityX -= MOVE_ACCEL;
+            if (aiInput.moveRight) bey.velocityX += MOVE_ACCEL;
+            if (aiInput.moveUp)    bey.velocityY -= MOVE_ACCEL;
+            if (aiInput.moveDown)  bey.velocityY += MOVE_ACCEL;
+            if (aiInput.chargeHeld) bey.power = Math.min(150, bey.power + POWER_REGEN * 60);
+            if (aiInput.specialTap && bey.power >= 100) {
+              bey.power -= 100;
+              bey.spin = Math.min(bey.maxSpin, bey.spin + bey.maxSpin * 0.08);
+            }
           }
         }
       }
@@ -601,15 +625,21 @@ export class LocalGameSimulation {
         if (d < minD && d > 0) {
           const overlap = (minD - d) / 2;
           const nx = dx / d, ny = dy / d;
+          // Always resolve the position overlap so beys can't stack on top of each other.
           a.x -= nx * overlap; a.y -= ny * overlap;
           b.x += nx * overlap; b.y += ny * overlap;
-          const dvx = a.velocityX - b.velocityX, dvy = a.velocityY - b.velocityY;
-          const impulse = (dvx * nx + dvy * ny) * 0.9;
-          a.velocityX -= impulse * nx; a.velocityY -= impulse * ny;
-          b.velocityX += impulse * nx; b.velocityY += impulse * ny;
-          // Spin transfer
-          const spinDiff = (a.spin - b.spin) * 0.03;
-          a.spin -= spinDiff; b.spin += spinDiff;
+          // Skip velocity impulse and spin transfer while either bey is spawn-immune.
+          const aImmune = this.elapsed < (this.spawnImmunity.get(a.id) ?? 0);
+          const bImmune = this.elapsed < (this.spawnImmunity.get(b.id) ?? 0);
+          if (!aImmune && !bImmune) {
+            const dvx = a.velocityX - b.velocityX, dvy = a.velocityY - b.velocityY;
+            const impulse = (dvx * nx + dvy * ny) * 0.9;
+            a.velocityX -= impulse * nx; a.velocityY -= impulse * ny;
+            b.velocityX += impulse * nx; b.velocityY += impulse * ny;
+            // Spin transfer
+            const spinDiff = (a.spin - b.spin) * 0.03;
+            a.spin -= spinDiff; b.spin += spinDiff;
+          }
           a.collisions++; b.collisions++;
         }
       }
