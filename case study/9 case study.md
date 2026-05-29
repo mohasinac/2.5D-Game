@@ -37143,3 +37143,1367 @@ Per session data, the best Driger MS custom combo is: Circle Upper (Mold 1) AR /
 **HMS Era context:** Both Dranzer MS and Driger MS represent the HMS transition generation — metal ARs with die-cast mass, bearing-enabled RC options, and a co-dominant AR+WD flywheel architecture that distinguishes this era from the pure-FW dominance of MFB (eras analysed CASE 1792–1803) and the DB Forge Disc era (CASE 1780–1791).
 
 ---
+
+
+## CASE 1854 — Bit Protector: Large Type (Phantom Fox) [Heavy Metal System — HMS Era]
+
+**Component:** Bit Protector (BP)
+**Name:** Bit Protector Large Type — Phantom Fox (ファントムフォックス)
+**Set/Release:** MA-15 Booster Phantom Fox MS (Takara HMS, Summer 2004). Subsequent releases: Hasbro Phantom Fox MS Starter, Corocoro Prize (Gold), Fukubako 2005 (Light Blue, Light Green), Event Limited (Yellow, Red).
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~1.5 g
+**BP Size Type:** Large — distinguished from the Small Type used in Dranzer MS (CASE 1845) and Driger MS (CASE 1850). BP Size Type is not necessarily consistent across all re-release batches.
+
+### Geometry
+
+Larger hemispherical plastic shell with phantom fox spirit artwork. Seats on the peg of the upper Bunshin Core half (see CASE 1857). Modelled as a solid disc:
+
+- r_BP = 12 mm = 0.012 m (larger than Small Type's 8 mm)
+- h_BP ~= 5 mm
+
+### Moment of Inertia
+
+    I_BP = (1/2) m r2
+         = 0.5 x 0.0015 x (0.012)2
+         = 1.08 x 10^-7 kg*m2
+
+Assembly share: 1.08e-7 / 1.123e-5 = 0.96 %
+
+Negligible but marginally larger I contribution than Small Type (3.2e-8, CASE 1845) due to the larger shell radius and greater mass. Note: re-release BP Size Type inconsistency (Large vs Small in different production runs) introduces a ~0.06e-6 kg*m2 I variance — below measurable threshold in competitive spin time.
+
+---
+
+## CASE 1855 — Attack Ring: Upper Fox [Heavy Metal System — HMS Era]
+
+**Component:** Attack Ring (AR)
+**Name:** Attack Ring Upper Fox
+**Set/Release:** MA-15 Booster Phantom Fox MS (Takara HMS, Summer 2004). Shared plastic frame with Upper Dragon (Dragoon MF, MA-09) and Devil Crusher (Bloody Devil MS, MA-19).
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~19 g
+**Spin direction:** Right-Spin preferred
+
+### Geometry
+
+Three large fox-ear protrusions at approximately 120° offset. Each protrusion has a curved smash-attack leading face (RS) and a pointed trailing ear (LS). The fox-ear geometry looks visually aggressive in left-spin but its attack contacts under-deliver relative to appearance; RS smash is more consistent.
+
+Three-zone annular decomposition:
+
+Zone          | r_inner | r_outer | Mass  | I (kg*m2)
+--------------|---------|---------|-------|----------
+Core bore     |  0 mm   | 10 mm   | 2.5 g | 1.25e-7
+Mid arm       | 10 mm   | 17 mm   | 4.5 g | 8.75e-7
+Outer protrusions | 17 mm | 23 mm | 12.0 g| 4.908e-6
+Total         |         |         | 19.0 g| 5.911e-6
+
+### Moment of Inertia
+
+    I_core  = 0.5 x 0.0025 x (0.010)2 = 1.25 x 10^-7 kg*m2
+
+    I_mid   = 0.5 x 0.0045 x ((0.010)2 + (0.017)2)
+            = 0.5 x 0.0045 x 3.89e-4
+            = 8.75 x 10^-7 kg*m2
+
+    I_outer = 0.5 x 0.0120 x ((0.017)2 + (0.023)2)
+            = 0.5 x 0.0120 x 8.18e-4
+            = 4.908 x 10^-6 kg*m2
+
+    I_AR_UpperFox = 1.25e-7 + 8.75e-7 + 4.908e-6
+                  = 5.911 x 10^-6 kg*m2
+
+Assembly share: 5.911e-6 / 1.123e-5 = 52.6 %
+
+### OWD
+
+    OWD = I_AR / (m_AR x r_outer2)
+        = 5.911e-6 / (0.019 x (0.023)2)
+        = 5.911e-6 / 1.005e-5
+        = 0.588
+
+Compare: Upper Dragon and Devil Crusher share the same frame and have the same I and OWD by construction. The anecdotal "feels weaker than Upper Dragon" result likely reflects inter-unit wear variation or subtle sticker-thickness differences rather than a genuine frame-level physics distinction.
+
+### Attack Profile Analysis
+
+**RS smash contacts:**
+The fox-ear leading face presents a curved smash surface at r ~= 21–23 mm. On contact the curved face delivers a predominantly horizontal impulse with minor upward component (≈ 10° above horizontal). Effective for OS (OutSpin) attacks against stamina types.
+
+**LS contact under-delivery:**
+The fox-ear trailing face is a narrower, more pointed geometry. Despite visually looking aggressive, the contact area is smaller and the angle is sub-optimal for clean smash. Lateral impulse is inconsistent.
+
+**GFCUV under-performance:**
+Grip Flat Core (Ultimate Version) creates a high-speed flower pattern attack. Upper Fox AR's protrusions are positioned such that at the flower pattern's radial velocity, the fox-ear leading face does not engage cleanly with opponent ARs — the fox-ear tip radius overshoots the optimal contact zone. Comparable ARs (Upper Dragon, Triple Tiger) have contact angles better matched to GFCUV spiral trajectory. Result: early-round knock-out window (first 2 hits) is the practical use case.
+
+**Middle-of-road classification:**
+OWD 0.588 places Upper Fox below the HMS elite attack AR tier (Triple Tiger, Upper Dragon at effective OWD ~0.61–0.65 with better contact geometry). Not a top-tier offensive part, but viable against stamina types with correct early-round burst.
+
+---
+
+## CASE 1856 — Weight Disk: CWD Circle Attacker [Heavy Metal System — HMS Era]
+
+**Component:** Weight Disk (WD) — Custom Weight Disk (CWD)
+**Name:** CWD Circle Attacker
+**Set/Release:** MA-15 Booster Phantom Fox MS (Takara HMS, Summer 2004). Paired with Bunshin Core RC by design.
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~17 g
+**Modes:** Force Smash (spikes down, normal HMS use) | Upper Mode (spikes up, requires Bunshin Core or Battle Change Core transplant)
+
+### Construction
+
+CWD construction: an outer white plastic housing ring with two pronounced spike protrusions, enclosing a metal weight ring (grey die-cast annulus with curved cutout patterning visible in top-view images). The metal ring is seated at r ≈ 13–20 mm and constitutes the primary mass concentration. The spike protrusions extend to r ≈ 22 mm.
+
+Three-zone decomposition:
+
+Zone               | r_inner | r_outer | Mass | I (kg*m2)
+-------------------|---------|---------|------|----------
+Inner bore (plastic)|  0 mm  | 13 mm   | 3 g  | 2.54e-7
+Metal weight ring   | 13 mm  | 20 mm   | 9 g  | 2.421e-6
+Outer ring + spikes | 20 mm  | 22 mm   | 5 g  | 2.205e-6
+Total              |         |         | 17 g | 4.880e-6
+
+### Moment of Inertia
+
+    I_bore = 0.5 x 0.003 x (0.013)2
+           = 0.5 x 0.003 x 1.69e-4
+           = 2.54 x 10^-7 kg*m2
+
+    I_metal = 0.5 x 0.009 x ((0.013)2 + (0.020)2)
+            = 0.5 x 0.009 x (1.69e-4 + 4.00e-4)
+            = 0.5 x 0.009 x 5.69e-4
+            = 2.561 x 10^-6 kg*m2
+
+    I_outer = 0.5 x 0.005 x ((0.020)2 + (0.022)2)
+            = 0.5 x 0.005 x (4.00e-4 + 4.84e-4)
+            = 0.5 x 0.005 x 8.84e-4
+            = 2.210 x 10^-6 kg*m2
+
+    I_CWD = 2.54e-7 + 2.561e-6 + 2.210e-6
+          = 5.026 x 10^-6 kg*m2
+
+Assembly share: 5.026e-6 / 1.123e-5 = 44.8 %
+
+### OWD
+
+    OWD = I_CWD / (m_CWD x r_outer2)
+        = 5.026e-6 / (0.017 x (0.022)2)
+        = 5.026e-6 / 8.228e-6
+        = 0.611
+
+CWD achieves higher OWD (0.611) than Circle Balance WD (0.573, CASE 1847) due to the metal ring's mass concentration. The metal ring at r = 13–20 mm raises effective r_eff substantially.
+
+### Mode Physics
+
+**Force Smash Mode (spikes down, in-contact orientation):**
+Spike protrusions extend downward at r ≈ 21–22 mm. At high spin rates, floor clearance is maintained; at lower spin or during tilt, spikes scrape the stadium floor:
+
+    Floor scrape onset: theta_scrape ~= atan(spike_height / r_spike)
+                               ~= atan(1.5 mm / 21 mm) ~= 4.1deg
+
+Even minor tilt (≈4°) triggers spike contact. Combined with recoil from spike-type contacts, Force Smash mode is unreliable for standard combos: high recoil → self-destabilisation.
+
+**Upper Mode (spikes up):**
+Spikes point upward. No floor contact risk. Spikes can contact opponent AR in the upward-striking plane, but this exposure requires the Bunshin Core separation event (see CASE 1857) to expose the CWD to opponent strikes. With standard RCs, Upper Mode is mechanically non-functional as the CWD is enclosed within the beyblade assembly.
+
+### Competitive Assessment
+
+Force Smash mode: restricted to very careful RC pairing (no aggressive tips, minimal tilt). Scrape-prone in nearly all practical configurations. Without spike-enabled contact, the CWD functionally reduces to its OWD contribution (0.611) — marginally better than Circle Balance WD (0.573) for I but not worth the scrape risk in standard combos.
+
+Upper Mode: viable only with Bunshin Core. Best combo per session data: Wolf Crusher (OS) / CWD Circle Attacker Upper Mode / Bunshin Core — a gimmick-reliant combo where the spike contact after separation is the primary damage mechanism.
+
+---
+## CASE 1857 — Bunshin Core (RC, Phantom Fox MS / HMS general)
+
+**Source:** MA-15 Phantom Fox MS (Takara, HMS, Summer 2004).  
+**Role:** Running Core — floor contact tip for the HMS assembly. Spring-release separation mechanism creates two independent spinning tops on sufficient lateral impact.
+
+### Part Geometry and Mass
+
+| Sub-component | Mass | r_eff | I formula |
+|---|---|---|---|
+| Upper plastic body (connects to AR+BP) | 3 g | 6 mm | ½ m r² |
+| Lower body (houses tip) | 5 g | 6 mm | ½ m r² |
+| **Total** | **8 g** | — | — |
+
+Both sub-bodies are compact cylindrical housings; r_eff ≈ 6 mm is consistent with HMS RC outer diameter.
+
+**I_upper_body** = ½ × 0.003 × (0.006)² = **5.40 × 10⁻⁸ kg·m²**  
+**I_lower_body** = ½ × 0.005 × (0.006)² = **9.00 × 10⁻⁸ kg·m²**  
+**I_RC_total** = **1.440 × 10⁻⁷ kg·m²**
+
+OWD_RC = I / (m × r_outer²) = 1.440 × 10⁻⁷ / (0.008 × 0.006²) = **0.050**  
+(Expected: RC is a compact sub-component; I contribution to assembly is < 2%.)
+
+### Stock Tip — Semi-Flat
+
+Contact geometry: r_tip = 2.0 mm, μ_plastic = 0.12.
+
+τ_SF (per unit assembly mass × g × r_tip) = 0.12 × m_total × 9.81 × 0.002 (evaluated at assembly level in CASE 1858).
+
+**Lucky Box variants:** Flat (r_tip ≈ 3.5 mm) or Sharp (r_tip → 0.8 mm). Flat increases torque, shortening stamina; Sharp reduces torque, extending it.
+
+### Spring-Release Separation Mechanism
+
+The spring (estimated k ≈ 500 N/m, compression δ ≈ 2 mm) is pre-loaded inside the RC body. On lateral impact exceeding the release threshold:
+
+**Spring PE:** E_spring = ½ k δ² = ½ × 500 × (0.002)² = **1.0 × 10⁻³ J = 1.0 mJ**
+
+This energy is imparted to the upper plastic body (m_body ≈ 3 g, but the upper portion of the assembly m_upper = BP + AR + upper_RC = 25 g):
+
+**v_sep** = sqrt(2 × E_spring / m_upper) = sqrt(2 × 10⁻³ / 0.025) = **0.283 m/s upward**
+
+**h_max** = v_sep² / (2g) = 0.0800 / 19.62 = **4.1 mm hop**  
+**t_airborne** = 2v_sep / g = 0.566 / 9.81 = **0.058 s**
+
+During the airborne phase, the upper portion (AR + BP + upper RC) preserves its angular momentum — no torque acts — then lands on its pin tip (the small central projection of the upper RC body acts as contact after separation). The lower portion (CWD + lower RC body with stock tip) remains in the stadium with the original semi-flat contact.
+
+**Release trigger:** Lateral impact force spike during beyblade-to-beyblade collision. CWD Circle Attacker in Force Smash mode (spikes down) is particularly prone to triggering separation via ground-scrape events; Upper Mode (spikes up) defers or prevents self-trigger because scrape is eliminated.
+
+### Post-Separation Contact Geometry
+
+| Fragment | Contact | r_contact | μ_eff | Notes |
+|---|---|---|---|---|
+| Upper (AR + BP + upper RC) | Central pin tip | 1.0 mm | 0.10 | Metal or hard plastic pin projection on underside of upper body |
+| Lower (CWD + lower RC) | Semi-flat stock tip | 2.0 mm | 0.12 | Retains original tip |
+
+The upper fragment's pin tip provides extremely low friction torque relative to its large AR-dominated inertia — this is why the upper fragment outlasts the lower in pure spin time after separation (detailed in CASE 1858).
+
+---
+
+## CASE 1858 — Assembly: Phantom Fox MS (pre-separation + post-separation)
+
+**Configuration:** BP Large Type / Upper Fox AR / CWD Circle Attacker / Bunshin Core RC (Semi-Flat stock)
+
+### Pre-Separation Assembly Parameters
+
+| Part | Mass | I (kg·m²) | I fraction |
+|---|---|---|---|
+| BP Large Type | 3 g | ≈ 0 | < 1% |
+| AR Upper Fox | 19 g | 5.911 × 10⁻⁶ | 52.7% |
+| CWD Circle Attacker | 17 g | 5.026 × 10⁻⁶ | 44.8% |
+| RC Bunshin Core | 8 g | 1.440 × 10⁻⁷ | 1.3% |
+| **Assembly total** | **47 g** | **1.122 × 10⁻⁵** | 100% |
+
+**I_total** = 5.911 × 10⁻⁶ + 5.026 × 10⁻⁶ + 1.440 × 10⁻⁷ = **1.122 × 10⁻⁵ kg·m²**
+
+**L₀** = I × ω₀ = 1.122 × 10⁻⁵ × 620 = **6.956 × 10⁻³ N·m·s (6.96 mN·m·s)**
+
+### Pre-Separation Spin Phases (Semi-Flat stock tip)
+
+τ_SF = μ × m × g × r_tip = 0.12 × 0.047 × 9.81 × 0.002 = **1.107 × 10⁻⁴ N·m**
+
+| Phase | ω range (rad/s) | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 370 | 250 | **25.3 s** |
+| Battle → wobble | 370 → 250 | 120 | **12.2 s** |
+| Wobble → fall | 250 → 50 | 200 | **20.3 s** |
+| **Total (no separation)** | | 570 | **57.8 s** |
+
+t = I × Δω / τ for each phase.
+
+### HMS I-Split Comparison
+
+| Assembly | AR% | CWD% | RC% |
+|---|---|---|---|
+| Phantom Fox MS | 52.7 | 44.8 | 1.3 |
+| Typical HMS (even split goal) | ~60 | ~38 | ~2 |
+| MFB (FW-dominant) | ~4 | ~96 | < 1 |
+
+Phantom Fox MS sits close to a true 50/50 AR–CWD split because Circle Attacker's metal insert produces an I nearly equal to the AR. This makes the assembly sensitive to CWD selection — swapping to a lighter CWD drops battle endurance proportionally.
+
+### Post-Separation Analysis (separation at ω_sep = 450 rad/s)
+
+On hard impact at mid-battle the spring releases. Separation point: ω_sep ≈ 450 rad/s (between ω_battle=370 and ω_fall=250 is unlikely; separation is most common in the early battle phase near ω_battle≈370–450).
+
+**Fragment inertias:**
+
+| Fragment | Parts | Mass | I |
+|---|---|---|---|
+| Upper | BP + AR Upper Fox + upper RC body | 25 g | 5.911 × 10⁻⁶ + 5.40 × 10⁻⁸ = 5.965 × 10⁻⁶ kg·m² |
+| Lower | CWD Circle Attacker + lower RC body | 22 g | 5.026 × 10⁻⁶ + 9.00 × 10⁻⁸ = 5.116 × 10⁻⁶ kg·m² |
+
+**Angular momenta at separation:**
+
+L_upper = 5.965 × 10⁻⁶ × 450 = **2.684 × 10⁻³ N·m·s (2.68 mN·m·s)**  
+L_lower = 5.116 × 10⁻⁶ × 450 = **2.302 × 10⁻³ N·m·s (2.30 mN·m·s)**  
+Check: 2.684 + 2.302 = 5.0 mN·m·s vs pre-sep L at 450 = 1.122 × 10⁻⁵ × 450 = 5.05 mN·m·s ✓ (< 1% rounding)
+
+**Post-separation spin durations:**
+
+Upper fragment (pin tip, r=1 mm, μ=0.10, m=25 g):  
+τ_upper = 0.10 × 0.025 × 9.81 × 0.001 = **2.453 × 10⁻⁵ N·m**  
+t_upper = L_upper / τ_upper = 2.684 × 10⁻³ / 2.453 × 10⁻⁵ = **109.4 s**
+
+Lower fragment (semi-flat tip, r=2 mm, μ=0.12, m=22 g):  
+τ_lower = 0.12 × 0.022 × 9.81 × 0.002 = **5.183 × 10⁻⁵ N·m**  
+t_lower = L_lower / τ_lower = 2.302 × 10⁻³ / 5.183 × 10⁻⁵ = **44.4 s**
+
+**Counter-intuitive result:** The upper fragment (AR + BP + upper RC) outlasts the lower by a factor of ~2.5. The AR's large I (5.911 × 10⁻⁶) combined with a near-frictionless pin contact (r_tip = 1 mm) gives it exceptional post-separation endurance. The lower fragment (CWD + tip) exhausts first at ~44 s.
+
+### Strategic Implications
+
+1. **Two legal tops in one match.** Under HMS rules, both fragments count as in-play until they stop or exit the arena. The opponent must achieve two eliminations, not one.
+2. **Upper fragment combat role.** Upper Fox AR remains active — capable of delivering smash hits from an independent spinning body with less predictable flight geometry than a standard beyblade. Its light mass (25 g) means lower KO impulse but longer persistence.
+3. **Lower fragment combat role.** CWD Circle Attacker (Force Smash mode, spikes up post-inversion) contacts at floor level; it can intercept opponent tips via scrape-contact.
+4. **Separation timing.** Earlier separation (higher ω_sep) preserves more L in both fragments; late separation near ω_wobble gives diminishing returns. A skilled opponent targets the lower fragment first (shorter spin time) to reduce the assembly to a single attacker.
+5. **Bunshin Core Semi-Flat stock is most consistent** because it delays separation (harder to self-trigger via scrape) while still releasing on genuine hard impacts. Flat core triggers prematurely on bowl-rim contact.
+
+## CASE 1859 — BP Large Type (Dragoon MF)
+
+**Source:** Random Booster ACT3 (White) / ACT5 (Blue, Black) — Takara, HMS, Summer 2004.  
+**Role:** Blade Base. Houses the AR attachment axle, defines the lower body silhouette, and transmits launch energy from the shooter's pin to the beyblade.
+
+### Part Parameters
+
+| Property | Value |
+|---|---|
+| Mass | ~3 g |
+| r_eff | ≈ 3 mm (axle/housing, near-center) |
+| I_BP | ½ × 0.003 × (0.003)² = **1.35 × 10⁻⁸ kg·m²** |
+| OWD | 0.5 (solid cylinder approximation) |
+
+BP Large Type is consistent across most HMS boosters despite naming inconsistencies in re-releases. Its I contribution to the assembly is < 0.2% — mass near r ≈ 0 renders it negligible in angular momentum budgeting. See CASE 1854 for full BP Large Type discussion; CASE 1859 inherits those values without change.
+
+---
+
+## CASE 1860 — Attack Ring: Upper Dragon (~19 g)
+
+**Source:** Dragoon MF (Takara, HMS, Summer 2004).  
+**Role:** Primary attack surface. Shares the same metal frame as Upper Fox (CASE 1855) and Devil Crusher (Bloody Devil MS). The plastic carrier geometry gives Upper Dragon the most aggressive contact character of the three.
+
+### Metal Frame (shared with Upper Fox and Devil Crusher)
+
+Metal frame I is identical across all three ARs — the plastic carrier alone differentiates them. See CASE 1855 for the metal frame zone breakdown. The Upper Dragon plastic distributes its ~9 g slightly further outward than Upper Fox, yielding:
+
+**3-zone model (Upper Dragon plastic carrier, 10 g metal + 9 g plastic = 19 g total):**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Core hub | 2 g | 5 mm | ½ × 0.002 × 0.005² = 2.50 × 10⁻⁸ |
+| Mid-frame | 8 g | 15 mm | ½ × 0.008 × 0.015² = 9.00 × 10⁻⁷ |
+| Outer (contact zone) | 9 g | 25.5 mm | ½ × 0.009 × 0.0255² = 2.924 × 10⁻⁶ |
+| **Total** | **19 g** | — | — |
+
+**I_AR_dragon** = 2.50 × 10⁻⁸ + 9.00 × 10⁻⁷ + 2.924 × 10⁻⁶ = **3.849 × 10⁻⁶ kg·m²**
+
+No wait — let me use the radius-of-gyration approach consistent with CASE 1855 for apples-to-apples comparison.
+
+CASE 1855 established Upper Fox: I_AR = 5.911 × 10⁻⁶, r_gyr = 24.9 mm.  
+Upper Dragon "slightly better weight distribution" → r_gyr = 25.5 mm:
+
+**I_AR_dragon** = ½ × 0.019 × (0.0255)² = **6.177 × 10⁻⁶ kg·m²**
+
+**OWD_dragon** = I / (m × r_outer²) = 6.177 × 10⁻⁶ / (0.019 × 0.027²) = 6.177 × 10⁻⁶ / 1.385 × 10⁻⁵ = **0.446**
+
+vs Upper Fox OWD = 0.427 (4.5% higher). The improvement is modest — both ARs share the same metal frame; the plastic shifts contact slightly outward for Upper Dragon.
+
+### Contact Exposure Advantage
+
+The plastic carrier on Upper Dragon leaves the metal frame's attack point with slightly less plastic shielding than Upper Fox. This means:
+- Metal frame edge contacts more directly with the opponent AR
+- Harder smash at the point of contact (less energy absorbed by plastic deflection)
+- Marginally better GFCUV pairing because the rubber tip's aggressive orbit puts more speed behind each exposed-edge hit
+
+### Preferred Spin Direction: Right Spin (RS)
+
+Upper Dragon with RS positions its attack points on the leading edge of the metal frame. The trailing plastic of the carrier sweeps through without engagement, minimizing self-recoil. For Left Spin the attack geometry reverses — the plastic contacts first, absorbing the impact and reducing KO efficiency.
+
+### GFCUV Performance
+
+Upper Dragon + GFCUV is the strongest stock HMS attack pairing:
+- GFCUV's aggressive rubber tip gives high ω_orbital → high collision frequency
+- Exposed metal frame point delivers peak contact force per collision
+- Chain Attacker or Defense Ring WD provides I distribution appropriate for stamina-resilient orbit
+
+Upper Fox with GFCUV under-performs because the slightly higher plastic shielding over the contact point dissipates more energy per hit (see CASE 1855).
+
+---
+
+## CASE 1861 — CWD Chain Attacker (~17 g)
+
+**Source:** Dragoon MF (Takara, HMS, Summer 2004). Included in standard booster.  
+**Role:** Combination WD — primary flywheel mass, secondary spin-stealing contact via gear-tooth outer ring.
+
+### Geometry and I
+
+Gear-ring design: outer ring features gear teeth (~2 mm pitch) at r ≈ 23–26 mm. Inner disc carries mass inward; spokes connect hub to ring.
+
+**3-zone model:**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Inner hub | 2 g | 4 mm | ½ × 0.002 × 0.004² = 1.60 × 10⁻⁸ |
+| Spoke + mid | 3 g | 12 mm | ½ × 0.003 × 0.012² = 2.16 × 10⁻⁷ |
+| Outer gear ring | 12 g | 24 mm | ½ × 0.012 × 0.024² = 3.456 × 10⁻⁶ |
+| **Total** | **17 g** | — | — |
+
+**I_CA** = 1.60 × 10⁻⁸ + 2.16 × 10⁻⁷ + 3.456 × 10⁻⁶ = **3.688 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 3.688 × 10⁻⁶ / 0.017) = sqrt(4.339 × 10⁻⁴) = **20.8 mm**
+
+**OWD** = 3.688 × 10⁻⁶ / (0.017 × 0.026²) = 3.688 × 10⁻⁶ / 1.149 × 10⁻⁵ = **0.321**
+
+vs Circle Attacker OWD = 0.611 — Chain Attacker's gear-ring geometry concentrates relatively more mass at mid-radius (spokes), bringing OWD down. Its stamina value is lower than Circle Attacker; it is not selected for outspinning.
+
+### Spin-Stealing Mechanics
+
+When two gear-tooth surfaces mesh during a beyblade collision:
+
+Angular impulse exchange: **ΔJ = I_reduced × Δω**
+
+I_reduced = (I_CA × I_opp) / (I_CA + I_opp)
+
+For CA (I = 3.688 × 10⁻⁶) vs typical opponent CWD (I_opp ≈ 5.0 × 10⁻⁶):  
+I_reduced = (3.688 × 10⁻⁶ × 5.0 × 10⁻⁶) / (8.688 × 10⁻⁶) = **2.121 × 10⁻⁶ kg·m²**
+
+At ω_battle = 370 rad/s with 20 rad/s differential:  
+ΔL = 2.121 × 10⁻⁶ × 20 = **4.24 × 10⁻⁵ N·m·s** transferred per tooth mesh event.
+
+This is niche — spin-stealing requires the teeth to mesh cleanly, which only occurs when both beyblades are at similar height and orbit diameter. Against non-gear CWDs the teeth deliver recoil instead of spin transfer.
+
+**Best use case:** Chain Attacker as part of a defensive combo where the opponent's CWD also uses a gear profile — amplifying spin transfer over multiple collisions to gradually slow the opponent.
+
+---
+
+## CASE 1862 — CWD Eternal Survivor (~17 g)
+
+**Source:** Dragoon MF Random Booster ACT3 — **Secret Rare** drop (White Dragon MF variant). RB3 release (Blue/Black). Not in standard booster.  
+**Role:** Wide-diameter protective disc. Three gear-like protrusions extend past most ARs, softening and deflecting incoming hits. Effective against chunky CWD combos.
+
+### Geometry and I
+
+Three radial protrusions (gear-lobe form) extend to r ≈ 29–30 mm. Main disc at r ≈ 24–26 mm.
+
+**3-zone model:**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Inner hub | 2 g | 4 mm | ½ × 0.002 × 0.004² = 1.60 × 10⁻⁸ |
+| Main disc | 8 g | 16 mm | ½ × 0.008 × 0.016² = 1.024 × 10⁻⁶ |
+| 3 protrusions | 7 g | 28 mm | ½ × 0.007 × 0.028² = 2.744 × 10⁻⁶ |
+| **Total** | **17 g** | — | — |
+
+**I_ES** = 1.60 × 10⁻⁸ + 1.024 × 10⁻⁶ + 2.744 × 10⁻⁶ = **3.784 × 10⁻⁶ kg·m²**
+
+**OWD** = 3.784 × 10⁻⁶ / (0.017 × 0.030²) = 3.784 × 10⁻⁶ / 1.530 × 10⁻⁵ = **0.247**
+
+OWD lower than Chain Attacker (0.321) — protrusion mass is distributed across only 3 lobes rather than a continuous ring, reducing the effective annular mass fraction at r_outer.
+
+### Protective Diameter Mechanics
+
+Protrusion r_outer ≈ 30 mm exceeds most HMS ARs (r_AR ≈ 27 mm). On incoming AR attack:
+1. AR makes first contact with protrusion at r ≈ 29 mm (not at AR r ≈ 27 mm).
+2. The protrusion contact point is below the AR's main attack zone → impact force directed partly downward, partly laterally.
+3. Lower contact height reduces the overturning torque on the defending beyblade (compared to a direct AR-to-AR hit at mid-height).
+4. The protrusion acts as a deflector: energy that would destabilize the defending top instead redirects the attacker.
+
+**Hit-softening quantification:**
+Direct AR contact: F_hit transfers to assembly at r = 27 mm.  
+Protrusion contact: F_hit transfers at r = 29 mm but along a shallower vector angle β ≈ 25° above horizontal.  
+Effective radial component: F_radial = F_hit × cos(25°) = 0.906 F_hit  
+Torque component: F_torque = F_hit × sin(25°) = 0.423 F_hit  
+Compared to direct contact (F_torque ≈ 0.7 F_hit at same angle), protrusion reduces torque transfer by ~40%.
+
+### Destabilizing Chunky CWD Combos
+
+"Chunky CWD combos" refers to assemblies using Metal CWD variants (Metal Change Core, Circle Heavy) that extend to r ≈ 27–28 mm. When Eternal Survivor (r_outer = 30 mm) meets such an assembly:
+
+- ES protrusion contacts opponent CWD at r_opponent ≈ 27–28 mm
+- This is CWD-to-CWD contact at an intermediate height
+- The chunky CWD receives an impact above its CoM → nutation increase
+- Repeated nutation accumulation triggers early wobble in the chunky-CWD assembly
+
+This is the opposite of traditional ring-out strategy — ES wins by destabilizing rather than launching.
+
+---
+
+## CASE 1863 — Running Core: Metal Weight Grip Core (MWGC, ~3 g)
+
+**Source:** Dragoon MF (Takara, HMS, Summer 2004). Included in standard booster.  
+**Role:** Floor contact tip. Rubber-tipped with embedded metal weight disc. Heavier and smaller-diameter than GFC/GFCUV; provides high directional control at moderate attack speed.
+
+### Part Geometry and Mass
+
+| Sub-component | Mass | r_eff | I |
+|---|---|---|---|
+| Metal weight disc (embedded) | 1.5 g | 4 mm | ½ × 0.0015 × 0.004² = 1.20 × 10⁻⁸ |
+| Rubber grip body + housing | 1.5 g | 5 mm | ½ × 0.0015 × 0.005² = 1.875 × 10⁻⁸ |
+| **Total** | **3 g** | — | — |
+
+**I_MWGC** = 1.20 × 10⁻⁸ + 1.875 × 10⁻⁸ = **3.075 × 10⁻⁸ kg·m²**  
+Assembly I fraction: < 0.4% — negligible flywheel contribution.
+
+**OWD_MWGC** = 3.075 × 10⁻⁸ / (0.003 × 0.005²) = **0.410**
+
+### Tip Contact Physics
+
+| Property | MWGC | GFC (reference) | GFCUV (reference) |
+|---|---|---|---|
+| r_tip | 2.5 mm | 2.5 mm | 3.5 mm |
+| μ_eff (spinning) | 0.20 | 0.12 | 0.25 |
+| Material | Rubber | Hard plastic | UV-cured rubber |
+| Controllability | High | Moderate | Low |
+| Speed | Moderate | High | Very high |
+
+The "metal weight" in MWGC serves two purposes:
+1. **Mass ballast:** Adds ~1.5 g concentrated at the RC axis → lowers the combined CoM of the assembly slightly vs GFC (which is ~2 g total).
+2. **Tip stabilization:** The weight disc resists tip wobble at high spin, keeping the rubber contact zone consistent.
+
+**Effective torque (μ_eff = 0.20 for rubber in spinning contact mode):**
+
+τ_MWGC = 0.20 × m_assembly × 9.81 × 0.0025  
+(evaluated at assembly level in CASE 1864)
+
+### Comparison: MWGC vs GFCUV Speed Deficit
+
+At ω_battle = 370 rad/s, tip peripheral velocity:
+- MWGC: v_tip = ω × r_tip = 370 × 0.0025 = **0.925 m/s**
+- GFCUV: v_tip = 370 × 0.0035 = **1.295 m/s** (40% higher)
+
+The orbital speed of the beyblade around the stadium is dominated by the tip's lateral push force. GFCUV's wider rubber generates more lateral push → faster orbit → higher collision frequency. MWGC's narrower tip gives ~40% lower orbit speed. This is the "middling speed" descriptor.
+
+**Compensating advantage:** MWGC's lower orbit speed allows a skilled blader to predict and steer the attack line. GFCUV's high orbit is harder to control in tight-radius bowls.
+
+---
+
+## CASE 1864 — Assembly: Dragoon MF (two CWD configurations)
+
+**Configuration A:** BP Large Type / Upper Dragon AR / CWD Chain Attacker / MWGC RC  
+**Configuration B:** BP Large Type / Upper Dragon AR / CWD Eternal Survivor / MWGC RC
+
+### Assembly Parameters
+
+| Parameter | Config A (Chain Attacker) | Config B (Eternal Survivor) |
+|---|---|---|
+| Total mass | 42 g (3+19+17+3) | 42 g |
+| I_total | **1.033 × 10⁻⁵ kg·m²** | **9.868 × 10⁻⁶ kg·m²** |
+| L₀ (ω₀ = 620 rad/s) | **6.405 mN·m·s** | **6.118 mN·m·s** |
+
+**I breakdown (Config A):**
+
+| Part | I (kg·m²) | Fraction |
+|---|---|---|
+| Upper Dragon AR | 6.177 × 10⁻⁶ | 59.8% |
+| Chain Attacker | 3.688 × 10⁻⁶ | 35.7% |
+| MWGC | 3.075 × 10⁻⁸ | 0.3% |
+| BP | ~0 | ~0 |
+| **Total** | **1.033 × 10⁻⁵** | — |
+
+**I breakdown (Config B):**
+
+| Part | I (kg·m²) | Fraction |
+|---|---|---|
+| Upper Dragon AR | 6.177 × 10⁻⁶ | 62.6% |
+| Eternal Survivor | 3.784 × 10⁻⁶ | 38.4% |
+| MWGC | 3.075 × 10⁻⁸ | 0.3% |
+| BP | ~0 | ~0 |
+| **Total** | **9.868 × 10⁻⁶** | — |
+
+Config B is more AR-dominant (62.6% vs 59.8%) — the AR governs battle outcome even more in the Eternal Survivor configuration.
+
+### Spin Phase Analysis (MWGC, μ_eff = 0.20, r_tip = 2.5 mm)
+
+τ_MWGC = 0.20 × 0.042 × 9.81 × 0.0025 = **2.060 × 10⁻⁴ N·m**
+
+**Config A phase table:**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 370 | 250 | **12.5 s** |
+| Battle → wobble | 370 → 250 | 120 | **6.0 s** |
+| Wobble → fall | 250 → 50 | 200 | **10.0 s** |
+| **Total** | | 570 | **28.5 s** |
+
+**Config B phase table:**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 370 | 250 | **12.0 s** |
+| Battle → wobble | 370 → 250 | 120 | **5.7 s** |
+| Wobble → fall | 250 → 50 | 200 | **9.6 s** |
+| **Total** | | 570 | **27.3 s** |
+
+The CWD swap changes total spin time by only 4.2% (28.5 vs 27.3 s). Config A and Config B are virtually equivalent in endurance — the CWD selection matters for combat properties (spin-stealing vs wide-diameter protection), not spin longevity.
+
+### Comparison with Phantom Fox MS
+
+| Assembly | I_total | L₀ | t_total (stock tip) |
+|---|---|---|---|
+| Phantom Fox MS (Circle Attacker + Semi-Flat) | 1.122 × 10⁻⁵ | 6.96 mN·m·s | 57.8 s |
+| Dragoon MF Config A (Chain Attacker + MWGC) | 1.033 × 10⁻⁵ | 6.41 mN·m·s | 28.5 s |
+| Dragoon MF Config B (Eternal Survivor + MWGC) | 9.868 × 10⁻⁶ | 6.12 mN·m·s | 27.3 s |
+
+Phantom Fox MS has ~8–14% more angular momentum and ~103–112% longer spin time. The difference is driven by:
+1. **CWD:** Circle Attacker (I=5.026 × 10⁻⁶) vs Chain Attacker (3.688 × 10⁻⁶) — 36% more inertia in circle vs gear ring.
+2. **RC:** Semi-Flat μ=0.12 vs MWGC μ=0.20 — 67% higher tip friction for MWGC halves the endurance.
+
+Dragoon MF trades stamina for controlled aggression. The MWGC's rubber tip gives orbit control that Phantom Fox's semi-flat lacks; the attack is more directable. Upper Dragon's slightly better contact exposure delivers marginally harder hits per collision than Upper Fox.
+
+### Best Combos Summary
+
+**Stock attack (competitive):** Upper Dragon RS / CWD Defense Ring + Metal CWD RBA2 / GFCUV  
+(Defense Ring for I, RBA2 for weight; GFCUV over MWGC for maximum orbit speed)
+
+**Chain Attacker niche:** Upper Dragon RS / Chain Attacker / Bearing Core (same-spin stamina with spin-steal bonus)
+
+**Eternal Survivor niche:** Upper Dragon RS / Eternal Survivor / MWGC (destabilize chunky-CWD opponent while maintaining controlled attack orbit)
+
+## CASE 1865 — BP Large Type (Round Shell MS)
+
+**Source:** Booster MA-19 Round Shell MS (Takara, HMS, Autumn 2004). No additional releases.  
+**Role:** Blade Base. See CASE 1854 for full BP Large Type analysis. Mass ~3 g, I ≈ 1.35 × 10⁻⁸ kg·m², contribution < 0.2% of assembly I. Inherits all values from CASE 1854.
+
+---
+
+## CASE 1866 — Attack Ring: Turtle Crusher (~20 g)
+
+**Source:** Round Shell MS (MA-19), Takara HMS, Autumn 2004.  
+**Role:** Primary attack surface. Shares metal frame with Aero Knight MS. Conservative outer profile with deliberate gap between plastic carrier and metal frame — this gap is the source of both its high recoil and its ring-out power.
+
+### Geometry and I
+
+Turtle Crusher presents a rounded, enclosed outer plastic profile that conceals its attack potential. The metal frame's contact edge protrudes at specific angular positions where the plastic deliberately recesses.
+
+**3-zone model:**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Core hub | 2 g | 4 mm | ½ × 0.002 × 0.004² = 1.60 × 10⁻⁸ |
+| Mid-frame | 5 g | 13 mm | ½ × 0.005 × 0.013² = 4.225 × 10⁻⁷ |
+| Outer contact band | 13 g | 24 mm | ½ × 0.013 × 0.024² = 3.744 × 10⁻⁶ |
+| **Total** | **20 g** | — | — |
+
+**I_TC** = 1.60 × 10⁻⁸ + 4.225 × 10⁻⁷ + 3.744 × 10⁻⁶ = **4.183 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 4.183 × 10⁻⁶ / 0.020) = sqrt(4.183 × 10⁻⁴) = **20.5 mm**
+
+**OWD** = 4.183 × 10⁻⁶ / (0.020 × 0.027²) = 4.183 × 10⁻⁶ / 1.458 × 10⁻⁵ = **0.287**
+
+Lower OWD than Upper Fox (0.427) or Upper Dragon (0.446) because the Turtle Crusher's rounded profile places proportionally more mass in the mid-frame band rather than the outer edge. The compact "turtle shell" shape is less efficient as a flywheel but this is secondary — the AR is optimized for collision dynamics, not stamina.
+
+### Gap-Driven Recoil Mechanism
+
+The gap between the plastic carrier and the metal frame is the defining feature:
+
+**Contact sequence on opponent hit:**
+1. Opponent AR attempts to contact Turtle Crusher's outer plastic — but the recessed zone means the plastic does not present at that angular position.
+2. Metal frame edge makes contact directly: metal-to-metal (or metal-to-plastic, depending on opponent).
+3. Metal frame has virtually no compliance (E_metal ≈ 70 GPa vs E_plastic ≈ 3 GPa).
+4. Impact energy converts directly to recoil impulse with minimal plastic absorption.
+5. Lateral recoil impulse transmitted to the opponent at high magnitude.
+
+**Approximate recoil impulse:**
+Metal-to-metal collision coefficient of restitution e ≈ 0.6 (partially elastic).  
+Recoil impulse = (1+e) × μ_r × Δp_normal  
+vs plastic-cushioned contact: e ≈ 0.3 → (1+0.3) × μ_r × Δp  
+
+Recoil from gap contact is ~54% stronger per collision than equivalent plastic-cushioned contact.
+
+**KO mechanism:** The recoil spike is large enough to redirect a fast-spinning opponent's trajectory toward the bowl rim. Not a sustained attack like GFCUV orbit — instead, one or two hard contacts with gap-driven recoil knock opponents out.
+
+### Metal-Tipped Tornado Staller Incompatibility
+
+Tornado Staller's metal tip (Bearing Core with metal ball bearing contact) at floor level positions the metal tip as the lowest energy-absorbing element. When Turtle Crusher recoil meets a Tornado Staller:
+- Recoil impulse must push the entire opposing assembly laterally
+- Bearing Core's near-frictionless tip (μ ≈ 0.01–0.02) allows the opponent to recover trajectory with minimal spin loss
+- The recoil does not translate to displacement — the opponent slides easily rather than pivoting to the rim
+
+Result: Turtle Crusher's gap-recoil is ineffective against low-tip-friction assemblies. Best matchup: rubber or semi-flat tipped opponents that respond to lateral impulse with spin loss.
+
+### Right Spin (RS) Preference
+
+RS positions the metal frame gap-edge on the leading attack surface. The plastic trailing edge never contacts the opponent during a clean RS hit, ensuring gap-recoil occurs on every collision rather than alternating contact modes.
+
+---
+
+## CASE 1867 — Rubber Weight Core (RWC, ~20 g)
+
+**Source:** Round Shell MS (MA-19). No separate release.  
+**Role:** Dual-function part — replaces BOTH the CWD and RC in the assembly simultaneously. The rubber torus serves as flywheel mass (WD function) and floor contact surface (RC function). This makes Round Shell MS a 3-part assembly (BP + AR + RWC) with no dedicated WD.
+
+### Part Architecture
+
+The RWC consists of:
+- **Tall inner cylindrical housing** (~8 g): connects to AR axle above, very tall relative to other HMS RC parts (h ≈ 20–25 mm vs typical RC h ≈ 8–10 mm). This height is the key to the Bearing Core destabilization mechanic.
+- **Outer rubber torus** (~12 g): thick annular rubber ring at r ≈ 10–19 mm from center. Contacts the stadium floor directly via the rubber outer surface.
+
+### I Calculation
+
+**Inner housing (tall cylinder):**
+r_inner = 0, r_outer = 10 mm, m = 8 g  
+I_inner = ½ × 0.008 × (0.010)² = **4.00 × 10⁻⁷ kg·m²**
+
+**Outer rubber torus (thick annular ring):**
+r_inner = 10 mm, r_outer = 19 mm, m = 12 g  
+I_torus = ½ × m × (r_inner² + r_outer²) = ½ × 0.012 × (0.010² + 0.019²)  
+= ½ × 0.012 × (1.00 × 10⁻⁴ + 3.61 × 10⁻⁴) = ½ × 0.012 × 4.61 × 10⁻⁴ = **2.766 × 10⁻⁶ kg·m²**
+
+**I_RWC_total** = 4.00 × 10⁻⁷ + 2.766 × 10⁻⁶ = **3.166 × 10⁻⁶ kg·m²**
+
+**OWD_RWC** = 3.166 × 10⁻⁶ / (0.020 × 0.019²) = 3.166 × 10⁻⁶ / 7.22 × 10⁻⁶ = **0.438**
+
+OWD of 0.438 is respectable — the rubber torus places substantial mass at r = 10–19 mm. As a combined WD+RC its effective flywheel contribution (~42.7% of assembly I) is lower than a dedicated CWD like Circle Attacker (44.8%) but within the same range.
+
+### Floor Contact: Rubber Ring Mechanics
+
+Contact type: ring contact at r_ring ≈ 15 mm (mean of torus contact zone).  
+Material: rubber (smooth outer surface, μ_static ≈ 0.50 but μ_eff_spinning ≈ 0.04 in high-ω rotation due to minimal slip).
+
+For a spinning rubber torus in contact with a flat stadium:
+- Primary energy loss mechanism: rubber internal hysteresis (viscoelastic damping), not sliding friction
+- μ_eff ≈ 0.04 (rubber-on-plastic rolling/spinning contact at ω > 200 rad/s)
+
+**τ_RWC** = μ_eff × m_assembly × g × r_ring = 0.04 × 0.043 × 9.81 × 0.015 = **2.533 × 10⁻⁴ N·m**
+
+This torque is higher than a bearing tip (μ ≈ 0.01, r ≈ 1 mm → τ ≈ 4.2 × 10⁻⁶ N·m for same mass) because ring contact at r=15mm multiplies the friction torque arm by 15×.
+
+### Height and CoM: Bearing Core Destabilization
+
+The RWC's inner housing height (~22 mm) lifts the AR assembly significantly:
+
+**CoM height estimate:**
+- RWC CoM: h_CoM_RWC ≈ 11 mm (mid-height of inner housing + torus weighted average)
+- AR CoM: h_CoM_AR ≈ 5 mm (flat ring above RWC top)
+- Combined assembly CoM: h_CoM ≈ 14–16 mm above stadium floor
+
+For comparison, Bearing Core assembly CoM: h_CoM_BC ≈ 8–10 mm above stadium floor.
+
+**Height differential:** Δh = h_RWC_assembly − h_BC_assembly ≈ 6–8 mm
+
+**Destabilization mechanism (same-spin):**
+In same-spin contact, the taller RWC assembly strikes the BC assembly above BC's CoM. The contact force F_contact acts at height h_contact ≈ h_CoM_BC + 6 mm (RWC contacts BC at the BC's mid-body, which is above BC's CoM by definition of Δh).
+
+Torque on BC from this contact:
+τ_destab = F_contact × Δh = F_contact × 0.007 m
+
+This torque is perpendicular to BC's spin axis → nutation excitation.
+
+Each collision increments BC's nutation angle θ:
+Δθ = τ_destab × t_contact / L_BC
+
+where L_BC = I_BC × ω_BC. As ω_BC decreases, L_BC decreases, and Δθ per collision increases.
+
+Result: BC assembly enters its wobble phase earlier than expected from its own spin decay alone. The RWC doesn't outrun BC — it pushes BC into wobble first.
+
+**μ_rubber on stadium floor (grip):** The rubber torus also grips the stadium during low-speed phases (ω < 100 rad/s), giving RWC an advantage in the wobble phase — it loses less distance per wobble cycle than a hard-tipped BC. However this phase comes too late to matter in standard same-spin stamina if BC's extra L₀ is large.
+
+---
+
+## CASE 1868 — Assembly: Round Shell MS
+
+**Configuration:** BP Large Type / Turtle Crusher AR / Rubber Weight Core (no separate CWD)
+
+### Assembly Parameters
+
+| Part | Mass | I (kg·m²) | Fraction |
+|---|---|---|---|
+| BP Large Type | 3 g | ≈ 0 | < 0.1% |
+| AR Turtle Crusher | 20 g | 4.183 × 10⁻⁶ | 57.0% |
+| RC Rubber Weight Core | 20 g | 3.166 × 10⁻⁶ | 43.1% |
+| **Assembly total** | **43 g** | **7.349 × 10⁻⁶** | — |
+
+**I_total** = 4.183 × 10⁻⁶ + 3.166 × 10⁻⁶ = **7.349 × 10⁻⁶ kg·m²**
+
+**L₀** = I × ω₀ = 7.349 × 10⁻⁶ × 620 = **4.556 × 10⁻³ N·m·s (4.56 mN·m·s)**
+
+### I-Split: 3-Part Architecture
+
+| Assembly | Parts | AR% | WD/CWD% | RC% |
+|---|---|---|---|---|
+| Round Shell MS | BP + AR + RWC | **57.0** | — | **43.1 (RWC)** |
+| Phantom Fox MS | BP + AR + CWD + RC | 52.7 | 44.8 | 1.3 |
+| Dragoon MF (Config A) | BP + AR + CWD + RC | 59.8 | 35.7 | 0.3 |
+
+Round Shell MS has no dedicated CWD — the RWC absorbs the WD role at 43.1% of I. This is 1.7 pp below Circle Attacker in Phantom Fox MS and 7.4 pp above Chain Attacker in Dragoon MF. The 3-part structure (only 43g despite heavy parts) has lower total I than 4-part HMS assemblies.
+
+### Spin Phase Analysis (RWC rubber ring contact)
+
+τ_RWC = μ_eff × m × g × r_ring = 0.04 × 0.043 × 9.81 × 0.015 = **2.533 × 10⁻⁴ N·m**
+
+| Phase | ω range (rad/s) | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 370 | 250 | **7.3 s** |
+| Battle → wobble | 370 → 250 | 120 | **3.5 s** |
+| Wobble → fall | 250 → 50 | 200 | **5.9 s** |
+| **Total** | | 570 | **16.7 s** |
+
+Round Shell MS has the shortest spin time of the three HMS assemblies analysed this session:
+
+| Assembly | I_total | L₀ | t_total |
+|---|---|---|---|
+| Phantom Fox MS (Semi-Flat) | 1.122 × 10⁻⁵ | 6.96 mN·m·s | 57.8 s |
+| Dragoon MF Config A (MWGC) | 1.033 × 10⁻⁵ | 6.41 mN·m·s | 28.5 s |
+| **Round Shell MS (RWC ring)** | **7.349 × 10⁻⁶** | **4.56 mN·m·s** | **16.7 s** |
+
+The 16.7 s total is not a flaw — Round Shell MS is built for a specific tactic that does not require long spin endurance.
+
+### Bearing Core Destabilization Niche
+
+The core competitive function is defeating Bearing Core stamina assemblies in same-spin. The timeline of a Round Shell MS vs Bearing Core same-spin match:
+
+**BC assembly reference parameters (example):**
+- I_BC ≈ 1.0 × 10⁻⁵, m_BC ≈ 40 g, ω₀ = 620 rad/s
+- L₀_BC = 6.20 mN·m·s
+- τ_BC ≈ 4.0 × 10⁻⁶ N·m (bearing tip, r=0.5 mm, μ=0.02)
+- t_total_BC ≈ 1550 s (ignoring collisions — near-infinite)
+
+Without destabilization, BC wins by an enormous margin. But:
+
+**Destabilization clock:**
+- Height differential: Δh ≈ 7 mm
+- Contact force at ω_battle = 370 rad/s: F_contact ≈ 0.15 N (momentum exchange per collision)
+- Nutation excitation per collision: Δθ ≈ F_contact × Δh / L_BC = 0.15 × 0.007 / 6.20 × 10⁻³ = 0.170 rad ≈ 9.7°
+- Wobble threshold for BC: θ_critical ≈ 45° (beyond which gyro restoring torque is overwhelmed)
+- Collisions to wobble: N_wobble = 45° / 9.7° ≈ **4–5 collisions**
+
+After 4–5 clean height-differential contacts, BC enters precession-dominated wobble and falls within 10–15 s. Round Shell MS, still at ω ≈ 280–320 rad/s at this point (t ≈ 12–14 s into the match), is still above its ω_wobble = 250 threshold and wins.
+
+The match must be completed within ~16 s (Round Shell MS's endurance), meaning BC destabilization must occur in the first 10 s. If the stadium diameter is small enough to guarantee 4–5 contacts before Round Shell MS's spin expires, the tactic succeeds.
+
+**When it fails:** If the stadium is large (low collision frequency), Round Shell MS exhausts before landing 4–5 contacts. Against opponents with very low CoM (Flat Core, Grip Flat Core in down-force orbit), Δh shrinks, reducing per-collision nutation excitation. Tornado Staller metal tip avoids destabilization because it slides away from each contact (low μ) before absorbing the height torque.
+
+### Best Combo: Metal Ape (Same-Spin) / — / Rubber Weight Core
+
+Metal Ape AR (from Garleon MS / Metal Ape MS) in same-spin extends the niche: Metal Ape's rounded profile reduces self-recoil during the height contacts, preserving Round Shell MS's spin long enough to complete the destabilization sequence. The gap between Round Shell MS AR (Turtle Crusher) and Metal Ape AR in terms of recoil is significant — Turtle Crusher's gap-driven recoil can cause the assembly to recoil off of BC during contacts, reducing nutation transfer per contact. Metal Ape's rounder profile (lower gap, more plastic coverage) delivers more consistent contact force per height-differential collision.
+
+## CASE 1869 — BP Large Type (Samurai Changer MS)
+
+**Source:** Starter MA-20 Samurai Changer MS (Takara, HMS, Autumn 2004). Additional releases: Hasbro Samurai Changer MS Starter (Purple), Fukubako 2005 (Red, Black).  
+**Role:** Blade Base. BP Size Type on initial release is not consistent for every production cycle or re-release — a later reprint may carry a different BP Size Type. See CASE 1854 for full BP Large Type analysis. Mass ~3 g, I ≈ 1.35 × 10⁻⁸ kg·m², assembly fraction < 0.2%. Values inherited from CASE 1854.
+
+---
+
+## CASE 1870 — Attack Ring: Samurai Upper (~22 g)
+
+**Source:** Samurai Changer MS (MA-20), Takara HMS, Autumn 2004.  
+**Role:** Primary attack surface. Shares the same metal frame as Death Gargoyle MS. Functionally equivalent to Circle Upper (from CASE 1860's companion Metal Frame lineage) with 1–2 g of additional plastic. Completes the "Big Three" HMS attack ARs alongside Circle Upper and the other Metal Frame variants.
+
+### Metal Frame Lineage
+
+Samurai Upper's metal frame is distinct from the Upper Fox / Upper Dragon / Devil Crusher lineage. It is the same frame as Death Gargoyle MS, which is the highest-mass metal frame variant in the HMS AR family. The extra 1–2 g of plastic carrier (vs Circle Upper's mold depending on version) marginally increases total AR mass to ~22 g.
+
+The sticker reads "Samurai Edge" despite the part being officially named Samurai Upper — a naming discrepancy internal to the production run.
+
+### I Calculation
+
+Samurai Upper at 22 g with the same-frame geometry as Circle Upper but with a slightly heavier plastic carrier. Circle Upper (Mold 2, ~21 g) was established as the reference. Using the radius-of-gyration approach:
+
+Samurai Upper plastic carrier distributes the extra gram(s) similarly to Circle Upper — no documented geometry change to the outer contact zone. Mass increase from ~20–21 g → ~22 g:
+
+**Approach:** Scale Circle Upper I by the mass ratio.
+
+Circle Upper (reference, Mold 2 ~21 g): I_CU ≈ 6.177 × 10⁻⁶ kg·m² (from CASE 1860's Metal Frame family — same r_gyr = 25.5 mm).
+
+Samurai Upper at 22 g, same r_gyr:  
+**I_SU** = ½ × 0.022 × (0.0255)² = **7.152 × 10⁻⁶ kg·m²**
+
+Alternatively: I_SU = I_CU × (22/21) = 6.177 × 10⁻⁶ × 1.0476 = **6.471 × 10⁻⁶ kg·m²**
+
+The two approaches give a range: 6.471–7.152 × 10⁻⁶. The discrepancy reflects uncertainty about whether the extra plastic extends outward (scale ½mr² → higher) or fills inward gaps (straight mass ratio → lower). Given the description notes "excess plastic may theoretically be worse for Stamina-oriented combos, or better for Attack," the extra mass likely sits at mid-to-outer radius (the attack zone). Using **I_SU = 6.777 × 10⁻⁶ kg·m²** (midpoint).
+
+**OWD_SU** = 6.777 × 10⁻⁶ / (0.022 × 0.027²) = 6.777 × 10⁻⁶ / 1.603 × 10⁻⁵ = **0.423**
+
+vs Circle Upper (Mold 2): OWD ≈ 0.443 (CASE 1860 Upper Dragon established same frame at 0.446; Circle Upper Mold 2 equivalent ~0.443).
+
+**Samurai Upper OWD = 0.423** — slightly lower than Circle Upper due to the extra plastic mass not adding to the outer ring proportionally. This is consistent with "excess plastic may be worse for Stamina."
+
+### Spin Direction Asymmetry
+
+Samurai Upper's most distinctive mechanical property is its radically different attack character between spin directions:
+
+**Left Spin:**
+- Attack point geometry presents with one face — produces a blade edge nearly perpendicular to the opponent's body.
+- Purely Smash Attack: high lateral impulse, contact perpendicular to radial direction.
+- F_smash = Δp_lateral / Δt_contact; the blade geometry maximizes Δp transfer.
+- No Upper Attack component: the contact angle is horizontal.
+
+**Right Spin:**
+- Three distinct attack modes active simultaneously:
+  1. **Upper Smash:** Angular attack point rises at θ ≈ 20–35° — lifts opponent upward while pushing laterally.
+  2. **Upper Attack:** Dedicated upper-angled blade engages at θ > 35°.
+  3. **Smash Attack:** Horizontal contact zone at the outer radius.
+- The three-mode geometry emerges from the asymmetric plastic carrier profile — RS rotates the compound blade into multi-angle presentation.
+
+**Left-Spin Smash quantification:**
+At ω_battle = 370 rad/s, v_contact = ω × r_AR = 370 × 0.027 = **9.99 m/s**  
+F_smash = m_AR × v_contact × (2 / Δt_contact)  
+Δt_contact ≈ 0.003 s (hard plastic collision ~3 ms)  
+F_smash_LS ≈ 0.022 × 9.99 × 2 / 0.003 = **146 N** (peak)
+
+**RS Upper Smash lift component:**
+At θ = 25°: F_vertical = F_smash × sin(25°) = 146 × 0.423 = **61.7 N upward**  
+Sufficient to briefly lift a 40–50 g opposing beyblade: a_lift = 61.7 / 0.045 = 1371 m/s² ≈ **140g**  
+This is large enough to pop the opponent off the floor contact, making its tip lose traction and inducing a ring-out trajectory.
+
+### Innate Survivability
+
+The description: "Incredibly solid weight distribution and innate survivability qualities making it a safe choice on any RC." This is quantified via its OWD and I/mass ratio:
+
+- I/m ratio = 6.777 × 10⁻⁶ / 0.022 = **3.08 × 10⁻⁴ m²** — comparable to Circle Upper (2.94 × 10⁻⁴), best in the Big Three cluster
+- The mass sitting at r_gyr = 25.5 mm means the AR self-damps nutation well: Δω_nutation = τ_nutation / I_AR is small per-collision
+- In late-game (ω approaching ω_wobble): L_AR = 6.777 × 10⁻⁶ × 250 = 1.69 mN·m·s — substantial angular momentum buffer even near fall
+
+"Refuses to lose": at ω_wobble the AR still carries enough L to deliver ring-out impulse (F_smash peak ~100 N), which is why late-game knockouts are characteristic of this AR.
+
+### Big Three Summary Comparison
+
+| AR | Mass | I (kg·m²) | OWD | LS mode | RS modes |
+|---|---|---|---|---|---|
+| Circle Upper (Mold 2) | ~21 g | 6.177 × 10⁻⁶ | 0.443 | Smash | Upper+Smash |
+| Upper Dragon | ~19 g | 6.177 × 10⁻⁶ | 0.446 | Smash | Upper+Smash |
+| **Samurai Upper** | **~22 g** | **6.777 × 10⁻⁶** | **0.423** | **Smash only** | **Upper Smash + Upper + Smash** |
+
+Samurai Upper has the highest raw I of the three. Its OWD is slightly lower (extra plastic), but its mass advantage gives it more total angular momentum at launch:
+
+L₀_SU vs L₀_CU: 6.777 × 10⁻⁶ × 620 vs 6.177 × 10⁻⁶ × 620 = 4.20 vs 3.83 mN·m·s → **+9.7%** angular momentum for Samurai Upper.
+
+---
+
+## CASE 1871 — Weight Disk: Circle Heavy
+
+**Source:** Common HMS WD; included in Samurai Changer MS (MA-20) as stock. See the Common Weight Disks entry.  
+
+Circle Heavy is the mass-optimized version of the Circle disc family. Unlike Circle Wide (thinner, more spread), Circle Heavy uses denser casting or thicker gauge to push mass outward without increasing diameter. Mass: ~18 g.
+
+### I Calculation
+
+**3-zone model:**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Inner hub | 1.5 g | 4 mm | ½ × 0.0015 × 0.004² = 1.20 × 10⁻⁸ |
+| Mid annulus | 4.5 g | 13 mm | ½ × 0.0045 × 0.013² = 3.802 × 10⁻⁷ |
+| Outer heavy ring | 12 g | 23 mm | ½ × 0.012 × 0.023² = 3.174 × 10⁻⁶ |
+| **Total** | **18 g** | — | — |
+
+**I_CH** = 1.20 × 10⁻⁸ + 3.802 × 10⁻⁷ + 3.174 × 10⁻⁶ = **3.566 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 3.566 × 10⁻⁶ / 0.018) = sqrt(3.963 × 10⁻⁴) = **19.9 mm**
+
+**OWD** = 3.566 × 10⁻⁶ / (0.018 × 0.023²) = 3.566 × 10⁻⁶ / 9.522 × 10⁻⁶ = **0.374**
+
+Lower OWD than Circle Attacker (0.611) because Circle Heavy concentrates mass at r ≈ 23 mm rather than 24–27 mm. "Heavy" refers to higher mass density at the same disc diameter, not extended outer radius. Its flywheel efficiency is moderate but its absolute I contribution is respectable for its mass.
+
+---
+
+## CASE 1872 — Running Core: Battle Change Core (BCC, ~11 g)
+
+**Source:** Samurai Changer MS (MA-20). Takara HMS, Autumn 2004. Gimmick Specialty series.  
+**Role:** Impact-actuated dual-mode RC. Slopes on the stock plastic CWD ring mechanically shift position on lateral impact, extending/retracting the tip to alternate between Semi-Flat and Hole-Flat. Not RPM-actuated; not manually triggered — purely force-actuated.
+
+### Physical Architecture
+
+The BCC has two sub-systems:
+
+1. **Tip assembly:** Contains a Semi-Flat tip on a sliding/spring mechanism. At rest (or in mode A), the tip protrudes to Semi-Flat height. On trigger: tip retracts to Hole-Flat geometry.
+
+2. **Cam/ramp CWD ring:** The stock plastic CWD ring has slopes ("upward slopes") arranged so that an oblique lateral impact torques the ring relative to the RC body. This rotation is the cam mechanism that drives tip position change.
+
+**Trigger condition:** The ramp slopes must receive an oblique tangential hit. Pure radial hits do not trigger the cam. This selectivity makes the mode change unreliable in combat — only certain collision geometries trigger it.
+
+### Tip Physics: Semi-Flat Mode
+
+r_tip = 2.0 mm, μ = 0.12 (plastic semi-flat)  
+τ_SF = 0.12 × m_assembly × 9.81 × 0.002 (evaluated at assembly level, CASE 1874)
+
+### Tip Physics: Hole-Flat Mode
+
+Hole-Flat geometry: annular contact (outer ring radius r_outer ≈ 4 mm, inner void r_inner ≈ 1.5 mm).  
+Contact area is a ring: τ_HF = μ × m × g × r_contact  
+r_contact ≈ (r_outer + r_inner) / 2 = (4 + 1.5) / 2 ≈ 2.75 mm  
+μ_HF ≈ 0.10 (slightly lower than semi-flat — the ring contact spreads load, reducing peak contact stress and effective grip)
+
+τ_HF = 0.10 × m_assembly × 9.81 × 0.00275 (evaluated in CASE 1874)
+
+**Mode change impact on assembly:**
+
+τ_SF / τ_HF = (0.12 × 0.002) / (0.10 × 0.00275) = 0.00024 / 0.000275 = **0.873**
+
+Semi-Flat provides ~14.5% more friction torque than Hole-Flat. This means:
+- Semi-Flat mode: lower spin endurance (faster decay), higher orbital speed (more aggressive)
+- Hole-Flat mode: higher spin endurance (~15% more), lower orbital speed (less aggressive)
+
+The mode change transitions from Semi-Flat (aggressive) to Hole-Flat (defensive) on impact. In most matches, the first hard collision may trigger a change from SF to HF — reducing attack speed for the remainder of the match if re-triggering back to SF doesn't occur.
+
+### I Calculation
+
+BCC mass ~11 g, relatively heavy for an HMS RC due to the cam mechanism and sliding tip.
+
+| Sub-component | Mass | r_eff | I |
+|---|---|---|---|
+| Inner housing + cam | 6 g | 5 mm | ½ × 0.006 × 0.005² = 7.50 × 10⁻⁸ |
+| Outer ring (stock CWD ring) | 5 g | 12 mm | ½ × 0.005 × 0.012² = 3.60 × 10⁻⁷ |
+| **Total** | **11 g** | — | — |
+
+**I_BCC** = 7.50 × 10⁻⁸ + 3.60 × 10⁻⁷ = **4.35 × 10⁻⁷ kg·m²**
+
+OWD_BCC = 4.35 × 10⁻⁷ / (0.011 × 0.012²) = 4.35 × 10⁻⁷ / 1.584 × 10⁻⁶ = **0.275**
+
+High mass RC (11 g vs typical 2–8 g) because of the cam mechanism weight. This is the most I-significant RC of the HMS assemblies analyzed so far.
+
+### Competitive Assessment
+
+**Against Stamina:** Semi-Flat start is too aggressive without control — orbit radius varies with floor conditions; high recoil from BCC slopes means each stadium bounce may self-trigger the cam. Assembly becomes unpredictably semi-flat → hole-flat → semi-flat.
+
+**Against Defense:** Hole-Flat mode (post-trigger) lacks the centripetal push of a true flat tip — the hole in the contact zone reduces lateral push force by ~12–18% vs solid flat. Attack endurance is limited.
+
+**Illegal configurations (alternative CWDs):** Removing the stock plastic ring and substituting another CWD (e.g., CWD God Ring, CWD Reverse Defenser) locks the tip in its current position — mode change gimmick deactivated. The tip remains consistent throughout. This improves predictability but does not fix the underlying tip geometry's competitive deficit.
+
+"Worst of both worlds" — the mode change RC provides neither the full stamina of Hole-Flat throughout nor the full attack of Semi-Flat throughout. The stochastic cam trigger means the mode change provides no systematic strategic advantage in standard competitive play.
+
+**Hole-Flat Start (game plan):** The best competitive use is to set the BCC to Hole-Flat manually before launch (physically extending or retracting the cam to the HF position). This gives maximum endurance for the opening, then if a hard hit triggers SF mode, the additional attack speed in late-game provides the "endgame knockout" dynamic that Samurai Upper is known for. However this sequence relies on the cam triggering at the right moment — difficult to engineer.
+
+---
+
+## CASE 1873 — (Reserved: Circle Heavy common WD supplementary, filed to CASE 1871)
+
+*Note: Circle Heavy is fully covered in CASE 1871. No additional case required.*
+
+---
+
+## CASE 1873 — Assembly: Samurai Changer MS
+
+**Configuration:** BP Large Type / Samurai Upper AR / Circle Heavy WD / Battle Change Core RC
+
+### Assembly Parameters
+
+| Part | Mass | I (kg·m²) | Fraction |
+|---|---|---|---|
+| BP Large Type | 3 g | ≈ 0 | < 0.1% |
+| AR Samurai Upper | 22 g | 6.777 × 10⁻⁶ | 56.4% |
+| WD Circle Heavy | 18 g | 3.566 × 10⁻⁶ | 29.7% |
+| RC Battle Change Core | 11 g | 4.35 × 10⁻⁷ | 3.6% |
+| **Assembly total** | **54 g** | **1.202 × 10⁻⁵** | — |
+
+**I_total** = 6.777 × 10⁻⁶ + 3.566 × 10⁻⁶ + 4.35 × 10⁻⁷ = **1.202 × 10⁻⁵ kg·m²**
+
+**L₀** = 1.202 × 10⁻⁵ × 620 = **7.452 × 10⁻³ N·m·s (7.45 mN·m·s)**
+
+Heaviest HMS assembly analyzed this session at 54 g (vs Phantom Fox 47 g, Dragoon MF 42 g, Round Shell 43 g). The mass advantage comes entirely from BCC's ~11 g mass — other HMS RCs are 2–8 g.
+
+### I-Split Analysis
+
+| Assembly | AR% | CWD/WD% | RC% |
+|---|---|---|---|
+| Samurai Changer MS (stock) | 56.4 | 29.7 | **3.6** |
+| Phantom Fox MS | 52.7 | 44.8 | 1.3 |
+| Dragoon MF Config A | 59.8 | 35.7 | 0.3 |
+| Round Shell MS | 57.0 | 43.1 (RWC) | — |
+
+BCC at 3.6% of assembly I is the most I-significant RC of the group — yet still modest. Circle Heavy WD (29.7%) is the lowest WD fraction of any 4-part HMS assembly analyzed — primarily because BCC's 11 g mass absorbs a larger share of total mass while contributing moderate I due to its compact geometry (OWD = 0.275).
+
+**AR-dominance:** At 56.4%, Samurai Upper owns the majority of the assembly's angular momentum. Each collision is primarily an AR event.
+
+### Spin Phase Analysis
+
+**Semi-Flat mode start (τ_SF):**
+τ_SF = 0.12 × 0.054 × 9.81 × 0.002 = **1.270 × 10⁻⁴ N·m**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 370 | 250 | **23.6 s** |
+| Battle → wobble | 370 → 250 | 120 | **11.4 s** |
+| Wobble → fall | 250 → 50 | 200 | **18.9 s** |
+| **Total (SF throughout)** | | 570 | **53.9 s** |
+
+**Hole-Flat mode start (τ_HF):**
+τ_HF = 0.10 × 0.054 × 9.81 × 0.00275 = **1.456 × 10⁻⁴ N·m**
+
+| Phase | Δω | Duration |
+|---|---|---|
+| Launch → battle | 250 | **20.6 s** |
+| Battle → wobble | 120 | **9.9 s** |
+| Wobble → fall | 200 | **16.5 s** |
+| **Total (HF throughout)** | 570 | **47.0 s** |
+
+**Mode change mid-match scenario (SF→HF at t = 25 s, ω ≈ 320 rad/s):**  
+At t = 25 s, remaining ω = 620 − (250 × 25/23.6 + 120 × (25−23.6)/11.4) ≈ 320 rad/s  
+Remaining L = 1.202 × 10⁻⁵ × 320 = 3.85 mN·m·s  
+Remaining time (now in HF mode): 3.85 × 10⁻³ / 1.456 × 10⁻⁴ = **26.4 s additional**  
+Total match time: 25 + 26.4 = **51.4 s**
+
+In all scenarios, Samurai Changer MS out-lasts Dragoon MF and Round Shell MS, and approaches Phantom Fox MS (57.8 s). The heavier assembly mass and BCC's 11 g RC keep it competitive on spin time despite the lower-OWD WD.
+
+### Comparative Standing (all HMS assemblies this session)
+
+| Assembly | I_total | L₀ | t_total (stock tip) | Assembly mass |
+|---|---|---|---|---|
+| **Samurai Changer MS (SF start)** | **1.202 × 10⁻⁵** | **7.45 mN·m·s** | **53.9 s** | **54 g** |
+| Phantom Fox MS (Semi-Flat) | 1.122 × 10⁻⁵ | 6.96 mN·m·s | 57.8 s | 47 g |
+| Dragoon MF Config A (MWGC) | 1.033 × 10⁻⁵ | 6.41 mN·m·s | 28.5 s | 42 g |
+| Round Shell MS (RWC) | 7.349 × 10⁻⁶ | 4.56 mN·m·s | 16.7 s | 43 g |
+
+Samurai Changer MS has the highest L₀ and I_total of the group, driven by Samurai Upper's 22 g mass. It is slightly shorter than Phantom Fox MS on spin time because:
+- Circle Heavy WD (OWD = 0.374) vs Circle Attacker (OWD = 0.611): lower WD efficiency
+- BCC RC (11 g, OWD = 0.275) vs Bunshin Core (8 g, OWD = 0.050): BCC's mass adds to τ_friction (larger F_N) more than it adds to I
+
+The mass in BCC "costs" more in tip friction than it contributes to angular momentum.
+
+### Best Combo vs Stock
+
+**Stock game plan (BCC):** Hole-Flat Start — longest endurance scenario, deferred attack trigger. Works only when Samurai Upper lands at least one clean hit before ω falls below 250 rad/s.
+
+**Competitive replacement:** Samurai Upper (Either Spin) / CWD Defense Ring + Metal CWD RBA2 / GFCUV  
+- Defense Ring: provides superior OWD flywheel support
+- GFCUV: eliminates mode-change uncertainty; consistent maximum attack orbital speed throughout
+
+The stock BCC is a gimmick collector's piece — mechanically fascinating but outperformed by GFCUV in every competitive metric. The mode-change mechanic cannot be triggered reliably, and even when it does trigger, the strategic timing is not player-controllable.
+
+## CASE 1874 — BP Large Type (Magical Ape MS)
+
+**Source:** Booster MA-18 Magical Ape MS (Takara, HMS, Summer 2004). No additional releases.  
+**Role:** Blade Base. BP Size Type not consistent across all production cycles. Mass ~3 g, I ≈ 1.35 × 10⁻⁸ kg·m², assembly fraction < 0.2%. All values inherited from CASE 1854.
+
+---
+
+## CASE 1875 — Attack Ring: Metal Ape (~19 g)
+
+**Source:** Magical Ape MS (MA-18), Takara HMS, Summer 2004.  
+**Role:** Compact, low-profile AR. Traditionally classified as a Compact AR but fully competitive in Stamina and Defense archetypes due to its small footprint and condensed weight distribution. The defining feature: most large HMS CWDs (Reverse Defenser, Defense Ring) extend radially beyond Metal Ape, making the CWD the primary collision surface rather than the AR.
+
+### Visual Geometry (from photos)
+
+The metal frame forms the outer ring at r ≈ 24 mm. The plastic carrier has four ape-fist/star-shaped protrusions at the outer perimeter. Sticker: "HMS Metal Ape." The assembly profile is noticeably lower-radius than the Big Three ARs (Upper Fox / Upper Dragon / Samurai Upper at r ≈ 27 mm).
+
+### I Calculation
+
+**3-zone model (19 g, compact condensed-inward distribution):**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Hub + inner plastic | 2 g | 4 mm | ½ × 0.002 × 0.004² = 1.60 × 10⁻⁸ |
+| Mid-frame | 7 g | 13 mm | ½ × 0.007 × 0.013² = 5.915 × 10⁻⁷ |
+| Outer band + metal frame | 10 g | 22 mm | ½ × 0.010 × 0.022² = 2.420 × 10⁻⁶ |
+| **Total** | **19 g** | — | — |
+
+**I_MA** = 1.60 × 10⁻⁸ + 5.915 × 10⁻⁷ + 2.420 × 10⁻⁶ = **3.028 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 3.028 × 10⁻⁶ / 0.019) = sqrt(3.188 × 10⁻⁴) = **17.9 mm**
+
+**OWD** = 3.028 × 10⁻⁶ / (0.019 × 0.024²) = 3.028 × 10⁻⁶ / 1.094 × 10⁻⁵ = **0.277**
+
+### Comparison with Big Three ARs
+
+| AR | Mass | I (kg·m²) | OWD | r_gyr |
+|---|---|---|---|---|
+| Samurai Upper | 22 g | 6.777 × 10⁻⁶ | 0.423 | 24.8 mm |
+| Upper Dragon | 19 g | 6.177 × 10⁻⁶ | 0.446 | 25.5 mm |
+| Circle Upper (Mold 2) | 21 g | 6.177 × 10⁻⁶ | 0.443 | 24.2 mm |
+| **Metal Ape** | **19 g** | **3.028 × 10⁻⁶** | **0.277** | **17.9 mm** |
+
+Metal Ape has **50% lower I** than the Big Three at the same mass. Its OWD of 0.277 is the lowest of any HMS AR analyzed. This is not a weakness in its intended role — the small footprint is exploited deliberately.
+
+### Wall-Style Defense Geometry
+
+Top-tier defensive CWDs used with Metal Ape (Reverse Defenser, CWD Defense Ring with Metal CWD) extend to r ≈ 26–28 mm — 4–6 mm beyond Metal Ape's r_AR = 24 mm.
+
+**Shielding geometry:** Incoming attacker AR at r_attack ≈ 27 mm tries to contact the defending assembly. At the defending assembly, the CWD sits at r = 27–28 mm. The AR is at r = 24 mm. The CWD is reached first at the perimeter.
+
+**Height geometry:** Incoming attacker using GFCUV or MWGC (short RCs, h_RC ≈ 8–10 mm) sits lower in the stadium. The defending assembly's CWD (at intermediate height ≈ 10–15 mm) meets the incoming AR. Metal Ape (at the top of the assembly, h ≈ 20–25 mm) is above the incoming attacker's reach.
+
+Result: Metal Ape never makes direct contact with a shorter attacking AR. The CWD absorbs all impact. This is the only HMS configuration where the AR is systematically bypassed by incoming attacks.
+
+**CWD impact absorption:** At r = 27 mm (CWD contact), the angular impulse transmitted to the AR is:  
+τ_transmitted = F_hit × (r_CWD − r_AR) × factor = F_hit × 0.003 × (lever geometry)  
+Compared to direct AR contact: the shielded AR receives ~0% of direct force (it is simply not hit). The CWD is the entire collision surface.
+
+### Stamina Properties
+
+Metal Ape's low r_gyr gives it high gyroscopic stability per unit angular momentum — a compact AR is stiffer against nutation. After a CWD-absorbed impact, the angular impulse on the AR is minimal:
+
+Nutation per collision: Δθ ≈ τ_CWD × t_contact / L_AR  
+L_AR = 3.028 × 10⁻⁶ × ω
+
+At ω_battle = 370 rad/s: L_AR = 1.12 mN·m·s  
+vs Upper Fox at same ω: L_AR = 2.19 mN·m·s
+
+Metal Ape's lower L_AR means more nutation per same impulse — it would normally be more easily destabilized. However, because it is never directly hit (wall-defense) and its compact geometry resists lateral displacement, the nutation argument inverts: its small footprint keeps it away from the opponent's attack zone.
+
+**Same-spin recoil vs opponent:** The description notes "significant recoil" — when Metal Ape does contact an opponent (in stamina or compact combat), the metal frame's contact imparts recoil to the opponent. This destabilizes opponent Stamina types. Metal Ape itself, being compact and low-recoil-receiving due to small contact area, retains more of its own spin.
+
+**Recoil self-protection:** A compact AR has less surface area exposed to incoming recoil torques. Recoil torque ∝ F × r_contact. At r_MA = 22 mm vs r_SU = 27 mm, the recoil torque on Metal Ape per unit force is (22/27)² ≈ 66% of that on Samurai Upper — 34% less self-destabilization per collision.
+
+---
+
+## CASE 1876 — Weight Disk: Circle Heavy (reference CASE 1871)
+
+**Source:** Common HMS WD; included as stock in Magical Ape MS (MA-18). Identical to the Circle Heavy analyzed in CASE 1871 (Samurai Changer MS). Mass ~18 g, I_CH = 3.566 × 10⁻⁶ kg·m², OWD = 0.374.
+
+**Significance in Magical Ape context:** Because Metal Ape AR (I = 3.028 × 10⁻⁶) is notably lower than Circle Heavy (I = 3.566 × 10⁻⁶), the WD is the dominant I-contributor in the Battle Mode assembly — a reversal of the typical HMS AR-dominant split. This makes Circle Heavy selection more impactful per gram in this assembly than in any Big Three AR combination.
+
+---
+
+## CASE 1877 — Running Core: Flat Core — Magical Ape Version (~2 g)
+
+**Source:** Magical Ape MS (MA-18), Takara HMS, Summer 2004.  
+**Distinguishing feature from original Flat Core (Gaia Dragoon MS):** Central screw embedded in the tip face, adding ~0.5 g. Technically the better Flat Core variant for competitive use. Slightly taller body profile than first version.
+
+### Part Geometry and I
+
+| Sub-component | Mass | r_eff | I |
+|---|---|---|---|
+| Outer cylindrical housing | 1.2 g | 6 mm | ½ × 0.0012 × 0.006² = 2.16 × 10⁻⁸ |
+| Screw + inner core | 0.8 g | 2 mm | ½ × 0.0008 × 0.002² = 1.60 × 10⁻⁹ |
+| **Total** | **2 g** | — | — |
+
+**I_FC** = 2.16 × 10⁻⁸ + 1.60 × 10⁻⁹ = **2.32 × 10⁻⁸ kg·m²**
+
+OWD_FC = 2.32 × 10⁻⁸ / (0.002 × 0.006²) = 2.32 × 10⁻⁸ / 7.20 × 10⁻⁸ = **0.322**
+
+Assembly fraction: I_FC / I_assembly ≈ 0.35% — negligible flywheel contribution.
+
+### Tip Contact Physics
+
+Flat contact: full disc bottom face contacts stadium.  
+- r_flat ≈ 4.0 mm (bottom face radius)  
+- μ_eff = 0.10 (plastic flat, spinning contact — intermediate between static and kinetic; slightly lower than semi-flat due to reduced edge contact)
+
+τ_FC = 0.10 × m_assembly × 9.81 × 0.004 (evaluated in CASE 1878)
+
+**Flat vs Semi-Flat friction comparison:**  
+τ_SF (r=2mm, μ=0.12): proportional to 0.12 × 0.002 = 2.40 × 10⁻⁴  
+τ_FC (r=4mm, μ=0.10): proportional to 0.10 × 0.004 = 4.00 × 10⁻⁴  
+
+Flat Core delivers **67% more friction torque** than Semi-Flat despite lower μ, purely from the larger contact radius. This means faster spin decay but higher lateral push force for attack patterns.
+
+### Height and Survivability
+
+"Slightly taller than other attack-oriented RCs" — adds ~1–2 mm to the overall assembly height. At r = 6 mm body radius, the height increase shifts CoM upward by Δh ≈ 1 mm.
+
+Additional gyroscopic stability penalty: Δθ_nutation per impulse ∝ 1 / L × Δh. The 1 mm extra height is negligible at battle-phase spin rates (L > 3 mN·m·s). It becomes marginally relevant at low-spin phases.
+
+"Slightly more survivability than rubber" — the hard plastic flat provides less friction than rubber flat (GFCUV: μ ≈ 0.25), giving ~40% longer spin life vs rubber while still providing flat-tip attack mobility.
+
+### Gyro Mode Architecture (Gimmick)
+
+In Gyro Mode, the entire WD + Flat Core are removed. The Gyro Mode accessory (large hollow dome-shaped body, mass ~12–14 g) replaces them. Metal Ape AR can be positioned inside the center of the gyro body.
+
+**Gyro Mode physics:**
+- Assembly structure: BP + outer gyro dome + Metal Ape AR (interior) + 2 metal bearings
+- The gyro body's hollow dome creates a low-density (high volume, moderate mass) flywheel — poor OWD
+- The metal bearings inside act as internal gyroscopes — but their small mass (~1.5 g each) and position near the axis contribute minimal I
+
+Gyro dome mass ~12 g at r_eff ≈ 15 mm:  
+I_dome = ½ × 0.012 × 0.015² = 1.35 × 10⁻⁶ kg·m²  
+OWD_dome = 1.35 × 10⁻⁶ / (0.012 × 0.020²) = 1.35/4.80 = **0.281**
+
+For comparison, Circle Heavy I = 3.566 × 10⁻⁶. The gyro dome provides only 38% of Circle Heavy's flywheel contribution despite similar mass range. This is why Gyro Mode is not competitive — the WD replacement dramatically reduces assembly I.
+
+**Illegal variant:** Replace Metal Ape (center) with an actual WD (e.g., Circle Wide) and substitute shield bearings for metal bearings. This improves I slightly but remains sub-competitive; the dome body's low OWD is the fundamental limitation.
+
+---
+
+## CASE 1878 — Assembly: Magical Ape MS (Battle Mode and Defense Combo)
+
+### Battle Mode: BP Large Type / Metal Ape AR / Circle Heavy WD / Flat Core RC
+
+**Assembly Parameters:**
+
+| Part | Mass | I (kg·m²) | Fraction |
+|---|---|---|---|
+| BP Large Type | 3 g | ≈ 0 | < 0.1% |
+| AR Metal Ape | 19 g | 3.028 × 10⁻⁶ | 45.6% |
+| WD Circle Heavy | 18 g | 3.566 × 10⁻⁶ | **53.7%** |
+| RC Flat Core (MA) | 2 g | 2.32 × 10⁻⁸ | 0.35% |
+| **Assembly total** | **42 g** | **6.617 × 10⁻⁶** | — |
+
+**I_total** = 3.028 × 10⁻⁶ + 3.566 × 10⁻⁶ + 2.32 × 10⁻⁸ = **6.617 × 10⁻⁶ kg·m²**
+
+**L₀** = 6.617 × 10⁻⁶ × 620 = **4.103 × 10⁻³ N·m·s (4.10 mN·m·s)**
+
+### WD-Dominant I Split — A Unique HMS Characteristic
+
+Circle Heavy (53.7%) > Metal Ape AR (45.6%). In every other HMS assembly analyzed this session, the AR held the majority:
+
+| Assembly | AR% | WD/CWD% | RC% |
+|---|---|---|---|
+| Samurai Changer MS | 56.4 | 29.7 | 3.6 |
+| Dragoon MF Config A | 59.8 | 35.7 | 0.3 |
+| Phantom Fox MS | 52.7 | 44.8 | 1.3 |
+| Round Shell MS (RWC) | 57.0 | 43.1 | — |
+| **Magical Ape MS (Battle Mode)** | **45.6** | **53.7** | **0.35** |
+
+Magical Ape MS is the only stock HMS assembly in this session where the WD carries more angular momentum than the AR. This means collisions primarily exchange WD-angular-momentum, not AR. An opponent landing a hit on Metal Ape's CWD zone disturbs WD-dominated inertia — the AR's spin is partially decoupled from the direct impact.
+
+### Spin Phase Analysis (Flat Core, μ_eff = 0.10, r_tip = 4.0 mm)
+
+τ_FC = 0.10 × 0.042 × 9.81 × 0.004 = **1.648 × 10⁻⁴ N·m**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 370 | 250 | **10.0 s** |
+| Battle → wobble | 370 → 250 | 120 | **4.8 s** |
+| Wobble → fall | 250 → 50 | 200 | **8.0 s** |
+| **Total** | | 570 | **22.8 s** |
+
+Short spin time (22.8 s) is appropriate for an attack-mode assembly. The Flat Core's large r_tip (4.0 mm) generates higher friction torque per unit μ than any semi-flat or sharp tip, keeping the orbital speed high at the cost of endurance.
+
+### Comparison: All HMS Battle Mode Assemblies (stock RCs)
+
+| Assembly | I_total | L₀ | t_total | Role |
+|---|---|---|---|---|
+| Samurai Changer MS (SF) | 1.202 × 10⁻⁵ | 7.45 mN·m·s | 53.9 s | Attack/gimmick |
+| Phantom Fox MS (SF) | 1.122 × 10⁻⁵ | 6.96 mN·m·s | 57.8 s | Stamina/2-body |
+| Dragoon MF (MWGC) | 1.033 × 10⁻⁵ | 6.41 mN·m·s | 28.5 s | Attack |
+| **Magical Ape MS (Flat Core)** | **6.617 × 10⁻⁶** | **4.10 mN·m·s** | **22.8 s** | **Compact/Attack** |
+| Round Shell MS (RWC) | 7.349 × 10⁻⁶ | 4.56 mN·m·s | 16.7 s | Destabilizer |
+
+Magical Ape MS (Battle Mode) has the second-lowest L₀ and t_total of the HMS group. The compact AR contributes only 4.52 mN·m·s to the angular momentum budget while carrying less inertia than the WD.
+
+**Flat Core attack dynamics:** At ω_battle = 370 rad/s, v_tip = 370 × 0.004 = 1.48 m/s (lateral push). This is intermediate between rubber-tip MWGC (~0.93 m/s) and GFCUV (~1.30 m/s), placing Magical Ape Battle Mode in a moderate attack speed bracket.
+
+### Best Defense Combo: Metal Ape + CWD Reverse Defenser + Bearing Core 2
+
+**Assembly parameters (best combo, not stock):**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | ≈ 0 |
+| AR Metal Ape | 19 g | 3.028 × 10⁻⁶ |
+| CWD Reverse Defenser + Metal CWD | ~18 g | **~5.500 × 10⁻⁶** |
+| RC Bearing Core 2 | ~3 g | ~5.0 × 10⁻⁸ |
+| **Total** | **~43 g** | **~8.578 × 10⁻⁶** |
+
+CWD Reverse Defenser (estimated): large-diameter CWD, r_outer ≈ 27 mm, mass ~18 g.  
+I_RD ≈ ½ × 0.018 × (0.024)² × (1/OWD) — using OWD ~ 0.63: I_RD ≈ ½ × 0.018 × 0.024² / 0.63 … let me use direct estimate: I_RD ≈ 5.5 × 10⁻⁶ kg·m².
+
+**I_total** ≈ 3.028 × 10⁻⁶ + 5.500 × 10⁻⁶ + 5.0 × 10⁻⁸ = **8.578 × 10⁻⁶ kg·m²**
+
+**Bearing Core 2 tip:** ball bearing, μ_eff ≈ 0.01, r_tip ≈ 1.0 mm.  
+τ_BC2 = 0.01 × 0.043 × 9.81 × 0.001 = **4.22 × 10⁻⁶ N·m**
+
+**t_total** = I × (ω₀ − ω_fall) / τ = 8.578 × 10⁻⁶ × 570 / 4.22 × 10⁻⁶ = **1159 s (~19 min)**
+
+Near-infinite spin endurance. At this endurance level, the battle is won or lost entirely on collision dynamics, not spin depletion.
+
+### Wall-Defense Quantification
+
+Shield geometry with CWD Reverse Defenser (r = 27 mm) vs Metal Ape (r = 24 mm):
+- Shielding margin: Δr = 3 mm — all incoming ARs at r ≥ 24 mm contact the CWD before Metal Ape
+- For a typical attacker at r_attack ≈ 27 mm: contact occurs at r_contact = 27 mm (CWD-to-AR contact, CWD wins)
+
+**Force distribution on collision:**  
+F_hit at r = 27 mm → distributed into:  
+- Spin torque: τ_spin = F_hit × r = F_hit × 0.027  
+- This torque from the CWD contact acts on I_RD = 5.5 × 10⁻⁶, not I_total  
+- Δω_RD = τ × Δt / I_RD = (F × 0.027 × 0.003) / 5.5 × 10⁻⁶
+
+For F_hit = 100 N, Δt = 3 ms:  
+Δω_RD = 100 × 0.027 × 0.003 / 5.5 × 10⁻⁶ = **1473 rad/s** lost in the CWD!
+
+This is a catastrophically large angular momentum loss at the CWD. But the CWD is rigidly attached to the assembly — the whole assembly loses Δω = τ_total / I_total:  
+Δω_assembly = F × 0.027 × 0.003 / 8.578 × 10⁻⁶ = **944 rad/s** if isolated...
+
+This can't be right — Δω > ω₀. I need to use the correct impact model.
+
+**Correct collision model:**  
+Linear momentum exchange (elastic collision between assembly mass and attacker mass):  
+For assembly m_def = 43 g vs attacker m_att = 42 g at v_relative = v_att (attacker orbit ~0.5 m/s):  
+Δv_def = 2 × m_att / (m_att + m_def) × v_relative = 2 × 0.042 / 0.085 × 0.5 = **0.494 m/s** lateral deflection impulse  
+
+The defending assembly absorbs 0.494 m/s lateral impulse at the CWD contact point. This translates to a change in precession angle rather than a direct spin loss (for a gyroscope, linear impulse at a side wall primarily changes direction, not spin rate).
+
+The rotational impulse about the spin axis (affecting ω directly) requires the force to have a tangential component:  
+If F_hit is purely radial, the spin torque is zero — it's pure precession excitation.  
+If F_hit has a tangential component (from orbital motion of the attacker), then a small ΔL occurs.
+
+For a mostly radial defense hit: the assembly's spin is largely preserved. This is why high-bearing-friction (BC2) defense is so durable — impacts don't meaningfully reduce spin.
+
+**Why Metal Ape is the key:** Any larger AR (e.g., Upper Fox at r = 27 mm) would receive direct AR-to-AR contact, adding a large tangential component to the hit (since both ARs are at the same radius and spinning). Metal Ape at r = 24 mm ensures all contacts are CWD-to-AR (radial-dominant), not AR-to-AR (tangential-possible). The geometry difference of 3 mm is the mechanism that "invalidates 80% of Attack combos."

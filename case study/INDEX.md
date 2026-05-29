@@ -5,7 +5,7 @@ Total: **1660 cases** across 14 files + 1 master reference.
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1854** — All new cases must start here. Update this block before writing any new case.
+> **1874** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,7 +23,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 · 1682–1685 · 1686–1690 · 1733–1736 · 1737–1741 · 1742–1746 · 1780–1785 · 1786–1791 · 1792–1797 · 1798–1803 · 1845–1853 | 382 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 · 1682–1685 · 1686–1690 · 1733–1736 · 1737–1741 · 1742–1746 · 1780–1785 · 1786–1791 · 1792–1797 · 1798–1803 · 1845–1853 · 1854–1868 · 1869–1873 | 404 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
@@ -114,6 +114,10 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1792–1797 | 6 | CS9 overflow: Dark Cancer CH120SF (MFB Metal Fusion starter — Face Bolt, Cancer ER slopes, Dark FW OWD=0.530 distributed-mass analysis, CH120 height-change gimmick, SF destabilizer combo) | CS9 |
 | 1798–1803 | 6 | CS9 overflow: Twisted Tempo 145WD / Basalt Horogium 145WD (MFB Metal Masters — Face Bolt, Tempo ER clock-hand asymmetry, Twisted FW OWD=0.701 near-ring mass, SSD centrifugal imbalance 17.3 N, 145 height, WD friction model, Assembly L=13.1 mN·m·s) | CS9 |
 | 1845–1853 | 9 | CS9 overflow: Dranzer MS + Driger MS (HMS era — BP Small Type x2, Spiral Upper AR OWD=0.570, Metal Upper AR OWD=0.584, Circle Balance WD OWD=0.573, Manual Change Core RC (Hole-Flat/Sharp dual-mode), Semi-Flat Core RC launch-dependent, HMS era omega_0=620 established, AR/WD co-dominant I split ~62/36 %) | CS9 |
+| 1854–1858 | 5 | CS9 overflow: Phantom Fox MS (HMS — BP Large Type, Upper Fox AR OWD=0.427, CWD Circle Attacker OWD=0.611 dual-mode, Bunshin Core spring-separation two-body mechanics, post-sep upper pin-tip t=109s vs lower semi-flat t=44s) | CS9 |
+| 1859–1864 | 6 | CS9 overflow: Dragoon MF (HMS — BP Large Type, Upper Dragon AR OWD=0.446 shared Metal Frame, Chain Attacker spin-steal I=3.688e-6, Eternal Survivor wide-diam protrusion deflection, MWGC rubber-tip μ=0.20 r=2.5mm, Assembly Chain/ES config t=28.5/27.3s) | CS9 |
+| 1865–1868 | 4 | CS9 overflow: Round Shell MS (HMS — BP Large Type, Turtle Crusher AR OWD=0.287 gap-driven recoil +54% vs plastic, RWC dual WD+RC role I=3.166e-6 rubber-ring μ_eff=0.04, 3-part assembly I=7.349e-6 t=16.7s, Bearing Core destab via h=7mm height diff 4–5 contacts) | CS9 |
+| 1869–1873 | 5 | CS9 overflow: Samurai Changer MS (HMS — BP Large Type, Samurai Upper AR I=6.777e-6 OWD=0.423 Big Three third entry LS pure Smash RS triple-mode, Circle Heavy WD OWD=0.374, BCC RC 11g cam-ramp mode-change SF↔HF force-actuated, Assembly I=1.202e-5 L=7.45 mN·m·s t=53.9s) | CS9 |
 | 1525–1527 | 3 | Grand Maelstrom — RS pivot-anchor T125 vortex whirlpool AoE 10s drain (Sophie · Grand Cetus T125RS) | CS13 |
 | 1528–1530 | 3 | Grand Victoire — whirlpool-exit aerial dive water-crash ring-out (Sophie · Grand Cetus T125RS) | CS13 |
 | 1531–1533 | 3 | Grand Fleet — WD145 wing platform aerial crash ring-out (Wales · Grand Cetus WD145RS) | CS13 |
