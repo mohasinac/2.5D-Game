@@ -7,7 +7,7 @@ import { db, COLLECTIONS } from '../../lib/firebase';
 import type { ServerArenaState, ServerBeyblade, ServerGameState } from '../../types/game';
 import type { GameRoomConfig } from '../../types/gameRoom';
 import type { FullGameInput } from '../hooks/useGameInput';
-import { AIController, type BeybladeSnapshot } from '../ai/AIController';
+import { AIController, type BeybladeSnapshot, type AIDifficulty } from '../ai/AIController';
 import { PHYSICS_SCALE } from '../../constants/units';
 
 // ─── Physics constants (mirror TryoutGamePage) ────────────────────────────────
@@ -35,6 +35,36 @@ function defaultArena(id = 'default'): ServerArenaState {
     worldBgColor: '', worldBgImageUrl: '',
     worldBgOpacity: 1.0, worldBgFit: 'cover', worldBgBlurPx: 0,
   };
+}
+
+// ─── Difficulty helpers ───────────────────────────────────────────────────────
+
+// Tournament: difficulty scales with round progress (medium → hard → hell).
+function tournamentRoundDifficulty(round: number, total: number): AIDifficulty {
+  if (total <= 1) return 'hell'; // only 1 round = final = hell
+  const progress = round / (total - 1); // 0..1
+  if (progress < 0.34) return 'medium';
+  if (progress < 0.67) return 'hard';
+  return 'hell';
+}
+
+// Royale: random distribution weighted by the base difficulty the player chose.
+function royaleRandomDifficulty(base: AIDifficulty): AIDifficulty {
+  const r = Math.random();
+  if (base === 'medium') {
+    return r < 0.45 ? 'medium' : r < 0.80 ? 'hard' : 'hell';
+  } else if (base === 'hard') {
+    return r < 0.15 ? 'medium' : r < 0.65 ? 'hard' : 'hell';
+  } else { // hell
+    return r < 0.05 ? 'medium' : r < 0.30 ? 'hard' : 'hell';
+  }
+}
+
+// Power range per difficulty tier
+function difficultyPowerRange(d: AIDifficulty): [number, number] {
+  if (d === 'hell')   return [115, 150];
+  if (d === 'hard')   return [95, 130];
+  return                     [80, 115]; // medium
 }
 
 // ─── Create a beyblade snapshot with adaptive spawn radius ───────────────────
@@ -81,6 +111,7 @@ export interface TournamentBracketInfo {
   playerWins: number;
   eliminated: boolean;
   champion: boolean;
+  opponentDifficulty: AIDifficulty;  // difficulty of current round's opponent
 }
 
 export interface SimSnapshot {
@@ -133,6 +164,8 @@ export class LocalGameSimulation {
   private tournamentChampion = false;
   // Cached player beyblade stats for round resets
   private playerBeyStats: Partial<ServerBeyblade> = {};
+  // Per-bot difficulty assignments (variable for royale / escalating for tournament)
+  private botDifficulties = new Map<string, AIDifficulty>();
 
   constructor(config: GameRoomConfig, onSnapshot: OnSnapshotFn) {
     this.config = config;
@@ -288,14 +321,24 @@ export class LocalGameSimulation {
       spinDirection: playerBey.spinDirection, color: playerBey.color,
     };
 
-    // Create AI opponents
+    // Create AI opponents with variable difficulties
     if (roomType !== 'tryout') {
       for (let i = 0; i < aiCountThisRound; i++) {
         const roundIndex = roomType === 'tournament-ai' ? this.tournamentRound : i;
         const id = roomType === 'tournament-ai' ? `ai_round_${roundIndex}` : `ai_${i}`;
-        const ai = makeBeySpaced(id, `CPU ${roundIndex + 1}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, i + 1, total);
+
+        // Pick difficulty: tournament escalates each round, royale is randomly distributed
+        const botDiff: AIDifficulty = roomType === 'tournament-ai'
+          ? tournamentRoundDifficulty(this.tournamentRound, this.tournamentTotalRounds)
+          : roomType === 'royale-ai'
+            ? royaleRandomDifficulty(aiDifficulty)
+            : aiDifficulty; // pvai / story-battle — use selected difficulty
+
+        this.botDifficulties.set(id, botDiff);
+        const label = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
+        const ai = makeBeySpaced(id, `CPU ${roundIndex + 1} ${label}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, i + 1, total);
         this.beyblades.set(id, ai);
-        this.aiControllers.set(id, new AIController(aiDifficulty));
+        this.aiControllers.set(id, new AIController(botDiff));
       }
     }
   }
@@ -328,12 +371,15 @@ export class LocalGameSimulation {
       });
     }
 
-    // Create new AI for this round
+    // Create new AI for this round with escalating difficulty
     const roundIndex = this.tournamentRound;
     const id = `ai_round_${roundIndex}`;
-    const ai = makeBeySpaced(id, `CPU ${roundIndex + 1}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, 1, total);
+    const botDiff = tournamentRoundDifficulty(roundIndex, this.tournamentTotalRounds);
+    this.botDifficulties.set(id, botDiff);
+    const label = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
+    const ai = makeBeySpaced(id, `CPU ${roundIndex + 1} ${label}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, 1, total);
     this.beyblades.set(id, ai);
-    this.aiControllers.set(id, new AIController(aiDifficulty));
+    this.aiControllers.set(id, new AIController(botDiff));
     this.winner = '';
     this.elapsed = 0;
   }
@@ -411,11 +457,13 @@ export class LocalGameSimulation {
           const playerAngle = (this.launchPosition - 0.5) * Math.PI;
           spawnAngle = playerAngle + Math.PI + (Math.random() - 0.5) * 0.6;
         }
-        const minPow = aiDifficulty === 'hell' ? 110 : aiDifficulty === 'hard' ? 95 : 85;
-        const maxPow = aiDifficulty === 'hell' ? 150 : aiDifficulty === 'hard' ? 130 : 120;
+        // Use per-bot difficulty for power (harder bots launch with more spin)
+        const botDiff = this.botDifficulties.get(bey.id) ?? aiDifficulty;
+        const [minPow, maxPow] = difficultyPowerRange(botDiff);
         power = minPow + Math.random() * (maxPow - minPow);
-        // AI gets a random tilt for variety
-        tiltOffset = (Math.random() - 0.5) * (Math.PI / 3);
+        // Tilt: harder bots aim more precisely (less random spread)
+        const tiltSpread = botDiff === 'hell' ? Math.PI / 6 : botDiff === 'hard' ? Math.PI / 4 : Math.PI / 3;
+        tiltOffset = (Math.random() - 0.5) * tiltSpread;
       }
 
       // Position on the spawn ring
@@ -638,6 +686,7 @@ export class LocalGameSimulation {
       launchTimer: this.launchTimer,
     };
 
+    const currentOpponentId = `ai_round_${this.tournamentRound}`;
     const tournamentBracket: TournamentBracketInfo | undefined =
       this.config.roomType === 'tournament-ai' ? {
         round: this.tournamentRound + 1,
@@ -645,6 +694,8 @@ export class LocalGameSimulation {
         playerWins: this.tournamentPlayerWins,
         eliminated: this.tournamentEliminated,
         champion: this.tournamentChampion,
+        opponentDifficulty: this.botDifficulties.get(currentOpponentId)
+          ?? tournamentRoundDifficulty(this.tournamentRound, this.tournamentTotalRounds),
       } : undefined;
 
     this.onSnapshot({

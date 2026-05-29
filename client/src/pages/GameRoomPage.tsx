@@ -532,22 +532,41 @@ export function GameRoomPage() {
         {tournamentBracket && (
           <div style={{
             position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
-            background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,180,0,0.5)',
-            borderRadius: 10, padding: '4px 14px', pointerEvents: 'none',
-            display: 'flex', alignItems: 'center', gap: 8, zIndex: 50,
+            background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,180,0,0.4)',
+            borderRadius: 10, padding: '5px 14px', pointerEvents: 'none',
+            display: 'flex', alignItems: 'center', gap: 10, zIndex: 50,
           }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#fbbf24', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Round {tournamentBracket.round} / {tournamentBracket.totalRounds}
+            {/* Round label */}
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#fbbf24', letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+              {tournamentBracket.round === tournamentBracket.totalRounds ? 'FINAL' : `Round ${tournamentBracket.round}`}
             </span>
-            {Array.from({ length: tournamentBracket.totalRounds }).map((_, i) => (
-              <span key={i} style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: i < tournamentBracket.playerWins ? '#22c55e'
-                  : i === tournamentBracket.round - 1 ? '#fbbf24'
-                  : 'rgba(255,255,255,0.15)',
-                display: 'inline-block',
-              }} />
-            ))}
+            {/* Opponent difficulty badge */}
+            <span style={{
+              fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase',
+              padding: '2px 7px', borderRadius: 6,
+              background: tournamentBracket.opponentDifficulty === 'hell' ? 'rgba(255,42,77,0.25)'
+                : tournamentBracket.opponentDifficulty === 'hard' ? 'rgba(239,68,68,0.2)'
+                : 'rgba(245,158,11,0.2)',
+              color: tournamentBracket.opponentDifficulty === 'hell' ? '#ff2a4d'
+                : tournamentBracket.opponentDifficulty === 'hard' ? '#ef4444'
+                : '#f59e0b',
+              border: `1px solid ${tournamentBracket.opponentDifficulty === 'hell' ? 'rgba(255,42,77,0.4)'
+                : tournamentBracket.opponentDifficulty === 'hard' ? 'rgba(239,68,68,0.3)'
+                : 'rgba(245,158,11,0.3)'}`,
+            }}>
+              {tournamentBracket.opponentDifficulty}
+            </span>
+            {/* Progress dots */}
+            <div style={{ display: 'flex', gap: 4 }}>
+              {Array.from({ length: tournamentBracket.totalRounds }).map((_, i) => (
+                <span key={i} style={{
+                  width: 8, height: 8, borderRadius: '50%', display: 'inline-block',
+                  background: i < tournamentBracket.playerWins ? '#22c55e'
+                    : i === tournamentBracket.round - 1 ? '#fbbf24'
+                    : 'rgba(255,255,255,0.15)',
+                }} />
+              ))}
+            </div>
           </div>
         )}
 

@@ -7795,7 +7795,236 @@ function tornadoDashCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +12 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1898 as further franchise moves are provided.*
+
+
+---
+
+## Case 1898 — GIMMICK: Storm Capricorn M145Q — M145 Targeting Stance & Q Horizontal Dash Release
+
+**Beyblade:** Storm Capricorn M145Q (TT JP: ストームカプリコーンM145Q; Hasbro EN: Storm Capricorn M145Q)
+**Blader:** Tobio Oike | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Capricorn | 3.8 | 23.0 |
+| Fusion Wheel | Storm | 28.0 | 28.0 |
+| Spin Track | M145 | 2.5 | 10.0 |
+| Performance Tip | Q (Quake) | 1.2 | 3.5 |
+| **Total** | | **35.5** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention. Assembly analysis here focuses on the Sniper Shot mechanism — horizontal spring dash + ER horn point-strike — distinct from Spin Screwdriver's vertical Q bounce, Cases 1839–1841.)
+
+**I_total** = 28.0×10⁻³ × 0.028² + 3.8×10⁻³ × 0.023² + 2.5×10⁻³ × 0.010² + 1.2×10⁻³ × 0.0035²
+           = 2.195×10⁻⁵ + 2.010×10⁻⁶ + 2.500×10⁻⁷ + 1.47×10⁻⁸
+           = **2.423×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.423×10⁻⁵ × 650 = **1.575×10⁻² kg·m²/s**
+
+---
+
+### 1. Q Tip — Horizontal Spring Dash Release
+
+The Q tip rubber dome (k = 1200 N/m, x_compress = 6 mm = 0.006 m) normally fires vertically for Spin Screwdriver's bounce. In Sniper Shot, Tobio's aiming stance channels the spring release horizontally — the compressed dome fires Storm Capricorn forward in a straight-line dash toward the locked target:
+
+```
+PE_Q = ½ × k × x² = ½ × 1200 × (0.006)² = 2.160×10⁻² J
+
+v_dash = √(2 × PE_Q / m) = √(2 × 2.160×10⁻² / 0.0355) = √(1.2169) = 1.103 m/s
+```
+
+Q tip orbital speed and spin decay:
+
+```
+v_orbital_Q = μ_Q × ω₀ × r_Q = 0.20 × 650 × 0.0035 = 0.4550 m/s
+τ_Q         = μ_Q × m × g × r_Q = 0.20 × 0.0355 × 9.81 × 0.0035 = 2.44×10⁻⁴ N·m
+t_spin      = L₀ / τ_Q = 1.575×10⁻² / 2.44×10⁻⁴ = 64.5 s
+```
+
+---
+
+### 2. ER Capricorn Horn — Bullet-Point Contact Pressure
+
+The Capricorn Energy Ring carries a prominent forward horn protrusion (tip radius r_horn = 1.5 mm, A_horn = π × r_horn² = 7.069×10⁻⁶ m²). At the moment of Sniper Shot contact, the horn tip concentrates the entire impact force at a single point — mimicking a bullet's penetrator nose:
+
+```
+v_horn_tip = ω₀ × r_ER = 650 × 0.023 = 14.95 m/s
+
+F_horn = m × (v_horn_tip / t_c)  [t_c = 0.5 ms hard-tip contact duration]
+       = 0.0355 × (14.95 / 5×10⁻⁴) = 0.0355 × 29900 = 1062 N
+
+P_horn = F_horn / A_horn = 1062 / 7.069×10⁻⁶ = 1.502×10⁸ Pa = 150.2 MPa
+
+σ_ratio = P_horn / σ_y_ABS = 150.2 / 55 = 2.73 × ABS yield
+```
+
+At 2.73× ABS yield the ER horn point exceeds the opponent's plastic yield stress — consistent with the anime's claim of the strike piercing through movable walls.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 35.5 g |
+| I_total | 2.423×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.575×10⁻² kg·m²/s |
+| v_blade_tip | 18.20 m/s |
+| PE_Q | 2.160×10⁻² J |
+| v_dash | 1.103 m/s |
+| v_orbital_Q | 0.4550 m/s |
+| r_horn | 1.5 mm |
+| v_horn_tip | 14.95 m/s |
+| F_horn (t_c = 0.5 ms) | 1062 N |
+| P_horn | 150.2 MPa |
+| σ_ratio | 2.73× ABS yield |
+| τ_Q | 2.44×10⁻⁴ N·m |
+| t_spin | 64.5 s |
+
+---
+
+## Case 1899 — SPECIAL: Sniper Shot — Tobio Oike / Storm Capricorn M145Q
+
+**Blader:** Tobio Oike | **Beyblade:** Storm Capricorn M145Q | **Type:** attack
+
+### Description
+
+Sniper Shot is a Special Move used by Tobio Oike and his Storm Capricorn M145Q. Tobio pulls his hands up and then points at the opponent as if shooting at them. Storm Capricorn then rushes forward at full speed in a red flash of energy and strikes the opposing beyblade with a force that sends it flying. The speed of the rush reportedly exceeds that of an actual bullet — Capricorn was able to pass through the movable walls of the Alamo Town stadium in an instant. When multiple opponents are present, Tobio's pointing gesture locks onto one target: the player completes a QTE targeting sequence to select and claim the precision bonus.
+
+### QTE: Target Lock (multi-opponent arena)
+
+When 2 or more opponents are active, the move triggers a target-selection QTE — a targeting cursor sweeps across the opponents and the player taps to lock on at the right moment. A successful lock grants a precision multiplier:
+
+```
+J_lock_bonus  = 1.20  (QTE success: precision horn-tip lock)
+J_miss_bonus  = 1.00  (QTE miss or single-opponent: no precision bonus)
+```
+
+### Stage — Q Horizontal Dash + Capricorn Horn Point Strike
+
+From Case 1898: v_dash = 1.103 m/s, e = 0.75 (hard Storm FW blade/ER horn smash contact).
+
+```
+m_eff = (m_SC × m_opp) / (m_SC + m_opp) = (0.0355 × 0.038) / (0.0355 + 0.038)
+      = 1.349×10⁻³ / 0.0735 = 1.835×10⁻² kg
+
+J_sniper_base = m_eff × (1 + e) × v_dash
+              = 1.835×10⁻² × 1.75 × 1.103
+              = 3.542×10⁻² N·s
+
+J_sniper_QTE  = J_sniper_base × J_lock_bonus = 3.542×10⁻² × 1.20 = 4.250×10⁻² N·s
+
+Δv_opp (QTE)    = J_sniper_QTE  / m_opp = 4.250×10⁻² / 0.038 = 1.118 m/s
+Δv_opp (no QTE) = J_sniper_base / m_opp = 3.542×10⁻² / 0.038 = 0.932 m/s
+```
+
+**Effect on Storm Capricorn (spin drain — QTE case):**
+
+```
+Δω_SC    = J_sniper_QTE × r_contact / I_SC = 4.250×10⁻² × 0.025 / 2.423×10⁻⁵ = 43.8 rad/s
+ω_remain = 650 − 43.8 = 606.2 rad/s  (93.3% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tobio's pointer stance fully channels his Capricorn spirit into a precision lance — the red energy flash is the Capricorn bit-beast materialising as a rifle barrel, and the stadium walls offer no resistance to the spirit-charged horn strike.
+
+[M] factor = **7.0 ×** (Tobio precision sniper spirit)
+[M] Δv = 1.118 × 7.0 = **7.8 m/s** (sniper ring-out)
+
+> **Note:** Physical values describe Q spring PE=2.160×10⁻² J horizontal release v_dash=1.103 m/s, ER Capricorn horn point P=150.2 MPa (2.73× ABS yield), QTE precision J=4.250×10⁻² N·s, Δv=1.118 m/s (no-QTE: J=3.542×10⁻² N·s, Δv=0.932 m/s). [M] values represent Tobio's full precision spirit materialisation as a through-wall bullet strike. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sniperShotSpecial(bey: Beyblade, target: Beyblade, qteSuccess: boolean): void {
+  // Q spring PE=2.160×10⁻²J→v_dash=1.103m/s; horn P=150.2MPa (2.73× ABS); J_base=3.542×10⁻²N·s; QTE +20%; [M] 7.0×
+  const J_base = 0.03542;
+  const J_phys = qteSuccess ? J_base * 1.20 : J_base; // QTE precision lock-on: +20% if targeted
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Tobio precision sniper spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Q (Quake) Performance Tip (spring-compressed rubber dome, k ≥ 900 N/m, x ≥ 5 mm, horizontal release) combined with an Energy Ring carrying a forward horn protrusion (tip radius r_horn ≤ 2 mm, r_AR ≥ 22 mm, contact pressure ≥ 2.5× ABS yield) on a mid-height track (M145 or equivalent ≥ 140 mm) for the horizontal dash-and-point-contact sniper strike. QTE targeting fires when ≥ 2 opponents are present; single-opponent matches use J_base with no QTE bonus. Standard game instance: Storm Capricorn M145Q (Tobio Oike, Metal Fusion).
+
+---
+
+## Case 1900 — COMBO: Sniper Charge — Storm Capricorn
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tobio Oike
+
+### Physics Justification
+
+The moveUp (↑) activates a partial Q dome compression during the aiming stance (x_partial = ½ × 6 mm = 3 mm):
+
+```
+PE_partial = ½ × k × x_partial² = ½ × 1200 × (0.003)² = 5.400×10⁻³ J
+
+v_partial = √(2 × PE_partial / m) = √(2 × 5.400×10⁻³ / 0.0355) = √(0.3042) = 0.5516 m/s
+```
+
+The moveRight (→) is the targeting alignment — Storm Capricorn tracks toward the opponent's position (no contact), adding an orbital approach component v_orbital_Q = 0.455 m/s.
+
+The attack (A) combines the partial Q dash and orbital approach into the horn strike:
+
+```
+v_impact = √(v_partial² + v_orbital_Q²) = √(0.5516² + 0.455²)
+         = √(0.3043 + 0.2070) = √0.5113 = 0.715 m/s
+
+J_charge = m_eff × (1 + e) × v_impact = 1.835×10⁻² × 1.75 × 0.715
+         = 2.296×10⁻² N·s
+```
+
+The Q rubber dome partially recompresses on landing, reconverting contact impulse to spin:
+
+```
+Δω = η_Q × J_charge × r_contact / I_SC
+   = 0.30 × 2.296×10⁻² × 0.025 / 2.423×10⁻⁵
+   = 0.30 × 5.740×10⁻⁴ / 2.423×10⁻⁵
+   = 0.30 × 23.69
+   = +7.1 rad/s  ≈ +7 rad/s
+```
+
+(η_Q = 0.30: Q rubber partial-compression dome rebound reconversion.) The dash-and-horn point strike gives damageMultiplier **1.25×**. lockMs = 0 (pure attack dash, no lock phase).
+
+**Parameters:**
+- spinGain: +7 rad/s (Q partial-dome rebound η = 0.30)
+- damageMultiplier: 1.25 (horizontal Q-dash horn point strike)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function sniperChargeCombo(bey: Beyblade, target: Beyblade): void {
+  // Q partial spring rebound: Δω ≈ +7 rad/s (η=0.30, x_partial=3mm, v_impact=0.715m/s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 7);
+  // Horizontal Q-dash horn strike: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +7 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1901 as further franchise moves are provided.*
 
 
 
@@ -14405,4 +14634,233 @@ function tornadoDashCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +12 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1898 as further franchise moves are provided.*
+
+
+---
+
+## Case 1898 — GIMMICK: Storm Capricorn M145Q — M145 Targeting Stance & Q Horizontal Dash Release
+
+**Beyblade:** Storm Capricorn M145Q (TT JP: ストームカプリコーンM145Q; Hasbro EN: Storm Capricorn M145Q)
+**Blader:** Tobio Oike | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Capricorn | 3.8 | 23.0 |
+| Fusion Wheel | Storm | 28.0 | 28.0 |
+| Spin Track | M145 | 2.5 | 10.0 |
+| Performance Tip | Q (Quake) | 1.2 | 3.5 |
+| **Total** | | **35.5** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention. Assembly analysis here focuses on the Sniper Shot mechanism — horizontal spring dash + ER horn point-strike — distinct from Spin Screwdriver's vertical Q bounce, Cases 1839–1841.)
+
+**I_total** = 28.0×10⁻³ × 0.028² + 3.8×10⁻³ × 0.023² + 2.5×10⁻³ × 0.010² + 1.2×10⁻³ × 0.0035²
+           = 2.195×10⁻⁵ + 2.010×10⁻⁶ + 2.500×10⁻⁷ + 1.47×10⁻⁸
+           = **2.423×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.423×10⁻⁵ × 650 = **1.575×10⁻² kg·m²/s**
+
+---
+
+### 1. Q Tip — Horizontal Spring Dash Release
+
+The Q tip rubber dome (k = 1200 N/m, x_compress = 6 mm = 0.006 m) normally fires vertically for Spin Screwdriver's bounce. In Sniper Shot, Tobio's aiming stance channels the spring release horizontally — the compressed dome fires Storm Capricorn forward in a straight-line dash toward the locked target:
+
+```
+PE_Q = ½ × k × x² = ½ × 1200 × (0.006)² = 2.160×10⁻² J
+
+v_dash = √(2 × PE_Q / m) = √(2 × 2.160×10⁻² / 0.0355) = √(1.2169) = 1.103 m/s
+```
+
+Q tip orbital speed and spin decay:
+
+```
+v_orbital_Q = μ_Q × ω₀ × r_Q = 0.20 × 650 × 0.0035 = 0.4550 m/s
+τ_Q         = μ_Q × m × g × r_Q = 0.20 × 0.0355 × 9.81 × 0.0035 = 2.44×10⁻⁴ N·m
+t_spin      = L₀ / τ_Q = 1.575×10⁻² / 2.44×10⁻⁴ = 64.5 s
+```
+
+---
+
+### 2. ER Capricorn Horn — Bullet-Point Contact Pressure
+
+The Capricorn Energy Ring carries a prominent forward horn protrusion (tip radius r_horn = 1.5 mm, A_horn = π × r_horn² = 7.069×10⁻⁶ m²). At the moment of Sniper Shot contact, the horn tip concentrates the entire impact force at a single point — mimicking a bullet's penetrator nose:
+
+```
+v_horn_tip = ω₀ × r_ER = 650 × 0.023 = 14.95 m/s
+
+F_horn = m × (v_horn_tip / t_c)  [t_c = 0.5 ms hard-tip contact duration]
+       = 0.0355 × (14.95 / 5×10⁻⁴) = 0.0355 × 29900 = 1062 N
+
+P_horn = F_horn / A_horn = 1062 / 7.069×10⁻⁶ = 1.502×10⁸ Pa = 150.2 MPa
+
+σ_ratio = P_horn / σ_y_ABS = 150.2 / 55 = 2.73 × ABS yield
+```
+
+At 2.73× ABS yield the ER horn point exceeds the opponent's plastic yield stress — consistent with the anime's claim of the strike piercing through movable walls.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 35.5 g |
+| I_total | 2.423×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.575×10⁻² kg·m²/s |
+| v_blade_tip | 18.20 m/s |
+| PE_Q | 2.160×10⁻² J |
+| v_dash | 1.103 m/s |
+| v_orbital_Q | 0.4550 m/s |
+| r_horn | 1.5 mm |
+| v_horn_tip | 14.95 m/s |
+| F_horn (t_c = 0.5 ms) | 1062 N |
+| P_horn | 150.2 MPa |
+| σ_ratio | 2.73× ABS yield |
+| τ_Q | 2.44×10⁻⁴ N·m |
+| t_spin | 64.5 s |
+
+---
+
+## Case 1899 — SPECIAL: Sniper Shot — Tobio Oike / Storm Capricorn M145Q
+
+**Blader:** Tobio Oike | **Beyblade:** Storm Capricorn M145Q | **Type:** attack
+
+### Description
+
+Sniper Shot is a Special Move used by Tobio Oike and his Storm Capricorn M145Q. Tobio pulls his hands up and then points at the opponent as if shooting at them. Storm Capricorn then rushes forward at full speed in a red flash of energy and strikes the opposing beyblade with a force that sends it flying. The speed of the rush reportedly exceeds that of an actual bullet — Capricorn was able to pass through the movable walls of the Alamo Town stadium in an instant. When multiple opponents are present, Tobio's pointing gesture locks onto one target: the player completes a QTE targeting sequence to select and claim the precision bonus.
+
+### QTE: Target Lock (multi-opponent arena)
+
+When 2 or more opponents are active, the move triggers a target-selection QTE — a targeting cursor sweeps across the opponents and the player taps to lock on at the right moment. A successful lock grants a precision multiplier:
+
+```
+J_lock_bonus  = 1.20  (QTE success: precision horn-tip lock)
+J_miss_bonus  = 1.00  (QTE miss or single-opponent: no precision bonus)
+```
+
+### Stage — Q Horizontal Dash + Capricorn Horn Point Strike
+
+From Case 1898: v_dash = 1.103 m/s, e = 0.75 (hard Storm FW blade/ER horn smash contact).
+
+```
+m_eff = (m_SC × m_opp) / (m_SC + m_opp) = (0.0355 × 0.038) / (0.0355 + 0.038)
+      = 1.349×10⁻³ / 0.0735 = 1.835×10⁻² kg
+
+J_sniper_base = m_eff × (1 + e) × v_dash
+              = 1.835×10⁻² × 1.75 × 1.103
+              = 3.542×10⁻² N·s
+
+J_sniper_QTE  = J_sniper_base × J_lock_bonus = 3.542×10⁻² × 1.20 = 4.250×10⁻² N·s
+
+Δv_opp (QTE)    = J_sniper_QTE  / m_opp = 4.250×10⁻² / 0.038 = 1.118 m/s
+Δv_opp (no QTE) = J_sniper_base / m_opp = 3.542×10⁻² / 0.038 = 0.932 m/s
+```
+
+**Effect on Storm Capricorn (spin drain — QTE case):**
+
+```
+Δω_SC    = J_sniper_QTE × r_contact / I_SC = 4.250×10⁻² × 0.025 / 2.423×10⁻⁵ = 43.8 rad/s
+ω_remain = 650 − 43.8 = 606.2 rad/s  (93.3% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tobio's pointer stance fully channels his Capricorn spirit into a precision lance — the red energy flash is the Capricorn bit-beast materialising as a rifle barrel, and the stadium walls offer no resistance to the spirit-charged horn strike.
+
+[M] factor = **7.0 ×** (Tobio precision sniper spirit)
+[M] Δv = 1.118 × 7.0 = **7.8 m/s** (sniper ring-out)
+
+> **Note:** Physical values describe Q spring PE=2.160×10⁻² J horizontal release v_dash=1.103 m/s, ER Capricorn horn point P=150.2 MPa (2.73× ABS yield), QTE precision J=4.250×10⁻² N·s, Δv=1.118 m/s (no-QTE: J=3.542×10⁻² N·s, Δv=0.932 m/s). [M] values represent Tobio's full precision spirit materialisation as a through-wall bullet strike. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sniperShotSpecial(bey: Beyblade, target: Beyblade, qteSuccess: boolean): void {
+  // Q spring PE=2.160×10⁻²J→v_dash=1.103m/s; horn P=150.2MPa (2.73× ABS); J_base=3.542×10⁻²N·s; QTE +20%; [M] 7.0×
+  const J_base = 0.03542;
+  const J_phys = qteSuccess ? J_base * 1.20 : J_base; // QTE precision lock-on: +20% if targeted
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (Tobio precision sniper spirit)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Q (Quake) Performance Tip (spring-compressed rubber dome, k ≥ 900 N/m, x ≥ 5 mm, horizontal release) combined with an Energy Ring carrying a forward horn protrusion (tip radius r_horn ≤ 2 mm, r_AR ≥ 22 mm, contact pressure ≥ 2.5× ABS yield) on a mid-height track (M145 or equivalent ≥ 140 mm) for the horizontal dash-and-point-contact sniper strike. QTE targeting fires when ≥ 2 opponents are present; single-opponent matches use J_base with no QTE bonus. Standard game instance: Storm Capricorn M145Q (Tobio Oike, Metal Fusion).
+
+---
+
+## Case 1900 — COMBO: Sniper Charge — Storm Capricorn
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tobio Oike
+
+### Physics Justification
+
+The moveUp (↑) activates a partial Q dome compression during the aiming stance (x_partial = ½ × 6 mm = 3 mm):
+
+```
+PE_partial = ½ × k × x_partial² = ½ × 1200 × (0.003)² = 5.400×10⁻³ J
+
+v_partial = √(2 × PE_partial / m) = √(2 × 5.400×10⁻³ / 0.0355) = √(0.3042) = 0.5516 m/s
+```
+
+The moveRight (→) is the targeting alignment — Storm Capricorn tracks toward the opponent's position (no contact), adding an orbital approach component v_orbital_Q = 0.455 m/s.
+
+The attack (A) combines the partial Q dash and orbital approach into the horn strike:
+
+```
+v_impact = √(v_partial² + v_orbital_Q²) = √(0.5516² + 0.455²)
+         = √(0.3043 + 0.2070) = √0.5113 = 0.715 m/s
+
+J_charge = m_eff × (1 + e) × v_impact = 1.835×10⁻² × 1.75 × 0.715
+         = 2.296×10⁻² N·s
+```
+
+The Q rubber dome partially recompresses on landing, reconverting contact impulse to spin:
+
+```
+Δω = η_Q × J_charge × r_contact / I_SC
+   = 0.30 × 2.296×10⁻² × 0.025 / 2.423×10⁻⁵
+   = 0.30 × 5.740×10⁻⁴ / 2.423×10⁻⁵
+   = 0.30 × 23.69
+   = +7.1 rad/s  ≈ +7 rad/s
+```
+
+(η_Q = 0.30: Q rubber partial-compression dome rebound reconversion.) The dash-and-horn point strike gives damageMultiplier **1.25×**. lockMs = 0 (pure attack dash, no lock phase).
+
+**Parameters:**
+- spinGain: +7 rad/s (Q partial-dome rebound η = 0.30)
+- damageMultiplier: 1.25 (horizontal Q-dash horn point strike)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function sniperChargeCombo(bey: Beyblade, target: Beyblade): void {
+  // Q partial spring rebound: Δω ≈ +7 rad/s (η=0.30, x_partial=3mm, v_impact=0.715m/s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 7);
+  // Horizontal Q-dash horn strike: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +7 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1901 as further franchise moves are provided.*

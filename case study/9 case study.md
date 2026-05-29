@@ -40319,3 +40319,403 @@ This is a conditional-stamina combo exploiting MCC's 76-second sharp phase. If t
 
 **Stock Death Gargoyle MS:** The most battlefield-capable stock HMS assembly despite its MCC transition liability. Circle Upper M2's attack power creates genuine ring-out threats from launch; the absence of SCC-style scraping geometry means the assembly does not self-terminate from hits. The MCC transition is the sole structural liability, and its 70-second delay window is sufficient for most competitive battles to resolve. Among stock HMS beys, Death Gargoyle MS is the strongest out-of-box contender — and the AR it ships with (Circle Upper M2) is the most valuable extracted part in the entire HMS collection.
 
+
+---
+
+## A-125 Draciel MS
+
+**Release:** Summer 2003, Starter A-125 (Green)
+**Additional releases:** Hasbro starter (Green); Sonokong Double Power Plus Set (Green); Fukubako 2004 (Blue); 5 Saint Beasts Booster (Proto-Grey); tournament recolors (Gold, Gold-Plated, Light Blue); Toys 'R' Us Limited (Lightning Black); event limited (G1 Prototype, White, Fire Red, Thunder Yellow, Light Blue)
+**Contents:** BP Small Type · AR Metal Defense · WD Circle Wide · RC Sharp Core
+
+---
+
+## CASE XXXX — BP Small Type (Draciel MS)
+
+**Part:** Bit Protector, Small Type
+**Weight:** ~1.5 g
+**Material:** ABS plastic
+
+### Production Note
+
+BP size type on the initial A-125 release is not consistent across every production cycle or re-release. A bey reproduced the following year may ship with a different BP size type. This applies to Draciel MS across its many recolors. No physics consequence — BP is a cap with negligible I regardless of size variant.
+
+### Moment of Inertia
+
+I_BP = ½ × 0.0015 × (0.009)² = **6.08 × 10⁻¹⁰ kg·m²**
+
+Contribution < 0.01 % of any assembly I. Not referenced in further calculations.
+
+
+---
+
+## CASE XXXX — AR Metal Defense (Draciel MS)
+
+**Part:** Attack Ring, Metal Defense
+**Weight:** ~17 g total (metal frame ~10 g + ABS wings ~7 g)
+**Material:** Zinc alloy frame + ABS plastic wings
+**Construction:** Screw-fixed (4 screws visible; frame is rigidly attached to ABS body)
+**HMS generation:** A-125 (early/starter wave, Summer 2003)
+
+### Physical Description
+
+Metal Defense presents eight outward protrusions: four metal tabs (blade-type, mounted at cardinal positions on an octagonal metal inner ring) and four ABS wing sections (triangular fan shape, mounted at diagonal positions). The assembly is screw-fixed — the metal frame does not float. The tabs are narrow and swept at a shallow angle; the ABS wings are broad and nearly radially oriented. Neither geometry creates a well-concentrated smash vector.
+
+The octagonal metal inner ring is the structural core; the ABS wings are cosmetic mass added at mid-radius. The outer diameter is comparable to other HMS ARs (~52 mm), but the total mass at 17 g is approximately 3 g below the competitive threshold where an HMS AR can absorb hits without suffering excessive RPM loss per contact.
+
+### Moment of Inertia
+
+| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
+|------|----------|--------------|--------------|-----------|
+| Metal hub + inner ring | 3 | 0 | 10 | 1.50 × 10⁻⁷ |
+| Metal tabs (4) | 7 | 10 | 26 | 2.716 × 10⁻⁶ |
+| ABS wings (4) | 7 | 12 | 22 | 2.198 × 10⁻⁶ |
+| **Total** | **17** | | | **5.064 × 10⁻⁶ kg·m²** |
+
+Metal tabs (7 g, r = 10–26 mm, annular approx):
+I = ½ × 0.007 × (0.010² + 0.026²) = ½ × 0.007 × 7.76×10⁻⁴ = 2.716×10⁻⁶ kg·m²
+
+ABS wings (7 g, r = 12–22 mm):
+I = ½ × 0.007 × (0.012² + 0.022²) = ½ × 0.007 × 6.28×10⁻⁴ = 2.198×10⁻⁶ kg·m²
+
+**I_Metal Defense = 5.064 × 10⁻⁶ kg·m²**
+
+OWD = 5.064×10⁻⁶ / (0.017 × 0.026²) = 5.064×10⁻⁶ / 1.149×10⁻⁵ = **0.441**
+
+The OWD (0.441) is reasonable — metal tabs at r = 26 mm provide flywheel efficiency similar to God Smasher (0.353) and upper-tier attack ARs. The competitive deficiency is absolute mass (17 g), not radial distribution. A well-shaped 17 g AR simply does not carry enough angular momentum to absorb repeated contact events without excessive Δω loss per hit.
+
+### Smash Contact Analysis
+
+**Metal tabs (4 prongs, cardinal positions):**
+Tab leading-edge angle from tangent: ~28° (octagonal geometry gives ~45° between adjacent face normals; tab sweep angle ≈ 28° from contact tangent)
+
+F_smash_tab = cos(28°) × F_impact = **0.883 × F_impact**
+F_recoil_tab = sin(28°) × F_impact = **0.469 × F_impact**
+
+**ABS wings (4 sections, diagonal positions):**
+Wing face orientation: broad and nearly radial → high contact angle ~42° from tangent
+
+F_smash_ABS = cos(42°) × F_impact = **0.743 × F_impact**
+F_recoil_ABS = sin(42°) × F_impact = **0.669 × F_impact**
+
+**Weighted average (8 contacts, equal probability):**
+F_smash_avg = (4 × 0.883 + 4 × 0.743) / 8 = **0.813 × F_impact**
+F_recoil_avg = (4 × 0.469 + 4 × 0.669) / 8 = **0.569 × F_impact**
+
+Smash efficiency of 0.813 is below Circle Upper (0.990 LS), God Smasher (0.966), and Upper Dragon. Recoil return of 0.569 is the highest of any AR analyzed in this series — more than half of each impact's force returns to the Metal Defense assembly as backward impulse. This is the quantitative basis for the "more prone to inflicting knockouts on itself" description.
+
+**Spin-steal contact (opposite-spin):**
+In an opposite-spin contact at ω_rel = 2 × ω_self, the ABS wings present first due to their large surface area. The nearly radial face orientation means the friction coefficient (μ ≈ 0.45 for ABS-on-ABS) acts over a moderate contact patch. The spin-steal force:
+F_steal = μ × F_normal ≈ 0.45 × F_normal
+
+This is geometrically superior to smooth-surface ARs for spin-stealing — the broad ABS face increases contact area. However, the simultaneous high recoil from the same face geometry means every spin-steal contact event also imparts a large backward impulse on Metal Defense, destabilizing it before the spin equalization can complete.
+
+**Conclusion on Metal Defense attack geometry:** Low smash efficiency + high recoil return is the worst possible combination for an attack AR. For spin-stealing it has the right contact area but the wrong impulse direction. No attack mode produces a good outcome from this geometry.
+
+### Dynamic Balance
+
+8-fold approximate symmetry (4 metal + 4 ABS alternating at 45°). The two material types have different mass and radius distribution, so perfect balance is not achieved, but the alternating pattern suppresses the dominant first harmonic. Residual imbalance is small; Metal Defense does not exhibit the wandering behavior of Smash Phoenix. Under competitive impact loading, the recoil torques dominate stability; static imbalance is not a primary concern.
+
+### Extracted Competitive Assessment
+
+Metal Defense has no competitive application in any type configuration:
+
+- **Attack:** 0.813 smash efficiency + 0.569 recoil return = net negative RPM exchange per hit; self-knockout risk exceeds ring-out delivery
+- **Defense:** Insufficient mass (17 g) to absorb hit momentum; each impact imparts proportionally larger Δω than on 20 g+ ARs
+- **Stamina (opposite-spin):** Highest spin-steal contact area of early HMS ARs, but high recoil dissipates the spin-equalization advantage before it can complete
+
+**Best extracted use:** As the user notes, the best strategy is maximum mass loading (God Ring + GFC Ultimate Mode) to compensate for the AR's liabilities and hope the recoil-generated impulses happen to land knockouts. This is not a design-intended use case; it is the least-bad application of a fundamentally deficient AR.
+
+**Competitive rank:** Last among HMS attack ARs. Circle Upper M2 > Upper Dragon > Upper Fox > God Smasher > Smash Leopard > Devil Crusher > Smash Phoenix > **Metal Defense**. The only scenario where Metal Defense is the correct choice is when every other AR in the lineup is unavailable.
+
+
+---
+
+## CASE XXXX — WD Circle Wide (Draciel MS)
+
+**Part:** Weight Disk, Circle Wide
+**Weight:** ~9.5 g (standard); ~10.1 g (Draciel MS starter exclusive — heavier variant)
+**Material:** Zinc alloy
+**Architecture:** Open-spoke ring (outer rim + inner hub ring connected by 3 radial spokes)
+
+### Physical Description
+
+Circle Wide uses an open-spoke architecture: a substantial outer rim ring, an inner hub ring, and three connecting radial spokes. The majority of material mass sits at or near the outer rim, which gives Circle Wide one of the highest OWDs of any HMS WD despite its moderate total weight. The open spoke design is visually distinct from solid-disk WDs like Circle Heavy.
+
+**Heavier Draciel MS variant:** The A-125 starter (both Takara and Sonokong versions) ships a Circle Wide measuring approximately 0.6 g heavier than the standard version found in other sets. This additional mass is distributed in the outer rim zone, incrementally improving OWD. The heavier variant is strictly preferred over the standard version in all applications.
+
+### Moment of Inertia
+
+**Standard Circle Wide (~9.5 g):**
+
+| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
+|------|----------|--------------|--------------|-----------|
+| Hub ring | 2 | 0 | 8 | 6.40 × 10⁻⁸ |
+| Spokes (3) | 2 | 8 | 15 | 2.89 × 10⁻⁷ |
+| Outer rim ring | 5.5 | 15 | 22 | 1.950 × 10⁻⁶ |
+| **Total** | **9.5** | | | **2.304 × 10⁻⁶ kg·m²** |
+
+OWD = 2.304×10⁻⁶ / (0.0095 × 0.022²) = 2.304×10⁻⁶ / 4.598×10⁻⁶ = **0.501**
+
+**Draciel MS heavy variant (~10.1 g, +0.6 g in outer rim):**
+
+Additional outer rim (0.6 g at r = 15–22 mm): ½ × 0.0006 × (0.015² + 0.022²) = 2.127×10⁻⁷ kg·m²
+
+I_CW_heavy = 2.304×10⁻⁶ + 2.127×10⁻⁷ = **2.517 × 10⁻⁶ kg·m²**
+OWD_heavy = 2.517×10⁻⁶ / (0.0101 × 0.022²) = 2.517×10⁻⁶ / 4.888×10⁻⁶ = **0.515**
+
+### Competitive Notes
+
+Circle Wide (heavy variant) has the highest OWD of any HMS WD in the standard library at 0.515 — above Circle Heavy (0.374) and competitive with CWD Defense Ring. Its total absolute I (2.517×10⁻⁶) is lower than Circle Heavy (2.717×10⁻⁶) due to lower total mass, but the radial distribution is more efficient.
+
+**Best WD application:** Stamina and spin-steal combos where maximizing OWD at low total mass is preferred. The heavy Draciel variant is the specific target for stamina-oriented WD builds. In assemblies where the full CWD slot is available (God Ring, Defense Ring), the WD is irrelevant; Circle Wide applies to beys using the WD slot only.
+
+**See the Common Weight Disks reference page for full weight range data across production lots.**
+
+---
+
+## CASE XXXX — RC Sharp Core (Draciel MS)
+
+**Part:** Running Core, Sharp Core
+**Weight:** ~2 g
+**Material:** ABS plastic body + hardened tip insert
+**HMS generation:** A-125 (initial starter wave)
+
+### Physical Description
+
+Sharp Core employs a hardened sharp tip for minimum floor contact area and maximum precision of movement. The key engineering fact distinguishing Sharp Core from all other HMS RCs is its **notably greater height** compared to the series standard. While most HMS RCs measure approximately 16–18 mm from base to tip, Sharp Core is perceptibly taller — estimated 22–25 mm assembled height.
+
+The increased height has two consequences:
+1. The AR/WD stack sits higher off the floor plane, raising the assembly's center of mass
+2. The effective lever arm from the tip contact point to the AR attack zone is longer, meaning any angular impulse from a hit produces greater tilt per unit force
+
+### Tip Parameters
+
+- Tip type: sharp, hardened ABS (possibly metal-tipped depending on production run)
+- μ ≈ 0.05 (same order as metal sharp tips; hardened ABS behaves similarly)
+- r_contact = 0.7 mm
+- τ_Sharp = μ × m × g × r = 0.05 × 0.031 × 9.81 × 0.0007 = **1.06 × 10⁻⁵ N·m** (reference: 31 g assembly)
+
+### Moment of Inertia
+
+Sharp Core is cylindrical at ~r = 6 mm (body):
+I_SC = ½ × 0.002 × (0.006)² = **3.60 × 10⁻⁸ kg·m²**
+
+Negligible in any assembly context.
+
+### Height-Induced Instability
+
+**Standard HMS critical tilt angle** (floor contact at normal height h_RC ≈ 17 mm, r_bey ≈ 26 mm):
+θ_crit_std = arcsin(17 / 26) ≈ **41°** — very high; beys don't reach this tilt in normal combat.
+
+**Sharp Core critical tilt** (height h_SC ≈ 23 mm, r_bey ≈ 26 mm):
+θ_crit_SC = arcsin(23 / 26) ≈ **62°** — this is not a floor-contact calculation but rather a stability metric: the higher center of mass means the gyroscopic restoring torque must overcome a larger moment arm to maintain upright precession.
+
+More relevant is the destabilization response. For a given lateral impulse J at the AR height h_AR above the floor:
+Angular impulse: Δ(tilt_rate) = J × h_AR / I_assembly
+
+At standard height (h_AR ≈ 17 mm): small angular impulse per hit.
+At Sharp Core height (h_AR ≈ 23 mm): Δ(tilt_rate) is **35 % larger** per unit impulse, amplifying wobble onset. The bey tips toward the wobble threshold faster per hit received.
+
+**Low-ω wobble onset:** Standard HMS wobble threshold ω_wobble ≈ 250 rad/s. With Sharp Core's elevated CoM, the gyroscopic restoring torque (∝ ω × I × cos(tilt)) falls short of the destabilizing gravitational torque at a higher ω than standard. Sharp Core effectively raises the wobble threshold — the bey begins wobbling at higher spin than normal, shortening the Battle phase.
+
+### Wobble-Knockdown Mechanic (Niche)
+
+During wobble, the AR plane tilts cyclically above and below horizontal. At tilt angles of 15–25°, the lower edge of the AR dips below the standard contact plane of upright opponents. A hit delivered during this downward phase strikes the opponent from above, imparting a downward force component:
+
+F_down = F_impact × sin(tilt_angle)
+
+At 20° tilt: F_down = 0.342 × F_impact
+
+This downward push rapidly reduces the opponent's own stability if their RC is a standard sharp or flat type. Combined with Circle Upper Mold 1's bump geometry (which has slightly lower outer-radius mass than M2, making it more prone to wobble itself), the Sharp Core combo can cascade the opponent into its own wobble and self-termination.
+
+This mechanism is:
+- **Conditional:** requires the bey to have already entered wobble (ω < ω_wobble) without falling
+- **Unreliable:** the timing of the downward phase within the wobble cycle must align with the contact moment
+- **Matchup-specific:** works best against opponents using sharp or flat RCs with low tilt tolerance; rubber or bearing RCs absorb the downward strike differently
+
+The user description "very entertaining to try and pull off" is an accurate assessment of the risk-reward ratio.
+
+### Extracted Competitive Assessment
+
+Sharp Core has no competitive use in standard configurations. The height penalty amplifies every incoming hit's destabilization effect by ~35 % compared to standard RCs, shortening practical battle duration regardless of tip friction quality. The sharp tip itself is excellent (same low τ as other sharp designs), but the height negates this advantage in any contact-laden battle.
+
+**The one niche:** Wobble-knockdown combos using Circle Upper Mold 1. This is the only configuration where Sharp Core's liability (premature wobble) becomes the mechanism of the intended strategy. Success rate is low but the mechanism is real physics, not theoretical. Competitive value: very low; niche-only.
+
+**Extracted rank:** Second-to-last among HMS RCs (above SCC Gamma only because its failure mode is height-based wobble, which is at least matchup-specific, not geometry-guaranteed as with SCC Gamma's scraping).
+
+
+---
+
+## CASE XXXX — Assembly: Draciel MS (Stock)
+
+**Assembly:** BP Small Type + AR Metal Defense + WD Circle Wide (heavy) + RC Sharp Core
+
+### Mass and Geometry
+
+| Component | Mass (g) | I (kg·m²) |
+|-----------|----------|-----------|
+| BP Small Type | 1.5 | 6.08 × 10⁻¹⁰ |
+| AR Metal Defense | 17 | 5.064 × 10⁻⁶ |
+| WD Circle Wide (heavy) | 10.1 | 2.517 × 10⁻⁶ |
+| RC Sharp Core | 2 | 3.60 × 10⁻⁸ |
+| **Total** | **30.6** | **7.617 × 10⁻⁶ kg·m²** |
+
+### Angular Momentum at Launch
+
+L₀ = I_total × ω₀ = 7.617×10⁻⁶ × 620 = **4.723 mN·m·s**
+
+At 30.6 g, this is the lightest HMS starter assembly analyzed in this series. For comparison: Death Gargoyle MS = 40 g (L₀ = 5.418); Shining God MS = 45 g (L₀ = 5.923). Draciel MS carries the lowest launch angular momentum — it is the most easily displaced by heavier opponents in any spin-exchange event.
+
+**AR I dominance:** 5.064 / 7.617 = **66.5 %** — Metal Defense dominates assembly I similarly to Circle Upper in Death Gargoyle MS, but at lower absolute values throughout.
+
+### Theoretical Spin-Down (tip-limited, no contact)
+
+τ_sharp = 0.05 × 0.0306 × 9.81 × 0.0007 = **1.05 × 10⁻⁵ N·m**
+
+3-phase model:
+- Launch → Battle (Δω = 248): t₁ = 7.617×10⁻⁶ × 248 / 1.05×10⁻⁵ = **179.9 s**
+- Battle → Wobble (Δω = 122): t₂ = 7.617×10⁻⁶ × 122 / 1.05×10⁻⁵ = **88.5 s**
+- Wobble → Fall (Δω = 200): t₃ = 7.617×10⁻⁶ × 200 / 1.05×10⁻⁵ = **145.1 s**
+
+**t_ideal (Sharp Core) = 413.5 seconds (~6.9 minutes)**
+
+This is the theoretical floor-only ceiling. In practice, Sharp Core's height penalty accelerates wobble onset (reduced effective ω_wobble threshold), and Metal Defense's high recoil return means every hit contributes outsized Δω. Practical battle duration against a competitive opponent: **5–20 seconds**, with the first decisive hit typically ending the contest due to the assembly's low mass providing little resistance to knockback.
+
+### Designated Combos
+
+#### Best AR Extracted Combo (Metal Defense)
+
+**AR:** Metal Defense (either spin)
+**WD/CWD:** God Ring (worn, 20 g)
+**RC:** GFC Ultimate Mode
+**Total mass:** ~42.5 g | I ≈ 10.642 × 10⁻⁶ kg·m²
+
+God Ring (worn, I = 5.532×10⁻⁶) dominates the assembly I at 52 %. GFC Ultimate Mode drives aggressive movement, pushing Metal Defense into the opponent rather than waiting for contact.
+
+τ_GFC = 0.25 × 0.0425 × 9.81 × 0.003 = 3.13×10⁻⁴ N·m
+t_theory = 10.642×10⁻⁶ × 570 / 3.13×10⁻⁴ = 19.4 s
+
+With Metal Defense's recoil (F_recoil_avg = 0.569 × F_impact), the combo is fundamentally gambling that the high-recoil events translate into opponent ring-outs rather than self-knockouts. God Ring's mass (20 g) provides enough inertia to survive recoil events better than stock Circle Wide, and GFC drives enough movement for contact frequency to matter. This is the highest-probability use of Metal Defense extracted.
+
+#### Best RC Extracted Combo (Sharp Core — wobble niche)
+
+**AR:** Circle Upper Mold 1 (opposite spin from conventional, or same spin)
+**WD:** Circle Heavy
+**RC:** Sharp Core
+**Total mass:** ~37.5 g | I ≈ 8.302 × 10⁻⁶ kg·m²
+
+τ_sharp = 0.05 × 0.0375 × 9.81 × 0.0007 = 1.29×10⁻⁵ N·m
+t_theory (sharp, no transition) = 8.302×10⁻⁶ × 570 / 1.29×10⁻⁵ = **367 s**
+
+The theoretical stamina is excellent. The caveat: Sharp Core's height causes wobble onset at higher ω than normal, and the actual wobble-to-fall phase is accelerated. The 367 s ceiling is only approached if the battle produces no significant contact events — meaning the opponent is a pure stamina type that also avoids contact. Against any attack type, the battle ends at the first decisive hit, well before the theoretical floor.
+
+The wobble-knockdown mechanic: if the battle reaches the late wobble phase (ω ≈ 200–280 rad/s), Circle Upper M1 bump contacts can hit opponents downward. The combo's best use case is against slow opponents in the center of the stadium who present themselves for upper-edge contacts during the wobble cycle.
+
+### Competitive Standing
+
+**AR Metal Defense (extracted):** No competitive use case. The lowest-tier HMS AR in the series by smash efficiency (0.813), and simultaneously the highest-recoil AR analyzed (0.569 return). The combination does not have a compensating advantage — it is not heavier, not better distributed, and not more symmetric than competing ARs. Light weight at 17 g compounds both problems by reducing the angular momentum that could otherwise absorb recoil events. Extract God Ring if the bey is obtained; Metal Defense is a shelf piece.
+
+**WD Circle Wide — heavy Draciel variant (extracted):** The highest-OWD HMS WD at 0.515, and strictly the best Circle Wide specimen available. Preferred over standard Circle Wide in any WD-slot stamina build. The 0.6 g additional mass in the outer rim is meaningful at this scale. Worth noting if sourcing specifically from the A-125 Draciel MS starter.
+
+**RC Sharp Core (extracted):** Niche wobble-knockdown tool only. Height penalty eliminates it from standard stamina, defense, and attack use. The only configuration where Sharp Core's premature wobble is deliberately exploited is Circle Upper M1 + Circle Heavy wobble-combo. Competitive value: negligible outside that single niche.
+
+**Stock Draciel MS:** The lowest angular momentum stock assembly in the HMS lineup. Two separate liabilities — Metal Defense's recoil and Sharp Core's height — simultaneously reduce battle duration from the first contact. The stock bey is not a viable competitive entry in any match format. As an early-series starter, its role was introduction to the HMS format rather than competitive readiness. The one extracted prize is the heavy Circle Wide WD, which is the best-in-class specimen for its category.
+
+
+---
+
+## A-123 Gaia Dragoon MS
+
+**Release:** Summer 2003, Starter A-123 (Purple)
+**Additional releases:** Hasbro Strata Dragoon MS Starter (Purple); Sonokong Double Power Plus Set (Purple); A-130 Double Shooter Set (Yellow); 5 Saint Beasts Booster (Proto-Grey); Fukubako 2004 (Black); tournament limited (White, Silver, Gold, Blue); event limited (White); W Master Campaign Limited (Silver, Pearl-White)
+**Contents:** BP Small Type · AR Metal Saucer · WD Circle Heavy · RC Flat Core
+
+---
+
+## CASE XXXX — BP Small Type (Gaia Dragoon MS)
+
+**Part:** Bit Protector, Small Type
+**Weight:** ~1.5 g
+**Material:** ABS plastic
+
+### Production Note
+
+Same BP size-type inconsistency as Draciel MS: initial production may use Small Type, but later reprints or recolors in subsequent years may ship a different BP size. No physics consequence regardless of size variant.
+
+I_BP ≈ **6.08 × 10⁻¹⁰ kg·m²** — negligible.
+
+
+---
+
+## CASE XXXX — AR Metal Saucer (Gaia Dragoon MS)
+
+**Part:** Attack Ring, Metal Saucer (labeled "Metal Saucer Ring GA" on sticker)
+**Weight:** ~15 g total (metal gear frame ~8 g + ABS inner disk ~7 g)
+**Material:** Zinc alloy gear frame + ABS plastic body
+**Shared metal frame:** Same gear ring as Advance Averazer's AR Advance Balancer
+**Construction:** NOT screw-fixed — gear frame floats in outer channel of ABS body
+
+### Physical Description
+
+Metal Saucer presents the unusual construction detail of an un-fastened metal component. The zinc alloy gear ring sits in a circular channel molded into the outer edge of the ABS disk. There are no screws, clips, or retaining pins fixing the gear ring to the ABS body. It is held radially by the channel geometry and by centrifugal force during spin, but it retains tangential and axial freedom — it can rotate slightly relative to the ABS body within the channel tolerance, and can tilt axially if the channel allows.
+
+The gear ring has approximately 18–20 teeth evenly spaced around its circumference. The teeth are blocky and nearly radial-faced — each tooth face is close to perpendicular to the radius vector, rather than angled as a pressure-angle gear tooth would be. The tooth tip is the primary contact point with opponent ARs.
+
+### Floating Frame Mechanics
+
+**At high ω (> 400 rad/s):**
+Centrifugal force presses the gear ring firmly outward against the channel wall. Radial pre-load ≈ m_frame × r_frame × ω²:
+F_centrifugal = 0.008 × 0.019 × 620² = **58.4 N**
+
+This centrifugal radial pre-load creates an effective friction lock between the gear ring and the ABS channel wall:
+F_lock = μ_metal_ABS × F_centrifugal ≈ 0.25 × 58.4 = **14.6 N**
+
+For a tangential (impact) force to slip the gear ring, it must exceed 14.6 N × (r_channel_friction / r_tooth_contact). Under high-ω steady-state conditions, the gear ring behaves nearly rigidly. Spin-steal contact at high ω is effectively as if the frame were screwed in place.
+
+**At low ω (< 250 rad/s) or during impact impulse:**
+Centrifugal pre-load drops proportionally to ω². At 250 rad/s: F_centrifugal = 0.008 × 0.019 × 250² = **9.5 N**, F_lock = **2.4 N**. A hard impact impulse can momentarily exceed this lock force, causing the gear ring to rotate briefly in the channel before friction re-seats it. This energy absorption into frame displacement:
+- Reduces the net impulse transmitted to the assembly (partial crash-absorb effect)
+- Returns as a secondary impulse when the frame re-contacts the channel wall (secondary recoil)
+
+**Net competitive effect of floating frame:**
+- Sustained gentle contact (spin-steal scenario): near-rigid → standard spin-steal mechanics apply
+- Hard impact: partial impact absorption → reduced Δω_self per hit compared to a fixed-frame AR of equal mass
+- Low-ω phase: centrifugal pre-load drop → gear ring wobbles slightly → dynamic imbalance at low ω
+
+### Moment of Inertia
+
+| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
+|------|----------|--------------|--------------|-----------|
+| ABS inner disk | 7 | 0 | 14 | 6.86 × 10⁻⁷ |
+| Gear ring body | 5 | 14 | 20 | 1.490 × 10⁻⁶ |
+| Gear teeth (18–20) | 3 | 20 | 23 | 1.394 × 10⁻⁶ |
+| **Total** | **15** | | | **3.572 × 10⁻⁶ kg·m²** |
+
+**I_Metal Saucer = 3.572 × 10⁻⁶ kg·m²**
+
+OWD = 3.572×10⁻⁶ / (0.015 × 0.023²) = 3.572×10⁻⁶ / 7.935×10⁻⁶ = **0.450**
+
+OWD is respectable but absolute I at only 3.572×10⁻⁶ is the lowest of any HMS AR — 37 % below Circle Upper M2 and 17 % below God Smasher. At 15 g, Metal Saucer carries the least rotational inertia of any HMS AR analyzed.
+
+### Contact Analysis
+
+**Gear tooth contact angle from tangent:** ~65° (radial-face teeth, not pressure-angle teeth)
+
+F_smash = cos(65°) × F_impact = **0.423 × F_impact**
+F_recoil = sin(65°) × F_impact = **0.906 × F_impact**
+
+Smash efficiency of 0.423 is the lowest of any HMS AR. Recoil return of 0.906 is the highest. Nearly all impact energy returns to the Metal Saucer assembly as backward impulse. This is the quantitative basis for "produces too much recoil."
+
+**Spin-steal friction coefficient:** μ_metal-gear-on-ABS ≈ 0.50–0.60 (metal tooth surface on ABS opponent AR, moderate normal load). This is higher than smooth-surface ARs for spin-steal contact patch friction — the gear teeth bite into the opponent surface slightly. In sustained opposite-spin contact at matched ω, this provides better-than-average spin equalization per unit contact time.
+
+The spin-steal paradox: Metal Saucer has good sustained-contact spin-steal properties (high μ, gear tooth engagement) but the high recoil coefficient means any contact event above a threshold impact velocity becomes recoil-dominant rather than spin-steal-dominant. The bey must be launched weak enough that all contact events are in the low-impulse regime for spin-steal to dominate over recoil.
+
+### Competitive Assessment
+
+Metal Saucer in any high-power or attack-type matchup: catastrophic. F_recoil = 0.906 means each hit returns 90% of impact energy as backward impulse — self-knockout risk in every contact. Attack type → certain knockout within 2–3 contacts.
+
+Metal Saucer in opposite-spin weak-launch stamina matchups: marginally viable. Gear teeth provide good friction for spin equalization; floating frame provides partial protection from contact impulses. At low relative velocities (weak launch ≈ 60–80% power), the contact events stay in the rolling/friction regime rather than the elastic collision regime.
+
+**No smash or defense application.** The only role is spin-stealing, and only with weak-launch technique. This is among the narrowest niche of any HMS AR.
+
