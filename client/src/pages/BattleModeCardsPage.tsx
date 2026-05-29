@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, COLLECTIONS } from '../lib/firebase';
 import { useGame } from '../contexts/GameContext';
-import { useAuth } from '../contexts/AuthContext';
 import { CardCarousel, type CarouselCard } from '../components/ui/CardCarousel';
 import type { GameRoomConfig, RoomType } from '../types/gameRoom';
 import toast from 'react-hot-toast';
@@ -23,10 +22,14 @@ const DIFFICULTY_LABELS: Record<Difficulty, { label: string; color: string }> = 
   hell:   { label: 'Hell',   color: '#ff2a4d' },
 };
 
+const SEP: React.CSSProperties = {
+  margin: '18px 0 14px',
+  display: 'flex', alignItems: 'center', gap: 10,
+};
+
 export function BattleModeCardsPage() {
   const navigate = useNavigate();
   const { settings } = useGame();
-  const { currentUser } = useAuth();
 
   const [beyblades, setBeyblades] = useState<SimpleOption[]>([]);
   const [arenas, setArenas] = useState<SimpleOption[]>([]);
@@ -36,6 +39,8 @@ export function BattleModeCardsPage() {
   const [selectedArena, setSelectedArena] = useState<string>('');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(1);
+  const [aiCountTournament, setAiCountTournament] = useState(3);  // rounds — 3 = 8-player bracket (QF/SF/F)
+  const [aiCountRoyale, setAiCountRoyale] = useState(11);         // bots — 11 = 12-player free-for-all
 
   const [drawer, setDrawer] = useState<DrawerState>({ open: false, roomType: null });
 
@@ -76,16 +81,20 @@ export function BattleModeCardsPage() {
       toast.error('Please select a beyblade and arena');
       return;
     }
+    const rt = drawer.roomType;
     const config: GameRoomConfig = {
-      roomType: drawer.roomType,
+      roomType: rt,
       beybladeId: selectedBey,
       arenaId: selectedArena,
-      aiDifficulty: drawer.roomType === 'pvai' ? difficulty : undefined,
+      aiDifficulty: (rt === 'pvai' || rt === 'tournament-ai' || rt === 'royale-ai') ? difficulty : undefined,
+      aiCount: rt === 'tournament-ai' ? aiCountTournament
+        : rt === 'royale-ai' ? aiCountRoyale
+        : undefined,
       bestOf,
     };
     setDrawer({ open: false, roomType: null });
     navigate('/game/room', { state: { config } });
-  }, [drawer, selectedBey, selectedArena, difficulty, bestOf, navigate]);
+  }, [drawer, selectedBey, selectedArena, difficulty, bestOf, aiCountTournament, aiCountRoyale, navigate]);
 
   const goToPvPLobby = useCallback(() => {
     if (!selectedBey || !selectedArena) { toast.error('Select a beyblade and arena first'); return; }
@@ -128,21 +137,47 @@ export function BattleModeCardsPage() {
       id: 'tournament',
       title: 'Tournament',
       subtitle: 'Bracket Competition',
-      description: 'Join or create a tournament bracket. Wait 1 minute for players — empty slots fill with AI challengers.',
+      description: 'Join an online bracket or fight through an offline AI gauntlet — no server needed.',
       gradient: 'linear-gradient(135deg, #451a03 0%, #b45309 50%, #451a03 100%)',
       icon: '🏆',
-      onSelect: () => goToTournamentLobby(),
+      onSelect: () => openDrawer('tournament-ai'),
     },
     {
       id: 'royale',
       title: 'Battle Royale',
       subtitle: 'Free-for-All',
-      description: 'Up to 8 players in one arena — last bey spinning wins. Empty slots fill with AI bots after 1 minute.',
+      description: 'Last bey spinning wins. Fight online or launch a local AI free-for-all — no server needed.',
       gradient: 'linear-gradient(135deg, #4a044e 0%, #9d174d 50%, #4a044e 100%)',
       icon: '💥',
-      onSelect: () => openDrawer('royale'),
+      onSelect: () => openDrawer('royale-ai'),
     },
   ];
+
+  // ─── Drawer title & label helpers ─────────────────────────────────────────
+  const drawerTitle = () => {
+    switch (drawer.roomType) {
+      case 'tryout':       return 'Tryout Setup';
+      case 'pvai':         return 'PvAI Setup';
+      case 'tournament-ai': return 'AI Tournament Setup';
+      case 'royale-ai':    return 'AI Royale Setup';
+      default:             return 'Battle Setup';
+    }
+  };
+
+  const showBotCount = drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
+  const showDifficulty = drawer.roomType === 'pvai' || drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
+  const showBestOf = drawer.roomType === 'pvai' || drawer.roomType === 'tournament-ai';
+  const showOnlineLink = drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
+
+  const onlineLinkLabel = drawer.roomType === 'tournament-ai' ? 'Join Online Tournament →' : 'Join Online Royale →';
+  const onlineLinkAction = drawer.roomType === 'tournament-ai' ? goToTournamentLobby : goToPvPLobby;
+
+  const isTournamentDrawer = drawer.roomType === 'tournament-ai';
+  const botCountLabel = isTournamentDrawer ? 'Rounds (opponents)' : 'AI Bots (players)';
+  const botMin = isTournamentDrawer ? 1 : 2;
+  const botMax = isTournamentDrawer ? 7 : 11;
+  const currentBotCount = isTournamentDrawer ? aiCountTournament : aiCountRoyale;
+  const setBotCount = isTournamentDrawer ? setAiCountTournament : setAiCountRoyale;
 
   return (
     <div style={{
@@ -199,15 +234,14 @@ export function BattleModeCardsPage() {
             borderRadius: '20px 20px 0 0', padding: '28px 24px 40px',
             width: '100%', maxWidth: '480px',
             animation: 'slideUp 200ms ease',
+            maxHeight: '90vh', overflowY: 'auto',
           }}>
-            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <div style={{
                 fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.4)',
                 letterSpacing: '0.1em', textTransform: 'uppercase',
               }}>
-                {drawer.roomType === 'tryout' ? 'Tryout Setup'
-                  : drawer.roomType === 'pvai' ? 'PvAI Setup'
-                  : 'Battle Setup'}
+                {drawerTitle()}
               </div>
             </div>
 
@@ -217,6 +251,30 @@ export function BattleModeCardsPage() {
               </div>
             ) : (
               <>
+                {/* Online shortcut link for tournament-ai / royale-ai */}
+                {showOnlineLink && (
+                  <>
+                    <button
+                      onClick={() => { setDrawer({ open: false, roomType: null }); onlineLinkAction(); }}
+                      style={{
+                        width: '100%', padding: '12px',
+                        background: 'rgba(99,102,241,0.1)',
+                        border: '1px solid rgba(99,102,241,0.4)',
+                        borderRadius: '12px', color: '#818cf8',
+                        fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                        letterSpacing: '0.04em', marginBottom: '4px',
+                      }}
+                    >
+                      {onlineLinkLabel}
+                    </button>
+                    <div style={SEP}>
+                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em' }}>or play offline vs AI</span>
+                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                    </div>
+                  </>
+                )}
+
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                     Beyblade
@@ -251,7 +309,45 @@ export function BattleModeCardsPage() {
                   </select>
                 </div>
 
-                {drawer.roomType === 'pvai' && (
+                {/* Bot count selector */}
+                {showBotCount && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                      {botCountLabel}: <span style={{ color: '#fff' }}>{currentBotCount}</span>
+                      {isTournamentDrawer && (
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', marginLeft: 6 }}>
+                          ({Math.pow(2, currentBotCount)}-player bracket)
+                        </span>
+                      )}
+                      {!isTournamentDrawer && (
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', marginLeft: 6 }}>
+                          ({currentBotCount + 1} total players)
+                        </span>
+                      )}
+                    </label>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {Array.from({ length: botMax - botMin + 1 }, (_, i) => i + botMin).map(n => (
+                        <button
+                          key={n}
+                          onClick={() => setBotCount(n)}
+                          style={{
+                            flex: '1 1 auto', minWidth: 36, padding: '8px 0',
+                            background: currentBotCount === n ? 'rgba(34,136,255,0.2)' : '#1e293b',
+                            border: `1px solid ${currentBotCount === n ? '#2288ff' : 'rgba(255,255,255,0.1)'}`,
+                            color: currentBotCount === n ? '#60a5fa' : 'rgba(255,255,255,0.5)',
+                            borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+                            transition: 'all 150ms',
+                          }}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Difficulty */}
+                {showDifficulty && (
                   <div style={{ marginBottom: '16px' }}>
                     <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
                       AI Difficulty
@@ -277,7 +373,8 @@ export function BattleModeCardsPage() {
                   </div>
                 )}
 
-                {drawer.roomType !== 'tryout' && drawer.roomType !== 'royale' && (
+                {/* Best-of format */}
+                {showBestOf && (
                   <div style={{ marginBottom: '20px' }}>
                     <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
                       Series Format

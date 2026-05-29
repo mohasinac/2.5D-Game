@@ -243,6 +243,9 @@ export function GameRoomPage() {
     }
   }, [local, colyseus.room, navigate, config]);
 
+  // Tournament bracket info from local sim
+  const tournamentBracket = simSnap?.tournamentBracket;
+
   if (!config) return null;
 
   const typeColorHex = myBeyblade ? (TYPE_COLORS[myBeyblade.type] ?? 0x888888) : 0x888888;
@@ -523,6 +526,29 @@ export function GameRoomPage() {
             power={myBeyblade?.power}
             comboMap={comboMap}
           />
+        )}
+
+        {/* Tournament-AI bracket badge */}
+        {tournamentBracket && (
+          <div style={{
+            position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,180,0,0.5)',
+            borderRadius: 10, padding: '4px 14px', pointerEvents: 'none',
+            display: 'flex', alignItems: 'center', gap: 8, zIndex: 50,
+          }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#fbbf24', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Round {tournamentBracket.round} / {tournamentBracket.totalRounds}
+            </span>
+            {Array.from({ length: tournamentBracket.totalRounds }).map((_, i) => (
+              <span key={i} style={{
+                width: 8, height: 8, borderRadius: '50%',
+                background: i < tournamentBracket.playerWins ? '#22c55e'
+                  : i === tournamentBracket.round - 1 ? '#fbbf24'
+                  : 'rgba(255,255,255,0.15)',
+                display: 'inline-block',
+              }} />
+            ))}
+          </div>
         )}
 
       </div>

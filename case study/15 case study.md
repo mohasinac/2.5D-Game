@@ -6904,7 +6904,898 @@ function emberStrikeCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +9 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1886 as further franchise moves are provided.*
+
+
+---
+
+## Case 1886 — GIMMICK: Salvage Valtryek Shot-7 — Shot Driver Spring Jump & Salvage Blade Dual Rubber-Metal Contact
+
+**Beyblade:** Salvage Valtryek Shot-7 (TT JP: セイバーヴァルキリー・ショット7; Hasbro EN: Salvage Valtryek Shot-7)
+**Blader:** Valt Aoi / Rashad Goodman | **Series:** Beyblade Burst DB (Dynamite Battle)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Salvage (3 metal + 3 rubber blades) | 16.0 | 28.0 |
+| DB Core | Valtryek | 7.5 | 12.0 |
+| Armor | (standard DB Armor) | 13.5 | 18.0 |
+| Ratchet | 7-60 | 18.0 | 22.0 |
+| Driver | Shot | 6.0 | 5.0 |
+| **Total** | | **61.0** | |
+
+**I_total** = 16.0×10⁻³ × 0.028² + 7.5×10⁻³ × 0.012² + 13.5×10⁻³ × 0.018² + 18.0×10⁻³ × 0.022² + 6.0×10⁻³ × 0.005²
+           = 1.254×10⁻⁵ + 1.080×10⁻⁶ + 4.374×10⁻⁶ + 8.712×10⁻⁶ + 1.50×10⁻⁷
+           = **2.686×10⁻⁵ kg·m²**
+
+ω₀ = 680 rad/s (Burst DB standard launch)
+L₀ = I × ω₀ = 2.686×10⁻⁵ × 680 = **1.826×10⁻² kg·m²/s**
+
+---
+
+### 1. Shot Driver — Spring-Loaded Jump Mechanism
+
+The Shot driver contains a rubber-tipped spring mechanism that compresses on floor contact and releases as a vertical impulse:
+
+```
+k_spring = 800 N/m,  x_compress = 5 mm = 0.005 m
+
+PE_spring = ½ × k × x² = ½ × 800 × (0.005)² = 1.000×10⁻² J
+
+v_z_jump = √(2 × PE_spring / m) = √(2 × 1.000×10⁻² / 0.061) = √(0.3279) = 0.573 m/s
+
+h_jump = v_z_jump² / (2g) = (0.573)² / (2 × 9.81) = 0.3283 / 19.62 = 16.7 mm
+```
+
+Shot driver orbital speed (μ_shot = 0.20, r_shot = 5 mm):
+
+```
+v_orbital = μ_shot × ω₀ × r_shot = 0.20 × 680 × 0.005 = 0.680 m/s
+τ_shot    = μ × m × g × r_shot = 0.20 × 0.061 × 9.81 × 0.005 = 5.984×10⁻⁴ N·m
+t_spin    = L₀ / τ_shot = 1.826×10⁻² / 5.984×10⁻⁴ = 30.5 s
+```
+
+**Combined impact velocity (orbital approach + spring jump liftoff):**
+
+```
+v_impact = √(v_orbital² + 2g × h_jump) = √(0.680² + 2 × 9.81 × 0.01673)
+         = √(0.4624 + 0.3283) = √0.7907 = 0.889 m/s
+```
+
+---
+
+### 2. Salvage Blade — Dual Rubber-Metal Blade Contact (Whip Mechanic)
+
+The Salvage Blade carries **3 metal blades** (hard smash) and **3 red rubber blades** (grip-and-snap whip):
+
+**Blade tip velocity:**
+
+```
+v_blade_tip = ω₀ × r_blade = 680 × 0.028 = 19.04 m/s
+```
+
+**Contact restitution model:**
+- Metal blades: e_metal = 0.75 (rigid elastic smash)
+- Rubber blades: e_rubber = 0.50 (snap-back whip — rubber grips, deforms, then releases, returning energy above simple rubber damping)
+
+```
+e_eff = (3 × e_metal + 3 × e_rubber) / 6
+      = (3 × 0.75 + 3 × 0.50) / 6 = (2.25 + 1.50) / 6 = 0.625
+```
+
+→ The rubber blade whip snap raises effective restitution beyond simple rubber contact, amplifying the total impulse delivered.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 61.0 g |
+| I_total | 2.686×10⁻⁵ kg·m² |
+| ω₀ | 680 rad/s |
+| L₀ | 1.826×10⁻² kg·m²/s |
+| v_blade_tip | 19.04 m/s |
+| PE_spring | 1.000×10⁻² J |
+| v_z_jump | 0.573 m/s |
+| h_jump | 16.7 mm |
+| v_orbital | 0.680 m/s |
+| v_impact | 0.889 m/s |
+| e_eff | 0.625 |
+| τ_shot | 5.984×10⁻⁴ N·m |
+| t_spin | 30.5 s |
+
+---
+
+## Case 1887 — SPECIAL: Salvage Whip (Savior Slash) — Valt Aoi / Rashad Goodman / Salvage Valtryek Shot-7
+
+**Blader:** Valt Aoi / Rashad Goodman | **Beyblade:** Salvage Valtryek Shot-7 | **Type:** attack
+
+### Description
+
+Salvage Whip (Japanese: Savior Slash, セイバースラッシュ) is a Special Move used by both Valt Aoi and Rashad Goodman with their respective Salvage Valtryek Shot-7 Beyblades. Utilizing the speed built up with the Shot Driver and its spring-loaded jump feature, Salvage Valtryek launches into an aerial approach and strikes the opposing Beyblade simultaneously with the three hard metal blades and the three red rubber snap-whip blades on the Salvage Blade, dealing massive combined smash and whip damage.
+
+### Stage — Shot Jump Aerial 6-Blade Strike
+
+From Case 1886: v_impact = 0.889 m/s (orbital + spring jump), e_eff = 0.625 (3 metal + 3 rubber whip).
+
+```
+m_eff = (m_SV × m_opp) / (m_SV + m_opp) = (0.061 × 0.040) / (0.061 + 0.040)
+      = 2.440×10⁻³ / 0.101 = 2.416×10⁻² kg
+
+J_salvage = m_eff × (1 + e_eff) × v_impact
+          = 2.416×10⁻² × 1.625 × 0.889
+          = 2.416×10⁻² × 1.4446 = 3.490×10⁻² N·s
+
+Δv_opp  = J_salvage / m_opp = 3.490×10⁻² / 0.040 = 0.873 m/s
+```
+
+**Effect on Salvage Valtryek (spin drain):**
+
+```
+Δω_SV    = J_salvage × r_contact / I_SV = 3.490×10⁻² × 0.025 / 2.686×10⁻⁵ = 32.5 rad/s
+ω_remain = 680 − 32.5 = 647.5 rad/s  (95.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt and Rashad's dual Valtryek spirits converge — when both bladers use Salvage Whip simultaneously the two Salvage Valtryek spiral into each other's approach vector, transforming the rubber whip blades into energy-absorbing lashes that drain the opponent's spin while the metal blades deliver the knockout blow.
+
+[M] factor = **8.0 ×** (co-blader dual-spirit amplification)
+[M] Δv = 0.873 × 8.0 = **7.0 m/s** (dual Savior Slash ring-out)
+
+> **Note:** Physical values describe Shot driver spring jump (PE=1.000×10⁻² J, h_jump=16.7 mm, v_impact=0.889 m/s), combined metal smash + rubber whip e_eff=0.625, impulse J=3.490×10⁻² N·s. [M] values represent Valt and Rashad's co-blader Valtryek spirit fusion amplifying the whip into a simultaneous dual Savior Slash. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function salvageWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Shot spring PE=1.000×10⁻²J→h=16.7mm→v_impact=0.889m/s; e_eff=0.625 (3 metal+3 rubber); J=3.490×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.03490;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Valt+Rashad co-blader dual Valtryek)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Salvage Blade (or equivalent layer with 3+ metal blades and 3+ rubber snap-whip blades at r ≥ 26 mm) combined with the Shot Driver (or equivalent spring-loaded rubber jump driver, k ≥ 600 N/m, x ≥ 4 mm) that delivers a spring jump h ≥ 12 mm for the aerial approach. Standard game instances: Salvage Valtryek Shot-7 (Valt Aoi and Rashad Goodman, Burst DB).
+
+---
+
+## Case 1888 — COMBO: Salvage Rush — Salvage Valtryek
+
+**Sequence:** A ↑ A (attack · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi / Rashad Goodman
+
+### Physics Justification
+
+The first attack (A) is an initial orbital contact at v_orbital = 0.680 m/s:
+
+```
+J_contact_1 = m_eff × (1 + e_eff) × v_orbital = 2.416×10⁻² × 1.625 × 0.680
+            = 2.416×10⁻² × 1.1050 = 2.670×10⁻² N·s
+```
+
+The moveUp (↑) activates the Shot driver spring jump (h = 16.7 mm, v_z = 0.573 m/s), elevating Salvage Valtryek for the aerial follow-up.
+
+The second attack (A) fires the aerial 6-blade dive at v_impact = 0.889 m/s. The Shot driver rubber tip's spring rebound on landing reconverts the landing impulse to spin:
+
+```
+J_contact_2 = J_salvage = 3.490×10⁻² N·s  (from Case 1887)
+
+Δω = η_shot × J_contact_2 × r_contact / I_SV
+   = 0.35 × 3.490×10⁻² × 0.025 / 2.686×10⁻⁵
+   = 0.35 × 8.725×10⁻⁴ / 2.686×10⁻⁵
+   = 0.35 × 32.48
+   = +11.4 rad/s  ≈ +11 rad/s
+```
+
+(η_shot = 0.35: Shot driver rubber spring-rebound reconversion at landing.) The aerial jump + 6-blade simultaneous dive gives damageMultiplier **1.25×**. lockMs = 0 (pure attack, no lock phase).
+
+**Parameters:**
+- spinGain: +11 rad/s (Shot driver rubber spring rebound η = 0.35)
+- damageMultiplier: 1.25 (aerial 6-blade rubber-metal dive)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function salvageRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Shot driver spring rebound: Δω ≈ +11 rad/s (η=0.35, h_jump=16.7mm)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Aerial 6-blade dive: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1889 — GIMMICK: Wyborg — Sand Vortex Inward Suction & SG Hole Flat Attack Mode
+
+**Beyblade:** Wyborg (TT JP: ワイバーグ; Hasbro EN: Wyborg)
+**Blader:** Ian Papov | **Series:** Beyblade (Bakuten Shoot V-Force, Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Wyborg (3-blade serpentine) | 14.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | SG Hole Flat (attack mode) | 2.0 | 5.0 |
+| **Total** | | **37.5** | |
+
+(Bit Chip ~1 g at r ≈ 0 excluded per convention. SG Hole Flat has a dual mode: initial sharp-tip defense mode switches to HF attack mode for Sand Bind execution.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.005²
+           = 1.434×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 5.0×10⁻⁸
+           = **3.679×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (standard plastic-gen Bakuten Shoot launch)
+L₀ = I × ω₀ = 3.679×10⁻⁵ × 700 = **2.575×10⁻² kg·m²/s**
+
+---
+
+### 1. Wyborg AR — Sand Vortex Inward Suction (Rankine Model)
+
+The Wyborg AR blades at v_tip generate a Rankine vortex. Unlike Storm Attack (which uses the vortex for outward ejection), the Wyborg vortex rotates with an inward-directed suction effect — pulling opponents toward Wyborg's AR strike zone, binding their orbital freedom (Sand Bind).
+
+**Blade tip velocity:**
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+```
+
+**Sand vortex (Rankine):**
+
+```
+Γ_sand = 2π × v_tip × r_AR = 2π × 22.40 × 0.032 = 4.500 m²/s
+
+At r_opp = 50 mm from centre:
+v_sand  = Γ_sand / (2π × r_opp) = 4.500 / (2π × 0.050) = 14.32 m/s
+
+q_sand  = ½ × ρ_air × v_sand² = ½ × 1.225 × 14.32² = 125.7 Pa
+F_bind  = q_sand × A_opp = 125.7 × π × 0.020² = 125.7 × 1.257×10⁻³ = 0.1580 N  (inward — suction binding)
+```
+
+---
+
+### 2. SG Hole Flat BB — High-Speed Attack Mode
+
+The SG Hole Flat (attack mode) drives aggressive orbital movement (μ_HF = 0.35, r_HF = 5 mm):
+
+```
+τ_HF    = μ × m × g × r_HF = 0.35 × 0.0375 × 9.81 × 0.005 = 6.44×10⁻⁴ N·m
+t_spin  = L₀ / τ_HF = 2.575×10⁻² / 6.44×10⁻⁴ = 40.0 s
+v_orbital_HF = μ × ω₀ × r_HF = 0.35 × 700 × 0.005 = 1.225 m/s
+```
+
+(In defense/initial mode: sharp tip μ_sharp=0.08, r_sharp=3mm, τ_sharp=8.831×10⁻⁵ N·m — conserves spin before attack phase activation.)
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.5 g |
+| I_total | 3.679×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.575×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| Γ_sand | 4.500 m²/s |
+| v_sand (r=50 mm) | 14.32 m/s |
+| F_bind | 0.1580 N (inward) |
+| τ_HF | 6.44×10⁻⁴ N·m |
+| t_spin (HF) | 40.0 s |
+| v_orbital_HF | 1.225 m/s |
+
+---
+
+## Case 1890 — SPECIAL: Sand Bind — Ian Papov / Wyborg
+
+**Blader:** Ian Papov | **Beyblade:** Wyborg | **Type:** attack
+
+### Description
+
+Sand Bind (Japanese: 砂蛇縛撃, Sa-ja-baku-geki — Sand-Snake Binding Strike) is a Special Move used by Ian Papov and Wyborg. Wyborg's Bit-Beast serpent manifests and coils around the opponent, restricting their movements via the sand vortex suction field. Wyborg then switches to its Hole Flat attack mode and attacks with high speed — the serpent's binding hold combined with the HF orbital speed drives the opponent out of the arena.
+
+### Stage 1 — Sand Vortex Binding (Inward Suction Draw)
+
+F_bind = 0.1580 N inward for t_bind = 0.20 s:
+
+```
+J_bind       = F_bind × t_bind = 0.1580 × 0.20 = 3.160×10⁻² N·s  (toward Wyborg)
+v_approach   = J_bind / m_opp = 3.160×10⁻² / 0.038 = 0.832 m/s  (opponent drawn in)
+```
+
+### Stage 2 — SG HF High-Speed Contact Strike
+
+Wyborg switches to HF attack mode: v_orbital_HF = 1.225 m/s. The opponent's suction-driven approach combines with Wyborg's orbital speed:
+
+```
+v_rel = v_orbital_HF + v_approach = 1.225 + 0.832 = 2.057 m/s
+
+m_eff = (0.0375 × 0.038) / (0.0375 + 0.038) = 1.425×10⁻³ / 0.0755 = 1.887×10⁻² kg
+
+J_sandbind = m_eff × (1 + e) × v_rel  [e = 0.60: rubber HF contact]
+           = 1.887×10⁻² × 1.60 × 2.057
+           = 6.210×10⁻² N·s
+
+Δv_opp = J_sandbind / m_opp = 6.210×10⁻² / 0.038 = 1.634 m/s
+```
+
+**Effect on Wyborg (spin drain):**
+
+```
+Δω_W     = J_sandbind × r_contact / I_W = 6.210×10⁻² × 0.025 / 3.679×10⁻⁵ = 42.2 rad/s
+ω_remain = 700 − 42.2 = 657.8 rad/s  (94.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ian's serpent Bit-Beast fully materialises — the sand tornado becomes a true desert sandstorm column that physically constricts the opponent like a coiling snake. The HF orbital strike at full [M] force drives them out of the arena.
+
+[M] factor = **7.0 ×**
+[M] Δv = 1.634 × 7.0 = **11.4 m/s** (serpent-bind ring-out)
+
+> **Note:** Physical values describe sand vortex inward suction (F=0.1580 N, J_bind=3.160×10⁻² N·s, v_approach=0.832 m/s), HF orbital approach (v_orbital=1.225 m/s), combined v_rel=2.057 m/s, J_sandbind=6.210×10⁻² N·s, Δv=1.634 m/s. [M] values represent Ian's serpent spirit transmuting the sand suction into a true binding constriction. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sandBindSpecial(bey: Beyblade, target: Beyblade): void {
+  // Sand vortex: F=0.1580N×0.2s→J_bind=3.160×10⁻²N·s inward; HF v_rel=2.057m/s→J=6.210×10⁻²N·s; [M] 7.0×
+  const J_bind = 0.03160;
+  const J_attack = 0.06210;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Stage 1: sand vortex inward pull (binding)
+  applyForce(target.id, -(dx / dist) * J_bind, -(dy / dist) * J_bind);
+  // Stage 2: HF attack — [M] 7.0×
+  const amplified = J_attack * 7.0; // [M] BeySpirit 7.0× (Ian serpent sand bind strike)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using an AR with 3+ blade protrusions at r ≥ 30 mm (generating Rankine inward suction Γ ≥ 4.0 m²/s at ω₀ ≥ 680 rad/s) combined with a Hole Flat or Wide Flat Blade Base (μ_HF ≥ 0.30, r ≥ 4 mm) for the attack-mode high-speed orbital strike. Standard game instance: Wyborg (Ian Papov, Bakuten Shoot V-Force plastic generation).
+
+---
+
+## Case 1891 — COMBO: Sand Fang — Wyborg
+
+**Sequence:** K A E (defense · attack · dodge)
+**Cost:** 15 | **Type:** attack | **Blader:** Ian Papov
+
+### Physics Justification
+
+The defense stance (K) switches Wyborg to sharp-tip mode (μ_sharp=0.08, r=3mm, τ_sharp=8.831×10⁻⁵ N·m), conserving spin by reducing friction vs HF mode:
+
+```
+τ_saved  = τ_HF − τ_sharp = 6.44×10⁻⁴ − 8.831×10⁻⁵ = 5.557×10⁻⁴ N·m
+Δω_saved = τ_saved × t_lock / I_W = 5.557×10⁻⁴ × 0.150 / 3.679×10⁻⁵ = 2.27 rad/s  (spin conserved)
+```
+
+The attack (A) activates the partial sand bind suction (t_partial = 0.10 s) then HF mode:
+
+```
+J_bind_partial = F_bind × t_partial = 0.1580 × 0.10 = 1.580×10⁻² N·s
+v_approach_partial = 1.580×10⁻² / 0.038 = 0.416 m/s
+
+v_rel_combo = v_orbital_HF + v_approach_partial = 1.225 + 0.416 = 1.641 m/s
+
+J_combo = m_eff × (1 + e) × v_rel_combo = 1.887×10⁻² × 1.60 × 1.641 = 4.954×10⁻² N·s
+```
+
+The dodge (E) represents Wyborg darting away using HF orbital speed. The HF rubber rebound from the contact reconverts impulse to spin:
+
+```
+Δω_rebound = η_HF × J_combo × r_contact / I_W
+           = 0.35 × 4.954×10⁻² × 0.025 / 3.679×10⁻⁵
+           = 0.35 × 1.2385×10⁻³ / 3.679×10⁻⁵
+           = 0.35 × 33.66
+           = +11.78 rad/s
+
+Total Δω = Δω_saved + Δω_rebound = 2.27 + 11.78 = +14.05 rad/s  ≈ +14 rad/s
+```
+
+(η_HF = 0.35: HF rubber rebound reconversion with partial sand-bind assisted approach.) lockMs = 150 (sharp-tip mode dwell during K stance). damageMultiplier **1.20×**.
+
+**Parameters:**
+- spinGain: +14 rad/s (mode-switch save + HF rubber rebound η = 0.35)
+- damageMultiplier: 1.20 (partial sand-bind approach + HF contact)
+- lockMs: 150 (sharp-tip spin conservation dwell)
+
+### TypeScript
+
+```typescript
+function sandFangCombo(bey: Beyblade, target: Beyblade): void {
+  // Mode-switch K saves Δω≈+2.3 rad/s; partial sand bind + HF rebound Δω≈+11.8 rad/s; total ≈+14 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 14);
+  // Sand-assisted HF approach: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 150: sharp-tip spin conservation window
+  bey.lockMs = 150;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +14 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1892 — GIMMICK: Dark Gasher CH120SF — CH120 Height Extension & Six-Prong Upper-Level AR Contact
+
+**Beyblade:** Dark Gasher CH120SF (TT JP: ダークガッシャーCH120SF; Hasbro EN: Dark Gasher CH120SF)
+**Blader:** Tetsuya Watarigani | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Cancer/Gasher | 3.8 | 23.0 |
+| Fusion Wheel | Dark | 30.0 | 28.0 |
+| Spin Track | CH120 (at 145 mm extended) | 2.7 | 12.0 |
+| Performance Tip | SF (Semi-Flat) | 0.8 | 4.0 |
+| **Total** | | **37.3** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention.)
+
+**I_total** = 30.0×10⁻³ × 0.028² + 3.8×10⁻³ × 0.023² + 2.7×10⁻³ × 0.012² + 0.8×10⁻³ × 0.004²
+           = 2.352×10⁻⁵ + 2.010×10⁻⁶ + 3.888×10⁻⁷ + 1.28×10⁻⁸
+           = **2.593×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.593×10⁻⁵ × 650 = **1.685×10⁻² kg·m²/s**
+
+---
+
+### 1. CH120 Change Height Track — 120 mm → 145 mm Extension (+25 mm)
+
+The CH120 (Change Height 120/145) Spin Track contains an inner sleeve that locks at two positions. Extending to 145 mm raises the entire beyblade body by Δh = 25 mm, lifting the Dark Fusion Wheel AR above the standard contact height of opponents using short tracks.
+
+**Gravitational PE stored by CoM elevation:**
+
+```
+Δh_CH120 = 145 − 120 = 25 mm = 0.025 m
+
+PE_CH = m × g × Δh_CH120 = 0.0373 × 9.81 × 0.025 = 9.141×10⁻³ J
+```
+
+When Dark Gasher tilts (pecks forward), this elevation converts to dive kinetic energy:
+
+```
+v_dive = √(2 × PE_CH / m) = √(2 × 9.141×10⁻³ / 0.0373) = √(0.4900) = 0.700 m/s
+```
+
+**Combined impact velocity (SF orbital + CH145 gravity dive):**
+
+```
+v_orbital_SF = μ_SF × ω₀ × r_SF = 0.12 × 650 × 0.004 = 0.312 m/s
+
+v_impact = √(v_orbital_SF² + 2g × Δh_CH120)
+         = √(0.312² + 2 × 9.81 × 0.025)
+         = √(0.09734 + 0.49050)
+         = √0.58784 = 0.767 m/s
+```
+
+---
+
+### 2. Dark FW — Six-Prong Upper-Level AR Contacts (Six Crab Claw Pattern)
+
+The Dark Fusion Wheel carries six contact protrusions arranged symmetrically (separated by 60° each). When Dark Gasher approaches at CH145 height, these six protrusions engage the opponent's AR from above — "as if six crabs are attacking with their claws" (one contact per prong per oscillation cycle).
+
+**Prong tip velocity:**
+
+```
+v_prong = ω₀ × r_FW = 650 × 0.028 = 18.20 m/s
+```
+
+**SF tip physics:**
+
+```
+τ_SF   = μ_SF × m × g × r_SF = 0.12 × 0.0373 × 9.81 × 0.004 = 1.756×10⁻⁴ N·m
+t_spin = L₀ / τ_SF = 1.685×10⁻² / 1.756×10⁻⁴ = 95.9 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.3 g |
+| I_total | 2.593×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.685×10⁻² kg·m²/s |
+| Δh_CH120 | 25 mm |
+| PE_CH | 9.141×10⁻³ J |
+| v_dive | 0.700 m/s |
+| v_orbital_SF | 0.312 m/s |
+| v_impact | 0.767 m/s |
+| v_prong | 18.20 m/s |
+| τ_SF | 1.756×10⁻⁴ N·m |
+| t_spin | 95.9 s |
+
+---
+
+## Case 1893 — SPECIAL: Six Crab Shake — Tetsuya Watarigani / Dark Gasher CH120SF
+
+**Blader:** Tetsuya Watarigani | **Beyblade:** Dark Gasher CH120SF | **Type:** attack
+
+### Description
+
+Six Crab Shake (Japanese: シックスクラブ・シェイキング, Shikkusu Kurabu Sheikingu) is a Special Move used by Tetsuya Watarigani and his Dark Gasher CH120SF. Gasher's track changes to 145mm height, raising the Dark Fusion Wheel above the opponent's AR contact zone. Gasher then pecks repeatedly at the opponent's beyblade from above — leaning into the Starblast Attack-style downward position — making it appear as if six crabs are simultaneously attacking the opposing bey with their claws.
+
+### Six-Peck Upper Strike Sequence
+
+The CH145 gravity dive gives v_impact = 0.767 m/s. All six prongs of the Dark FW deliver sequential peck contacts totalling the full impulse:
+
+```
+m_eff = (m_DG × m_opp) / (m_DG + m_opp) = (0.0373 × 0.038) / (0.0373 + 0.038)
+      = 1.4174×10⁻³ / 0.0753 = 1.882×10⁻² kg
+
+J_sixcrab = m_eff × (1 + e_prong) × v_impact  [e_prong = 0.70: hard ABS claw tips]
+          = 1.882×10⁻² × 1.70 × 0.767
+          = 1.882×10⁻² × 1.3039 = 2.454×10⁻² N·s
+
+Δv_opp  = J_sixcrab / m_opp = 2.454×10⁻² / 0.038 = 0.646 m/s
+```
+
+**Impulse per individual peck contact (1 of 6):**
+
+```
+J_per_peck = J_sixcrab / 6 = 2.454×10⁻² / 6 = 4.090×10⁻³ N·s  (each claw contact)
+```
+
+**Effect on Dark Gasher (spin drain — CH145 dive reconversion):**
+
+```
+Δω_DG    = J_sixcrab × r_contact / I_DG = 2.454×10⁻² × 0.025 / 2.593×10⁻⁵ = 23.7 rad/s
+ω_remain = 650 − 23.7 = 626.3 rad/s  (96.4% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tetsuya's Gasher Bit-Beast materialises as six giant crab claws simultaneously striking the opponent — the CH145 peck sequence transforms into a true multi-claw assault that overwhelms opponent defenses.
+
+[M] factor = **6.0 ×** (thematically matching the six-claw count)
+[M] Δv = 0.646 × 6.0 = **3.9 m/s** (six-claw ring-out)
+
+> **Note:** Physical values describe CH120 extension Δh=25 mm raising PE_CH=9.141×10⁻³ J, gravity-dive v_impact=0.767 m/s, six-prong sequential peck total J=2.454×10⁻² N·s (4.090×10⁻³ N·s per prong), and Δv=0.646 m/s. [M] values represent Tetsuya's crab spirit manifesting six simultaneous giant claws. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sixCrabShakeSpecial(bey: Beyblade, target: Beyblade): void {
+  // CH120→145: Δh=25mm→PE=9.141×10⁻³J; v_impact=0.767m/s; 6-prong J=2.454×10⁻²N·s; [M] 6.0×
+  const J_phys = 0.02454;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 6.0; // [M] BeySpirit 6.0× (Tetsuya six crab claw materialisation)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the CH120 (or CH130/145) Change Height Spin Track that can extend to ≥145 mm combined with a Fusion Wheel carrying 6+ symmetric contact protrusions at r ≥ 26 mm. The height extension must raise the AR above the opponent's contact zone to enable top-down peck contacts. Standard game instance: Dark Gasher CH120SF (Tetsuya Watarigani, Metal Fusion).
+
+---
+
+## Case 1894 — COMBO: Crab Peck — Dark Gasher
+
+**Sequence:** ↓ A A (moveDown · attack · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tetsuya Watarigani
+
+### Physics Justification
+
+The moveDown (↓) represents Dark Gasher dropping into the CH145 elevated-peck position — CoM raised by 25 mm, v_dive = 0.700 m/s primed.
+
+The first attack (A) fires a full CH145 peck at v_impact = 0.767 m/s:
+
+```
+J_peck_1 = m_eff × (1 + e_prong) × v_impact = 1.882×10⁻² × 1.70 × 0.767 = 2.454×10⁻² N·s
+```
+
+The second attack (A) fires a partial-height recovery peck (h₂ = Δh_CH120 × 0.50 = 12.5 mm):
+
+```
+v_impact_2 = √(v_orbital_SF² + 2g × h₂) = √(0.312² + 2 × 9.81 × 0.0125) = √(0.0973 + 0.2453) = 0.585 m/s
+
+J_peck_2 = m_eff × (1 + e_prong) × v_impact_2 = 1.882×10⁻² × 1.70 × 0.585 = 1.871×10⁻² N·s
+```
+
+The SF tip elastic rebound reconverts the two-peck impulse to spin:
+
+```
+Δω = η × (J_peck_1 + J_peck_2) × r_contact / I_DG
+   = 0.30 × (2.454×10⁻² + 1.871×10⁻²) × 0.025 / 2.593×10⁻⁵
+   = 0.30 × 4.325×10⁻² × 0.025 / 2.593×10⁻⁵
+   = 0.30 × 1.081×10⁻³ / 2.593×10⁻⁵
+   = 0.30 × 41.7
+   = +12.5 rad/s  ≈ +13 rad/s
+```
+
+(η = 0.30: SF semi-flat tip elastic rebound at partial-height double peck.) The double CH145-dive attack gives damageMultiplier **1.25×**. lockMs = 0 (pure attack).
+
+**Parameters:**
+- spinGain: +13 rad/s (SF double peck rebound η = 0.30)
+- damageMultiplier: 1.25 (double CH145 gravity-dive peck from above)
+- lockMs: 0 (pure attack)
+
+### TypeScript
+
+```typescript
+function crabPeckCombo(bey: Beyblade, target: Beyblade): void {
+  // SF double CH145 peck rebound: Δω ≈ +13 rad/s (η=0.30, J1=2.454×10⁻² + J2=1.871×10⁻²)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Double gravity dive peck from CH145: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1895 — GIMMICK: Ray Gasher M145Q — M145 Mid-Height Stabiliser & Q-Tip Rubber Bounce Drill
+
+**Beyblade:** Ray Gasher M145Q (TT JP: レイガッシャーM145Q; Hasbro EN: Ray Gasher M145Q)
+**Blader:** Enso Garcia / Selen | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Gasher | 3.8 | 23.0 |
+| Fusion Wheel | Ray | 27.5 | 28.0 |
+| Spin Track | M145 (Mid 145 mm) | 2.5 | 10.0 |
+| Performance Tip | Q (Quake) | 1.2 | 3.5 |
+| **Total** | | **35.0** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention.)
+
+**I_total** = 27.5×10⁻³ × 0.028² + 3.8×10⁻³ × 0.023² + 2.5×10⁻³ × 0.010² + 1.2×10⁻³ × 0.0035²
+           = 2.156×10⁻⁵ + 2.010×10⁻⁶ + 2.500×10⁻⁷ + 1.47×10⁻⁸
+           = **2.383×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.383×10⁻⁵ × 650 = **1.549×10⁻² kg·m²/s**
+
+---
+
+### 1. Q (Quake) Performance Tip — Rubber Bounce Drill Launch
+
+The Q tip carries a hard rubber nub (μ_Q ≈ 0.20, r_Q = 3.5 mm) with a built-in spring-compressed rubber dome (k = 1200 N/m, x_compress = 6 mm = 0.006 m). On hard floor contact, the rubber dome compresses and releases a vertical bounce impulse — driving the signature Quake bounce and the upward drill-spin entry:
+
+```
+PE_Q = ½ × k × x² = ½ × 1200 × (0.006)² = 2.160×10⁻² J
+
+v_vert = √(2 × PE_Q / m) = √(2 × 2.160×10⁻² / 0.0350) = √(1.2343) = 1.111 m/s
+
+h_apex = v_vert² / (2g) = (1.111)² / (2 × 9.81) = 1.2343 / 19.62 = 62.9 mm  ≈ 63 mm
+```
+
+Q tip orbital speed:
+
+```
+v_orbital_Q = μ_Q × ω₀ × r_Q = 0.20 × 650 × 0.0035 = 0.4550 m/s
+τ_Q         = μ_Q × m × g × r_Q = 0.20 × 0.0350 × 9.81 × 0.0035 = 2.401×10⁻⁴ N·m
+t_spin      = L₀ / τ_Q = 1.549×10⁻² / 2.401×10⁻⁴ = 64.5 s
+```
+
+**Combined impact velocity (orbital + Q bounce apex re-entry):**
+
+```
+v_impact = √(v_orbital_Q² + 2g × h_apex)
+         = √(0.4550² + 2 × 9.81 × 0.0629)
+         = √(0.2070 + 1.2345)
+         = √1.4415 = 1.201 m/s
+```
+
+---
+
+### 2. Ray FW & M145 — Drill-Tornado Spin Column
+
+The Ray Fusion Wheel's swept blade protrusions at r = 28 mm generate a rotating spiral wash (drill vortex) as Ray Gasher ascends from the Q bounce into its overhead strike. The M145 mid-height track stabilises this ascent at 145 mm without the change-height locking mechanism, keeping the AR elevation constant.
+
+**Blade tip velocity:**
+
+```
+v_blade_tip = ω₀ × r_FW = 650 × 0.028 = 18.20 m/s
+```
+
+**Drill-vortex dynamic pressure at r_opp = 50 mm:**
+
+```
+Γ_drill = 2π × v_blade_tip × r_FW = 2π × 18.20 × 0.028 = 3.205 m²/s
+
+v_drill  = Γ_drill / (2π × r_opp) = 3.205 / (2π × 0.050) = 10.18 m/s
+
+q_drill  = ½ × ρ_air × v_drill² = ½ × 1.225 × 10.18² = 63.52 Pa
+F_drill  = q_drill × A_opp = 63.52 × π × 0.020² = 63.52 × 1.257×10⁻³ = 0.07983 N
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 35.0 g |
+| I_total | 2.383×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.549×10⁻² kg·m²/s |
+| v_blade_tip | 18.20 m/s |
+| PE_Q | 2.160×10⁻² J |
+| v_vert | 1.111 m/s |
+| h_apex | 63 mm |
+| v_orbital_Q | 0.4550 m/s |
+| v_impact | 1.201 m/s |
+| Γ_drill | 3.205 m²/s |
+| F_drill | 0.07983 N |
+| τ_Q | 2.401×10⁻⁴ N·m |
+| t_spin | 64.5 s |
+
+---
+
+## Case 1896 — SPECIAL: Slumdog Driver — Enso Garcia / Selen / Ray Gasher M145Q
+
+**Blader:** Enso Garcia / Selen | **Beyblade:** Ray Gasher M145Q | **Type:** attack
+
+### Description
+
+Slumdog Driver (Japanese: スラムドッグ・ドライバー, Suramu Doggu Doraibā) is a Special Move used by both Enso Garcia and Selen with their Ray Gasher M145Q Beyblades. Ray Gasher consumes itself in a drill-like tornado and slams the opponent from above. The Q tip's rubber bounce launches Ray Gasher skyward at h ≈ 63 mm, spinning as a vertical drill column, before it crashes back down on the opposing beyblade with full aerial smash force. When both Selen and Enso use this move simultaneously, it becomes Double Slumdog Driver — two drill columns converging on the same target for doubled destructive force.
+
+### Stage — Q Bounce Drill Aerial Overhead Smash
+
+From Case 1895: v_impact = 1.201 m/s (Q orbital + bounce apex re-entry), e = 0.75 (hard Ray FW smash blades).
+
+```
+m_eff = (m_RG × m_opp) / (m_RG + m_opp) = (0.0350 × 0.038) / (0.0350 + 0.038)
+      = 1.330×10⁻³ / 0.0730 = 1.822×10⁻² kg
+
+J_slumdog = m_eff × (1 + e) × v_impact
+          = 1.822×10⁻² × 1.75 × 1.201
+          = 1.822×10⁻² × 2.1018 = 3.829×10⁻² N·s
+
+Δv_opp  = J_slumdog / m_opp = 3.829×10⁻² / 0.038 = 1.008 m/s
+```
+
+**Effect on Ray Gasher (spin drain):**
+
+```
+Δω_RG    = J_slumdog × r_contact / I_RG = 3.829×10⁻² × 0.025 / 2.383×10⁻⁵ = 40.1 rad/s
+ω_remain = 650 − 40.1 = 609.9 rad/s  (93.8% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Enso and Selen's Ray Gasher Bit-Beasts converge into Double Slumdog Driver — both crab-beast spirits materialise as twin drill tornadoes spiralling down onto the same point, delivering twice the Quake bounce energy in a single combined overhead slam.
+
+[M] factor = **8.0 ×** (Double Slumdog co-blader dual-drill amplification)
+[M] Δv = 1.008 × 8.0 = **8.1 m/s** (twin-drill ring-out)
+
+> **Note:** Physical values describe Q-tip rubber bounce (PE=2.160×10⁻² J, h=63 mm, v_impact=1.201 m/s), Ray FW drill smash (e=0.75), impulse J=3.829×10⁻² N·s, Δv=1.008 m/s. [M] values represent Enso and Selen's co-blader Gasher spirits fusing into Double Slumdog Driver — two drill columns in a single convergent overhead strike. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function slumdogDriverSpecial(bey: Beyblade, target: Beyblade): void {
+  // Q bounce PE=2.160×10⁻²J→h=63mm→v_impact=1.201m/s; e=0.75 drill smash; J=3.829×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.03829;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Enso+Selen co-blader Double Slumdog drill)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Q (Quake) Performance Tip (or equivalent spring-compressed rubber bounce tip, k ≥ 900 N/m, x ≥ 5 mm) combined with a Fusion Wheel carrying swept smash blades at r ≥ 26 mm (generating drill-tornado approach at ω₀ ≥ 630 rad/s) on a mid-height track (M145 or equivalent ≥ 140 mm). The Q bounce must reach h ≥ 50 mm for a valid overhead drill entry. Standard game instances: Ray Gasher M145Q (Enso Garcia and Selen, Metal Fusion).
+
+---
+
+## Case 1897 — COMBO: Tornado Dash — Ray Gasher
+
+**Sequence:** ↑ A ↑ (moveUp · attack · moveUp)
+**Cost:** 15 | **Type:** attack | **Blader:** Enso Garcia / Selen
+
+### Physics Justification
+
+The first moveUp (↑) activates the Q tip rubber bounce (PE = 2.160×10⁻² J, h = 63 mm, v_vert = 1.111 m/s) — Ray Gasher launches upward in drill-spin mode.
+
+The attack (A) fires the mid-air Ray FW overhead drill smash at v_impact = 1.201 m/s:
+
+```
+J_drill = J_slumdog = 3.829×10⁻² N·s  (from Case 1896)
+```
+
+The second moveUp (↑) represents the Q tip rubber spring rebound on landing — re-compressing the rubber dome and reconverting landing impulse back to spin:
+
+```
+Δω = η_Q × J_drill × r_contact / I_RG
+   = 0.30 × 3.829×10⁻² × 0.025 / 2.383×10⁻⁵
+   = 0.30 × 9.573×10⁻⁴ / 2.383×10⁻⁵
+   = 0.30 × 40.17
+   = +12.1 rad/s  ≈ +12 rad/s
+```
+
+(η_Q = 0.30: Q rubber bounce dome recompression reconversion on landing.) The Q bounce aerial drill smash gives damageMultiplier **1.25×**. lockMs = 0 (pure aerial attack, no lock phase).
+
+**Parameters:**
+- spinGain: +12 rad/s (Q rubber bounce rebound η = 0.30)
+- damageMultiplier: 1.25 (Q bounce aerial drill overhead smash)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function tornadoDashCombo(bey: Beyblade, target: Beyblade): void {
+  // Q bounce rebound: Δω ≈ +12 rad/s (η=0.30, h=63mm, J=3.829×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Aerial drill overhead smash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1898 as further franchise moves are provided.*
 
 
 
@@ -12623,4 +13514,895 @@ function emberStrikeCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +9 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1886 as further franchise moves are provided.*
+
+
+---
+
+## Case 1886 — GIMMICK: Salvage Valtryek Shot-7 — Shot Driver Spring Jump & Salvage Blade Dual Rubber-Metal Contact
+
+**Beyblade:** Salvage Valtryek Shot-7 (TT JP: セイバーヴァルキリー・ショット7; Hasbro EN: Salvage Valtryek Shot-7)
+**Blader:** Valt Aoi / Rashad Goodman | **Series:** Beyblade Burst DB (Dynamite Battle)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Blade | Salvage (3 metal + 3 rubber blades) | 16.0 | 28.0 |
+| DB Core | Valtryek | 7.5 | 12.0 |
+| Armor | (standard DB Armor) | 13.5 | 18.0 |
+| Ratchet | 7-60 | 18.0 | 22.0 |
+| Driver | Shot | 6.0 | 5.0 |
+| **Total** | | **61.0** | |
+
+**I_total** = 16.0×10⁻³ × 0.028² + 7.5×10⁻³ × 0.012² + 13.5×10⁻³ × 0.018² + 18.0×10⁻³ × 0.022² + 6.0×10⁻³ × 0.005²
+           = 1.254×10⁻⁵ + 1.080×10⁻⁶ + 4.374×10⁻⁶ + 8.712×10⁻⁶ + 1.50×10⁻⁷
+           = **2.686×10⁻⁵ kg·m²**
+
+ω₀ = 680 rad/s (Burst DB standard launch)
+L₀ = I × ω₀ = 2.686×10⁻⁵ × 680 = **1.826×10⁻² kg·m²/s**
+
+---
+
+### 1. Shot Driver — Spring-Loaded Jump Mechanism
+
+The Shot driver contains a rubber-tipped spring mechanism that compresses on floor contact and releases as a vertical impulse:
+
+```
+k_spring = 800 N/m,  x_compress = 5 mm = 0.005 m
+
+PE_spring = ½ × k × x² = ½ × 800 × (0.005)² = 1.000×10⁻² J
+
+v_z_jump = √(2 × PE_spring / m) = √(2 × 1.000×10⁻² / 0.061) = √(0.3279) = 0.573 m/s
+
+h_jump = v_z_jump² / (2g) = (0.573)² / (2 × 9.81) = 0.3283 / 19.62 = 16.7 mm
+```
+
+Shot driver orbital speed (μ_shot = 0.20, r_shot = 5 mm):
+
+```
+v_orbital = μ_shot × ω₀ × r_shot = 0.20 × 680 × 0.005 = 0.680 m/s
+τ_shot    = μ × m × g × r_shot = 0.20 × 0.061 × 9.81 × 0.005 = 5.984×10⁻⁴ N·m
+t_spin    = L₀ / τ_shot = 1.826×10⁻² / 5.984×10⁻⁴ = 30.5 s
+```
+
+**Combined impact velocity (orbital approach + spring jump liftoff):**
+
+```
+v_impact = √(v_orbital² + 2g × h_jump) = √(0.680² + 2 × 9.81 × 0.01673)
+         = √(0.4624 + 0.3283) = √0.7907 = 0.889 m/s
+```
+
+---
+
+### 2. Salvage Blade — Dual Rubber-Metal Blade Contact (Whip Mechanic)
+
+The Salvage Blade carries **3 metal blades** (hard smash) and **3 red rubber blades** (grip-and-snap whip):
+
+**Blade tip velocity:**
+
+```
+v_blade_tip = ω₀ × r_blade = 680 × 0.028 = 19.04 m/s
+```
+
+**Contact restitution model:**
+- Metal blades: e_metal = 0.75 (rigid elastic smash)
+- Rubber blades: e_rubber = 0.50 (snap-back whip — rubber grips, deforms, then releases, returning energy above simple rubber damping)
+
+```
+e_eff = (3 × e_metal + 3 × e_rubber) / 6
+      = (3 × 0.75 + 3 × 0.50) / 6 = (2.25 + 1.50) / 6 = 0.625
+```
+
+→ The rubber blade whip snap raises effective restitution beyond simple rubber contact, amplifying the total impulse delivered.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 61.0 g |
+| I_total | 2.686×10⁻⁵ kg·m² |
+| ω₀ | 680 rad/s |
+| L₀ | 1.826×10⁻² kg·m²/s |
+| v_blade_tip | 19.04 m/s |
+| PE_spring | 1.000×10⁻² J |
+| v_z_jump | 0.573 m/s |
+| h_jump | 16.7 mm |
+| v_orbital | 0.680 m/s |
+| v_impact | 0.889 m/s |
+| e_eff | 0.625 |
+| τ_shot | 5.984×10⁻⁴ N·m |
+| t_spin | 30.5 s |
+
+---
+
+## Case 1887 — SPECIAL: Salvage Whip (Savior Slash) — Valt Aoi / Rashad Goodman / Salvage Valtryek Shot-7
+
+**Blader:** Valt Aoi / Rashad Goodman | **Beyblade:** Salvage Valtryek Shot-7 | **Type:** attack
+
+### Description
+
+Salvage Whip (Japanese: Savior Slash, セイバースラッシュ) is a Special Move used by both Valt Aoi and Rashad Goodman with their respective Salvage Valtryek Shot-7 Beyblades. Utilizing the speed built up with the Shot Driver and its spring-loaded jump feature, Salvage Valtryek launches into an aerial approach and strikes the opposing Beyblade simultaneously with the three hard metal blades and the three red rubber snap-whip blades on the Salvage Blade, dealing massive combined smash and whip damage.
+
+### Stage — Shot Jump Aerial 6-Blade Strike
+
+From Case 1886: v_impact = 0.889 m/s (orbital + spring jump), e_eff = 0.625 (3 metal + 3 rubber whip).
+
+```
+m_eff = (m_SV × m_opp) / (m_SV + m_opp) = (0.061 × 0.040) / (0.061 + 0.040)
+      = 2.440×10⁻³ / 0.101 = 2.416×10⁻² kg
+
+J_salvage = m_eff × (1 + e_eff) × v_impact
+          = 2.416×10⁻² × 1.625 × 0.889
+          = 2.416×10⁻² × 1.4446 = 3.490×10⁻² N·s
+
+Δv_opp  = J_salvage / m_opp = 3.490×10⁻² / 0.040 = 0.873 m/s
+```
+
+**Effect on Salvage Valtryek (spin drain):**
+
+```
+Δω_SV    = J_salvage × r_contact / I_SV = 3.490×10⁻² × 0.025 / 2.686×10⁻⁵ = 32.5 rad/s
+ω_remain = 680 − 32.5 = 647.5 rad/s  (95.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Valt and Rashad's dual Valtryek spirits converge — when both bladers use Salvage Whip simultaneously the two Salvage Valtryek spiral into each other's approach vector, transforming the rubber whip blades into energy-absorbing lashes that drain the opponent's spin while the metal blades deliver the knockout blow.
+
+[M] factor = **8.0 ×** (co-blader dual-spirit amplification)
+[M] Δv = 0.873 × 8.0 = **7.0 m/s** (dual Savior Slash ring-out)
+
+> **Note:** Physical values describe Shot driver spring jump (PE=1.000×10⁻² J, h_jump=16.7 mm, v_impact=0.889 m/s), combined metal smash + rubber whip e_eff=0.625, impulse J=3.490×10⁻² N·s. [M] values represent Valt and Rashad's co-blader Valtryek spirit fusion amplifying the whip into a simultaneous dual Savior Slash. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function salvageWhipSpecial(bey: Beyblade, target: Beyblade): void {
+  // Shot spring PE=1.000×10⁻²J→h=16.7mm→v_impact=0.889m/s; e_eff=0.625 (3 metal+3 rubber); J=3.490×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.03490;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Valt+Rashad co-blader dual Valtryek)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Salvage Blade (or equivalent layer with 3+ metal blades and 3+ rubber snap-whip blades at r ≥ 26 mm) combined with the Shot Driver (or equivalent spring-loaded rubber jump driver, k ≥ 600 N/m, x ≥ 4 mm) that delivers a spring jump h ≥ 12 mm for the aerial approach. Standard game instances: Salvage Valtryek Shot-7 (Valt Aoi and Rashad Goodman, Burst DB).
+
+---
+
+## Case 1888 — COMBO: Salvage Rush — Salvage Valtryek
+
+**Sequence:** A ↑ A (attack · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Valt Aoi / Rashad Goodman
+
+### Physics Justification
+
+The first attack (A) is an initial orbital contact at v_orbital = 0.680 m/s:
+
+```
+J_contact_1 = m_eff × (1 + e_eff) × v_orbital = 2.416×10⁻² × 1.625 × 0.680
+            = 2.416×10⁻² × 1.1050 = 2.670×10⁻² N·s
+```
+
+The moveUp (↑) activates the Shot driver spring jump (h = 16.7 mm, v_z = 0.573 m/s), elevating Salvage Valtryek for the aerial follow-up.
+
+The second attack (A) fires the aerial 6-blade dive at v_impact = 0.889 m/s. The Shot driver rubber tip's spring rebound on landing reconverts the landing impulse to spin:
+
+```
+J_contact_2 = J_salvage = 3.490×10⁻² N·s  (from Case 1887)
+
+Δω = η_shot × J_contact_2 × r_contact / I_SV
+   = 0.35 × 3.490×10⁻² × 0.025 / 2.686×10⁻⁵
+   = 0.35 × 8.725×10⁻⁴ / 2.686×10⁻⁵
+   = 0.35 × 32.48
+   = +11.4 rad/s  ≈ +11 rad/s
+```
+
+(η_shot = 0.35: Shot driver rubber spring-rebound reconversion at landing.) The aerial jump + 6-blade simultaneous dive gives damageMultiplier **1.25×**. lockMs = 0 (pure attack, no lock phase).
+
+**Parameters:**
+- spinGain: +11 rad/s (Shot driver rubber spring rebound η = 0.35)
+- damageMultiplier: 1.25 (aerial 6-blade rubber-metal dive)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function salvageRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Shot driver spring rebound: Δω ≈ +11 rad/s (η=0.35, h_jump=16.7mm)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Aerial 6-blade dive: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1889 — GIMMICK: Wyborg — Sand Vortex Inward Suction & SG Hole Flat Attack Mode
+
+**Beyblade:** Wyborg (TT JP: ワイバーグ; Hasbro EN: Wyborg)
+**Blader:** Ian Papov | **Series:** Beyblade (Bakuten Shoot V-Force, Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Wyborg (3-blade serpentine) | 14.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Blade Base | SG Hole Flat (attack mode) | 2.0 | 5.0 |
+| **Total** | | **37.5** | |
+
+(Bit Chip ~1 g at r ≈ 0 excluded per convention. SG Hole Flat has a dual mode: initial sharp-tip defense mode switches to HF attack mode for Sand Bind execution.)
+
+**I_total** = 14.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.0×10⁻³ × 0.005²
+           = 1.434×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 5.0×10⁻⁸
+           = **3.679×10⁻⁵ kg·m²**
+
+ω₀ = 700 rad/s (standard plastic-gen Bakuten Shoot launch)
+L₀ = I × ω₀ = 3.679×10⁻⁵ × 700 = **2.575×10⁻² kg·m²/s**
+
+---
+
+### 1. Wyborg AR — Sand Vortex Inward Suction (Rankine Model)
+
+The Wyborg AR blades at v_tip generate a Rankine vortex. Unlike Storm Attack (which uses the vortex for outward ejection), the Wyborg vortex rotates with an inward-directed suction effect — pulling opponents toward Wyborg's AR strike zone, binding their orbital freedom (Sand Bind).
+
+**Blade tip velocity:**
+
+```
+v_tip = ω₀ × r_AR = 700 × 0.032 = 22.40 m/s
+```
+
+**Sand vortex (Rankine):**
+
+```
+Γ_sand = 2π × v_tip × r_AR = 2π × 22.40 × 0.032 = 4.500 m²/s
+
+At r_opp = 50 mm from centre:
+v_sand  = Γ_sand / (2π × r_opp) = 4.500 / (2π × 0.050) = 14.32 m/s
+
+q_sand  = ½ × ρ_air × v_sand² = ½ × 1.225 × 14.32² = 125.7 Pa
+F_bind  = q_sand × A_opp = 125.7 × π × 0.020² = 125.7 × 1.257×10⁻³ = 0.1580 N  (inward — suction binding)
+```
+
+---
+
+### 2. SG Hole Flat BB — High-Speed Attack Mode
+
+The SG Hole Flat (attack mode) drives aggressive orbital movement (μ_HF = 0.35, r_HF = 5 mm):
+
+```
+τ_HF    = μ × m × g × r_HF = 0.35 × 0.0375 × 9.81 × 0.005 = 6.44×10⁻⁴ N·m
+t_spin  = L₀ / τ_HF = 2.575×10⁻² / 6.44×10⁻⁴ = 40.0 s
+v_orbital_HF = μ × ω₀ × r_HF = 0.35 × 700 × 0.005 = 1.225 m/s
+```
+
+(In defense/initial mode: sharp tip μ_sharp=0.08, r_sharp=3mm, τ_sharp=8.831×10⁻⁵ N·m — conserves spin before attack phase activation.)
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.5 g |
+| I_total | 3.679×10⁻⁵ kg·m² |
+| ω₀ | 700 rad/s |
+| L₀ | 2.575×10⁻² kg·m²/s |
+| v_tip | 22.40 m/s |
+| Γ_sand | 4.500 m²/s |
+| v_sand (r=50 mm) | 14.32 m/s |
+| F_bind | 0.1580 N (inward) |
+| τ_HF | 6.44×10⁻⁴ N·m |
+| t_spin (HF) | 40.0 s |
+| v_orbital_HF | 1.225 m/s |
+
+---
+
+## Case 1890 — SPECIAL: Sand Bind — Ian Papov / Wyborg
+
+**Blader:** Ian Papov | **Beyblade:** Wyborg | **Type:** attack
+
+### Description
+
+Sand Bind (Japanese: 砂蛇縛撃, Sa-ja-baku-geki — Sand-Snake Binding Strike) is a Special Move used by Ian Papov and Wyborg. Wyborg's Bit-Beast serpent manifests and coils around the opponent, restricting their movements via the sand vortex suction field. Wyborg then switches to its Hole Flat attack mode and attacks with high speed — the serpent's binding hold combined with the HF orbital speed drives the opponent out of the arena.
+
+### Stage 1 — Sand Vortex Binding (Inward Suction Draw)
+
+F_bind = 0.1580 N inward for t_bind = 0.20 s:
+
+```
+J_bind       = F_bind × t_bind = 0.1580 × 0.20 = 3.160×10⁻² N·s  (toward Wyborg)
+v_approach   = J_bind / m_opp = 3.160×10⁻² / 0.038 = 0.832 m/s  (opponent drawn in)
+```
+
+### Stage 2 — SG HF High-Speed Contact Strike
+
+Wyborg switches to HF attack mode: v_orbital_HF = 1.225 m/s. The opponent's suction-driven approach combines with Wyborg's orbital speed:
+
+```
+v_rel = v_orbital_HF + v_approach = 1.225 + 0.832 = 2.057 m/s
+
+m_eff = (0.0375 × 0.038) / (0.0375 + 0.038) = 1.425×10⁻³ / 0.0755 = 1.887×10⁻² kg
+
+J_sandbind = m_eff × (1 + e) × v_rel  [e = 0.60: rubber HF contact]
+           = 1.887×10⁻² × 1.60 × 2.057
+           = 6.210×10⁻² N·s
+
+Δv_opp = J_sandbind / m_opp = 6.210×10⁻² / 0.038 = 1.634 m/s
+```
+
+**Effect on Wyborg (spin drain):**
+
+```
+Δω_W     = J_sandbind × r_contact / I_W = 6.210×10⁻² × 0.025 / 3.679×10⁻⁵ = 42.2 rad/s
+ω_remain = 700 − 42.2 = 657.8 rad/s  (94.0% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Ian's serpent Bit-Beast fully materialises — the sand tornado becomes a true desert sandstorm column that physically constricts the opponent like a coiling snake. The HF orbital strike at full [M] force drives them out of the arena.
+
+[M] factor = **7.0 ×**
+[M] Δv = 1.634 × 7.0 = **11.4 m/s** (serpent-bind ring-out)
+
+> **Note:** Physical values describe sand vortex inward suction (F=0.1580 N, J_bind=3.160×10⁻² N·s, v_approach=0.832 m/s), HF orbital approach (v_orbital=1.225 m/s), combined v_rel=2.057 m/s, J_sandbind=6.210×10⁻² N·s, Δv=1.634 m/s. [M] values represent Ian's serpent spirit transmuting the sand suction into a true binding constriction. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sandBindSpecial(bey: Beyblade, target: Beyblade): void {
+  // Sand vortex: F=0.1580N×0.2s→J_bind=3.160×10⁻²N·s inward; HF v_rel=2.057m/s→J=6.210×10⁻²N·s; [M] 7.0×
+  const J_bind = 0.03160;
+  const J_attack = 0.06210;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Stage 1: sand vortex inward pull (binding)
+  applyForce(target.id, -(dx / dist) * J_bind, -(dy / dist) * J_bind);
+  // Stage 2: HF attack — [M] 7.0×
+  const amplified = J_attack * 7.0; // [M] BeySpirit 7.0× (Ian serpent sand bind strike)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using an AR with 3+ blade protrusions at r ≥ 30 mm (generating Rankine inward suction Γ ≥ 4.0 m²/s at ω₀ ≥ 680 rad/s) combined with a Hole Flat or Wide Flat Blade Base (μ_HF ≥ 0.30, r ≥ 4 mm) for the attack-mode high-speed orbital strike. Standard game instance: Wyborg (Ian Papov, Bakuten Shoot V-Force plastic generation).
+
+---
+
+## Case 1891 — COMBO: Sand Fang — Wyborg
+
+**Sequence:** K A E (defense · attack · dodge)
+**Cost:** 15 | **Type:** attack | **Blader:** Ian Papov
+
+### Physics Justification
+
+The defense stance (K) switches Wyborg to sharp-tip mode (μ_sharp=0.08, r=3mm, τ_sharp=8.831×10⁻⁵ N·m), conserving spin by reducing friction vs HF mode:
+
+```
+τ_saved  = τ_HF − τ_sharp = 6.44×10⁻⁴ − 8.831×10⁻⁵ = 5.557×10⁻⁴ N·m
+Δω_saved = τ_saved × t_lock / I_W = 5.557×10⁻⁴ × 0.150 / 3.679×10⁻⁵ = 2.27 rad/s  (spin conserved)
+```
+
+The attack (A) activates the partial sand bind suction (t_partial = 0.10 s) then HF mode:
+
+```
+J_bind_partial = F_bind × t_partial = 0.1580 × 0.10 = 1.580×10⁻² N·s
+v_approach_partial = 1.580×10⁻² / 0.038 = 0.416 m/s
+
+v_rel_combo = v_orbital_HF + v_approach_partial = 1.225 + 0.416 = 1.641 m/s
+
+J_combo = m_eff × (1 + e) × v_rel_combo = 1.887×10⁻² × 1.60 × 1.641 = 4.954×10⁻² N·s
+```
+
+The dodge (E) represents Wyborg darting away using HF orbital speed. The HF rubber rebound from the contact reconverts impulse to spin:
+
+```
+Δω_rebound = η_HF × J_combo × r_contact / I_W
+           = 0.35 × 4.954×10⁻² × 0.025 / 3.679×10⁻⁵
+           = 0.35 × 1.2385×10⁻³ / 3.679×10⁻⁵
+           = 0.35 × 33.66
+           = +11.78 rad/s
+
+Total Δω = Δω_saved + Δω_rebound = 2.27 + 11.78 = +14.05 rad/s  ≈ +14 rad/s
+```
+
+(η_HF = 0.35: HF rubber rebound reconversion with partial sand-bind assisted approach.) lockMs = 150 (sharp-tip mode dwell during K stance). damageMultiplier **1.20×**.
+
+**Parameters:**
+- spinGain: +14 rad/s (mode-switch save + HF rubber rebound η = 0.35)
+- damageMultiplier: 1.20 (partial sand-bind approach + HF contact)
+- lockMs: 150 (sharp-tip spin conservation dwell)
+
+### TypeScript
+
+```typescript
+function sandFangCombo(bey: Beyblade, target: Beyblade): void {
+  // Mode-switch K saves Δω≈+2.3 rad/s; partial sand bind + HF rebound Δω≈+11.8 rad/s; total ≈+14 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 14);
+  // Sand-assisted HF approach: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  // lockMs = 150: sharp-tip spin conservation window
+  bey.lockMs = 150;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 150 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +14 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1892 — GIMMICK: Dark Gasher CH120SF — CH120 Height Extension & Six-Prong Upper-Level AR Contact
+
+**Beyblade:** Dark Gasher CH120SF (TT JP: ダークガッシャーCH120SF; Hasbro EN: Dark Gasher CH120SF)
+**Blader:** Tetsuya Watarigani | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Cancer/Gasher | 3.8 | 23.0 |
+| Fusion Wheel | Dark | 30.0 | 28.0 |
+| Spin Track | CH120 (at 145 mm extended) | 2.7 | 12.0 |
+| Performance Tip | SF (Semi-Flat) | 0.8 | 4.0 |
+| **Total** | | **37.3** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention.)
+
+**I_total** = 30.0×10⁻³ × 0.028² + 3.8×10⁻³ × 0.023² + 2.7×10⁻³ × 0.012² + 0.8×10⁻³ × 0.004²
+           = 2.352×10⁻⁵ + 2.010×10⁻⁶ + 3.888×10⁻⁷ + 1.28×10⁻⁸
+           = **2.593×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.593×10⁻⁵ × 650 = **1.685×10⁻² kg·m²/s**
+
+---
+
+### 1. CH120 Change Height Track — 120 mm → 145 mm Extension (+25 mm)
+
+The CH120 (Change Height 120/145) Spin Track contains an inner sleeve that locks at two positions. Extending to 145 mm raises the entire beyblade body by Δh = 25 mm, lifting the Dark Fusion Wheel AR above the standard contact height of opponents using short tracks.
+
+**Gravitational PE stored by CoM elevation:**
+
+```
+Δh_CH120 = 145 − 120 = 25 mm = 0.025 m
+
+PE_CH = m × g × Δh_CH120 = 0.0373 × 9.81 × 0.025 = 9.141×10⁻³ J
+```
+
+When Dark Gasher tilts (pecks forward), this elevation converts to dive kinetic energy:
+
+```
+v_dive = √(2 × PE_CH / m) = √(2 × 9.141×10⁻³ / 0.0373) = √(0.4900) = 0.700 m/s
+```
+
+**Combined impact velocity (SF orbital + CH145 gravity dive):**
+
+```
+v_orbital_SF = μ_SF × ω₀ × r_SF = 0.12 × 650 × 0.004 = 0.312 m/s
+
+v_impact = √(v_orbital_SF² + 2g × Δh_CH120)
+         = √(0.312² + 2 × 9.81 × 0.025)
+         = √(0.09734 + 0.49050)
+         = √0.58784 = 0.767 m/s
+```
+
+---
+
+### 2. Dark FW — Six-Prong Upper-Level AR Contacts (Six Crab Claw Pattern)
+
+The Dark Fusion Wheel carries six contact protrusions arranged symmetrically (separated by 60° each). When Dark Gasher approaches at CH145 height, these six protrusions engage the opponent's AR from above — "as if six crabs are attacking with their claws" (one contact per prong per oscillation cycle).
+
+**Prong tip velocity:**
+
+```
+v_prong = ω₀ × r_FW = 650 × 0.028 = 18.20 m/s
+```
+
+**SF tip physics:**
+
+```
+τ_SF   = μ_SF × m × g × r_SF = 0.12 × 0.0373 × 9.81 × 0.004 = 1.756×10⁻⁴ N·m
+t_spin = L₀ / τ_SF = 1.685×10⁻² / 1.756×10⁻⁴ = 95.9 s
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 37.3 g |
+| I_total | 2.593×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.685×10⁻² kg·m²/s |
+| Δh_CH120 | 25 mm |
+| PE_CH | 9.141×10⁻³ J |
+| v_dive | 0.700 m/s |
+| v_orbital_SF | 0.312 m/s |
+| v_impact | 0.767 m/s |
+| v_prong | 18.20 m/s |
+| τ_SF | 1.756×10⁻⁴ N·m |
+| t_spin | 95.9 s |
+
+---
+
+## Case 1893 — SPECIAL: Six Crab Shake — Tetsuya Watarigani / Dark Gasher CH120SF
+
+**Blader:** Tetsuya Watarigani | **Beyblade:** Dark Gasher CH120SF | **Type:** attack
+
+### Description
+
+Six Crab Shake (Japanese: シックスクラブ・シェイキング, Shikkusu Kurabu Sheikingu) is a Special Move used by Tetsuya Watarigani and his Dark Gasher CH120SF. Gasher's track changes to 145mm height, raising the Dark Fusion Wheel above the opponent's AR contact zone. Gasher then pecks repeatedly at the opponent's beyblade from above — leaning into the Starblast Attack-style downward position — making it appear as if six crabs are simultaneously attacking the opposing bey with their claws.
+
+### Six-Peck Upper Strike Sequence
+
+The CH145 gravity dive gives v_impact = 0.767 m/s. All six prongs of the Dark FW deliver sequential peck contacts totalling the full impulse:
+
+```
+m_eff = (m_DG × m_opp) / (m_DG + m_opp) = (0.0373 × 0.038) / (0.0373 + 0.038)
+      = 1.4174×10⁻³ / 0.0753 = 1.882×10⁻² kg
+
+J_sixcrab = m_eff × (1 + e_prong) × v_impact  [e_prong = 0.70: hard ABS claw tips]
+          = 1.882×10⁻² × 1.70 × 0.767
+          = 1.882×10⁻² × 1.3039 = 2.454×10⁻² N·s
+
+Δv_opp  = J_sixcrab / m_opp = 2.454×10⁻² / 0.038 = 0.646 m/s
+```
+
+**Impulse per individual peck contact (1 of 6):**
+
+```
+J_per_peck = J_sixcrab / 6 = 2.454×10⁻² / 6 = 4.090×10⁻³ N·s  (each claw contact)
+```
+
+**Effect on Dark Gasher (spin drain — CH145 dive reconversion):**
+
+```
+Δω_DG    = J_sixcrab × r_contact / I_DG = 2.454×10⁻² × 0.025 / 2.593×10⁻⁵ = 23.7 rad/s
+ω_remain = 650 − 23.7 = 626.3 rad/s  (96.4% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Tetsuya's Gasher Bit-Beast materialises as six giant crab claws simultaneously striking the opponent — the CH145 peck sequence transforms into a true multi-claw assault that overwhelms opponent defenses.
+
+[M] factor = **6.0 ×** (thematically matching the six-claw count)
+[M] Δv = 0.646 × 6.0 = **3.9 m/s** (six-claw ring-out)
+
+> **Note:** Physical values describe CH120 extension Δh=25 mm raising PE_CH=9.141×10⁻³ J, gravity-dive v_impact=0.767 m/s, six-prong sequential peck total J=2.454×10⁻² N·s (4.090×10⁻³ N·s per prong), and Δv=0.646 m/s. [M] values represent Tetsuya's crab spirit manifesting six simultaneous giant claws. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function sixCrabShakeSpecial(bey: Beyblade, target: Beyblade): void {
+  // CH120→145: Δh=25mm→PE=9.141×10⁻³J; v_impact=0.767m/s; 6-prong J=2.454×10⁻²N·s; [M] 6.0×
+  const J_phys = 0.02454;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 6.0; // [M] BeySpirit 6.0× (Tetsuya six crab claw materialisation)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the CH120 (or CH130/145) Change Height Spin Track that can extend to ≥145 mm combined with a Fusion Wheel carrying 6+ symmetric contact protrusions at r ≥ 26 mm. The height extension must raise the AR above the opponent's contact zone to enable top-down peck contacts. Standard game instance: Dark Gasher CH120SF (Tetsuya Watarigani, Metal Fusion).
+
+---
+
+## Case 1894 — COMBO: Crab Peck — Dark Gasher
+
+**Sequence:** ↓ A A (moveDown · attack · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Tetsuya Watarigani
+
+### Physics Justification
+
+The moveDown (↓) represents Dark Gasher dropping into the CH145 elevated-peck position — CoM raised by 25 mm, v_dive = 0.700 m/s primed.
+
+The first attack (A) fires a full CH145 peck at v_impact = 0.767 m/s:
+
+```
+J_peck_1 = m_eff × (1 + e_prong) × v_impact = 1.882×10⁻² × 1.70 × 0.767 = 2.454×10⁻² N·s
+```
+
+The second attack (A) fires a partial-height recovery peck (h₂ = Δh_CH120 × 0.50 = 12.5 mm):
+
+```
+v_impact_2 = √(v_orbital_SF² + 2g × h₂) = √(0.312² + 2 × 9.81 × 0.0125) = √(0.0973 + 0.2453) = 0.585 m/s
+
+J_peck_2 = m_eff × (1 + e_prong) × v_impact_2 = 1.882×10⁻² × 1.70 × 0.585 = 1.871×10⁻² N·s
+```
+
+The SF tip elastic rebound reconverts the two-peck impulse to spin:
+
+```
+Δω = η × (J_peck_1 + J_peck_2) × r_contact / I_DG
+   = 0.30 × (2.454×10⁻² + 1.871×10⁻²) × 0.025 / 2.593×10⁻⁵
+   = 0.30 × 4.325×10⁻² × 0.025 / 2.593×10⁻⁵
+   = 0.30 × 1.081×10⁻³ / 2.593×10⁻⁵
+   = 0.30 × 41.7
+   = +12.5 rad/s  ≈ +13 rad/s
+```
+
+(η = 0.30: SF semi-flat tip elastic rebound at partial-height double peck.) The double CH145-dive attack gives damageMultiplier **1.25×**. lockMs = 0 (pure attack).
+
+**Parameters:**
+- spinGain: +13 rad/s (SF double peck rebound η = 0.30)
+- damageMultiplier: 1.25 (double CH145 gravity-dive peck from above)
+- lockMs: 0 (pure attack)
+
+### TypeScript
+
+```typescript
+function crabPeckCombo(bey: Beyblade, target: Beyblade): void {
+  // SF double CH145 peck rebound: Δω ≈ +13 rad/s (η=0.30, J1=2.454×10⁻² + J2=1.871×10⁻²)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 13);
+  // Double gravity dive peck from CH145: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +13 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1895 — GIMMICK: Ray Gasher M145Q — M145 Mid-Height Stabiliser & Q-Tip Rubber Bounce Drill
+
+**Beyblade:** Ray Gasher M145Q (TT JP: レイガッシャーM145Q; Hasbro EN: Ray Gasher M145Q)
+**Blader:** Enso Garcia / Selen | **Series:** Beyblade: Metal Fusion (MFB)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Energy Ring | Gasher | 3.8 | 23.0 |
+| Fusion Wheel | Ray | 27.5 | 28.0 |
+| Spin Track | M145 (Mid 145 mm) | 2.5 | 10.0 |
+| Performance Tip | Q (Quake) | 1.2 | 3.5 |
+| **Total** | | **35.0** | |
+
+(Face Bolt ~1.4 g excluded per MFB convention.)
+
+**I_total** = 27.5×10⁻³ × 0.028² + 3.8×10⁻³ × 0.023² + 2.5×10⁻³ × 0.010² + 1.2×10⁻³ × 0.0035²
+           = 2.156×10⁻⁵ + 2.010×10⁻⁶ + 2.500×10⁻⁷ + 1.47×10⁻⁸
+           = **2.383×10⁻⁵ kg·m²**
+
+ω₀ = 650 rad/s (MFB Metal Fusion standard launch)
+L₀ = I × ω₀ = 2.383×10⁻⁵ × 650 = **1.549×10⁻² kg·m²/s**
+
+---
+
+### 1. Q (Quake) Performance Tip — Rubber Bounce Drill Launch
+
+The Q tip carries a hard rubber nub (μ_Q ≈ 0.20, r_Q = 3.5 mm) with a built-in spring-compressed rubber dome (k = 1200 N/m, x_compress = 6 mm = 0.006 m). On hard floor contact, the rubber dome compresses and releases a vertical bounce impulse — driving the signature Quake bounce and the upward drill-spin entry:
+
+```
+PE_Q = ½ × k × x² = ½ × 1200 × (0.006)² = 2.160×10⁻² J
+
+v_vert = √(2 × PE_Q / m) = √(2 × 2.160×10⁻² / 0.0350) = √(1.2343) = 1.111 m/s
+
+h_apex = v_vert² / (2g) = (1.111)² / (2 × 9.81) = 1.2343 / 19.62 = 62.9 mm  ≈ 63 mm
+```
+
+Q tip orbital speed:
+
+```
+v_orbital_Q = μ_Q × ω₀ × r_Q = 0.20 × 650 × 0.0035 = 0.4550 m/s
+τ_Q         = μ_Q × m × g × r_Q = 0.20 × 0.0350 × 9.81 × 0.0035 = 2.401×10⁻⁴ N·m
+t_spin      = L₀ / τ_Q = 1.549×10⁻² / 2.401×10⁻⁴ = 64.5 s
+```
+
+**Combined impact velocity (orbital + Q bounce apex re-entry):**
+
+```
+v_impact = √(v_orbital_Q² + 2g × h_apex)
+         = √(0.4550² + 2 × 9.81 × 0.0629)
+         = √(0.2070 + 1.2345)
+         = √1.4415 = 1.201 m/s
+```
+
+---
+
+### 2. Ray FW & M145 — Drill-Tornado Spin Column
+
+The Ray Fusion Wheel's swept blade protrusions at r = 28 mm generate a rotating spiral wash (drill vortex) as Ray Gasher ascends from the Q bounce into its overhead strike. The M145 mid-height track stabilises this ascent at 145 mm without the change-height locking mechanism, keeping the AR elevation constant.
+
+**Blade tip velocity:**
+
+```
+v_blade_tip = ω₀ × r_FW = 650 × 0.028 = 18.20 m/s
+```
+
+**Drill-vortex dynamic pressure at r_opp = 50 mm:**
+
+```
+Γ_drill = 2π × v_blade_tip × r_FW = 2π × 18.20 × 0.028 = 3.205 m²/s
+
+v_drill  = Γ_drill / (2π × r_opp) = 3.205 / (2π × 0.050) = 10.18 m/s
+
+q_drill  = ½ × ρ_air × v_drill² = ½ × 1.225 × 10.18² = 63.52 Pa
+F_drill  = q_drill × A_opp = 63.52 × π × 0.020² = 63.52 × 1.257×10⁻³ = 0.07983 N
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 35.0 g |
+| I_total | 2.383×10⁻⁵ kg·m² |
+| ω₀ | 650 rad/s |
+| L₀ | 1.549×10⁻² kg·m²/s |
+| v_blade_tip | 18.20 m/s |
+| PE_Q | 2.160×10⁻² J |
+| v_vert | 1.111 m/s |
+| h_apex | 63 mm |
+| v_orbital_Q | 0.4550 m/s |
+| v_impact | 1.201 m/s |
+| Γ_drill | 3.205 m²/s |
+| F_drill | 0.07983 N |
+| τ_Q | 2.401×10⁻⁴ N·m |
+| t_spin | 64.5 s |
+
+---
+
+## Case 1896 — SPECIAL: Slumdog Driver — Enso Garcia / Selen / Ray Gasher M145Q
+
+**Blader:** Enso Garcia / Selen | **Beyblade:** Ray Gasher M145Q | **Type:** attack
+
+### Description
+
+Slumdog Driver (Japanese: スラムドッグ・ドライバー, Suramu Doggu Doraibā) is a Special Move used by both Enso Garcia and Selen with their Ray Gasher M145Q Beyblades. Ray Gasher consumes itself in a drill-like tornado and slams the opponent from above. The Q tip's rubber bounce launches Ray Gasher skyward at h ≈ 63 mm, spinning as a vertical drill column, before it crashes back down on the opposing beyblade with full aerial smash force. When both Selen and Enso use this move simultaneously, it becomes Double Slumdog Driver — two drill columns converging on the same target for doubled destructive force.
+
+### Stage — Q Bounce Drill Aerial Overhead Smash
+
+From Case 1895: v_impact = 1.201 m/s (Q orbital + bounce apex re-entry), e = 0.75 (hard Ray FW smash blades).
+
+```
+m_eff = (m_RG × m_opp) / (m_RG + m_opp) = (0.0350 × 0.038) / (0.0350 + 0.038)
+      = 1.330×10⁻³ / 0.0730 = 1.822×10⁻² kg
+
+J_slumdog = m_eff × (1 + e) × v_impact
+          = 1.822×10⁻² × 1.75 × 1.201
+          = 1.822×10⁻² × 2.1018 = 3.829×10⁻² N·s
+
+Δv_opp  = J_slumdog / m_opp = 3.829×10⁻² / 0.038 = 1.008 m/s
+```
+
+**Effect on Ray Gasher (spin drain):**
+
+```
+Δω_RG    = J_slumdog × r_contact / I_RG = 3.829×10⁻² × 0.025 / 2.383×10⁻⁵ = 40.1 rad/s
+ω_remain = 650 − 40.1 = 609.9 rad/s  (93.8% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Enso and Selen's Ray Gasher Bit-Beasts converge into Double Slumdog Driver — both crab-beast spirits materialise as twin drill tornadoes spiralling down onto the same point, delivering twice the Quake bounce energy in a single combined overhead slam.
+
+[M] factor = **8.0 ×** (Double Slumdog co-blader dual-drill amplification)
+[M] Δv = 1.008 × 8.0 = **8.1 m/s** (twin-drill ring-out)
+
+> **Note:** Physical values describe Q-tip rubber bounce (PE=2.160×10⁻² J, h=63 mm, v_impact=1.201 m/s), Ray FW drill smash (e=0.75), impulse J=3.829×10⁻² N·s, Δv=1.008 m/s. [M] values represent Enso and Selen's co-blader Gasher spirits fusing into Double Slumdog Driver — two drill columns in a single convergent overhead strike. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function slumdogDriverSpecial(bey: Beyblade, target: Beyblade): void {
+  // Q bounce PE=2.160×10⁻²J→h=63mm→v_impact=1.201m/s; e=0.75 drill smash; J=3.829×10⁻²N·s; [M] 8.0×
+  const J_phys = 0.03829;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Enso+Selen co-blader Double Slumdog drill)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Q (Quake) Performance Tip (or equivalent spring-compressed rubber bounce tip, k ≥ 900 N/m, x ≥ 5 mm) combined with a Fusion Wheel carrying swept smash blades at r ≥ 26 mm (generating drill-tornado approach at ω₀ ≥ 630 rad/s) on a mid-height track (M145 or equivalent ≥ 140 mm). The Q bounce must reach h ≥ 50 mm for a valid overhead drill entry. Standard game instances: Ray Gasher M145Q (Enso Garcia and Selen, Metal Fusion).
+
+---
+
+## Case 1897 — COMBO: Tornado Dash — Ray Gasher
+
+**Sequence:** ↑ A ↑ (moveUp · attack · moveUp)
+**Cost:** 15 | **Type:** attack | **Blader:** Enso Garcia / Selen
+
+### Physics Justification
+
+The first moveUp (↑) activates the Q tip rubber bounce (PE = 2.160×10⁻² J, h = 63 mm, v_vert = 1.111 m/s) — Ray Gasher launches upward in drill-spin mode.
+
+The attack (A) fires the mid-air Ray FW overhead drill smash at v_impact = 1.201 m/s:
+
+```
+J_drill = J_slumdog = 3.829×10⁻² N·s  (from Case 1896)
+```
+
+The second moveUp (↑) represents the Q tip rubber spring rebound on landing — re-compressing the rubber dome and reconverting landing impulse back to spin:
+
+```
+Δω = η_Q × J_drill × r_contact / I_RG
+   = 0.30 × 3.829×10⁻² × 0.025 / 2.383×10⁻⁵
+   = 0.30 × 9.573×10⁻⁴ / 2.383×10⁻⁵
+   = 0.30 × 40.17
+   = +12.1 rad/s  ≈ +12 rad/s
+```
+
+(η_Q = 0.30: Q rubber bounce dome recompression reconversion on landing.) The Q bounce aerial drill smash gives damageMultiplier **1.25×**. lockMs = 0 (pure aerial attack, no lock phase).
+
+**Parameters:**
+- spinGain: +12 rad/s (Q rubber bounce rebound η = 0.30)
+- damageMultiplier: 1.25 (Q bounce aerial drill overhead smash)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function tornadoDashCombo(bey: Beyblade, target: Beyblade): void {
+  // Q bounce rebound: Δω ≈ +12 rad/s (η=0.30, h=63mm, J=3.829×10⁻²N·s)
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 12);
+  // Aerial drill overhead smash: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +12 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1898 as further franchise moves are provided.*

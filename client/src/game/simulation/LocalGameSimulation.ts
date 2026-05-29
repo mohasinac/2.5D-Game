@@ -1,5 +1,5 @@
 // LocalGameSimulation — client-side physics loop.
-// Used for: tryout (solo), pvai (1-human vs AI), story-battle.
+// Used for: tryout (solo), pvai (1-human vs AI), story-battle, tournament-ai, royale-ai.
 // No Colyseus connection required — produces ServerGameState snapshots each tick.
 
 import { doc, getDoc } from 'firebase/firestore';
@@ -37,13 +37,15 @@ function defaultArena(id = 'default'): ServerArenaState {
   };
 }
 
-// ─── Create a default beyblade snapshot ──────────────────────────────────────
-function makeBey(
+// ─── Create a beyblade snapshot with adaptive spawn radius ───────────────────
+// For large groups (>4 total) spawns further out to prevent initial overlaps.
+function makeBeySpaced(
   id: string, username: string, color: string, isAI: boolean,
   cx: number, cy: number, r: number, index: number, total: number,
 ): ServerBeyblade {
   const angle = (index / total) * Math.PI * 2;
-  const spawnR = r * 0.35;
+  // For large groups (>4) spread further out so beys don't start overlapping
+  const spawnR = total > 4 ? r * 0.55 : r * 0.35;
   return {
     id, userId: id, username,
     x: cx + Math.cos(angle) * spawnR,
@@ -62,12 +64,24 @@ function makeBey(
   };
 }
 
-const PLAYER_COLORS = ['#2288ff', '#ff4466', '#44dd88', '#ffaa22', '#aa44ff'];
+const PLAYER_COLORS = [
+  '#2288ff', '#ff4466', '#44dd88', '#ffaa22', '#aa44ff',
+  '#ff8800', '#00ccff', '#ff44ff', '#88ff44', '#ffdd00',
+  '#ff2266', '#00ffaa',
+];
 
 // ─── LocalGameSimulation class ────────────────────────────────────────────────
 
 export type SimStatus = 'idle' | 'loading' | 'countdown' | 'launching' | 'in-progress' | 'finished';
 export type SimPhase = 'countdown' | 'launching' | 'in-progress';
+
+export interface TournamentBracketInfo {
+  round: number;        // 1-based current round
+  totalRounds: number;
+  playerWins: number;
+  eliminated: boolean;
+  champion: boolean;
+}
 
 export interface SimSnapshot {
   gameState: ServerGameState;
@@ -80,6 +94,7 @@ export interface SimSnapshot {
   launchPosition: number;
   launchPower: number;
   loadingError: string | null;
+  tournamentBracket?: TournamentBracketInfo;
 }
 
 type OnSnapshotFn = (snap: SimSnapshot) => void;
@@ -103,11 +118,21 @@ export class LocalGameSimulation {
   private lastTs: number | null = null;
   private countdownInterval: ReturnType<typeof setInterval> | null = null;
   private launchInterval: ReturnType<typeof setInterval> | null = null;
+  private roundTransitionTimeout: ReturnType<typeof setTimeout> | null = null;
 
   private launchTilt = 0;
   private launchPosition = 0.5;
   private launchPower = 0;
   private launchReady = false;
+
+  // Tournament-AI bracket state
+  private tournamentRound = 0;       // 0-based index of current round
+  private tournamentTotalRounds = 0; // total number of rounds
+  private tournamentPlayerWins = 0;
+  private tournamentEliminated = false;
+  private tournamentChampion = false;
+  // Cached player beyblade stats for round resets
+  private playerBeyStats: Partial<ServerBeyblade> = {};
 
   constructor(config: GameRoomConfig, onSnapshot: OnSnapshotFn) {
     this.config = config;
@@ -132,6 +157,7 @@ export class LocalGameSimulation {
     if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
     if (this.countdownInterval) { clearInterval(this.countdownInterval); this.countdownInterval = null; }
     if (this.launchInterval) { clearInterval(this.launchInterval); this.launchInterval = null; }
+    if (this.roundTransitionTimeout) { clearTimeout(this.roundTransitionTimeout); this.roundTransitionTimeout = null; }
     this.lastTs = null;
   }
 
@@ -178,7 +204,19 @@ export class LocalGameSimulation {
   private async loadData() {
     const { beybladeId = 'default', arenaId = 'default', aiCount = 1, aiDifficulty = 'medium' } = this.config;
     const cx = DEFAULT_ARENA_W / 2, cy = DEFAULT_ARENA_H / 2;
-    const total = this.config.roomType === 'tryout' ? 1 : 1 + (aiCount);
+    const roomType = this.config.roomType;
+
+    // For tournament-ai: only 1 AI per round (sequential 1v1 bracket)
+    // For royale-ai: all bots simultaneously (up to 11 for a 12-player free-for-all)
+    const aiCountThisRound = roomType === 'tryout' ? 0
+      : roomType === 'tournament-ai' ? 1
+      : Math.max(2, Math.min(11, aiCount));
+    const total = 1 + aiCountThisRound;
+
+    // Set up tournament bracket info on first load (default 3 rounds = 8-player bracket)
+    if (roomType === 'tournament-ai' && this.tournamentTotalRounds === 0) {
+      this.tournamentTotalRounds = Math.max(1, Math.min(7, aiCount));
+    }
 
     // Load arena
     let arenaData: Record<string, unknown> | null = null;
@@ -211,7 +249,7 @@ export class LocalGameSimulation {
     const arCy = (this.arena.height ?? DEFAULT_ARENA_H) / 2;
 
     // Load player beyblade
-    const playerBey = makeBey('player', 'Player', PLAYER_COLORS[0], false, arCx, arCy, this.arenaRadius, 0, total);
+    const playerBey = makeBeySpaced('player', 'Player', PLAYER_COLORS[0], false, arCx, arCy, this.arenaRadius, 0, total);
     if (beybladeId !== 'default') {
       try {
         const snap = await getDoc(doc(db, COLLECTIONS.BEYBLADE_STATS, beybladeId));
@@ -242,17 +280,62 @@ export class LocalGameSimulation {
     playerBey.spin = playerBey.maxSpin;
     this.myBeyId = 'player';
     this.beyblades.set('player', playerBey);
+    // Cache stats for tournament-ai round resets
+    this.playerBeyStats = {
+      maxSpin: playerBey.maxSpin, maxStamina: playerBey.maxStamina,
+      maxHealth: playerBey.maxHealth, radius: playerBey.radius,
+      actualSize: playerBey.actualSize, type: playerBey.type,
+      spinDirection: playerBey.spinDirection, color: playerBey.color,
+    };
 
     // Create AI opponents
-    if (this.config.roomType !== 'tryout') {
-      const count = Math.max(1, Math.min(7, aiCount));
-      for (let i = 0; i < count; i++) {
-        const id = `ai_${i}`;
-        const ai = makeBey(id, `CPU ${i + 1}`, PLAYER_COLORS[(i + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, i + 1, total);
+    if (roomType !== 'tryout') {
+      for (let i = 0; i < aiCountThisRound; i++) {
+        const roundIndex = roomType === 'tournament-ai' ? this.tournamentRound : i;
+        const id = roomType === 'tournament-ai' ? `ai_round_${roundIndex}` : `ai_${i}`;
+        const ai = makeBeySpaced(id, `CPU ${roundIndex + 1}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, i + 1, total);
         this.beyblades.set(id, ai);
         this.aiControllers.set(id, new AIController(aiDifficulty));
       }
     }
+  }
+
+  // ─── Reset for next tournament round ──────────────────────────────────────
+  private resetForNextTournamentRound() {
+    const { aiDifficulty = 'medium' } = this.config;
+    const arCx = (this.arena.width ?? DEFAULT_ARENA_W) / 2;
+    const arCy = (this.arena.height ?? DEFAULT_ARENA_H) / 2;
+    const total = 2; // player + 1 AI
+
+    // Remove old AI controllers and beyblades (keep player)
+    for (const key of Array.from(this.beyblades.keys())) {
+      if (key !== 'player') { this.beyblades.delete(key); this.aiControllers.delete(key); }
+    }
+
+    // Restore player
+    const player = this.beyblades.get('player');
+    if (player) {
+      const maxSpin = this.playerBeyStats.maxSpin ?? 2192;
+      const maxStamina = this.playerBeyStats.maxStamina ?? 1600;
+      Object.assign(player, {
+        spin: maxSpin, maxSpin,
+        health: maxStamina, maxHealth: maxStamina,
+        stamina: maxStamina, maxStamina,
+        power: 0, isActive: true, isDefending: false,
+        velocityX: 0, velocityY: 0,
+        x: arCx + Math.cos(0) * this.arenaRadius * 0.35,
+        y: arCy + Math.sin(0) * this.arenaRadius * 0.35,
+      });
+    }
+
+    // Create new AI for this round
+    const roundIndex = this.tournamentRound;
+    const id = `ai_round_${roundIndex}`;
+    const ai = makeBeySpaced(id, `CPU ${roundIndex + 1}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, 1, total);
+    this.beyblades.set(id, ai);
+    this.aiControllers.set(id, new AIController(aiDifficulty));
+    this.winner = '';
+    this.elapsed = 0;
   }
 
   // ─── Countdown → Launch → Playing ────────────────────────────────────────
@@ -296,16 +379,59 @@ export class LocalGameSimulation {
   }
 
   private applyLaunchParams() {
-    const bey = this.beyblades.get('player');
-    if (!bey) return;
-    const power = this.launchReady ? Math.max(30, this.launchPower) : 50;
-    bey.spin = bey.maxSpin * (power / 100);
-    // Spawn position offset
-    const angle = (this.launchPosition - 0.5) * Math.PI;
     const cx = (this.arena.width ?? DEFAULT_ARENA_W) / 2;
     const cy = (this.arena.height ?? DEFAULT_ARENA_H) / 2;
-    bey.x = cx + Math.cos(angle) * this.arenaRadius * 0.3;
-    bey.y = cy + Math.sin(angle) * this.arenaRadius * 0.3;
+    const { aiDifficulty = 'medium' } = this.config;
+    const isRoyale = this.config.roomType === 'royale-ai';
+    const beyArr = Array.from(this.beyblades.values());
+    const total = beyArr.length;
+    // Spawn ring radius — wide enough so 12 beys don't start overlapping
+    const spawnR = total > 4 ? this.arenaRadius * 0.52 : this.arenaRadius * 0.40;
+
+    beyArr.forEach((bey, idx) => {
+      const isPlayer = bey.id === 'player';
+      let spawnAngle: number;
+      let power: number;
+      let tiltOffset: number;
+
+      if (isPlayer) {
+        // Player's chosen position maps 0→-90°, 0.5→0°, 1→+90° around right side
+        spawnAngle = isRoyale
+          ? (0 / total) * Math.PI * 2          // royale: player at top of ring
+          : (this.launchPosition - 0.5) * Math.PI; // other modes: player-controlled
+        power = this.launchReady ? Math.max(30, this.launchPower) : 50;
+        // Player tilt steers the inward launch direction (±45° range → ±36° offset)
+        tiltOffset = (this.launchTilt / 45) * (Math.PI / 5);
+      } else {
+        if (isRoyale) {
+          // Evenly distribute all beys around the full ring
+          spawnAngle = (idx / total) * Math.PI * 2;
+        } else {
+          // Tournament/pvai: AI spawns on opposite side with slight randomness
+          const playerAngle = (this.launchPosition - 0.5) * Math.PI;
+          spawnAngle = playerAngle + Math.PI + (Math.random() - 0.5) * 0.6;
+        }
+        const minPow = aiDifficulty === 'hell' ? 110 : aiDifficulty === 'hard' ? 95 : 85;
+        const maxPow = aiDifficulty === 'hell' ? 150 : aiDifficulty === 'hard' ? 130 : 120;
+        power = minPow + Math.random() * (maxPow - minPow);
+        // AI gets a random tilt for variety
+        tiltOffset = (Math.random() - 0.5) * (Math.PI / 3);
+      }
+
+      // Position on the spawn ring
+      bey.x = cx + Math.cos(spawnAngle) * spawnR;
+      bey.y = cy + Math.sin(spawnAngle) * spawnR;
+
+      // Initial velocity — shoot inward toward arena center, deflected by tilt
+      const inwardDir = Math.atan2(cy - bey.y, cx - bey.x);
+      const launchDir = inwardDir + tiltOffset;
+      const launchSpeed = (power / 100) * 4.2; // px/frame at 60fps
+      bey.velocityX = Math.cos(launchDir) * launchSpeed;
+      bey.velocityY = Math.sin(launchDir) * launchSpeed;
+
+      // Spin based on launch power
+      bey.spin = bey.maxSpin * (power / 100);
+    });
   }
 
   private startPhysics() {
@@ -381,11 +507,9 @@ export class LocalGameSimulation {
       bey.rotation += bey.angularVelocity;
       if (bey.rotation > 360) bey.rotation -= 360;
 
-      // Spin decay
-      bey.spin = Math.max(
-        this.config.roomType === 'tryout' ? bey.maxSpin * 0.05 : 0,
-        bey.spin - SPIN_DECAY * dt,
-      );
+      // Spin decay (tryout keeps a floor so the bey never fully stops)
+      const spinFloor = this.config.roomType === 'tryout' ? bey.maxSpin * 0.05 : 0;
+      bey.spin = Math.max(spinFloor, bey.spin - SPIN_DECAY * dt);
 
       // Arena boundary
       const dx = bey.x - cx, dy = bey.y - cy;
@@ -400,7 +524,7 @@ export class LocalGameSimulation {
         bey.velocityY -= ny * Math.abs(bey.velocityX * nx + bey.velocityY * ny) * 1.3;
       }
 
-      // Knock out when spin reaches zero (applies to all beys, including AI)
+      // Knock out when spin reaches zero (applies to all competitive modes)
       if (bey.spin <= 0 && this.config.roomType !== 'tryout') {
         bey.isActive = false;
         bey.spin = 0;
@@ -432,12 +556,48 @@ export class LocalGameSimulation {
       }
     }
 
-    // Check win condition (pvai / story-battle) — require at least 0.5s elapsed to prevent false start wins
-    if (this.elapsed >= 0.5 && (this.config.roomType === 'pvai' || this.config.roomType === 'story-battle')) {
+    // Check win condition — require at least 0.5s elapsed to prevent false start wins
+    const rt = this.config.roomType;
+    const hasWinCondition = rt === 'pvai' || rt === 'story-battle' || rt === 'royale-ai' || rt === 'tournament-ai';
+    if (this.elapsed >= 0.5 && hasWinCondition) {
       const actives = Array.from(this.beyblades.values()).filter(b => b.isActive);
       if (actives.length <= 1) {
+        const roundWinner = actives.length === 1 ? actives[0].id : '';
+
+        if (rt === 'tournament-ai') {
+          const playerWon = roundWinner === 'player';
+          const moreRounds = this.tournamentRound + 1 < this.tournamentTotalRounds;
+          if (playerWon && moreRounds) {
+            // Round win — schedule next round after brief pause
+            this.tournamentPlayerWins++;
+            this.winner = 'player';
+            this.status = 'finished';
+            this.emitSnapshot();
+            if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+            this.roundTransitionTimeout = setTimeout(() => {
+              this.roundTransitionTimeout = null;
+              this.tournamentRound++;
+              this.resetForNextTournamentRound();
+              this.startCountdown();
+            }, 2500);
+          } else {
+            // Either player lost or champion — final finish
+            if (playerWon) {
+              this.tournamentPlayerWins++;
+              this.tournamentChampion = true;
+            } else {
+              this.tournamentEliminated = true;
+            }
+            this.winner = roundWinner;
+            this.status = 'finished';
+            this.emitSnapshot();
+          }
+          return;
+        }
+
+        // pvai, royale-ai, story-battle
         this.status = 'finished';
-        this.winner = actives.length === 1 ? actives[0].id : '';
+        this.winner = roundWinner;
         this.emitSnapshot();
         return;
       }
@@ -478,6 +638,15 @@ export class LocalGameSimulation {
       launchTimer: this.launchTimer,
     };
 
+    const tournamentBracket: TournamentBracketInfo | undefined =
+      this.config.roomType === 'tournament-ai' ? {
+        round: this.tournamentRound + 1,
+        totalRounds: this.tournamentTotalRounds,
+        playerWins: this.tournamentPlayerWins,
+        eliminated: this.tournamentEliminated,
+        champion: this.tournamentChampion,
+      } : undefined;
+
     this.onSnapshot({
       gameState,
       beyblades: scaledBeyblades,
@@ -489,6 +658,7 @@ export class LocalGameSimulation {
       launchPosition: this.launchPosition,
       launchPower: this.launchPower,
       loadingError: error,
+      tournamentBracket,
     });
   }
 }

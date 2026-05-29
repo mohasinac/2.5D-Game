@@ -4,7 +4,9 @@ export type RoomType =
   | 'pvp'
   | 'tournament'
   | 'royale'
-  | 'story-battle';
+  | 'story-battle'
+  | 'tournament-ai'
+  | 'royale-ai';
 
 export interface GameRoomConfig {
   roomType: RoomType;
@@ -23,7 +25,7 @@ export interface GameRoomConfig {
   storyContext?: { episodeId: string; sceneIndex: number };
 }
 
-export const LOCAL_ROOM_TYPES: RoomType[] = ['tryout', 'pvai', 'story-battle'];
+export const LOCAL_ROOM_TYPES: RoomType[] = ['tryout', 'pvai', 'story-battle', 'tournament-ai', 'royale-ai'];
 export const SERVER_ROOM_TYPES: RoomType[] = ['pvp', 'tournament', 'royale'];
 
 export function isLocalRoom(roomType: RoomType): boolean {

@@ -39696,3 +39696,626 @@ Against docile opponents (Stamina/Defense sitting near center): the first-pass f
 **RC Shooter Change Core Alpha (extracted):** Mechanically the most ambitious concept in the HMS running core lineup. The lowered WD position, mode-change collar, and tool-free WD swap represent engineering investment beyond the series norm for a single RC component. In competitive practice, the execution fails: the lowered CWD position creates floor-contact penalties at normal combat tilt (θ_crit = 8.5° vs. ~17° for standard RCs), and the plastic tip construction accelerates wear across matches. Usable as a Hole-Flat attack RC in brief tornado-stall-to-flower-pattern combos when paired with Samurai Upper and a high-I CWD; not a substitute for GFC (Ultimate Mode) or MCC in serious play. The concept is sound; the geometry is not.
 
 **Stock Bloody Devil MS:** The most actively self-defeating stock assembly in the HMS group. Two failure mechanisms (Devil Saucer self-drain, SCC Alpha floor scraping) are simultaneously active from the first hit, producing practical battle durations of 2–6 seconds regardless of opponent. As the penultimate HMS release, Bloody Devil MS stands as the clearest example that Takara's final-series design team prioritized visual novelty and mechanical gimmickry over competitive execution. The stock bey is the most interesting to look at of the HMS lineup; it is also the most reliably self-terminated.
+
+---
+
+## MA-24 Shining God MS
+
+**Release:** End of winter 2005 (final HMS booster release)
+**Contents:** BP Large Type · AR God Smasher · CWD God Ring · RC SCC Gamma
+
+---
+
+## CASE XXXX — BP Large Type (Shining God MS)
+
+**Part:** Bit Protector, Large Type
+**Weight:** ~2.0 g
+**Material:** ABS plastic
+**Role:** Connector cap; seals the AR boss; no physics contribution
+
+### Moment of Inertia
+
+Standard Large Type cap — same geometry as all other Large Type BPs. Modeled as a uniform disk:
+
+I_BP = ½ × 0.002 × (0.012)² = **1.44 × 10⁻⁸ kg·m²**
+
+This accounts for < 0.2 % of any finished assembly I. Contribution is negligible in all contexts.
+
+### Competitive Notes
+
+Large Type BP is mechanically interchangeable across all HMS beys that accept it (Metal Ape, Samurai Upper, Shining God MS, etc.). No recolor or geometry difference affects physics. The Shining God MS BP is the standard large-cap piece; its competitive role is zero.
+
+---
+
+## CASE XXXX — AR God Smasher (Shining God MS)
+
+**Part:** Attack Ring, God Smasher
+**Weight (mold 2 reference):** ~18 g total (metal frame ~11 g + ABS overlay ~7 g)
+**Material:** Zinc alloy frame + ABS plastic faces
+**HMS generation:** MA-24 (final booster)
+
+### Physical Description
+
+God Smasher shares its zinc alloy metal frame with Smash Phoenix (MA-18) and Smash Leopard (MA-20). The metal frame is a two-pronged asymmetric blade with two dominant smash contact points separated by ~180°. The ABS overlay on God Smasher, however, differs from both siblings: where Smash Phoenix uses a two-sided asymmetric overlay and Smash Leopard uses a notched/pronged overlay, God Smasher replaces both with three symmetrically placed trapezoidal "forehead" protrusions at approximately 120° spacing. This 3-fold ABS geometry balances the 2-fold metal frame, eliminating dynamic imbalance from the combined AR.
+
+**Key difference from Smash Phoenix/Smash Leopard:** God Smasher has no dynamic imbalance. At launch ω₀ = 620 rad/s, the oscillating centrifugal torque that drives Smash Phoenix's aggressive wandering is absent. God Smasher is the docile member of the metal frame family.
+
+### Moment of Inertia
+
+Mass distribution (cylindrical shell zones, radius in mm):
+
+| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
+|------|----------|--------------|--------------|-----------|
+| Hub/ABS core | 2 | 0 | 4 | 8.00 × 10⁻⁹ |
+| Metal mid-section | 2 | 4 | 12 | 2.88 × 10⁻⁷ |
+| Metal outer ring | 7 | 12 | 24 | 2.352 × 10⁻⁶ |
+| ABS forehead faces | 7 | 0 | 17 | 1.011 × 10⁻⁶ |
+| **Total** | **18** | | | **3.663 × 10⁻⁶ kg·m²** |
+
+ABS faces (7 g at mean r = 17 mm, modeled as annular disk 0–17 mm):
+I_ABS = ½ × 0.007 × (0.017)² = 1.011 × 10⁻⁶ kg·m²
+
+**I_God Smasher = 3.663 × 10⁻⁶ kg·m²**
+
+OWD = I / (m × r_outer²) = 3.663×10⁻⁶ / (0.018 × 0.024²) = 3.663×10⁻⁶ / 1.037×10⁻⁵ = **0.353**
+
+This OWD is lower than Upper Dragon (0.42), Upper Fox (0.39), and Smash Phoenix (similar frame). The ABS forehead mass distributed toward the center (r = 0–17 mm) pulls the centroid inward relative to an all-metal design.
+
+### Attack Mechanics
+
+**Smash efficiency:** The metal frame delivers primary smash contact. Leading edge contact angle ≈ 15° from tangent. Effective smash force ≈ F_smash = cos(15°) × F_impact = 0.966 × F_impact.
+
+**ABS forehead recoil:** The three trapezoidal ABS protrusions contact opponents at approximately normal incidence. At high ω, these protrusions create a modest recoil penalty — estimated 5–8 % energy return to self per contact. The same protrusions, however, also present as glancing upper-attack surfaces at slight tilt, adding a secondary launch vector to attacks. The practical effect is:
+
+- At zero tilt: pure smash, slight ABS recoil (net ~91–93 % efficiency)
+- At 5–10° tilt: combined smash + mild upper component; ABS protrusions begin to lift the opponent
+
+The protrusions are not purpose-designed upper attack geometry (no angled leading edge), but the mass placement at r = 17 mm with flat faces creates incidental upper contact similar to Circle Upper's mold geometry, albeit weaker.
+
+**Spin direction symmetry:** God Smasher's smash contact points are distributed at 2-fold symmetry (metal frame) overlaid with 3-fold (ABS). This means both spin directions deliver functionally similar attack profiles — unlike Circle Upper where LS and RS produce distinctly different attack modes. God Smasher is effectively spin-direction neutral for smash; the upper-attack secondary from the ABS faces is present in both directions.
+
+### Dynamic Balance
+
+3-fold ABS overlay + 2-fold metal frame → net mass distribution approaches 6-fold (every 60°). Residual imbalance is the first harmonic of the difference (1-fold, very small magnitude). In practice God Smasher is treated as balanced; no measurable wandering or precession-axis drift at standard launch RPM. This is the defining competitive difference from its metal-frame siblings.
+
+### Extracted Use
+
+God Smasher is the second-ranked metal frame AR in its own family:
+
+**Upper Dragon > Upper Fox > God Smasher > Smash Leopard > Devil Crusher > Smash Phoenix**
+
+Ranking within family: Upper-attack hybrid ARs (Upper Dragon, Upper Fox) outperform pure-smash ARs in HMS tournaments due to ring-out reliability. God Smasher's incidental upper-attack component from the ABS faces places it above Smash Leopard (notched, no upper component) and Devil Crusher (ABS interference). Smash Phoenix's dynamic imbalance renders it unpredictable; God Smasher's balanced profile makes it more consistent but lower-damage per hit than Phoenix.
+
+**Best AR extracted use:** Pair with Defense Ring + Metal CWD (Sea Dragon) + GFC (Ultimate Mode). God Smasher's balanced smash attacks into opponent CWDs; the 3-fold ABS geometry provides marginal floor pickup at late-battle tilt. Aggressive role is secondary; extractors should prioritize Upper Dragon or Upper Fox if available.
+
+
+---
+
+## CASE XXXX — CWD God Ring (Shining God MS)
+
+**Part:** CWD God Ring
+**Assembly weight:** ~20 g total (plastic ring ~3 g + Sea Dragon Metal CWD ~17 g)
+**Material:** ABS plastic ring + zinc alloy Metal CWD (Sea Dragon sourced)
+**HMS generation:** MA-24
+
+### Physical Description
+
+God Ring is a two-piece assembly: a lightweight ABS outer ring and the Sea Dragon Metal CWD insert (from MA-03 Sea Dragon MS / RB2). The Sea Dragon Metal CWD is a separate, distinct part from the 5 g Metal CWD packaged in RBA2 — it is approximately 3× heavier (17 g vs. ~5–6 g) and fills a larger-radius disk profile.
+
+**Two notches on the outer rim:** The plastic ring carries two opposing inward-pointing notches at ~180° separation. In the mint state, these notches catch on opponent ARs, creating brief engagement and recoil. In the worn state (notches smoothed by contact wear), the ring presents a fully smooth outer surface — the best possible Defense/Stamina CWD profile in the HMS lineup.
+
+**God Ring is the heaviest HMS CWD assembly available.** At ~20 g total, it exceeds Defense Ring (~12 g), Reverse Defenser (~13 g), and all free-spinning CWDs. The Sea Dragon Metal CWD contributes the overwhelming majority of this mass.
+
+### Moment of Inertia
+
+**Sea Dragon Metal CWD (17 g, radial profile ~4–21 mm):**
+
+Modeled as two cylindrical shell zones:
+
+| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
+|------|----------|--------------|--------------|-----------|
+| Hub/spoke | 3 | 0 | 8 | 9.60 × 10⁻⁸ |
+| Outer metal disk | 14 | 8 | 21 | 3.696 × 10⁻⁶ |
+| **Total SDMCWD** | **17** | | | **3.792 × 10⁻⁶ kg·m²** |
+
+**ABS plastic ring (3 g, r ~22–26 mm):**
+
+I_ring = ½ × 0.003 × (0.022² + 0.026²) = ½ × 0.003 × (4.84×10⁻⁴ + 6.76×10⁻⁴) = ½ × 0.003 × 1.160×10⁻³ = **1.740 × 10⁻⁶ kg·m²**
+
+**I_God Ring total = 3.792×10⁻⁶ + 1.740×10⁻⁶ = 5.532 × 10⁻⁶ kg·m²**
+
+OWD = I / (m × r_outer²) = 5.532×10⁻⁶ / (0.020 × 0.026²) = 5.532×10⁻⁶ / 1.352×10⁻⁵ = **0.409**
+
+This OWD (0.409) is lower than Reverse Defenser (0.512) despite God Ring being heavier. The Sea Dragon Metal CWD mass is concentrated at intermediate radius (8–21 mm) rather than at the outermost edge; the plastic ring adds outer-edge mass but is too light to compensate. God Ring's advantage is **absolute I magnitude** (5.532×10⁻⁶), not flywheel efficiency per unit mass. For stamina applications, higher I at the cost of OWD efficiency is a favorable trade as long as tip friction is not the limiting factor.
+
+### Mint vs. Worn State
+
+**Mint (notches intact):**
+- Notches engage opponent ARs → brief 5–15 ms lock → mutual recoil event
+- Per-notch contact: estimated 3–8 % spin loss to self per full engagement
+- Two notches at 180° → two engagement opportunities per revolution at high ω
+- Effect: God Ring in mint state functions as a pseudo-attack CWD — notch engagement can destabilize opponents but also self-inflicts momentum loss
+- Practical impact: reduces effective stamina; best avoided in pure Stamina/Defense applications
+
+**Worn (notches smoothed):**
+- Outer surface becomes fully smooth ABS
+- Contact with opponent ARs results in pure deflection (no engagement)
+- No spin-exchange on glancing contact; best-case opponent contact scenario for stamina play
+- Worn God Ring is functionally the top Defense/Stamina CWD in the HMS lineup when combined with the Sea Dragon Metal CWD's high I
+- Wear progression: 3–8 battles of casual contact smooth the notches to acceptable worn state
+
+**Recommended use state:** Worn. For serious competitive stamina/defense application, pre-wear the notches or seek a used specimen. Mint God Ring is suitable only for niche attack-CWD experimentation.
+
+### Competitive CWD Ranking (Stamina/Defense, worn)
+
+**God Ring (worn, 20 g) > Reverse Defenser (13 g) > Defense Ring (12 g) > Free Crusher (locked) > Wing Attacker (locked)**
+
+God Ring's absolute I advantage (5.532×10⁻⁶ vs. Reverse Defenser's ~3.8×10⁻⁶) translates directly to longer spin times and stronger resistance to opponent spin-steal attempts. At equivalent assembly mass, God Ring extends theoretical stamina by ~45 % over Reverse Defenser in tip-limited scenarios. In real combat, the difference narrows due to contact mechanics, but God Ring's dominance in the stamina CWD tier is unambiguous.
+
+**God Ring (mint) competitive note:** The mint notch-engagement is insufficiently forceful for ring-out attack, and the self-inflicted spin loss is too severe for stamina play. Mint God Ring occupies an awkward middle position: weaker attack than any purpose-built attack AR, weaker stamina than worn God Ring. The mint state has no competitive recommend; it exists as a transitional condition between factory-new and competitive-ready.
+
+
+---
+
+## CASE XXXX — RC SCC Gamma (Shining God MS)
+
+**Part:** Running Core, Shooter Change Core Gamma
+**Weight:** ~5 g
+**Material:** ABS plastic body + metal collar insert
+**HMS generation:** MA-24
+
+### Physical Description
+
+SCC Gamma is the second and final Shooter Change Core variant, paired with SCC Alpha (MA-23 Bloody Devil MS). Both share the same fundamental architecture: a lowered-WD collar system that drops the CWD contact plane ~3 mm below the standard RC position, and a mode-change collar that swaps the tip without tools by rotating the collar ring. SCC Gamma's tip pair is **Sharp ↔ Hole-Flat**, in contrast to SCC Alpha's **Semi-Flat ↔ Hole-Flat**.
+
+Sharp mode: hardened metal pin, point contact, μ ≈ 0.05, r_contact = 0.5 mm
+Hole-Flat mode: recessed ABS ring, μ ≈ 0.35, r_contact = 2.5 mm (ring rim contact)
+
+### Moment of Inertia
+
+Same geometry as SCC Alpha body:
+
+I_SCC_Gamma = **3.44 × 10⁻⁷ kg·m²**
+
+### Tip Friction Torques
+
+**Sharp mode:**
+τ_Sharp = μ × m_assembly × g × r_contact = 0.05 × 0.045 × 9.81 × 0.0005 = **1.10 × 10⁻⁵ N·m**
+
+(Reference assembly m = 45 g)
+
+**Hole-Flat mode:**
+τ_HF = μ × m × g × r_contact = 0.35 × 0.045 × 9.81 × 0.0025 = **3.85 × 10⁻⁵ N·m**
+
+### Floor-Scraping Penalty
+
+SCC Gamma's lowered CWD position creates the same geometric vulnerability as SCC Alpha. Critical tilt angle for CWD floor contact:
+
+θ_crit_Gamma = arcsin(h_CWD / r_CWD) = arcsin(3 mm / 20 mm) = arcsin(0.150) = **8.6°**
+
+At θ = 10° (first competitive hit, reference):
+τ_rim_drag = μ_floor × m × g × sin(10°) × r_CWD = 0.45 × 0.045 × 9.81 × 0.1736 × 0.020 = **6.90 × 10⁻⁴ N·m**
+
+(μ_floor = 0.45 for ABS ring on standard stadium floor)
+
+### Mode Comparison
+
+| Mode | τ_tip | τ_rim_drag | Ratio (scraping / tip) |
+|------|-------|-----------|----------------------|
+| Sharp | 1.10 × 10⁻⁵ | 6.90 × 10⁻⁴ | **63×** |
+| Hole-Flat | 3.85 × 10⁻⁵ | 6.90 × 10⁻⁴ | **18×** |
+
+Sharp mode makes the scraping penalty 63× the tip's own friction torque. Any tilt beyond θ_crit immediately dominates spin-down by a factor of 63. SCC Gamma in Sharp mode is the most tilt-sensitive RC in the HMS lineup by a substantial margin.
+
+Hole-Flat mode ratio (18×) is lower than SCC Alpha in HF mode (4.7×) only in absolute terms — the rim drag value is similar for both, but SCC Gamma's HF tip has lower μ. In practice the HF mode is still unusable under normal combat conditions.
+
+### Spin-Down Cascade (Sharp mode, stock assembly I = 9.0 × 10⁻⁶)
+
+At steady-state ω₀ = 620 rad/s, Sharp mode tip drain:
+dω/dt = τ_Sharp / I = 1.10×10⁻⁵ / 9.0×10⁻⁶ = **1.22 rad/s per second** (theoretical maximum run time ~508 s)
+
+After one hit imparting θ = 10° tilt, 0.3-second scraping event:
+Δω = τ_rim_drag × t / I = 6.90×10⁻⁴ × 0.3 / 9.0×10⁻⁶ = **23.0 rad/s**
+
+Equivalent to **18.9 seconds** of uninterrupted Sharp tip friction. A single brief scraping event annihilates the stamina advantage of the Sharp tip. Three such events (0.9 s total contact) lose 69 rad/s — 11 % of ω₀ — pushing immediately toward the wobble threshold.
+
+### Competitive Assessment
+
+SCC Gamma introduces a sharper tip than SCC Alpha (Sharp vs. Semi-Flat) — theoretically better stamina on an ideal floor. In practice, the sharp tip trades 0.05 rad/s lower drain for 63× sensitivity to tilt, compared to SCC Alpha's 7× sensitivity. The net competitive result is worse:
+
+- SCC Alpha HF mode self-destructs at θ ≥ 8.5° with 7× ratio (manageable if θ stays low)
+- SCC Gamma Sharp mode self-destructs at θ ≥ 8.6° with 63× ratio (catastrophic at first contact)
+- SCC Gamma HF mode self-destructs at θ ≥ 8.6° with 18× ratio (worse than SCC Alpha HF)
+
+SCC Gamma has no competitive use case as a stamina RC. The lowered CWD geometry that penalizes SCC Alpha is equally present in Gamma, and Gamma's tip pair provides no compensating advantage. Extracted, both SCC Gamma modes are inferior to GFC (Ultimate Mode, ~8× flat-tip torque but no scraping penalty) and BC2 aggressive mode (controlled tip contact area, no lowered CWD geometry).
+
+SCC Gamma is strictly inferior to SCC Alpha in competitive extracted use. SCC Alpha at least has a Semi-Flat mode (7× ratio) that tolerates a brief tornado-stall window; Gamma's best mode is 18× in HF.
+
+**Extracted rank:** Last among all HMS RCs. No recommended use.
+
+
+---
+
+## CASE XXXX — Assembly: Shining God MS (Stock)
+
+**Assembly:** BP Large Type + AR God Smasher + CWD God Ring + RC SCC Gamma
+**Stock tip mode:** Sharp (factory setting)
+
+### Mass and Geometry
+
+| Component | Mass (g) | I (kg·m²) |
+|-----------|----------|-----------|
+| BP Large Type | 2 | 1.44 × 10⁻⁸ |
+| AR God Smasher | 18 | 3.663 × 10⁻⁶ |
+| CWD God Ring | 20 | 5.532 × 10⁻⁶ |
+| RC SCC Gamma | 5 | 3.44 × 10⁻⁷ |
+| **Total** | **45** | **9.553 × 10⁻⁶ kg·m²** |
+
+### Angular Momentum at Launch
+
+L₀ = I_total × ω₀ = 9.553×10⁻⁶ × 620 = **5.923 mN·m·s**
+
+This is the highest launch angular momentum of any stock HMS assembly that has been analyzed in this series, driven entirely by the God Ring CWD (5.532×10⁻⁶ = 57.9 % of total I).
+
+### CWD Dominance
+
+God Ring contribution: 5.532×10⁻⁶ / 9.553×10⁻⁶ = **57.9 %** of assembly I
+
+This is the highest single-part I dominance of any HMS assembly reviewed. The implication: whatever the RC does to the assembly's spin behavior, God Ring sets the angular momentum floor. Even after complete tip-wear failure, the God Ring maintains enormous rotational inertia that resists spin-steal and collision knockback.
+
+### Theoretical Spin-Down Time (tip-limited, no contact)
+
+**Sharp mode (stock):**
+τ_Sharp = 1.10 × 10⁻⁵ N·m
+t_total = L₀ / τ = 9.553×10⁻⁶ × 620 / 1.10×10⁻⁵
+
+3-phase model:
+- Launch → Battle (Δω = 248): t₁ = 9.553×10⁻⁶ × 248 / 1.10×10⁻⁵ = **215.6 s**
+- Battle → Wobble (Δω = 122): t₂ = 9.553×10⁻⁶ × 122 / 1.10×10⁻⁵ = **105.9 s**
+- Wobble → Fall (Δω = 200): t₃ = 9.553×10⁻⁶ × 200 / 1.10×10⁻⁵ = **173.7 s**
+
+**t_ideal (Sharp) = 495.2 seconds (~8.3 minutes)**
+
+This is the theoretical maximum if the assembly never contacts anything. It is irrelevant in practice.
+
+### Practical Battle Duration
+
+The SCC Gamma scraping cascade analysis applies directly. In any battle where a hit imparts θ ≥ 8.6° (which occurs in the very first contact with any attack-type opponent):
+
+Δω per 0.3 s scraping event = 6.90×10⁻⁴ × 0.3 / 9.553×10⁻⁶ = **21.7 rad/s**
+
+Three scraping events (0.9 s total): 65.1 rad/s lost = 10.5 % of ω₀
+
+God Ring's high I partially cushions each event (lower Δω per scraping event than lighter assemblies), but the scraping torque is independent of I — the cascade still terminates the bey within 3–8 contacts.
+
+**Practical battle duration (stock, competitive opponent):** 2–8 seconds.
+
+### Designated Combos
+
+#### Best AR Extracted Combo (God Smasher attack role)
+
+**AR:** God Smasher
+**CWD:** Defense Ring + Metal CWD (RBA2)
+**RC:** GFC Ultimate Mode (GFC from Draciel MS)
+**Total mass:** ~40 g | I ≈ 9.4 × 10⁻⁶ kg·m²
+
+GFC Ultimate Mode eliminates the SCC Gamma scraping problem. Defense Ring + Metal CWD provides stable, non-notched outer defense. God Smasher's balanced smash profile and incidental ABS upper component create consistent attack without wandering. This is a functional middle-tier attack combo that lacks the ring-out power of Upper Dragon or Upper Fox but offers better consistency.
+
+t_theory (GFC flat, μ = 0.25, r = 3 mm): τ = 0.25 × 0.040 × 9.81 × 0.003 = 2.94×10⁻⁴ N·m → t ≈ 134 s
+
+With God Smasher's 91–93 % smash efficiency, this combo achieves ring-out probability proportional to hit frequency and opponent CWD mass.
+
+#### Best CWD Extracted Combo (God Ring worn — Stamina/Defense)
+
+**AR:** Metal Ape (balanced, symmetric, low recoil)
+**CWD:** God Ring (worn)
+**RC:** BC2 docile mode
+**Total mass:** ~44 g | I ≈ 8.6 × 10⁻⁶ kg·m²
+
+God Ring (worn) + BC2 docile (metal tip, μ ≈ 0.08, r = 0.8 mm) creates the highest-stamina HMS combo achievable from available parts:
+
+τ_BC2_docile = 0.08 × 0.044 × 9.81 × 0.0008 = 2.77 × 10⁻⁵ N·m
+t_total = I × Δω_total / τ = 8.6×10⁻⁶ × 570 / 2.77×10⁻⁵ = **177 s** (theoretical)
+
+At spin parity or near-parity with stamina opponents, God Ring's superior I makes this the most durable HMS stamina build. Against spin-steal attacks, God Ring's mass (20 g) resists spin-equalization better than any rival CWD.
+
+#### Best CWD Extracted Combo (God Ring mint — Conditional attack)
+
+**AR:** Samurai Upper
+**CWD:** God Ring (mint)
+**RC:** BC2 aggressive mode
+**Total mass:** ~45 g | I ≈ 8.9 × 10⁻⁶ kg·m²
+
+Mint God Ring notch engagement paired with Samurai Upper's upper-attack AR creates a dual-mechanism attack: upper attack from the AR + notch-catch from the CWD. The notch self-infliction penalty (~5 % per engagement) is acceptable against opponents who can be ring-outed or destabilized within the first 3–4 contacts. Against stamina opponents that sit near center, this combo is inferior to the worn version.
+
+### Competitive Standing
+
+**AR God Smasher (extracted):** Mid-tier attack AR. Second-weakest smash in the metal frame family (above Smash Phoenix in consistency but below Upper Fox and Upper Dragon in power). The balanced profile eliminates the dynamic-imbalance liability of Smash Phoenix and makes it the most predictable extracted AR in the family. No stamina or defense application. Best use: attack combo with GFC when Upper Dragon/Fox are unavailable.
+
+**CWD God Ring — worn (extracted):** The premier stamina and defense CWD in the HMS lineup. Highest absolute I (5.532×10⁻⁶), heaviest assembly mass (20 g), and fully smooth outer surface in worn state combine to outperform every other HMS CWD in endurance-based roles. Paired with BC2 docile mode, God Ring combos can achieve theoretical spin times approaching 3 minutes — the practical ceiling for HMS stamina play. Competitive value: highest in its class.
+
+**CWD God Ring — mint (extracted):** Niche conditional-attack use only. Notch engagement is insufficiently forceful for standalone ring-out capability and inflicts self-spin-loss in proportion to contact frequency. Mint God Ring is best understood as a pre-wear transitional state rather than a usable competitive configuration.
+
+**RC SCC Gamma (extracted):** No competitive application. SCC Gamma is inferior to every other HMS RC in every use case:
+
+- vs. GFC Ultimate Mode: GFC provides a flat, stable tip with no scraping liability; Gamma offers nothing comparable
+- vs. BC2: BC2's dual modes (docile/aggressive) cover both stamina and controlled-attack with no geometric penalty
+- vs. SCC Alpha: Alpha's Semi-Flat mode tolerates brief low-tilt windows (7× ratio vs. Gamma's 63× in Sharp, 18× in HF)
+- vs. Metal Change Core: MCC's mode-transition creates unpredictable behavior that still outclasses Gamma's geometry-constrained failure
+
+SCC Gamma is architecturally the most ambitious HMS RC engineering exercise (mode-change collar, lowered WD position), but both mode choices fail under competitive conditions due to the lowered-CWD geometry. The Shooter Change Core concept required a tip pair where at least one mode tolerated normal combat tilt — neither Sharp nor Hole-Flat at SCC geometry achieves this. Competitive value: zero.
+
+**Stock Shining God MS:** The highest angular momentum of any stock HMS assembly (L₀ = 5.923 mN·m·s), with the majority supplied by the God Ring CWD. In practice, SCC Gamma in Sharp mode destroys the assembly's stamina potential within the first 2–3 contacts, delivering a 2–8 second battle window regardless of the God Ring's theoretical capacity. The stock form is a cautionary study in component mismatch: the finest CWD in the HMS lineup is paired with the worst RC. Extracting God Ring and replacing SCC Gamma is the single most impactful part substitution available in the entire HMS range.
+
+
+---
+
+## MA-04 Death Gargoyle MS
+
+**Release:** Mid-2004 (early HMS booster)
+**Contents:** BP Small Type · AR Circle Upper · WD Circle Heavy · RC Metal Change Core
+
+---
+
+## CASE XXXX — BP Small Type (Death Gargoyle MS)
+
+**Part:** Bit Protector, Small Type
+**Weight:** ~1.5 g
+**Material:** ABS plastic
+
+### Moment of Inertia
+
+Small Type BP is a compact cap with lower outer radius than Large Type. Modeled as a uniform disk r = 9 mm:
+
+I_BP = ½ × 0.0015 × (0.009)² = **6.08 × 10⁻¹⁰ kg·m²**
+
+Negligible in all assembly I calculations. Contribution < 0.01 % of any finished assembly.
+
+### Competitive Notes
+
+Small Type BP is mechanically specific to ARs with the small boss recess (Death Gargoyle MS, some others). No physics contribution. The Death Gargoyle MS BP is interchangeable with other Small Type BPs; the color is the only differentiator.
+
+
+---
+
+## CASE XXXX — AR Circle Upper (Death Gargoyle MS)
+
+**Part:** Attack Ring, Circle Upper
+**Weight:** ~20.5 g (Mold 2, Death Gargoyle MS version); ~19.0 g (Mold 1)
+**Material:** Zinc alloy metal ring + ABS overlay; two bump protrusions
+**HMS generation:** MA-04
+
+### Physical Description
+
+Circle Upper is described as the "Mack Daddy of HMS" attack rings. It shares its metal ring with Samurai Upper (MA-07). The defining geometry is two raised bump protrusions on the outer rim at approximately 180° separation. The bumps are symmetric — this gives Circle Upper 2-fold rotational symmetry and no dynamic imbalance (same as God Smasher, unlike the asymmetric 2-fold family of Smash Phoenix).
+
+**Two molds exist:**
+- **Mold 1** (~19 g): Slightly lighter, contact-point geometry marginally less aggressive
+- **Mold 2** (~20.5 g): Heavier (1.5 g more metal in bump region), sharper bump leading edges; Death Gargoyle MS ships with Mold 2
+
+The bump protrusions are the attack geometry. Their shape — rounded leading edge transitioning to a flat face — creates two distinct attack modes depending on spin direction:
+
+**Left-spin (LS):** The rounded leading edge presents first. Contact profile: blunt-nose smash. Pure horizontal momentum transfer. F_smash ≈ cos(8°) × F_impact = 0.990 × F_impact. No upper component. Near-maximum smash efficiency.
+
+**Right-spin (RS):** The flat face presents first, but at an upward angle due to the bump geometry inclination (~15° from horizontal). Contact profile: forward smash + upward upper-attack component. F_smash ≈ cos(15°) × F_impact = 0.966 × F_impact; F_upper ≈ sin(15°) × F_impact = 0.259 × F_impact. Additionally, the ABS overlay around the bump creates a secondary glancing smash at lower r as the contact arc sweeps past. RS thus delivers: three overlapping attack components — primary upper smash, secondary upper attack, tertiary smash.
+
+**Spin direction summary:**
+- LS: pure smash (single mechanism, maximum reliability)
+- RS: triple-mechanism attack (upper smash + upper attack + smash) — higher per-contact force but slightly reduced predictability
+
+### Moment of Inertia (Mold 2, ~20.5 g)
+
+Mass distribution:
+
+| Zone | Mass (g) | r_inner (mm) | r_outer (mm) | I (kg·m²) |
+|------|----------|--------------|--------------|-----------|
+| Hub/ABS core | 2 | 0 | 8 | 6.40 × 10⁻⁸ |
+| Metal ring | 14 | 8 | 23 | 3.332 × 10⁻⁶ |
+| Bump protrusions (2×) | 4.5 | 23 | 26 | 2.576 × 10⁻⁶ |
+| **Total** | **20.5** | | | **5.972 × 10⁻⁶ kg·m²** |
+
+Bump protrusions (4.5 g total at r ≈ 23–26 mm):
+I_bumps = ½ × 0.0045 × (0.023² + 0.026²) = ½ × 0.0045 × (5.29×10⁻⁴ + 6.76×10⁻⁴) = ½ × 0.0045 × 1.205×10⁻³ = 2.711 × 10⁻⁶ kg·m²
+
+**I_CU_M2 = 5.972 × 10⁻⁶ kg·m²** (revised with corrected bump zone)
+
+OWD = I / (m × r_outer²) = 5.972×10⁻⁶ / (0.0205 × 0.026²) = 5.972×10⁻⁶ / 1.387×10⁻⁵ = **0.430**
+
+Mold 1 (~19 g, bump zone ~4.0 g): I_CU_M1 ≈ 5.522 × 10⁻⁶ kg·m², OWD ≈ 0.422
+
+### Dynamic Balance
+
+2-fold bump symmetry produces no net centrifugal torque. Circle Upper is balanced at all ω; no precession-axis drift. This distinguishes it from Smash Phoenix (2-fold, asymmetric ABS → unbalanced) and Upper Dragon (also balanced, but different mechanism). Circle Upper's balance is geometric — the symmetric bumps are equidistant at 180° and identical in mass.
+
+### Attack Mechanics Summary
+
+| Mode | F_smash/F | F_upper/F | Mechanisms |
+|------|----------|----------|-----------|
+| LS | 0.990 | 0 | 1 (pure smash) |
+| RS | 0.966 | 0.259 | 3 (upper smash + upper atk + smash) |
+
+LS is the preferred mode against opponents with high-I CWDs that can absorb smash momentum without ring-out — the pure smash delivers maximum translational force. RS is preferred for ring-out attacks against lighter or tilt-prone opponents: the upper component launches the opponent upward and outward simultaneously.
+
+### Extracted Competitive Ranking
+
+Circle Upper is the top-ranked attack AR in the entire HMS lineup:
+
+**Circle Upper (M2, RS) > Upper Dragon > Upper Fox > Circle Upper (M2, LS) > God Smasher > ...**
+
+The RS triple-mechanism attack achieves the highest ring-out probability per contact of any HMS AR. Upper Dragon's singular upper-smash mechanism is more predictable but lower peak force. Circle Upper RS occasionally over-rotates contacts (reduced efficiency if the angle sweep is too wide), but peak-contact events deliver the highest combined force vector of any HMS AR geometry.
+
+**LS mode use case:** Circle Upper LS is preferred in tournaments where opponents use high-I defense setups (e.g., God Ring combos) that absorb the upper component without ring-out — pure smash into the CWD mass is more reliable for sustained contact. RS vs. LS is a strategic choice, not a definitive ranking.
+
+
+---
+
+## CASE XXXX — WD Circle Heavy (Death Gargoyle MS)
+
+**Part:** Weight Disk, Circle Heavy
+**Weight:** ~15 g
+**Material:** Zinc alloy
+**HMS generation:** MA-04
+
+### Overview
+
+Circle Heavy is a standard HMS WD used across multiple booster sets. Full analysis of all HMS WDs appears in the Common Weight Disks reference case. Key figures reproduced here for assembly calculation:
+
+From Common WD reference:
+- I_Circle Heavy ≈ 2.717 × 10⁻⁶ kg·m² (annular disk, inner r = 8 mm, outer r = 22 mm)
+- OWD ≈ 0.374
+
+Circle Heavy is a mid-tier HMS WD by OWD. It is outperformed by Ten Heavy (OWD ~0.52) and Wide Defense (OWD ~0.48) for stamina applications, but is heavier than most thin-disk WDs and provides adequate flywheel mass for attack combos. Its principal value in Death Gargoyle MS is pairing with Circle Upper to provide the CWD-equivalent mass budget for a non-CWD HMS (Death Gargoyle MS uses a WD, not a CWD — the WD slot replaces the HMS CWD architecture in this generation).
+
+**Note:** Death Gargoyle MS predates the standard HMS CWD system in booster form. The WD + tip architecture is structurally different from later HMS boosters; the Circle Heavy WD provides weight distribution in the mid-radius zone rather than the outer CWD zone.
+
+
+---
+
+## CASE XXXX — RC Metal Change Core (Death Gargoyle MS)
+
+**Part:** Running Core, Metal Change Core
+**Weight:** ~3 g
+**Material:** ABS housing + metal tip insert
+**HMS generation:** MA-04
+
+### Physical Description
+
+Metal Change Core (MCC) is the most mechanically novel RC in the HMS lineup. The tip is not a fixed-geometry piece: it is a metal pin mounted in a spring-loaded sleeve that can extend or retract based on the centrifugal force of rotation. At high ω (high spin), centrifugal force holds the sleeve retracted and the metal pin protrudes — this is **Sharp mode**. As ω declines, the spring overcomes centrifugal force and pushes the outer ABS skirt ring down into floor contact — this is **Skirt mode** (also called flat mode or ABS mode).
+
+The transition is not instantaneous and not exactly predictable to the user. It occurs somewhere in the ω range 200–350 rad/s depending on spring tension, wear, and floor surface. This transition is often referred to as making MCC "unpredictable" — the bey visibly changes behavior mid-battle without warning.
+
+### Tip Geometry and Friction Parameters
+
+**Sharp mode (high ω):**
+- Metal pin, point contact
+- μ ≈ 0.07, r_contact = 1.0 mm
+- τ_sharp = μ × m × g × r = 0.07 × 0.045 × 9.81 × 0.001 = **3.09 × 10⁻⁵ N·m**
+
+(Reference assembly m = 45 g)
+
+**Skirt mode (low ω):**
+- ABS ring rim contact
+- μ ≈ 0.20, r_contact = 4.5 mm (mean of 4–5 mm ring)
+- τ_skirt = μ × m × g × r = 0.20 × 0.045 × 9.81 × 0.0045 = **3.97 × 10⁻⁴ N·m**
+
+### Mode Ratio
+
+τ_skirt / τ_sharp = 3.97×10⁻⁴ / 3.09×10⁻⁵ = **12.8×**
+
+The skirt mode produces 12.8× the friction torque of sharp mode. When the transition fires, the spin-down rate accelerates by a factor of ~13. This is the source of the "unpredictable" description: a bey that appeared to be outspinning its opponent at high ω can abruptly begin losing at 12.8× the previous drain rate once the skirt deploys.
+
+### Moment of Inertia
+
+I_MCC ≈ ½ × 0.003 × (0.010)² + (small metal tip contribution) ≈ **4.90 × 10⁻⁸ kg·m²**
+
+This is the lightest HMS RC by I. Its contribution to assembly I is < 0.6 % in any standard build.
+
+### Spin-Down Model
+
+For a 45 g assembly with I = 8.0 × 10⁻⁶ (stock approximate):
+
+**Phase 1: Sharp mode (ω = 620 → 350 rad/s, Δω = 270 rad/s)**
+t₁ = I × Δω / τ_sharp = 8.0×10⁻⁶ × 270 / 3.09×10⁻⁵ = **69.9 s**
+
+**Phase 2: Skirt mode (ω = 350 → 0 rad/s, Δω = 350 rad/s)**
+t₂ = I × Δω / τ_skirt = 8.0×10⁻⁶ × 350 / 3.97×10⁻⁴ = **7.06 s**
+
+**Total theoretical run time with transition: 76.9 s**
+
+The skirt phase (7 s) terminates the bey almost instantly once engaged. In practice, the transition at ω ≈ 200–350 rad/s coincides with the wobble threshold — the bey is already losing stability when the skirt fires, and the 12.8× increased drain accelerates termination within 2–5 seconds of transition.
+
+**Without transition (pure sharp mode to ω = 0):**
+t_sharp_only = 8.0×10⁻⁶ × 620 / 3.09×10⁻⁵ = 160.5 s
+
+The 83-second gap between transition and no-transition scenarios represents the MCC's practical variability range. A bey that transitions early (ω = 350) loses ~83 seconds of theoretical endurance.
+
+### Competitive Assessment
+
+MCC's utility is the Sharp mode phase. For the first ~70 s at optimal tip wear and clean floor conditions, MCC provides competitive stamina via the metal pin. The skirt transition is not a feature — it is a failure mode. Users seeking predictable, repeatable performance avoid MCC; users who accept the transition as a known risk may use it in attack-dominant assemblies where the match ends before the transition fires.
+
+**MCC sharp mode vs. GFC Ultimate Mode:** GFC flat tip (μ ≈ 0.25, r = 3 mm) → τ = 2.94×10⁻⁴ N·m. GFC drains 9.5× faster than MCC sharp, but GFC has no transition failure mode. MCC wins on raw stamina in the sharp phase (160 s vs. 17 s theoretical) but the transition erases this advantage once fired.
+
+**MCC vs. BC2 docile:** BC2 docile (metal tip, μ ≈ 0.08, r = 0.8 mm) → τ ≈ 2.83×10⁻⁵ N·m. MCC sharp and BC2 docile are comparable in drain rate. BC2 docile has no transition — it is the strictly superior choice for pure stamina. MCC's advantage over BC2 is conditional: only in assemblies where the added contact area of BC2 causes handling issues does MCC offer anything different.
+
+**Extracted rank:** Conditional mid-tier. MCC in the sharp phase is a legitimate second-choice stamina RC behind BC2 docile. As a competitive tool, it requires match-duration awareness: if the battle has not ended by the time MCC transitions (~70 s into battle), the bey will typically terminate within seconds of transition.
+
+
+---
+
+## CASE XXXX — Assembly: Death Gargoyle MS (Stock)
+
+**Assembly:** BP Small Type + AR Circle Upper (M2) + WD Circle Heavy + RC Metal Change Core
+**Stock tip mode:** Sharp (factory state, high ω)
+
+### Mass and Geometry
+
+| Component | Mass (g) | I (kg·m²) |
+|-----------|----------|-----------|
+| BP Small Type | 1.5 | 6.08 × 10⁻¹⁰ |
+| AR Circle Upper M2 | 20.5 | 5.972 × 10⁻⁶ |
+| WD Circle Heavy | 15 | 2.717 × 10⁻⁶ |
+| RC Metal Change Core | 3 | 4.90 × 10⁻⁸ |
+| **Total** | **40.0** | **8.739 × 10⁻⁶ kg·m²** |
+
+### Angular Momentum at Launch
+
+L₀ = I_total × ω₀ = 8.739×10⁻⁶ × 620 = **5.418 mN·m·s**
+
+Circle Upper M2 contributes 5.972 / 8.739 = **68.3 %** of assembly I. This is the highest single-AR I dominance in the HMS lineup — Circle Upper's outer bump mass at r = 23–26 mm provides enormous flywheel contribution for a non-CWD architecture.
+
+### Theoretical Spin-Down Time
+
+**Phase 1: Sharp mode (ω = 620 → 350, Δω = 270 rad/s):**
+t₁ = 8.739×10⁻⁶ × 270 / 3.09×10⁻⁵ = **76.3 s**
+
+**Phase 2: Skirt mode (ω = 350 → 0, Δω = 350 rad/s):**
+t₂ = 8.739×10⁻⁶ × 350 / 3.97×10⁻⁴ = **7.7 s**
+
+**t_total (with transition) = 84.0 s**
+**t_total (pure sharp, no transition) = 175.3 s**
+
+### Practical Combat Behavior
+
+Death Gargoyle MS is the most functionally versatile stock HMS assembly in the lineup due to Circle Upper's attack capability. The MCC sharp phase (76 s theoretical) is long enough that most competitive battles conclude before transition fires. Against stamina opponents: Circle Upper RS delivers ring-out attempts in the first 10–20 contacts; if unsuccessful, the assembly outlasts most opponents in the sharp phase. Against attack opponents: mutual exchange at high ω favors Circle Upper's mass (L₀ = 5.418 mN·m·s) in spin-exchange events.
+
+**Vulnerability:** MCC transition at ω ≈ 200–350 rad/s (unpredictable timing). In extended battles that approach 70+ seconds without resolution, MCC transition terminates the stock assembly almost immediately. This makes Death Gargoyle MS stock unreliable in prolonged stamina contests — it is fundamentally an attack bey that disguises as a stamina candidate until transition fires.
+
+**No SCC scraping liability:** Unlike Bloody Devil MS and Shining God MS, Death Gargoyle MS has no lowered-CWD geometry. The WD and RC are standard-height components; floor clearance at normal tilt (< 15°) is not compromised. This alone makes the stock assembly substantially more durable than the two final HMS boosters.
+
+### Designated Combos
+
+#### Best AR Extracted Combo (Circle Upper M2 attack role)
+
+**AR:** Circle Upper M2
+**CWD:** God Ring (worn) or Defense Ring + Metal CWD
+**RC:** BC2 aggressive mode
+**Total mass:** ~44 g | I ≈ 10.9 × 10⁻⁶ kg·m²
+
+Circle Upper M2 + God Ring (worn) + BC2 aggressive creates the highest-I attack combo available in the HMS lineup. BC2 aggressive (controlled ABS flat, μ ≈ 0.30, r = 3.5 mm) provides enough friction for stable spin without MCC's transition liability.
+
+τ_BC2_aggressive = 0.30 × 0.044 × 9.81 × 0.0035 = 4.54 × 10⁻⁴ N·m
+t_theory = 10.9×10⁻⁶ × 570 / 4.54×10⁻⁴ = **136.9 s** (theoretical, attack pacing assumed to end battle first)
+
+Circle Upper RS attack on this combo: per-contact ring-out probability is maximized by the triple-mechanism (upper smash + upper atk + smash). At I = 10.9×10⁻⁶ and L₀ = 6.76 mN·m·s, this assembly has the highest launch angular momentum of any HMS combo and resists counter-knockback better than any single-part rival.
+
+#### Best Stamina Combo (MCC sharp phase, brief match target)
+
+**AR:** Metal Ape (balanced, low recoil)
+**CWD:** God Ring (worn)
+**RC:** MCC (sharp phase only — concede if battle exceeds 60 s)
+**Total mass:** ~43 g | I ≈ 9.2 × 10⁻⁶ kg·m²
+
+This is a conditional-stamina combo exploiting MCC's 76-second sharp phase. If the match ends before transition fires, MCC's low τ_sharp outlasts GFC and BC2 aggressive in pure spin endurance. The God Ring CWD provides the I foundation; MCC provides the low drain rate in the early phase.
+
+**Strategic note:** This combo requires match-duration awareness. If the battle has not produced a ring-out or the opponent has not died by ~60 s, the user should expect MCC transition to fire and terminate the assembly within seconds. Not suitable for tournament use without match-duration guarantees.
+
+### Competitive Standing
+
+**AR Circle Upper M2 (extracted):** Premier attack AR in the HMS lineup. RS mode delivers the highest per-contact combined force vector of any HMS AR. LS mode provides clean, reliable pure smash for anti-stamina and anti-defense matchups. The 2-fold symmetric bump geometry prevents dynamic imbalance while concentrating 4.5 g at r = 23–26 mm, giving Circle Upper the highest OWD (0.430) of any HMS attack AR. Competitive value: highest in class. Extract from Death Gargoyle MS and place immediately into an attack combo; this AR should be active in every competitive HMS lineup.
+
+**WD Circle Heavy (extracted):** See Common Weight Disks reference. Mid-tier HMS WD by OWD (0.374). Outperformed by Ten Heavy and Wide Defense for stamina applications. Functional in attack combos where WD slot is present. Death Gargoyle MS's early-generation architecture means the WD sits lower in the stack than HMS CWD position — extraction into CWD-architecture beys is not directly applicable.
+
+**RC Metal Change Core (extracted):** See RC analysis above. Conditional mid-tier. Sharp phase is competitive for sub-70s battles; transition makes MCC unsuitable for any match expected to last longer. The concept of centrifugal mode-change is mechanically sophisticated and unique in the HMS lineup; the execution is constrained by transition unpredictability. Competitive value: conditional and narrow.
+
+**Stock Death Gargoyle MS:** The most battlefield-capable stock HMS assembly despite its MCC transition liability. Circle Upper M2's attack power creates genuine ring-out threats from launch; the absence of SCC-style scraping geometry means the assembly does not self-terminate from hits. The MCC transition is the sole structural liability, and its 70-second delay window is sufficient for most competitive battles to resolve. Among stock HMS beys, Death Gargoyle MS is the strongest out-of-box contender — and the AR it ships with (Circle Upper M2) is the most valuable extracted part in the entire HMS collection.
+
