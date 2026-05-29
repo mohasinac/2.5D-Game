@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SoundManager } from "@/game/audio/SoundManager";
+import { useAuth } from "@/contexts/AuthContext";
+import { KeyBindingsPanel } from "@/components/game/KeyBindingsPanel";
 
 interface Settings {
   masterVolume: number;
@@ -34,6 +36,23 @@ function saveSettings(s: Settings) {
   localStorage.setItem("beyblade_settings", JSON.stringify(s));
 }
 
+function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
+  return (
+    <button
+      onClick={onChange}
+      className={`relative w-11 h-6 rounded-full transition-colors ${
+        on ? "bg-blue-500" : "bg-bg0 border border-border-c"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+          on ? "left-[22px]" : "left-0.5"
+        }`}
+      />
+    </button>
+  );
+}
+
 function VolumeSlider({
   label,
   value,
@@ -63,12 +82,14 @@ function VolumeSlider({
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
+  const [showControls, setShowControls] = useState(false);
+  const { currentUser, signOutUser } = useAuth();
+  const navigate = useNavigate();
 
   function update(patch: Partial<Settings>) {
     setSettings((prev) => {
       const next = { ...prev, ...patch };
       saveSettings(next);
-      // Keep SoundManager in sync with the master volume slider.
       if (patch.masterVolume !== undefined) {
         SoundManager.setVolume(patch.masterVolume / 100);
       }
@@ -76,9 +97,19 @@ export default function SettingsPage() {
     });
   }
 
+  async function handleSignOut() {
+    await signOutUser();
+    navigate("/login");
+  }
+
+  const initials = currentUser?.email?.[0]?.toUpperCase() ?? "?";
+  const email    = currentUser?.email ?? "Not signed in";
+
   return (
     <div className="min-h-screen bg-bg0 p-8">
       <div className="max-w-lg mx-auto">
+
+        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link
             to="/"
@@ -88,6 +119,38 @@ export default function SettingsPage() {
           </Link>
           <h1 className="text-3xl font-bold text-theme-text">Settings</h1>
         </div>
+
+        {/* Profile */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-theme-text mb-4">Profile</h2>
+          <div className="bg-bg2 rounded-2xl border border-border-c p-5">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-theme-purple/20 border border-theme-purple/40 flex items-center justify-center text-xl font-bold text-theme-purple">
+                {initials}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-theme-text">{email}</p>
+                <p className="text-xs text-theme-muted mt-0.5">Player account</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Controls */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-theme-text mb-4">Controls</h2>
+          <div className="bg-bg2 rounded-2xl border border-border-c p-5 flex flex-col gap-4">
+            <p className="text-sm text-theme-muted">
+              Remap keyboard bindings for movement, attack, defense, dodge, and charge. Arrow keys are always active as movement fallbacks.
+            </p>
+            <button
+              onClick={() => setShowControls(true)}
+              className="py-2.5 px-5 bg-theme-purple text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity self-start"
+            >
+              Configure Key Bindings
+            </button>
+          </div>
+        </section>
 
         {/* Audio */}
         <section className="mb-8">
@@ -115,24 +178,12 @@ export default function SettingsPage() {
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-theme-text mb-4">Visual</h2>
           <div className="bg-bg2 rounded-2xl border border-border-c p-5 flex flex-col gap-5">
-            {/* Screen Shake */}
+
             <div className="flex items-center justify-between">
               <span className="text-sm text-theme-text font-medium">Screen Shake</span>
-              <button
-                onClick={() => update({ screenShake: !settings.screenShake })}
-                className={`relative w-11 h-6 rounded-full transition-colors ${
-                  settings.screenShake ? "bg-blue-500" : "bg-bg0 border border-border-c"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                    settings.screenShake ? "left-[22px]" : "left-0.5"
-                  }`}
-                />
-              </button>
+              <Toggle on={settings.screenShake} onChange={() => update({ screenShake: !settings.screenShake })} />
             </div>
 
-            {/* Particle Density */}
             <div className="flex flex-col gap-2">
               <span className="text-sm text-theme-text font-medium">Particle Density</span>
               <div className="flex gap-2">
@@ -152,26 +203,37 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Reduce Motion */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-theme-text font-medium">Reduce Motion</span>
-              <button
-                onClick={() => update({ reduceMotion: !settings.reduceMotion })}
-                className={`relative w-11 h-6 rounded-full transition-colors ${
-                  settings.reduceMotion ? "bg-blue-500" : "bg-bg0 border border-border-c"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                    settings.reduceMotion ? "left-[22px]" : "left-0.5"
-                  }`}
-                />
-              </button>
+              <Toggle on={settings.reduceMotion} onChange={() => update({ reduceMotion: !settings.reduceMotion })} />
             </div>
+
           </div>
         </section>
 
-        {/* Reset */}
+        {/* Account */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-theme-text mb-4">Account</h2>
+          <div className="bg-bg2 rounded-2xl border border-border-c p-5">
+            {currentUser ? (
+              <button
+                onClick={handleSignOut}
+                className="w-full py-2.5 rounded-xl bg-bg0 text-red-400 text-sm font-semibold border border-border-c hover:border-red-500 hover:bg-red-500/10 transition-colors"
+              >
+                Sign Out
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="block text-center py-2.5 rounded-xl bg-theme-purple text-white text-sm font-semibold no-underline hover:opacity-90 transition-opacity"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+        </section>
+
+        {/* Reset to Defaults */}
         <button
           onClick={() => {
             const fresh = { ...DEFAULTS };
@@ -180,9 +242,13 @@ export default function SettingsPage() {
           }}
           className="w-full py-2.5 rounded-xl bg-bg2 text-theme-muted text-sm border border-border-c hover:border-red-500 hover:text-red-400 transition-colors"
         >
-          Reset to Defaults
+          Reset Visual &amp; Audio to Defaults
         </button>
+
       </div>
+
+      {/* Key bindings modal */}
+      {showControls && <KeyBindingsPanel onClose={() => setShowControls(false)} />}
     </div>
   );
 }

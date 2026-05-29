@@ -4984,7 +4984,1159 @@ function phoenixDiveCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +24 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1851 as further franchise moves are provided.*
+
+
+> **Note:** Cases 1851–1854 reserved — CS9 HMS session conflict #7 (CS9 wrote HMS Dranzer MS / Driger MS at 1845–1853 in a concurrent session). Cases 1855–1857 continue from Case 1850 (Spiral Fireball).
+
+---
+
+## Case 1855 — GIMMICK: Galeon 2 — Blade Sweep Plasma Vortex & SFC Tip Orbital Drive
+
+**Beyblade:** Galeon 2 (TT JP: ガルーン2; Hasbro EN: Galeon 2)
+**Blader:** Lee | **Series:** Beyblade G-Revolution (Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Galeon 2 (6-blade lion-thunder) | 15.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Bottom Base | SFC (Semi-Flat Customs) | 2.5 | 4.0 |
+| **Total** | | **39.0** | |
+
+(Bit Chip Galeon 2 ~1 g at r ≈ 0 excluded per convention.)
+
+**I_total** = 15.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.5×10⁻³ × 0.004²
+           = 1.536×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 4.0×10⁻⁸
+           = **3.780×10⁻⁵ kg·m²**
+
+ω₀ = 710 rad/s (standard plastic-generation G-Revolution launch)
+L₀ = I × ω₀ = 3.780×10⁻⁵ × 710 = **2.684×10⁻² kg·m²/s**
+
+---
+
+### 1. Galeon 2 AR — Blade Sweep Plasma Wake ("Lightning Bolts")
+
+The six lion-thunder blades of Galeon 2's Attack Ring sweep at high tip velocity, ionising the boundary-layer air and creating visible plasma wakes — the lightning bolt effect seen in the anime.
+
+**Blade tip velocity and dynamic pressure:**
+
+```
+v_tip = ω₀ × r_AR = 710 × 0.032 = 22.72 m/s
+
+q_tip = ½ × ρ_air × v_tip² = ½ × 1.225 × 22.72² = 316.7 Pa
+```
+
+**Blade sweep frequency (any fixed point near the AR):**
+
+```
+f_blade = ω₀ × n_blades / (2π) = 710 × 6 / (2π) = 677.8 Hz
+```
+
+**Single blade pass lateral impulse (blade width 3 mm, contact area 10×10 mm, miss distance 5 mm):**
+
+```
+Δt_pass = blade_thickness / v_tip = 3×10⁻³ / 22.72 = 1.320×10⁻⁴ s
+A_contact = 1.0×10⁻⁴ m²
+F_blade_pulse = q_tip × A_contact = 316.7 × 1.0×10⁻⁴ = 3.167×10⁻² N
+J_pulse = F_blade_pulse × Δt_pass = 3.167×10⁻² × 1.320×10⁻⁴ = 4.180×10⁻⁶ N·s  (per blade pass)
+```
+
+**Accumulated lateral disorient impulse (N_passes over t_spiral = 2.0 s orbital approach):**
+
+```
+N_passes = f_blade × t_spiral = 677.8 × 2.0 = 1356
+
+J_lateral_total = N_passes × J_pulse = 1356 × 4.180×10⁻⁶ = 5.666×10⁻³ N·s
+
+Radial outward component (60% of lateral → radial displacement):
+J_radial_eff  = 0.60 × 5.666×10⁻³ = 3.400×10⁻³ N·s
+F_radial_eff  = J_radial_eff / t_spiral = 3.400×10⁻³ / 2.0 = 1.700×10⁻³ N  (sustained outward push)
+```
+
+→ This is the "lightning disorientation" — 1.7 mN of sustained lateral outward force gradually displaces the opponent toward the stadium wall.
+
+---
+
+### 2. SFC Tip — Semi-Flat Orbital Drive
+
+The Semi-Flat Customs tip contacts the floor at radius r_SFC = 4 mm with moderate friction, giving Galeon 2 a balance between attack orbital velocity and stamina:
+
+```
+τ_SFC = μ × m × g × r_SFC = 0.30 × 0.039 × 9.81 × 0.004 = 4.590×10⁻⁴ N·m
+t_spin = L₀ / τ_SFC = 2.684×10⁻² / 4.590×10⁻⁴ = 58.5 s
+
+v_orbital = μ_SFC × ω₀ × r_SFC = 0.30 × 710 × 0.004 = 0.852 m/s  (steady orbit)
+```
+
+(Galeon 2 at attack speed uses peak v_orbital ≈ 1.5 m/s with launch momentum.)
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 3.780×10⁻⁵ kg·m² |
+| ω₀ | 710 rad/s |
+| L₀ | 2.684×10⁻² kg·m²/s |
+| v_tip | 22.72 m/s |
+| q_tip | 316.7 Pa |
+| f_blade | 677.8 Hz |
+| J_pulse | 4.180×10⁻⁶ N·s |
+| J_lateral_total (2 s) | 5.666×10⁻³ N·s |
+| J_radial_eff | 3.400×10⁻³ N·s |
+| F_radial_eff | 1.700×10⁻³ N |
+| τ_SFC | 4.590×10⁻⁴ N·m |
+| t_spin | 58.5 s |
+
+---
+
+## Case 1856 — SPECIAL: Spiral Lightning — Lee / Galeon 2
+
+**Blader:** Lee | **Beyblade:** Galeon 2 | **Type:** attack
+
+### Description
+
+Spiral Lightning is Lee's signature special move with Galeon 2. Galeon 2 spirals inward in a tightening orbit around the opponent, its six AR blades generating rapid lightning bolt plasma wakes at 677 Hz. These successive blade sweeps disorient and laterally displace the opponent outward over the spiral approach. Finally, Galeon 2 delivers a direct orbital crash at full attack speed. Galeon first used this against Tyson's Dragoon in a battle royale during G-Revolution.
+
+### Stage 1 — Lightning Orbital Approach (from Case 1855)
+
+Accumulated blade sweep lateral disorient over t = 2.0 s:
+J_radial_eff = 3.400×10⁻³ N·s → opponent lateral displacement = **J_radial_eff / m_opp = 3.400×10⁻³ / 0.038 = 89.5 mm** (opponent displaced 89.5 mm outward from centre, near stadium wall).
+
+### Stage 2 — Orbital Crash
+
+**Collision model (orbital attack, e = 0.80):**
+
+Parameters:
+- m_G2 = 39.0 g, v_attack = 1.5 m/s (peak SFC orbital)
+- m_opp = 38 g, v_opp ≈ 0
+
+```
+m_eff = (0.039 × 0.038) / (0.039 + 0.038) = 1.482×10⁻³ / 0.077 = 1.925×10⁻² kg
+
+J_crash = m_eff × (1 + e) × v_attack
+        = 1.925×10⁻² × 1.80 × 1.5
+        = 5.198×10⁻² N·s
+```
+
+**Effect on opponent (combined disorient + crash):**
+```
+Δv_opp  = J_crash / m_opp = 5.198×10⁻² / 0.038 = 1.368 m/s
+```
+(Opponent already at wall due to 89.5 mm disorient displacement — 1.37 m/s sends it over the edge.)
+
+**Effect on Galeon 2 (spin drain):**
+```
+Δω_G2    = J_crash × r_contact / I_G2 = 5.198×10⁻² × 0.025 / 3.780×10⁻⁵ = 34.4 rad/s
+ω_remain = 710 − 34.4 = 675.6 rad/s  (95.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Lee channels Galeon's full thunder spirit — the lightning bolts become true electrical arcs that overwhelm the opponent's spin before the final crash.
+
+[M] factor = **6.0 ×**
+[M] Δv = 1.368 × 6.0 = **8.2 m/s** (ring-out from wall)
+
+> **Note:** Physical values describe blade sweep plasma wake accumulated lateral disorient and orbital crash mechanics. [M] values represent BeySpirit-overridden electrical arc force that overwhelms normal collision limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function spiralLightningSpecial(bey: Beyblade, target: Beyblade): void {
+  // Stage 1: blade sweep lateral disorient — push target outward (F_radial = 1.700×10⁻³ N × 2s)
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Sustained lateral outward nudge (represented as accumulated impulse)
+  applyForce(target.id, (dx / dist) * 0.0034, (dy / dist) * 0.0034);
+  // Stage 2: orbital crash — J_crash = 5.198×10⁻² N·s; [M] 6.0×
+  const J_phys = 0.05198;
+  const amplified = J_phys * 6.0; // [M] BeySpirit 6.0×
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a multi-blade Attack Ring (6+ blades) with blade tip velocity v_tip ≥ 20 m/s for sufficient blade-sweep plasma wake generation, combined with a semi-flat tip that provides stable mid-speed orbital approach. Standard game instance: Galeon 2 (Lee, G-Revolution). Without the high blade count the lightning strike frequency drops below the 677 Hz disorient threshold; without the SFC tip the orbital stability needed to sustain the 2-second spiral approach is absent.
+
+---
+
+## Case 1857 — COMBO: Thunder Arc — Galeon 2
+
+**Sequence:** → E A (moveRight · dodge · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Lee
+
+### Physics Justification
+
+The rightward orbital sweep (→) positions Galeon 2 on a clockwise arc, generating a partial blade sweep sequence against the opponent (f_blade × Δt_arc = 677.8 × 0.12 = 81 blade passes → J_partial = 81 × 4.180×10⁻⁶ = 3.386×10⁻⁴ N·s lateral). The dodge (E) represents a lightning arc flash — Galeon briefly arcs away and then snaps inward, converting the orbital tangential velocity back to spin at the contact point:
+
+```
+Δω = η × m_G2 × v_orbital × r_contact / I_G2
+   = 0.60 × 0.039 × 1.5 × 0.025 / 3.780×10⁻⁵
+   = 0.60 × (1.463×10⁻³) / 3.780×10⁻⁵
+   = 0.60 × 38.70
+   = +23.2 rad/s  ≈ +23 rad/s
+```
+
+(η = 0.60: SFC semi-flat orbital-to-spin reconversion at arc flash snap-back.) The attack (A) delivers the strike at the end of the arc, amplified by the accumulated blade sweep lateral push: damageMultiplier **1.25×**.
+
+**Parameters:**
+- spinGain: +23 rad/s (SFC orbital-to-spin reconversion at arc flash, η = 0.60)
+- damageMultiplier: 1.25 (orbital arc approach amplified by partial blade sweep disorient)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function thunderArcCombo(bey: Beyblade, target: Beyblade): void {
+  // SFC orbital-to-spin arc flash reconversion: Δω ≈ +23 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 23);
+  // Arc approach with blade sweep disorient: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +23 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1858 — GIMMICK: Ace Dragon Sting Charge Zan — Sting Disc Spring-Wall Ricochet & Zephyr Tip Orbital Drive
+
+**Beyblade:** Ace Dragon Sting Charge Zan (TT JP: エースドラゴン・スティング・チャージ・ザン; Hasbro EN: Ace Dragon Sting Charge Zan)
+**Blader:** Dante Koryu | **Series:** Beyblade Burst Rise (B-149)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer Base | Ace Dragon | 21.0 | 27.0 |
+| Layer Weight | — | 0.0 | — |
+| Disc | Sting (spring-loaded) | 7.5 | 22.0 |
+| Driver | Charge Zan (Zephyr) | 2.5 | 5.0 |
+| **Total** | | **31.0** | |
+
+**I_total** = 21.0×10⁻³ × 0.027² + 7.5×10⁻³ × 0.022² + 2.5×10⁻³ × 0.005²
+           = 1.531×10⁻⁵ + 3.630×10⁻⁶ + 6.25×10⁻⁸
+           = **1.900×10⁻⁵ kg·m²**
+
+ω₀ = 630 rad/s (standard Burst Rise launch)
+L₀ = I × ω₀ = 1.900×10⁻⁵ × 630 = **1.197×10⁻² kg·m²/s**
+
+---
+
+### 1. Sting Disc — Spring-Loaded Wall-Ricochet Mechanism
+
+The Sting Disc features two spring-loaded protrusions at r = 22 mm. When Ace Dragon impacts the stadium wall, the protrusions compress and release, adding stored spring potential energy to the rebound.
+
+**Spring mechanics (single protrusion, k ≈ 75 N/m, max compression x = 4 mm):**
+
+```
+PE_spring = ½ × k × x² = ½ × 75 × (0.004)² = 6.000×10⁻⁴ J
+
+Δv_spring = √(2 × PE_spring / m) = √(2 × 6.000×10⁻⁴ / 0.031) = √(3.871×10⁻²) = 0.197 m/s
+```
+
+**Wall approach velocity (Ace Dragon orbital speed):**
+
+```
+v_wall = ω₀ × r_orbit / (2π / n_walls) ≈ 1.800 m/s  (orbital approach speed at wall contact)
+```
+
+**Post-bounce velocity (two protrusions active, e_wall = 0.72 ABS-on-ABS):**
+
+```
+v_post = e_wall × v_wall + 2 × Δv_spring
+       = 0.72 × 1.800 + 2 × 0.197
+       = 1.296 + 0.394
+       = 1.690 m/s
+```
+
+**Speed gain from spring mechanism:**
+
+```
+Δv_net = v_post − e_wall × v_wall = 1.690 − 1.296 = 0.394 m/s  (spring boost)
+
+KE_gain = ½ × m × (v_post² − (e_wall × v_wall)²)
+        = ½ × 0.031 × (1.690² − 1.296²)
+        = ½ × 0.031 × (2.856 − 1.680)
+        = 1.822×10⁻² J
+```
+
+→ Spring releases stored energy at the wall, accelerating Ace Dragon beyond what elastic rebound alone provides.
+
+**S Gear analogy:** The S Gear (DB/BU system) uses a mechanically similar sliding spring mechanism. When the Layer's mode-change trigger fires, the S Gear's internal spring unloads, releasing stored elastic energy to the Disc in the same spring-energy-to-orbital-velocity conversion. The physics is identical: PE_spring → ΔKE_orbital.
+
+---
+
+### 2. Zephyr Driver — Variable-Friction Orbital Drive
+
+The Zephyr Driver transitions between a sharp tip (low friction, high speed) and a flat contact pad (moderate friction, stable orbit), controlled by spin rate:
+
+```
+μ_sharp  = 0.10  (high spin — sharp point contacts; stamina/orbit mode)
+μ_flat   = 0.35  (low spin — pad contacts; ground-hugging attack mode)
+
+τ_sharp  = μ × m × g × r = 0.10 × 0.031 × 9.81 × 0.005 = 1.521×10⁻⁴ N·m
+t_spin   = L₀ / τ_sharp = 1.197×10⁻² / 1.521×10⁻⁴ = 78.7 s  (stamina mode)
+
+v_orbital_flat = μ_flat × ω₀ × r_driver = 0.35 × 630 × 0.005 = 1.103 m/s  (attack mode)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 31.0 g |
+| I_total | 1.900×10⁻⁵ kg·m² |
+| ω₀ | 630 rad/s |
+| L₀ | 1.197×10⁻² kg·m²/s |
+| k_spring | 75 N/m |
+| x_compression | 4 mm |
+| PE_spring | 6.000×10⁻⁴ J |
+| v_wall | 1.800 m/s |
+| v_post | 1.690 m/s |
+| KE_gain | 1.822×10⁻² J |
+| τ_sharp | 1.521×10⁻⁴ N·m |
+| t_spin | 78.7 s |
+
+---
+
+## Case 1859 — SPECIAL: Spring Cannon / Bound Stinger — Dante Koryu / Ace Dragon Sting Charge Zan
+
+**Blader:** Dante Koryu | **Beyblade:** Ace Dragon Sting Charge Zan | **Type:** attack
+
+### Description
+
+Spring Cannon (Bound Stinger in Japan) is the signature special move of Dante Koryu and Ace Dragon Sting Charge Zan. Dragon increases its speed and attack power by using its spring-loaded Sting Disc to ricochet off the stadium wall. Dragon can also parry incoming attacks by aiming the Sting Disc at the opponent's beyblade mid-approach, transferring the spring release directly into a counter-strike. The move is used with Ace Dragon, Glyph Dragon, and Rock Dragon Sting Charge Zan variants.
+
+### Stage 1 — Wall Ricochet (from Case 1858)
+
+Orbital approach: v_wall = 1.800 m/s. Spring release at wall: v_post = **1.690 m/s** (Δv_spring = 0.394 m/s).
+
+### Stage 2 — Spring Cannon Strike
+
+Ace Dragon redirects from the wall toward the opponent at the enhanced post-bounce velocity.
+
+**Collision model (spring-boosted orbital attack, e = 0.75):**
+
+Parameters:
+- m_AD = 31.0 g, v_attack = v_post = 1.690 m/s
+- m_opp = 32 g (representative Burst Rise), v_opp ≈ 0
+
+```
+m_eff = (0.031 × 0.032) / (0.031 + 0.032) = 9.920×10⁻⁴ / 0.063 = 1.575×10⁻² kg
+
+J_cannon = m_eff × (1 + e) × v_attack
+         = 1.575×10⁻² × 1.75 × 1.690
+         = 4.653×10⁻² N·s
+```
+
+**Parry variant (Sting Disc aimed at incoming opponent, relative velocity v_rel = v_post + v_opp_approach = 1.690 + 1.200 = 2.890 m/s):**
+
+```
+J_parry = m_eff × (1 + e) × v_rel
+        = 1.575×10⁻² × 1.75 × 2.890
+        = 7.959×10⁻² N·s
+```
+
+**Effect on opponent (cannon strike):**
+```
+Δv_opp  = J_cannon / m_opp = 4.653×10⁻² / 0.032 = 1.454 m/s
+```
+
+**Effect on Ace Dragon (spin drain):**
+```
+Δω_AD    = J_cannon × r_contact / I_AD = 4.653×10⁻² × 0.020 / 1.900×10⁻⁵ = 49.0 rad/s
+ω_remain = 630 − 49.0 = 581.0 rad/s  (92.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dante channels Dragon's roaring spirit — the spring Disc surges with dragon energy, converting the wall not into a bounce but into a cannon barrel that fires Dragon like a projectile.
+
+[M] factor = **5.5 ×**
+[M] Δv = 1.454 × 5.5 = **8.0 m/s** (ring-out)
+
+> **Note:** Physical values describe Sting Disc spring-loaded wall-ricochet PE release and orbital cannon strike mechanics. [M] values represent Dante's BeySpirit dragon-energy cannon blast that transcends elastic limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function springCannonSpecial(bey: Beyblade, target: Beyblade): void {
+  // Wall ricochet: v_post = 1.690 m/s (spring-boosted)
+  // Physical J_cannon = 4.653×10⁻² N·s; [M] 5.5×
+  const J_phys = 0.04653;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 5.5; // [M] BeySpirit 5.5× (dragon spring cannon)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Sting Disc (or S Gear spring-mechanism equivalent) that provides two active spring protrusions at r ≥ 20 mm, combined with an orbital attack driver (Zephyr or equivalent variable-friction tip). The spring PE release requires a Disc with internal spring mechanism (k ≥ 60 N/m) capable of storing ≥ 5×10⁻⁴ J per protrusion at max wall compression. Standard game instance: Ace Dragon Sting Charge Zan (Dante Koryu, Burst Rise). Also compatible: Glyph Dragon Sting Charge Zan, Rock Dragon Sting Charge Zan (same Disc/Driver; different Layer Base).
+
+---
+
+## Case 1860 — COMBO: Sting Rush — Ace Dragon
+
+**Sequence:** → K A (moveRight · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Dante Koryu
+
+### Physics Justification
+
+The rightward arc (→) positions Ace Dragon on an approach vector toward the stadium wall, building orbital momentum (v_orbital = 1.103 m/s in flat-driver attack mode). The defense stance (K) represents the Sting Disc loading — Dragon brakes slightly as the spring protrusions compress against the wall contact: PE_spring loaded = ½ × 75 × (3×10⁻³)² = 3.375×10⁻⁴ J (75% of full compression at reduced approach speed). The attack (A) fires the spring-loaded strike at the opponent immediately after wall contact, transferring the stored spring energy:
+
+```
+Δv_spring_partial = √(2 × 2 × PE_partial / m) = √(2 × 2 × 3.375×10⁻⁴ / 0.031) = 0.209 m/s
+
+v_attack_combo = v_orbital + Δv_spring_partial = 1.103 + 0.209 = 1.312 m/s
+
+Δω = η × m × v_attack_combo × r_contact / I_AD
+   = 0.55 × 0.031 × 1.312 × 0.020 / 1.900×10⁻⁵
+   = 0.55 × (8.134×10⁻⁴) / 1.900×10⁻⁵
+   = 0.55 × 42.81
+   = +23.5 rad/s  ≈ +24 rad/s
+```
+
+(η = 0.55: Zephyr flat-contact spin reconversion at spring-release wall kick.) damageMultiplier **1.25×** from spring-boosted closing velocity above standard orbital.
+
+**Parameters:**
+- spinGain: +24 rad/s (Zephyr flat-contact spring-release reconversion η = 0.55)
+- damageMultiplier: 1.25 (spring-boosted orbital strike above standard closing speed)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function stingRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Sting spring-release wall kick spin reconversion: Δω ≈ +24 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 24);
+  // Spring-boosted approach: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +24 rad/s (partial) | ✓ |
+
+---
+
+## Case 1861 — GIMMICK: Galaxy Pegasus W105R2F — W105 Wing Aerodynamic Lift Platform & R2F Orbital Burst Drive
+
+**Beyblade:** Galaxy Pegasus W105R2F (TT JP: ギャラクシーペガシスW105R2F; Hasbro EN: Galaxy Pegasus W105R2F)
+**Blader:** Gingka Hagane | **Series:** Beyblade: Metal Masters (BB-70)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Fusion Wheel | Galaxy | 30.0 | 30.0 |
+| Energy Ring | Pegasus II | 4.0 | 24.0 |
+| Spin Track | W105 (Wing 105) | 2.5 | 20.0 |
+| Performance Tip | R2F (Rubber Double Flat) | 2.0 | 6.0 |
+| **Total** | | **38.5** | |
+
+**I_total** = 30.0×10⁻³ × 0.030² + 4.0×10⁻³ × 0.024² + 2.5×10⁻³ × 0.020² + 2.0×10⁻³ × 0.006²
+           = 2.700×10⁻⁵ + 2.304×10⁻⁶ + 1.000×10⁻⁶ + 7.20×10⁻⁸
+           = **3.034×10⁻⁵ kg·m²**
+
+ω₀ = 680 rad/s (standard MFB Metal Masters launch)
+L₀ = I × ω₀ = 3.034×10⁻⁵ × 680 = **2.063×10⁻² kg·m²/s**
+
+---
+
+### 1. W105 Track — Wing Aerodynamic Lift Platform
+
+Spin Track W105 carries two swept wing blades at r = 20 mm height, 105 mm track height. The wings generate upward aerodynamic lift as Galaxy Pegasus circles the stadium at orbital speed.
+
+**Wing tip velocity and lift:**
+
+```
+v_wing = ω₀ × r_W105 = 680 × 0.020 = 13.60 m/s
+
+A_wing = 5.0×10⁻³ × 15.0×10⁻³ = 7.5×10⁻⁵ m²  (single wing blade area)
+C_L    = 0.55  (swept flat wing at track height)
+
+F_lift_per_wing = ½ × ρ_air × C_L × A_wing × v_wing²
+               = ½ × 1.225 × 0.55 × 7.5×10⁻⁵ × 13.60²
+               = 5.243×10⁻³ N
+```
+
+**Total lift (2 active wings):**
+
+```
+F_lift_total = 2 × 5.243×10⁻³ = 1.049×10⁻² N
+
+W = m × g = 0.0385 × 9.81 = 0.378 N
+
+Lift / Weight = 1.049×10⁻² / 0.378 = 2.8%  (BeySpirit required for full liftoff)
+```
+
+**Orbital speed contribution from W105 wings:**
+
+The wings also produce a small tangential thrust component (swept angle α = 20°):
+
+```
+F_thrust = F_lift_total × sin(20°) = 1.049×10⁻² × 0.342 = 3.588×10⁻³ N  (tangential)
+a_orbital = F_thrust / m = 3.588×10⁻³ / 0.0385 = 0.0932 m/s²
+v_orbital_gain (over 1 orbit, t_orbit ≈ 0.5s) = 0.0932 × 0.5 = 4.66×10⁻² m/s  (small boost)
+```
+
+---
+
+### 2. R2F Tip — Rubber Double Flat Orbital Burst Drive
+
+The R2F tip has a wide rubber double-flat surface (r_R2F = 6 mm, μ_rubber = 0.80) giving extremely aggressive orbital movement with rapid spin decay:
+
+```
+τ_R2F   = μ × m × g × r_R2F = 0.80 × 0.0385 × 9.81 × 0.006 = 1.817×10⁻³ N·m
+t_spin  = L₀ / τ_R2F = 2.063×10⁻² / 1.817×10⁻³ = 11.4 s  (aggressive attack stamina)
+
+v_orbital = μ_rubber × ω₀ × r_R2F = 0.80 × 680 × 0.006 = 3.264 m/s  (peak orbital velocity)
+```
+
+→ The R2F gives Galaxy Pegasus the highest orbital speed of any Pegasus variant — 3.264 m/s vs Storm Pegasus RF's 2.040 m/s (Case 1812). This is the momentum source for the Starbooster stadium circle and liftoff.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 38.5 g |
+| I_total | 3.034×10⁻⁵ kg·m² |
+| ω₀ | 680 rad/s |
+| L₀ | 2.063×10⁻² kg·m²/s |
+| v_wing | 13.60 m/s |
+| F_lift_total | 1.049×10⁻² N |
+| Lift / Weight | 2.8% |
+| τ_R2F | 1.817×10⁻³ N·m |
+| t_spin | 11.4 s |
+| v_orbital | 3.264 m/s |
+
+---
+
+## Case 1862 — SPECIAL: Starbooster Attack / Stargazer — Gingka Hagane / Galaxy Pegasus W105R2F
+
+**Blader:** Gingka Hagane | **Beyblade:** Galaxy Pegasus W105R2F | **Type:** attack
+
+### Description
+
+Starbooster Attack (Stargazer in Japan) is the first special move used by Gingka Hagane and Galaxy Pegasus W105R2F. Galaxy Pegasus circles around the stadium at full R2F orbital speed, building centripetal momentum. It then uses this accumulated orbital energy to take flight into the air, and crashes back down onto the opponent. Galaxy Pegasus has also used this move when knocked airborne by an opponent. The move is similar to Storm Pegasus's Starblast Attack but uses the W105 wing lift platform and higher R2F orbital speed.
+
+### Stage 1 — Stadium Circle Momentum Build (from Case 1861)
+
+R2F orbital speed: v_orbital = **3.264 m/s**. After N = 2 full orbits at r_arena = 0.200 m (stadium inner radius):
+
+```
+t_circle = 2 × (2π × r_arena / v_orbital) = 2 × (2π × 0.200 / 3.264) = 2 × 0.385 = 0.770 s
+
+W105 wing lift over t_circle: F_lift × t_circle = 1.049×10⁻² × 0.770 = 8.078×10⁻³ N·s (upward impulse)
+v_liftoff_assist = 8.078×10⁻³ / m = 8.078×10⁻³ / 0.0385 = 0.210 m/s  (wing-assisted liftoff v_z)
+```
+
+**Total liftoff velocity (orbital tangential converted to vertical + wing assist):**
+
+```
+η_liftoff = 0.35  (fraction of orbital KE convertible to vertical at R2F grip release)
+v_z_orbital = η_liftoff × v_orbital = 0.35 × 3.264 = 1.142 m/s
+
+v_z_total = v_z_orbital + v_liftoff_assist = 1.142 + 0.210 = 1.352 m/s
+```
+
+**Apex height:**
+
+```
+h_apex = v_z_total² / (2g) = 1.352² / (2 × 9.81) = 1.828 / 19.62 = 0.0932 m  ≈ 93 mm
+```
+
+### Stage 2 — Aerial Crash
+
+**Dive impact velocity:**
+
+```
+v_impact = √(v_orbital² + 2g × h_apex)
+         = √(3.264² + 2 × 9.81 × 0.0932)
+         = √(10.65 + 1.829)
+         = √12.48
+         = 3.533 m/s
+```
+
+**Collision model (high-speed aerial orbital dive, e = 0.80):**
+
+Parameters:
+- m_GP = 38.5 g, v_impact = 3.533 m/s
+- m_opp = 40 g (representative), v_opp ≈ 0
+
+```
+m_eff = (0.0385 × 0.040) / (0.0385 + 0.040) = 1.540×10⁻³ / 0.0785 = 1.962×10⁻² kg
+
+J_booster = m_eff × (1 + e) × v_impact
+          = 1.962×10⁻² × 1.80 × 3.533
+          = 1.248×10⁻¹ N·s
+```
+
+**Effect on opponent:**
+```
+Δv_opp  = J_booster / m_opp = 1.248×10⁻¹ / 0.040 = 3.120 m/s
+```
+
+**Effect on Galaxy Pegasus (spin drain):**
+```
+Δω_GP    = J_booster × r_contact / I_GP = 1.248×10⁻¹ × 0.025 / 3.034×10⁻⁵ = 102.8 rad/s
+ω_remain = 680 − 102.8 = 577.2 rad/s  (84.9% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka channels Pegasus's full celestial spirit — the stadium circle becomes a spiral galaxy orbit that launches Pegasus as a star-speed projectile.
+
+[M] factor = **8.0 ×**
+[M] Δv = 3.120 × 8.0 = **24.96 m/s** (ring-out at star velocity)
+
+> **Note:** Physical values describe W105 wing aerodynamic lift-assisted liftoff, R2F orbital momentum conversion, and aerial dive impulse. [M] values represent Gingka's BeySpirit Pegasus star-launch that transcends orbital mechanics. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function starboosterAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Stadium circle: v_orbital = 3.264 m/s; h_apex = 93 mm → v_impact = 3.533 m/s
+  // Physical J_booster = 1.248×10⁻¹ N·s; [M] 8.0×
+  const J_phys = 0.1248;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Pegasus star velocity)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the W105 Spin Track (Wing 105) combined with an R2F or equivalent high-friction rubber flat driver that produces orbital speed ≥ 3 m/s. The W105 wing lift assist requires the wing blades to be at track height 105 to generate measurable upward impulse during the stadium circle. Standard game instance: Galaxy Pegasus W105R2F (Gingka Hagane, Metal Masters). Without W105 the wing-assisted liftoff component is absent; without R2F the orbital speed needed to convert to sufficient apex height for the full crash impulse is absent.
+
+---
+
+## Case 1863 — COMBO: Orbit Crash — Galaxy Pegasus
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The upward arc (↑) sends Galaxy Pegasus into a high orbital sweep, building momentum at R2F speed (v_orbital = 3.264 m/s × fraction, estimated 2.2 m/s at partial orbit completion). The rightward redirect (→) converts the upward arc tangential velocity into a rightward approach vector — this represents Galaxy Pegasus redirecting its circular path toward the opponent. The attack (A) delivers the orbital strike at the redirected velocity:
+
+```
+v_attack_combo = √(v_up² + v_right²) = √(2.2² + 2.2²) / √2 = 2.2 m/s  (resultant diagonal)
+
+Δω = η × m_GP × v_attack_combo × r_contact / I_GP
+   = 0.50 × 0.0385 × 2.2 × 0.025 / 3.034×10⁻⁵
+   = 0.50 × (2.118×10⁻³) / 3.034×10⁻⁵
+   = 0.50 × 69.8
+   = +34.9 rad/s  ≈ +35 rad/s
+```
+
+(η = 0.50: R2F rubber contact orbital-to-spin momentum reconversion at arc redirect.) The orbital approach angle from two arcs raises the damageMultiplier to **1.35×** from combined directional momentum.
+
+**Parameters:**
+- spinGain: +35 rad/s (R2F rubber orbital-to-spin arc redirect reconversion η = 0.50)
+- damageMultiplier: 1.35 (combined ↑→ arc approach directional momentum)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function orbitCrashCombo(bey: Beyblade, target: Beyblade): void {
+  // R2F rubber arc redirect spin reconversion: Δω ≈ +35 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 35);
+  // Combined arc approach: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +35 rad/s (partial) | ✓ |
+
+---
+
+## Case 1864 — GIMMICK(2): Storm Pegasus 105RF — RF Tip Orbital-to-Liftoff Aerodynamic Launch
+
+**Beyblade:** Storm Pegasus 105RF (TT JP: ストームペガシス105RF; Hasbro EN: Storm Pegasus 105RF)
+**Blader:** Gingka Hagane | **Series:** Beyblade: Metal Fusion (BB-28)
+
+> **GIMMICK(1)** — Storm Pegasus orbital vortex, Rankine vortex model, and RF tip orbital mechanics are documented in **Case 1812**. This GIMMICK(2) focuses specifically on the RF tip's orbital-to-liftoff aerodynamic transition that enables Starblast Attack.
+
+### Assembly (reference)
+
+Storm Pegasus 105RF: m = 37.0 g, I_total = 2.783×10⁻⁵ kg·m², ω₀ = 680 rad/s, L₀ = 1.892×10⁻² kg·m²/s (from Case 1812).
+
+---
+
+### RF Tip — Orbital-to-Vertical Liftoff Aerodynamics
+
+At peak orbital speed, the RF (Rubber Flat) tip provides v_orbital = 2.040 m/s (from Case 1812). When Storm Pegasus reaches the stadium wall or receives an upward impact, the orbital velocity vector is redirected vertically.
+
+**Vertical velocity at liftoff (η_launch = 0.30: RF grip-release liftoff efficiency):**
+
+```
+v_z = η_launch × v_orbital = 0.30 × 2.040 = 0.612 m/s
+```
+
+**Additional vertical velocity from external upward strike (opponent knock-up):**
+
+When the opponent's attack hits Storm Pegasus upward (J_up ≈ 2.0×10⁻² N·s):
+
+```
+v_z_strike = J_up / m = 2.0×10⁻² / 0.037 = 0.541 m/s
+
+v_z_total = v_z + v_z_strike = 0.612 + 0.541 = 1.153 m/s  (knock-up assisted liftoff)
+```
+
+**Apex height (self-launch only):**
+
+```
+h_apex_self = v_z² / (2g) = 0.612² / (2 × 9.81) = 0.3745 / 19.62 = 19.1 mm
+```
+
+**Apex height (knock-up assisted):**
+
+```
+h_apex_knockup = v_z_total² / (2g) = 1.153² / (2 × 9.81) = 1.329 / 19.62 = 67.8 mm
+```
+
+→ Storm Pegasus can initiate Starblast Attack voluntarily (self-launch, h ≈ 19 mm) or via opponent knock-up (h ≈ 68 mm for a harder dive).
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| v_orbital | 2.040 m/s (from Case 1812) |
+| η_launch | 0.30 |
+| v_z (self) | 0.612 m/s |
+| h_apex (self) | 19.1 mm |
+| v_z (knock-up) | 1.153 m/s |
+| h_apex (knock-up) | 67.8 mm |
+
+---
+
+## Case 1865 — SPECIAL: Starblast Attack / Shooting Star Attack — Gingka Hagane / Storm Pegasus 105RF
+
+**Blader:** Gingka Hagane | **Beyblade:** Storm Pegasus 105RF (also used with Cosmic Pegasus F:D) | **Type:** attack
+
+### Description
+
+Starblast Attack (Shooting Star Attack in Japan) is the first special move used by Gingka Hagane. In the anime it was used with Storm Pegasus 105RF and later with Cosmic Pegasus F:D. In the manga it was used with Pegasis 105F and Storm Pegasis 10Glaive Quick'. Pegasus soars into the sky voluntarily or launched by the opponent's own attack, then crashes directly onto the opponent in a nose dive. This is Gingka's signature move throughout Beyblade Metal Fusion.
+
+### Stage 1 — Liftoff (from Case 1864)
+
+Self-launch: h_apex = **19.1 mm**, v_z = 0.612 m/s.
+Knock-up variant: h_apex = **67.8 mm**, v_z = 1.153 m/s.
+
+**Dive impact velocity (self-launch):**
+
+```
+v_impact_self = √(v_orbital² + 2g × h_apex_self)
+              = √(2.040² + 2 × 9.81 × 0.0191)
+              = √(4.162 + 0.375)
+              = √4.537
+              = 2.130 m/s
+```
+
+**Dive impact velocity (knock-up variant):**
+
+```
+v_impact_knockup = √(v_orbital² + 2g × h_apex_knockup)
+                 = √(2.040² + 2 × 9.81 × 0.0678)
+                 = √(4.162 + 1.331)
+                 = √5.493
+                 = 2.344 m/s
+```
+
+### Stage 2 — Nose Dive Crash
+
+**Collision model (nose dive, e = 0.80 — using knock-up variant as primary):**
+
+Parameters:
+- m_SP = 37.0 g, v_impact = 2.344 m/s
+- m_opp = 38 g, v_opp ≈ 0
+
+```
+m_eff = (0.037 × 0.038) / (0.037 + 0.038) = 1.406×10⁻³ / 0.075 = 1.875×10⁻² kg
+
+J_starblast = m_eff × (1 + e) × v_impact
+            = 1.875×10⁻² × 1.80 × 2.344
+            = 7.901×10⁻² N·s
+```
+
+**Self-launch variant (v_impact = 2.130 m/s):**
+
+```
+J_starblast_self = 1.875×10⁻² × 1.80 × 2.130 = 7.189×10⁻² N·s
+```
+
+**Effect on opponent (knock-up variant):**
+```
+Δv_opp  = J_starblast / m_opp = 7.901×10⁻² / 0.038 = 2.079 m/s
+```
+
+**Effect on Storm Pegasus (spin drain):**
+```
+Δω_SP    = J_starblast × r_contact / I_SP = 7.901×10⁻² × 0.025 / 2.783×10⁻⁵ = 71.0 rad/s
+ω_remain = 680 − 71.0 = 609.0 rad/s  (89.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka channels Pegasus's blazing star spirit — the dive becomes a shooting star that burns through the opponent with the full force of a falling celestial body.
+
+[M] factor = **7.0 ×**
+[M] Δv = 2.079 × 7.0 = **14.6 m/s** (ring-out as shooting star)
+
+> **Note:** Physical values describe RF tip orbital-to-vertical liftoff, self-launch and knock-up variant apex heights, and nose-dive collision impulse. [M] values represent Gingka's BeySpirit shooting-star force that overwhelms normal collision limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function starblastAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Nose dive: h_apex = 67.8 mm (knock-up) → v_impact = 2.344 m/s
+  // Physical J_starblast = 7.901×10⁻² N·s; [M] 7.0×
+  const J_phys = 0.07901;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (shooting star)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the RF (Rubber Flat) driver or equivalent high-grip rubber flat tip with orbital speed ≥ 1.8 m/s. The liftoff mechanic requires sufficient orbital velocity for the η_launch × v_orbital vertical component to achieve measurable apex height; the knock-up variant is available to any bey that can redirect an upward impact force. Standard game instance: Storm Pegasus 105RF (Gingka Hagane, Metal Fusion). Also compatible: Cosmic Pegasus F:D (Metal Fury — same blader, same move; F:D driver provides comparable orbital velocity). The nose-dive crash impulse depends primarily on v_impact at the liftoff height achieved; higher v_orbital (Galaxy Pegasus R2F in Case 1862) gives a harder version of the same move.
+
+---
+
+## Case 1866 — COMBO: Star Dive — Storm Pegasus
+
+**Sequence:** ↑ A ↓ (moveUp · attack · moveDown)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The upward arc (↑) initiates the self-launch liftoff — Storm Pegasus redirects orbital momentum vertically (v_z = 0.612 m/s, h_apex = 19.1 mm). The attack (A) at apex fires the nose dive, using self-launch impact velocity (v_impact_self = 2.130 m/s). The downward exit (↓) represents Storm Pegasus driving the landing — RF rubber ground contact at the dive end converts the residual downward velocity back to spin:
+
+```
+v_land = √(2g × h_apex_self) = √(2 × 9.81 × 0.0191) = 0.612 m/s  (terminal at apex self-launch)
+
+Δω = η × m_SP × v_land × r_contact / I_SP
+   = 0.55 × 0.037 × 0.612 × 0.025 / 2.783×10⁻⁵
+   = 0.55 × (5.661×10⁻⁴) / 2.783×10⁻⁵
+   = 0.55 × 20.34
+   = +11.2 rad/s  ≈ +11 rad/s
+```
+
+(η = 0.55: RF rubber landing-impact spin reconversion.) The self-launch nose dive angle (straight vertical: θ = 90°) gives pure downward impulse on the opponent, boosting damageMultiplier to **1.20×** from the added vertical strike vector.
+
+**Parameters:**
+- spinGain: +11 rad/s (RF rubber landing-impact spin reconversion η = 0.55)
+- damageMultiplier: 1.20 (vertical nose-dive impact vector)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function starDiveCombo(bey: Beyblade, target: Beyblade): void {
+  // RF rubber landing spin reconversion: Δω ≈ +11 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Vertical nose dive: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+> **Note:** Cases 1867–1873 reserved — CS9 HMS session conflict #8 (CS9 wrote Round Shell MS at 1865–1868 and Samurai Changer MS at 1869–1873 in concurrent sessions; CS15 Cases 1865–1866 overlap with Round Shell MS blocks). Cases 1874–1876 continue from Case 1866 (Star Dive).
+
+---
+
+## Case 1874 — GIMMICK(2): Galaxy Pegasus W105R2F — R2F Warm-Up Friction Increase & Space-Launch Altitude
+
+**Beyblade:** Galaxy Pegasus W105R2F (TT JP: ギャラクシーペガシスW105R2F; Hasbro EN: Galaxy Pegasus W105R2F)
+**Blader:** Gingka Hagane | **Series:** Beyblade: Metal Masters (BB-70)
+
+> **GIMMICK(1)** — W105 wing aerodynamic lift, R2F baseline orbital mechanics, and Starbooster Attack liftoff physics are documented in **Cases 1861–1862**. This GIMMICK(2) focuses on the physical change that enables Stardust Driver: the R2F tip requires arena run-in time before reaching full friction, and only after this warm-up can Galaxy Pegasus achieve the orbit speed needed to launch into space.
+
+### Assembly (reference — from Case 1861)
+
+Galaxy Pegasus W105R2F: m = 38.5 g, I_total = 3.034×10⁻⁵ kg·m², ω₀ = 680 rad/s, L₀ = 2.063×10⁻² kg·m²/s, W105 F_lift = 1.049×10⁻² N.
+
+---
+
+### 1. R2F Warm-Up Friction Increase
+
+The R2F (Rubber Double Flat) tip uses a wide rubber surface. Rubber friction is temperature-dependent: cold rubber is relatively stiff and loses grip energy to elastic hysteresis, while warmed rubber is softer and achieves maximum grip. Gingka's "perfect control" and Gingka mastering the R2F is specifically about giving the tip time to adjust in the arena before reaching full power — the R2F needs continuous arena contact to warm up before it can deliver its maximum orbital velocity.
+
+**Frictional power dissipated in R2F rubber (at ω₀, cold μ):**
+
+```
+P_heat = τ_R2F_cold × ω₀ = (μ_cold × m × g × r_R2F) × ω₀
+       = (0.80 × 0.0385 × 9.81 × 0.006) × 680
+       = 1.817×10⁻³ × 680 = 1.236 W
+```
+
+**Warm-up period (4 cold-speed stadium circles):**
+
+```
+t_warmup = 4 × (2π × r_arena / v_orbital_cold) = 4 × (2π × 0.200 / 3.264) = 1.538 s
+
+ΔQ_warmup = P_heat × t_warmup = 1.236 × 1.538 = 1.901 J
+```
+
+After ΔQ_warmup = 1.9 J of frictional heat input, the R2F rubber reaches operating temperature — friction coefficient rises from μ_cold to μ_warm:
+
+```
+μ_R2F_cold = 0.80  (standard, first 1–2 circuits)
+μ_R2F_warm = 0.95  (after t_warmup; thermally softened rubber — optimal grip)
+
+Δμ = +0.15  (+18.75% friction gain from thermal warm-up)
+
+v_orbital_warm = μ_warm × ω₀ × r_R2F = 0.95 × 680 × 0.006 = 3.878 m/s
+(vs v_orbital_cold = 3.264 m/s — Stardust Driver runs at +18.75% higher orbital speed)
+```
+
+→ Starbooster Attack launches before warm-up completes (2 cold circles, μ = 0.80). Stardust Driver waits for full warm-up (4 circles, μ = 0.95) — this is the physical reason for the 4-circle extended spiral.
+
+---
+
+### 2. Extended Warm-Up Spiral — Wing Lift Accumulation
+
+Wing lift accumulated over the full warm-up period (at conservative cold-speed timing):
+
+```
+v_z_wing_extended = F_lift_total × t_warmup / m = 1.049×10⁻² × 1.538 / 0.0385 = 0.419 m/s
+(vs Starbooster v_z_wing = 0.210 m/s at 2-circle cold spiral)
+```
+
+**Mastered liftoff efficiency (warm rubber gives better floor grip → better vertical push):**
+
+```
+η_mastered = 0.50  (vs η_standard = 0.35 at Starbooster Attack)
+
+v_z_orbital_warm = η_mastered × v_orbital_warm = 0.50 × 3.878 = 1.939 m/s
+
+v_z_total = v_z_orbital_warm + v_z_wing_extended = 1.939 + 0.419 = 2.358 m/s
+
+h_apex_stardust = v_z_total² / (2g) = 2.358² / (2 × 9.81) = 5.560 / 19.62 = 0.2834 m  ≈ 283 mm
+```
+
+### Comparison Summary
+
+| Quantity | Starbooster Attack (Case 1862) | Stardust Driver |
+|---------|-------------------------------|-----------------|
+| N circles | 2 | 4 |
+| t_spiral | 0.770 s | 1.538 s |
+| μ_R2F at liftoff | 0.80 (cold) | 0.95 (warm) |
+| v_orbital at liftoff | 3.264 m/s | 3.878 m/s |
+| v_z_wing | 0.210 m/s | 0.419 m/s |
+| η_liftoff | 0.35 | 0.50 |
+| v_z_orbital | 1.142 m/s | 1.939 m/s |
+| v_z_total | 1.352 m/s | 2.358 m/s |
+| h_apex | 93 mm | **283 mm** |
+
+---
+
+## Case 1875 — SPECIAL: Stardust Driver / Star Dust Driver — Gingka Hagane / Galaxy Pegasus W105R2F
+
+**Blader:** Gingka Hagane | **Beyblade:** Galaxy Pegasus W105R2F | **Type:** attack
+
+### Description
+
+Stardust Driver (星塵蹴, Sutādasuto Doraibā) is the second Special Move used by Gingka Hagane and Galaxy Pegasus W105R2F. After gaining perfect control over Galaxy Pegasus's R2F tip — meaning the rubber has been given sufficient arena run-in time to reach full grip — Galaxy Pegasus increases its orbital speed and executes four full stadium circles to build maximum warm-rubber momentum. It then launches into space far higher than Starbooster Attack, and crashes back down with full force. Stardust Driver was developed specifically for opponents who could withstand Starbooster Attack: it defeated Julian Konzern (Gravity Destroyer's Black Excalibur) and Damian Hart (Hades Kerbecs' Hades Gate) when Starbooster Attack proved insufficient.
+
+### Stage 1 — R2F Warm-Up Extended Spiral & Liftoff (from Case 1874)
+
+μ_R2F_warm = 0.95, v_orbital_warm = 3.878 m/s, v_z_total = 2.358 m/s, h_apex = **283 mm**.
+
+### Stage 2 — Space-Altitude Crash
+
+**Dive impact velocity:**
+
+```
+v_impact = √(v_orbital_warm² + 2g × h_apex)
+         = √(3.878² + 2 × 9.81 × 0.2834)
+         = √(15.039 + 5.560)
+         = √20.599
+         = 4.539 m/s
+```
+
+**Collision model (warm-rubber full-speed space dive, e = 0.80):**
+
+Parameters:
+- m_GP = 38.5 g, v_impact = 4.539 m/s
+- m_opp = 40 g, v_opp ≈ 0
+
+```
+m_eff = (0.0385 × 0.040) / (0.0385 + 0.040) = 1.540×10⁻³ / 0.0785 = 1.962×10⁻² kg
+
+J_stardust = m_eff × (1 + e) × v_impact
+           = 1.962×10⁻² × 1.80 × 4.539
+           = 1.602×10⁻¹ N·s
+```
+
+**Effect on opponent:**
+```
+Δv_opp  = J_stardust / m_opp = 1.602×10⁻¹ / 0.040 = 4.005 m/s
+(vs Starbooster Δv = 3.120 m/s — Stardust Driver is 28.4% stronger at physical level)
+```
+
+**Effect on Galaxy Pegasus (spin drain):**
+```
+Δω_GP    = J_stardust × r_contact / I_GP = 1.602×10⁻¹ × 0.025 / 3.034×10⁻⁵ = 132.0 rad/s
+ω_remain = 680 − 132.0 = 548.0 rad/s  (80.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka's fully mastered spirit drives Galaxy Pegasus beyond the atmosphere — it returns as a genuine falling star with interstellar impact force.
+
+[M] factor = **9.0 ×**
+[M] Δv = 4.005 × 9.0 = **36.0 m/s** (star-speed ring-out)
+
+> **Note:** Physical values describe R2F rubber warm-up friction gain (μ: 0.80→0.95, ΔQ = 1.901 J), doubled wing-lift accumulation over 4-circuit warm-up, warm orbital speed 3.878 m/s, and space-altitude dive impulse at h = 283 mm. [M] values represent Gingka's fully mastered Pegasus star spirit that transcends all orbital limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function stardustDriverSpecial(bey: Beyblade, target: Beyblade): void {
+  // R2F warm-up: μ→0.95, 4 circles, η_mastered=0.50 → h_apex=283mm → v_impact=4.539 m/s
+  // Physical J_stardust = 1.602×10⁻¹ N·s; [M] 9.0×
+  const J_phys = 0.1602;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 9.0; // [M] BeySpirit 9.0× (star-speed warm-rubber mastered crash)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the W105 Spin Track and R2F driver where the blader can allow the rubber tip sufficient arena run-in time to reach warm-grip state (t_warmup ≥ 1.538 s, ΔQ ≥ 1.9 J). The move requires the full 4-circuit warm-up spiral to reach μ_R2F_warm = 0.95; attempting it cold (Starbooster Attack) delivers only μ = 0.80 and h_apex = 93 mm. Standard game instance: Galaxy Pegasus W105R2F (Gingka Hagane, Metal Masters). This is an evolution of Starbooster Attack (Case 1862) — the same physical frame, but executed only after full R2F warm-up.
+
+---
+
+## Case 1876 — COMBO: Dust Rush — Galaxy Pegasus
+
+**Sequence:** E ↑ A (dodge · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The dodge (E) represents Galaxy Pegasus pulling into a tighter inner arc using cold-R2F grip (no warm-up in combo context — quick attack sequence): v_orbital = μ_cold × ω₀ × r = 3.264 m/s. The moveUp (↑) initiates a partial liftoff at η_combo = 0.25 (50% of Stardust's full η_mastered = 0.50):
+
+```
+v_z_combo = η_combo × v_orbital_cold = 0.25 × 3.264 = 0.816 m/s
+h_combo   = v_z_combo² / (2g) = 0.816² / (2 × 9.81) = 0.6660 / 19.62 = 33.9 mm
+```
+
+The attack (A) fires the partial aerial dive at the end of the arc:
+
+```
+v_impact_combo = √(v_orbital_cold² + 2g × h_combo)
+               = √(3.264² + 2 × 9.81 × 0.0339)
+               = √(10.653 + 0.665)
+               = √11.318
+               = 3.364 m/s
+
+Δω = η_land × m_GP × v_impact_combo × r_contact / I_GP
+   = 0.30 × 0.0385 × 3.364 × 0.025 / 3.034×10⁻⁵
+   = 0.30 × (3.237×10⁻³) / 3.034×10⁻⁵
+   = 0.30 × 106.7
+   = +32.0 rad/s  ≈ +32 rad/s
+```
+
+(η_land = 0.30: cold-R2F rubber re-contact at partial-height landing. Cold tip used since no warm-up in combo timeframe.) The partial cold-launch liftoff at 33.9 mm gives damageMultiplier **1.25×**.
+
+**Parameters:**
+- spinGain: +32 rad/s (cold R2F rubber landing reconversion η_land = 0.30, h_combo = 33.9 mm)
+- damageMultiplier: 1.25 (partial cold liftoff aerial orbital strike)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function dustRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Cold R2F partial liftoff landing reconversion: Δω ≈ +32 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 32);
+  // Partial cold aerial dive: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +32 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1877 as further franchise moves are provided.*
 
 
 
@@ -8783,4 +9935,1156 @@ function phoenixDiveCombo(bey: Beyblade, target: Beyblade): void {
 | AoE | none | none | ✓ |
 | Full spin recovery | none | +24 rad/s (partial) | ✓ |
 
-*Cases continue from Case 1851 as further franchise moves are provided.*
+
+
+> **Note:** Cases 1851–1854 reserved — CS9 HMS session conflict #7 (CS9 wrote HMS Dranzer MS / Driger MS at 1845–1853 in a concurrent session). Cases 1855–1857 continue from Case 1850 (Spiral Fireball).
+
+---
+
+## Case 1855 — GIMMICK: Galeon 2 — Blade Sweep Plasma Vortex & SFC Tip Orbital Drive
+
+**Beyblade:** Galeon 2 (TT JP: ガルーン2; Hasbro EN: Galeon 2)
+**Blader:** Lee | **Series:** Beyblade G-Revolution (Plastic Generation)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Attack Ring | Galeon 2 (6-blade lion-thunder) | 15.0 | 32.0 |
+| Weight Disk | 10 Wide | 18.0 | 35.0 |
+| Spin Gear | Right SG | 3.5 | 10.0 |
+| Bottom Base | SFC (Semi-Flat Customs) | 2.5 | 4.0 |
+| **Total** | | **39.0** | |
+
+(Bit Chip Galeon 2 ~1 g at r ≈ 0 excluded per convention.)
+
+**I_total** = 15.0×10⁻³ × 0.032² + 18.0×10⁻³ × 0.035² + 3.5×10⁻³ × 0.010² + 2.5×10⁻³ × 0.004²
+           = 1.536×10⁻⁵ + 2.205×10⁻⁵ + 3.5×10⁻⁷ + 4.0×10⁻⁸
+           = **3.780×10⁻⁵ kg·m²**
+
+ω₀ = 710 rad/s (standard plastic-generation G-Revolution launch)
+L₀ = I × ω₀ = 3.780×10⁻⁵ × 710 = **2.684×10⁻² kg·m²/s**
+
+---
+
+### 1. Galeon 2 AR — Blade Sweep Plasma Wake ("Lightning Bolts")
+
+The six lion-thunder blades of Galeon 2's Attack Ring sweep at high tip velocity, ionising the boundary-layer air and creating visible plasma wakes — the lightning bolt effect seen in the anime.
+
+**Blade tip velocity and dynamic pressure:**
+
+```
+v_tip = ω₀ × r_AR = 710 × 0.032 = 22.72 m/s
+
+q_tip = ½ × ρ_air × v_tip² = ½ × 1.225 × 22.72² = 316.7 Pa
+```
+
+**Blade sweep frequency (any fixed point near the AR):**
+
+```
+f_blade = ω₀ × n_blades / (2π) = 710 × 6 / (2π) = 677.8 Hz
+```
+
+**Single blade pass lateral impulse (blade width 3 mm, contact area 10×10 mm, miss distance 5 mm):**
+
+```
+Δt_pass = blade_thickness / v_tip = 3×10⁻³ / 22.72 = 1.320×10⁻⁴ s
+A_contact = 1.0×10⁻⁴ m²
+F_blade_pulse = q_tip × A_contact = 316.7 × 1.0×10⁻⁴ = 3.167×10⁻² N
+J_pulse = F_blade_pulse × Δt_pass = 3.167×10⁻² × 1.320×10⁻⁴ = 4.180×10⁻⁶ N·s  (per blade pass)
+```
+
+**Accumulated lateral disorient impulse (N_passes over t_spiral = 2.0 s orbital approach):**
+
+```
+N_passes = f_blade × t_spiral = 677.8 × 2.0 = 1356
+
+J_lateral_total = N_passes × J_pulse = 1356 × 4.180×10⁻⁶ = 5.666×10⁻³ N·s
+
+Radial outward component (60% of lateral → radial displacement):
+J_radial_eff  = 0.60 × 5.666×10⁻³ = 3.400×10⁻³ N·s
+F_radial_eff  = J_radial_eff / t_spiral = 3.400×10⁻³ / 2.0 = 1.700×10⁻³ N  (sustained outward push)
+```
+
+→ This is the "lightning disorientation" — 1.7 mN of sustained lateral outward force gradually displaces the opponent toward the stadium wall.
+
+---
+
+### 2. SFC Tip — Semi-Flat Orbital Drive
+
+The Semi-Flat Customs tip contacts the floor at radius r_SFC = 4 mm with moderate friction, giving Galeon 2 a balance between attack orbital velocity and stamina:
+
+```
+τ_SFC = μ × m × g × r_SFC = 0.30 × 0.039 × 9.81 × 0.004 = 4.590×10⁻⁴ N·m
+t_spin = L₀ / τ_SFC = 2.684×10⁻² / 4.590×10⁻⁴ = 58.5 s
+
+v_orbital = μ_SFC × ω₀ × r_SFC = 0.30 × 710 × 0.004 = 0.852 m/s  (steady orbit)
+```
+
+(Galeon 2 at attack speed uses peak v_orbital ≈ 1.5 m/s with launch momentum.)
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 39.0 g |
+| I_total | 3.780×10⁻⁵ kg·m² |
+| ω₀ | 710 rad/s |
+| L₀ | 2.684×10⁻² kg·m²/s |
+| v_tip | 22.72 m/s |
+| q_tip | 316.7 Pa |
+| f_blade | 677.8 Hz |
+| J_pulse | 4.180×10⁻⁶ N·s |
+| J_lateral_total (2 s) | 5.666×10⁻³ N·s |
+| J_radial_eff | 3.400×10⁻³ N·s |
+| F_radial_eff | 1.700×10⁻³ N |
+| τ_SFC | 4.590×10⁻⁴ N·m |
+| t_spin | 58.5 s |
+
+---
+
+## Case 1856 — SPECIAL: Spiral Lightning — Lee / Galeon 2
+
+**Blader:** Lee | **Beyblade:** Galeon 2 | **Type:** attack
+
+### Description
+
+Spiral Lightning is Lee's signature special move with Galeon 2. Galeon 2 spirals inward in a tightening orbit around the opponent, its six AR blades generating rapid lightning bolt plasma wakes at 677 Hz. These successive blade sweeps disorient and laterally displace the opponent outward over the spiral approach. Finally, Galeon 2 delivers a direct orbital crash at full attack speed. Galeon first used this against Tyson's Dragoon in a battle royale during G-Revolution.
+
+### Stage 1 — Lightning Orbital Approach (from Case 1855)
+
+Accumulated blade sweep lateral disorient over t = 2.0 s:
+J_radial_eff = 3.400×10⁻³ N·s → opponent lateral displacement = **J_radial_eff / m_opp = 3.400×10⁻³ / 0.038 = 89.5 mm** (opponent displaced 89.5 mm outward from centre, near stadium wall).
+
+### Stage 2 — Orbital Crash
+
+**Collision model (orbital attack, e = 0.80):**
+
+Parameters:
+- m_G2 = 39.0 g, v_attack = 1.5 m/s (peak SFC orbital)
+- m_opp = 38 g, v_opp ≈ 0
+
+```
+m_eff = (0.039 × 0.038) / (0.039 + 0.038) = 1.482×10⁻³ / 0.077 = 1.925×10⁻² kg
+
+J_crash = m_eff × (1 + e) × v_attack
+        = 1.925×10⁻² × 1.80 × 1.5
+        = 5.198×10⁻² N·s
+```
+
+**Effect on opponent (combined disorient + crash):**
+```
+Δv_opp  = J_crash / m_opp = 5.198×10⁻² / 0.038 = 1.368 m/s
+```
+(Opponent already at wall due to 89.5 mm disorient displacement — 1.37 m/s sends it over the edge.)
+
+**Effect on Galeon 2 (spin drain):**
+```
+Δω_G2    = J_crash × r_contact / I_G2 = 5.198×10⁻² × 0.025 / 3.780×10⁻⁵ = 34.4 rad/s
+ω_remain = 710 − 34.4 = 675.6 rad/s  (95.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Lee channels Galeon's full thunder spirit — the lightning bolts become true electrical arcs that overwhelm the opponent's spin before the final crash.
+
+[M] factor = **6.0 ×**
+[M] Δv = 1.368 × 6.0 = **8.2 m/s** (ring-out from wall)
+
+> **Note:** Physical values describe blade sweep plasma wake accumulated lateral disorient and orbital crash mechanics. [M] values represent BeySpirit-overridden electrical arc force that overwhelms normal collision limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function spiralLightningSpecial(bey: Beyblade, target: Beyblade): void {
+  // Stage 1: blade sweep lateral disorient — push target outward (F_radial = 1.700×10⁻³ N × 2s)
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  // Sustained lateral outward nudge (represented as accumulated impulse)
+  applyForce(target.id, (dx / dist) * 0.0034, (dy / dist) * 0.0034);
+  // Stage 2: orbital crash — J_crash = 5.198×10⁻² N·s; [M] 6.0×
+  const J_phys = 0.05198;
+  const amplified = J_phys * 6.0; // [M] BeySpirit 6.0×
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using a multi-blade Attack Ring (6+ blades) with blade tip velocity v_tip ≥ 20 m/s for sufficient blade-sweep plasma wake generation, combined with a semi-flat tip that provides stable mid-speed orbital approach. Standard game instance: Galeon 2 (Lee, G-Revolution). Without the high blade count the lightning strike frequency drops below the 677 Hz disorient threshold; without the SFC tip the orbital stability needed to sustain the 2-second spiral approach is absent.
+
+---
+
+## Case 1857 — COMBO: Thunder Arc — Galeon 2
+
+**Sequence:** → E A (moveRight · dodge · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Lee
+
+### Physics Justification
+
+The rightward orbital sweep (→) positions Galeon 2 on a clockwise arc, generating a partial blade sweep sequence against the opponent (f_blade × Δt_arc = 677.8 × 0.12 = 81 blade passes → J_partial = 81 × 4.180×10⁻⁶ = 3.386×10⁻⁴ N·s lateral). The dodge (E) represents a lightning arc flash — Galeon briefly arcs away and then snaps inward, converting the orbital tangential velocity back to spin at the contact point:
+
+```
+Δω = η × m_G2 × v_orbital × r_contact / I_G2
+   = 0.60 × 0.039 × 1.5 × 0.025 / 3.780×10⁻⁵
+   = 0.60 × (1.463×10⁻³) / 3.780×10⁻⁵
+   = 0.60 × 38.70
+   = +23.2 rad/s  ≈ +23 rad/s
+```
+
+(η = 0.60: SFC semi-flat orbital-to-spin reconversion at arc flash snap-back.) The attack (A) delivers the strike at the end of the arc, amplified by the accumulated blade sweep lateral push: damageMultiplier **1.25×**.
+
+**Parameters:**
+- spinGain: +23 rad/s (SFC orbital-to-spin reconversion at arc flash, η = 0.60)
+- damageMultiplier: 1.25 (orbital arc approach amplified by partial blade sweep disorient)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function thunderArcCombo(bey: Beyblade, target: Beyblade): void {
+  // SFC orbital-to-spin arc flash reconversion: Δω ≈ +23 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 23);
+  // Arc approach with blade sweep disorient: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +23 rad/s (partial) | ✓ |
+
+
+
+---
+
+## Case 1858 — GIMMICK: Ace Dragon Sting Charge Zan — Sting Disc Spring-Wall Ricochet & Zephyr Tip Orbital Drive
+
+**Beyblade:** Ace Dragon Sting Charge Zan (TT JP: エースドラゴン・スティング・チャージ・ザン; Hasbro EN: Ace Dragon Sting Charge Zan)
+**Blader:** Dante Koryu | **Series:** Beyblade Burst Rise (B-149)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Layer Base | Ace Dragon | 21.0 | 27.0 |
+| Layer Weight | — | 0.0 | — |
+| Disc | Sting (spring-loaded) | 7.5 | 22.0 |
+| Driver | Charge Zan (Zephyr) | 2.5 | 5.0 |
+| **Total** | | **31.0** | |
+
+**I_total** = 21.0×10⁻³ × 0.027² + 7.5×10⁻³ × 0.022² + 2.5×10⁻³ × 0.005²
+           = 1.531×10⁻⁵ + 3.630×10⁻⁶ + 6.25×10⁻⁸
+           = **1.900×10⁻⁵ kg·m²**
+
+ω₀ = 630 rad/s (standard Burst Rise launch)
+L₀ = I × ω₀ = 1.900×10⁻⁵ × 630 = **1.197×10⁻² kg·m²/s**
+
+---
+
+### 1. Sting Disc — Spring-Loaded Wall-Ricochet Mechanism
+
+The Sting Disc features two spring-loaded protrusions at r = 22 mm. When Ace Dragon impacts the stadium wall, the protrusions compress and release, adding stored spring potential energy to the rebound.
+
+**Spring mechanics (single protrusion, k ≈ 75 N/m, max compression x = 4 mm):**
+
+```
+PE_spring = ½ × k × x² = ½ × 75 × (0.004)² = 6.000×10⁻⁴ J
+
+Δv_spring = √(2 × PE_spring / m) = √(2 × 6.000×10⁻⁴ / 0.031) = √(3.871×10⁻²) = 0.197 m/s
+```
+
+**Wall approach velocity (Ace Dragon orbital speed):**
+
+```
+v_wall = ω₀ × r_orbit / (2π / n_walls) ≈ 1.800 m/s  (orbital approach speed at wall contact)
+```
+
+**Post-bounce velocity (two protrusions active, e_wall = 0.72 ABS-on-ABS):**
+
+```
+v_post = e_wall × v_wall + 2 × Δv_spring
+       = 0.72 × 1.800 + 2 × 0.197
+       = 1.296 + 0.394
+       = 1.690 m/s
+```
+
+**Speed gain from spring mechanism:**
+
+```
+Δv_net = v_post − e_wall × v_wall = 1.690 − 1.296 = 0.394 m/s  (spring boost)
+
+KE_gain = ½ × m × (v_post² − (e_wall × v_wall)²)
+        = ½ × 0.031 × (1.690² − 1.296²)
+        = ½ × 0.031 × (2.856 − 1.680)
+        = 1.822×10⁻² J
+```
+
+→ Spring releases stored energy at the wall, accelerating Ace Dragon beyond what elastic rebound alone provides.
+
+**S Gear analogy:** The S Gear (DB/BU system) uses a mechanically similar sliding spring mechanism. When the Layer's mode-change trigger fires, the S Gear's internal spring unloads, releasing stored elastic energy to the Disc in the same spring-energy-to-orbital-velocity conversion. The physics is identical: PE_spring → ΔKE_orbital.
+
+---
+
+### 2. Zephyr Driver — Variable-Friction Orbital Drive
+
+The Zephyr Driver transitions between a sharp tip (low friction, high speed) and a flat contact pad (moderate friction, stable orbit), controlled by spin rate:
+
+```
+μ_sharp  = 0.10  (high spin — sharp point contacts; stamina/orbit mode)
+μ_flat   = 0.35  (low spin — pad contacts; ground-hugging attack mode)
+
+τ_sharp  = μ × m × g × r = 0.10 × 0.031 × 9.81 × 0.005 = 1.521×10⁻⁴ N·m
+t_spin   = L₀ / τ_sharp = 1.197×10⁻² / 1.521×10⁻⁴ = 78.7 s  (stamina mode)
+
+v_orbital_flat = μ_flat × ω₀ × r_driver = 0.35 × 630 × 0.005 = 1.103 m/s  (attack mode)
+```
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 31.0 g |
+| I_total | 1.900×10⁻⁵ kg·m² |
+| ω₀ | 630 rad/s |
+| L₀ | 1.197×10⁻² kg·m²/s |
+| k_spring | 75 N/m |
+| x_compression | 4 mm |
+| PE_spring | 6.000×10⁻⁴ J |
+| v_wall | 1.800 m/s |
+| v_post | 1.690 m/s |
+| KE_gain | 1.822×10⁻² J |
+| τ_sharp | 1.521×10⁻⁴ N·m |
+| t_spin | 78.7 s |
+
+---
+
+## Case 1859 — SPECIAL: Spring Cannon / Bound Stinger — Dante Koryu / Ace Dragon Sting Charge Zan
+
+**Blader:** Dante Koryu | **Beyblade:** Ace Dragon Sting Charge Zan | **Type:** attack
+
+### Description
+
+Spring Cannon (Bound Stinger in Japan) is the signature special move of Dante Koryu and Ace Dragon Sting Charge Zan. Dragon increases its speed and attack power by using its spring-loaded Sting Disc to ricochet off the stadium wall. Dragon can also parry incoming attacks by aiming the Sting Disc at the opponent's beyblade mid-approach, transferring the spring release directly into a counter-strike. The move is used with Ace Dragon, Glyph Dragon, and Rock Dragon Sting Charge Zan variants.
+
+### Stage 1 — Wall Ricochet (from Case 1858)
+
+Orbital approach: v_wall = 1.800 m/s. Spring release at wall: v_post = **1.690 m/s** (Δv_spring = 0.394 m/s).
+
+### Stage 2 — Spring Cannon Strike
+
+Ace Dragon redirects from the wall toward the opponent at the enhanced post-bounce velocity.
+
+**Collision model (spring-boosted orbital attack, e = 0.75):**
+
+Parameters:
+- m_AD = 31.0 g, v_attack = v_post = 1.690 m/s
+- m_opp = 32 g (representative Burst Rise), v_opp ≈ 0
+
+```
+m_eff = (0.031 × 0.032) / (0.031 + 0.032) = 9.920×10⁻⁴ / 0.063 = 1.575×10⁻² kg
+
+J_cannon = m_eff × (1 + e) × v_attack
+         = 1.575×10⁻² × 1.75 × 1.690
+         = 4.653×10⁻² N·s
+```
+
+**Parry variant (Sting Disc aimed at incoming opponent, relative velocity v_rel = v_post + v_opp_approach = 1.690 + 1.200 = 2.890 m/s):**
+
+```
+J_parry = m_eff × (1 + e) × v_rel
+        = 1.575×10⁻² × 1.75 × 2.890
+        = 7.959×10⁻² N·s
+```
+
+**Effect on opponent (cannon strike):**
+```
+Δv_opp  = J_cannon / m_opp = 4.653×10⁻² / 0.032 = 1.454 m/s
+```
+
+**Effect on Ace Dragon (spin drain):**
+```
+Δω_AD    = J_cannon × r_contact / I_AD = 4.653×10⁻² × 0.020 / 1.900×10⁻⁵ = 49.0 rad/s
+ω_remain = 630 − 49.0 = 581.0 rad/s  (92.2% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Dante channels Dragon's roaring spirit — the spring Disc surges with dragon energy, converting the wall not into a bounce but into a cannon barrel that fires Dragon like a projectile.
+
+[M] factor = **5.5 ×**
+[M] Δv = 1.454 × 5.5 = **8.0 m/s** (ring-out)
+
+> **Note:** Physical values describe Sting Disc spring-loaded wall-ricochet PE release and orbital cannon strike mechanics. [M] values represent Dante's BeySpirit dragon-energy cannon blast that transcends elastic limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function springCannonSpecial(bey: Beyblade, target: Beyblade): void {
+  // Wall ricochet: v_post = 1.690 m/s (spring-boosted)
+  // Physical J_cannon = 4.653×10⁻² N·s; [M] 5.5×
+  const J_phys = 0.04653;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 5.5; // [M] BeySpirit 5.5× (dragon spring cannon)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the Sting Disc (or S Gear spring-mechanism equivalent) that provides two active spring protrusions at r ≥ 20 mm, combined with an orbital attack driver (Zephyr or equivalent variable-friction tip). The spring PE release requires a Disc with internal spring mechanism (k ≥ 60 N/m) capable of storing ≥ 5×10⁻⁴ J per protrusion at max wall compression. Standard game instance: Ace Dragon Sting Charge Zan (Dante Koryu, Burst Rise). Also compatible: Glyph Dragon Sting Charge Zan, Rock Dragon Sting Charge Zan (same Disc/Driver; different Layer Base).
+
+---
+
+## Case 1860 — COMBO: Sting Rush — Ace Dragon
+
+**Sequence:** → K A (moveRight · defense · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Dante Koryu
+
+### Physics Justification
+
+The rightward arc (→) positions Ace Dragon on an approach vector toward the stadium wall, building orbital momentum (v_orbital = 1.103 m/s in flat-driver attack mode). The defense stance (K) represents the Sting Disc loading — Dragon brakes slightly as the spring protrusions compress against the wall contact: PE_spring loaded = ½ × 75 × (3×10⁻³)² = 3.375×10⁻⁴ J (75% of full compression at reduced approach speed). The attack (A) fires the spring-loaded strike at the opponent immediately after wall contact, transferring the stored spring energy:
+
+```
+Δv_spring_partial = √(2 × 2 × PE_partial / m) = √(2 × 2 × 3.375×10⁻⁴ / 0.031) = 0.209 m/s
+
+v_attack_combo = v_orbital + Δv_spring_partial = 1.103 + 0.209 = 1.312 m/s
+
+Δω = η × m × v_attack_combo × r_contact / I_AD
+   = 0.55 × 0.031 × 1.312 × 0.020 / 1.900×10⁻⁵
+   = 0.55 × (8.134×10⁻⁴) / 1.900×10⁻⁵
+   = 0.55 × 42.81
+   = +23.5 rad/s  ≈ +24 rad/s
+```
+
+(η = 0.55: Zephyr flat-contact spin reconversion at spring-release wall kick.) damageMultiplier **1.25×** from spring-boosted closing velocity above standard orbital.
+
+**Parameters:**
+- spinGain: +24 rad/s (Zephyr flat-contact spring-release reconversion η = 0.55)
+- damageMultiplier: 1.25 (spring-boosted orbital strike above standard closing speed)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function stingRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Sting spring-release wall kick spin reconversion: Δω ≈ +24 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 24);
+  // Spring-boosted approach: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +24 rad/s (partial) | ✓ |
+
+---
+
+## Case 1861 — GIMMICK: Galaxy Pegasus W105R2F — W105 Wing Aerodynamic Lift Platform & R2F Orbital Burst Drive
+
+**Beyblade:** Galaxy Pegasus W105R2F (TT JP: ギャラクシーペガシスW105R2F; Hasbro EN: Galaxy Pegasus W105R2F)
+**Blader:** Gingka Hagane | **Series:** Beyblade: Metal Masters (BB-70)
+
+### Assembly
+
+| Part | Component | Mass (g) | r_CoM (mm) |
+|------|-----------|----------|------------|
+| Fusion Wheel | Galaxy | 30.0 | 30.0 |
+| Energy Ring | Pegasus II | 4.0 | 24.0 |
+| Spin Track | W105 (Wing 105) | 2.5 | 20.0 |
+| Performance Tip | R2F (Rubber Double Flat) | 2.0 | 6.0 |
+| **Total** | | **38.5** | |
+
+**I_total** = 30.0×10⁻³ × 0.030² + 4.0×10⁻³ × 0.024² + 2.5×10⁻³ × 0.020² + 2.0×10⁻³ × 0.006²
+           = 2.700×10⁻⁵ + 2.304×10⁻⁶ + 1.000×10⁻⁶ + 7.20×10⁻⁸
+           = **3.034×10⁻⁵ kg·m²**
+
+ω₀ = 680 rad/s (standard MFB Metal Masters launch)
+L₀ = I × ω₀ = 3.034×10⁻⁵ × 680 = **2.063×10⁻² kg·m²/s**
+
+---
+
+### 1. W105 Track — Wing Aerodynamic Lift Platform
+
+Spin Track W105 carries two swept wing blades at r = 20 mm height, 105 mm track height. The wings generate upward aerodynamic lift as Galaxy Pegasus circles the stadium at orbital speed.
+
+**Wing tip velocity and lift:**
+
+```
+v_wing = ω₀ × r_W105 = 680 × 0.020 = 13.60 m/s
+
+A_wing = 5.0×10⁻³ × 15.0×10⁻³ = 7.5×10⁻⁵ m²  (single wing blade area)
+C_L    = 0.55  (swept flat wing at track height)
+
+F_lift_per_wing = ½ × ρ_air × C_L × A_wing × v_wing²
+               = ½ × 1.225 × 0.55 × 7.5×10⁻⁵ × 13.60²
+               = 5.243×10⁻³ N
+```
+
+**Total lift (2 active wings):**
+
+```
+F_lift_total = 2 × 5.243×10⁻³ = 1.049×10⁻² N
+
+W = m × g = 0.0385 × 9.81 = 0.378 N
+
+Lift / Weight = 1.049×10⁻² / 0.378 = 2.8%  (BeySpirit required for full liftoff)
+```
+
+**Orbital speed contribution from W105 wings:**
+
+The wings also produce a small tangential thrust component (swept angle α = 20°):
+
+```
+F_thrust = F_lift_total × sin(20°) = 1.049×10⁻² × 0.342 = 3.588×10⁻³ N  (tangential)
+a_orbital = F_thrust / m = 3.588×10⁻³ / 0.0385 = 0.0932 m/s²
+v_orbital_gain (over 1 orbit, t_orbit ≈ 0.5s) = 0.0932 × 0.5 = 4.66×10⁻² m/s  (small boost)
+```
+
+---
+
+### 2. R2F Tip — Rubber Double Flat Orbital Burst Drive
+
+The R2F tip has a wide rubber double-flat surface (r_R2F = 6 mm, μ_rubber = 0.80) giving extremely aggressive orbital movement with rapid spin decay:
+
+```
+τ_R2F   = μ × m × g × r_R2F = 0.80 × 0.0385 × 9.81 × 0.006 = 1.817×10⁻³ N·m
+t_spin  = L₀ / τ_R2F = 2.063×10⁻² / 1.817×10⁻³ = 11.4 s  (aggressive attack stamina)
+
+v_orbital = μ_rubber × ω₀ × r_R2F = 0.80 × 680 × 0.006 = 3.264 m/s  (peak orbital velocity)
+```
+
+→ The R2F gives Galaxy Pegasus the highest orbital speed of any Pegasus variant — 3.264 m/s vs Storm Pegasus RF's 2.040 m/s (Case 1812). This is the momentum source for the Starbooster stadium circle and liftoff.
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| m | 38.5 g |
+| I_total | 3.034×10⁻⁵ kg·m² |
+| ω₀ | 680 rad/s |
+| L₀ | 2.063×10⁻² kg·m²/s |
+| v_wing | 13.60 m/s |
+| F_lift_total | 1.049×10⁻² N |
+| Lift / Weight | 2.8% |
+| τ_R2F | 1.817×10⁻³ N·m |
+| t_spin | 11.4 s |
+| v_orbital | 3.264 m/s |
+
+---
+
+## Case 1862 — SPECIAL: Starbooster Attack / Stargazer — Gingka Hagane / Galaxy Pegasus W105R2F
+
+**Blader:** Gingka Hagane | **Beyblade:** Galaxy Pegasus W105R2F | **Type:** attack
+
+### Description
+
+Starbooster Attack (Stargazer in Japan) is the first special move used by Gingka Hagane and Galaxy Pegasus W105R2F. Galaxy Pegasus circles around the stadium at full R2F orbital speed, building centripetal momentum. It then uses this accumulated orbital energy to take flight into the air, and crashes back down onto the opponent. Galaxy Pegasus has also used this move when knocked airborne by an opponent. The move is similar to Storm Pegasus's Starblast Attack but uses the W105 wing lift platform and higher R2F orbital speed.
+
+### Stage 1 — Stadium Circle Momentum Build (from Case 1861)
+
+R2F orbital speed: v_orbital = **3.264 m/s**. After N = 2 full orbits at r_arena = 0.200 m (stadium inner radius):
+
+```
+t_circle = 2 × (2π × r_arena / v_orbital) = 2 × (2π × 0.200 / 3.264) = 2 × 0.385 = 0.770 s
+
+W105 wing lift over t_circle: F_lift × t_circle = 1.049×10⁻² × 0.770 = 8.078×10⁻³ N·s (upward impulse)
+v_liftoff_assist = 8.078×10⁻³ / m = 8.078×10⁻³ / 0.0385 = 0.210 m/s  (wing-assisted liftoff v_z)
+```
+
+**Total liftoff velocity (orbital tangential converted to vertical + wing assist):**
+
+```
+η_liftoff = 0.35  (fraction of orbital KE convertible to vertical at R2F grip release)
+v_z_orbital = η_liftoff × v_orbital = 0.35 × 3.264 = 1.142 m/s
+
+v_z_total = v_z_orbital + v_liftoff_assist = 1.142 + 0.210 = 1.352 m/s
+```
+
+**Apex height:**
+
+```
+h_apex = v_z_total² / (2g) = 1.352² / (2 × 9.81) = 1.828 / 19.62 = 0.0932 m  ≈ 93 mm
+```
+
+### Stage 2 — Aerial Crash
+
+**Dive impact velocity:**
+
+```
+v_impact = √(v_orbital² + 2g × h_apex)
+         = √(3.264² + 2 × 9.81 × 0.0932)
+         = √(10.65 + 1.829)
+         = √12.48
+         = 3.533 m/s
+```
+
+**Collision model (high-speed aerial orbital dive, e = 0.80):**
+
+Parameters:
+- m_GP = 38.5 g, v_impact = 3.533 m/s
+- m_opp = 40 g (representative), v_opp ≈ 0
+
+```
+m_eff = (0.0385 × 0.040) / (0.0385 + 0.040) = 1.540×10⁻³ / 0.0785 = 1.962×10⁻² kg
+
+J_booster = m_eff × (1 + e) × v_impact
+          = 1.962×10⁻² × 1.80 × 3.533
+          = 1.248×10⁻¹ N·s
+```
+
+**Effect on opponent:**
+```
+Δv_opp  = J_booster / m_opp = 1.248×10⁻¹ / 0.040 = 3.120 m/s
+```
+
+**Effect on Galaxy Pegasus (spin drain):**
+```
+Δω_GP    = J_booster × r_contact / I_GP = 1.248×10⁻¹ × 0.025 / 3.034×10⁻⁵ = 102.8 rad/s
+ω_remain = 680 − 102.8 = 577.2 rad/s  (84.9% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka channels Pegasus's full celestial spirit — the stadium circle becomes a spiral galaxy orbit that launches Pegasus as a star-speed projectile.
+
+[M] factor = **8.0 ×**
+[M] Δv = 3.120 × 8.0 = **24.96 m/s** (ring-out at star velocity)
+
+> **Note:** Physical values describe W105 wing aerodynamic lift-assisted liftoff, R2F orbital momentum conversion, and aerial dive impulse. [M] values represent Gingka's BeySpirit Pegasus star-launch that transcends orbital mechanics. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function starboosterAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Stadium circle: v_orbital = 3.264 m/s; h_apex = 93 mm → v_impact = 3.533 m/s
+  // Physical J_booster = 1.248×10⁻¹ N·s; [M] 8.0×
+  const J_phys = 0.1248;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 8.0; // [M] BeySpirit 8.0× (Pegasus star velocity)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the W105 Spin Track (Wing 105) combined with an R2F or equivalent high-friction rubber flat driver that produces orbital speed ≥ 3 m/s. The W105 wing lift assist requires the wing blades to be at track height 105 to generate measurable upward impulse during the stadium circle. Standard game instance: Galaxy Pegasus W105R2F (Gingka Hagane, Metal Masters). Without W105 the wing-assisted liftoff component is absent; without R2F the orbital speed needed to convert to sufficient apex height for the full crash impulse is absent.
+
+---
+
+## Case 1863 — COMBO: Orbit Crash — Galaxy Pegasus
+
+**Sequence:** ↑ → A (moveUp · moveRight · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The upward arc (↑) sends Galaxy Pegasus into a high orbital sweep, building momentum at R2F speed (v_orbital = 3.264 m/s × fraction, estimated 2.2 m/s at partial orbit completion). The rightward redirect (→) converts the upward arc tangential velocity into a rightward approach vector — this represents Galaxy Pegasus redirecting its circular path toward the opponent. The attack (A) delivers the orbital strike at the redirected velocity:
+
+```
+v_attack_combo = √(v_up² + v_right²) = √(2.2² + 2.2²) / √2 = 2.2 m/s  (resultant diagonal)
+
+Δω = η × m_GP × v_attack_combo × r_contact / I_GP
+   = 0.50 × 0.0385 × 2.2 × 0.025 / 3.034×10⁻⁵
+   = 0.50 × (2.118×10⁻³) / 3.034×10⁻⁵
+   = 0.50 × 69.8
+   = +34.9 rad/s  ≈ +35 rad/s
+```
+
+(η = 0.50: R2F rubber contact orbital-to-spin momentum reconversion at arc redirect.) The orbital approach angle from two arcs raises the damageMultiplier to **1.35×** from combined directional momentum.
+
+**Parameters:**
+- spinGain: +35 rad/s (R2F rubber orbital-to-spin arc redirect reconversion η = 0.50)
+- damageMultiplier: 1.35 (combined ↑→ arc approach directional momentum)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function orbitCrashCombo(bey: Beyblade, target: Beyblade): void {
+  // R2F rubber arc redirect spin reconversion: Δω ≈ +35 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 35);
+  // Combined arc approach: 1.35× normal impulse
+  bey.damageMultiplier = 1.35;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.35, (dy / dist) * 0.35);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.35 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +35 rad/s (partial) | ✓ |
+
+---
+
+## Case 1864 — GIMMICK(2): Storm Pegasus 105RF — RF Tip Orbital-to-Liftoff Aerodynamic Launch
+
+**Beyblade:** Storm Pegasus 105RF (TT JP: ストームペガシス105RF; Hasbro EN: Storm Pegasus 105RF)
+**Blader:** Gingka Hagane | **Series:** Beyblade: Metal Fusion (BB-28)
+
+> **GIMMICK(1)** — Storm Pegasus orbital vortex, Rankine vortex model, and RF tip orbital mechanics are documented in **Case 1812**. This GIMMICK(2) focuses specifically on the RF tip's orbital-to-liftoff aerodynamic transition that enables Starblast Attack.
+
+### Assembly (reference)
+
+Storm Pegasus 105RF: m = 37.0 g, I_total = 2.783×10⁻⁵ kg·m², ω₀ = 680 rad/s, L₀ = 1.892×10⁻² kg·m²/s (from Case 1812).
+
+---
+
+### RF Tip — Orbital-to-Vertical Liftoff Aerodynamics
+
+At peak orbital speed, the RF (Rubber Flat) tip provides v_orbital = 2.040 m/s (from Case 1812). When Storm Pegasus reaches the stadium wall or receives an upward impact, the orbital velocity vector is redirected vertically.
+
+**Vertical velocity at liftoff (η_launch = 0.30: RF grip-release liftoff efficiency):**
+
+```
+v_z = η_launch × v_orbital = 0.30 × 2.040 = 0.612 m/s
+```
+
+**Additional vertical velocity from external upward strike (opponent knock-up):**
+
+When the opponent's attack hits Storm Pegasus upward (J_up ≈ 2.0×10⁻² N·s):
+
+```
+v_z_strike = J_up / m = 2.0×10⁻² / 0.037 = 0.541 m/s
+
+v_z_total = v_z + v_z_strike = 0.612 + 0.541 = 1.153 m/s  (knock-up assisted liftoff)
+```
+
+**Apex height (self-launch only):**
+
+```
+h_apex_self = v_z² / (2g) = 0.612² / (2 × 9.81) = 0.3745 / 19.62 = 19.1 mm
+```
+
+**Apex height (knock-up assisted):**
+
+```
+h_apex_knockup = v_z_total² / (2g) = 1.153² / (2 × 9.81) = 1.329 / 19.62 = 67.8 mm
+```
+
+→ Storm Pegasus can initiate Starblast Attack voluntarily (self-launch, h ≈ 19 mm) or via opponent knock-up (h ≈ 68 mm for a harder dive).
+
+### Key Parameters Summary
+
+| Quantity | Value |
+|---------|-------|
+| v_orbital | 2.040 m/s (from Case 1812) |
+| η_launch | 0.30 |
+| v_z (self) | 0.612 m/s |
+| h_apex (self) | 19.1 mm |
+| v_z (knock-up) | 1.153 m/s |
+| h_apex (knock-up) | 67.8 mm |
+
+---
+
+## Case 1865 — SPECIAL: Starblast Attack / Shooting Star Attack — Gingka Hagane / Storm Pegasus 105RF
+
+**Blader:** Gingka Hagane | **Beyblade:** Storm Pegasus 105RF (also used with Cosmic Pegasus F:D) | **Type:** attack
+
+### Description
+
+Starblast Attack (Shooting Star Attack in Japan) is the first special move used by Gingka Hagane. In the anime it was used with Storm Pegasus 105RF and later with Cosmic Pegasus F:D. In the manga it was used with Pegasis 105F and Storm Pegasis 10Glaive Quick'. Pegasus soars into the sky voluntarily or launched by the opponent's own attack, then crashes directly onto the opponent in a nose dive. This is Gingka's signature move throughout Beyblade Metal Fusion.
+
+### Stage 1 — Liftoff (from Case 1864)
+
+Self-launch: h_apex = **19.1 mm**, v_z = 0.612 m/s.
+Knock-up variant: h_apex = **67.8 mm**, v_z = 1.153 m/s.
+
+**Dive impact velocity (self-launch):**
+
+```
+v_impact_self = √(v_orbital² + 2g × h_apex_self)
+              = √(2.040² + 2 × 9.81 × 0.0191)
+              = √(4.162 + 0.375)
+              = √4.537
+              = 2.130 m/s
+```
+
+**Dive impact velocity (knock-up variant):**
+
+```
+v_impact_knockup = √(v_orbital² + 2g × h_apex_knockup)
+                 = √(2.040² + 2 × 9.81 × 0.0678)
+                 = √(4.162 + 1.331)
+                 = √5.493
+                 = 2.344 m/s
+```
+
+### Stage 2 — Nose Dive Crash
+
+**Collision model (nose dive, e = 0.80 — using knock-up variant as primary):**
+
+Parameters:
+- m_SP = 37.0 g, v_impact = 2.344 m/s
+- m_opp = 38 g, v_opp ≈ 0
+
+```
+m_eff = (0.037 × 0.038) / (0.037 + 0.038) = 1.406×10⁻³ / 0.075 = 1.875×10⁻² kg
+
+J_starblast = m_eff × (1 + e) × v_impact
+            = 1.875×10⁻² × 1.80 × 2.344
+            = 7.901×10⁻² N·s
+```
+
+**Self-launch variant (v_impact = 2.130 m/s):**
+
+```
+J_starblast_self = 1.875×10⁻² × 1.80 × 2.130 = 7.189×10⁻² N·s
+```
+
+**Effect on opponent (knock-up variant):**
+```
+Δv_opp  = J_starblast / m_opp = 7.901×10⁻² / 0.038 = 2.079 m/s
+```
+
+**Effect on Storm Pegasus (spin drain):**
+```
+Δω_SP    = J_starblast × r_contact / I_SP = 7.901×10⁻² × 0.025 / 2.783×10⁻⁵ = 71.0 rad/s
+ω_remain = 680 − 71.0 = 609.0 rad/s  (89.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka channels Pegasus's blazing star spirit — the dive becomes a shooting star that burns through the opponent with the full force of a falling celestial body.
+
+[M] factor = **7.0 ×**
+[M] Δv = 2.079 × 7.0 = **14.6 m/s** (ring-out as shooting star)
+
+> **Note:** Physical values describe RF tip orbital-to-vertical liftoff, self-launch and knock-up variant apex heights, and nose-dive collision impulse. [M] values represent Gingka's BeySpirit shooting-star force that overwhelms normal collision limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function starblastAttackSpecial(bey: Beyblade, target: Beyblade): void {
+  // Nose dive: h_apex = 67.8 mm (knock-up) → v_impact = 2.344 m/s
+  // Physical J_starblast = 7.901×10⁻² N·s; [M] 7.0×
+  const J_phys = 0.07901;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 7.0; // [M] BeySpirit 7.0× (shooting star)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the RF (Rubber Flat) driver or equivalent high-grip rubber flat tip with orbital speed ≥ 1.8 m/s. The liftoff mechanic requires sufficient orbital velocity for the η_launch × v_orbital vertical component to achieve measurable apex height; the knock-up variant is available to any bey that can redirect an upward impact force. Standard game instance: Storm Pegasus 105RF (Gingka Hagane, Metal Fusion). Also compatible: Cosmic Pegasus F:D (Metal Fury — same blader, same move; F:D driver provides comparable orbital velocity). The nose-dive crash impulse depends primarily on v_impact at the liftoff height achieved; higher v_orbital (Galaxy Pegasus R2F in Case 1862) gives a harder version of the same move.
+
+---
+
+## Case 1866 — COMBO: Star Dive — Storm Pegasus
+
+**Sequence:** ↑ A ↓ (moveUp · attack · moveDown)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The upward arc (↑) initiates the self-launch liftoff — Storm Pegasus redirects orbital momentum vertically (v_z = 0.612 m/s, h_apex = 19.1 mm). The attack (A) at apex fires the nose dive, using self-launch impact velocity (v_impact_self = 2.130 m/s). The downward exit (↓) represents Storm Pegasus driving the landing — RF rubber ground contact at the dive end converts the residual downward velocity back to spin:
+
+```
+v_land = √(2g × h_apex_self) = √(2 × 9.81 × 0.0191) = 0.612 m/s  (terminal at apex self-launch)
+
+Δω = η × m_SP × v_land × r_contact / I_SP
+   = 0.55 × 0.037 × 0.612 × 0.025 / 2.783×10⁻⁵
+   = 0.55 × (5.661×10⁻⁴) / 2.783×10⁻⁵
+   = 0.55 × 20.34
+   = +11.2 rad/s  ≈ +11 rad/s
+```
+
+(η = 0.55: RF rubber landing-impact spin reconversion.) The self-launch nose dive angle (straight vertical: θ = 90°) gives pure downward impulse on the opponent, boosting damageMultiplier to **1.20×** from the added vertical strike vector.
+
+**Parameters:**
+- spinGain: +11 rad/s (RF rubber landing-impact spin reconversion η = 0.55)
+- damageMultiplier: 1.20 (vertical nose-dive impact vector)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function starDiveCombo(bey: Beyblade, target: Beyblade): void {
+  // RF rubber landing spin reconversion: Δω ≈ +11 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 11);
+  // Vertical nose dive: 1.20× normal impulse
+  bey.damageMultiplier = 1.20;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.20, (dy / dist) * 0.20);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.20 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +11 rad/s (partial) | ✓ |
+
+
+
+> **Note:** Cases 1867–1873 reserved — CS9 HMS session conflict #8 (CS9 wrote Round Shell MS at 1865–1868 and Samurai Changer MS at 1869–1873 in concurrent sessions; CS15 Cases 1865–1866 overlap with Round Shell MS blocks). Cases 1874–1876 continue from Case 1866 (Star Dive).
+
+---
+
+## Case 1874 — GIMMICK(2): Galaxy Pegasus W105R2F — R2F Warm-Up Friction Increase & Space-Launch Altitude
+
+**Beyblade:** Galaxy Pegasus W105R2F (TT JP: ギャラクシーペガシスW105R2F; Hasbro EN: Galaxy Pegasus W105R2F)
+**Blader:** Gingka Hagane | **Series:** Beyblade: Metal Masters (BB-70)
+
+> **GIMMICK(1)** — W105 wing aerodynamic lift, R2F baseline orbital mechanics, and Starbooster Attack liftoff physics are documented in **Cases 1861–1862**. This GIMMICK(2) focuses on the physical change that enables Stardust Driver: the R2F tip requires arena run-in time before reaching full friction, and only after this warm-up can Galaxy Pegasus achieve the orbit speed needed to launch into space.
+
+### Assembly (reference — from Case 1861)
+
+Galaxy Pegasus W105R2F: m = 38.5 g, I_total = 3.034×10⁻⁵ kg·m², ω₀ = 680 rad/s, L₀ = 2.063×10⁻² kg·m²/s, W105 F_lift = 1.049×10⁻² N.
+
+---
+
+### 1. R2F Warm-Up Friction Increase
+
+The R2F (Rubber Double Flat) tip uses a wide rubber surface. Rubber friction is temperature-dependent: cold rubber is relatively stiff and loses grip energy to elastic hysteresis, while warmed rubber is softer and achieves maximum grip. Gingka's "perfect control" and Gingka mastering the R2F is specifically about giving the tip time to adjust in the arena before reaching full power — the R2F needs continuous arena contact to warm up before it can deliver its maximum orbital velocity.
+
+**Frictional power dissipated in R2F rubber (at ω₀, cold μ):**
+
+```
+P_heat = τ_R2F_cold × ω₀ = (μ_cold × m × g × r_R2F) × ω₀
+       = (0.80 × 0.0385 × 9.81 × 0.006) × 680
+       = 1.817×10⁻³ × 680 = 1.236 W
+```
+
+**Warm-up period (4 cold-speed stadium circles):**
+
+```
+t_warmup = 4 × (2π × r_arena / v_orbital_cold) = 4 × (2π × 0.200 / 3.264) = 1.538 s
+
+ΔQ_warmup = P_heat × t_warmup = 1.236 × 1.538 = 1.901 J
+```
+
+After ΔQ_warmup = 1.9 J of frictional heat input, the R2F rubber reaches operating temperature — friction coefficient rises from μ_cold to μ_warm:
+
+```
+μ_R2F_cold = 0.80  (standard, first 1–2 circuits)
+μ_R2F_warm = 0.95  (after t_warmup; thermally softened rubber — optimal grip)
+
+Δμ = +0.15  (+18.75% friction gain from thermal warm-up)
+
+v_orbital_warm = μ_warm × ω₀ × r_R2F = 0.95 × 680 × 0.006 = 3.878 m/s
+(vs v_orbital_cold = 3.264 m/s — Stardust Driver runs at +18.75% higher orbital speed)
+```
+
+→ Starbooster Attack launches before warm-up completes (2 cold circles, μ = 0.80). Stardust Driver waits for full warm-up (4 circles, μ = 0.95) — this is the physical reason for the 4-circle extended spiral.
+
+---
+
+### 2. Extended Warm-Up Spiral — Wing Lift Accumulation
+
+Wing lift accumulated over the full warm-up period (at conservative cold-speed timing):
+
+```
+v_z_wing_extended = F_lift_total × t_warmup / m = 1.049×10⁻² × 1.538 / 0.0385 = 0.419 m/s
+(vs Starbooster v_z_wing = 0.210 m/s at 2-circle cold spiral)
+```
+
+**Mastered liftoff efficiency (warm rubber gives better floor grip → better vertical push):**
+
+```
+η_mastered = 0.50  (vs η_standard = 0.35 at Starbooster Attack)
+
+v_z_orbital_warm = η_mastered × v_orbital_warm = 0.50 × 3.878 = 1.939 m/s
+
+v_z_total = v_z_orbital_warm + v_z_wing_extended = 1.939 + 0.419 = 2.358 m/s
+
+h_apex_stardust = v_z_total² / (2g) = 2.358² / (2 × 9.81) = 5.560 / 19.62 = 0.2834 m  ≈ 283 mm
+```
+
+### Comparison Summary
+
+| Quantity | Starbooster Attack (Case 1862) | Stardust Driver |
+|---------|-------------------------------|-----------------|
+| N circles | 2 | 4 |
+| t_spiral | 0.770 s | 1.538 s |
+| μ_R2F at liftoff | 0.80 (cold) | 0.95 (warm) |
+| v_orbital at liftoff | 3.264 m/s | 3.878 m/s |
+| v_z_wing | 0.210 m/s | 0.419 m/s |
+| η_liftoff | 0.35 | 0.50 |
+| v_z_orbital | 1.142 m/s | 1.939 m/s |
+| v_z_total | 1.352 m/s | 2.358 m/s |
+| h_apex | 93 mm | **283 mm** |
+
+---
+
+## Case 1875 — SPECIAL: Stardust Driver / Star Dust Driver — Gingka Hagane / Galaxy Pegasus W105R2F
+
+**Blader:** Gingka Hagane | **Beyblade:** Galaxy Pegasus W105R2F | **Type:** attack
+
+### Description
+
+Stardust Driver (星塵蹴, Sutādasuto Doraibā) is the second Special Move used by Gingka Hagane and Galaxy Pegasus W105R2F. After gaining perfect control over Galaxy Pegasus's R2F tip — meaning the rubber has been given sufficient arena run-in time to reach full grip — Galaxy Pegasus increases its orbital speed and executes four full stadium circles to build maximum warm-rubber momentum. It then launches into space far higher than Starbooster Attack, and crashes back down with full force. Stardust Driver was developed specifically for opponents who could withstand Starbooster Attack: it defeated Julian Konzern (Gravity Destroyer's Black Excalibur) and Damian Hart (Hades Kerbecs' Hades Gate) when Starbooster Attack proved insufficient.
+
+### Stage 1 — R2F Warm-Up Extended Spiral & Liftoff (from Case 1874)
+
+μ_R2F_warm = 0.95, v_orbital_warm = 3.878 m/s, v_z_total = 2.358 m/s, h_apex = **283 mm**.
+
+### Stage 2 — Space-Altitude Crash
+
+**Dive impact velocity:**
+
+```
+v_impact = √(v_orbital_warm² + 2g × h_apex)
+         = √(3.878² + 2 × 9.81 × 0.2834)
+         = √(15.039 + 5.560)
+         = √20.599
+         = 4.539 m/s
+```
+
+**Collision model (warm-rubber full-speed space dive, e = 0.80):**
+
+Parameters:
+- m_GP = 38.5 g, v_impact = 4.539 m/s
+- m_opp = 40 g, v_opp ≈ 0
+
+```
+m_eff = (0.0385 × 0.040) / (0.0385 + 0.040) = 1.540×10⁻³ / 0.0785 = 1.962×10⁻² kg
+
+J_stardust = m_eff × (1 + e) × v_impact
+           = 1.962×10⁻² × 1.80 × 4.539
+           = 1.602×10⁻¹ N·s
+```
+
+**Effect on opponent:**
+```
+Δv_opp  = J_stardust / m_opp = 1.602×10⁻¹ / 0.040 = 4.005 m/s
+(vs Starbooster Δv = 3.120 m/s — Stardust Driver is 28.4% stronger at physical level)
+```
+
+**Effect on Galaxy Pegasus (spin drain):**
+```
+Δω_GP    = J_stardust × r_contact / I_GP = 1.602×10⁻¹ × 0.025 / 3.034×10⁻⁵ = 132.0 rad/s
+ω_remain = 680 − 132.0 = 548.0 rad/s  (80.6% retained)
+```
+
+---
+
+**[M] BeySpirit amplification:**
+Gingka's fully mastered spirit drives Galaxy Pegasus beyond the atmosphere — it returns as a genuine falling star with interstellar impact force.
+
+[M] factor = **9.0 ×**
+[M] Δv = 4.005 × 9.0 = **36.0 m/s** (star-speed ring-out)
+
+> **Note:** Physical values describe R2F rubber warm-up friction gain (μ: 0.80→0.95, ΔQ = 1.901 J), doubled wing-lift accumulation over 4-circuit warm-up, warm orbital speed 3.878 m/s, and space-altitude dive impulse at h = 283 mm. [M] values represent Gingka's fully mastered Pegasus star spirit that transcends all orbital limits. Combos do not receive [M] amplification.
+
+### TypeScript
+
+```typescript
+function stardustDriverSpecial(bey: Beyblade, target: Beyblade): void {
+  // R2F warm-up: μ→0.95, 4 circles, η_mastered=0.50 → h_apex=283mm → v_impact=4.539 m/s
+  // Physical J_stardust = 1.602×10⁻¹ N·s; [M] 9.0×
+  const J_phys = 0.1602;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const amplified = J_phys * 9.0; // [M] BeySpirit 9.0× (star-speed warm-rubber mastered crash)
+  applyForce(target.id, (dx / dist) * amplified, (dy / dist) * amplified);
+}
+```
+
+**Compatible beys:** Any beyblade using the W105 Spin Track and R2F driver where the blader can allow the rubber tip sufficient arena run-in time to reach warm-grip state (t_warmup ≥ 1.538 s, ΔQ ≥ 1.9 J). The move requires the full 4-circuit warm-up spiral to reach μ_R2F_warm = 0.95; attempting it cold (Starbooster Attack) delivers only μ = 0.80 and h_apex = 93 mm. Standard game instance: Galaxy Pegasus W105R2F (Gingka Hagane, Metal Masters). This is an evolution of Starbooster Attack (Case 1862) — the same physical frame, but executed only after full R2F warm-up.
+
+---
+
+## Case 1876 — COMBO: Dust Rush — Galaxy Pegasus
+
+**Sequence:** E ↑ A (dodge · moveUp · attack)
+**Cost:** 15 | **Type:** attack | **Blader:** Gingka Hagane
+
+### Physics Justification
+
+The dodge (E) represents Galaxy Pegasus pulling into a tighter inner arc using cold-R2F grip (no warm-up in combo context — quick attack sequence): v_orbital = μ_cold × ω₀ × r = 3.264 m/s. The moveUp (↑) initiates a partial liftoff at η_combo = 0.25 (50% of Stardust's full η_mastered = 0.50):
+
+```
+v_z_combo = η_combo × v_orbital_cold = 0.25 × 3.264 = 0.816 m/s
+h_combo   = v_z_combo² / (2g) = 0.816² / (2 × 9.81) = 0.6660 / 19.62 = 33.9 mm
+```
+
+The attack (A) fires the partial aerial dive at the end of the arc:
+
+```
+v_impact_combo = √(v_orbital_cold² + 2g × h_combo)
+               = √(3.264² + 2 × 9.81 × 0.0339)
+               = √(10.653 + 0.665)
+               = √11.318
+               = 3.364 m/s
+
+Δω = η_land × m_GP × v_impact_combo × r_contact / I_GP
+   = 0.30 × 0.0385 × 3.364 × 0.025 / 3.034×10⁻⁵
+   = 0.30 × (3.237×10⁻³) / 3.034×10⁻⁵
+   = 0.30 × 106.7
+   = +32.0 rad/s  ≈ +32 rad/s
+```
+
+(η_land = 0.30: cold-R2F rubber re-contact at partial-height landing. Cold tip used since no warm-up in combo timeframe.) The partial cold-launch liftoff at 33.9 mm gives damageMultiplier **1.25×**.
+
+**Parameters:**
+- spinGain: +32 rad/s (cold R2F rubber landing reconversion η_land = 0.30, h_combo = 33.9 mm)
+- damageMultiplier: 1.25 (partial cold liftoff aerial orbital strike)
+- lockMs: 0 (pure attack mobility)
+
+### TypeScript
+
+```typescript
+function dustRushCombo(bey: Beyblade, target: Beyblade): void {
+  // Cold R2F partial liftoff landing reconversion: Δω ≈ +32 rad/s
+  bey.spin = Math.min(bey.maxSpin, bey.spin + 32);
+  // Partial cold aerial dive: 1.25× normal impulse
+  bey.damageMultiplier = 1.25;
+  const dx = target.x - bey.x;
+  const dy = target.y - bey.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  applyForce(target.id, (dx / dist) * 0.25, (dy / dist) * 0.25);
+}
+```
+
+### Ceiling Check
+
+| Constraint | Limit | This combo | Status |
+|-----------|-------|-----------|--------|
+| damageMultiplier | ≤ 1.5 | 1.25 | ✓ |
+| lockMs | ≤ 300 | 0 | ✓ |
+| Invulnerability | none | none | ✓ |
+| AoE | none | none | ✓ |
+| Full spin recovery | none | +32 rad/s (partial) | ✓ |
+
+*Cases continue from Case 1877 as further franchise moves are provided.*

@@ -1,4 +1,7 @@
 import { useEffect, useRef } from "react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/contexts/AuthContext";
 
 export type LoadingStep =
   | "connecting-ws"
@@ -40,6 +43,7 @@ export interface LoadingProgressProps {
   stepProgress?: number;
   error?: string;
   onRetry?: () => void;
+  roomType?: string;
 }
 
 // ── Spinning beyblade canvas animation ──────────────────────────────────────
@@ -134,7 +138,30 @@ function BeybladeSpinner({ color, spinning }: { color: string; spinning: boolean
   );
 }
 
-export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry }: LoadingProgressProps) {
+export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry, roomType }: LoadingProgressProps) {
+  const { currentUser } = useAuth();
+  const loggedRef = useRef<string | null>(null);
+
+  // Write one error entry to admin_logs when an error first appears
+  useEffect(() => {
+    if (!error || loggedRef.current === error) return;
+    loggedRef.current = error;
+    if (!currentUser) return;
+    const errorType = error.toLowerCase().includes("firebase") || error.toLowerCase().includes("firestore")
+      ? "firebase"
+      : error.toLowerCase().includes("server") || error.toLowerCase().includes("colyseus") || error.toLowerCase().includes("ws")
+      ? "server"
+      : "asset";
+    addDoc(collection(db, "admin_logs"), {
+      timestamp: serverTimestamp(),
+      userId: currentUser.uid,
+      errorType,
+      step: currentStep,
+      message: error,
+      ...(roomType ? { roomType } : {}),
+    }).catch(() => { /* silent — don't surface logging failures to the player */ });
+  }, [error, currentUser, currentStep, roomType]);
+
   const idx = Math.max(0, STEP_ORDER.indexOf(currentStep));
   const totalSteps = STEP_ORDER.length;
   const completed = idx + Math.min(1, Math.max(0, stepProgress));

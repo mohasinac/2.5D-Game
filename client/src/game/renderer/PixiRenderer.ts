@@ -2494,19 +2494,18 @@ export class BeybladeGameRenderer {
   resize() {
     if (this.initialized) {
       this.app.resize();
-      // Rebuild arena on resize
-      this.arenaRadius = 0;
-      this.cameraInitialized = false;
-      this.shrinkRingGraphics = null;
-      this.lastShrinkRadiusPx = -1;
-      // Reset baked floor state so bakeArenaFloor() re-creates and re-adds
-      // the sprite after buildArena() clears arenaLayer with removeChildren().
-      // Without this the sprite reference points to a removed (orphaned) child.
-      this.arenaFloorSprite = null;
-      this.arenaFloorTiltAngle = -9999; // force re-bake on first post-resize render
-      // Inform world transform of new screen size; zoom limits recompute
-      // when buildArena runs again next frame.
+      // Update screen dimensions — do NOT rebuild the arena.
+      // The viewport window into the world changes size; the arena and all
+      // world objects stay at their current positions (warp-free camera).
       this.world.setScreen(this.app.screen.width, this.app.screen.height);
+      if (this.arenaRadius > 0) {
+        // Recompute zoom limits for the new viewport without a full rebuild.
+        this.world.computeZoomLimits(2.5);
+      }
+      // Screen-space overlay graphics must be regenerated to fit new canvas.
+      this.darknessOverlay = null;
+      this.fogOverlay = null;
+      this.arenaEffectOverlay = null;
     }
   }
 

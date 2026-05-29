@@ -23,18 +23,17 @@ describe("units", () => {
     expect(MM_PER_CM).toBe(10);
   });
 
-  it("recomputePxPerCm scales with viewport short-axis", () => {
-    recomputePxPerCm(1920, 1080);
-    expect(getPxPerCm()).toBeCloseTo(24, 6);      // reference viewport → exactly 24
+  it("recomputePxPerCm always returns PX_PER_CM_BASE (viewport-independent)", () => {
+    expect(recomputePxPerCm(1920, 1080)).toBe(24);
+    expect(getPxPerCm()).toBe(24);
 
-    recomputePxPerCm(375, 812);
-    expect(getPxPerCm()).toBeCloseTo(375 / 1080 * 24, 6);  // mobile
+    expect(recomputePxPerCm(375, 812)).toBe(24);
+    expect(getPxPerCm()).toBe(24);
 
-    recomputePxPerCm(3840, 2160);
-    expect(getPxPerCm()).toBeCloseTo(2160 / 1080 * 24, 6); // 4K
+    expect(recomputePxPerCm(3840, 2160)).toBe(24);
+    expect(getPxPerCm()).toBe(24);
 
-    // restore reference for subsequent tests
-    recomputePxPerCm(1920, 1080);
+    expect(recomputePxPerCm()).toBe(24);
   });
 
   it("cm <-> px round-trips", () => {

@@ -38507,3 +38507,701 @@ If F_hit has a tangential component (from orbital motion of the attacker), then 
 For a mostly radial defense hit: the assembly's spin is largely preserved. This is why high-bearing-friction (BC2) defense is so durable — impacts don't meaningfully reduce spin.
 
 **Why Metal Ape is the key:** Any larger AR (e.g., Upper Fox at r = 27 mm) would receive direct AR-to-AR contact, adding a large tangential component to the hit (since both ARs are at the same radius and spinning). Metal Ape at r = 24 mm ensures all contacts are CWD-to-AR (radial-dominant), not AR-to-AR (tangential-possible). The geometry difference of 3 mm is the mechanism that "invalidates 80% of Attack combos."
+
+---
+
+## CASE 1879 — BP Large Type (Slash Riger MS)
+
+**Source:** Slash Riger MS (Takara HMS, late 2004). No confirmed re-release; the BP is Large Type with high certainty since the HMS line did not remain in production long enough after initial release for a production-cycle BP size change to occur.  
+**Role:** Blade Base. See CASE 1854/1865/1869/1874 for full BP Large Type analysis. Mass ~3 g, I ≈ 1.35 × 10⁻⁸ kg·m², contribution < 0.3% of any stock assembly I. All values inherited from the shared BP Large Type lineage.
+
+---
+
+## CASE 1880 — Attack Ring: Slash Upper (~19 g)
+
+**Source:** Slash Riger MS (Takara HMS, late 2004).  
+**Role:** Upper/Smash hybrid attack AR. One of only two HMS ARs capable of generating legitimate Upper Attack in right-spin, alongside Circle Upper (CASE 1846). The metal frame presents a ramped leading edge that redirects a portion of collision impulse vertically — primarily a smash AR with a meaningful vertical component that occasionally achieves full upper redirect under optimal contact geometry.
+
+### Geometry and I
+
+Three-zone model:
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Core hub | 2 g | 4 mm | ½ × 0.002 × 0.004² = 1.60 × 10⁻⁸ |
+| Inner ramp base | 4 g | 12 mm | ½ × 0.004 × 0.012² = 2.88 × 10⁻⁷ |
+| Outer contact/metal frame | 13 g | 25 mm | ½ × 0.013 × 0.025² = 4.063 × 10⁻⁶ |
+| **Total** | **19 g** | — | — |
+
+**I_SU** = 1.60×10⁻⁸ + 2.88×10⁻⁷ + 4.063×10⁻⁶ = **4.367 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 4.367×10⁻⁶ / 0.019) = sqrt(4.597×10⁻⁴) = **21.4 mm**
+
+**OWD** = 4.367×10⁻⁶ / (0.019 × 0.025²) = 4.367×10⁻⁶ / 1.188×10⁻⁵ = **0.367**
+
+### Mass Deficit Analysis
+
+By Slash Riger MS's release date (late 2004), the HMS AR mass standard had escalated to 20–22 g. Slash Upper at 19 g is one generation behind:
+
+| AR | Mass | I_AR | Tier |
+|---|---|---|---|
+| Samurai Upper (MA-20) | ~22 g | ~5.4 × 10⁻⁶ kg·m² | Top |
+| Jiraiya Blade (MA-22) | ~22 g | ~5.4 × 10⁻⁶ kg·m² | Top |
+| Upper Fox (Phantom Fox MS) | ~20 g | 4.90 × 10⁻⁶ kg·m² | High |
+| Turtle Crusher (Round Shell MS) | 20 g | 4.183 × 10⁻⁶ kg·m² | Mid |
+| **Slash Upper (Slash Riger MS)** | **19 g** | **4.367 × 10⁻⁶ kg·m²** | **Mid** |
+| Metal Ape (Magical Ape MS) | 19 g | 3.028 × 10⁻⁶ kg·m² | Compact |
+
+The 1 g deficit vs the generation standard translates to:  
+ΔI ≈ ½ × 0.001 × 0.025² = **3.125 × 10⁻⁷ kg·m²**  
+ΔL ≈ 3.125×10⁻⁷ × 620 = **0.194 mN·m·s** less at launch
+
+Not catastrophic in isolation, but compounding in an AR that is already middle-tier in attack output. Had Slash Upper been 20 g, I_SU ≈ 4.679 × 10⁻⁶ kg·m² — an additional 7% inertia that would deliver meaningfully harder hits per collision.
+
+Slash Upper exceeds the I of other 19 g ARs (Metal Ape: 3.028 × 10⁻⁶) because the ramp geometry distributes mass to the outer contact band. The upper-attack profile forces mass outward; the cost is that the mass never reaches the 20 g target that would make it fully competitive against the era's top ARs.
+
+### Upper Attack Ramp Geometry
+
+Slash Upper presents an angled ramp at the leading edge (right-spin) that redirects collision force partially upward. Ramp angle θ_ramp ≈ 22–28°:
+
+F_vertical = F_impact × sin(25°) = **0.423 × F_impact**  
+F_horizontal = F_impact × cos(25°) = **0.906 × F_impact**
+
+Circle Upper (consistent Upper Attack) achieves θ_ramp ≈ 38–42°:  
+F_vertical = 0.616 × F_impact (stronger redirect)  
+F_horizontal = 0.766 × F_impact
+
+The shallower ramp makes Slash Upper a smash-dominant AR. "Occasional" Upper Attack in right-spin occurs when the contact geometry aligns precisely: the ramp tip catches the opponent AR's underside at the correct relative height. This alignment is sensitive to the relative CoM heights of the two assemblies — a 1–2 mm height mismatch shifts the contact from ramp-tip to ramp-body, eliminating the vertical component and leaving only smash.
+
+### Right-Spin Preference
+
+RS positions the ramp as the leading contact surface. LS reverses the geometry: the shallower trailing profile leads, producing smash without the vertical component. Slash Upper delivers Smash Attack in both spins; only RS provides the ramp condition required for Upper Attack.
+
+### Compact Combo Role
+
+Alongside Jiraiya Blade and Metal Ape in Metal Change Core compact combos: the compact footprint of the MCC RC's mode-change mechanism fits cleanly under the smaller attack ARs, and Slash Upper's moderate radius (r = 25 mm) sits below the engagement threshold of most circle CWDs. The combo prioritises controlled burst entries over sustained orbit.
+
+---
+
+## CASE 1881 — CWD Free Crusher (~18 g)
+
+**Source:** Slash Riger MS (Takara HMS, late 2004). Included as stock CWD.  
+**Role:** Multi-wing attack-extension CWD. An escalation of the wing-protrusion concept over CWD Wing Attacker (Dranzer MF) — more wings, same fundamental liabilities amplified. The free-spin mechanism decouples the wings from the assembly's rotational inertia, producing a split-flywheel architecture where the CWD's largest mass contribution effectively vanishes during combat.
+
+### Geometry and I
+
+CWD Free Crusher consists of two mechanically distinct sub-assemblies:
+
+**Rigid inner body (~10 g):** CWD hub from r = 8–14 mm, rigidly coupled to the assembly's spin axis.
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Hub inner ring | 5 g | 8 mm | ½ × 0.005 × 0.008² = 1.60 × 10⁻⁷ |
+| Hub outer ring | 5 g | 14 mm | ½ × 0.005 × 0.014² = 4.90 × 10⁻⁷ |
+| **Body total** | **10 g** | — | **6.50 × 10⁻⁷ kg·m²** |
+
+**Free-spinning wings (~8 g):** Multiple ABS wings on a free-spin pivot at r ≈ 16–23 mm. Decoupled from assembly rotation.
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Pivot mechanism | 2 g | 16 mm | ½ × 0.002 × 0.016² = 2.56 × 10⁻⁷ |
+| Wing mass | 6 g | 23 mm | ½ × 0.006 × 0.023² = 1.587 × 10⁻⁶ |
+| **Wings total** | **8 g** | — | **1.843 × 10⁻⁶ kg·m²** |
+
+**Effective I contributions:**
+
+| Mode | I_FC | OWD |
+|---|---|---|
+| Wings free-spinning (combat default) | **6.50 × 10⁻⁷ kg·m²** | **0.063** |
+| Wings mechanically locked (BCC slope) | **2.493 × 10⁻⁶ kg·m²** | **0.241** |
+
+OWD of 0.063 in free-spin mode is the lowest flywheel efficiency of any HMS CWD analyzed in this session. In free-spin mode, CWD Free Crusher contributes almost nothing to assembly I or L.
+
+### Three Compounding Failure Modes
+
+**1. Stability disruption.** Free-spinning wings create a dynamically shifting angular mass distribution. As the wings seek their rotational equilibrium (neither locked with the assembly nor stationary in the lab frame), the assembly's effective mass distribution changes continuously. This introduces precession perturbations that advance nutation onset and reduce the time before the wobble phase.
+
+**2. Smash Attack mitigation.** An incoming AR hit at wing radius (r ≈ 22 mm) transfers impulse to a free-spinning wing. Instead of that impulse being transmitted to the opponent as KO force, the energy accelerates the wing in the lab frame — the wing absorbs the collision as rotational kinetic energy. The wings act as a self-damping layer that absorbs exactly the Smash Attack energy the CWD is supposed to deliver.
+
+**3. Endurance penalty.** Free-spinning pivots carry non-zero internal friction. Each pivot contributes τ_internal > 0, draining spin through internal dissipation even absent any stadium contact. This is additive with all other spin-loss mechanisms.
+
+### BCC Upper Slope Mechanical Lock
+
+Battle Change Core's upper slope presents a fixed plastic surface immediately above the CWD mounting zone. CWD Free Crusher's wing leading edges contact this slope within ~60–90° of attempted rotation — physically blocking wing travel. With wing rotation blocked, I_FC_locked = 2.493 × 10⁻⁶ kg·m² (full mass couples to assembly).
+
+This is the only condition under which CWD Free Crusher contributes meaningfully to assembly I. The tradeoff is that BCC itself is a severe liability (CASE 1872: uncontrollable trajectory, gap recoil, ~11 g mass asymmetry) — so the locked-wing gain is erased by the RC's own deficiencies.
+
+---
+
+## CASE 1882 — Running Core: Free Wing Core (~7 g)
+
+**Source:** Slash Riger MS (Takara HMS, late 2004).  
+**Role:** Double-axis gimmick RC. Three ABS wings mounted on a mechanism that allows both free rotation (spin decoupled from assembly) AND vertical translation (wings slide up and down along the shaft). The tallest gimmick RC in the HMS group analyzed. The double-axis freedom is the defining architectural feature — and the mechanism through which the assembly systematically destroys itself.
+
+### Part Architecture
+
+| Sub-assembly | Mass | r_eff | Description |
+|---|---|---|---|
+| Central shaft + tip | ~2 g | 0–3 mm | Spinning contact with stadium floor; flat/semi-flat plastic tip |
+| Wing housing body | ~2 g | 4–8 mm | Rigid ABS cylinder; houses wing pivot and vertical slide mechanism |
+| Three free wings | ~3 g | 10–14 mm | ABS wings; free to rotate about pivot axes AND slide vertically on shaft |
+
+**I_FWC (body + shaft, wings decoupled):**
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Central shaft | 2 g | 3 mm | ½ × 0.002 × 0.003² = 9.0 × 10⁻⁹ |
+| Wing housing | 2 g | 7 mm | ½ × 0.002 × 0.007² = 4.90 × 10⁻⁸ |
+| **Body total** | **4 g** | — | **5.80 × 10⁻⁸ kg·m²** |
+
+Wings: decoupled, I_wings = ½ × 0.003 × 0.012² = 2.16 × 10⁻⁷ kg·m² (irrelevant to assembly I while free-spinning).
+
+**I_FWC_eff = 5.80 × 10⁻⁸ kg·m²** — contributes < 1.2% of any stock assembly I.
+
+### Tip Friction
+
+Tip: flat/semi-flat plastic, r_tip ≈ 2.0 mm, μ_eff ≈ 0.10
+
+For Slash Riger MS stock (m = 47 g):  
+**τ_tip** = 0.10 × 0.047 × 9.81 × 0.002 = **9.23 × 10⁻⁵ N·m**
+
+### The Vertical-Translation Failure Mechanism
+
+The wings' vertical freedom means they are not held at a fixed height relative to the stadium floor. During battle phase, any lateral impulse (collision, stadium wall) tilts the assembly — and the vertically-free wings descend under gravity toward floor contact.
+
+**Wing floor contact torque** (wing trailing edge at r_wing ≈ 12 mm, μ_wing ≈ 0.20):  
+τ_wing_floor = 0.20 × 0.047 × 9.81 × 0.012 = **1.107 × 10⁻³ N·m**
+
+This is **12× the tip torque.** When a single wing contacts the floor:
+
+Δω/s = τ_wing / I_assembly = 1.107×10⁻³ / 5.094×10⁻⁶ = **217 rad/s per second of contact**
+
+From battle phase (ω ≈ 372 rad/s):
+- 0.5 s contact event → Δω = 109 rad/s → ω = 263 rad/s (past wobble threshold in one event)
+- Two contact events within 2 s → below recovery threshold, assembly terminates
+
+The causal chain is deterministic:
+1. Battle-phase collision disturbs assembly tilt.
+2. Vertically-free wings descend under gravity.
+3. Wing contacts stadium floor at r = 12 mm.
+4. Floor friction torque at 12× tip value catastrophically drains spin.
+5. Reduced spin → increased nutation → more tilt → more wing contact → rapid self-termination.
+
+The wings are positioned at a height and angle where stadium contact is their only achievable interaction — they cannot reach an opponent AR at a useful contact geometry. Their entire function in battle is destructive floor drag.
+
+### CoM Height Penalty
+
+Free Wing Core body height ≈ 20 mm (vs typical HMS RC h ≈ 8–12 mm). This raises assembly CoM to h_CoM ≈ 14 mm above the stadium floor (vs h_CoM ≈ 8–10 mm for low-profile RCs like MWGC or GFC). Higher CoM amplifies the precession response to each lateral impulse — a hit that would produce a manageable directional change on a low-CoM assembly produces an amplified precession event on Free Wing Core, directly triggering wing deployment.
+
+### Best Combo with Free Wing Core
+
+**AR: Knight Crusher (Either Spin) + CWD Free Crusher (with Metal CWD, RBA2) + Free Wing Core**
+
+Knight Crusher (MA-21) — the weakest HMS AR, nub protrusions with no ramp, no upper, minimal smash — is selected precisely because it generates the fewest self-initiated collisions. Since Free Wing Core terminates within 2–3 hits regardless of AR, using Knight Crusher (no meaningful attack geometry) minimises the number of hit-events that trigger wing deployment. The combo is not competitive; it is the configuration that allows the assembly to embarrass itself in the slowest possible manner. As the user notes: "the most entertaining part... isn't its ability to knock things out... but actually the ridiculous ways in which it manages to completely stop spinning after the first two hits. Sort of like if Ragdoll Physics was applied to Beyblade."
+
+---
+
+## CASE 1883 — Assembly: Slash Riger MS
+
+**Assembly:** Slash Riger MS  
+**Configurations:** Stock (Slash Upper + CWD Free Crusher + Free Wing Core) and Best Attack Combo (Slash Upper RS + CWD Defense Ring + Metal CWD RBA2 + GFCUV)
+
+### Stock Assembly Parameters
+
+| Part | Mass | I (kg·m²) | Fraction |
+|---|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ | 0.3% |
+| AR Slash Upper | 19 g | 4.367 × 10⁻⁶ | 85.7% |
+| CWD Free Crusher (wings free) | 18 g | 6.50 × 10⁻⁷ | 12.8% |
+| RC Free Wing Core (body only) | 7 g | 5.80 × 10⁻⁸ | 1.1% |
+| **Total** | **47 g** | **5.094 × 10⁻⁶ kg·m²** | — |
+
+**L₀_stock** = 5.094×10⁻⁶ × 620 = **3.16 mN·m·s** — the lowest L₀ of any stock HMS assembly analyzed in this session.
+
+The AR dominance (85.7%) is the highest of any HMS stock assembly. This is a consequence of CWD Free Crusher contributing almost nothing (wings free) and Free Wing Core's near-zero body I — Slash Upper is carrying the entire inertia budget alone.
+
+### Spin Phase Analysis (Stock — Theoretical, Wings Clear)
+
+**τ_tip** = 9.23 × 10⁻⁵ N·m (semi-flat plastic, r_tip = 2 mm)
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **13.7 s** |
+| Battle → wobble | 372 → 250 | 122 | **6.7 s** |
+| Wobble → fall | 250 → 50 | 200 | **11.0 s** |
+| **Total** | — | 570 | **31.4 s** |
+
+This 31.4 s is a theoretical ceiling that assumes the wings never contact the floor — an unreachable condition in any real battle.
+
+### Wing Contact Reality
+
+When any Free Wing Core wing contacts the floor (τ_wing = 1.107 × 10⁻³ N·m):
+
+Δω/s = 1.107×10⁻³ / 5.094×10⁻⁶ = **217 rad/s per second of contact**
+
+From battle phase (ω ≈ 372 rad/s), a single 0.5-second wing contact event loses 109 rad/s — carrying the assembly past the wobble threshold in one event. Two consecutive contact events within 2 s eliminate the assembly. In practice, battle-phase collisions virtually guarantee wing floor contact within the first 2–3 hits, producing the "completely stops spinning after the first two hits" outcome.
+
+The theoretical 31.4 s vs the ~2–4 s practical battle duration is the largest discrepancy between theoretical and actual spin time of any HMS assembly in this session.
+
+### Assembly I Comparison (all HMS stock assemblies, this session)
+
+| Assembly | I_total (kg·m²) | L₀ (mN·m·s) | t_ideal (s) | Role |
+|---|---|---|---|---|
+| Samurai Changer MS (BCC) | 1.202 × 10⁻⁵ | 7.45 | 53.9 | Attack/gimmick |
+| Phantom Fox MS (Semi-Flat) | 1.122 × 10⁻⁵ | 6.96 | 57.8 | Stamina |
+| Dragoon MF (MWGC) | 1.033 × 10⁻⁵ | 6.41 | 28.5 | Attack |
+| Dranzer MS (MCC HF) | 9.668 × 10⁻⁶ | 5.99 | — | Defense/Stamina |
+| Round Shell MS (RWC) | 7.349 × 10⁻⁶ | 4.56 | 16.7 | Destabilizer |
+| Magical Ape MS (Flat Core) | 6.617 × 10⁻⁶ | 4.10 | 22.8 | Compact/Attack |
+| **Slash Riger MS (stock)** | **5.094 × 10⁻⁶** | **3.16** | **31.4\*** | **Gimmick / Full Send** |
+
+\*Theoretical only — practical spin time ≈ 2–4 s before wing contact terminates the battle.
+
+Slash Riger MS has the lowest I_total and L₀ of the HMS group. Its nominal rank in the spin-time table (31.4 s — mid-table) is a fiction produced by a low-friction tip; the actual combat duration is measured in seconds.
+
+### Best Attack Combo
+
+**AR: Slash Upper (RS) + WD: CWD Defense Ring + Metal CWD (RBA2) + RC: GFCUV (Grip Flat Core Ultimate Version, from Dragoon MS UV)**
+
+**CWD Defense Ring + Metal CWD (RBA2) — I estimate:**  
+Smooth circular CWD, r_inner ≈ 10 mm, r_outer ≈ 26 mm, ring mass ~14 g:  
+I_ring = ½ × 0.014 × (0.010² + 0.026²) = ½ × 0.014 × 7.76×10⁻⁴ = 5.432 × 10⁻⁶ kg·m²  
+Metal CWD inner insert: ~5 g at r ≈ 8 mm → I_MCWD = ½ × 0.005 × 0.008² = 1.60 × 10⁻⁷ kg·m²  
+**I_DR_combo** = 5.432×10⁻⁶ + 1.60×10⁻⁷ = **5.592 × 10⁻⁶ kg·m²**, OWD = **0.436** (best-in-class CWD flywheel efficiency)
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Slash Upper | 19 g | 4.367 × 10⁻⁶ |
+| CWD Defense Ring + Metal CWD | ~19 g | 5.592 × 10⁻⁶ |
+| RC GFCUV | ~2 g | ~negligible |
+| **Total** | **~43 g** | **9.972 × 10⁻⁶ kg·m²** |
+
+**L₀_best** = 9.972×10⁻⁶ × 620 = **6.18 mN·m·s** — up 96% from stock, placing it near Dragoon MF (6.41 mN·m·s) and Dranzer MS (5.99 mN·m·s) territory.
+
+**GFCUV:** μ_eff ≈ 0.30 (soft sticky rubber compound), r_tip ≈ 2.5 mm  
+τ_GFCUV = 0.30 × 0.043 × 9.81 × 0.0025 = **3.170 × 10⁻⁴ N·m**
+
+**Spin phases (best combo):**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **7.8 s** |
+| Battle → wobble | 372 → 250 | 122 | **3.8 s** |
+| Wobble → fall | 250 → 50 | 200 | **6.3 s** |
+| **Total** | — | 570 | **17.9 s** |
+
+Shorter than stock's theoretical time (17.9 vs 31.4 s) because GFCUV's rubber compound has 3.4× higher friction torque than the semi-flat tip. This is the intended tradeoff: attack combos prioritise KO delivery within the first few contacts over theoretical endurance.
+
+### Why Flower Pattern Is Required
+
+Slash Upper's attack window is narrow: the ramp geometry delivers upper-redirect force only when the contact angle aligns with the ramp face at the correct relative height. Random orbital paths generate off-axis contacts where only smash occurs — not the decisive upper impulse needed for ring-out.
+
+GFCUV's rubber grip creates a flower pattern (Slide → Catapult → Banking) orbital trajectory. Each petal of the orbit passes through the stadium center at a predictable angle, ensuring Slash Upper's ramp leading face meets the opponent consistently. Without flower pattern, most contacts are smash-only and insufficient for ring-out. The combo depends on the orbital geometry to convert middle-tier AR mass into usable Upper Attack.
+
+### Competitive Standing
+
+**Slash Upper AR in best combo:** Legitimate mid-tier attack combo. The best combo (Defense Ring + GFCUV) delivers L₀ = 6.18 mN·m·s and GFCUV orbit, making it viable in competitive settings — not top-tier against Jiraiya Blade or Samurai Upper combos, but functional and occasionally capable of Upper Attack in RS. The AR's rarity (associated with a novelty bey) elevates its perceived tier beyond its actual middle-of-the-road performance.
+
+**Stock Slash Riger MS:** The lowest-angular-momentum HMS stock assembly analyzed. Three simultaneous gimmick mechanisms (free-spinning CWD wings, free-spinning RC wings, vertically-translating RC wings) each independently harm performance; combined, they guarantee self-termination within seconds. Takara's most self-destructive HMS configuration — a technically fascinating study in how gimmick stacking beyond component quality produces diminishing and then negative returns.
+
+---
+
+## CASE 1884 — BP Large Type (Dranzer MF)
+
+**Source:** Dranzer MF (Takara HMS, Autumn 2004). Initial release: Random Booster ACT4 (Blue, Orange colorways). Additional release: Random Booster ACT5 (Yellow, Black colorways). RBA5 re-release in 2005 may have produced a different BP Size Type on some production runs — unlike Slash Riger MS, Dranzer MF received a confirmed second RBA drop, making BP Size Type less certain for late units. BP Large Type is assumed as the dominant case.  
+**Role:** Blade Base. See CASE 1854/1865/1869/1874/1879 for full BP Large Type analysis. Mass ~3 g, I ≈ 1.35 × 10⁻⁸ kg·m², contribution < 0.2% of any assembly I.
+
+---
+
+## CASE 1885 — Attack Ring: Smash Phoenix (~18 g)
+
+**Source:** Dranzer MF (Takara HMS, Autumn 2004). RBA4 drop (Autumn 2004), RBA5 re-release (2005).  
+**Role:** Smash AR, defense-viable. Shares its zinc-alloy metal frame with Dark Leopard MS's Smash Leopard and Shining God MS's God Smasher. Of the three ARs using this frame, Smash Phoenix's ABS caul is the most conservatively designed — the highest plastic coverage-to-gap ratio, and the smallest contact protrusions. Contact points: the Phoenix beak and the crown of the Phoenix head; both are small, localized, and produce recoil-heavy hits rather than clean smash force.
+
+### Metal Frame Family Context
+
+All three ARs (Smash Phoenix / Smash Leopard / God Smasher) share an identical zinc die-cast outer frame consisting of three arc sections at irregular angular positions. The ABS caul is the sole differentiator:
+
+| AR | ABS Caul | Contact geometry | Role |
+|---|---|---|---|
+| Smash Leopard | Angular/jagged inner ring; most aggressive | Direct metal frame exposure | Smash |
+| God Smasher | Wide, full-coverage caul; 2 ABS contact points per side in RS | ABS + metal combination | Smash |
+| **Smash Phoenix** | **Wide phoenix-wing lobes; minimal crevices; most circular** | **Small beak + head protrusions only** | **Defense / limited Smash** |
+
+The most circular profile means the plastic fills in the gaps between the metal frame tabs more completely than the other two ARs. This increases the effective outer perimeter coverage but reduces contact point sharpness — less attack geometry, more circular collision surface.
+
+### Geometry and I
+
+Three-zone model:
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Core hub | 2 g | 4 mm | ½ × 0.002 × 0.004² = 1.60 × 10⁻⁸ |
+| Mid-zone (ABS fill between metal tabs) | 4 g | 12 mm | ½ × 0.004 × 0.012² = 2.88 × 10⁻⁷ |
+| Outer contact (metal tabs + wing ABS) | 12 g | 24 mm | ½ × 0.012 × 0.024² = 3.456 × 10⁻⁶ |
+| **Total** | **18 g** | — | — |
+
+**I_SP** = 1.60×10⁻⁸ + 2.88×10⁻⁷ + 3.456×10⁻⁶ = **3.760 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 3.760×10⁻⁶ / 0.018) = sqrt(4.178×10⁻⁴) = **20.4 mm**
+
+**OWD** = 3.760×10⁻⁶ / (0.018 × 0.024²) = 3.760×10⁻⁶ / 1.037×10⁻⁵ = **0.362**
+
+OWD of 0.362 places Smash Phoenix in the moderate-efficiency tier — above Metal Ape (0.277) and approximately equal to Slash Upper (0.367), but below the top-tier upper ARs (Upper Dragon: 0.446, Samurai Upper: ~0.460). For an 18 g AR, this is a creditable flywheel contribution on paper; the practical issue is not I but mass distribution asymmetry.
+
+### 2-Fold Mass Asymmetry and Dynamic Imbalance
+
+**The problem:** Weight distribution is not even across the AR — mass is concentrated at opposite ends, creating a 2-fold (dumbbell-like) asymmetry rather than a uniform ring.
+
+Physical origin: The metal frame consists of 3 arc sections at irregular angular positions. The ABS phoenix-wing lobes add significant mass at 2 specific angular positions (~180° apart) while the sector between them is lightly filled. The result: two heavy zones and two light zones at 90° to the heavy pair.
+
+Modeling: Δm ≈ 3 g imbalance (each heavy zone has ~1.5 g more than a uniform ring distribution at r = 24 mm).
+
+**Dynamic imbalance force at battle phase (ω = 370 rad/s):**
+
+F_centrifugal_total = 2 × Δm_zone × ω² × r = 2 × 0.0015 × 370² × 0.024 = 2 × 0.0015 × 136,900 × 0.024 = **9.86 N** peak-to-peak rotating force
+
+**Imbalance torque about the tilt axis** (h_CoM ≈ 10 mm above floor):  
+τ_imbalance_peak = F_centrifugal × h_CoM = 9.86 × 0.010 = **0.099 N·m**
+
+**Gravity precession torque** at 5° tilt (41 g assembly):  
+τ_gravity = 0.041 × 9.81 × 0.010 × sin(5°) = **3.51 × 10⁻³ N·m**
+
+Ratio: τ_imbalance / τ_gravity = 0.099 / 3.51×10⁻³ = **28×**
+
+At battle-phase spin, the rotating centrifugal imbalance torque is 28× larger than the gravitational precession torque. This means the assembly's precession is not the smooth, gravity-driven steady precession seen in well-balanced assemblies — it is a jagged, imbalance-excited oscillation that repeats at the spin frequency (370 Hz). The assembly effectively "shudders" rather than precessing smoothly.
+
+**Consequence for defense:** Each time the AR's heavy zone sweeps toward a contact point with an attacking bey, the mass imbalance amplifies the collision impulse. Each time it sweeps away, the impulse is diminished. This creates periodic, unpredictable recoil spikes rather than consistent, low-recoil defense behavior. A defense AR like Metal Ape at OWD = 0.277 (lower I) but with near-uniform distribution absorbs hits more consistently and loses less spin per hit than Smash Phoenix at OWD = 0.362 (higher I) with this imbalance.
+
+**Why stamina fails:** The imbalance oscillation transfers gyroscopic energy into lateral oscillation. At each cycle, a small amount of spin kinetic energy is converted to lateral motion and then back — not a lossless process. The effective spin decay rate increases by roughly (τ_imbalance / L₀)² per revolution as an additional dissipation term. This is on top of tip friction.
+
+### Left-Spin Preference for Defense
+
+In right-spin, the phoenix beak presents as a leading contact point — even small beak contacts trigger the imbalance oscillation from a directed impulse. In left-spin, the beak becomes a trailing surface — contacts are more tangential, reducing the impulse direction that most excites the 2-fold oscillation. Marginally less recoil in LS is the result. Insufficient to make Smash Phoenix a top-tier defense AR but meaningful at the margin.
+
+### Best Combo
+
+**AR: Smash Phoenix (LS) + WD: CWD Reverse Defenser + Metal CWD (RBA2) + RC: Bearing Core 2**
+
+Left-spin reduces beak-recoil. Reverse Defenser + Metal CWD maximises I and CWD-dominant contact (see CASE 1887). BC2 (worn) provides near-bearing tip friction. The combo accepts that Smash Phoenix is a weak link and compensates with the best available CWD and RC; the combo is "technically stock RB5 Dranzer MF with a BC2 RC."
+
+---
+
+## CASE 1886 — CWD Wing Attacker (~17 g)
+
+**Source:** Dranzer MF Random Booster ACT4 prize drop. Not included in all RBA4 pulls.  
+**Role:** Free-spinning two-wing CWD. The HMS equivalent of Plastic Beyblade's Wing Base — a large, asymmetric component with free-spinning plastic wings that extend past the AR diameter. The HMS series' earliest and simplest expression of the free-spin wing concept (predating CWD Free Crusher's multi-wing escalation in Slash Riger MS, CASE 1881).
+
+### Geometry and I
+
+Two sub-assemblies:
+
+**Rigid inner body (~9 g):** CWD hub from r = 8–14 mm, rigidly coupled to assembly spin.
+
+| Zone | Mass | r_eff | I |
+|---|---|---|---|
+| Hub inner | 4 g | 8 mm | ½ × 0.004 × 0.008² = 1.28 × 10⁻⁷ |
+| Hub outer | 5 g | 14 mm | ½ × 0.005 × 0.014² = 4.90 × 10⁻⁷ |
+| **Body total** | **9 g** | — | **6.18 × 10⁻⁷ kg·m²** |
+
+**Free-spinning wings (~8 g):** Two large ABS wings on pivot at r ≈ 27 mm. Decoupled from assembly rotation.  
+I_wings = 2 × ½ × 0.004 × 0.027² = **2.916 × 10⁻⁶ kg·m²** (decoupled — irrelevant to assembly I in battle)
+
+| Mode | I_WA_eff | OWD |
+|---|---|---|
+| Wings free-spinning (combat default) | **6.18 × 10⁻⁷ kg·m²** | **0.050** |
+| Wings locked (hypothetical) | **3.534 × 10⁻⁶ kg·m²** | **0.285** |
+
+OWD of 0.050 in combat mode is the lowest of any HMS CWD analyzed to date — below even CWD Free Crusher (0.063). Wing Attacker's two large wings (8 g at r = 27 mm) are slightly more mass-at-radius than Free Crusher's multi-wing distribution but further from the spin axis, creating an even greater decoupled I penalty.
+
+### Why the Wings Compound Every Problem
+
+**1. Contact point for opponents.** Wing Attacker's wings extend to r_wing ≈ 27–30 mm, which is larger than most HMS ARs (r_AR ≈ 22–26 mm). An attacking opponent can make initial wing contact before their AR reaches Dranzer MF's AR. The wing absorbs some attack impulse as rotational acceleration (not transmitted to the assembly as KO impulse), but also deflects the attacker's trajectory unpredictably and destabilizes Dranzer MF via the torque transmitted to the wing pivot.
+
+**2. Floor scraping earlier than any other CWD.** Wing contact radius r_wing ≈ 27–30 mm vs. a standard circular CWD at r ≈ 26 mm.
+
+Tilt angle for wing floor contact: θ_wing = h_floor_clearance / r_wing  
+Tilt angle for standard CWD floor contact: θ_std = h_floor_clearance / r_std
+
+θ_wing / θ_std = r_std / r_wing = 26 / 28 = **0.929**
+
+Wings contact the stadium floor at 92.9% of the tilt angle that would cause a standard CWD to scrape. Practically: Wing Attacker shortens the wobble phase by approximately 7% relative to a standard CWD, and more against smaller CWDs. This is not dramatic but is additive with all other problems.
+
+**3. Low effective I.** OWD = 0.050 means the CWD contributes almost nothing to the assembly's angular momentum budget. For a 17 g CWD, a competitive circular CWD (OWD ≈ 0.520) would contribute I ≈ 5.9 × 10⁻⁶ kg·m². Wing Attacker in free-spin mode contributes only 6.18 × 10⁻⁷ kg·m² — 90% less flywheel efficiency.
+
+### The "Fixed Metal Wing" Thought Experiment
+
+The user's observation: "Had it been made of pure metal, been fixed in place, and weighed ~5 g rather than 2 g" — this describes a completely different part: a compact metal protrusion CWD with high-density fixed mass at r = 27 mm. For 5 g of fixed metal at r = 27 mm:  
+I_hypothetical = 0.005 × 0.027² = **3.645 × 10⁻⁶ kg·m²**
+
+Such a CWD would behave as a metal-to-AR contact amplifier — the protrusion catches the opponent's AR at a slightly larger radius, delivering a modest smash extension. At 5 g fixed, it would not destabilize Dranzer MF. The free-spinning 17 g Wing Attacker misses this target in every dimension.
+
+### Full Send Best Combo
+
+**AR: Dragon Saucer + WD: CWD Wing Attacker + RC: Aero Core & Aero Wing (from Aero Knight MS)**
+
+Game plan — Aero Wing (the plastic wing accessory from Aero Knight MS's RC system) stacks on top of Aero Core, creating a dramatically tall assembly with prominent wing protrusions both at the RC level and at the CWD level. The height differential between Dranzer MF (normal) and this assembly is extreme. Dragon Saucer provides a visually chaotic AR silhouette. None of this is competitive; all of it is memorable. As documented by the community: "the most entertaining part... isn't its ability to knock things out, but actually the ridiculous ways in which it manages to completely stop spinning after the first two hits."
+
+---
+
+## CASE 1887 — CWD Reverse Defenser (~17 g)
+
+**Source:** Dranzer MF Random Booster ACT5 prize drop.  
+**Role:** Defensive circular CWD. Smooth circular perimeter, large outer diameter, high-OWD flywheel design. Effectively a slightly lighter and thinner CWD God Ring — the two perform identically in defense and stamina roles, with Reverse Defenser offering marginally lower absolute I (due to 1 g lower mass) but the same outer-ring collision behaviour. Significantly underrated given its rarity and the collector-item status of its source bey.
+
+### Geometry and I
+
+Two-layer construction visible in images: an outer ABS ring (yellow/golden) surrounding a zinc metal inner ring (standard HMS CWD metal insert).
+
+**ABS outer ring (~12 g):** annular disc from r_inner = 14 mm to r_outer = 26 mm  
+I_ABS = ½ × 0.012 × (0.014² + 0.026²) = ½ × 0.012 × (1.96×10⁻⁴ + 6.76×10⁻⁴) = ½ × 0.012 × 8.72×10⁻⁴ = **5.232 × 10⁻⁶ kg·m²**
+
+**Metal inner ring (~5 g):** annular ring from r_inner = 8 mm to r_outer = 14 mm  
+I_metal = ½ × 0.005 × (0.008² + 0.014²) = ½ × 0.005 × (6.4×10⁻⁵ + 1.96×10⁻⁴) = ½ × 0.005 × 2.60×10⁻⁴ = **6.50 × 10⁻⁷ kg·m²**
+
+**I_RD** = 5.232×10⁻⁶ + 6.50×10⁻⁷ = **5.882 × 10⁻⁶ kg·m²**
+
+r_gyr = sqrt(2 × 5.882×10⁻⁶ / 0.017) = sqrt(6.920×10⁻⁴) = **26.3 mm**
+
+**OWD** = 5.882×10⁻⁶ / (0.017 × 0.026²) = 5.882×10⁻⁶ / 1.149×10⁻⁵ = **0.512**
+
+OWD of 0.512 is the highest of any HMS CWD analyzed in this session:
+
+| CWD | Mass | I (kg·m²) | OWD |
+|---|---|---|---|
+| Circle Attacker | 17 g | 5.026 × 10⁻⁶ | 0.611 |
+| **Reverse Defenser** | **17 g** | **5.882 × 10⁻⁶** | **0.512** |
+| Circle Heavy | 18 g | 3.566 × 10⁻⁶ | 0.374 |
+| Chain Attacker | 17 g | 3.688 × 10⁻⁶ | 0.321 |
+| Wing Attacker (free) | 17 g | 6.18 × 10⁻⁷ | 0.050 |
+
+Circle Attacker's higher OWD (0.611 vs 0.512) despite equal mass is due to its metal ring being concentrated at r = 13–20 mm — a narrower radial band positioned closer to r_outer relative to r_outer = 22 mm. Reverse Defenser's OWD of 0.512 at r_outer = 26 mm is an excellent result for a large circular CWD: the smooth circular ring geometry concentrates mass outward efficiently without any spoke/arm mass waste.
+
+### With Metal CWD Insert (RBA2)
+
+Adding Metal CWD (inner weight insert from RBA2): ~5 g at r ≈ 8 mm  
+I_MCWD = ½ × 0.005 × 0.008² = **1.60 × 10⁻⁷ kg·m²**
+
+**I_RD + MCWD** = 5.882×10⁻⁶ + 1.60×10⁻⁷ = **6.042 × 10⁻⁶ kg·m²**  
+Total mass: ~22 g. The Metal CWD contributes negligible I (the inner-ring mass adds almost nothing due to its small r) but does increase assembly mass by ~5 g, raising total assembly I and L via increased m and τ reduction (more massive assembly requires more torque from the same tip friction to achieve the same Δω/s).
+
+### Collision Profile: Circular Perimeter Advantage
+
+Smooth circular perimeter means every contact angle produces the same collision geometry — there are no "hard" faces or "soft" faces, no protrusions that create recoil spikes. For defense combos:
+- Purely radial contacts (no tangential component) on any attack angle → minimal spin loss per hit
+- No recoil amplification from contact geometry → consistent, predictable defense
+- Worn-down outer surface (from natural play) reduces recoil further → Life After Death / Late-phase Stamina improvement
+
+This is why Reverse Defenser "performs identically to God Ring for defense" — both are smooth large-diameter circular CWDs. The 1 g mass difference (18 g vs 17 g) translates to ΔI ≈ ½ × 0.001 × (0.014² + 0.026²) ≈ 4.4 × 10⁻⁷ kg·m² — a measurable but not strategically significant gap.
+
+### Multi-Role Versatility
+
+The user notes Reverse Defenser can serve as a Defense Ring substitute on Circle/Samurai Upper Attack combos. At r_outer = 26 mm vs Defense Ring's ~26 mm, both provide similar I floor and collision buffer. Reverse Defenser is more appropriate for defense; its smooth perimeter slightly increases the probability of glancing hits (less energy absorbed per collision) vs. a Defense Ring, which may have more mass-concentrated features.
+
+---
+
+## CASE 1888 — Running Core: Free Shaft Core (~3 g)
+
+**Source:** Dranzer MF (Random Booster ACT4/ACT5 prize RC). See CASE 139 (Case Study 2) which carried a ~8 g estimate based on early data — corrected here to **~3 g** based on confirmed mass data from Case Study 5 (Case 1096) and user measurement. The ~8 g figure was an estimation error; Free Shaft Core is in the MWGC (~3 g) mass class, not the BCC (~11 g) class.  
+**Role:** Compact Combo RC. Unique architectural feature: the inner spindle connecting the tip to the RC body is mechanically free to rotate relative to the outer ABS shell. The decoupled shaft is intended to preserve spin through lateral collision events, but the practical result is early precession onset that limits competitive utility.
+
+### Part Architecture
+
+| Sub-assembly | Mass | r_eff | Notes |
+|---|---|---|---|
+| Inner shaft + tip | ~2 g | 0–3 mm | Free-rotating relative to shell; metal tip (small point/semi-flat) |
+| Outer ABS shell | ~1 g | 3–6 mm | Rigidly connected to CWD mounting above; NOT rigidly connected to shaft below |
+
+**I_FSC** = ½ × 0.002 × 0.003² + ½ × 0.001 × 0.006² = 9.0×10⁻⁹ + 1.80×10⁻⁸ = **2.70 × 10⁻⁸ kg·m²**
+
+RC contributes < 0.7% of any assembly I — negligible in all assembly calculations.
+
+### Tip Friction
+
+Tip: metal semi-flat/sharp point, r_tip ≈ 1.0 mm, μ_eff ≈ 0.07 (metal-on-plastic stadium)
+
+For stock assembly (m = 41 g):  
+**τ_FSC_stock** = 0.07 × 0.041 × 9.81 × 0.001 = **2.817 × 10⁻⁵ N·m**
+
+This is the second-lowest tip friction torque of any HMS RC analyzed in this session (only beaten by BC2's worn bearing tip at τ ≈ 4.6 × 10⁻⁶ N·m). The very low torque is why Free Shaft Core has such high theoretical spin times despite the stock assembly's low I.
+
+### Decoupled Shaft and Early Precession Mechanism
+
+In a fixed-shaft RC: lateral collision impulse → AR tilts → shaft transmits the tilt → tip-floor contact creates a restoring force → restoring moment resists further tilt → stable precession
+
+In Free Shaft Core: lateral collision impulse → AR tilts → outer shell tilts with the assembly → at the shaft junction, the shell can rotate relative to the shaft → the restoring moment path from tip-to-AR is interrupted
+
+The shaft's free rotation absorbs a fraction of the tilt-restoring torque that the tip-floor contact generates. Instead of this torque propagating up the rigid shaft to resist AR tilt, it is partially dissipated as shaft-relative-to-shell rotation. The effective restoring coefficient k_free ≈ 0.55–0.65 (vs. k_fixed = 1.0 for a rigid shaft).
+
+**Implication:** For a given lateral impulse, a Free Shaft Core assembly tilts more before the restoring moment terminates the tilt. Each collision produces a larger tilt perturbation than an equivalent fixed-shaft RC would. Repeated battle-phase collisions accumulate tilt perturbations faster → earlier onset of wobble phase.
+
+The precession rate is:  
+Ω = τ_gravity / L_assembly (where L_assembly = I_total × ω)
+
+L_assembly is unchanged by the free shaft (the shaft's decoupling doesn't affect I_total since I_FSC ≈ 0). So the precession RATE is identical to a fixed-shaft RC. What changes is the AMPLITUDE of precession excited per collision: each hit produces a larger initial tilt due to reduced k, so the cumulative precession angle grows faster.
+
+This is why "Free Shaft Core is much more prone to early precession, wobbling" despite its negligible I contribution — it's a force transmission issue, not an inertia issue.
+
+### Height and CoM: Why "Not Tall Enough"
+
+The user notes FSC "isn't tall enough to take advantage of that trait in a niche combo." This refers to the destabilizer role exploited by Round Shell MS's RWC (CASE 1867): a tall RC raises the assembly CoM, causing each collision to produce a larger nutation excitation on the opponent. To use early precession offensively, the RC must be tall enough to raise the assembly's own AR into the opponent's lateral contact zone during the late-wobble phase.
+
+Free Shaft Core's body height ≈ 8–10 mm — typical for HMS RCs, not the 20+ mm of RWC. The assembly CoM is not high enough for FSC's precession tendency to translate into destabilization of opponents. It simply precesses prematurely without the compensating benefit of height-based opponent interference.
+
+### Best Combo
+
+**AR: Jiraiya Blade (Same-Spin) + WD: CWD Defense Ring + Metal CWD (RBA2) + RC: Free Shaft Core**
+
+Rationale: Jiraiya Blade (CASE 142 in Case Study 2, ~22 g, top-tier smash/upper AR) provides maximum AR I. Defense Ring + Metal CWD delivers the best available CWD I (CASE 1883 reference). The combo accepts FSC's limited precession resistance by compensating with maximum AR + CWD inertia — the largest possible L₀ from what FSC can anchor.
+
+Launch strategy: powerful flat launch rather than aggressive angled launch. Aggressive launch increases initial ω but also introduces early tilt perturbations that FSC's free shaft cannot efficiently resist, triggering premature precession. A powerful flat launch maximises ω₀ with minimal initial tilt → best possible start before the free shaft's limitation becomes apparent.
+
+---
+
+## CASE 1889 — Assembly: Dranzer MF
+
+**Configurations analyzed:**
+- Stock (Smash Phoenix + CWD Wing Attacker + Free Shaft Core)
+- Best Defense Combo (Smash Phoenix LS + CWD Reverse Defenser + Metal CWD RBA2 + Bearing Core 2)
+- Best Compact Combo (Jiraiya Blade SS + CWD Defense Ring + Metal CWD RBA2 + Free Shaft Core)
+
+### Stock Assembly Parameters
+
+| Part | Mass | I (kg·m²) | Fraction |
+|---|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ | 0.3% |
+| AR Smash Phoenix | 18 g | 3.760 × 10⁻⁶ | 85.2% |
+| CWD Wing Attacker (wings free) | 17 g | 6.18 × 10⁻⁷ | 14.0% |
+| RC Free Shaft Core | 3 g | 2.70 × 10⁻⁸ | 0.6% |
+| **Total** | **41 g** | **4.419 × 10⁻⁶ kg·m²** | — |
+
+**L₀_stock** = 4.419×10⁻⁶ × 620 = **2.74 mN·m·s** — lower than Slash Riger MS stock (3.16 mN·m·s). The lowest L₀ of any HMS stock assembly in this session.
+
+AR dominance at 85.2% is extreme — driven by CWD Wing Attacker's near-zero effective I in free-spin mode. Smash Phoenix is carrying the assembly's inertia budget almost entirely alone.
+
+### Spin Phase Analysis (Stock — Theoretical, Wings Clear)
+
+**τ_FSC** = 2.817 × 10⁻⁵ N·m
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **38.9 s** |
+| Battle → wobble | 372 → 250 | 122 | **19.1 s** |
+| Wobble → fall | 250 → 50 | 200 | **31.4 s** |
+| **Total** | — | 570 | **89.4 s** |
+
+The 89.4 s theoretical spin time is the longest of any HMS stock assembly in this session — a consequence of the Free Shaft Core's extremely low tip friction. This metric is misleading:
+
+**Wing floor contact reality:** Wing Attacker's wings contact the stadium floor at 92.9% of the tilt angle of a standard CWD (due to larger r_wing). The wobble phase shortens accordingly. In practice, Wing Attacker shortens the effective battle duration below the theoretical ceiling.
+
+**Smash Phoenix imbalance reality:** The 28× dynamic imbalance torque at battle phase means each hit on the assembly produces a larger spin loss than the tip friction alone would predict. An effective "imbalance friction term" adds to the theoretical τ_tip, reducing the practical spin time.
+
+Combined: stock Dranzer MF has long theoretical endurance (good tip, low mass assembly) but poor practical performance (Wing Attacker destabilization, Smash Phoenix recoil).
+
+### Stock Assembly Comparison (All HMS stock assemblies, this session)
+
+| Assembly | I_total (kg·m²) | L₀ (mN·m·s) | t_ideal (s) | Role |
+|---|---|---|---|---|
+| Samurai Changer MS (BCC) | 1.202 × 10⁻⁵ | 7.45 | 53.9 | Attack/gimmick |
+| Phantom Fox MS (Semi-Flat) | 1.122 × 10⁻⁵ | 6.96 | 57.8 | Stamina |
+| Dragoon MF (MWGC) | 1.033 × 10⁻⁵ | 6.41 | 28.5 | Attack |
+| Dranzer MS (MCC HF) | 9.668 × 10⁻⁶ | 5.99 | — | Defense/Stamina |
+| Round Shell MS (RWC) | 7.349 × 10⁻⁶ | 4.56 | 16.7 | Destabilizer |
+| Magical Ape MS (Flat Core) | 6.617 × 10⁻⁶ | 4.10 | 22.8 | Compact/Attack |
+| Slash Riger MS (FWC stock) | 5.094 × 10⁻⁶ | 3.16 | 31.4\* | Gimmick |
+| **Dranzer MF (Wing Attacker + FSC)** | **4.419 × 10⁻⁶** | **2.74** | **89.4\*\*** | **Collector / Limited** |
+
+\*Practical ≈ 2–4 s due to wing contact catastrophe  
+\*\*Practical significantly shorter due to Wing Attacker floor scraping and Smash Phoenix imbalance
+
+Dranzer MF stock has the lowest absolute I and L₀ of the HMS group — even below Slash Riger MS — entirely because Wing Attacker contributes almost nothing in free-spin mode. However, unlike Slash Riger MS's catastrophic active self-destruction, Dranzer MF stock is merely consistently mediocre rather than terminally brief.
+
+### Best Defense Combo
+
+**Smash Phoenix (LS) + CWD Reverse Defenser + Metal CWD (RBA2) + Bearing Core 2**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Smash Phoenix | 18 g | 3.760 × 10⁻⁶ |
+| CWD Reverse Defenser + Metal CWD | ~22 g | 6.042 × 10⁻⁶ |
+| RC Bearing Core 2 (worn) | ~4 g | ~negligible |
+| **Total** | **~47 g** | **~9.815 × 10⁻⁶ kg·m²** |
+
+**L₀_defense** = 9.815×10⁻⁶ × 620 = **6.09 mN·m·s**
+
+**BC2 (worn tip):** μ_eff ≈ 0.01, r_tip ≈ 1.0 mm  
+τ_BC2 = 0.01 × 0.047 × 9.81 × 0.001 = **4.61 × 10⁻⁶ N·m**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **528 s** |
+| Battle → wobble | 372 → 250 | 122 | **260 s** |
+| Wobble → fall | 250 → 50 | 200 | **426 s** |
+| **Total** | — | 570 | **1214 s (~20.2 min)** |
+
+The ~20 min theoretical endurance is characteristic of all BC2-based defense combos (cf. Metal Ape + BC2 in CASE 1878: ~19 min). The practical battle time is determined by nutation dynamics and collision frequency, not raw spin time. No HMS battle lasts 20 min; BC2 combos win by surviving until the opponent runs out of spin under normal conditions.
+
+**Why it underperforms Metal Ape + Reverse Defenser + BC2:**
+
+Metal Ape + RD + BC2 (CASE 1878): I_total = 8.578 × 10⁻⁶, L₀ = 5.32 mN·m·s  
+Smash Phoenix + RD + BC2: I_total = 9.815 × 10⁻⁶, L₀ = 6.09 mN·m·s
+
+Smash Phoenix defense has 14% MORE I and 14% MORE L₀ than Metal Ape defense. On paper, it should outlast Metal Ape in the same combo. The user says it doesn't — why?
+
+The answer is the dynamic imbalance (CASE 1885). Smash Phoenix's 2-fold asymmetry creates an oscillating 28× perturbation torque at battle spin. Each hit on the defense assembly:
+- For Metal Ape: contact is radial-dominant (CWD-to-AR geometry, CASE 1878) → spin loss ≈ tangential impulse component only
+- For Smash Phoenix: contact also excites the AR's imbalance oscillation → additional spin loss through imbalance-driven energy transfer
+
+The per-hit spin loss for Smash Phoenix defense is higher than for Metal Ape defense despite the higher I, because the AR imbalance adds an effective friction component proportional to ω². This overtakes the I advantage, especially in the battle phase where ω is high and the imbalance torque is maximum.
+
+The imbalance also means Smash Phoenix defense exits the stable battle phase earlier (faster nutation onset per hit), shortening the effective high-efficiency defense window.
+
+### Best Compact Combo
+
+**Jiraiya Blade (Same-Spin) + CWD Defense Ring + Metal CWD (RBA2) + Free Shaft Core**
+
+| Part | Mass | I (kg·m²) |
+|---|---|---|
+| BP Large Type | 3 g | 1.35 × 10⁻⁸ |
+| AR Jiraiya Blade | ~22 g | ~5.400 × 10⁻⁶ |
+| CWD Defense Ring + Metal CWD | ~19 g | 5.592 × 10⁻⁶ |
+| RC Free Shaft Core | 3 g | 2.70 × 10⁻⁸ |
+| **Total** | **~47 g** | **~11.005 × 10⁻⁶ kg·m²** |
+
+**L₀_compact** = 11.005×10⁻⁶ × 620 = **6.83 mN·m·s**
+
+τ_FSC (m = 47 g) = 0.07 × 0.047 × 9.81 × 0.001 = **3.228 × 10⁻⁵ N·m**
+
+| Phase | ω range | Δω | Duration |
+|---|---|---|---|
+| Launch → battle | 620 → 372 | 248 | **84.6 s** |
+| Battle → wobble | 372 → 250 | 122 | **41.6 s** |
+| Wobble → fall | 250 → 50 | 200 | **68.2 s** |
+| **Total** | — | 570 | **194.4 s (~3.2 min)** |
+
+The 3.2 min theoretical time is the longest compact combo analyzed in this HMS session. The Free Shaft Core's metal-sharp tip at r_tip = 1.0 mm is the key — it produces one-tenth the friction torque of a rubber flat tip (μ_eff 0.07 vs 0.30, r_tip 1.0 vs 2.5 mm), extending endurance at the cost of orbital activity.
+
+**Free Shaft Core vs Metal Change Core (MCC):**
+
+MCC compact combo (the competitive benchmark): fixed shaft, similar tip profile.  
+- MCC provides a firm shaft-to-tip restoring moment path — each lateral perturbation is resisted more efficiently
+- MCC compact maintains more of its theoretical spin time in actual battle
+- FSC compact loses spin faster per hit (reduced restoring moment → more precession per collision) 
+
+In practice: FSC compact achieves perhaps 60–70% of its theoretical spin time. MCC compact achieves perhaps 75–85%. Both start at similar L₀, but MCC exits the battle with more L remaining — MCC wins the late-battle outstall.
+
+Against Defense: FSC's docile orbit (no lateral velocity from the low-friction tip) means it does not pursue the opponent. It sits near the center and spins. A wall-based Defense combo can outlast it due to MCC's passive orbit being less disruptive than a Bearing Core slow drift. Destabilizing the wall defense "a bit" (user) is the only FSC compact path to victory here.
+
+### Competitive Standing
+
+**Smash Phoenix AR (extracted):** Legitimate defense AR in LS + Reverse Defenser + BC2 setup. Not top-tier — Metal Ape and Circle Upper perform better in defense roles due to uniform mass distribution. Accessible from RBA4/5 (collector-item source). The AR's best use case is in the stock RBA5 configuration (technically: Smash Phoenix + Reverse Defenser stock + BC2 substitution) because no better combination can overcome the imbalance penalty.
+
+**CWD Reverse Defenser (extracted):** Top-tier defense/stamina CWD. Functionally equivalent to CWD God Ring; slightly lighter (17 g vs 18 g) and marginally lower I. Should be treated as an accessible God Ring substitute — both achieve the same OWD ceiling and smooth-perimeter contact profile. Competitive value is high; historical undervaluation is an artefact of obscurity, not performance.
+
+**CWD Wing Attacker (extracted from Dranzer MF):** No competitive role. Same liabilities as CWD Free Crusher (CASE 1881) with fewer wings — still free-spinning, still extends past the AR, still contributes minimal I. The design is interesting as a historical predecessor to the multi-wing escalation of Free Crusher but does not improve on its fundamental failure mode.
+
+**Free Shaft Core (extracted):** Second-rate compact RC. Matches MCC in tip friction profile but consistently underperforms due to reduced gyroscopic restoring efficiency. The sub-3 g mass and metal sharp tip make it theoretically excellent for endurance; the free shaft mechanism limits how much of that theoretical endurance is realised in practice. Usable in Jiraiya Blade compact combos when MCC is unavailable; not a replacement for MCC in serious competitive play.
+
+**Stock Dranzer MF:** Lowest L₀ stock assembly of the HMS group. The combination of Wing Attacker's near-zero effective CWD contribution and the Free Shaft Core's negligible I makes the stock assembly an almost-pure Smash Phoenix flywheel with non-functional support parts. Unlike Slash Riger MS (active self-destruction), Dranzer MF stock fails passively — it doesn't break itself, it simply brings nothing to the table.

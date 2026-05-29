@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { touchInputState } from '../../game/hooks/useGameInput';
 
 // ─── Orientation hook ─────────────────────────────────────────────────────────
@@ -16,6 +16,10 @@ function useIsPortrait() {
 }
 
 // ─── Touch helpers ─────────────────────────────────────────────────────────────
+function vibrate(ms: number) {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(ms);
+}
+
 function applyAction(action: string, active: boolean) {
   if (action === 'chargeHeld') { touchInputState.chargeHeld = active; return; }
   if (action === 'specialTap') { if (active) touchInputState.specialTap = true; return; }
@@ -23,49 +27,130 @@ function applyAction(action: string, active: boolean) {
 }
 function useTouchBtn(action: string) {
   return {
-    onPointerDown: (e: React.PointerEvent) => { e.currentTarget.setPointerCapture(e.pointerId); applyAction(action, true); },
+    onPointerDown: (e: React.PointerEvent) => { e.currentTarget.setPointerCapture(e.pointerId); applyAction(action, true); vibrate(18); },
     onPointerUp:   (_e: React.PointerEvent) => { applyAction(action, false); },
     onPointerCancel: (_e: React.PointerEvent) => { applyAction(action, false); },
   };
 }
 
-// ─── D-pad ─────────────────────────────────────────────────────────────────────
-function DPad({ size = 96 }: { size?: number }) {
-  const up    = useTouchBtn('moveUp');
-  const down  = useTouchBtn('moveDown');
-  const left  = useTouchBtn('moveLeft');
-  const right = useTouchBtn('moveRight');
+// ─── Virtual joystick ─────────────────────────────────────────────────────────
+// Replaces the old 4-button D-pad. The thumb moves in 2D to the pointer
+// position; diagonal presses activate both axes simultaneously.
+function VirtualJoystick({ size = 96 }: { size?: number }) {
+  const [thumbOffset, setThumbOffset] = useState({ x: 0, y: 0 });
+  const [active, setActive] = useState(false);
+  const baseRef   = useRef<HTMLDivElement>(null);
+  const ptrRef    = useRef<number | null>(null);
 
-  const armColor = 'linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)';
-  const shadow   = '0 3px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.3)';
+  const maxTravel = size * 0.33;   // max thumb displacement from center
+  const deadZone  = 0.22;
+  const thumbSz   = Math.round(size * 0.38);
 
-  const arm = (label: string, h: ReturnType<typeof useTouchBtn>, extra: React.CSSProperties) => (
-    <div {...h} style={{
-      position: 'absolute',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: armColor, boxShadow: shadow,
-      color: 'rgba(255,255,255,0.5)', fontSize: size * 0.13, fontWeight: 900,
-      cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-      ...extra,
-    }}>{label}</div>
-  );
+  function applyAxis(clientX: number, clientY: number) {
+    if (!baseRef.current) return;
+    const rect = baseRef.current.getBoundingClientRect();
+    const cx = rect.left + size / 2;
+    const cy = rect.top  + size / 2;
 
-  const arm1 = Math.round(size * 0.333);
-  const arm2 = size - arm1 * 2;
+    let dx = clientX - cx;
+    let dy = clientY - cy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist > maxTravel) {
+      const scale = maxTravel / dist;
+      dx *= scale; dy *= scale;
+    }
+
+    setThumbOffset({ x: dx, y: dy });
+
+    const nx = dx / maxTravel;
+    const ny = dy / maxTravel;
+    touchInputState.moveLeft  = nx < -deadZone;
+    touchInputState.moveRight = nx > deadZone;
+    touchInputState.moveUp    = ny < -deadZone;
+    touchInputState.moveDown  = ny > deadZone;
+  }
+
+  function resetAxis() {
+    setThumbOffset({ x: 0, y: 0 });
+    touchInputState.moveLeft = touchInputState.moveRight = touchInputState.moveUp = touchInputState.moveDown = false;
+  }
+
+  // Direction indicator arrows — light up when that axis side is active
+  const nx = thumbOffset.x / maxTravel;
+  const ny = thumbOffset.y / maxTravel;
+  const arrowColor = (on: boolean) => on ? 'rgba(139,92,246,0.85)' : 'rgba(255,255,255,0.12)';
+  const arrowEdge  = Math.round(size * 0.08);
 
   return (
-    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-      {/* horizontal bar */}
-      <div style={{ position: 'absolute', top: arm1, left: 0, width: size, height: arm2, background: armColor, boxShadow: shadow, borderRadius: Math.round(size * 0.05) }} />
-      {/* vertical bar */}
-      <div style={{ position: 'absolute', top: 0, left: arm1, width: arm2, height: size, background: armColor, boxShadow: shadow, borderRadius: Math.round(size * 0.05) }} />
-      {/* center nub */}
-      <div style={{ position: 'absolute', top: arm1, left: arm1, width: arm2, height: arm2, background: '#111', zIndex: 2 }} />
-      {/* arms */}
-      {arm('▲', up,    { top: 2,      left: arm1, width: arm2, height: arm1 - 2, borderRadius: `${size*0.05}px ${size*0.05}px 0 0`, zIndex: 3 })}
-      {arm('▼', down,  { bottom: 2,   left: arm1, width: arm2, height: arm1 - 2, borderRadius: `0 0 ${size*0.05}px ${size*0.05}px`, zIndex: 3 })}
-      {arm('◀', left,  { left: 2,     top: arm1,  width: arm1 - 2, height: arm2, borderRadius: `${size*0.05}px 0 0 ${size*0.05}px`, zIndex: 3 })}
-      {arm('▶', right, { right: 2,    top: arm1,  width: arm1 - 2, height: arm2, borderRadius: `0 ${size*0.05}px ${size*0.05}px 0`, zIndex: 3 })}
+    <div
+      ref={baseRef}
+      data-testid="virtual-joystick"
+      style={{
+        position: 'relative', width: size, height: size, borderRadius: '50%',
+        background: 'radial-gradient(circle at 35% 30%, #2a2a2a 0%, #111 100%)',
+        border: '2px solid rgba(255,255,255,0.09)',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -2px 5px rgba(0,0,0,0.5)',
+        touchAction: 'none', userSelect: 'none', cursor: 'pointer', flexShrink: 0,
+      }}
+      onPointerDown={(e) => {
+        if (ptrRef.current !== null) return;
+        ptrRef.current = e.pointerId;
+        e.currentTarget.setPointerCapture(e.pointerId);
+        setActive(true); vibrate(15);
+        applyAxis(e.clientX, e.clientY);
+      }}
+      onPointerMove={(e) => {
+        if (e.pointerId !== ptrRef.current) return;
+        applyAxis(e.clientX, e.clientY);
+      }}
+      onPointerUp={(e) => {
+        if (e.pointerId !== ptrRef.current) return;
+        ptrRef.current = null; setActive(false); resetAxis();
+      }}
+      onPointerCancel={(e) => {
+        if (e.pointerId !== ptrRef.current) return;
+        ptrRef.current = null; setActive(false); resetAxis();
+      }}
+    >
+      {/* Axis guide cross + inner ring */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: '50%', left: '12%', right: '12%', height: 1, background: 'rgba(255,255,255,0.06)', transform: 'translateY(-50%)' }} />
+        <div style={{ position: 'absolute', left: '50%', top: '12%', bottom: '12%', width: 1, background: 'rgba(255,255,255,0.06)', transform: 'translateX(-50%)' }} />
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          width: size * 0.52, height: size * 0.52, borderRadius: '50%',
+          border: '1px solid rgba(255,255,255,0.05)',
+          transform: 'translate(-50%, -50%)',
+        }} />
+      </div>
+
+      {/* Direction arrows — illuminate when axis active */}
+      <div style={{ position: 'absolute', top: arrowEdge, left: '50%', transform: 'translateX(-50%)',
+        color: arrowColor(ny < -deadZone), fontSize: size * 0.13, lineHeight: 1, pointerEvents: 'none' }}>▲</div>
+      <div style={{ position: 'absolute', bottom: arrowEdge, left: '50%', transform: 'translateX(-50%)',
+        color: arrowColor(ny > deadZone), fontSize: size * 0.13, lineHeight: 1, pointerEvents: 'none' }}>▼</div>
+      <div style={{ position: 'absolute', left: arrowEdge, top: '50%', transform: 'translateY(-50%)',
+        color: arrowColor(nx < -deadZone), fontSize: size * 0.13, lineHeight: 1, pointerEvents: 'none' }}>◀</div>
+      <div style={{ position: 'absolute', right: arrowEdge, top: '50%', transform: 'translateY(-50%)',
+        color: arrowColor(nx > deadZone), fontSize: size * 0.13, lineHeight: 1, pointerEvents: 'none' }}>▶</div>
+
+      {/* Moveable thumb */}
+      <div style={{
+        position: 'absolute',
+        width: thumbSz, height: thumbSz, borderRadius: '50%',
+        background: active
+          ? 'radial-gradient(circle at 38% 35%, #7c3aed 0%, #4c1d95 100%)'
+          : 'radial-gradient(circle at 38% 35%, #52525b 0%, #27272a 100%)',
+        border: `2px solid ${active ? 'rgba(139,92,246,0.85)' : 'rgba(113,113,122,0.5)'}`,
+        boxShadow: active
+          ? '0 2px 10px rgba(0,0,0,0.7), 0 0 14px rgba(109,40,217,0.55)'
+          : '0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.10)',
+        left: '50%', top: '50%',
+        transform: `translate(calc(-50% + ${thumbOffset.x}px), calc(-50% + ${thumbOffset.y}px))`,
+        transition: active ? 'none' : 'transform 0.13s ease-out, background 0.1s, border-color 0.1s, box-shadow 0.1s',
+        pointerEvents: 'none',
+      }} />
     </div>
   );
 }
@@ -113,7 +198,7 @@ function OvalBtn({
   const h = useTouchBtn(action);
   const handlers = onPress
     ? {
-        onPointerDown: (e: React.PointerEvent) => { e.currentTarget.setPointerCapture(e.pointerId); onPress(); },
+        onPointerDown: (e: React.PointerEvent) => { e.currentTarget.setPointerCapture(e.pointerId); vibrate(18); onPress(); },
         onPointerUp:   (_e: React.PointerEvent) => {},
         onPointerCancel: (_e: React.PointerEvent) => {},
       }
@@ -185,9 +270,9 @@ function ZoomStrip({
   };
   return (
     <div style={{ display: 'flex', gap: 3 }}>
-      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onZoomIn?.(); }}>+</div>
-      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onZoomReset?.(); }}>0</div>
-      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onZoomOut?.(); }}>−</div>
+      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); vibrate(12); onZoomIn?.(); }}>+</div>
+      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); vibrate(12); onZoomReset?.(); }}>0</div>
+      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); vibrate(12); onZoomOut?.(); }}>−</div>
     </div>
   );
 }
@@ -234,9 +319,12 @@ interface ShellProps {
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onZoomReset?: () => void;
+  controlsHidden: boolean;
+  onToggleControls: () => void;
 }
 
-function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: ShellProps) {
+function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls }: ShellProps) {
+  const T = '0.28s ease';
   return (
     <div style={{
       position: 'relative',
@@ -247,8 +335,13 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: 
       boxShadow: '0 0 0 1.5px rgba(255,255,255,0.18), 0 24px 80px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.22)',
       display: 'flex', flexDirection: 'column', overflow: 'visible',
     }}>
-      {/* Shoulder row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 20, paddingRight: 20 }}>
+      {/* Shoulder row — collapses when controls hidden */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between',
+        paddingLeft: 20, paddingRight: 20,
+        maxHeight: controlsHidden ? 0 : 40, overflow: 'hidden',
+        transition: `max-height ${T}`,
+      }}>
         <ShoulderBtn label="L" action="chargeHeld" side="L" />
         <ShoulderBtn label="R" action="specialTap" side="R" />
       </div>
@@ -256,20 +349,28 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: 
       {/* Main row */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4px 14px 10px', gap: 10, minHeight: 0 }}>
 
-        {/* Left — D-pad + SELECT/START */}
-        <div style={{ width: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, flexShrink: 0 }}>
-          <DPad size={90} />
+        {/* Left — joystick + SELECT/START (collapses) */}
+        <div style={{
+          width: controlsHidden ? 0 : '20%', overflow: 'hidden',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          gap: 12, flexShrink: 0,
+          transition: `width ${T}`,
+        }}>
+          <VirtualJoystick size={90} />
           <div style={{ display: 'flex', gap: 8 }}>
             <OvalBtn label="SELECT" action="specialTap" />
             <OvalBtn label="START"  onPress={onExit} />
           </div>
         </div>
 
-        {/* Center — screen */}
+        {/* Center — screen (always visible, expands when controls hidden) */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, minWidth: 0, minHeight: 0, height: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingBottom: 2 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>BEYBLADE GAME</div>
-            <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+              <ToggleBtn hidden={controlsHidden} onToggle={onToggleControls} />
+            </div>
           </div>
           <ScreenBezel style={{ flex: 1, width: '100%', minHeight: 0 }}>
             {children}
@@ -279,8 +380,14 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: 
           </div>
         </div>
 
-        {/* Right — power LED + action cluster + speaker */}
-        <div style={{ width: '26%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: '100%', paddingTop: 4, paddingBottom: 8, flexShrink: 0 }}>
+        {/* Right — action cluster (collapses) */}
+        <div style={{
+          width: controlsHidden ? 0 : '26%', overflow: 'hidden',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'space-between', height: '100%',
+          paddingTop: 4, paddingBottom: 8, flexShrink: 0,
+          transition: `width ${T}`,
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, alignSelf: 'flex-end', paddingRight: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e, 0 0 12px rgba(34,197,94,0.5)' }} />
             <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>POWER</span>
@@ -296,7 +403,8 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: 
 }
 
 // ─── PORTRAIT layout (GBC style) ──────────────────────────────────────────────
-function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: ShellProps) {
+function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls }: ShellProps) {
+  const T = '0.28s ease';
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -305,21 +413,27 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: S
       overflow: 'hidden',
     }}>
 
-      {/* ── L/R shoulder buttons above screen ──────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 10, paddingRight: 10, paddingTop: 4, flexShrink: 0 }}>
+      {/* ── L/R shoulder buttons above screen (collapse when hidden) ── */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between',
+        paddingLeft: 10, paddingRight: 10, paddingTop: 4, flexShrink: 0,
+        maxHeight: controlsHidden ? 0 : 36, overflow: 'hidden',
+        transition: `max-height ${T}`,
+      }}>
         <SmallShoulderBtn label="L" action="chargeHeld" side="L" />
         <SmallShoulderBtn label="R" action="specialTap" side="R" />
       </div>
 
-      {/* ── Screen section ──────────────────────────────── */}
+      {/* ── Screen section — grows when controls hidden ─── */}
       <div style={{
         width: '100%',
         aspectRatio: '1 / 1',
-        maxHeight: '56vh',
+        maxHeight: controlsHidden ? '96vh' : '56vh',
         flexShrink: 0,
         background: '#0a0b14',
         position: 'relative',
         boxShadow: 'inset 0 -4px 16px rgba(0,0,0,0.7)',
+        transition: 'max-height 0.28s ease',
       }}>
         {/* Bezel top accent */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: 'rgba(255,255,255,0.04)' }} />
@@ -334,43 +448,49 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: S
             {children}
           </div>
         </div>
-        {/* GAME BOY COLOR label at bottom of bezel */}
+        {/* GAME BOY COLOR label + toggle at bottom of bezel */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
           height: 28, background: '#0a0b14',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          paddingLeft: 10, paddingRight: 10, gap: 4,
         }}>
-          <span style={{ fontSize: 11, fontWeight: 900, fontStyle: 'italic', color: '#e5e7eb', letterSpacing: '0.05em' }}>GAME BOY</span>
-          <span style={{ fontSize: 11, fontWeight: 900, color: '#7c3aed', letterSpacing: '0.1em' }}>COLOR</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 11, fontWeight: 900, fontStyle: 'italic', color: '#e5e7eb', letterSpacing: '0.05em' }}>GAME BOY</span>
+            <span style={{ fontSize: 11, fontWeight: 900, color: '#7c3aed', letterSpacing: '0.1em' }}>COLOR</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+            <ToggleBtn hidden={controlsHidden} onToggle={onToggleControls} />
+          </div>
         </div>
       </div>
 
-      {/* ── Controller body ───────────────────────────── */}
+      {/* ── Controller body — collapses when controls hidden ── */}
       <div style={{
-        flex: 1,
+        maxHeight: controlsHidden ? 0 : '45vh',
+        overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
-        padding: '4px 16px 10px',
+        padding: controlsHidden ? 0 : '4px 16px 10px',
         gap: 0,
         minHeight: 0,
         position: 'relative',
+        transition: 'max-height 0.28s ease, padding 0.28s ease',
       }}>
-        {/* Nintendo emboss + zoom strip */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, flexShrink: 0 }}>
+        {/* Nintendo emboss */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 4, flexShrink: 0 }}>
           <div style={{
             fontSize: 13, fontWeight: 700, letterSpacing: '0.2em',
             color: 'rgba(0,0,0,0.25)', textTransform: 'uppercase',
             textShadow: '0 1px 0 rgba(255,255,255,0.08)',
           }}>Nintendo</div>
-          <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
         </div>
 
         {/* Main controls row */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 0 }}>
-          {/* D-pad */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45%' }}>
-            <DPad size={120} />
+            <VirtualJoystick size={120} />
           </div>
-          {/* Action cluster */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45%' }}>
             <ActionCluster btnSize={48} containerSize={130} />
           </div>
@@ -395,6 +515,33 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: S
   );
 }
 
+// ─── Controls visibility toggle button ───────────────────────────────────────
+function ToggleBtn({ hidden, onToggle }: { hidden: boolean; onToggle: () => void }) {
+  return (
+    <div
+      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); vibrate(12); onToggle(); }}
+      title={hidden ? 'Show controls' : 'Hide controls'}
+      style={{
+        width: 22, height: 22, borderRadius: 4,
+        background: hidden
+          ? 'linear-gradient(180deg, #7c3aed 0%, #5b21b6 100%)'
+          : 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
+        border: `1px solid ${hidden ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.12)'}`,
+        boxShadow: hidden
+          ? '0 0 8px rgba(109,40,217,0.5), inset 0 1px 0 rgba(255,255,255,0.2)'
+          : '0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: hidden ? '#e9d5ff' : 'rgba(255,255,255,0.55)',
+        fontSize: 11, cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+        transition: 'background 0.2s, box-shadow 0.2s',
+        flexShrink: 0,
+      }}
+    >
+      {hidden ? '⊕' : '⊖'}
+    </div>
+  );
+}
+
 // ─── GameShell (root) ─────────────────────────────────────────────────────────
 export interface GameShellProps {
   children: React.ReactNode;
@@ -414,7 +561,19 @@ export function GameShell({
   onZoomReset,
 }: GameShellProps) {
   const portrait = useIsPortrait();
-  const shellProps = { onExit, onZoomIn, onZoomOut, onZoomReset };
+  const [controlsHidden, setControlsHidden] = useState<boolean>(() => {
+    try { return localStorage.getItem('bey.hideControls') === '1'; } catch { return false; }
+  });
+
+  function toggleControls() {
+    setControlsHidden(prev => {
+      const next = !prev;
+      try { localStorage.setItem('bey.hideControls', next ? '1' : '0'); } catch { /* ignore */ }
+      return next;
+    });
+  }
+
+  const shellProps = { onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls: toggleControls };
 
   return (
     <div className="game-shell">

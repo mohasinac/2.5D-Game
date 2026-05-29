@@ -1,16 +1,18 @@
 // Canonical unit system for the client.
-// World unit is centimeters. Render scale adapts to viewport so the game looks
-// consistent across all screen sizes (mobile, desktop, 4K, ultrawide).
+// World unit is centimeters. pxPerCm is FIXED at PX_PER_CM_BASE (24) — never
+// viewport-relative. Changing viewport size changes the visible world area (more
+// or less of the arena is visible), not the size of world objects. This prevents
+// warping: a circle stays a circle on any viewport shape.
 //
 // Design:
-//   PX_PER_CM_BASE  = 24   — fixed reference: 1cm at REFERENCE_VMIN viewport height
-//   REFERENCE_VMIN  = 1080 — short axis (px) at which PX_PER_CM_BASE applies
-//   getPxPerCm()           — live value, scales with viewport short-axis
+//   PX_PER_CM_BASE  = 24   — always 1cm = 24px (constant, device-independent)
+//   REFERENCE_VMIN  = 1080 — kept for physics/seed compatibility only
+//   getPxPerCm()           — always returns PX_PER_CM_BASE (24)
 //   PHYSICS_SCALE   = 16   — server physics space multiplier (never changes)
 //
-// At 1080px short-axis  → getPxPerCm() == 24  (reference, same as before)
-// At 375px  mobile      → getPxPerCm() ≈ 8.3  (world shrinks to fit)
-// At 2160px 4K          → getPxPerCm() ≈ 48   (world expands to fill)
+// Zoom is the only mechanism that changes how large world objects appear on screen.
+// On viewport resize the camera zoom limits are recomputed so the arena still fits,
+// but pxPerCm itself is invariant.
 
 export const PX_PER_CM_BASE = 24;    // reference px/cm — use for storage/physics ONLY
 export const REFERENCE_VMIN = 1080;  // viewport short-axis at which PX_PER_CM_BASE applies
@@ -21,17 +23,11 @@ export const CM_PER_M  = 100;
 let cachedPxPerCm = PX_PER_CM_BASE;
 
 /**
- * Recompute the live px/cm ratio from viewport dimensions.
- * Optionally pass the renderer's own screen size for accuracy when the game
- * canvas doesn't fill the entire browser window.
- * Called automatically on window resize and from WorldTransform.setScreen().
+ * No-op kept for API compatibility — pxPerCm is always PX_PER_CM_BASE (24).
+ * Viewport size does NOT affect px/cm; it affects how much of the world is visible.
  */
-export function recomputePxPerCm(screenW?: number, screenH?: number): number {
-  const sw = screenW ?? (typeof window !== "undefined" ? window.innerWidth  : REFERENCE_VMIN);
-  const sh = screenH ?? (typeof window !== "undefined" ? window.innerHeight : REFERENCE_VMIN);
-  const vmin = Math.min(sw, sh);
-  // Floor at 4 to avoid divide-by-zero in tiny iframes / test environments.
-  cachedPxPerCm = Math.max(4, (vmin / REFERENCE_VMIN) * PX_PER_CM_BASE);
+export function recomputePxPerCm(_screenW?: number, _screenH?: number): number {
+  cachedPxPerCm = PX_PER_CM_BASE;
   return cachedPxPerCm;
 }
 
@@ -52,8 +48,4 @@ export const physicsToCm = (p:  number): number => p  / (PX_PER_CM_BASE * PHYSIC
 // Effective scale at a given zoom level.
 export const effectivePxPerCm = (zoom: number): number => cachedPxPerCm * zoom;
 
-// ── Global resize listener ────────────────────────────────────────────────────
-if (typeof window !== "undefined") {
-  recomputePxPerCm();
-  window.addEventListener("resize", () => recomputePxPerCm());
-}
+// pxPerCm is fixed — no resize listener needed.

@@ -2,7 +2,7 @@
 // Owns the camera state. Consumed by the renderer + admin previews.
 // See plan: Parts 1, 1b, 2, 15.
 
-import { getPxPerCm, recomputePxPerCm } from "@/constants/units";
+import { getPxPerCm } from "@/constants/units";
 
 export interface ViewportCm {
   x: number; y: number; w: number; h: number;     // world rectangle the screen frames
@@ -50,7 +50,7 @@ export class WorldTransform {
   setScreen(w: number, h: number) {
     this.screenW = w;
     this.screenH = h;
-    recomputePxPerCm(w, h);
+    // pxPerCm is fixed (24) — resizing the viewport changes visible world area, not object scale.
   }
 
   setArenaBounds(minX_cm: number, minY_cm: number, maxX_cm: number, maxY_cm: number, allowFreePan = false) {

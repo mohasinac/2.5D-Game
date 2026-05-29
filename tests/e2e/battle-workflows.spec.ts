@@ -15,6 +15,29 @@ import { tryLogin, gotoProtected, ss, filterErrors } from "./helpers/auth";
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Navigate via the new card carousel to start a game at /game/room. */
+async function startViaCarousel(page: Page, mode: "tryout" | "pvai" = "tryout"): Promise<boolean> {
+  const landed = await gotoProtected(page, "/game/battle");
+  if (!landed) return false;
+
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForTimeout(1_000);
+
+  const cardLabel = mode === "tryout" ? /tryout|solo|practice/i : /pvai|vs ai|ai battle/i;
+  const card = page.locator("button, [role='button'], [class*='card']").filter({ hasText: cardLabel }).first();
+  if (await card.isVisible({ timeout: 8_000 }).catch(() => false)) {
+    await card.click();
+    await page.waitForTimeout(800);
+  }
+
+  const startBtn = page.locator("button").filter({ hasText: /start|play|launch|let it rip/i }).first();
+  if (await startBtn.isVisible({ timeout: 6_000 }).catch(() => false)) await startBtn.click();
+
+  const atRoom = await page.waitForURL(/\/game\/room/, { timeout: 15_000 }).then(() => true).catch(() => false);
+  if (!atRoom) return page.locator("canvas").isVisible({ timeout: 10_000 }).catch(() => false);
+  return true;
+}
+
 /** Wait for canvas OR loading-progress — whichever appears first (game pages). */
 async function waitForGame(page: Page, timeout = 30_000) {
   await Promise.race([
@@ -57,8 +80,9 @@ test.describe("Public: Login page", () => {
   test("shows validation on empty submit", async ({ page }) => {
     await page.goto("/login");
     await settle(page, 600);
-    await page.click('button[type="submit"]');
-    await page.waitForTimeout(600);
+    // Button is disabled when fields are empty — that IS the validation
+    const submitBtn = page.locator('button[type="submit"]');
+    await expect(submitBtn).toBeDisabled({ timeout: 5_000 });
     await ss(page, "02b-login-empty-submit");
   });
 });
@@ -187,6 +211,115 @@ test.describe("Tryout: Game canvas (2D)", () => {
     await page.waitForTimeout(2_000);
 
     expect(filterErrors(errors)).toHaveLength(0);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3b. Launch QTE — tilt + position + power charge
+// ─────────────────────────────────────────────────────────────────────────────
+
+test.describe("Launch QTE: tilt / position / power (carousel flow)", () => {
+  test.setTimeout(120_000);
+
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
+
+  test("full launch QTE cycle — tilt, position, charge, release", async ({ page }) => {
+    const started = await startViaCarousel(page, "tryout");
+    if (!started) { await ss(page, "LQ01-unauth"); return; }
+
+    await page.waitForLoadState("domcontentloaded");
+    // Wait out the 3s warmup countdown
+    await page.waitForTimeout(3_500);
+    await ss(page, "LQ01-post-warmup");
+
+    // Detect launch phase (tilt/power/charge text appears)
+    const launchEl = page.locator("text=/tilt|charge|power|launch|Let It Rip/i").first();
+    const inLaunch = await launchEl.waitFor({ state: "visible", timeout: 20_000 }).then(() => true).catch(() => false);
+
+    if (inLaunch) {
+      await ss(page, "LQ01-launch-phase");
+      console.log("[LQ01] Launch phase visible");
+
+      // Tilt left
+      await page.keyboard.press("KeyA");
+      await page.waitForTimeout(200);
+      await ss(page, "LQ01-tilt-left");
+
+      // Tilt right (two presses to cross center)
+      await page.keyboard.press("KeyD");
+      await page.keyboard.press("KeyD");
+      await page.waitForTimeout(200);
+      await ss(page, "LQ01-tilt-right");
+
+      // Position back to center-ish
+      await page.keyboard.press("KeyA");
+      await page.waitForTimeout(150);
+
+      // Position adjustment
+      await page.keyboard.press("KeyW");
+      await page.waitForTimeout(150);
+      await page.keyboard.press("KeyS");
+      await page.waitForTimeout(150);
+      await ss(page, "LQ01-position-set");
+
+      // Hold Space to charge power
+      await page.keyboard.down("Space");
+      await page.waitForTimeout(2_000);
+      await ss(page, "LQ01-power-charging");
+
+      // Release to launch
+      await page.keyboard.up("Space");
+      await page.waitForTimeout(500);
+      await ss(page, "LQ01-launched");
+
+      console.log("[LQ01] Charge-release cycle complete");
+    } else {
+      await ss(page, "LQ01-no-launch-phase");
+      console.log("[LQ01] Launch phase not visible — game may have started immediately");
+    }
+
+    // Canvas should be visible after launch
+    await page.locator("canvas").waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
+    await ss(page, "LQ01-canvas-active");
+  });
+
+  test("PvAI launch — AI auto-launches, human completes full charge cycle", async ({ page }) => {
+    const started = await startViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "LQ02-unauth"); return; }
+
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(4_000);
+    await ss(page, "LQ02-warmup");
+
+    const launchEl = page.locator("text=/launch|power|charge|tilt|Let It Rip/i").first();
+    const inLaunch = await launchEl.waitFor({ state: "visible", timeout: 15_000 }).then(() => true).catch(() => false);
+
+    if (inLaunch) {
+      await ss(page, "LQ02-launch-phase");
+
+      // Set tilt and position
+      await page.keyboard.press("KeyD");
+      await page.waitForTimeout(150);
+      await page.keyboard.press("KeyW");
+      await page.waitForTimeout(150);
+
+      // Max charge hold
+      await page.keyboard.down("Space");
+      await page.waitForTimeout(2_500);
+      await ss(page, "LQ02-full-charge");
+
+      await page.keyboard.up("Space");
+      await page.waitForTimeout(1_000);
+      await ss(page, "LQ02-launched");
+
+      console.log("[LQ02] PvAI launch QTE complete");
+    } else {
+      console.log("[LQ02] Launch phase not triggered — already in-progress");
+    }
+
+    await page.locator("canvas").waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
+    await page.waitForTimeout(5_000);
+    await ss(page, "LQ02-battle-running");
   });
 });
 
