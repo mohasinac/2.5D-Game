@@ -113,8 +113,8 @@ export function QTEOverlay({ prompt, onKeyPress, onDismiss }: QTEOverlayProps) {
   return (
     <div
       data-testid="qte-prompt"
-      className={`fixed top-1/2 left-1/2 bg-[rgba(15,23,42,0.97)] rounded-[16px] px-7 py-5 min-w-[280px] text-center z-[200] [transition:transform_0.05s] shadow-[0_4px_32px_rgba(0,0,0,0.6)] border-2 ${result === "success" ? "border-[#22c55e]" : result === "failed" ? "border-[#ef4444]" : "border-[#eab308]"}`}
-      style={{ transform: `translate(-50%, -50%)${shake ? " translateX(-6px)" : ""}`, animation: shake ? "shake 0.3s ease" : undefined }}
+      className={`bg-[rgba(15,23,42,0.97)] rounded-[16px] px-7 py-5 min-w-[280px] text-center z-[200] [transition:transform_0.05s] shadow-[0_4px_32px_rgba(0,0,0,0.6)] border-2 ${result === "success" ? "border-[#22c55e]" : result === "failed" ? "border-[#ef4444]" : "border-[#eab308]"}`}
+      style={{ transform: shake ? "translateX(-6px)" : undefined, animation: shake ? "shake 0.3s ease" : undefined }}
     >
       {/* Header */}
       <div className="text-[11px] text-theme-yellow font-bold uppercase tracking-[0.12em] mb-[6px]">

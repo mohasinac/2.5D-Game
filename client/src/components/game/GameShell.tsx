@@ -151,6 +151,19 @@ export function GameShell({ children, show25DRotate = false }: GameShellProps) {
       {/* ── Game viewport slot (children = canvas + overlays) ── */}
       <div className="game-viewport-slot">
         {children}
+        {/* Controls toggle — inside viewport so it stays within the game window */}
+        <button
+          onClick={() => setControlsVisible(v => !v)}
+          style={{
+            position: 'absolute', top: 8, right: 8, zIndex: 50,
+            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.45)', borderRadius: '8px',
+            padding: '3px 10px', fontSize: '10px', fontWeight: 700,
+            letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer',
+          }}
+        >
+          {controlsVisible ? 'HIDE' : 'CTRL'}
+        </button>
       </div>
 
       {/* ── Right gutter ─────────────────────────────────── */}
@@ -174,19 +187,6 @@ export function GameShell({ children, show25DRotate = false }: GameShellProps) {
         </div>
       )}
 
-      {/* ── Controls toggle ───────────────────────────────── */}
-      <button
-        onClick={() => setControlsVisible(v => !v)}
-        style={{
-          position: 'absolute', top: 8, right: 8, zIndex: 50,
-          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-          color: 'rgba(255,255,255,0.45)', borderRadius: '8px',
-          padding: '3px 10px', fontSize: '10px', fontWeight: 700,
-          letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer',
-        }}
-      >
-        {controlsVisible ? 'HIDE' : 'CTRL'}
-      </button>
     </div>
   );
 }

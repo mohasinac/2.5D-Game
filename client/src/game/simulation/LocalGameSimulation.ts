@@ -8,6 +8,7 @@ import type { ServerArenaState, ServerBeyblade, ServerGameState } from '../../ty
 import type { GameRoomConfig } from '../../types/gameRoom';
 import type { FullGameInput } from '../hooks/useGameInput';
 import { AIController, type BeybladeSnapshot } from '../ai/AIController';
+import { PHYSICS_SCALE } from '../../constants/units';
 
 // ─── Physics constants (mirror TryoutGamePage) ────────────────────────────────
 const FRICTION     = 0.97;
@@ -233,6 +234,9 @@ export class LocalGameSimulation {
         }
       } catch { /* use player defaults */ }
     }
+    // Ensure valid spin values regardless of Firestore data quality
+    if (!playerBey.maxSpin || playerBey.maxSpin <= 0) playerBey.maxSpin = 2192;
+    playerBey.spin = playerBey.maxSpin;
     this.myBeyId = 'player';
     this.beyblades.set('player', playerBey);
 
@@ -425,8 +429,8 @@ export class LocalGameSimulation {
       }
     }
 
-    // Check win condition (pvai / story-battle)
-    if (this.config.roomType === 'pvai' || this.config.roomType === 'story-battle') {
+    // Check win condition (pvai / story-battle) — require at least 0.5s elapsed to prevent false start wins
+    if (this.elapsed >= 0.5 && (this.config.roomType === 'pvai' || this.config.roomType === 'story-battle')) {
       const actives = Array.from(this.beyblades.values()).filter(b => b.isActive);
       if (actives.length <= 1) {
         this.status = 'finished';
@@ -442,6 +446,19 @@ export class LocalGameSimulation {
 
   // ─── Emit state snapshot ──────────────────────────────────────────────────
   private emitSnapshot(error: string | null = null) {
+    // Renderer expects server physics-space coords (arena_px * PHYSICS_SCALE).
+    // LocalGameSimulation physics runs in plain arena-pixel space, so scale on output.
+    const scaledBeyblades = new Map<string, ServerBeyblade>();
+    for (const [id, bey] of this.beyblades) {
+      scaledBeyblades.set(id, {
+        ...bey,
+        x: bey.x * PHYSICS_SCALE,
+        y: bey.y * PHYSICS_SCALE,
+        velocityX: (bey.velocityX ?? 0) * PHYSICS_SCALE,
+        velocityY: (bey.velocityY ?? 0) * PHYSICS_SCALE,
+      });
+    }
+
     const gameState: ServerGameState = {
       status: this.status === 'in-progress' ? 'in-progress'
         : this.status === 'finished' ? 'finished'
@@ -454,13 +471,13 @@ export class LocalGameSimulation {
       winner: this.winner,
       matchId: 'local',
       arena: this.arena as ReturnType<typeof defaultArena>,
-      beyblades: this.beyblades,
+      beyblades: scaledBeyblades,
       launchTimer: this.launchTimer,
     };
 
     this.onSnapshot({
       gameState,
-      beyblades: new Map(this.beyblades),
+      beyblades: scaledBeyblades,
       myBeyId: this.myBeyId,
       status: this.status,
       countdown: this.countdown,

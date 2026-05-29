@@ -63,7 +63,7 @@ export function CollisionQTEOverlay({
 
   return (
     <div
-      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/[.82] rounded-xl py-4 px-7 min-w-[360px] text-center text-white font-mono select-none border-2 border-[--bc] shadow-[0_0_24px_var(--bs)] z-[1000]"
+      className="bg-black/[.82] rounded-xl py-4 px-7 min-w-[360px] text-center text-white font-mono select-none border-2 border-[--bc] shadow-[0_0_24px_var(--bs)] z-[1000]"
       style={{ "--bc": barColor, "--bs": `${barColor}44` } as React.CSSProperties}
     >
       <div className="text-[18px] font-bold mb-2.5 tracking-[2px]">

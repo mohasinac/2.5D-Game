@@ -210,7 +210,14 @@ export function GameRoomPage() {
   const handleExit = useCallback(() => {
     if (!local) colyseus.room?.leave();
     simRef.current?.stop();
-    navigate(config?.roomType === 'tournament' ? '/game/2d/tournament' : '/game/battle');
+    const rt = config?.roomType;
+    if (rt === 'tournament') {
+      navigate(config?.tournamentId ? `/game/2d/tournament/${config.tournamentId}` : '/game/2d/tournament');
+    } else if (rt === 'pvp') {
+      navigate('/game/2d/battle/lobby');
+    } else {
+      navigate('/game/battle');
+    }
   }, [local, colyseus.room, navigate, config]);
 
   if (!config) return null;

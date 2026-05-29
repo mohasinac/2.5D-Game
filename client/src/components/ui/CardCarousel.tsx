@@ -36,8 +36,8 @@ export function CardCarousel({ cards, initialIndex = 0, className = '' }: CardCa
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') go(-1);
-      else if (e.key === 'ArrowRight') go(1);
+      if (e.key === 'ArrowLeft') { go(-1); e.preventDefault(); }
+      else if (e.key === 'ArrowRight') { go(1); e.preventDefault(); }
       else if (e.key === 'Enter' || e.key === ' ') {
         const card = cards[activeIndex];
         if (card && !card.disabled) card.onSelect();
