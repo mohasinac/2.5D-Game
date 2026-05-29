@@ -371,8 +371,15 @@ export class BeybladeGameRenderer {
       }
     }
 
-    this.updateCameraTarget(beyblades);
+    // Update screen size FIRST so zoom limits and camera init see the real canvas dimensions.
     this.world.setScreen(this.app.screen.width, this.app.screen.height);
+    // Pre-compute zoom limits before camera initialisation so the initial snap uses the
+    // correct fit-arena zoom rather than the 0.25 default.
+    if (beyblades.size > 0) {
+      const first = beyblades.values().next().value!;
+      this.world.computeZoomLimits(first.radius || 2.5);
+    }
+    this.updateCameraTarget(beyblades);
     this.world.tick();
     this.applyCameraTransform();
     this.updateArenaRotation(gameState);
@@ -416,10 +423,13 @@ export class BeybladeGameRenderer {
     if (target) {
       const cm = this.physicsToWorldCm(target.x, target.y);
       this.world.setFollowTarget(cm.x, cm.y);
-      if (!this.cameraInitialized) {
+      // Defer camera initialisation until the canvas has a real size (avoids a zoom=0.25
+      // lock that occurs when setScreen hasn't fired yet on the very first frame).
+      if (!this.cameraInitialized && this.world.screenW > 0 && this.world.screenH > 0) {
         this.world.snapTo(cm.x, cm.y);
-        // Initial zoom = fit-arena (minZoom).
-        this.world.setZoom(this.world.limits.minZoom, true);
+        // Start at 1.5× fit-arena so beyblades fill ~2/3 of the viewport and are clearly
+        // visible without the user needing to manually zoom in.
+        this.world.setZoom(this.world.limits.minZoom * 1.5, true);
         this.cameraInitialized = true;
       }
     }
@@ -942,13 +952,6 @@ export class BeybladeGameRenderer {
 
   private syncBeyblades(beyblades: Map<string, ServerBeyblade>) {
     const seen = new Set<string>();
-
-    // Recompute zoom limits using actual bey radius once we have one.
-    if (beyblades.size > 0) {
-      const first = beyblades.values().next().value!;
-      const radiusCm = first.radius || 2.5;
-      this.world.computeZoomLimits(radiusCm);
-    }
 
     beyblades.forEach((beyblade, id) => {
       seen.add(id);
