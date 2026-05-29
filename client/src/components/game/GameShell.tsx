@@ -101,11 +101,25 @@ function ActionCluster({ btnSize = 40, containerSize = 110 }: { btnSize?: number
   );
 }
 
-// ─── Small oval button ─────────────────────────────────────────────────────────
-function OvalBtn({ label, action, wide = false }: { label: string; action: string; wide?: boolean }) {
+// ─── Small oval button — supports bitmask action OR a direct onPress callback ──
+function OvalBtn({
+  label, action = '_noop', onPress, wide = false,
+}: {
+  label: string;
+  action?: string;
+  onPress?: () => void;
+  wide?: boolean;
+}) {
   const h = useTouchBtn(action);
+  const handlers = onPress
+    ? {
+        onPointerDown: (e: React.PointerEvent) => { e.currentTarget.setPointerCapture(e.pointerId); onPress(); },
+        onPointerUp:   (_e: React.PointerEvent) => {},
+        onPointerCancel: (_e: React.PointerEvent) => {},
+      }
+    : h;
   return (
-    <div {...h} style={{
+    <div {...handlers} style={{
       width: wide ? 52 : 44, height: 14, borderRadius: 7,
       background: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
       border: '1px solid rgba(0,0,0,0.45)',
@@ -132,6 +146,49 @@ function ShoulderBtn({ label, action, side }: { label: string; action: string; s
       color: 'rgba(255,255,255,0.75)', fontSize: 11, fontWeight: 800, letterSpacing: '0.05em',
       cursor: 'pointer', touchAction: 'none', userSelect: 'none',
     }}>{label}</div>
+  );
+}
+
+// ─── Small shoulder tab (for portrait) ────────────────────────────────────────
+function SmallShoulderBtn({ label, action, side }: { label: string; action: string; side: 'L' | 'R' }) {
+  const h = useTouchBtn(action);
+  return (
+    <div {...h} style={{
+      width: 60, height: 22,
+      background: 'linear-gradient(180deg, #9ca3af 0%, #6b7280 60%, #4b5563 100%)',
+      borderRadius: side === 'L' ? '5px 5px 0 8px' : '5px 5px 8px 0',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)',
+      border: '1px solid rgba(0,0,0,0.3)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color: 'rgba(255,255,255,0.75)', fontSize: 10, fontWeight: 800, letterSpacing: '0.05em',
+      cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+    }}>{label}</div>
+  );
+}
+
+// ─── Zoom button strip ────────────────────────────────────────────────────────
+function ZoomStrip({
+  onZoomIn, onZoomOut, onZoomReset,
+}: {
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onZoomReset?: () => void;
+}) {
+  const btnStyle: React.CSSProperties = {
+    width: 22, height: 22, borderRadius: 4,
+    background: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 900,
+    cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+  };
+  return (
+    <div style={{ display: 'flex', gap: 3 }}>
+      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onZoomIn?.(); }}>+</div>
+      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onZoomReset?.(); }}>0</div>
+      <div style={btnStyle} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onZoomOut?.(); }}>−</div>
+    </div>
   );
 }
 
@@ -171,7 +228,15 @@ function ScreenBezel({ children, style }: { children: React.ReactNode; style?: R
 }
 
 // ─── LANDSCAPE layout (GBA style) ─────────────────────────────────────────────
-function LandscapeShell({ children }: { children: React.ReactNode }) {
+interface ShellProps {
+  children: React.ReactNode;
+  onExit?: () => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onZoomReset?: () => void;
+}
+
+function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: ShellProps) {
   return (
     <div style={{
       position: 'relative',
@@ -191,18 +256,21 @@ function LandscapeShell({ children }: { children: React.ReactNode }) {
       {/* Main row */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '4px 14px 10px', gap: 10, minHeight: 0 }}>
 
-        {/* Left — D-pad + center */}
+        {/* Left — D-pad + SELECT/START */}
         <div style={{ width: '20%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, flexShrink: 0 }}>
           <DPad size={90} />
           <div style={{ display: 'flex', gap: 8 }}>
-            <OvalBtn label="SELECT" action="jump" />
-            <OvalBtn label="START"  action="attack" />
+            <OvalBtn label="SELECT" action="specialTap" />
+            <OvalBtn label="START"  onPress={onExit} />
           </div>
         </div>
 
         {/* Center — screen */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, minWidth: 0, minHeight: 0, height: '100%' }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>BEYBLADE GAME</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingBottom: 2 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>BEYBLADE GAME</div>
+            <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+          </div>
           <ScreenBezel style={{ flex: 1, width: '100%', minHeight: 0 }}>
             {children}
           </ScreenBezel>
@@ -211,7 +279,7 @@ function LandscapeShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Right — power + actions + speaker */}
+        {/* Right — power LED + action cluster + speaker */}
         <div style={{ width: '26%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: '100%', paddingTop: 4, paddingBottom: 8, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, alignSelf: 'flex-end', paddingRight: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e, 0 0 12px rgba(34,197,94,0.5)' }} />
@@ -228,7 +296,7 @@ function LandscapeShell({ children }: { children: React.ReactNode }) {
 }
 
 // ─── PORTRAIT layout (GBC style) ──────────────────────────────────────────────
-function PortraitShell({ children }: { children: React.ReactNode }) {
+function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset }: ShellProps) {
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -237,11 +305,17 @@ function PortraitShell({ children }: { children: React.ReactNode }) {
       overflow: 'hidden',
     }}>
 
-      {/* ── Screen section (top) ──────────────────────── */}
+      {/* ── L/R shoulder buttons above screen ──────────── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 10, paddingRight: 10, paddingTop: 4, flexShrink: 0 }}>
+        <SmallShoulderBtn label="L" action="chargeHeld" side="L" />
+        <SmallShoulderBtn label="R" action="specialTap" side="R" />
+      </div>
+
+      {/* ── Screen section ──────────────────────────────── */}
       <div style={{
         width: '100%',
         aspectRatio: '1 / 1',
-        maxHeight: '58vh',
+        maxHeight: '56vh',
         flexShrink: 0,
         background: '#0a0b14',
         position: 'relative',
@@ -275,28 +349,27 @@ function PortraitShell({ children }: { children: React.ReactNode }) {
       <div style={{
         flex: 1,
         display: 'flex', flexDirection: 'column',
-        padding: '8px 16px 12px',
+        padding: '4px 16px 10px',
         gap: 0,
         minHeight: 0,
         position: 'relative',
       }}>
-        {/* Nintendo emboss */}
-        <div style={{
-          textAlign: 'center',
-          fontSize: 13, fontWeight: 700, letterSpacing: '0.2em',
-          color: 'rgba(0,0,0,0.25)', textTransform: 'uppercase',
-          paddingBottom: 6, flexShrink: 0,
-          textShadow: '0 1px 0 rgba(255,255,255,0.08)',
-        }}>Nintendo</div>
+        {/* Nintendo emboss + zoom strip */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, flexShrink: 0 }}>
+          <div style={{
+            fontSize: 13, fontWeight: 700, letterSpacing: '0.2em',
+            color: 'rgba(0,0,0,0.25)', textTransform: 'uppercase',
+            textShadow: '0 1px 0 rgba(255,255,255,0.08)',
+          }}>Nintendo</div>
+          <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+        </div>
 
         {/* Main controls row */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 0 }}>
-
           {/* D-pad */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45%' }}>
             <DPad size={120} />
           </div>
-
           {/* Action cluster */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '45%' }}>
             <ActionCluster btnSize={48} containerSize={130} />
@@ -304,20 +377,17 @@ function PortraitShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom row: SELECT/START + Speaker */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: 8, flexShrink: 0 }}>
-          {/* SELECT + START */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: 6, flexShrink: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', gap: 10 }}>
-              <OvalBtn label="SELECT" action="jump" wide />
-              <OvalBtn label="START"  action="attack" wide />
+              <OvalBtn label="SELECT" action="specialTap" wide />
+              <OvalBtn label="START"  onPress={onExit} wide />
             </div>
             <div style={{ display: 'flex', gap: 10, paddingLeft: 4 }}>
               <span style={{ fontSize: 8, color: 'rgba(0,0,0,0.3)', fontWeight: 700, letterSpacing: '0.12em', width: 52, textAlign: 'center' }}>SELECT</span>
               <span style={{ fontSize: 8, color: 'rgba(0,0,0,0.3)', fontWeight: 700, letterSpacing: '0.12em', width: 52, textAlign: 'center' }}>START</span>
             </div>
           </div>
-
-          {/* Speaker dots */}
           <SpeakerDots cols={6} rows={5} />
         </div>
       </div>
@@ -326,19 +396,31 @@ function PortraitShell({ children }: { children: React.ReactNode }) {
 }
 
 // ─── GameShell (root) ─────────────────────────────────────────────────────────
-interface GameShellProps {
+export interface GameShellProps {
   children: React.ReactNode;
   show25DRotate?: boolean;
+  onExit?: () => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onZoomReset?: () => void;
 }
 
-export function GameShell({ children, show25DRotate: _show25DRotate = false }: GameShellProps) {
+export function GameShell({
+  children,
+  show25DRotate: _show25DRotate = false,
+  onExit,
+  onZoomIn,
+  onZoomOut,
+  onZoomReset,
+}: GameShellProps) {
   const portrait = useIsPortrait();
+  const shellProps = { onExit, onZoomIn, onZoomOut, onZoomReset };
 
   return (
     <div className="game-shell">
       {portrait
-        ? <PortraitShell>{children}</PortraitShell>
-        : <LandscapeShell>{children}</LandscapeShell>
+        ? <PortraitShell {...shellProps}>{children}</PortraitShell>
+        : <LandscapeShell {...shellProps}>{children}</LandscapeShell>
       }
     </div>
   );

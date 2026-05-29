@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from "react";
 
 interface CollisionQTEOverlayProps {
   active: boolean;
-  power: number;             // 0–150
-  maxPower?: number;         // default 150
+  power: number;
+  maxPower?: number;
   canFireSpecial: boolean;
   qteMultiplier: number;
   currentSP: number;
   onFireSpecial: () => void;
-  onMash?: () => void;       // called on any keydown during the QTE window
+  onMash?: () => void;
 }
 
 function getPowerColor(power: number): string {
@@ -31,13 +31,10 @@ export function CollisionQTEOverlay({
 }: CollisionQTEOverlayProps) {
   const specialFiredRef = useRef(false);
 
-  // Any keydown → mash; Space → also fire special if available
   useEffect(() => {
     if (!active) return;
     const handler = (e: KeyboardEvent) => {
-      // Mash on any key
       onMash?.();
-      // Space additionally fires special
       if (e.code === "Space" && canFireSpecial && !specialFiredRef.current) {
         e.preventDefault();
         specialFiredRef.current = true;
@@ -48,7 +45,6 @@ export function CollisionQTEOverlay({
     return () => window.removeEventListener("keydown", handler);
   }, [active, canFireSpecial, onFireSpecial, onMash]);
 
-  // Reset ref when QTE becomes active
   useEffect(() => {
     if (active) specialFiredRef.current = false;
   }, [active]);
@@ -57,66 +53,68 @@ export function CollisionQTEOverlay({
 
   const fillPct = Math.min(100, (power / maxPower) * 100);
   const barColor = getPowerColor(power);
-  const isHard = power >= 100;
-  const isOvercharged = power >= maxPower;
   const finalMult = qteMultiplier * (currentSP / 100);
 
   return (
     <div
-      className="bg-black/[.82] rounded-xl py-4 px-7 min-w-[360px] text-center text-white font-mono select-none border-2 border-[--bc] shadow-[0_0_24px_var(--bs)] z-[1000]"
-      style={{ "--bc": barColor, "--bs": `${barColor}44` } as React.CSSProperties}
+      style={{
+        width: 150,
+        background: "rgba(8,10,20,0.82)",
+        border: `1.5px solid ${barColor}88`,
+        borderRadius: 10,
+        padding: "7px 10px 8px",
+        boxShadow: `0 3px 16px rgba(0,0,0,0.5), 0 0 10px ${barColor}22`,
+        userSelect: "none",
+        pointerEvents: "none",
+        display: "flex",
+        flexDirection: "column",
+        gap: 5,
+      }}
     >
-      <div className="text-[18px] font-bold mb-2.5 tracking-[2px]">
-        ⚡ COLLISION! MASH BUTTONS! ⚡
+      {/* Title */}
+      <div style={{ fontSize: 9, fontWeight: 800, color: barColor, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        ⚡ CLASH — MASH!
       </div>
 
       {/* Power bar */}
-      <div className="bg-[#222] rounded-[6px] h-[22px] relative mb-1.5 overflow-hidden">
-        <div
-          className={`h-full rounded-[6px] [transition:width_0.05s_linear,background_0.1s] w-[--fw] bg-[color:var(--bc)] ${isOvercharged ? "shadow-[0_0_12px_var(--bc)]" : ""}`}
-          style={{ "--fw": `${fillPct}%`, "--bc": barColor } as React.CSSProperties}
-        />
-        <div className="absolute right-1.5 top-0.5 text-[13px] font-bold text-white [text-shadow:1px_1px_2px_#000]">
-          {power}%
-        </div>
+      <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: 3, height: 8, overflow: "hidden", position: "relative" }}>
+        <div style={{
+          height: "100%", width: `${fillPct}%`,
+          background: barColor, borderRadius: 3,
+          transition: "width 0.05s linear, background 0.1s",
+          boxShadow: fillPct >= 66 ? `0 0 6px ${barColor}` : undefined,
+        }} />
       </div>
 
-      {/* Hard zone indicator */}
-      {isHard && (
-        <div
-          className="text-[11px] text-[#ff9900] mb-1.5 opacity-90 [animation:pulse_0.6s_infinite_alternate]"
-        >
-          ── GETTING HARDER ──
-        </div>
-      )}
-
-      {/* Multiplier display */}
-      <div className="text-[13px] text-[#aaa] mb-2.5">
-        QTE: <span className="text-[color:var(--tc)]" style={{ "--tc": barColor } as React.CSSProperties}>{qteMultiplier.toFixed(2)}x</span>
-        &nbsp;×&nbsp;
-        SP: <span className="text-[#88aaff]">{currentSP}%</span>
-        &nbsp;=&nbsp;
-        <span className="text-white font-bold">{finalMult.toFixed(2)}x</span> damage
+      {/* Power value + multiplier */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: 9, color: barColor, fontWeight: 700 }}>{power}%</span>
+        <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)" }}>{finalMult.toFixed(1)}x</span>
       </div>
 
-      {/* Special fire prompt */}
+      {/* Special prompt */}
       {canFireSpecial && (
-        <button
+        <div
+          style={{
+            fontSize: 8, fontWeight: 800, color: "#ff8800",
+            textAlign: "center", letterSpacing: "0.1em",
+            padding: "3px 0",
+            border: "1px solid #ff880055",
+            borderRadius: 4,
+            animation: "cqte-blink 0.5s infinite alternate",
+            pointerEvents: "auto",
+            cursor: "pointer",
+          }}
           onClick={onFireSpecial}
-          className="rounded-lg text-white font-bold text-[14px] px-[18px] py-2 cursor-pointer tracking-[1px] bg-[linear-gradient(135deg,#ff4400,#ff8800)] border-2 border-[#ffa500] shadow-[0_0_12px_#ff6600] [animation:blink_0.5s_infinite_alternate]"
         >
-          🔥 PRESS [SPACE] TO FIRE SPECIAL! 🔥
-        </button>
+          🔥 [SPACE] SPECIAL
+        </div>
       )}
 
       <style>{`
-        @keyframes pulse {
-          from { opacity: 0.6; }
+        @keyframes cqte-blink {
+          from { opacity: 0.65; }
           to   { opacity: 1.0; }
-        }
-        @keyframes blink {
-          from { opacity: 0.7; box-shadow: 0 0 8px #ff6600; }
-          to   { opacity: 1.0; box-shadow: 0 0 20px #ff6600; }
         }
       `}</style>
     </div>

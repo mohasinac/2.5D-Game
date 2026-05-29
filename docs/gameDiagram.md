@@ -1,9 +1,11 @@
 # Game UI Diagrams
 
 All diagrams reflect the actual component code. Coordinates and sizes are
-taken directly from `GameShell.tsx`, `LaunchPhase.tsx`, `QTEOverlay.tsx`,
-`CollisionQTEOverlay.tsx`, `Countdown.tsx`, `KOOverlay.tsx`,
-`VictoryOverlay.tsx`, and `GameRoomPage.tsx`.
+taken directly from `GameShell.tsx`, `LaunchPhase.tsx`, `QTENotificationSystem.tsx`,
+`Countdown.tsx`, `KOOverlay.tsx`, `VictoryOverlay.tsx`, and `GameRoomPage.tsx`.
+
+> **QTEOverlay.tsx** and **CollisionQTEOverlay.tsx** are superseded by
+> `QTENotificationSystem.tsx` (4 purpose-built variants — see section 16).
 
 ---
 
@@ -17,13 +19,14 @@ taken directly from `GameShell.tsx`, `LaunchPhase.tsx`, `QTEOverlay.tsx`,
 6. [Launch QTE — String Launcher](#6-launch-qte--string-launcher)
 7. [Launch QTE — Ripcord Launcher](#7-launch-qte--ripcord-launcher)
 8. [Launch Cinematic ("LET IT RIP")](#8-launch-cinematic-let-it-rip)
-9. [Collision QTE (clash mash)](#9-collision-qte-clash-mash)
-10. [Counter/Special QTE (sequence block)](#10-counterspecial-qte-sequence-block)
+9. [Collision QTE — MashQTE (clash mash)](#9-collision-qte--mashqte-clash-mash)
+10. [Counter QTE — SequenceQTE (sequence block)](#10-counter-qte--sequenceqte-sequence-block)
 11. [KO Overlay](#11-ko-overlay)
 12. [Burst Overlay](#12-burst-overlay)
 13. [Victory Overlay](#13-victory-overlay)
 14. [BitBeast Cinematic](#14-bitbeast-cinematic)
 15. [Button Mapping Reference](#15-button-mapping-reference)
+16. [QTE Notification System Design](#16-qte-notification-system-design)
 
 ---
 
@@ -380,37 +383,29 @@ Power source: local → simSnap.launchPower; server → myBeyblade.launchPower
 
 ---
 
-## 9. Collision QTE (clash mash)
+## 9. Collision QTE — MashQTE (clash mash)
 
-`CollisionQTEOverlay` rendered inside a centering `div` inside
-`.game-overlay-layer`. No scrim — arena stays visible.
+`MashQTE` from `QTENotificationSystem.tsx`. Slim right-edge strip — arena
+stays fully visible. `data-testid="qte-mash"`. Works in local and server rooms.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  .game-overlay-layer  [display:flex center center z:200]      │
+│  .game-overlay-layer                                          │
 │                                                               │
-│       ┌───────────────────────────────────────────┐          │
-│       │  border-2 border-[--bc]  rounded-xl        │          │
-│       │  shadow-[0_0_24px_var(--bc)44]             │          │
-│       │  bg-black/[.82]  min-w-[360px]             │          │
-│       │                                            │          │
-│       │  ⚡ COLLISION! MASH BUTTONS! ⚡            │  text-18 │
-│       │                                            │  bold    │
-│       │  ┌────────────────────────────────────┐   │          │
-│       │  │ ██████████████████░░░░░░░░░░  72%  │   │  h:22px  │
-│       │  └────────────────────────────────────┘   │  bar     │
-│       │                                            │          │
-│       │  ── GETTING HARDER ──  (≥100, orange pulse)│          │
-│       │                                            │          │
-│       │  QTE: 1.45x  ×  SP: 80%  =  1.16x damage │          │
-│       │        ^yellow    ^lightblue   ^white bold │          │
-│       │                                            │          │
-│       │  ┌────────────────────────────────────┐   │          │
-│       │  │ 🔥 PRESS [SPACE] TO FIRE SPECIAL! 🔥│   │  shown   │
-│       │  └────────────────────────────────────┘   │  only    │
-│       │  (orange gradient bg, gold border, blink)  │  when    │
-│       └───────────────────────────────────────────┘  canFire │
+│  Arena plays on behind ─────────────────────────────────►    │
 │                                                               │
+│                                        ┌────────────────┐    │
+│                                        │ ⚡ CLASH—MASH! │← 9px│
+│                                        │ ─────────────  │    │
+│                                        │ [██████░░] bar  │← h:8│
+│                                        │ 72%  1.2x dmg  │    │
+│                                        │ ┌────────────┐ │    │
+│                                        │ │🔥 SPACE→SP │ │ ←  │
+│                                        │ └────────────┘ │  shown│
+│                                        └────────────────┘  when│
+│                                        152px wide          canFire│
+│  position: right 5%, top 50%  translateY(-50%)             │
+│  zIndex: 200                                                  │
 └──────────────────────────────────────────────────────────────┘
 
 Power bar color scale:
@@ -422,47 +417,42 @@ Power bar color scale:
 
 Controls:
   Any key  → onMash()  (increments power server-side)
-  Space    → onFireSpecial() if canFireSpecial (once per QTE window)
+  Space    → onFireSpecial() if canFireSpecial (once per window)
 ```
 
 ---
 
-## 10. Counter/Special QTE (sequence block)
+## 10. Counter QTE — SequenceQTE (sequence block)
 
-`QTEOverlay` rendered inside a centering `div` inside `.game-overlay-layer`.
-Only shown for server rooms (`!local`). Triggered when opponent fires a special.
+`SequenceQTE` from `QTENotificationSystem.tsx`. Compact bottom-centre card —
+game canvas stays fully visible. `data-testid="qte-sequence"`. Two variants:
+`counter` (yellow, triggered by opponent special) and `hijack` (purple, BeyLink).
+Works in local and server rooms.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  .game-overlay-layer  [display:flex center center z:200]      │
+│  .game-overlay-layer                                          │
 │                                                               │
-│     ┌─────────────────────────────────────────────┐          │
-│     │  border-2  rounded-[16px]  min-w-[280px]    │          │
-│     │  bg rgba(15,23,42,0.97)                      │          │
-│     │  border: yellow (active) / green (success)   │          │
-│     │            / red (failed)                    │          │
-│     │                                              │          │
-│     │  ⚡ Counter Chance!         (text-[#eab308]) │          │
-│     │  Press the sequence to block their special   │          │
-│     │                                              │          │
-│     │  ┌────┐  ┌────┐  ┌────┐  ┌────┐             │          │
-│     │  │ ✓  │  │ ✓  │  │ →  │  │ J  │  ← keys    │          │
-│     │  │ ←  │  │ →  │  │ →  │  │    │             │          │
-│     │  └────┘  └────┘  └────┘  └────┘             │          │
-│     │  green   green   yellow  grey                │          │
-│     │  (done)  (done)  (now)   (next)              │          │
-│     │  w:44px h:44px, rounded-[10px], text-20px    │          │
-│     │                                              │          │
-│     │  [████████████████████░░░░░░░░░░░░░░░░░░]   │  h:6px  │
-│     │   green─────────→yellow──────→red           │  timer  │
-│     │                                              │          │
-│     │  3 ticks remaining                           │          │
-│     │                                              │          │
-│     │  ┌──────────────────────────────────────┐   │          │
-│     │  │       BLOCKED!  (on success)          │   │  result  │
-│     │  │  bg rgba(green,0.15)  text green      │   │  overlay │
-│     │  └──────────────────────────────────────┘   │          │
-│     └─────────────────────────────────────────────┘          │
+│  Arena plays on behind ─────────────────────────────────►    │
+│                                                               │
+│                    ┌──────────────────────────┐              │
+│                    │  ⚡ Counter!  (yellow)    │ ← 9px bold  │
+│                    │                           │              │
+│                    │  [←][→][↑][J]  ← 28px pills│            │
+│                    │  grey  grey  yellow grey  │              │
+│                    │     (done)(done)(now)(next)│             │
+│                    │                           │              │
+│                    │  [████████████░░░░] h:4   │ ← timer bar │
+│                    └──────────────────────────┘              │
+│                    220px wide                                 │
+│  position: bottom 12%, left 50%  translateX(-50%)            │
+│  zIndex: 200 (counter) / 201 (hijack, stacks above)          │
+│                                                               │
+│  Hijack variant (purple #a855f7 accent):                     │
+│                    ┌──────────────────────────┐              │
+│                    │  🔗 Hijack!  (purple)     │              │
+│                    │  [J][J][J]  ← mash attack │              │
+│                    └──────────────────────────┘              │
 └──────────────────────────────────────────────────────────────┘
 
 Key mapping:
@@ -471,9 +461,9 @@ Key mapping:
   J / j     → "attack"     K / k      → "defense"
   L / l     → "dodge"
 
-Wrong key: panel shakes translateX(-6px), progress resets to 0
-Success:   "BLOCKED!" overlay, auto-dismiss after 700ms
-Timeout:   "TOO SLOW" overlay, parent dismisses
+Wrong key: card shakes translateX(-5px), progress resets to 0
+Success:   "BLOCKED!" overlay flash, onSuccess() fires, auto-dismiss after 450ms
+Timeout:   onDismiss() called immediately
 ```
 
 ---
@@ -642,8 +632,112 @@ z-195 and z-196 (above everything else). Shown when special move fires.
   Should be `action="specialTap"`.
 - **START action wrong** — `GameShell.tsx` line 199/312: `action="attack"`.
   Should call `handleExit` (exit/pause) — it is not a bitmask input.
-- **Collision QTE only wired for server rooms** — `GameRoomPage.tsx` line 345:
-  `{collisionQTEActive && !local && ...}`. Local tryout/pvai matches cannot
-  trigger collision QTE events from `LocalGameSimulation` yet.
-- **QTE overlay only wired for server rooms** — `GameRoomPage.tsx` line 334:
-  `{qtePrompt && !local && ...}`. Same reason.
+
+---
+
+## 16. QTE Notification System Design
+
+`QTENotificationSystem.tsx` exports 4 purpose-built notification variants.
+Each is sized and positioned to keep the **arena fully visible** while the
+player responds. All use `position:absolute` inside `.game-overlay-layer`.
+
+### Design Table
+
+| Variant | Component | Trigger | Shape | Size | Position | Colour |
+|---------|-----------|---------|-------|------|----------|--------|
+| Counter sequence | `SequenceQTE variant="counter"` | `qte-prompt` (opponent fires special) | Compact card | 220×~110px | Bottom-centre (bottom:12%, left:50%) | Yellow `#eab308` |
+| Hijack sequence | `SequenceQTE variant="hijack"` | `bey-link-hijack-qte` (attacker QTE) | Compact card | 220×~110px | Bottom-centre (zIndex:201) | Purple `#a855f7` |
+| Collision mash | `MashQTE` | `collision-qte-start` | Slim strip | 152×~120px | Right edge (right:5%, top:50%) | Dynamic power bar green→gold |
+| BeyLink escape | `SingleKeyQTE variant="escape"` | `bey-link-qte` (victim escape prompt) | Toast pill | 190×~46px | Top-centre (top:8%, left:50%) | Cyan `#06b6d4` |
+| Hijack block | `SingleKeyQTE variant="block"` | `bey-link-hijack-block-qte` (defender) | Toast pill | 190×~46px | Top-centre (zIndex:201) | Blue `#3b82f6` |
+| Control loss | `DebuffNotice` | `bey-link-control-loss` (passive) | Status badge | 160×~52px | Top-left (top:8%, left:5%) | Red/amber/ice by mode |
+
+### ASCII Mockups
+
+**MashQTE** — right edge, slim:
+```
+┌──────────────────┐
+│ ⚡ CLASH—MASH!   │  ← 9px uppercase, dynamic color
+│ [██████░░░░░░░░] │  ← h:8px power bar
+│ 72%    1.2x dmg  │  ← value + multiplier
+│ [🔥 SPACE→SPEC] │  ← only when canFireSpecial
+└──────────────────┘
+  152px wide
+  right:5%, top:50%, translateY(-50%)
+```
+
+**SequenceQTE counter** — bottom-centre:
+```
+┌──────────────────────────┐
+│ ⚡ Counter!  (yellow)    │
+│  [←][→][↑][J]           │  ← 28×28px pills
+│  [████████████░░░] timer │  ← h:4px
+└──────────────────────────┘
+  220px wide
+  bottom:12%, left:50%, translateX(-50%)
+```
+
+**SequenceQTE hijack** — same position, purple:
+```
+┌──────────────────────────┐
+│ 🔗 Hijack!  (purple)     │
+│  [J][J][J]               │  ← 3× attack mash
+│  [████████████░░░] timer │
+└──────────────────────────┘
+  zIndex:201 (above counter if both active)
+```
+
+**SingleKeyQTE escape** — top-centre toast:
+```
+┌──────────────────────────────────────┐
+│  [K]  Escape!          ████████████ │  ← timer fill behind (opacity:0.08)
+└──────────────────────────────────────┘
+  Pill shape, 190px, border-radius:24px
+  top:8%, left:50%, translateX(-50%), cyan border
+```
+
+**SingleKeyQTE block** — same position, blue:
+```
+┌──────────────────────────────────────┐
+│  [L]  Block Hijack!    ████████████ │
+└──────────────────────────────────────┘
+  zIndex:201, blue border
+```
+
+**DebuffNotice** — top-left badge:
+```
+┌──────────────────┐
+│ ↩  REVERSED      │  ← icon + label, red
+│ [██████░░░░░░░░] │  ← h:3px duration bar
+└──────────────────┘
+  160px wide
+  top:8%, left:5%
+  Modes: reverse=red, scramble=orange, freeze=ice-blue
+```
+
+### Component Props Summary
+
+```typescript
+// SequenceQTE
+{ prompt: QTEPromptData; variant?: "counter"|"hijack"; onKeyPress; onDismiss; onSuccess? }
+
+// MashQTE
+{ active; power; maxPower?; canFireSpecial; qteMultiplier; currentSP; onFireSpecial; onMash? }
+
+// SingleKeyQTE
+{ data: SingleKeyQTEData; onPress; onDismiss }
+// SingleKeyQTEData: { key, label, expiresAt, variant: "escape"|"block" }
+
+// DebuffNotice
+{ data: DebuffNoticeData; onExpire }
+// DebuffNoticeData: { mode: "reverse"|"scramble"|"freeze"; durationTicks; startedAt; tickMs? }
+```
+
+### data-testid Reference
+
+| Component | data-testid | Notes |
+|-----------|-------------|-------|
+| `SequenceQTE` | `qte-sequence` | Also `qte-key-{i}` for each pill |
+| `MashQTE` | `qte-mash` | Also `qte-mash-special` for special prompt |
+| `SingleKeyQTE` | `qte-single-key` | |
+| `DebuffNotice` | `qte-debuff` | |

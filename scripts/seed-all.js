@@ -419,6 +419,18 @@ const SEEDERS = [
     collections: ["seasons", "episodes"],
     description: "2 seasons + 8 episodes for story mode progression",
   },
+  {
+    name: "collision-qte-events",
+    script: "seed-collision-qte-events.js",
+    collections: ["collision_qte_events"],
+    description: "11 collision QTE window configs keyed by beyblade type pairing",
+  },
+  {
+    name: "special-clash-events",
+    script: "seed-special-clash-events.js",
+    collections: ["special_clash_events"],
+    description: "11 special move clash configs (counter sequences, damage scales, VFX tags)",
+  },
 ];
 
 // ── 4. Parse CLI flags ────────────────────────────────────────────────────────

@@ -1,11 +1,11 @@
-# Beyblade Case Studies — Master Index
+﻿# Beyblade Case Studies — Master Index
 Total: **1660 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1798** — All new cases must start here. Update this block before writing any new case.
+> **1854** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,7 +23,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 · 1682–1685 · 1686–1690 · 1733–1736 · 1737–1741 · 1742–1746 · 1780–1785 · 1786–1791 · 1792–1797 | 367 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 · 1289–1339 · 1376–1380 · 1500–1524 · 1546–1573 · 1604–1609 · 1634–1642 · 1682–1685 · 1686–1690 · 1733–1736 · 1737–1741 · 1742–1746 · 1780–1785 · 1786–1791 · 1792–1797 · 1798–1803 · 1845–1853 | 382 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
@@ -112,6 +112,8 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1780–1785 | 6 | CS9 overflow: Roar Bahamut Giga Moment-10 (DB LS Stamina — DB Core Bahamut Rubber Lock, Blade Roar ellipse gimmick, Armor 10 LAD, Giga OWD flywheel, Moment free-dish tip) | CS9 |
 | 1786–1791 | 6 | CS9 overflow: Curse Satan Hurricane Universe 1D (Superking RS Stamina/Defense — 1D chassis weakness, Hurricane floor-scraping, Universe dual free-spinning ball, double-instability analysis) | CS9 |
 | 1792–1797 | 6 | CS9 overflow: Dark Cancer CH120SF (MFB Metal Fusion starter — Face Bolt, Cancer ER slopes, Dark FW OWD=0.530 distributed-mass analysis, CH120 height-change gimmick, SF destabilizer combo) | CS9 |
+| 1798–1803 | 6 | CS9 overflow: Twisted Tempo 145WD / Basalt Horogium 145WD (MFB Metal Masters — Face Bolt, Tempo ER clock-hand asymmetry, Twisted FW OWD=0.701 near-ring mass, SSD centrifugal imbalance 17.3 N, 145 height, WD friction model, Assembly L=13.1 mN·m·s) | CS9 |
+| 1845–1853 | 9 | CS9 overflow: Dranzer MS + Driger MS (HMS era — BP Small Type x2, Spiral Upper AR OWD=0.570, Metal Upper AR OWD=0.584, Circle Balance WD OWD=0.573, Manual Change Core RC (Hole-Flat/Sharp dual-mode), Semi-Flat Core RC launch-dependent, HMS era omega_0=620 established, AR/WD co-dominant I split ~62/36 %) | CS9 |
 | 1525–1527 | 3 | Grand Maelstrom — RS pivot-anchor T125 vortex whirlpool AoE 10s drain (Sophie · Grand Cetus T125RS) | CS13 |
 | 1528–1530 | 3 | Grand Victoire — whirlpool-exit aerial dive water-crash ring-out (Sophie · Grand Cetus T125RS) | CS13 |
 | 1531–1533 | 3 | Grand Fleet — WD145 wing platform aerial crash ring-out (Wales · Grand Cetus WD145RS) | CS13 |

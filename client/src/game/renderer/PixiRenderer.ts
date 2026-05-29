@@ -1628,22 +1628,9 @@ export class BeybladeGameRenderer {
     const barHeight = 4;
     const barY = -r - 22;
 
-    // Health bar
+    // Health and spin bars removed — HUD displays these values instead
     healthBar.clear();
-    healthBar.rect(-barWidth / 2, barY, barWidth, barHeight);
-    healthBar.fill({ color: 0x333333 });
-    const healthPct = beyblade.health / 100;
-    const healthColor = healthPct > 0.5 ? 0x44cc44 : healthPct > 0.25 ? 0xffaa00 : 0xff3333;
-    healthBar.rect(-barWidth / 2, barY, barWidth * healthPct, barHeight);
-    healthBar.fill({ color: healthColor });
-
-    // Spin bar (below health bar)
     spinBar.clear();
-    spinBar.rect(-barWidth / 2, barY + barHeight + 2, barWidth, 3);
-    spinBar.fill({ color: 0x222244 });
-    const spinPct = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
-    spinBar.rect(-barWidth / 2, barY + barHeight + 2, barWidth * spinPct, 3);
-    spinBar.fill({ color: 0x4488ff });
 
     // Label position
     label.y = barY - 4;

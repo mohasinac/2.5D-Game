@@ -2,16 +2,18 @@
  * hud-and-qte-tests.spec.ts
  *
  * Comprehensive HUD and QTE testing:
- *   1. Player HUD (YOU StatCard, VS label, timer, connection dot)
+ *   1. Player HUD (HP bar, SP bar with % and number)
  *   2. Enemy HUD (CPU StatCard, AI beyblade health/stamina)
  *   3. Spectator HUD (PLAYER vs CPU cards, "Click to follow" label)
- *   4. CameraControls HUD (zoom buttons + / 0 / −)
+ *   4. GBA Shell zoom buttons (+/0/−) on console body
  *   5. Series score panel (BO3/BO5 win tracker)
  *   6. Launch QTE — tilt, position, power charge, release
  *   7. Collision QTE — button prompt during impact window
  *   8. ComboHUD — combo strip visibility
  *   9. SpecialMoveHUD — ring visibility when beyblade has a special move
  *  10. Loading progress stepper (6 steps: WS → join → arena → bey → audio → warmup)
+ *
+ * Flow: Navigate to /game/battle → select card → game runs at /game/room
  *
  * Requires TEST_EMAIL + TEST_PASSWORD (admin credentials).
  * Run: npm run test:e2e:gameplay -- hud-and-qte-tests
@@ -24,7 +26,42 @@ import { tryLogin, gotoProtected, ss, diagnose, filterErrors } from "./helpers/a
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Wait for the game to reach a specific Colyseus status via UI indicators. */
+/** Navigate to /game/battle and start a Tryout or PvAI game via the card carousel. */
+async function startGameViaCarousel(
+  page: Page,
+  mode: "tryout" | "pvai" = "tryout"
+): Promise<boolean> {
+  const landed = await gotoProtected(page, "/game/battle");
+  if (!landed) return false;
+
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForTimeout(1_000);
+
+  // Click the relevant card
+  const cardLabel = mode === "tryout" ? /tryout|solo|practice/i : /pvai|vs ai|ai battle/i;
+  const card = page.locator("button, [role='button'], [class*='card']").filter({ hasText: cardLabel }).first();
+  const cardOk = await card.isVisible({ timeout: 8_000 }).catch(() => false);
+  if (cardOk) {
+    await card.click();
+    await page.waitForTimeout(800);
+  }
+
+  // Look for a Start / Play / Launch button in the inline picker or card
+  const startBtn = page.locator("button").filter({ hasText: /start|play|launch|let it rip/i }).first();
+  const startOk = await startBtn.isVisible({ timeout: 6_000 }).catch(() => false);
+  if (startOk) await startBtn.click();
+
+  // Wait for game room
+  const atRoom = await page.waitForURL(/\/game\/room/, { timeout: 15_000 }).then(() => true).catch(() => false);
+  if (!atRoom) {
+    // Fallback: check if canvas appeared regardless of URL
+    const canvas = page.locator("canvas");
+    return canvas.isVisible({ timeout: 10_000 }).catch(() => false);
+  }
+  return true;
+}
+
+/** Wait for the game to reach a specific status via UI indicators. */
 async function waitForGameStatus(page: Page, status: "warmup" | "launching" | "in-progress", timeoutMs = 30_000): Promise<boolean> {
   const indicators: Record<string, string> = {
     warmup:      "text=/3|2|1|Let It Rip|warmup/i",
@@ -50,19 +87,10 @@ test.describe("HUD: Loading Progress stepper", () => {
     await tryLogin(page);
   });
 
-  test("loading progress bar is shown when connecting to AI battle", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "H01-loading-unauth"); return; }
+  test("loading progress bar is shown when connecting to a game", async ({ page }) => {
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "H01-loading-unauth"); return; }
 
-    await page.waitForLoadState("domcontentloaded");
-
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
     await page.waitForLoadState("domcontentloaded");
 
     // Loading bar should appear briefly
@@ -83,7 +111,6 @@ test.describe("HUD: Loading Progress stepper", () => {
     await canvas.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
     await ss(page, "H01-loading-complete");
 
-    // After loading, canvas should be visible
     const canvasOk = await canvas.isVisible().catch(() => false);
     if (canvasOk) {
       console.log("[H01] Loading complete — canvas visible");
@@ -93,37 +120,27 @@ test.describe("HUD: Loading Progress stepper", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. Player HUD + Enemy HUD (StatCards)
+// 2. Player HUD — HP + SP bars
 // ─────────────────────────────────────────────────────────────────────────────
 
-test.describe("HUD: Player and Enemy StatCards", () => {
+test.describe("HUD: Player HP and SP bars", () => {
   test.setTimeout(120_000);
 
   test.beforeEach(async ({ page }) => {
     await tryLogin(page);
   });
 
-  test("YOU and CPU stat cards appear during AI battle", async ({ page }) => {
+  test("HP and SP bars appear in-game with % values", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", e => errors.push(e.message));
 
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "H02-statcard-unauth"); return; }
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "H02-statbar-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(6_000); // wait past warmup
+    await page.waitForTimeout(6_000);
     await ss(page, "H02-battle-started");
 
-    // Verify canvas is up
     const canvas = page.locator("canvas");
     await canvas.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
     await ss(page, "H02-canvas-up");
@@ -132,77 +149,46 @@ test.describe("HUD: Player and Enemy StatCards", () => {
     await page.waitForTimeout(15_000);
     await ss(page, "H02-in-progress");
 
-    // Player HUD label "YOU"
-    const youLabel = page.locator("text=YOU").first();
-    const youVisible = await youLabel.isVisible({ timeout: 5_000 }).catch(() => false);
-    if (youVisible) {
-      await ss(page, "H02-player-hud-YOU-visible");
-      await expect(youLabel).toBeVisible();
-      console.log("[H02] Player YOU label visible");
+    // HP label
+    const hpLabel = page.locator("text=HP").first();
+    const hpVisible = await hpLabel.isVisible({ timeout: 5_000 }).catch(() => false);
+    if (hpVisible) {
+      await ss(page, "H02-hp-bar-visible");
+      await expect(hpLabel).toBeVisible();
+      console.log("[H02] HP label visible");
     } else {
-      console.log("[H02] YOU label not found — HUD may be hidden during loading");
+      console.log("[H02] HP label not found — HUD may only show during in-progress");
     }
 
-    // VS label
-    const vsLabel = page.locator("text=VS").first();
-    const vsVisible = await vsLabel.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (vsVisible) {
-      await ss(page, "H02-vs-label-visible");
-      console.log("[H02] VS label visible");
+    // SP label (capped at 100)
+    const spLabel = page.locator("text=SP").first();
+    const spVisible = await spLabel.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (spVisible) {
+      await ss(page, "H02-sp-bar-visible");
+      console.log("[H02] SP label visible");
     }
 
-    // CPU label (enemy HUD)
-    const cpuLabel = page.locator("text=CPU").first();
-    const cpuVisible = await cpuLabel.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (cpuVisible) {
-      await ss(page, "H02-enemy-hud-CPU-visible");
-      await expect(cpuLabel).toBeVisible();
-      console.log("[H02] Enemy CPU label visible");
-    } else {
-      console.log("[H02] CPU label not found");
-    }
-
-    // Timer
-    const timer = page.locator("text=/\\d+s/").first();
-    const timerVisible = await timer.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (timerVisible) {
-      const timerText = await timer.textContent();
-      console.log(`[H02] Timer: "${timerText}"`);
-      await ss(page, "H02-timer-visible");
-    }
-
-    // Connection dot (small div with background:green/red)
-    const hudStatus = page.locator("text=/VS AI|SPECTATING/").first();
-    const statusVisible = await hudStatus.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (statusVisible) {
-      await ss(page, "H02-hud-status-label");
-      console.log("[H02] HUD status label visible");
+    // Verify % values are shown (e.g. "100/100" or "75/100")
+    const valueText = page.locator("text=/\\d+\\/100/").first();
+    const valueVisible = await valueText.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (valueVisible) {
+      const txt = await valueText.textContent();
+      console.log(`[H02] HUD value: "${txt}"`);
+      await ss(page, "H02-hud-value-visible");
     }
 
     await ss(page, "H02-all-hud-elements");
 
-    // No critical JS errors
     const critical = filterErrors(errors);
-    if (critical.length) {
-      console.log(`[H02] JS errors: ${critical.join(" | ")}`);
-    }
+    if (critical.length) console.log(`[H02] JS errors: ${critical.join(" | ")}`);
     expect(critical).toHaveLength(0);
   });
 
   test("Spectator view shows PLAYER vs CPU cards with 'Click to follow'", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "H03-spectator-unauth"); return; }
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "H03-spectator-unauth"); return; }
 
-    await page.waitForLoadState("domcontentloaded");
-
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    // Get the URL then navigate with ?spectate=true
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
+    // Navigate to the current room URL as a spectator
     const battleUrl = page.url();
     const spectateUrl = `${battleUrl}${battleUrl.includes("?") ? "&" : "?"}spectate=true`;
 
@@ -211,7 +197,6 @@ test.describe("HUD: Player and Enemy StatCards", () => {
     await page.waitForTimeout(8_000);
     await ss(page, "H03-spectator-view");
 
-    // Check for spectator indicator
     const spectateLabel = page.locator("text=SPECTATING").first();
     const specVisible = await spectateLabel.isVisible({ timeout: 5_000 }).catch(() => false);
     if (specVisible) {
@@ -219,7 +204,6 @@ test.describe("HUD: Player and Enemy StatCards", () => {
       console.log("[H03] SPECTATING label visible");
     }
 
-    // Check for "Click to follow" text in spectator view
     const followLabel = page.locator("text=/click.*follow|follow.*click/i").first();
     const followVisible = await followLabel.isVisible({ timeout: 5_000 }).catch(() => false);
     if (followVisible) {
@@ -230,35 +214,27 @@ test.describe("HUD: Player and Enemy StatCards", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. Camera Controls HUD
+// 3. GBA Shell zoom buttons (on console body, not in viewport)
 // ─────────────────────────────────────────────────────────────────────────────
 
-test.describe("HUD: Camera Controls (zoom buttons)", () => {
+test.describe("HUD: GBA Shell zoom buttons (+/0/−)", () => {
   test.setTimeout(120_000);
 
   test.beforeEach(async ({ page }) => {
     await tryLogin(page);
   });
 
-  test("zoom buttons appear and work during AI battle", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "H04-zoom-unauth"); return; }
+  test("zoom buttons on GBA shell body work during a game", async ({ page }) => {
+    const started = await startGameViaCarousel(page, "tryout");
+    if (!started) { await ss(page, "H04-zoom-unauth"); return; }
 
-    await page.waitForLoadState("domcontentloaded");
-
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(10_000);
     await ss(page, "H04-battle-ready");
 
-    // Zoom in button
-    const zoomIn = page.locator("button").filter({ hasText: /^\+$|zoom.?in/i }).first();
+    // Zoom buttons are divs on the GBA console body (ZoomStrip component)
+    // They contain the text +, 0, − and are NOT inside the game viewport
+    const zoomIn = page.locator("div, button").filter({ hasText: /^\+$/ }).first();
     const zoomInOk = await zoomIn.isVisible({ timeout: 5_000 }).catch(() => false);
     if (zoomInOk) {
       await zoomIn.click();
@@ -267,8 +243,7 @@ test.describe("HUD: Camera Controls (zoom buttons)", () => {
       console.log("[H04] Zoom in clicked");
     }
 
-    // Zoom reset button
-    const zoomReset = page.locator("button").filter({ hasText: /^0$|reset.*zoom/i }).first();
+    const zoomReset = page.locator("div, button").filter({ hasText: /^0$/ }).first();
     const zoomResetOk = await zoomReset.isVisible({ timeout: 3_000 }).catch(() => false);
     if (zoomResetOk) {
       await zoomReset.click();
@@ -276,8 +251,7 @@ test.describe("HUD: Camera Controls (zoom buttons)", () => {
       await ss(page, "H04-zoom-reset");
     }
 
-    // Zoom out button
-    const zoomOut = page.locator("button").filter({ hasText: /^[−\-]$|zoom.?out/i }).first();
+    const zoomOut = page.locator("div, button").filter({ hasText: /^[−\-]$/ }).first();
     const zoomOutOk = await zoomOut.isVisible({ timeout: 3_000 }).catch(() => false);
     if (zoomOutOk) {
       await zoomOut.click();
@@ -286,7 +260,7 @@ test.describe("HUD: Camera Controls (zoom buttons)", () => {
     }
 
     if (zoomInOk) {
-      console.log("[H04] All zoom controls verified");
+      console.log("[H04] All GBA shell zoom controls verified");
     } else {
       console.log("[H04] Zoom controls not found — checking keyboard shortcuts instead");
       const canvas = page.locator("canvas");
@@ -316,28 +290,18 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
     await tryLogin(page);
   });
 
-  test("launch QTE UI shows tilt, position and power indicators", async ({ page }) => {
+  test("launch QTE UI shows tilt, position and power indicators (shown for local rooms too)", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", e => errors.push(e.message));
 
-    const landed = await gotoProtected(page, "/game/2d/tryout/setup");
-    if (!landed) { await ss(page, "Q01-launch-unauth"); return; }
+    const started = await startGameViaCarousel(page, "tryout");
+    if (!started) { await ss(page, "Q01-launch-unauth"); return; }
 
-    await page.waitForLoadState("domcontentloaded");
-    await ss(page, "Q01-tryout-setup");
-
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    await page.waitForURL(/tryout\/play|tryout\/game/, { timeout: 15_000 }).catch(() => {});
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(3_500); // warmup is 3s
     await ss(page, "Q01-game-loaded");
 
-    // Wait for launch phase (server sets status=launching after warmup)
+    // Wait for launch phase
     const launchIndicator = page.locator("text=/launch|tilt|charge|power|Let It Rip/i").first();
     const launchVisible = await launchIndicator.waitFor({ state: "visible", timeout: 20_000 }).then(() => true).catch(() => false);
 
@@ -345,18 +309,14 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
       await ss(page, "Q01-launch-phase-started");
       console.log("[Q01] Launch phase visible");
 
-      // Check tilt indicator
       const tiltEl = page.locator("text=/tilt|A.*D.*tilt/i, [class*=tilt], [id*=tilt]").first();
       const tiltVisible = await tiltEl.isVisible({ timeout: 3_000 }).catch(() => false);
       if (tiltVisible) await ss(page, "Q01-tilt-indicator");
 
-      // Check power bar / charge indicator
       const powerEl = page.locator("text=/power|charge|space/i, [class*=power], [class*=charge]").first();
       const powerVisible = await powerEl.isVisible({ timeout: 3_000 }).catch(() => false);
       if (powerVisible) await ss(page, "Q01-power-indicator");
 
-      // Interact with launch controls
-      // A/D for tilt
       await page.keyboard.press("KeyA");
       await page.waitForTimeout(200);
       await ss(page, "Q01-tilt-left");
@@ -366,62 +326,45 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
       await page.waitForTimeout(200);
       await ss(page, "Q01-tilt-right");
 
-      // W/S for position
       await page.keyboard.press("KeyW");
       await page.waitForTimeout(200);
       await ss(page, "Q01-position-up");
 
-      // Space to charge power
       await page.keyboard.down("Space");
       await page.waitForTimeout(1_500);
       await ss(page, "Q01-power-charging");
 
-      // Release Space to launch
       await page.keyboard.up("Space");
       await page.waitForTimeout(500);
       await ss(page, "Q01-launched");
 
       console.log("[Q01] Launch QTE interactions complete");
     } else {
-      // Game may have gone directly to in-progress
       await ss(page, "Q01-no-launch-phase");
       console.log("[Q01] Launch phase not detected — game may start immediately");
     }
 
-    // Wait for canvas
     const canvas = page.locator("canvas");
     await canvas.waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
     await ss(page, "Q01-canvas-post-launch");
 
-    // No critical errors
     const critical = filterErrors(errors);
     if (critical.length) console.log(`[Q01] JS errors: ${critical.join(" | ")}`);
   });
 
-  test("AI battle launch QTE — AI auto-launches and human must charge", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "Q02-ai-launch-unauth"); return; }
+  test("PvAI launch QTE — AI auto-launches and human must charge", async ({ page }) => {
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "Q02-ai-launch-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(4_000);
+    await ss(page, "Q02-pvai-warmup");
 
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(4_000); // past warmup
-    await ss(page, "Q02-ai-battle-warmup");
-
-    // Check for launch phase
     const launchEl = page.locator("text=/launch|power|charge|tilt|Let It Rip/i").first();
     const inLaunch = await launchEl.waitFor({ state: "visible", timeout: 15_000 }).then(() => true).catch(() => false);
     if (inLaunch) {
       await ss(page, "Q02-launch-phase");
 
-      // Do a quick launch: charge for 1.5s and release
       await page.keyboard.down("Space");
       await page.waitForTimeout(1_500);
       await page.keyboard.up("Space");
@@ -429,7 +372,6 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
       await ss(page, "Q02-human-launched");
     }
 
-    // Game should be in-progress now
     const canvas = page.locator("canvas");
     await canvas.waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
     await page.waitForTimeout(5_000);
@@ -438,29 +380,20 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. Collision QTE
+// 5. Collision QTE (now works in local rooms too — !local gate removed)
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe("QTE: Collision QTE (impact window button prompt)", () => {
-  test.setTimeout(180_000); // Collisions may take time
+  test.setTimeout(180_000);
 
   test.beforeEach(async ({ page }) => {
     await tryLogin(page);
   });
 
   test("collision QTE prompt appears during battle and responds to input", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "Q03-collision-unauth"); return; }
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "Q03-collision-unauth"); return; }
 
-    await page.waitForLoadState("domcontentloaded");
-
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
-
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
     await page.waitForLoadState("domcontentloaded");
 
     // Get through warmup + launch
@@ -471,8 +404,6 @@ test.describe("QTE: Collision QTE (impact window button prompt)", () => {
     await page.waitForTimeout(2_000);
     await ss(page, "Q03-in-progress");
 
-    // Wait for collision QTE to appear (prompt with "J" key or collision button)
-    // The QTE shows a prompt during the brief impact window
     const qtePrompt = page.locator('[class*="qte"], [class*="collision-prompt"]')
       .or(page.getByText(/press.*J|collision|impact|QTE|counter|clash/i))
       .first();
@@ -482,7 +413,6 @@ test.describe("QTE: Collision QTE (impact window button prompt)", () => {
       await page.waitForTimeout(15_000);
       await ss(page, `Q03-battle-t${(attempt + 1) * 15}s`);
 
-      // Mash attack key during the battle to provoke collisions
       for (let i = 0; i < 5; i++) {
         await page.keyboard.press("KeyJ");
         await page.waitForTimeout(200);
@@ -494,7 +424,6 @@ test.describe("QTE: Collision QTE (impact window button prompt)", () => {
         console.log(`[Q03] Collision QTE found at t=${(attempt + 1) * 15}s`);
         qteFound = true;
 
-        // Press the action key during the window
         await page.keyboard.press("KeyJ");
         await page.waitForTimeout(200);
         await ss(page, "Q03-qte-responded");
@@ -503,7 +432,7 @@ test.describe("QTE: Collision QTE (impact window button prompt)", () => {
     }
 
     if (!qteFound) {
-      console.log("[Q03] Collision QTE not triggered in 90s — may require specific beyblade types or positions");
+      console.log("[Q03] Collision QTE not triggered in 90s — may require specific beyblade types");
     }
 
     await ss(page, "Q03-final-state");
@@ -522,14 +451,15 @@ test.describe("HUD: Series score panel (BO3)", () => {
   });
 
   test("BO3 series score panel appears in top-right HUD", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
+    const landed = await gotoProtected(page, "/game/battle");
     if (!landed) { await ss(page, "H05-series-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1_000);
 
-    // Wait for form to load, then select BO3
+    // Look for BO3 option in the card picker
     const bo3Btn = page.locator("button").filter({ hasText: /^BO3$/i }).first();
-    await bo3Btn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+    await bo3Btn.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
     if (await bo3Btn.isVisible().catch(() => false)) {
       await bo3Btn.click();
       await page.waitForTimeout(200);
@@ -541,12 +471,11 @@ test.describe("HUD: Series score panel (BO3)", () => {
       await startBtn.click();
     }
 
-    await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
+    await page.waitForURL(/\/game\/room/, { timeout: 15_000 }).catch(() => {});
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(8_000);
     await ss(page, "H05-bo3-in-progress");
 
-    // Series score panel should show both player names and win counts
     const seriesPanel = page.locator("text=/0.*0|wins?.*series/i").first();
     const panelVisible = await seriesPanel.isVisible({ timeout: 5_000 }).catch(() => false);
     if (panelVisible) {
@@ -573,15 +502,19 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
     const errors: string[] = [];
     page.on("pageerror", e => errors.push(e.message));
 
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
+    const landed = await gotoProtected(page, "/game/battle");
     if (!landed) { await ss(page, "L01-1v7-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-
-    // Wait for the form to load (Firestore data)
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
-    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+    await page.waitForTimeout(1_000);
     await ss(page, "L01-setup-page");
+
+    // Click PvAI card
+    const pvaiCard = page.locator("button, [role='button'], [class*='card']").filter({ hasText: /pvai|vs ai|ai battle/i }).first();
+    if (await pvaiCard.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await pvaiCard.click();
+      await page.waitForTimeout(800);
+    }
 
     // Set AI count to 7
     const countInput = page.locator('input[name="ai-count"], input[type="number"][min]').first();
@@ -593,17 +526,16 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
       console.log("[L01] AI count input not visible — using default");
     }
 
-    // Start battle
+    const startBtn = page.locator("button").filter({ hasText: /start|play|launch/i }).first();
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
 
-    await page.waitForURL(/ai-battle\/play/, { timeout: 20_000 }).catch(() => {});
+    await page.waitForURL(/\/game\/room/, { timeout: 20_000 }).catch(() => {});
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(4_000);
     await ss(page, "L01-1v7-battle-started");
 
-    // Canvas should appear
     const canvas = page.locator("canvas");
     const canvasOk = await canvas.waitFor({ state: "visible", timeout: 25_000 }).then(() => true).catch(() => false);
     if (canvasOk) {
@@ -611,7 +543,6 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
       console.log("[L01] Canvas visible with 1v7 setup");
     }
 
-    // Get through launch phase
     await page.waitForTimeout(4_000);
     await page.keyboard.down("Space");
     await page.waitForTimeout(1_500);
@@ -619,21 +550,11 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
     await page.waitForTimeout(3_000);
     await ss(page, "L01-1v7-in-progress");
 
-    // Screenshot every 10s to see battles playing out
     for (let i = 1; i <= 4; i++) {
       await page.waitForTimeout(10_000);
       await ss(page, `L01-1v7-t${i * 10}s`);
     }
 
-    // Check for eliminations
-    const splitScreen = page.locator("text=/eliminated|knocked out|ring out/i").first();
-    const splitVisible = await splitScreen.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (splitVisible) {
-      await ss(page, "L01-1v7-elimination");
-      console.log("[L01] Elimination event visible");
-    }
-
-    // Wait for winner or timeout
     const ended = await page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Defeated!/i)).first()
       .waitFor({ state: "visible", timeout: 150_000 }).then(() => true).catch(() => false);
 
@@ -645,12 +566,171 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
       console.log("[L01] 1v7 match still running at timeout");
     }
 
-    // Check JS errors
     const critical = filterErrors(errors);
-    if (critical.length) {
-      console.log(`[L01] JS errors: ${critical.join(" | ")}`);
+    if (critical.length) console.log(`[L01] JS errors: ${critical.join(" | ")}`);
+    // Don't assert zero errors for load test
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7b. QTE Notification System — variant tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+test.describe("QTE Notification System: variant components", () => {
+  test.setTimeout(180_000);
+
+  test.beforeEach(async ({ page }) => {
+    await tryLogin(page);
+  });
+
+  test("SequenceQTE (counter) has data-testid=qte-sequence and key pills", async ({ page }) => {
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "QN01-unauth"); return; }
+
+    await page.waitForLoadState("domcontentloaded");
+    // Skip through launch phase
+    await page.waitForTimeout(4_000);
+    await page.keyboard.down("Space");
+    await page.waitForTimeout(1_500);
+    await page.keyboard.up("Space");
+    await page.waitForTimeout(3_000);
+
+    // Wait for a counter QTE (opponent fires special → QTE appears)
+    // Poll for up to 90s of battle
+    let qteFound = false;
+    for (let i = 0; i < 6 && !qteFound; i++) {
+      await page.waitForTimeout(15_000);
+      const qteEl = page.locator('[data-testid="qte-sequence"]');
+      qteFound = await qteEl.isVisible({ timeout: 1_000 }).catch(() => false);
+      if (qteFound) {
+        await ss(page, "QN01-sequence-qte-visible");
+        await expect(qteEl).toBeVisible();
+
+        // Check key pills exist
+        const keyPill = page.locator('[data-testid^="qte-key-"]').first();
+        await expect(keyPill).toBeVisible({ timeout: 2_000 });
+        console.log("[QN01] SequenceQTE visible with key pills");
+      }
     }
-    // Don't assert zero errors for load test — we're stress testing
+    if (!qteFound) {
+      console.log("[QN01] SequenceQTE not triggered — requires opponent special move");
+    }
+    await ss(page, "QN01-final");
+  });
+
+  test("MashQTE has data-testid=qte-mash and shows power bar", async ({ page }) => {
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "QN02-unauth"); return; }
+
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(4_000);
+    await page.keyboard.down("Space");
+    await page.waitForTimeout(1_500);
+    await page.keyboard.up("Space");
+    await page.waitForTimeout(3_000);
+
+    // Mash QTE appears on collision — spam attack key to provoke collisions
+    let mashFound = false;
+    for (let i = 0; i < 6 && !mashFound; i++) {
+      await page.waitForTimeout(10_000);
+      for (let k = 0; k < 10; k++) {
+        await page.keyboard.press("KeyJ");
+        await page.waitForTimeout(100);
+      }
+      const mashEl = page.locator('[data-testid="qte-mash"]');
+      mashFound = await mashEl.isVisible({ timeout: 2_000 }).catch(() => false);
+      if (mashFound) {
+        await ss(page, "QN02-mash-qte-visible");
+        await expect(mashEl).toBeVisible();
+        // Mash keys during window
+        for (let k = 0; k < 5; k++) {
+          await page.keyboard.press("KeyJ");
+          await page.waitForTimeout(120);
+        }
+        const specialPrompt = page.locator('[data-testid="qte-mash-special"]');
+        const specialVisible = await specialPrompt.isVisible({ timeout: 2_000 }).catch(() => false);
+        if (specialVisible) {
+          await ss(page, "QN02-mash-special-prompt");
+          console.log("[QN02] MashQTE special prompt visible");
+        }
+        console.log("[QN02] MashQTE visible");
+        break;
+      }
+    }
+    if (!mashFound) {
+      console.log("[QN02] MashQTE not triggered in 60s — may require more collisions");
+    }
+    await ss(page, "QN02-final");
+  });
+
+  test("SingleKeyQTE (escape) has data-testid=qte-single-key", async ({ page }) => {
+    // This QTE only appears in server rooms (PvP/AI-server) for BeyLink escape.
+    // We just verify the data-testid renders if/when it appears.
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "QN03-unauth"); return; }
+
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(4_000);
+    await page.keyboard.down("Space");
+    await page.waitForTimeout(1_500);
+    await page.keyboard.up("Space");
+    await page.waitForTimeout(5_000);
+    await ss(page, "QN03-in-progress");
+
+    // SingleKeyQTE is BeyLink-only; check if it appears in extended play
+    let skFound = false;
+    for (let i = 0; i < 4 && !skFound; i++) {
+      await page.waitForTimeout(15_000);
+      const skEl = page.locator('[data-testid="qte-single-key"]');
+      skFound = await skEl.isVisible({ timeout: 1_000 }).catch(() => false);
+      if (skFound) {
+        await ss(page, "QN03-single-key-visible");
+        await expect(skEl).toBeVisible();
+        console.log("[QN03] SingleKeyQTE visible");
+        // Press any key to respond
+        await page.keyboard.press("KeyJ");
+        await page.waitForTimeout(500);
+        await ss(page, "QN03-responded");
+      }
+    }
+    if (!skFound) {
+      console.log("[QN03] SingleKeyQTE not triggered — BeyLink must activate first");
+    }
+    await ss(page, "QN03-final");
+  });
+
+  test("DebuffNotice has data-testid=qte-debuff and duration bar", async ({ page }) => {
+    // Debuff appears in server rooms when BeyLink control-loss is triggered.
+    const started = await startGameViaCarousel(page, "pvai");
+    if (!started) { await ss(page, "QN04-unauth"); return; }
+
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(4_000);
+    await page.keyboard.down("Space");
+    await page.waitForTimeout(1_500);
+    await page.keyboard.up("Space");
+    await page.waitForTimeout(5_000);
+    await ss(page, "QN04-in-progress");
+
+    let debuffFound = false;
+    for (let i = 0; i < 4 && !debuffFound; i++) {
+      await page.waitForTimeout(15_000);
+      const debuffEl = page.locator('[data-testid="qte-debuff"]');
+      debuffFound = await debuffEl.isVisible({ timeout: 1_000 }).catch(() => false);
+      if (debuffFound) {
+        await ss(page, "QN04-debuff-visible");
+        await expect(debuffEl).toBeVisible();
+        // Check debuff label (REVERSED / SCRAMBLED / FROZEN)
+        const label = page.locator('[data-testid="qte-debuff"]').locator("text=/REVERSED|SCRAMBLED|FROZEN/i").first();
+        const labelOk = await label.isVisible({ timeout: 2_000 }).catch(() => false);
+        if (labelOk) console.log("[QN04] DebuffNotice with mode label visible");
+        console.log("[QN04] DebuffNotice visible");
+      }
+    }
+    if (!debuffFound) {
+      console.log("[QN04] DebuffNotice not triggered — BeyLink control-loss must fire first");
+    }
+    await ss(page, "QN04-final");
   });
 });
 
@@ -666,7 +746,7 @@ test.describe("Tournament: immediate match + PvAI gauntlet", () => {
   });
 
   test("tournament list shows player-gauntlet type", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/tournament");
+    const landed = await gotoProtected(page, "/game/tournament");
     if (!landed) { await ss(page, "T01-tournament-list-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
@@ -675,7 +755,6 @@ test.describe("Tournament: immediate match + PvAI gauntlet", () => {
 
     await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
 
-    // Check for gauntlet type badge if any exist
     const gauntletBadge = page.locator("text=/gauntlet|player.gauntlet|⚔/i").first();
     const gauntletVisible = await gauntletBadge.isVisible({ timeout: 3_000 }).catch(() => false);
     if (gauntletVisible) {
@@ -694,13 +773,9 @@ test.describe("Tournament: immediate match + PvAI gauntlet", () => {
     await page.waitForTimeout(2_500);
     await ss(page, "T02-tournament-create");
 
-    // Select Player Gauntlet type
-    const typeSelect = page.locator('select, [role="combobox"]').filter({
-      hasText: /pvp|gauntlet|mixed/i
-    }).first();
+    const typeSelect = page.locator('select, [role="combobox"]').filter({ hasText: /pvp|gauntlet|mixed/i }).first();
 
     if (await typeSelect.isVisible().catch(() => false)) {
-      // Select player-gauntlet option
       const gauntletOpt = page.locator('[role="option"], option').filter({ hasText: /gauntlet/i }).first();
       if (await gauntletOpt.isVisible().catch(() => false)) {
         await gauntletOpt.click();
@@ -710,7 +785,6 @@ test.describe("Tournament: immediate match + PvAI gauntlet", () => {
       }
     }
 
-    // Check the form renders correctly for gauntlet type
     await ss(page, "T02-gauntlet-form");
   });
 });

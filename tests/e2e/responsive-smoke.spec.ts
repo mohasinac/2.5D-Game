@@ -276,29 +276,29 @@ test.describe("Responsive Smoke: Game setup pages", () => {
     await smokeProtected(page, {
       route: "/game",
       name: "RS05-game-select",
-      reachable: ["text=Tryout", "text=AI Battle"],
+      reachable: ["text=Battle", "text=Story"],
     });
   });
 
-  test("Tryout setup (2D) — Start button reachable on 390px", async ({ page }) => {
+  test("Battle mode cards page — Tryout card reachable on 390px", async ({ page }) => {
     await smokeProtected(page, {
-      route: "/game/2d/tryout/setup",
-      name: "RS06-tryout-setup-2d",
-      reachable: ['button:has-text("Start"), button:has-text("Play")'],
+      route: "/game/battle",
+      name: "RS06-battle-cards",
+      reachable: ["text=Tryout"],
     });
   });
 
-  test("Tryout setup (2.5D) renders at all viewports", async ({ page }) => {
-    await smokeProtected(page, { route: "/game/2.5d/tryout/setup", name: "RS07-tryout-setup-25d" });
+  test("Battle mode cards page (2.5D via admin toggle) renders at all viewports", async ({ page }) => {
+    await smokeProtected(page, { route: "/game/battle", name: "RS07-battle-cards-25d" });
   });
 
-  test("AI Battle setup — difficulty/series buttons all reachable on 390px", async ({ page }) => {
+  test("Battle mode cards page — PvAI card reachable on 390px", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
 
     if (!loggedIn) loggedIn = await tryLogin(page);
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "RS08-ai-setup-unauth"); return; }
+    const landed = await gotoProtected(page, "/game/battle");
+    if (!landed) { await ss(page, "RS08-pvai-card-unauth"); return; }
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(1_500);
 
@@ -308,34 +308,22 @@ test.describe("Responsive Smoke: Game setup pages", () => {
       await assertNoHorizontalScroll(page);
       await assertScrollable(page);
 
-      // Difficulty buttons must be reachable (not cropped on small screens)
-      for (const label of ["Medium", "Hard", "Hell"]) {
-        const btn = page.locator("button").filter({ hasText: label });
-        if (await btn.count() > 0) {
-          await assertReachable(page, btn, `${label}-btn @ ${vp.label}`);
+      // All 5 battle mode cards must be reachable
+      for (const label of ["Tryout", "PvAI", "PvP", "Tournament", "Royale"]) {
+        const card = page.locator(`text=/${label}/i`).first();
+        if (await card.count() > 0) {
+          await assertReachable(page, card, `${label}-card @ ${vp.label}`);
         }
-      }
-      // Series format buttons
-      for (const label of ["BO1", "BO3", "BO5"]) {
-        const btn = page.locator("button").filter({ hasText: label });
-        if (await btn.count() > 0) {
-          await assertReachable(page, btn, `${label}-btn @ ${vp.label}`);
-        }
-      }
-      // Start button
-      const startBtn = page.locator("button").filter({ hasText: /start/i });
-      if (await startBtn.count() > 0) {
-        await assertReachable(page, startBtn, `start-btn @ ${vp.label}`);
       }
 
-      await ss(page, `RS08-ai-setup-${vp.label}`);
+      await ss(page, `RS08-battle-cards-${vp.label}`);
     }
     expect(filterErrors(errors)).toHaveLength(0);
   });
 
   test("PVP Battle lobby — room controls reachable at all viewports", async ({ page }) => {
     await smokeProtected(page, {
-      route: "/game/2d/battle/lobby",
+      route: "/game/battle/lobby",
       name: "RS09-pvp-lobby",
       reachable: ['button, [role="tab"]'],
     });
@@ -350,7 +338,7 @@ test.describe("Responsive Smoke: Game setup pages", () => {
   });
 
   test("Tournament list — cards/buttons reachable at all viewports", async ({ page }) => {
-    await smokeProtected(page, { route: "/game/2d/tournament", name: "RS11-tournament-list" });
+    await smokeProtected(page, { route: "/game/tournament", name: "RS11-tournament-list" });
   });
 });
 
@@ -792,39 +780,46 @@ test.describe("Responsive Smoke: Game pages — no overflow on 390px", () => {
     if (!loggedIn) loggedIn = await tryLogin(page);
   });
 
-  test("AI Battle game page — no horizontal overflow at 390px (min-w was 400px)", async ({ page }) => {
+  test("Game room (/game/room) — GBA shell no horizontal overflow at 390px", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
 
-    const landed = await gotoProtected(page, "/game/2d/ai-battle");
-    if (!landed) { await ss(page, "RS70-ai-game-unauth"); return; }
+    const landed = await gotoProtected(page, "/game/battle");
+    if (!landed) { await ss(page, "RS70-game-room-unauth"); return; }
     await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(800);
 
-    // Click Start to land on the game page
-    const startBtn = page.locator("button").filter({ hasText: /start|play/i }).first();
-    const hasStart = await startBtn.waitFor({ state: "visible", timeout: 10_000 }).then(() => true).catch(() => false);
-    if (hasStart) {
-      await startBtn.click();
-      await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
+    // Click Tryout card
+    const card = page.locator("button, [role='button'], [class*='card']").filter({ hasText: /tryout|solo|practice/i }).first();
+    if (await card.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await card.click();
+      await page.waitForTimeout(500);
     }
+
+    const startBtn = page.locator("button").filter({ hasText: /start|play/i }).first();
+    if (await startBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await startBtn.click();
+    }
+
+    await page.waitForURL(/\/game\/room/, { timeout: 15_000 }).catch(() => {});
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(800);
     await assertNoHorizontalScroll(page);
-    await ss(page, "RS70-ai-game-mobile-390");
+    await ss(page, "RS70-game-room-mobile-390");
 
-    // Exit button must be reachable even during loading overlay
-    const exitBtn = page.locator("a, button").filter({ hasText: /exit|leave|back/i }).first();
-    if (await exitBtn.count() > 0) {
-      await assertReachable(page, exitBtn, "exit-btn @ mobile-390");
+    // START button on GBA shell acts as exit — must be reachable
+    const startShellBtn = page.locator("div, button").filter({ hasText: /^start$/i }).first();
+    if (await startShellBtn.count() > 0) {
+      await assertReachable(page, startShellBtn, "START-btn @ mobile-390");
     }
 
-    await ss(page, "RS70-ai-game-mobile-with-exit");
+    await ss(page, "RS70-game-room-mobile-with-start");
     expect(filterErrors(errors)).toHaveLength(0);
   });
 
   test("Tournament lobby — card layout reachable at 390px", async ({ page }) => {
-    const landed = await gotoProtected(page, "/game/2d/tournament");
+    const landed = await gotoProtected(page, "/game/tournament");
     if (!landed) { await ss(page, "RS71-tournament-lobby-unauth"); return; }
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(1_500);

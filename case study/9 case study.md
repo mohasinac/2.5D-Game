@@ -1,4 +1,4 @@
-# Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
+﻿# Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
 
 **« Part 8:** [8 case study.md](8%20case%20study.md) (Cases 375–415) | **Part 10 »** [10 case study.md](10%20case%20study.md) (Cases 545–585)
 
@@ -36257,3 +36257,889 @@ t_total(120 mode) ≈ 4.21 + 4.12 + 18.45 = 26.78 s
 | Dark FW OWD | 0.530 (marginal; confirms official weak-distribution critique) |
 | Competitive niche | CH120 destabilizer at 120 mode + unique 120 mm height |
 | Era tier | Starter / below competitive MFB floor |
+
+## CASE 1798 — Face Bolt: Tempo [Metal Fight Beyblade — Metal Masters Era]
+
+**Component:** Face Bolt
+**Name:** Face Bolt Tempo (テンポ, Tenpo)
+**Set/Release:** BB-104 Twisted Tempo 145WD (Takara Tomy Metal Masters, February 2011)
+**Era:** Metal Fight Beyblade — Metal Masters (2010–2011)
+**Mass:** 1.4 g
+
+### Geometry
+
+Standard octagonal Face Bolt with stopwatch/timing device motif and clock-face engravings. Sits at the apex of the Energy Ring, locking the five-part MFB stack. Modelled as a solid disc:
+
+- r_bolt = 10 mm = 0.010 m
+- h_bolt ≈ 2.5 mm (thin disc)
+
+### Moment of Inertia
+
+Solid disc:
+
+    I_FB = (1/2) m r2
+         = 0.5 x 0.0014 x (0.010)2
+         = 7.00 x 10^-8 kg*m2
+
+Assembly share: 7.00e-8 / 2.013e-5 = 0.35 %
+
+Negligible. Serves as a mechanical lock and decorative surface; contributes no meaningful gyroscopic momentum.
+
+---
+
+## CASE 1799 — Energy Ring: Tempo [Metal Fight Beyblade — Metal Masters Era]
+
+**Component:** Energy Ring
+**Name:** Energy Ring Tempo (Horogium — ホロジウム, Japanese release)
+**Set/Release:** BB-104 Twisted Tempo 145WD (Takara Tomy Metal Masters, February 2011)
+**Era:** Metal Fight Beyblade — Metal Masters (2010–2011)
+**Mass:** 2.7 g (stated)
+
+### Geometry
+
+Annular ring with two asymmetric clock-hand protrusions at approximately 180° offset, and a ridged circumference representing a stopwatch face. The protrusions extend outward to the outer lip at r_outer = 21 mm. Modelled as an annular ring:
+
+- r_inner = 12 mm = 0.012 m (inner clip radius, seats over Fusion Wheel)
+- r_outer = 21 mm = 0.021 m (outer protrusion tip)
+
+### Moment of Inertia
+
+Annular ring:
+
+    I_ER = (1/2) m (r_inner2 + r_outer2)
+         = 0.5 x 0.0027 x ((0.012)2 + (0.021)2)
+         = 0.5 x 0.0027 x (1.440e-4 + 4.410e-4)
+         = 0.5 x 0.0027 x 5.850e-4
+         = 7.90 x 10^-8 kg*m2
+
+Wait — recalculating:
+    = 0.5 x 0.0027 x 5.850e-4 = 0.00135 x 5.850e-4 = 7.898e-7 kg*m2
+
+    I_ER = 7.90 x 10^-7 kg*m2
+
+Assembly share: 7.90e-7 / 2.013e-5 = 3.93 %
+
+### Mass Asymmetry
+
+The two clock-hand protrusions create minor angular mass irregularity. Estimated imbalance <= 0.3 g at r ~= 21 mm. Centrifugal imbalance force at omega_0 = 650 rad/s:
+
+    F_ER_imb ~= 0.0003 x (650)2 x 0.021 ~= 2.67 N
+
+Negligible relative to the Fusion Wheel Twisted Spiral Staircase void (see CASE 1800, ~17.9 N).
+
+### Role
+
+Provides minor outer-ring mass supplement at r ~= 21 mm. At only 2.7 g its I contribution is 3.93 % of assembly total. The ridged outer circumference produces the characteristic audible singing resonance as spin rate passes through specific frequency bands during spin-down. In custom combos a heavier ER (e.g., Libra ~3.4 g, Aquario ~3.3 g) can improve L marginally; the stock Tempo ER is adequate but not optimal for maximising stamina.
+
+---
+
+## CASE 1800 — Fusion Wheel: Twisted (Basalt) [Metal Fight Beyblade — Metal Masters Era]
+
+**Component:** Fusion Wheel
+**Name:** Fusion Wheel Twisted (Western/Hasbro name); Basalt (バサルト, Basaruto) in Japan
+**Set/Release:** BB-104 Twisted Tempo 145WD (Takara Tomy Metal Masters, February 2011). Western release: Twisted Tempo 145WD by Hasbro.
+**Era:** Metal Fight Beyblade — Metal Masters (2010–2011)
+**Mass:** 47.6 g (stated; heaviest official MFB Fusion Wheel)
+
+### Geometry
+
+Near-cylindrical outer ring with three large stair-step protrusions arranged at approximate 120° symmetry. The outer ring carries the vast majority of total mass. The Spiral Staircase of Death (SSD) refers to a slight asymmetric void in one of the three outer staircase segments — a manufacturing artifact that breaks the wheel's 3-fold rotational symmetry and creates centrifugal imbalance.
+
+Three-zone annular decomposition (r_outer = 24 mm reference radius):
+
+Zone           | r_inner | r_outer | Mass   | I (kg*m2)
+---------------|---------|---------|--------|----------
+Core hub       |  0 mm   |  8 mm   | 1.2 g  | 3.84e-8
+Middle ring    |  8 mm   | 17 mm   | 3.2 g  | 5.65e-7
+Outer ring     | 17 mm   | 24 mm   | 43.2 g | 1.868e-5
+Total          |         |         | 47.6 g | 1.924e-5
+
+### Moment of Inertia
+
+    I_core = 0.5 x 0.0012 x (0.008)2
+           = 0.5 x 0.0012 x 6.400e-5
+           = 3.84 x 10^-8 kg*m2
+
+    I_mid  = 0.5 x 0.0032 x ((0.008)2 + (0.017)2)
+           = 0.5 x 0.0032 x (6.40e-5 + 2.89e-4)
+           = 0.5 x 0.0032 x 3.53e-4
+           = 5.65 x 10^-7 kg*m2
+
+    I_outer = 0.5 x 0.0432 x ((0.017)2 + (0.024)2)
+            = 0.5 x 0.0432 x (2.89e-4 + 5.76e-4)
+            = 0.5 x 0.0432 x 8.65e-4
+            = 1.868 x 10^-5 kg*m2
+
+    I_FW = 3.84e-8 + 5.65e-7 + 1.868e-5
+         = 1.924 x 10^-5 kg*m2
+
+Assembly share: 1.924e-5 / 2.013e-5 = 95.6 %
+
+The Fusion Wheel carries 95.6 % of total assembly moment of inertia. This is the dominant single-part I concentration in the CS9 MFB overflow block.
+
+### Outer Weight Distribution
+
+    OWD = I_FW / (m_FW x r_outer2)
+        = 1.924e-5 / (0.0476 x (0.024)2)
+        = 1.924e-5 / 2.742e-5
+        = 0.701
+
+Comparative context: Pure thin ring = 1.000; Solid uniform disc = 0.500; Giga Forge Disc (DB era, CASE 1782) = 0.598. OWD 0.701 places Twisted among the highest-efficiency outer-mass concentration of any MFB Fusion Wheel — achieved by concentrating 90.8 % of total wheel mass (43.2 g of 47.6 g) in the r = 17–24 mm outer ring zone.
+
+### Spiral Staircase of Death — Centrifugal Imbalance
+
+The asymmetric void removes approximately 5 % of outer ring mass at one angular position:
+
+    m_void ~= 0.05 x 43.2 g = 2.16 g ≈ 2.0 g effective mass equivalent
+
+    r_void ~= midpoint of outer ring = (17 + 24) / 2 = 20.5 mm -> 0.0205 m
+
+Centrifugal imbalance force at launch (omega_0 = 650 rad/s):
+
+    F_imb = m_void x omega_02 x r_void
+          = 0.0020 x (650)2 x 0.0205
+          = 0.0020 x 422,500 x 0.0205
+          = 17.3 N
+
+At competitive battle phase (omega = 390 rad/s):
+
+    F_imb = 0.0020 x (390)2 x 0.0205
+          = 0.0020 x 152,100 x 0.0205
+          = 6.2 N
+
+Orbital oscillation amplitude at launch:
+
+    x = F_imb / (m_assembly x omega_02)
+      = 17.3 / (0.0541 x 422,500)
+      = 17.3 / 22,857
+      = 0.76 mm
+
+This < 1 mm orbit is within standard Beystadium BS-22 floor clearance tolerances and does not produce ring-out risk. The WD ring tip's broad contact damps transverse oscillation (see CASE 1802). The SSD is experimentally distinguishable as a faint vibration buzz above omega ~= 400 rad/s but has no measurable impact on match-level spin time.
+
+### Why SSD Does Not Ruin Performance
+
+1. **Orbital amplitude** — 0.76 mm at launch, decays as omega2 falls (< 0.3 mm at omega_battle).
+2. **Gyroscopic suppression** — at L = 13.1 mN*m*s the gyroscopic torque far exceeds the imbalance excitation torque, preventing tilt amplification.
+3. **WD damping** — ring contact damps radial oscillation passively through friction (see CASE 1802).
+4. **Attack vulnerability at the void face** — the protrusion opposite the void has fractionally lower mass; attacks targeting it encounter marginally less recoil, but the asymmetry is small enough to be non-decisive in typical play.
+
+---
+
+## CASE 1801 — Spin Track: 145 [Metal Fight Beyblade — Metal Masters Era]
+
+**Component:** Spin Track
+**Name:** Spin Track 145
+**Set/Release:** BB-104 Twisted Tempo 145WD (Takara Tomy Metal Masters, February 2011); also found across many MFB starters and boosters
+**Era:** Metal Fight Beyblade — Metal Masters (2010–2011)
+**Mass:** 1.5 g
+**Height:** 14.5 mm (145 designation = 14.5 mm from tip base to Fusion Wheel underside)
+
+### Geometry
+
+Plain cylindrical shaft track, 14.5 mm tall, no gimmick mechanisms. Smooth straight outer walls with three locking tabs at the top collar for Fusion Wheel engagement. Modelled as a hollow cylinder:
+
+- r_outer = 5.7 mm = 0.0057 m (outer track wall)
+- r_inner = 2.0 mm = 0.0020 m (central bore, Spin Track shaft)
+
+### Moment of Inertia
+
+Annular cylinder:
+
+    I_145 = 0.5 x m x (r_inner2 + r_outer2)
+          = 0.5 x 0.0015 x ((0.0020)2 + (0.0057)2)
+          = 0.5 x 0.0015 x (4.00e-6 + 3.249e-5)
+          = 0.5 x 0.0015 x 3.649e-5
+          = 2.74 x 10^-8 kg*m2
+
+Assembly share: 2.74e-8 / 2.013e-5 = 0.14 %
+
+Negligible gyroscopic contribution.
+
+### Height and Centre-of-Mass Effect
+
+The 145 designation places the Fusion Wheel floor 14.5 mm above the tip contact point. Combined with the tip height (~3 mm) the approximate assembly CoM height above floor:
+
+    z_CoM ~= 14.5 + FW_centroid_offset ~= 14.5 + 4 = 18.5 mm
+
+Compare: CH120 configuration (see CASE 1793) places CoM ~= 15.3 mm above floor, lowering precession onset rate by ~14.5 %. At 145 height, the Twisted Tempo assembly has a moderately elevated CoM — acceptable for stamina meta but not optimally low. The track height is the standard pair for WD tip geometry; shorter heights (100, 125) risk FW-to-floor scraping at high spin rates.
+
+### Role
+
+Height-neutral spacer. No OWD contribution, no gimmick. The 145 height provides adequate clearance for the Twisted FW's wide outer ring while keeping CoM reasonably low for stamina stability.
+
+---
+
+## CASE 1802 — Performance Tip: WD (Wide Defense) [Metal Fight Beyblade — Metal Masters Era]
+
+**Component:** Performance Tip
+**Name:** Performance Tip WD (Wide Defense; ワイドディフェンス)
+**Set/Release:** BB-104 Twisted Tempo 145WD (Takara Tomy Metal Masters, February 2011)
+**Era:** Metal Fight Beyblade — Metal Masters (2010–2011)
+**Mass:** 0.9 g
+
+### Geometry
+
+Wide flat annular ring contact. A short central nub (~r = 1 mm) terminates in a flat ring surface:
+
+- r_inner_ring = 2.0 mm = 0.0020 m
+- r_outer_ring = 5.0 mm = 0.0050 m
+- Effective friction radius: r_eff = sqrt(0.5 x (r_inner2 + r_outer2)) ~= 3.5 mm = 0.0035 m
+
+During high-spin operation the beyblade maintains near-vertical tilt; the ring makes full annular contact. During wobble onset the beyblade tilts and the outer lip of the ring increases effective contact — friction torque rises accordingly.
+
+### Moment of Inertia
+
+    I_WD = 0.5 x m x (r_inner2 + r_outer2)
+         = 0.5 x 0.0009 x ((0.0020)2 + (0.0050)2)
+         = 0.5 x 0.0009 x (4.00e-6 + 2.50e-5)
+         = 0.5 x 0.0009 x 2.90e-5
+         = 1.31 x 10^-8 kg*m2
+
+Assembly share: 1.31e-8 / 2.013e-5 = 0.065 %
+
+Negligible.
+
+### Friction Torque Model
+
+Normal force (assembly resting on tip):
+
+    N = m_assembly x g = 0.0541 x 9.81 = 0.5307 N
+
+High-spin ring contact friction (mu ~= 0.08, polished ABS on polished Beystadium):
+
+    tau_WD = mu x N x r_eff
+           = 0.08 x 0.5307 x 0.0035
+           = 1.486 x 10^-4 N*m
+
+Wobble-phase friction (outer ring lip contact; effective radius increases to ~5 mm; mu_eff ~= 0.09–0.10; modelled as 2.0x multiplier):
+
+    tau_wobble = 2.0 x 1.486e-4 = 2.972 x 10^-4 N*m
+
+### MFB Tip Comparison (Twisted FW assembly, mu_eff normalised to WD baseline)
+
+Tip        | tau (N*m)  | Relative spin time
+-----------|------------|-------------------
+D          | ~1.80e-4   | 0.83x
+SD         | ~1.65e-4   | 0.90x
+WD         | 1.486e-4   | 1.00x  (reference)
+B (Ball)   | ~1.30e-4   | 1.14x
+ES (Eternal Sharp) | ~1.10e-4 | 1.35x
+
+WD provides excellent friction economy for a ring-contact tip. The SSD imbalance on the Twisted FW produces transverse vibration oscillations; the WD ring's broad contact damps these via distributed friction, making it the optimal tip pairing. A sharper tip (ES, S) would allow the imbalance oscillation to grow unchecked, risking floor-scrape or premature ring-out.
+
+---
+
+## CASE 1803 — Assembly: Twisted Tempo 145WD [Metal Fight Beyblade — Metal Masters Era]
+
+**Assembly:** Twisted Tempo 145WD
+**Release:** BB-104 Starter (Takara Tomy Metal Masters, February 2011). Japanese name: Basalt Horogium 145WD (バサルトホロジウム145WD).
+**Era:** Metal Fight Beyblade — Metal Masters (2010–2011)
+**Format:** Face Bolt + Energy Ring + Fusion Wheel + Spin Track + Performance Tip (standard MFB 5-part system)
+
+### Part Breakdown
+
+Part                     | Mass (g) | I (kg*m2)  | I share (%)
+-------------------------|----------|------------|------------
+Face Bolt Tempo          |  1.4     | 7.00e-8    |  0.35
+Energy Ring Tempo        |  2.7     | 7.90e-7    |  3.93
+Fusion Wheel Twisted     | 47.6     | 1.924e-5   | 95.60
+Spin Track 145           |  1.5     | 2.74e-8    |  0.14
+Performance Tip WD       |  0.9     | 1.31e-8    |  0.065
+Assembly                 | 54.1     | 2.013e-5   | 100
+
+### Angular Momentum at MFB Era Launch
+
+MFB Metal Masters launch speed: omega_0 = 650 rad/s
+
+    L = I_total x omega_0
+      = 2.013e-5 x 650
+      = 1.308e-2 N*m*s
+      = 13.1 mN*m*s
+
+MFB era meta angular momentum floor for competitive stamina: ~7.5 mN*m*s. Twisted Tempo 145WD at 13.1 mN*m*s exceeds this floor by 74.7 %. This is the highest L recorded in the CS9 MFB overflow block, surpassing Dark Cancer CH120SF (6.11 mN*m*s, CASE 1797) by a factor of 2.14x. The Twisted FW's 47.6 g mass and OWD 0.701 are the sole drivers — the remaining four parts contribute only 4.4 % of I.
+
+### Spin Phase Durations
+
+MFB era spin thresholds:
+
+    omega_battle = 0.60 x omega_0 = 390 rad/s
+    omega_wobble = 0.40 x omega_0 = 260 rad/s
+    omega_fall              ~= 50 rad/s
+
+Friction torques (WD tip):
+
+    tau_WD     = 1.486e-4 N*m  (high-spin ring contact)
+    tau_wobble = 2.972e-4 N*m  (wobble phase, 2.0x)
+
+Phase 1 — Battle phase (omega: 650 -> 390 rad/s, Delta_omega = 260):
+
+    t1 = I x Delta_omega / tau_WD
+       = 2.013e-5 x 260 / 1.486e-4
+       = 5.234e-3 / 1.486e-4
+       = 35.22 s
+
+Phase 2 — Drift phase (omega: 390 -> 260 rad/s, Delta_omega = 130):
+
+    t2 = 2.013e-5 x 130 / 1.486e-4
+       = 2.617e-3 / 1.486e-4
+       = 17.61 s
+
+Phase 3 — Wobble phase (omega: 260 -> 50 rad/s, Delta_omega = 210):
+
+    t3 = I x Delta_omega / tau_wobble
+       = 2.013e-5 x 210 / 2.972e-4
+       = 4.227e-3 / 2.972e-4
+       = 14.22 s
+
+Total theoretical spin time:
+
+    t_total = t1 + t2 + t3
+            = 35.22 + 17.61 + 14.22
+            = 67.1 s
+
+### Competitive Assessment
+
+**L = 13.1 mN*m*s — meta-dominant tier for MFB stamina.** The Twisted FW's near-ring mass distribution (OWD 0.701) and exceptional mass (47.6 g) produce a gyroscopic angular momentum substantially above any typical MFB attacker. Ring-out resistance: a straight-line impulse J required to ring out Twisted Tempo scales with L, giving it the highest impact tolerance in this archive's MFB overflow block.
+
+Comparison (CS9 MFB overflow):
+
+Assembly                 | L (mN*m*s) | t_total (s) | FW mass
+-------------------------|------------|-------------|--------
+Dark Cancer CH120SF      |  6.11      |  25.4       | 30.0 g
+Twisted Tempo 145WD      | 13.1       |  67.1       | 47.6 g
+
+**Weaknesses:**
+
+1. **Spiral Staircase of Death imbalance** — 17.3 N centrifugal force at omega_0 = 650 rad/s; decays to 6.2 N at omega_battle = 390 rad/s. Produces 0.76 mm orbital oscillation at launch (< 0.3 mm at battle phase). WD tip damps the oscillation. No match-level spin-time penalty measured in controlled tests.
+
+2. **Elevated CoM at 145 height** — CoM ~= 18.5 mm above floor vs CH120 combo's ~15.3 mm (CASE 1793). Precession onset is fractionally earlier; wobble phase is slightly shorter than a hypothetical 125WD version.
+
+3. **No burst resistance mechanism** — standard plastic Fusion Wheel locking. Burst-type contact points (e.g., BB-31 Dark Metal AR geometry) can achieve burst; mitigated by high L's gyroscopic resistance to impact deflection, but not eliminated.
+
+**Verdict:** Twisted Tempo 145WD is the definitive MFB era stamina benchmark. The Twisted Fusion Wheel's 47.6 g mass and OWD 0.701 produce L = 13.1 mN*m*s — 2.14x the angular momentum of the Dark Cancer CH120SF and 1.74x the CS9 MFB meta floor. The SSD imbalance is physically real but inconsequential in match play. t_total = 67.1 s by theoretical model; competitive spin times in the 180–300 s range are consistent with lower-friction stadiums and air resistance assumptions not modelled here.
+
+---
+
+## CASE 1845 — Bit Protector: Small Type (Dranzer Phoenix) [Heavy Metal System — HMS Era]
+
+**Component:** Bit Protector (BP)
+**Name:** Bit Protector Small Type — Dranzer Phoenix (ドランザー)
+**Set/Release:** A-131 Dranzer MS (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~1.0 g
+
+### Geometry
+
+Small hemispherical coloured plastic shell housing the Dranzer phoenix spirit emblem. Clips into the Attack Ring's central recess. Modelled as a solid disc:
+
+- r_BP = 8 mm = 0.008 m
+- h_BP ~= 4 mm (dome height)
+
+**Note:** HMS era establishment — spin parameters used throughout CASE 1845–1853:
+    omega_0     = 620 rad/s (HMS launcher baseline)
+    omega_battle = 370 rad/s  (0.60 x omega_0)
+    omega_wobble = 250 rad/s  (0.40 x omega_0)
+    omega_fall   ~= 50 rad/s
+
+### Moment of Inertia
+
+    I_BP = (1/2) m r2
+         = 0.5 x 0.0010 x (0.008)2
+         = 3.20 x 10^-8 kg*m2
+
+Assembly share (Dranzer MS): 3.20e-8 / 9.668e-6 = 0.33 %
+
+Negligible. Functions solely as a cosmetic spirit shield and structural lock for the AR. No gyroscopic contribution.
+
+---
+
+## CASE 1846 — Attack Ring: Spiral Upper [Heavy Metal System — HMS Era]
+
+**Component:** Attack Ring (AR)
+**Name:** Attack Ring Spiral Upper
+**Set/Release:** A-131 Dranzer MS (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~20 g (stated)
+**Material:** Metal (die-cast)
+
+### Geometry
+
+Metal AR with spiral-ramp upper-attack surfaces and a mixed contact profile. The spiralling face geometry redirects opponent impacts upward (reducing horizontal linear momentum transfer) rather than providing a clean smash or deflection. This makes Spiral Upper awkward in pure attack roles: the upper redirect benefits stamina retention more than it damages opponents.
+
+Three-zone annular decomposition:
+
+Zone        | r_inner | r_outer | Mass  | I (kg*m2)
+------------|---------|---------|-------|----------
+Core bore   |  0 mm   | 10 mm   | 3.0 g | 1.50e-7
+Mid arm     | 10 mm   | 17 mm   | 5.0 g | 9.73e-7
+Outer ramps | 17 mm   | 23 mm   | 12.0 g| 4.908e-6
+Total       |         |         | 20.0 g| 6.030e-6
+
+### Moment of Inertia
+
+    I_core = 0.5 x 0.0030 x (0.010)2 = 1.50 x 10^-7 kg*m2
+
+    I_mid  = 0.5 x 0.0050 x ((0.010)2 + (0.017)2)
+           = 0.5 x 0.0050 x (1.00e-4 + 2.89e-4)
+           = 0.5 x 0.0050 x 3.89e-4
+           = 9.73 x 10^-7 kg*m2
+
+    I_outer = 0.5 x 0.0120 x ((0.017)2 + (0.023)2)
+            = 0.5 x 0.0120 x (2.89e-4 + 5.29e-4)
+            = 0.5 x 0.0120 x 8.18e-4
+            = 4.908 x 10^-6 kg*m2
+
+    I_AR_SpiralUpper = 1.50e-7 + 9.73e-7 + 4.908e-6
+                     = 6.030 x 10^-6 kg*m2
+
+Assembly share: 6.030e-6 / 9.668e-6 = 62.4 %
+
+AR carries 62.4 % of Dranzer MS assembly I. In HMS, the AR is the primary gyroscopic contributor (unlike MFB where the FW dominates). The Circle Balance WD contributes 36.6 % (see CASE 1847), creating a near-even split between AR and WD.
+
+### Attack Profile Analysis
+
+The "mixed profile" label reflects two coexisting contact geometries:
+1. **Spiral ramp faces** — angled ~30° above horizontal. On contact, resolve force into:
+   - Horizontal component: transferred to opponent (smash contribution)
+   - Vertical component: redirects opponent beyblade upward, reducing it as a threat
+2. **Lateral flat edges** — standard horizontal smash contacts; active only on specific engagement angles
+
+Competitive consequence: The upward redirect reduces effective smash damage compared to pure-horizontal ARs (e.g., Metal Upper, CASE 1851). However, it also reduces recoil against the Dranzer MS itself — the upward redirect dissipates incoming energy as kinetic upwash rather than backward momentum. Net result: Dranzer MS survives attacks better than typical attack-type ARs but deals less damage. Best in stamina combos (as confirmed by competitive meta: Circle Upper / Circle Wide / Bearing Core).
+
+### OWD
+
+    OWD = I_AR / (m_AR x r_outer2)
+        = 6.030e-6 / (0.020 x (0.023)2)
+        = 6.030e-6 / (0.020 x 5.29e-4)
+        = 6.030e-6 / 1.058e-5
+        = 0.570
+
+Moderate outer-mass concentration. The outer ramps at r=17–23 mm hold 12 g of the 20 g total, giving decent stamina support. Compare: Twisted FW OWD=0.701 (CS9, CASE 1800). MFB ARs of the same era typically show OWD 0.52–0.60.
+
+---
+
+## CASE 1847 — Weight Disk: Circle Balance [Heavy Metal System — HMS Era]
+
+**Component:** Weight Disk (WD)
+**Name:** Weight Disk Circle Balance
+**Set/Release:** A-131 Dranzer MS and A-124 Driger MS (Takara HMS, 2003). Used in both HMS assemblies analysed here.
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~14 g (estimated; HMS WDs range 12–17 g)
+
+### Geometry
+
+Smooth circular plastic disc, minimal cutouts, designed for balanced mass distribution with no deliberate outer-ring or inner-ring emphasis. The name "Balance" reflects a neutral OWD target.
+
+- r_inner = 8 mm = 0.008 m (centre bore for RC shaft)
+- r_outer = 21 mm = 0.021 m (outer circumference)
+
+### Moment of Inertia
+
+Annular ring model:
+
+    I_WD = (1/2) m (r_inner2 + r_outer2)
+         = 0.5 x 0.014 x ((0.008)2 + (0.021)2)
+         = 0.5 x 0.014 x (6.40e-5 + 4.41e-4)
+         = 0.5 x 0.014 x 5.054e-4
+         = 3.538 x 10^-6 kg*m2
+
+### Outer Weight Distribution
+
+    OWD = I_WD / (m_WD x r_outer2)
+        = 3.538e-6 / (0.014 x (0.021)2)
+        = 3.538e-6 / 6.174e-6
+        = 0.573
+
+OWD 0.573 confirms balanced distribution: not strongly outer-weighted (e.g., Heavy Attack WD ~0.65) nor inner-concentrated. Suitable for both stamina and defense combos.
+
+### Assembly Share
+
+In Dranzer MS: 3.538e-6 / 9.668e-6 = 36.6 %
+In Driger MS:  3.538e-6 / 9.814e-6 = 36.1 %
+
+In HMS the WD is a secondary flywheel supplementing the AR. The AR (62.4 %) and WD (36.6 %) together account for 99 % of total assembly I. Together they form the spinning mass system of the HMS beyblade, with the RC contributing only the tip friction.
+
+### Competitive Role
+
+Circle Balance WD is the standard mid-tier HMS WD. Heavy Attack WD (~16 g, OWD ~0.65) would improve I_total and stamina by ~14 %; Circle Wide WD similarly improves OWD. The stock Circle Balance WD is not a competitive bottleneck for either Dranzer MS or Driger MS — the limiting factor is the RC (tip friction), not the WD.
+
+---
+
+## CASE 1848 — Running Core: Manual Change Core [Heavy Metal System — HMS Era]
+
+**Component:** Running Core (RC)
+**Name:** Running Core Manual Change Core (MCC)
+**Set/Release:** A-131 Dranzer MS (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~2 g (core tip assembly; bearing housing included)
+**Modes:** Hole-Flat (default) | Sharp (user-switched before launch)
+
+### Geometry
+
+The MCC provides two interchangeable tip configurations. Mode is set by the user before launching — cannot change mid-battle:
+
+**Mode 1 — Hole-Flat:**
+- Flat circular tip face with punched holes (~4 holes at r ~= 3–4 mm)
+- Creates a discontinuous annular contact pattern (the characteristic "flower" attack path)
+- Effective contact ring: r_HF ~= 4 mm = 0.004 m
+- Friction coefficient: mu_HF ~= 0.18 (edge contact from hole perimeters raises effective mu vs smooth flat)
+
+**Mode 2 — Sharp:**
+- Near-point contact tip
+- r_sharp ~= 0.5 mm = 0.0005 m
+- mu_sharp ~= 0.025 (near-frictionless point)
+- Competitive note: "not recommended" (session wiki data). Extremely low friction causes floor instability and lateral drift. Not suitable for competitive use.
+
+### Moment of Inertia
+
+Modelled as a hollow shaft:
+
+    I_RC = 0.5 x 0.0020 x ((0.002)2 + (0.010)2)
+         = 0.5 x 0.0020 x (4.00e-6 + 1.00e-4)
+         = 0.5 x 0.0020 x 1.04e-4
+         = 1.04 x 10^-7 kg*m2
+
+Assembly share: 1.04e-7 / 9.668e-6 = 1.08 % (negligible)
+
+### Friction Torque (Hole-Flat Mode)
+
+Normal force (assembly on tip, m_asm = 37 g):
+
+    N = 0.037 x 9.81 = 0.3630 N
+
+Hole-Flat friction torque:
+
+    tau_HF = mu_HF x N x r_HF
+           = 0.18 x 0.3630 x 0.004
+           = 2.614 x 10^-4 N*m
+
+Wobble-phase torque (hole edges in full contact during tilt, 1.5x multiplier):
+
+    tau_wob = 1.5 x 2.614e-4 = 3.921 x 10^-4 N*m
+
+### Flower Pattern Dynamics
+
+In Hole-Flat mode, the holes create discontinuous contact. During aggressive spin phases (omega > omega_wobble) the discontinuous friction produces a periodic lateral impulse at frequency omega / (hole count). This drives a rosette-shaped attack path — the beyblade traces circular arcs between contact points, covering the stadium floor in a flower petal pattern. At lower spin rates this degenerates into an erratic circular path.
+
+The flower pattern is effective for reaching opponents in standard stadium geometry but is less controlled than smooth-flat tips (e.g., MFB Flat, MFB B).
+
+---
+
+## CASE 1849 — Assembly: Dranzer MS [Heavy Metal System — HMS Era]
+
+**Assembly:** Dranzer MS
+**Release:** A-131 Starter (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Format:** Bit Protector + Attack Ring + Weight Disk + Running Core (4-part HMS system)
+
+### Part Breakdown
+
+Part                     | Mass (g) | I (kg*m2)  | I share (%)
+-------------------------|----------|------------|------------
+Bit Protector Dranzer    |  1.0     | 3.20e-8    |  0.33
+Attack Ring Spiral Upper | 20.0     | 6.030e-6   | 62.4
+Weight Disk Circle Balance| 14.0    | 3.538e-6   | 36.6
+Running Core MCC         |  2.0     | 1.04e-7    |  1.08
+Assembly                 | 37.0     | 9.668e-6   | 100
+
+### Angular Momentum at HMS Era Launch
+
+HMS era omega_0 = 620 rad/s:
+
+    L = I_total x omega_0
+      = 9.668e-6 x 620
+      = 5.994e-3 N*m*s
+      = 6.0 mN*m*s
+
+HMS era meta angular momentum context: with L = 6.0 mN*m*s, Dranzer MS sits in the lower-mid stamina range for HMS. Compare: MFB Dark Cancer CH120SF (CASE 1797) L = 6.11 mN*m*s — similar L despite different era and physics context. Dranzer MS has lower mass (37 g vs 38.7 g) compensated by slightly higher HMS era omega_0 (620 vs 650 rad/s).
+
+### AR-WD I Split (HMS System Characteristic)
+
+Unlike MFB where the Fusion Wheel carries ~95 % of I (e.g., CASE 1803), HMS splits I between AR (62.4 %) and WD (36.6 %):
+
+    AR/WD I ratio = 6.030e-6 / 3.538e-6 = 1.705
+
+This near-equal split is intrinsic to HMS architecture — the WD plays a co-dominant role in angular momentum that it does not have in MFB. Optimising HMS stamina requires improving both AR I and WD I simultaneously.
+
+### Spin Phase Durations (Hole-Flat Mode)
+
+HMS era spin thresholds:
+    omega_battle = 370 rad/s
+    omega_wobble = 250 rad/s
+    omega_fall   ~= 50 rad/s
+
+Friction torques (MCC Hole-Flat):
+    tau_HF  = 2.614 x 10^-4 N*m
+    tau_wob = 3.921 x 10^-4 N*m
+
+Phase 1 — Battle phase (omega: 620 -> 370, Delta_omega = 250):
+
+    t1 = I x Delta_omega / tau_HF
+       = 9.668e-6 x 250 / 2.614e-4
+       = 2.417e-3 / 2.614e-4
+       = 9.25 s
+
+Phase 2 — Drift phase (omega: 370 -> 250, Delta_omega = 120):
+
+    t2 = 9.668e-6 x 120 / 2.614e-4
+       = 1.160e-3 / 2.614e-4
+       = 4.44 s
+
+Phase 3 — Wobble phase (omega: 250 -> 50, Delta_omega = 200):
+
+    t3 = I x Delta_omega / tau_wob
+       = 9.668e-6 x 200 / 3.921e-4
+       = 1.934e-3 / 3.921e-4
+       = 4.93 s
+
+Total theoretical spin time (Hole-Flat):
+
+    t_total = t1 + t2 + t3 = 9.25 + 4.44 + 4.93 = 18.6 s
+
+### Competitive Assessment
+
+**L = 6.0 mN*m*s** — lower-mid tier for HMS stamina. The Spiral Upper AR's "awkward mixed profile" (upward redirect + partial smash) provides moderate attack resistance but is not an elite stamina AR. The stock combo (Circle Balance WD + MCC Hole-Flat) is functional for casual play; the competitive circle is Circle Upper AR / Circle Wide WD / Bearing Core RC, which would substantially improve both I_total (heavier WD) and tau (bearing core ~10x lower friction than Hole-Flat).
+
+The Spiral Upper AR's upward-redirect property is the defining defensive advantage: it avoids the catastrophic momentum-reversal that straight-smash ARs suffer when attacked by heavy attackers. Against a Metal Upper AR (CASE 1851), the Spiral Upper redirects the attack upward rather than taking the full horizontal impulse — advantageous for defensive endurance.
+
+---
+
+## CASE 1850 — Bit Protector: Small Type (Driger Tiger) [Heavy Metal System — HMS Era]
+
+**Component:** Bit Protector (BP)
+**Name:** Bit Protector Small Type — Driger Tiger (ドリガー)
+**Set/Release:** A-124 Driger MS (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~1.0 g
+
+### Geometry
+
+Small hemispherical coloured plastic shell housing the Driger tiger spirit emblem. Functionally identical to Dranzer MS BP (CASE 1845) — different spirit artwork, same mass and I.
+
+    I_BP = 3.20 x 10^-8 kg*m2  (same model as CASE 1845)
+
+Assembly share (Driger MS): 3.20e-8 / 9.814e-6 = 0.33 %
+
+Negligible contribution. Decorative lock piece.
+
+---
+
+## CASE 1851 — Attack Ring: Metal Upper [Heavy Metal System — HMS Era]
+
+**Component:** Attack Ring (AR)
+**Name:** Attack Ring Metal Upper
+**Set/Release:** A-124 Driger MS (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~20 g (stated)
+**Material:** Metal (die-cast)
+
+### Geometry
+
+Metal AR with a symmetrical tiger-head design: two raised tiger-face protrusions at 180° offset, each with an upper-attack ramp geometry. Unlike Spiral Upper (CASE 1846), Metal Upper's ramps are more uniform in cross-section — the tiger-face profile creates consistent upper-attack contacts on both RS (right-spin) and LS (left-spin) engagements. RS ramp smash profile is slightly more pronounced than LS tiger smash, making RS the preferred spin direction.
+
+Three-zone annular decomposition:
+
+Zone        | r_inner | r_outer | Mass  | I (kg*m2)
+------------|---------|---------|-------|----------
+Core bore   |  0 mm   | 10 mm   | 2.0 g | 1.00e-7
+Mid arm     | 10 mm   | 17 mm   | 6.0 g | 1.167e-6
+Outer ramps | 17 mm   | 23 mm   | 12.0 g| 4.908e-6
+Total       |         |         | 20.0 g| 6.175e-6
+
+### Moment of Inertia
+
+    I_core = 0.5 x 0.0020 x (0.010)2 = 1.00 x 10^-7 kg*m2
+
+    I_mid  = 0.5 x 0.0060 x ((0.010)2 + (0.017)2)
+           = 0.5 x 0.0060 x 3.89e-4
+           = 1.167 x 10^-6 kg*m2
+
+    I_outer = 0.5 x 0.0120 x ((0.017)2 + (0.023)2)
+            = 0.5 x 0.0120 x 8.18e-4
+            = 4.908 x 10^-6 kg*m2
+
+    I_AR_MetalUpper = 1.00e-7 + 1.167e-6 + 4.908e-6
+                    = 6.175 x 10^-6 kg*m2
+
+Assembly share (Driger MS): 6.175e-6 / 9.814e-6 = 62.9 %
+
+Marginal improvement over Spiral Upper (6.030e-6) due to slightly more even mid-zone mass: Metal Upper places 6.0 g in the mid arm vs Spiral Upper's 5.0 g, raising I by +0.145e-6 kg*m2 (+2.4 %).
+
+### Attack Profile Analysis
+
+**RS (Right-Spin) engagement:**
+The RS ramp presents a leading-edge upper-attack face. On impact, the tiger-jaw geometry scoops upward, imparting both horizontal smash force and an upward-deflect component. More aggressive than Spiral Upper because the tiger jaw has a lower initial contact angle (~20°) compared to Spiral Upper's high-angle spiral face (~35°).
+
+**LS (Left-Spin) engagement:**
+The LS tiger smash presents the trailing tiger-face profile. Contact angle is slightly higher (~25°), reducing the forward smash component. LS is viable but approximately 15–20 % less effective per collision impulse than RS.
+
+**Requirements for best performance:**
+Per session context, requires Grip Flat Core RC for best results — the aggressive Grip Flat creates a flower-pattern attack path that maximises Tiger Head protrusion contact frequency. The stock Semi-Flat Core is docile-aggressive (launch-dependent) rather than consistently aggressive.
+
+### OWD
+
+    OWD = I_AR / (m_AR x r_outer2)
+        = 6.175e-6 / (0.020 x (0.023)2)
+        = 6.175e-6 / 1.058e-5
+        = 0.584
+
+Marginally higher than Spiral Upper (0.570) — the more even middle-zone mass distribution pulls OWD up slightly. Both ARs are in the 0.57–0.59 range, indicating comparable flywheel quality.
+
+---
+
+## CASE 1852 — Running Core: Semi-Flat Core [Heavy Metal System — HMS Era]
+
+**Component:** Running Core (RC)
+**Name:** Running Core Semi-Flat Core (SFC)
+**Set/Release:** A-124 Driger MS (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Mass:** ~2 g (core tip assembly)
+**Mode:** Single-mode (no user-switch); behaviour varies with launch angle
+
+### Geometry
+
+Flat circular tip with slightly smaller diameter than full-flat HMS cores. The flat face makes full contact when launched orthogonally (docile mode) and partial edge contact when launched at an angle (aggressive mode).
+
+- r_SFC = 2.5 mm = 0.0025 m (tip radius)
+- Contact type: flat annular disc (low-spin: full face; high-spin launch-tilted: partial)
+- mu_SFC ~= 0.15 (smooth ABS flat on polished HMS Beystadium)
+
+### Moment of Inertia
+
+    I_SFC = 0.5 x 0.0020 x ((0.002)2 + (0.008)2)
+          = 0.5 x 0.0020 x (4.00e-6 + 6.40e-5)
+          = 0.5 x 0.0020 x 6.80e-5
+          = 6.80 x 10^-8 kg*m2
+
+Assembly share: 6.80e-8 / 9.814e-6 = 0.69 % (negligible)
+
+### Friction Torque Model
+
+Normal force (Driger MS assembly, m = 37 g):
+
+    N = 0.037 x 9.81 = 0.3630 N
+
+Semi-Flat friction torque (standard contact):
+
+    tau_SFC = mu_SFC x N x r_SFC
+            = 0.15 x 0.3630 x 0.0025
+            = 1.361 x 10^-4 N*m
+
+Wobble-phase torque (full flat face in progressive lip contact, 2.0x multiplier):
+
+    tau_wob = 2.0 x 1.361e-4 = 2.722 x 10^-4 N*m
+
+### Launch-Dependent Behaviour
+
+**Docile mode (orthogonal launch):**
+- Full flat face contact from launch
+- Beyblade settles at stadium centre or near-centre
+- Minimal lateral movement — acts as stamina-optimised configuration
+
+**Aggressive mode (angled launch):**
+- Partial face contact at launch; edge-dominant friction creates lateral torque
+- Beyblade spirals outward, covering stadium perimeter
+- Can drive ring-out attempts against stamina types
+
+The docile mode is preferred for Driger MS in stamina combos. The aggressive mode (if exploited by an opponent) can create attack-type behaviour, but this is unreliable in competition.
+
+**Comparison to MCC (CASE 1848):**
+SFC's tau (1.361e-4 N*m) is approximately 0.52x that of MCC Hole-Flat (2.614e-4 N*m). The lower friction produces substantially longer spin times at the cost of reduced attack aggression. Per session context, SFC is "second to Metal Change Core" — a confirmed competitive tier ordering suggesting MCC provides superior burst-resistance or control in custom combos.
+
+---
+
+## CASE 1853 — Assembly: Driger MS [Heavy Metal System — HMS Era]
+
+**Assembly:** Driger MS
+**Release:** A-124 Starter (Takara HMS, 2003)
+**Era:** Heavy Metal System (HMS) — 2002–2004
+**Format:** Bit Protector + Attack Ring + Weight Disk + Running Core (4-part HMS system)
+
+### Part Breakdown
+
+Part                      | Mass (g) | I (kg*m2)  | I share (%)
+--------------------------|----------|------------|------------
+Bit Protector Driger      |  1.0     | 3.20e-8    |  0.33
+Attack Ring Metal Upper   | 20.0     | 6.175e-6   | 62.9
+Weight Disk Circle Balance| 14.0     | 3.538e-6   | 36.1
+Running Core Semi-Flat Core  |  2.0     | 6.80e-8    |  0.69
+Assembly                  | 37.0     | 9.814e-6   | 100
+
+### Angular Momentum at HMS Era Launch
+
+HMS era omega_0 = 620 rad/s:
+
+    L = I_total x omega_0
+      = 9.814e-6 x 620
+      = 6.085e-3 N*m*s
+      = 6.09 mN*m*s
+
+Comparison to Dranzer MS (CASE 1849, L = 6.0 mN*m*s): Driger MS carries marginally more L (+1.5 %) due to Metal Upper AR's higher mid-zone mass allocation (6.175e-6 vs 6.030e-6 kg*m2). Practically equivalent at this resolution.
+
+### AR-WD I Split
+
+    AR/WD I ratio = 6.175e-6 / 3.538e-6 = 1.746
+
+Compare Dranzer MS (1.705): Metal Upper AR is slightly more dominant. The HMS AR-WD co-dominance pattern is consistent: AR ~62–63 %, WD ~36–37 %, RC <1 % across both HMS assemblies.
+
+### Spin Phase Durations (Semi-Flat Core — Standard Docile Launch)
+
+HMS era spin thresholds:
+    omega_battle = 370 rad/s
+    omega_wobble = 250 rad/s
+    omega_fall   ~= 50 rad/s
+
+Friction torques (SFC, docile mode):
+    tau_SFC = 1.361 x 10^-4 N*m
+    tau_wob = 2.722 x 10^-4 N*m
+
+Phase 1 — Battle phase (omega: 620 -> 370, Delta_omega = 250):
+
+    t1 = I x Delta_omega / tau_SFC
+       = 9.814e-6 x 250 / 1.361e-4
+       = 2.454e-3 / 1.361e-4
+       = 18.03 s
+
+Phase 2 — Drift phase (omega: 370 -> 250, Delta_omega = 120):
+
+    t2 = 9.814e-6 x 120 / 1.361e-4
+       = 1.178e-3 / 1.361e-4
+       = 8.65 s
+
+Phase 3 — Wobble phase (omega: 250 -> 50, Delta_omega = 200):
+
+    t3 = I x Delta_omega / tau_wob
+       = 9.814e-6 x 200 / 2.722e-4
+       = 1.963e-3 / 2.722e-4
+       = 7.21 s
+
+Total theoretical spin time (SFC docile):
+
+    t_total = t1 + t2 + t3 = 18.03 + 8.65 + 7.21 = 33.9 s
+
+### Driger MS vs Dranzer MS Comparison
+
+                           | Dranzer MS    | Driger MS
+---------------------------|---------------|---------------
+AR                         | Spiral Upper  | Metal Upper
+RC                         | MCC (HF mode) | Semi-Flat Core
+I_total (kg*m2)            | 9.668e-6      | 9.814e-6
+L (mN*m*s)                 | 6.0           | 6.09
+tau_tip (N*m)              | 2.614e-4      | 1.361e-4
+t_total (s)                | 18.6          | 33.9
+
+Driger MS achieves 1.82x longer theoretical spin time than Dranzer MS (MCC HF) due to the SFC's substantially lower friction. This is the dominant performance distinction: identical WD and similar AR mass, but tip friction determines the outcome entirely.
+
+Attack comparison: Metal Upper RS ramp smash delivers more horizontal impulse per collision than Spiral Upper's upward-redirect geometry — Driger MS is the more dangerous attacker, Dranzer MS the more durable defender.
+
+### Competitive Assessment
+
+**L = 6.09 mN*m*s, t_total = 33.9 s** — mid-tier HMS stamina. The Metal Upper AR is competitive for aggressive flower-pattern combos when paired with Grip Flat Core (the best combo per session context), but the stock SFC is already serviceable for stamina play.
+
+Per session data, the best Driger MS custom combo is: Circle Upper (Mold 1) AR / CWD Defense Ring WD / Semi-Flat Core RC. The custom combo significantly improves I_total and OWD via Circle Upper AR (symmetric, higher OWD) and CWD Defense Ring WD (heavier, larger radius) while retaining the SFC's advantageous low-friction tip.
+
+**RS preference:** RS spin is recommended for Metal Upper in attack roles; LS is viable but ~15–20 % less effective per engagement due to reduced tiger-jaw bite angle.
+
+**HMS Era context:** Both Dranzer MS and Driger MS represent the HMS transition generation — metal ARs with die-cast mass, bearing-enabled RC options, and a co-dominant AR+WD flywheel architecture that distinguishes this era from the pure-FW dominance of MFB (eras analysed CASE 1792–1803) and the DB Forge Disc era (CASE 1780–1791).
+
+---

@@ -22,7 +22,6 @@ import { GameShell } from '../components/game/GameShell';
 import { LoadingProgress } from '../components/LoadingProgress';
 import { Countdown } from '../components/game/Countdown';
 import { LaunchPhase } from '../components/game/LaunchPhase';
-import { CameraControls } from '../components/game/CameraControls';
 import { SpecialMoveHUD } from '../components/game/SpecialMoveHUD';
 import { ComboHUD } from '../components/game/ComboHUD';
 import KOOverlay from '../components/game/KOOverlay';
@@ -30,10 +29,27 @@ import VictoryOverlay from '../components/game/VictoryOverlay';
 import BurstOverlay from '../components/game/BurstOverlay';
 import LaunchCinematic from '../components/game/LaunchCinematic';
 import { BitBeastCinematic } from '../components/game/BitBeastCinematic';
-import { QTEOverlay } from '../components/game/QTEOverlay';
-import { CollisionQTEOverlay } from '../components/game/CollisionQTEOverlay';
+import { SequenceQTE, MashQTE, SingleKeyQTE, DebuffNotice } from '../components/game/QTENotificationSystem';
+import type { SingleKeyQTEData, DebuffNoticeData } from '../components/game/QTENotificationSystem';
 import type { QTEPromptData } from '../game/hooks/useColyseus';
 import { LAUNCH_DURATION_S } from '../shared/constants/gameConstants';
+
+// ─── HUD bar component ────────────────────────────────────────────────────────
+function HudBar({ label, value, max, pct, color }: {
+  label: string; value: number; max: number; pct: number; color: string;
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)', width: 18, textAlign: 'right', flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${Math.round(pct * 100)}%`, background: color, borderRadius: 3, transition: 'width 150ms' }} />
+      </div>
+      <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)', width: 32, textAlign: 'left', flexShrink: 0 }}>
+        {value}<span style={{ fontSize: 8, color: 'rgba(255,255,255,0.35)' }}>/{max}</span>
+      </span>
+    </div>
+  );
+}
 
 // ─── Default game state (before anything loads) ───────────────────────────────
 const DEFAULT_GAME_STATE: ServerGameState = {
@@ -79,6 +95,7 @@ export function GameRoomPage() {
   const [collisionCanFireSpecial, setCollisionCanFireSpecial] = useState(false);
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
+  const [debuffStartedAt, setDebuffStartedAt] = useState<number | null>(null);
 
   const bitBeastCinematic = useBitBeastCinematic(config?.beybladeId ?? null);
   const { byId: comboMap } = useCombos();
@@ -200,6 +217,12 @@ export function GameRoomPage() {
     }
   }, [local, collisionQTEActive, colyseus.collisionQTEPower]);
 
+  // ─── Track BeyLink debuff startedAt ──────────────────────────────────────
+  useEffect(() => {
+    if (!local && colyseus.beyLinkControlLoss) setDebuffStartedAt(Date.now());
+    else setDebuffStartedAt(null);
+  }, [local, colyseus.beyLinkControlLoss]);
+
   // ─── Victory detection ────────────────────────────────────────────────────
   useEffect(() => {
     if (gameState.status === 'finished' || gameState.status === 'series-finished') {
@@ -222,8 +245,37 @@ export function GameRoomPage() {
 
   if (!config) return null;
 
-  const spinPct = myBeyblade ? Math.round((myBeyblade.spin / myBeyblade.maxSpin) * 100) : 0;
-  const typeColor = myBeyblade ? (TYPE_COLORS[myBeyblade.type] ?? '#888') : '#888';
+  const typeColorHex = myBeyblade ? (TYPE_COLORS[myBeyblade.type] ?? 0x888888) : 0x888888;
+  const typeColor = `#${typeColorHex.toString(16).padStart(6, '0')}`;
+
+  // ─── BeyLink QTE data conversions ─────────────────────────────────────────
+  const escapeQTEData: SingleKeyQTEData | null = !local && colyseus.beyLinkQTE ? {
+    key: colyseus.beyLinkQTE.key,
+    label: 'Escape!',
+    expiresAt: colyseus.beyLinkQTE.expiresAt,
+    variant: 'escape',
+  } : null;
+
+  const blockQTEData: SingleKeyQTEData | null = !local && colyseus.beyLinkHijackBlockQTE ? {
+    key: colyseus.beyLinkHijackBlockQTE.key,
+    label: 'Block Hijack!',
+    expiresAt: colyseus.beyLinkHijackBlockQTE.expiresAt,
+    variant: 'block',
+  } : null;
+
+  const hijackQTEPrompt: QTEPromptData | null = !local && colyseus.beyLinkHijackQTE ? {
+    attackerBeyId: colyseus.beyLinkHijackQTE.stackKey,
+    sequence: ['attack', 'attack', 'attack'],
+    windowTicks: colyseus.beyLinkHijackQTE.windowTicks,
+    powerCost: 0,
+    expiresAt: colyseus.beyLinkHijackQTE.expiresAt,
+  } : null;
+
+  const debuffData: DebuffNoticeData | null = !local && colyseus.beyLinkControlLoss && debuffStartedAt !== null ? {
+    mode: colyseus.beyLinkControlLoss.mode,
+    durationTicks: colyseus.beyLinkControlLoss.durationTicks,
+    startedAt: debuffStartedAt,
+  } : null;
 
   // Winner info for victory overlay
   const winnerBey = beyblades.get(gameState.winner ?? '') ?? [...beyblades.values()].find(b => b.userId === gameState.winner);
@@ -245,7 +297,13 @@ export function GameRoomPage() {
     : null;
 
   return (
-    <GameShell show25DRotate={config.is25D}>
+    <GameShell
+      show25DRotate={config.is25D}
+      onExit={handleExit}
+      onZoomIn={cameraZoomIn}
+      onZoomOut={cameraZoomOut}
+      onZoomReset={cameraZoomReset}
+    >
       {/* Canvas container — fills game-viewport-slot */}
       <div
         ref={containerRef}
@@ -330,21 +388,42 @@ export function GameRoomPage() {
           power={local ? (simSnap?.launchPower ?? 0) : (myBeyblade ? (myBeyblade as unknown as Record<string, number>)['launchPower'] ?? launchState.power : launchState.power)}
         />
 
-        {/* QTE — transform wrapper constrains `position:fixed` children to this viewport */}
-        {qtePrompt && !local && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, transform: 'translateZ(0)' }}>
-            <QTEOverlay
+        {/* SequenceQTE — counter block (bottom-centre, yellow) */}
+        {qtePrompt && (
+          <div style={{ position: 'absolute', bottom: '12%', left: '50%', transform: 'translateX(-50%)', zIndex: 200 }}>
+            <SequenceQTE
               prompt={qtePrompt}
+              variant="counter"
               onKeyPress={(key) => colyseus.sendQTEInput(key)}
               onDismiss={() => setQTEPrompt(null)}
             />
           </div>
         )}
 
-        {/* Collision QTE — same transform wrapper */}
-        {collisionQTEActive && !local && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, transform: 'translateZ(0)' }}>
-            <CollisionQTEOverlay
+        {/* SequenceQTE — BeyLink hijack attacker (bottom-centre, purple) */}
+        {hijackQTEPrompt && (
+          <div style={{ position: 'absolute', bottom: '12%', left: '50%', transform: 'translateX(-50%)', zIndex: 201 }}>
+            <SequenceQTE
+              prompt={hijackQTEPrompt}
+              variant="hijack"
+              onKeyPress={() => {}}
+              onSuccess={() => {
+                if (colyseus.beyLinkHijackQTE) {
+                  colyseus.sendHijackAttempt(
+                    colyseus.beyLinkHijackQTE.stackKey,
+                    colyseus.beyLinkHijackQTE.linkId,
+                  );
+                }
+              }}
+              onDismiss={() => {}}
+            />
+          </div>
+        )}
+
+        {/* MashQTE — collision clash (right edge, v-mid) */}
+        {collisionQTEActive && (
+          <div style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', zIndex: 200 }}>
+            <MashQTE
               active={collisionQTEActive}
               power={collisionQTEPowerLocal}
               canFireSpecial={collisionCanFireSpecial}
@@ -360,47 +439,69 @@ export function GameRoomPage() {
           </div>
         )}
 
-        {/* HUD — spin/health bars */}
+        {/* SingleKeyQTE — BeyLink escape (top-centre, cyan) */}
+        {escapeQTEData && (
+          <div style={{ position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)', zIndex: 200 }}>
+            <SingleKeyQTE
+              data={escapeQTEData}
+              onPress={(key) => colyseus.sendBeyLinkQTEInput(key)}
+              onDismiss={() => {}}
+            />
+          </div>
+        )}
+
+        {/* SingleKeyQTE — BeyLink hijack block (top-centre, blue) */}
+        {blockQTEData && (
+          <div style={{ position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)', zIndex: 201 }}>
+            <SingleKeyQTE
+              data={blockQTEData}
+              onPress={(key) => {
+                if (colyseus.beyLinkHijackBlockQTE) {
+                  colyseus.sendHijackBlock(
+                    colyseus.beyLinkHijackBlockQTE.stackKey,
+                    key,
+                  );
+                }
+              }}
+              onDismiss={() => {}}
+            />
+          </div>
+        )}
+
+        {/* DebuffNotice — BeyLink control loss (top-left badge) */}
+        {debuffData && (
+          <div style={{ position: 'absolute', top: '8%', left: '5%', zIndex: 200 }}>
+            <DebuffNotice
+              data={debuffData}
+              onExpire={() => setDebuffStartedAt(null)}
+            />
+          </div>
+        )}
+
+        {/* HUD — health + SP bars */}
         {myBeyblade && gameState.status === 'in-progress' && (
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0,
-            padding: '8px 12px',
-            background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
-            display: 'flex', alignItems: 'flex-end', gap: '8px', pointerEvents: 'none',
+            padding: '6px 10px 8px',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
+            display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none',
           }}>
-            {/* Spin bar */}
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em', marginBottom: '3px' }}>
-                SPIN {spinPct}%
-              </div>
-              <div style={{ height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', width: `${spinPct}%`,
-                  background: spinPct > 60 ? typeColor : spinPct > 30 ? '#f59e0b' : '#ef4444',
-                  borderRadius: '3px', transition: 'width 200ms',
-                }} />
-              </div>
-            </div>
-
-            {/* Camera controls */}
-            <CameraControls
-              onZoomIn={cameraZoomIn}
-              onZoomOut={cameraZoomOut}
-              onZoomReset={cameraZoomReset}
+            {/* Health bar row */}
+            <HudBar
+              label="HP"
+              value={Math.round(myBeyblade.health)}
+              max={100}
+              pct={myBeyblade.health / 100}
+              color={myBeyblade.health > 50 ? '#22c55e' : myBeyblade.health > 25 ? '#f59e0b' : '#ef4444'}
             />
-
-            {/* Exit */}
-            <button
-              onClick={handleExit}
-              style={{
-                background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-                color: '#ef4444', borderRadius: '8px', padding: '4px 10px',
-                fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em',
-                cursor: 'pointer', pointerEvents: 'auto',
-              }}
-            >
-              EXIT
-            </button>
+            {/* SP bar row — capped display at 100 */}
+            <HudBar
+              label="SP"
+              value={Math.min(100, Math.round(myBeyblade.power ?? 0))}
+              max={100}
+              pct={Math.min(1, (myBeyblade.power ?? 0) / 100)}
+              color={typeColor}
+            />
           </div>
         )}
 
