@@ -3314,3 +3314,795 @@ Source: `15 case study.md` (use FIRST occurrence only — duplicates start at ~l
 
 ---
 
+### [Case 2005 — Tyson Granger / Dragoon MS — Storm Follow](./15%20case%20study.md#case-2005)
+
+**System**: HMS (G-Revolution)  
+**Mechanism**: COMBO — Storm Follow. Sequence: moveUp → moveUp → attack (↑ ↑ A). Cost: 15. Type: attack. Double-arc moving storm build + contact: J_wind_arc1=2.680×10⁻²+J_wind_arc2=4.021×10⁻²+J_contact_combo=8.957×10⁻² → J_combo=1.298×10⁻¹ N·s; moving-storm orbital rebound Δω=+8 rad/s (η_orbit=0.08); dmgMult 1.30×; lockMs 50. dmgMult 1.30× ≤ 1.5 ✓; lockMs 50 ≤ 300 ✓.  
+**Gimmick**: Parent: Moving storm vortex (Case 2003)
+
+---
+
+### [Case 2006 — Storm Spryzen Knuckle Unite — Stadium Groove Speed Build + Heavy Contact](./15%20case%20study.md#case-2006)
+
+**System**: Burst God / SuperKing (3-part)  
+**Blader**: Shu Kurenai  
+**Geometry**: m=52.0 g; Storm Spryzen layer r=3.3 cm; Knuckle disc r=2.6 cm; Unite driver r_outer=0.9 cm; I_total=4.292×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Unite outer rubber ring (μ=0.52, r=9 mm) engages groove wall → v_orbital_free=3.276 m/s → η_groove=1.35 → v_groove_peak=4.423 m/s. Counter strike at groove exit: m_eff=2.261×10⁻² kg; e=0.73; J_UCB=1.730×10⁻¹ N·s → Δv_opp=4.325 m/s.  
+**Gimmick**: Groove-rail speed build + counter attack strike → MechanicRegistry: groove_counter
+
+---
+
+### [Case 2007 — Shu Kurenai / Storm Spryzen Knuckle Unite — Ultra Counter Break](./15%20case%20study.md#case-2007)
+
+**System**: Burst God / SuperKing  
+**Blader**: Shu Kurenai  
+**Special Move**: Ultra Counter Break (JP: Turū Kauntā Bureiku — True Counter Break) — groove rail η=1.35 v_groove=4.423 m/s; J_UCB=1.730×10⁻¹ N·s → Δv=4.325 m/s; Δω_drain=133.0 rad/s (81.0% retained). [M] Shu Spryzen counter-fire ×8.0 → Δv=34.60 m/s. powerCost 100. Groove rail mechanism: same as Ultimate Flash Launch but Unite outer ring μ=0.52 r=9mm on heavier 52.0g assembly. Distinct from Counter Break (standard, no groove).  
+**Compatible beys**: Burst God/SuperKing rubber-ring variable driver (outer ring r ≥ 7 mm, μ ≥ 0.45) + wide reinforced layer (r ≥ 3.0 cm, e ≥ 0.70) in stadium with circular groove rail (η_groove ≥ 1.20); standard: Storm Spryzen Knuckle Unite (Shu Kurenai, Burst God/SuperKing)
+
+---
+
+### [Case 2008 — Shu Kurenai / Storm Spryzen Knuckle Unite — Counter Groove](./15%20case%20study.md#case-2008)
+
+**System**: Burst God / SuperKing  
+**Mechanism**: COMBO — Counter Groove. Sequence: moveRight → moveRight → attack (→ → A). Cost: 15. Type: attack. Double-arc groove: v_arc2=3.931 m/s → v_combo_contact=4.521 m/s (η_partial=1.15); J_combo=1.768×10⁻¹ N·s; Unite rubber rebound Δω=+12 rad/s (η_Unite=0.09); dmgMult 1.35×; lockMs 0. dmgMult 1.35× ≤ 1.5 ✓; lockMs 0 ≤ 300 ✓.  
+**Gimmick**: Parent: Groove speed build (Case 2006)
+
+---
+
+### [Case 2009 — Emperor Forneus — Outer Rim Drift Trajectory Change](./15%20case%20study.md#case-2009)
+
+**System**: Burst Cho-Z (3-part)  
+**Blader**: Free de la Hoya  
+**Geometry**: m=49.0 g; Emperor Forneus layer r_rim=3.8 cm; Disc 0 r=1.6 cm; Atomic driver r=0.4 cm (bearing); I_total=4.094×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Standard bearing orbit v_orbital=0.224 m/s (μ=0.08). Outer rim tangential velocity v_rim_tang=26.60 m/s (ω₀×r_rim=700×0.038); glancing approach φ_drift=30°; η_rim=0.16; v_rim_eff=2.128 m/s; v_contact_drift=2.352 m/s. Counter strike: m_eff=2.202×10⁻² kg; e=0.72; J_UED=8.908×10⁻² N·s → Δv_opp=2.227 m/s.  
+**Gimmick**: Outer rim drift trajectory change → MechanicRegistry: rim_drift_redirect
+
+---
+
+### [Case 2010 — Free de la Hoya / Emperor Forneus — Ultra Emperor Drift](./15%20case%20study.md#case-2010)
+
+**System**: Burst Cho-Z  
+**Blader**: Free de la Hoya  
+**Special Move**: Ultra Emperor Drift (JP: Arutimetto Enperā Dorifuto) — outer rim r_rim=3.8 cm; v_rim_tang=26.60 m/s; φ_drift=30°; η_rim=0.16; v_rim_eff=2.128 m/s; v_contact_drift=2.352 m/s; J_UED=8.908×10⁻² N·s → Δv=2.227 m/s; Δω_drain=82.6 rad/s (88.2% retained). [M] Free de la Hoya Forneus drift ×7.5 → Δv=16.70 m/s. powerCost 100. Outer rim redirects glancing approach to direct contact (analogous to Counter Break groove-speed trajectory redirect). Distinct from groove mechanisms.  
+**Compatible beys**: Burst Cho-Z extended outer rim layer (r_rim ≥ 3.4 cm, φ_drift ≥ 20°; v_rim_eff ≥ 1.5 m/s) + low-friction bearing driver; standard: Emperor Forneus (Free de la Hoya, Burst Cho-Z)
+
+---
+
+### [Case 2011 — Free de la Hoya / Emperor Forneus — Emperor Drift](./15%20case%20study.md#case-2011)
+
+**System**: Burst Cho-Z  
+**Mechanism**: COMBO — Emperor Drift. Sequence: moveLeft → moveRight → attack (← → A). Cost: 15. Type: attack. Drift snap reversal: v_drift_combo=1.873 m/s + v_snap=0.157 m/s = v_combo_contact=2.030 m/s; J_combo=7.689×10⁻² N·s; rim drift rebound Δω=+8 rad/s (η_drift_rebound=0.11); dmgMult 1.30×; lockMs 0. dmgMult 1.30× ≤ 1.5 ✓; lockMs 0 ≤ 300 ✓.  
+**Gimmick**: Parent: Outer rim drift (Case 2009)
+
+---
+
+### [Case 2012 — Union Achilles Convert Xtend+ Retsu — Stadium Wall-Ride + Xtend+ Tip Switch Dive](./15%20case%20study.md#case-2012)
+
+**System**: Burst GT (3-part)  
+**Blader**: Aiger Akabane  
+**Geometry**: m=48.0 g; Union Achilles layer r=3.3 cm; Convert disc r=2.3 cm; Xtend+ driver r_point=0.3 cm; I_total=3.917×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Point-mode wall climb (μ=0.15, r=3mm): v_entry=2.00 m/s; h_wall=9.0 cm; Xtend+ mode switch at apex η_switch=1.04 → v_contact=2.080 m/s. Dive strike: m_eff=2.182×10⁻² kg; e=0.76; J_UD_U=7.987×10⁻² N·s → Δv_opp=2.00 m/s; Δω_drain=67.3 rad/s (90.4% retained).  
+**Gimmick**: Point-mode wall climb + tip switch dive → wall-ride-and-fall family (Z Dive / Turbo Dive / Ultimate Dive / Unison Dive)
+
+---
+
+### [Case 2013 — Aiger Akabane / Union Achilles Convert Xtend+ Retsu — Unison Dive](./15%20case%20study.md#case-2013)
+
+**System**: Burst GT  
+**Blader**: Aiger Akabane  
+**Special Move**: Unison Dive (JP: Yunion Daibu) — GT wall h=9.0 cm; Xtend+ point→flat tip switch η=1.04; v_contact=2.080 m/s; J_UD_U=7.987×10⁻² N·s → Δv=2.00 m/s; Δω_drain=67.3 rad/s (90.4% retained — Xtend+ flat→point reversion post-dive). [M] Aiger Achilles divine drive ×7.5 → Δv=15.00 m/s. powerCost 100. Xtend+ point-mode preserves spin during wall climb. Wall-ride-and-fall family consistent with Z Dive, Turbo Dive, Ultimate Dive.  
+**Compatible beys**: Burst GT/SuperKing variable-mode driver (point/flat switch, Xtend+ or equivalent) + wide attack layer (r ≥ 3.0 cm, e ≥ 0.72) in GT stadium (h_wall ≥ 7.0 cm); standard: Union Achilles Convert Xtend+ Retsu (Aiger Akabane, Burst GT)
+
+---
+
+### [Case 2014 — Aiger Akabane / Union Achilles Convert Xtend+ Retsu — Union Ascent](./15%20case%20study.md#case-2014)
+
+**System**: Burst GT  
+**Mechanism**: COMBO — Union Ascent. Sequence: moveRight → moveUp → attack (→ ↑ A). Cost: 15. Type: attack. Wall climb + dive: v_combo_entry=1.500 m/s; h_combo=h_wall=9.0 cm; v_combo_contact=1.329 m/s (no η_switch in combo); J_combo=5.104×10⁻² N·s; Xtend+ point re-engage Δω=+6 rad/s (η=0.13); dmgMult 1.30×; lockMs 100. dmgMult 1.30× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Wall-ride Xtend+ dive (Case 2012)
+
+---
+
+### [Case 2015 — Victory Valtryek Boost Variable — Stadium Outer Rim Variable Speed Surge](./15%20case%20study.md#case-2015)
+
+**System**: Burst God (3-part)  
+**Blader**: Valt Aoi  
+**Geometry**: m=44.0 g; Victory Valtryek layer r=3.2 cm; Boost disc r=2.2 cm; Variable driver r_stable=0.4 cm, r_boost=0.5 cm; I_total=3.361×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Variable stable mode v_mode1=0.980 m/s (μ=0.35); outer rim triggers boost mode: μ=0.70 r=5mm → v_rim_base=2.450 m/s; η_rim_outer=1.50 → v_outer_rim_peak=3.675 m/s (3.75× stable). First hit: J_first=1.340×10⁻¹ N·s Δv=3.350 m/s; lap follow-up η=0.60 → J_lap=8.040×10⁻²; J_total_UFL=2.144×10⁻¹ N·s → Δv_total=5.360 m/s.  
+**Gimmick**: Variable driver outer rim exponential speed surge + lap multi-hit → MechanicRegistry: outer_rim_surge. Compatible also: Genesis Valtryek 6Vortex Reboot (same v_rim_peak via Reboot rubber ring, cross-ref Case 1991)
+
+---
+
+### [Case 2016 — Valt Aoi / Victory Valtryek Boost Variable — Ultra Flash Launch](./15%20case%20study.md#case-2016)
+
+**System**: Burst God / Surge  
+**Blader**: Valt Aoi  
+**Special Move**: Ultra Flash Launch (JP: Shin Furasshu Shūto — True Flash Shoot) — Variable outer rim η_rim_outer=1.50; v_outer_rim_peak=3.675 m/s (3.75× stable, described as "exponential"); J_first=1.340×10⁻¹ N·s; lap η=0.60 follow-up; J_total=2.144×10⁻¹ N·s → Δv_total=5.360 m/s; Δω_drain=204.2 rad/s (70.8% retained — two-hit). [M] Valt Valtryek flash-drive ×8.0 → Δv_total=42.88 m/s. powerCost 100. Genesis Valtryek 6Vortex Reboot achieves same outer rim peak (cross-ref Case 1991). Evolved from Flash Launch (stable-mode only). Distinct from Ultimate Flash Launch (inner groove η=1.35) and Ultimate Flash V (Variable' mode switch).  
+**Compatible beys**: Burst God/Surge Variable driver (r_boost ≥ 4 mm, μ_boost ≥ 0.60) or rubber-ring equivalent in stadium with raised outer rim lip (η_rim_outer ≥ 1.40); standard: Victory Valtryek Boost Variable and Genesis Valtryek 6Vortex Reboot (Valt Aoi, Burst God/Surge)
+
+---
+
+### [Case 2017 — Valt Aoi / Victory Valtryek Boost Variable — Flash Rim](./15%20case%20study.md#case-2017)
+
+**System**: Burst God  
+**Mechanism**: COMBO — Flash Rim. Sequence: moveRight → moveRight → attack (→ → A). Cost: 15. Type: attack. Double outer rim arc: v_arc1=2.573 m/s (70% peak), v_arc2=3.234 m/s (88% peak); J_combo=1.179×10⁻¹ N·s; Variable rim rebound Δω=+11 rad/s (η_var_rim=0.10); dmgMult 1.40×; lockMs 0. dmgMult 1.40× ≤ 1.5 ✓; lockMs 0 ≤ 300 ✓.  
+**Gimmick**: Parent: Outer rim Variable surge (Case 2015)
+
+---
+
+### [Case 2018 — Dragoon V2 — Extreme Sprint Wall-Launch + 270° Flanking Arc](./15%20case%20study.md#case-2018)
+
+**System**: Plastic-gen V-Force (5-part)  
+**Blader**: Tyson Granger  
+**Geometry**: m=39.0 g; Upper Dragoon AR r=2.8 cm; Wide Survivor WD r=3.0 cm; Customize Grip Base r_BB=0.5 cm; I_total=2.353×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Extreme sprint: μ_vanish=0.80 → v_sprint=2.000 m/s (1.78× standard flat); wall-launch h_wall=6.0 cm; 270° in-air flanking arc η_arc=0.95 lands behind opponent; rear approach: v_contact_rear=v_sprint+v_opp_drift=2.000+0.300=2.300 m/s (drift adds); m_eff=1.975×10⁻² kg; e=0.78; J_VA=8.086×10⁻² N·s → Δv_opp=2.022 m/s.  
+**Gimmick**: Extreme sprint rear-flanking approach → MechanicRegistry: vanish_flank
+
+---
+
+### [Case 2019 — Tyson Granger / Dragoon V2 — Vanishing Attack](./15%20case%20study.md#case-2019)
+
+**System**: Plastic-gen V-Force  
+**Blader**: Tyson Granger  
+**Special Move**: Vanishing Attack — flat-tip extreme sprint μ=0.80 v_sprint=2.000 m/s (1.78× standard); wall-launch h=6.0 cm; 270° in-air flanking arc; rear attack v_contact_rear=2.300 m/s (opponent drift adds +0.300 m/s); J_VA=8.086×10⁻² N·s → Δv=2.022 m/s; Δω_drain=96.2 rad/s (80.8% retained). [M] Tyson Dragoon vanishing-speed ×8.0 → Δv=16.18 m/s. powerCost 100. Force applied from behind target. Rear-attack flanking bonus exclusive to 270° approach trajectory.  
+**Compatible beys**: Plastic-gen flat-type Blade Base (r ≥ 4 mm, μ_peak ≥ 0.70; v_sprint ≥ 1.80 m/s) in standard plastic-gen stadium (h_wall ≥ 5.0 cm); standard: Dragoon V2 (Tyson Granger, Bakuten Shoot V-Force)
+
+---
+
+### [Case 2020 — Tyson Granger / Dragoon V2 — Phantom Flank](./15%20case%20study.md#case-2020)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Phantom Flank. Sequence: dodge → moveLeft → attack (E ← A). Cost: 15. Type: attack. Vanish sprint 80% + flank arc 90% + rear drift 80%: v_contact_rear_combo=1.680 m/s; J_combo=5.906×10⁻² N·s; sprint arc reversion Δω=+8 rad/s (η_sprint=0.12); dmgMult 1.30×; lockMs 0. Force applied from behind target. dmgMult 1.30× ≤ 1.5 ✓; lockMs 0 ≤ 300 ✓.  
+**Gimmick**: Parent: Extreme sprint rear flank (Case 2018)
+
+---
+
+### [Case 2021 — Venus — Temptation Resonance Field + Bit-Beast Venus Full Manifestation](./15%20case%20study.md#case-2021)
+
+**System**: Plastic-gen G-Revolution (5-part)  
+**Blader**: Ming-Ming  
+**Geometry**: m=35.0 g; Venus Bloom AR r=2.6 cm; Round Heavy WD r=2.8 cm; Venus Sharp Base r_BB=0.4 cm; I_total=1.820×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Temptation resonance field: e_tempt=0.06 (idol spirit disrupts opponent's precession damping → +6% burst compliance). Bit-Beast Venus full manifestation: v_contact_base=1.400 m/s (tip+BEGA guidance) → η_Venus_BB=1.45 → v_contact_Venus=2.030 m/s; e_eff=0.78; m_eff=1.867×10⁻² kg; J_VT=6.746×10⁻² N·s → Δv_opp=1.687 m/s. Sharp base: Bit-Beast provides primary attack force (not tip orbital speed).  
+**Gimmick**: Idol resonance field + Bit-Beast manifestation strike → MechanicRegistry: temptation_resonance
+
+---
+
+### [Case 2022 — Ming-Ming / Venus — Venus Temptation](./15%20case%20study.md#case-2022)
+
+**System**: Plastic-gen G-Revolution  
+**Blader**: Ming-Ming  
+**Special Move**: Venus Temptation — temptation resonance field e_tempt=0.06; Venus BB η=1.45; v_contact_Venus=2.030 m/s; e_eff=0.78; J_VT=6.746×10⁻² N·s → Δv=1.687 m/s; Δω_drain=96.4 rad/s (80.7% retained). [M] Ming-Ming Venus idol divine spirit ×7.5 → Δv=12.65 m/s. powerCost 100. First used vs Daichi / Strata Dragoon in Episode 43. BEGA antagonist, top-tier G-Revolution blader; stadium transforms to "happy lovely world" before BB charge. Sharp base relies on BB force not tip orbital speed.  
+**Compatible beys**: Plastic-gen Bit-Beast full manifestation BB (η_BB ≥ 1.30) + precision/stamina Blade Base (r ≤ 5 mm) + temptation-field BeySpirit; standard: Venus (Ming-Ming, Bakuten Shoot G-Revolution Ep.43)
+
+---
+
+### [Case 2023 — Ming-Ming / Venus — Lovely Strike](./15%20case%20study.md#case-2023)
+
+**System**: Plastic-gen G-Revolution  
+**Mechanism**: COMBO — Lovely Strike. Sequence: moveDown → defense → attack (↓ K A). Cost: 15. Type: attack. Partial temptation + 80% BB: e_tempt_combo=0.03; v_combo_contact=1.624 m/s; J_combo=5.307×10⁻² N·s; BB resonance rebound Δω=+10 rad/s (η_BB_rebound=0.13); dmgMult 1.30×; lockMs 150 (lovely world mesmerize dwell). dmgMult 1.30× ≤ 1.5 ✓; lockMs 150 ≤ 300 ✓.  
+**Gimmick**: Parent: Temptation resonance + BB manifestation (Case 2021)
+
+---
+
+### [Case 2024 — Poison Serpent SW145SD — SW145 Pendulum Energy Storage + Dark Power Rise-Strike](./15%20case%20study.md#case-2024)
+
+**System**: MFB Metal Fusion (5-part)  
+**Blader**: Reiji Mizuchi  
+**Geometry**: m=33.5 g; Poison MW r=3.1 cm; Serpent CW r=3.3 cm; SW145 r_arm=2.2 cm; SD tip r=0.4 cm; I_total=2.545×10⁻⁵ kg·m²; ω₀=580 rad/s  
+**Mechanism**: SW145 swing arm pendulum energy storage (θ_max=15°, m_arm≈2.5g each, 2 arms): E_pend=0.4069 J; lock-release v_rise=4.929 m/s. Dark Power amplification η_dark=1.35 → v_rise_dark=6.654 m/s (=v_strike). Contact: m_eff=1.823×10⁻² kg; e_dark=0.90 (near-perfect burst restitution — "opponent bey explodes in mid-air"); J_VS=2.305×10⁻¹ N·s → Δv_opp=5.762 m/s.  
+**Gimmick**: SW145 pendulum energy storage + Dark Move rise-strike → MechanicRegistry: dark_move_rise_strike
+
+---
+
+### [Case 2025 — Reiji Mizuchi / Poison Serpent SW145SD — Venom Strike](./15%20case%20study.md#case-2025)
+
+**System**: MFB Metal Fusion  
+**Blader**: Reiji Mizuchi  
+**Special Move**: Venom Strike (JP: Venom Genocide / Benom Jenosaido) — SW145 pendulum E_pend=0.4069 J; Dark Power η_dark=1.35; v_rise_dark=6.654 m/s; e_dark=0.90; J_VS=2.305×10⁻¹ N·s → Δv=5.762 m/s; Δω_drain=280.8 rad/s (51.6% retained). [M] Reiji Dark Power Serpent ×7.0 → Δv=40.33 m/s. powerCost 100. Dark Move classification (same family as Dragon Emperor Soaring Bite Strike). Opponent bey explodes mid-air. First used vs Hyoma/Rock Aries in Metal Fusion. Reiji's only Dark Move.  
+**Compatible beys**: MFB SW145 Swing Track (r_pend ≥ 2.0 cm) + compact burst-profile MW (e_dark ≥ 0.85) + Dark Power blader (η_dark ≥ 1.25); standard: Poison Serpent SW145SD (Reiji Mizuchi, Metal Fight Beyblade Metal Fusion)
+
+---
+
+### [Case 2026 — Reiji Mizuchi / Poison Serpent SW145SD — Venom Coil](./15%20case%20study.md#case-2026)
+
+**System**: MFB Metal Fusion  
+**Mechanism**: COMBO — Venom Coil. Sequence: moveDown → dodge → attack (↓ E A). Cost: 15. Type: attack. Partial pendulum 60% + partial Dark Power η_dark_combo=1.15: E_pend_combo=0.2441 J; v_rise_combo=3.817 m/s; v_strike_combo=4.390 m/s; e_combo=0.76; J_combo=1.408×10⁻¹ N·s; SW145 arm rebound Δω=+17 rad/s (η_SW_rebound=0.10); dmgMult 1.35×; lockMs 80. dmgMult 1.35× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: SW145 pendulum Dark Move (Case 2024)
+
+---
+
+### [Case 2027 — Variant Lucifer Mobius 2D — Double Bash + 2D Barrier Pincer](./15%20case%20study.md#case-2027)
+
+**System**: Burst DB (4-part)  
+**Blader**: Lain Valhalla  
+**Geometry**: m=47.0 g; Variant Lucifer blade r=3.8 cm; Mobius ratchet r=2.6 cm; 2D driver r=0.5 cm; I_total=4.583×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Double bash: J_bash1=6.768×10⁻² N·s (v=1.800 m/s); J_bash2=5.415×10⁻² N·s (v=1.440 m/s). Wall ram: v_ram=2.200 m/s; J_wall=7.131×10⁻² N·s. 2D barrier extension v=1.500 m/s; J_crush=5.024×10⁻² N·s. J_VEX=2.434×10⁻¹ N·s → Δv_opp=6.084 m/s. (DB Core excluded from I; r≈0.)  
+**Gimmick**: Double bash + wall ram + 2D barrier pincer → MechanicRegistry: barrier_pincer_crush
+
+---
+
+### [Case 2028 — Lain Valhalla / Variant Lucifer Mobius 2D — Vexing Crush](./15%20case%20study.md#case-2028)
+
+**System**: Burst DB  
+**Blader**: Lain Valhalla  
+**Special Move**: Vexing Crush (JP: Barianto Puresu — Variant Press) — 4-phase assault: J_bash1=6.768×10⁻²+J_bash2=5.415×10⁻²+J_wall=7.131×10⁻²+J_crush=5.024×10⁻² = J_VEX=2.434×10⁻¹ N·s → Δv=6.084 m/s; Δω_drain=201.8 rad/s (71.2% retained); lockMs=200 (barrier pincer dwell). [M] Lain Lucifer supreme pressure ×8.0 → Δv=48.67 m/s. powerCost 100. Lucius bashes twice, rams into wall, then pins opponent between 2D barrier and wall. DB-era stadium required for barrier wall range.  
+**Compatible beys**: Burst DB 2D driver (v_extend ≥ 1.20 m/s) + wide high-armor blade (r ≥ 3.5 cm, e ≥ 0.70); standard: Variant Lucifer Mobius 2D (Lain Valhalla, Burst DB)
+
+---
+
+### [Case 2029 — Lain Valhalla / Variant Lucifer Mobius 2D — Variant Crush](./15%20case%20study.md#case-2029)
+
+**System**: Burst DB  
+**Mechanism**: COMBO — Variant Crush. Sequence: moveRight → attack → defense (→ A K). Cost: 25. Type: attack. Double bash (80/75%)+2D partial (no wall assist): J_combo_bash1=5.415×10⁻²+J_combo_bash2=4.062×10⁻²+J_barrier_combo=3.760×10⁻² → J_combo=1.324×10⁻¹ N·s; 2D barrier spring rebound Δω=+10 rad/s (η_2D=0.09); dmgMult 1.40×; lockMs 200. dmgMult 1.40× ≤ 1.5 ✓; lockMs 200 ≤ 300 ✓.  
+**Gimmick**: Parent: Double bash 2D barrier (Case 2027)
+
+---
+
+### [Case 2030 — Dragoon V / Dragoon Victory — Multi-Vortex Storm Generation (Main + 3 Sub-Vortices)](./15%20case%20study.md#case-2030)
+
+**System**: Plastic-gen (5-part; manga Vol.7 Ch.2 / anime / PS game)  
+**Blader**: Tyson Granger  
+**Geometry**: m=32.0 g; Dragon Wing AR r=2.5 cm; Ten Heavy WD r=2.6 cm; Flat Base V r_BB=0.4 cm; I_total=1.438×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Main vortex Γ_main=0.982 m²/s. 3 sub-vortices (manga/PS depiction): Γ_sub=0.295 m²/s each; Γ_total=1.866 m²/s; η_sub=1.60. Tornado-propelled approach v_base=2.400 m/s (v_tip_flat=1.100+BeySpirit surge=1.300); m_eff=1.778×10⁻² kg; e=0.74; J_VTorn=1.188×10⁻¹ N·s → Δv_opp=2.970 m/s. Spin drain 206.5 rad/s (58.7% retained).  
+**Gimmick**: Multi-vortex storm (manga/PS: 3 sub-vortices; anime: single cloak rush) → MechanicRegistry: multi_vortex_storm. Debuted manga Vol.7 Ch.2 vs Ozuma/Flash Leopard
+
+---
+
+### [Case 2031 — Tyson Granger / Dragoon V — Victory Tornado](./15%20case%20study.md#case-2031)
+
+**System**: Plastic-gen  
+**Blader**: Tyson Granger  
+**Special Move**: Victory Tornado (JP: 勝利竜巻) — multi-vortex Γ_main=0.982 m²/s, N_sub=3, Γ_total=1.866 m²/s; η_sub=1.60; v_base=2.400 m/s; J_VTorn=1.188×10⁻¹ N·s → Δv=2.970 m/s; Δω_drain=206.5 rad/s (58.7% retained). [M] Tyson Dragoon storm ×8.0 → Δv=23.76 m/s. powerCost 100. Anime=single vortex cloak rush; manga/PS=3 sub-vortices around main column (can address multiple opponents simultaneously). Debuted manga Vol.7 Ch.2 vs Ozuma/Flash Leopard.  
+**Compatible beys**: Plastic-gen 4-blade AR (r ≥ 2.3 cm; Γ_main ≥ 0.85 m²/s at ω₀ ≥ 480) + flat Blade Base (μ ≥ 0.50, r ≥ 3 mm) + BeySpirit tornado amplification; standard: Dragoon V (Tyson Granger, Bakuten Shoot Beyblade)
+
+---
+
+### [Case 2032 — Tyson Granger / Dragoon V — Tornado Vortex](./15%20case%20study.md#case-2032)
+
+**System**: Plastic-gen  
+**Mechanism**: COMBO — Tornado Vortex. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 15. Type: attack. 2 of 3 sub-vortices active (η_sub_combo=1.40); v_combo_approach=1.800 m/s (75% base); J_combo=7.797×10⁻² N·s; sub-vortex rebound Δω=+16 rad/s (η_vortex_rebound=0.12); dmgMult 1.35×; lockMs 100. dmgMult 1.35× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Multi-vortex storm (Case 2030)
+
+---
+
+### [Case 2033 — Draciel V — Turtle Survivor AR Vortex Wall + Spring SG Shock Absorption](./15%20case%20study.md#case-2033)
+
+**System**: Plastic-gen V-Force (5-part)  
+**Blader**: Max Tate  
+**Geometry**: m=35.5 g; Turtle Survivor AR r=2.6 cm; Eight Heavy WD r=2.8 cm; Defense Grip Base r_rubber=0.3 cm; Spring SG r=0.3 cm; I_total=1.751×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Viper storm Rankine vortex: Γ=1.062 m²/s; v_θ=3.380 m/s at r=5.0 cm; deflects incoming opponent 70.5° off attack path. Combined contact: v_eff_total=2.290 m/s; e_turtle=0.82; m_eff=1.881×10⁻² kg; J_VW=7.843×10⁻² N·s → Δv_opp=1.961 m/s. Spring SG absorbs 40%: Δω_drain=69.9 rad/s (86.0% retained vs 116.5 without — saves 9.3% spin).  
+**Gimmick**: Vortex wall deflection + Spring SG shock absorption → MechanicRegistry: vortex_wall_defense
+
+---
+
+### [Case 2034 — Max Tate / Draciel V — Viper Wall](./15%20case%20study.md#case-2034)
+
+**System**: Plastic-gen V-Force  
+**Blader**: Max Tate  
+**Special Move**: Viper Wall — defense type. Viper storm vortex: Γ=1.062 m²/s; v_θ=3.380 m/s at r=5.0 cm; incoming deflected 70.5°. Combined contact v_eff_total=2.290 m/s; e_turtle=0.82; J_VW=7.843×10⁻² N·s → Δv_opp=1.961 m/s (opponent deflected outward). Spring SG η=0.40 absorbs 40%: ω_remain=430.1 rad/s (86.0% retained). Black Turtle (Genbu) spirit entwined with serpent/viper — name references Chinese mythology. Distinct from vortex-attack moves.  
+**Compatible beys**: Plastic-gen 8-wall round-bumper AR (high deflection restitution, e ≥ 0.80) + Spring SG + rubber ball/grip Blade Base; standard: Draciel V (Max Tate, Bakuten Shoot V-Force)
+
+---
+
+### [Case 2035 — Max Tate / Draciel V — Viper Shield](./15%20case%20study.md#case-2035)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Viper Shield. Sequence: defense → moveDown → defense (K ↓ K). Cost: 15. Type: defense. Partial viper storm 60% + Spring SG pre-compression: v_θ_combo=2.028 m/s; v_combo_contact=1.718 m/s; e_combo=0.74; J_combo=5.622×10⁻² N·s; Spring SG rebound Δω=+13 rad/s (η_SG_rebound=0.15); dmgMult 1.20× (outward deflection — defense focus); lockMs 200. Force applied outward from Draciel center. dmgMult 1.20× ≤ 1.5 ✓; lockMs 200 ≤ 300 ✓.  
+**Gimmick**: Parent: Vortex wall defense (Case 2033)
+
+---
+
+### [Case 2036 — Dranzer V — Volcanic Fire Blade Ignition](./15%20case%20study.md#case-2036)
+
+**System**: Plastic-gen V-Force (5-part)  
+**Blader**: Kai Hiwatari  
+**Geometry**: m=34.0 g; Volcano Blade AR r=2.7 cm; Eight WD r=2.5 cm; Spike Base r_BB=0.2 cm (needle); I_total=1.662×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Spike Base needle orbit μ_sharp=0.25 r=2mm: v_tip=0.250 m/s; Kai precision charge v_approach=1.800 m/s; v_contact_base=2.050 m/s. Volcanic fire blade coating η_volcano=1.30; m_eff=1.838×10⁻² kg; e_blade=0.76; J_VE=8.620×10⁻² N·s → Δv_opp=2.155 m/s. Spike needle: ultra-low tip friction maximizes spin retention; attack force from AR blade contact.  
+**Gimmick**: Volcanic fire AR coating + precision needle approach → MechanicRegistry: volcanic_fire_blade
+
+---
+
+### [Case 2037 — Kai Hiwatari / Dranzer V — Volcano Emission](./15%20case%20study.md#case-2037)
+
+**System**: Plastic-gen V-Force  
+**Blader**: Kai Hiwatari  
+**Special Move**: Volcano Emission — volcanic fire coating η_volcano=1.30; v_contact_base=2.050 m/s; e_blade=0.76; J_VE=8.620×10⁻² N·s → Δv=2.155 m/s; Δω_drain=140.0 rad/s (72.0% retained). [M] Kai Dranzer phoenix volcanic fire ×9.0 → Δv=19.40 m/s. powerCost 100. Creates "volcano blaze on the blade" — Dranzer V's Volcano Blade AR ignites with phoenix fire energy at moment of BeySpirit peak. Spike needle preserves spin outside strike.  
+**Compatible beys**: Plastic-gen V-Force fire-type AR (r ≥ 2.5 cm, blade-edge profile, e ≥ 0.72) + sharp/needle Blade Base (r ≤ 3 mm, μ ≤ 0.30) + volcanic fire BeySpirit (η_volcano ≥ 1.20); standard: Dranzer V (Kai Hiwatari, Bakuten Shoot V-Force)
+
+---
+
+### [Case 2038 — Kai Hiwatari / Dranzer V — Volcano Blade](./15%20case%20study.md#case-2038)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Volcano Blade. Sequence: moveRight → attack → moveUp (→ A ↑). Cost: 15. Type: attack. Partial volcanic ignition η_volcano_combo=1.15; v_combo_contact=1.538 m/s; J_combo=5.721×10⁻² N·s; fire rebound Δω=+11 rad/s (η_fire_rebound=0.12); dmgMult 1.30×; lockMs 80. dmgMult 1.30× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: Volcanic fire blade (Case 2036)
+
+---
+
+### [Case 2039 — Dranzer V2 — Explosion-Propelled Fire Projectile](./15%20case%20study.md#case-2039)
+
+**System**: Plastic-gen V-Force (5-part; manga / anime / GBA)  
+**Blader**: Kai Hiwatari  
+**Geometry**: m=36.0 g; Volcano Blade V2 AR r=2.8 cm; Ten Heavy WD r=2.7 cm; Spike Base II r_BB=0.2 cm; I_total=1.989×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Explosion propulsion: η_explosion=1.60 (manga: grenade-like detonation propels bey forward); v_base=1.800 m/s → v_contact=2.880 m/s. On-impact explosive restitution e_excellent=0.88 (manga: demolishes concrete); m_eff=1.895×10⁻² kg; J_VEE=1.026×10⁻¹ N·s → Δv_opp=2.564 m/s. GBA: classified Super Finish (超必殺) — highest power tier. Debuted manga vs Leon Zagart/Burning Cerberus.  
+**Gimmick**: Explosion-propelled fire projectile + on-impact detonation → MechanicRegistry: explosive_fire_launch
+
+---
+
+### [Case 2040 — Kai Hiwatari / Dranzer V2 — Volcano Excellent Emission](./15%20case%20study.md#case-2040)
+
+**System**: Plastic-gen V-Force (manga / anime / GBA)  
+**Blader**: Kai Hiwatari  
+**Special Move**: Volcano Excellent Emission (JP: 超爆炎放射 — Chō Bakuen Hōsha) — explosion η_explosion=1.60; v_contact=2.880 m/s; e_excellent=0.88; J_VEE=1.026×10⁻¹ N·s → Δv=2.564 m/s; Δω_drain=144.4 rad/s (71.1% retained). [M] Kai Dranzer super-explosive fire ×9.0 → Δv=23.08 m/s. powerCost 100. GBA: Super Finish tier. Anime: bey engulfed in thick flames. Manga: grenade-detonation propulsion, demolishes concrete on impact. Upgrade from Volcano Emission (η_explosion vs η_volcano). Debuted manga vs Leon Zagart/Burning Cerberus.  
+**Compatible beys**: Plastic-gen V-Force explosive-edge AR (r ≥ 2.6 cm; e_excellent ≥ 0.84) + explosive-charge Blade Base (η_explosion ≥ 1.40, r ≤ 3 mm) + Super Finish BeySpirit; standard: Dranzer V2 (Kai Hiwatari, Bakuten Shoot V-Force)
+
+---
+
+### [Case 2041 — Kai Hiwatari / Dranzer V2 — Volcano Excellent](./15%20case%20study.md#case-2041)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Volcano Excellent. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 25. Type: attack. Partial explosion η_explosion_combo=1.35; v_combo_contact=1.944 m/s; e_combo=0.76; J_combo=6.483×10⁻² N·s; explosion rebound Δω=+11 rad/s (η_explosion_rebound=0.12); dmgMult 1.40×; lockMs 80. dmgMult 1.40× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: Explosion fire projectile (Case 2039)
+
+---
+
+### [Case 2042 — Driger V — Tiger Claw Rapid-Fire Shredding Barrier](./15%20case%20study.md#case-2042)
+
+**System**: Plastic-gen V-Force (5-part)  
+**Blader**: Ray Kon  
+**Geometry**: m=36.0 g; Tiger Claw AR r=2.7 cm; Eight Heavy WD r=2.8 cm; Defense Ball Base r_ball=0.3 cm; I_total=1.887×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Tiger Claw rapid-fire N=4 (one strike per claw, η_decay=0.80): J_single=4.723×10⁻² N·s (v_claw=1.400 m/s, e_claw=0.78); geometric sum (N=4 η=0.80)=2.952; J_VC=1.395×10⁻¹ N·s → Δv_opp=3.487 m/s. White Tiger (Byakko 白虎) — guardian of the West; kanji name: 白虎連射爪 (Byakko Rensha Sō — White Tiger Rapid-Fire Claw). First used vs Joseph/Vanishing Moot.  
+**Gimmick**: N=4 rapid-fire claw shredding barrier → MechanicRegistry: rapid_fire_claw
+
+---
+
+### [Case 2043 — Ray Kon / Driger V — Vulcan Claw](./15%20case%20study.md#case-2043)
+
+**System**: Plastic-gen V-Force  
+**Blader**: Ray Kon  
+**Special Move**: Vulcan Claw (JP: 白虎連射爪 — Byakko Rensha Sō) — Tiger Claw N=4 rapid-fire η_decay=0.80; J_VC=1.395×10⁻¹ N·s (geometric sum=2.952) → Δv=3.487 m/s; Δω_drain=199.6 rad/s (60.1% retained). [M] Ray Driger White Tiger ×8.0 → Δv=27.90 m/s. powerCost 100. Shredding barrier = 4-claw sequential contact forming enclosing claw field. White Tiger spirit (Byakko) manifests as defensive barrier. First used vs Joseph/Vanishing Moot.  
+**Compatible beys**: Plastic-gen multi-claw AR (r ≥ 2.5 cm, N_claw ≥ 3, e_claw ≥ 0.74) + metal ball/semi-flat Base (μ ≤ 0.40); standard: Driger V (Ray Kon, Bakuten Shoot V-Force)
+
+---
+
+### [Case 2044 — Ray Kon / Driger V — Vulcan Barrier](./15%20case%20study.md#case-2044)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Vulcan Barrier. Sequence: moveRight → moveUp → attack (→ ↑ A). Cost: 15. Type: attack. 3-claw rapid-fire 75% speed: J_single_combo=3.542×10⁻²; sum(N=3 η=0.80)=2.440; J_combo=8.642×10⁻² N·s; Tiger Claw rebound Δω=+14 rad/s (η_claw_rebound=0.11); dmgMult 1.35×; lockMs 120. dmgMult 1.35× ≤ 1.5 ✓; lockMs 120 ≤ 300 ✓.  
+**Gimmick**: Parent: Tiger Claw rapid-fire (Case 2042)
+
+---
+
+### [Case 2045 — Driger V2 — Bit-Beast Upper Claw + N=6 Innumerable Claw Swipes](./15%20case%20study.md#case-2045)
+
+**System**: Plastic-gen V-Force (5-part)  
+**Blader**: Ray Kon  
+**Geometry**: m=37.5 g; Tiger Defenser AR r=2.8 cm; Ten Heavy WD r=2.8 cm; Neo Right SG r=0.3 cm; Metal Ball Base V2 r=0.3 cm; I_total=2.048×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Upper attack η_upper=1.10 (10% contact boost from below) v_upper=1.760 m/s. Driger BB full manifestation η_Driger_BB=1.30. N_claw=6 (innumerable swipes) η_decay=0.75; geometric sum=3.288; J_base_single=6.130×10⁻² N·s; J_rapid=2.016×10⁻¹ N·s; J_VPC=J_rapid×η_BB=2.621×10⁻¹ N·s → Δv_opp=6.553 m/s. Extreme drain: Δω=358.3 rad/s (28.3% retained — used twice total).  
+**Gimmick**: Bit-Beast full manifestation upper claw + N=6 innumerable swipes → MechanicRegistry: bb_upper_claw_swipes. Ep.40 debut; Ep.48 vs Gordo/Blizzard Orthrus
+
+---
+
+### [Case 2046 — Ray Kon / Driger V2 — Vulcan Power Claw](./15%20case%20study.md#case-2046)
+
+**System**: Plastic-gen V-Force  
+**Blader**: Ray Kon  
+**Special Move**: Vulcan Power Claw (JP: Barucan Pawā Kurō) — upper attack η_upper=1.10; Driger BB η=1.30; N=6 innumerable swipes η_decay=0.75 sum=3.288; J_VPC=2.621×10⁻¹ N·s → Δv=6.553 m/s; Δω_drain=358.3 rad/s (28.3% retained — maximum output, used twice). [M] Ray Driger White Tiger supreme claw ×8.0 → Δv=52.42 m/s. powerCost 100. GBA: "barrier of blades + innumerable claw swipes." Ep.40 debut; Ep.48 vs Gordo/Blizzard Orthrus.  
+**Compatible beys**: Plastic-gen improved multi-claw AR (r ≥ 2.6 cm, N_claw ≥ 5, e ≥ 0.78) + upper-attack trajectory (η_upper ≥ 1.08) + full BB manifestation (η_BB ≥ 1.25); standard: Driger V2 (Ray Kon, Bakuten Shoot V-Force)
+
+---
+
+### [Case 2047 — Ray Kon / Driger V2 — Vulcan Power Strike](./15%20case%20study.md#case-2047)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Vulcan Power Strike. Sequence: moveUp → attack → moveRight (↑ A →). Cost: 25. Type: attack. 4-claw + partial BB (η_BB_combo=1.15): v_upper_combo=1.320 m/s; sum(N=4 η=0.75)=2.734; J_combo=1.446×10⁻¹ N·s; Driger BB rebound Δω=+20 rad/s (η_Driger_rebound=0.10); dmgMult 1.45×; lockMs 150. dmgMult 1.45× ≤ 1.5 ✓; lockMs 150 ≤ 300 ✓.  
+**Gimmick**: Parent: BB upper claw (Case 2045)
+
+---
+
+### [Case 2048 — Xiphoid Xcalius Xanthus Sword' — Sword-Tip Point-Pierce Concentrated Strike](./15%20case%20study.md#case-2048)
+
+**System**: Burst DB (5-part layered system)  
+**Blader**: Xander Shakadera  
+**Geometry**: m=78.8 g; Xiphoid Blade r_tip=3.3 cm; DB Core Xcalius r=1.0 cm; Armor 1 r=1.8 cm; Xanthus disc r=2.6 cm; Sword' driver r=0.5 cm; I_total=3.500×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Sword-tip geometry: r_tip=33mm v_tip=23.10 m/s; contact area A_tip=3.142×10⁻⁶ m² (single point); pierce: η_pierce=1.30 (reduced deformation loss); e_sword=0.88 (near-elastic hard-tip); v_approach=2.200 m/s; m_eff=3.562×10⁻² kg (78.8g vs 65g opp); J_XS=1.915×10⁻¹ N·s → Δv_opp=2.946 m/s. Contact pressure P_tip=152.4 MPa (2.77× ABS yield — massive blade damage confirmed).  
+**Gimmick**: Sword-tip point-pierce concentrated strike → MechanicRegistry: point_pierce_strike. DB Core Xcalius + Xanthus (Achilles's immortal horse) disc lineage
+
+---
+
+### [Case 2049 — Xander Shakadera / Xiphoid Xcalius Xanthus Sword' — Xiphoid Saber](./15%20case%20study.md#case-2049)
+
+**System**: Burst DB  
+**Blader**: Xander Shakadera  
+**Special Move**: Xiphoid Saber — sword-tip pierce η_pierce=1.30; v_approach=2.200 m/s; e_sword=0.88; J_XS=1.915×10⁻¹ N·s → Δv=2.946 m/s; Δω_drain=180.6 rad/s (74.2% retained); P_tip=152.4 MPa (2.77× ABS yield). [M] Xander Shakadera Xcalius sword-tip ×7.5 → Δv=22.10 m/s. powerCost 100. Direct linear charge — no arc, no tornado. All mass and spin concentrated into single-point contact. Visible deformation at contact point.  
+**Compatible beys**: Burst DB pointed Blade (r_tip ≥ 3.0 cm, tip radius ≤ 1.5 mm, η_pierce ≥ 1.20) + directed sharp Driver (Sword'/Xtreme') + large-span disc (r_CoM ≥ 2.4 cm); standard: Xiphoid Xcalius Xanthus Sword' (Xander Shakadera, Burst DB)
+
+---
+
+### [Case 2050 — Xander Shakadera / Xiphoid Xcalius Xanthus Sword' — Xiphoid Strike](./15%20case%20study.md#case-2050)
+
+**System**: Burst DB  
+**Mechanism**: COMBO — Xiphoid Strike. Sequence: moveRight → moveUp → attack (→ ↑ A). Cost: 25. Type: attack. Partial sword pierce 75% + partial alignment η_pierce_combo=1.15: v_combo=1.650 m/s; e_combo=0.78; J_combo=1.203×10⁻¹ N·s; tip rebound Δω=+11 rad/s (η_tip_rebound=0.10); dmgMult 1.40×; lockMs 80. dmgMult 1.40× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: Sword-tip point-pierce (Case 2048)
+
+---
+
+### [Case 2051 — Vulcan Horuseus 145D — Horuseus Wing-Beat Directed Wind Cannon](./15%20case%20study.md#case-2051)
+
+**System**: MFB Metal Masters (5-part)  
+**Blader**: Nile  
+**Geometry**: m=38.5 g; Vulcan Fusion Wheel r=3.0 cm; Horuseus Energy Ring r=2.4 cm; 145 track r=0.6 cm; D tip r=0.5 cm; I_total=3.000×10⁻⁵ kg·m²; ω₀=630 rad/s  
+**Mechanism**: Vulcan rim tip speed v_wing_tip=18.90 m/s (ω₀×r_FW=630×0.030). Wing-beat concentration η_wing_direct=0.50 → v_blast=9.450 m/s. Aerodynamic drag: F_blast=1.074×10⁻¹ N (A_eff=1.963×10⁻³ m²); J_single=3.221×10⁻² N·s; N=3 shots η_decay=0.90 sum=2.710; J_VC=8.729×10⁻² N·s → Δv_opp=2.267 m/s. D free-spin (μ≈0.10) maintains stable orbit between shots.  
+**Gimmick**: Centrifugal wind cannon redirected by Horuseus wing-beat geometry → MechanicRegistry: wind_cannon. Horus (Egyptian falcon/sky deity) spirit
+
+---
+
+### [Case 2052 — Nile / Vulcan Horuseus 145D — Vulcan Cannon](./15%20case%20study.md#case-2052)
+
+**System**: MFB Metal Masters  
+**Blader**: Nile  
+**Special Move**: Vulcan Cannon — no official name; activation phrase "Flap Your Wings, Horuseus." Vulcan centrifugal wind v_wing_tip=18.90 m/s; η_wing_direct=0.50; v_blast=9.450 m/s; N=3 shots η_decay=0.90; J_VC=8.729×10⁻² N·s → Δv=2.267 m/s; Δω_drain=87.3 rad/s (86.1% retained). [M] Nile Horuseus Egyptian falcon ×7.0 → Δv=15.87 m/s. powerCost 100. Fires pellets of energy / wind blasts (both descriptions produce same effect). First used vs Vridick; used in Nile vs Masamune battle.  
+**Compatible beys**: MFB large smooth Fusion Wheel (r_FW ≥ 2.8 cm, v_tip ≥ 17 m/s) + wing-tip Energy Ring (N_wing ≥ 2, r_ER ≥ 2.2 cm; η_wing_direct ≥ 0.40); standard: Vulcan Horuseus 145D (Nile, Beyblade Metal Masters)
+
+---
+
+### [Case 2053 — Nile / Vulcan Horuseus 145D — Vulcan Shot](./15%20case%20study.md#case-2053)
+
+**System**: MFB Metal Masters  
+**Mechanism**: COMBO — Vulcan Shot. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 15. Type: attack. 2-shot 70% blast: v_combo_blast=6.615 m/s; N=2; F_combo=5.262×10⁻² N; J_combo=3.157×10⁻² N·s; wind rebound Δω=+11 rad/s (η_wind_rebound=0.35 — blast rebounds off opponent blade back to Vulcan wheel); dmgMult 1.25×; lockMs 120. dmgMult 1.25× ≤ 1.5 ✓; lockMs 120 ≤ 300 ✓.  
+**Gimmick**: Parent: Wind cannon (Case 2051)
+
+---
+
+### [Case 2054 — Zone Lúinor Drake Spiral' Metsu — Slope-Accelerated Metal Zone Layer Base Slam](./15%20case%20study.md#case-2054)
+
+**System**: Burst DB (5-part layered system)  
+**Blader**: Lodin Haijima  
+**Geometry**: m=72.0 g; Zone Lúinor Blade r=2.5 cm; Drake DB Core r=1.0 cm; Armor 2 r=1.8 cm; Spiral' disc r=2.2 cm; Metsu driver r=0.5 cm (μ≈0.75); I_total=2.635×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: DB-era bowl wall h_wall=3.5 cm; v_base=1.800 m/s → v_contact=1.982 m/s (energy conservation 2gh=0.687 m²/s²). Metal Zone Layer Base contact ring e_metal=0.85; m_eff=3.416×10⁻² kg (72g vs 65g); J_ZS=1.253×10⁻¹ N·s → Δv_opp=1.927 m/s. Lúinor (Longinus — legendary lance) dragon spirit.  
+**Gimmick**: Slope-assisted metal contact ring slam → MechanicRegistry: slope_metal_slam
+
+---
+
+### [Case 2055 — Lodin Haijima / Zone Lúinor Drake Spiral' Metsu — Zone Slam](./15%20case%20study.md#case-2055)
+
+**System**: Burst DB  
+**Blader**: Lodin Haijima  
+**Special Move**: Zone Slam (JP: Tsuvai Sutoreeто — Zwei Straight) — Metsu slope approach v_base=1.800 m/s; h_wall=3.5 cm → v_contact=1.982 m/s; metal Zone Layer Base e_metal=0.85; J_ZS=1.253×10⁻¹ N·s → Δv=1.927 m/s; Δω_drain=118.9 rad/s (83.0% retained). [M] Lodin Lúinor dragon lance ×7.5 → Δv=14.45 m/s. powerCost 100. Japanese name: Zwei Straight (ツヴァイストレート). Bowl wall descent adds 0.687 m²/s² KE to approach.  
+**Compatible beys**: Burst DB metallic Zone Layer Base ring (r_metal ≥ 2.2 cm, e_metal ≥ 0.82) + high-friction flat Driver (μ ≥ 0.70) in bowl-stadium (h_wall ≥ 2.5 cm); standard: Zone Lúinor Drake Spiral' Metsu (Lodin Haijima, Burst DB)
+
+---
+
+### [Case 2056 — Lodin Haijima / Zone Lúinor Drake Spiral' Metsu — Zone Charge](./15%20case%20study.md#case-2056)
+
+**System**: Burst DB  
+**Mechanism**: COMBO — Zone Charge. Sequence: moveLeft → moveUp → attack (← ↑ A). Cost: 15. Type: attack. Partial slope h_combo=2.5 cm, 75% base speed: v_combo_contact=1.521 m/s; e_combo=0.78; J_combo=9.247×10⁻² N·s; metal rebound Δω=+11 rad/s (η_metal_rebound=0.12); dmgMult 1.35×; lockMs 100. dmgMult 1.35× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Slope metal slam (Case 2054)
+
+---
+
+### [Case 2057 — Zone Lúinor Drake Spiral' Metsu — Drake Disc Phase Alignment: Dual Dragon-Head Hammer Extension](./15%20case%20study.md#case-2057)
+
+**System**: Burst DB (same assembly as Case 2054; I_total=2.635×10⁻⁵ kg·m², ω₀=700 rad/s)  
+**Blader**: Lodin Haijima  
+**Mechanism**: Drake DB Core dragon-alignment nodes (r=1.4 cm) phase-lock into Zone Layer Base dragon-head grooves at launch → combined hammer tips r_dragon=2.6 cm + Δr_drake=2mm = r_hammer=2.8 cm; v_hammer_tip=19.60 m/s. Dual-hammer enhancement η_align=1.40 (40% impulse increase vs standard Zone metal ring); e_hammer=0.83; v_approach=1.600 m/s; m_eff=3.416×10⁻² kg; J_ZH=1.400×10⁻¹ N·s → Δv_opp=2.154 m/s. Δω_drain=148.8 rad/s (78.7% retained).  
+**Gimmick**: Drake disc phase-lock creates dual dragon-head hammer contacts → MechanicRegistry: disc_phase_alignment
+
+---
+
+### [Case 2058 — Lodin Haijima / Zone Lúinor Drake Spiral' Metsu — Zone Hammer](./15%20case%20study.md#case-2058)
+
+**System**: Burst DB  
+**Blader**: Lodin Haijima  
+**Special Move**: Zone Hammer (JP: Tsuvai Hanmā — Zwei Hammer) — Drake disc phase-alignment: r_hammer=2.8 cm; v_hammer_tip=19.60 m/s; η_align=1.40; e_hammer=0.83; J_ZH=1.400×10⁻¹ N·s → Δv=2.154 m/s; Δω_drain=148.8 rad/s (78.7% retained — higher drain than Zone Slam due to r_hammer). [M] Lodin Lúinor dragon lance ×7.5 → Δv=16.16 m/s. powerCost 100. Japanese name: Zwei Hammer (ツヴァイハンマー). Alignment set at launch — not during battle. Two hammers at 180° spacing.  
+**Compatible beys**: Burst DB Blade with dragon-head protrusions (r_dragon ≥ 2.4 cm) + DB Core alignment nodes (r_drake ≥ 1.2 cm) phase-locking to r_hammer ≥ 2.7 cm (η_align ≥ 1.30); standard: Zone Lúinor Drake Spiral' Metsu (Lodin Haijima, Burst DB)
+
+---
+
+### [Case 2059 — Lodin Haijima / Zone Lúinor Drake Spiral' Metsu — Drake Strike](./15%20case%20study.md#case-2059)
+
+**System**: Burst DB  
+**Mechanism**: COMBO — Drake Strike. Sequence: moveRight → moveUp → attack (→ ↑ A). Cost: 15. Type: attack. Partial single-hammer alignment (one of two heads): η_combo_align=1.15; v_combo=1.120 m/s; e_combo=0.79; J_combo=7.876×10⁻² N·s; composite rebound Δω=+11 rad/s (η_drake_rebound=0.13); dmgMult 1.35×; lockMs 90. dmgMult 1.35× ≤ 1.5 ✓; lockMs 90 ≤ 300 ✓.  
+**Gimmick**: Parent: Drake disc phase alignment (Case 2057)
+
+---
+
+### [Case 2060 — Dragoon V2 — Dual-Flank Teleport Velocity Slam](./15%20case%20study.md#case-2060)
+
+**System**: Plastic-gen V-Force (5-part)  
+**Blader**: Tyson Granger  
+**Geometry**: m=36.0 g; Tornado Wing V2 AR r=2.6 cm; Ten Heavy WD r=2.7 cm; Fast Flat Base II r_BB=0.3 cm (μ≈0.75); I_total=1.785×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Wing tip speed v_tip=13.00 m/s; flat approach v_approach=2.000 m/s. Dual-flank ±45° vector decomposition: J_single=6.595×10⁻² N·s; J_WA=√2×J_single=9.327×10⁻² N·s (forward components add constructively, lateral cancel) → Δv_opp=2.332 m/s. Used only by Tyson Granger.  
+**Gimmick**: Dual-flank teleport ±45° simultaneous pass → MechanicRegistry: dual_flank_slam
+
+---
+
+### [Case 2061 — Tyson Granger / Dragoon V2 — Wave Attack](./15%20case%20study.md#case-2061)
+
+**System**: Plastic-gen V-Force  
+**Blader**: Tyson Granger  
+**Special Move**: Wave Attack — Fast Flat Base II aggressive orbit v_approach=2.000 m/s; dual-flank ±45° teleport; J_WA=9.327×10⁻² N·s → Δv=2.332 m/s; Δω_drain=135.8 rad/s (72.8% retained). [M] Tyson Dragoon V-Force dragon ×8.0 → Δv=18.66 m/s. powerCost 100. Dragoon "teleports" to opposing flanking positions left and right simultaneously. Used only by Tyson.  
+**Compatible beys**: Plastic-gen swept-wing AR (r ≥ 2.4 cm, ≥3 wings) + high-friction flat Base (μ ≥ 0.70; v_approach ≥ 1.8 m/s) + Dragoon dual-teleport BeySpirit; standard: Dragoon V2 (Tyson Granger, Beyblade V-Force)
+
+---
+
+### [Case 2062 — Tyson Granger / Dragoon V2 — Wave Rush](./15%20case%20study.md#case-2062)
+
+**System**: Plastic-gen V-Force  
+**Mechanism**: COMBO — Wave Rush. Sequence: moveLeft → moveRight → attack (← → A). Cost: 15. Type: attack. Orbital surge to dual-flank approach: v_approach=2.000 m/s; single-arm leading edge only (one wing contacts first); J_single=6.595×10⁻² N·s; rebound Δω=+8 rad/s; dmgMult 1.25×; lockMs 140. dmgMult 1.25× ≤ 1.5 ✓; lockMs 140 ≤ 300 ✓.  
+**Gimmick**: Parent: Dual-flank teleport ±45° (Case 2060)
+
+---
+
+### [Case 2063 — Metal Driger — Hologram Ambush](./15%20case%20study.md#case-2063)
+
+**System**: HMS (Hard Metal System, 3-part)  
+**Blader**: Ray Kon  
+**Geometry**: m=24.0 g; Metal Driger AR r=2.5 cm; SG (HMS) r=1.5 cm; Metal Semi-Flat Base r_BB=0.4 cm (μ≈0.45); I_total=7.904×10⁻⁶ kg·m²; ω₀=600 rad/s  
+**Mechanism**: Tip speed v_tip=15.00 m/s; orbital speed v_orbital=3.200 m/s. Rain/water-film arena creates orbital hologram copies at same tip speed v_tip=14.40 m/s (0.96×; slight diffraction loss). Three orbital copies at 120° separation; η_ambush=1.35 total combined impulse multiplier; J_WBA=6.229×10⁻² N·s. Rainstorm arena required (precipitation density ≥ moderate). HMS aluminum construction: lighter (24g), ω₀=600 rad/s, metallic AR gives e=0.88.  
+**Gimmick**: Hologram ambush (rain/water-film multi-copy) → MechanicRegistry: hologram_ambush
+
+---
+
+### [Case 2064 — Hiro Granger / Metal Driger — Wave Buster Attack](./15%20case%20study.md#case-2064)
+
+**System**: HMS  
+**Blader**: Hiro Granger  
+**Special Move**: Wave Buster Attack — Metal Driger orbital v_orbital=3.200 m/s; three hologram copies (η_ambush=1.35); primary + hologram simultaneous strike: J_WBA=6.229×10⁻² N·s → Δv=1.557 m/s (physical); Δω_drain=115.8 rad/s (80.7% retained — HMS lighter so less drain). [M] Hiro/Ray Driger white tiger ×8.0 → Δv=12.46 m/s. powerCost 100. Rain arena activates hologram orbital copies — each copy strikes from a different approach vector simultaneously. Used only by Hiro/Ray with Metal Driger.  
+**Compatible beys**: HMS metallic AR (r ≥ 2.3 cm, mirror-polished ≥ 80% reflectance) + rainstorm arena condition (precipitation ≥ moderate) + white tiger BeySpirit; standard: Metal Driger (Ray Kon / Hiro Granger, HMS)
+
+---
+
+### [Case 2065 — Hiro Granger / Metal Driger — Wave Ambush](./15%20case%20study.md#case-2065)
+
+**System**: HMS  
+**Mechanism**: COMBO — Wave Ambush. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 15. Type: attack. Single-hologram flanking approach from upper-arc position: η_single_holo=0.45 of J_WBA=2.803×10⁻² N·s (isolated copy leading edge only); rebound Δω=+16 rad/s (HMS lighter — higher Δω per impulse); dmgMult 1.25×; lockMs 100. dmgMult 1.25× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Hologram ambush (Case 2063)
+
+---
+
+### [Case 2066 — Clay Aries ED145B — Free-Spin Torque Decoupling](./15%20case%20study.md#case-2066)
+
+**System**: MFB Metal Masters (4-part)  
+**Blader**: Hyoma  
+**Geometry**: m=18.0 g; Clay Aries Wheel r=2.3 cm; ED145 (Electronic Defense 145) r_track=1.45 cm; Ball driver r_BB=0.4 cm; I_total=8.373×10⁻⁶ kg·m²; ω₀=640 rad/s  
+**Mechanism**: Tip speed v_tip=14.72 m/s; orbital speed v_orbital=1.900 m/s. ED145 free-spinning defense disc: k_decouple=0.85 — the ED145 bearing absorbs 85% of contact torque before it reaches the Wheel; Aries retains 98.9% spin per contact. Wind field generation via orbital motion creates defensive pressure zone. v_orbit_wind=1.900 m/s. Clay Aries wins Wind Storm Assault attack from upwind position via wind-field pushing opponent out. J_WSA=2.444×10⁻² N·s.  
+**Gimmick**: ED145 free-spin torque decoupling (k_decouple=0.85) + wind-field deflection → MechanicRegistry: free_spin_decoupling; wind_field_defense
+
+---
+
+### [Case 2067 — Hyoma / Clay Aries ED145B — Wind Storm Assault](./15%20case%20study.md#case-2067)
+
+**System**: MFB Metal Masters  
+**Blader**: Hyoma  
+**Special Move**: Wind Storm Assault (JP: Gone With the Wind — Kaze to Tomoni Sarinu) — ED145 free-spin orbit v_orbital=1.900 m/s; wind-field deflection: J_WSA=2.444×10⁻² N·s → Δv=0.611 m/s (outward, repulsive — defense type); Δω_loss=16.3 rad/s (97.4% spin retained via k_decouple=0.85); **Type**: defense/stamina — force applied outward (pushes attacker away). [M] Hyoma Aries ram ×7.0 → Δv=4.277 m/s. powerCost 100. Wind-field creates no direct contact; deflection pressure only. Effective only if opponent approaches from within the wind orbit radius.  
+**Compatible beys**: MFB free-spinning defense track (ED145 or equivalent, k_decouple ≥ 0.80) + Ball or semi-flat driver (v_orbital ≥ 1.7 m/s) + wind-field BeySpirit; standard: Clay Aries ED145B (Hyoma, Metal Masters)
+
+---
+
+### [Case 2068 — Hyoma / Clay Aries ED145B — Wind Shift](./15%20case%20study.md#case-2068)
+
+**System**: MFB Metal Masters  
+**Mechanism**: COMBO — Wind Shift. Sequence: moveUp → defense → attack (↑ K A). Cost: 15. Type: defense. ED145 free-spin bearing absorbs approach impulse; lateral redirect uses wind orbit to push opponent off-axis: J_redirect=1.100×10⁻² N·s (lateral only); Δω=+4 rad/s (returned from bearing impulse absorption); dmgMult 1.20×; lockMs 80. dmgMult 1.20× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: Free-spin torque decoupling (Case 2066)
+
+---
+
+### [Case 2069 — Griffolyon — Spirit Feather Multi-Hit](./15%20case%20study.md#case-2069)
+
+**System**: Plastic-gen G-Revolution (5-part)  
+**Blader**: Robert Jürgens  
+**Geometry**: m=32.0 g; Griffolyon AR r=2.7 cm; Ten Balance WD r=2.5 cm; Spike Base r_BB=0.5 cm (μ≈0.30); I_total=1.756×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Tip speed v_tip=13.50 m/s; orbital speed v_orbital=2.200 m/s. Spirit feather multi-hit: N=8 sequential feather contacts (Griffin wings extend and retract cycling), η_decay=0.85 per successive hit; geometric series sum S=(1−0.85⁸)/(1−0.85)=4.974; effective combined impulse J_WD=3.143×10⁻² N·s (single feather J_base=6.320×10⁻³ N·s). Each feather hit smaller than prior; total accumulated Δv_opp=0.785 m/s; Δω_drain=44.7 rad/s (91.1% retained — spike tip low friction, less orbit energy lost).  
+**Gimmick**: Spirit feather N=8 η=0.85 multi-hit geometric series → MechanicRegistry: spirit_multi_hit
+
+---
+
+### [Case 2070 — Robert Jürgens / Griffolyon — Wing Dagger](./15%20case%20study.md#case-2070)
+
+**System**: Plastic-gen G-Revolution  
+**Blader**: Robert Jürgens  
+**Special Move**: Wing Dagger — Griffin spirit feather cascade N=8 η=0.85; J_WD=3.143×10⁻² N·s → Δv=0.786 m/s (physical); Δω_drain=44.7 rad/s. [M] Robert Jürgens Griffolyon griffin ×7.0 → Δv=5.500 m/s. powerCost 100. Eight rapid feather-blade contacts in sequence; later hits reinforce earlier ones via resonance. Used only by Robert Jürgens.  
+**Compatible beys**: Plastic-gen wing AR (r ≥ 2.5 cm, ≥4 blade feathers) + balanced or spike tip (μ ≤ 0.35) + griffin BeySpirit; standard: Griffolyon (Robert Jürgens, G-Revolution)
+
+---
+
+### [Case 2071 — Robert Jürgens / Griffolyon — Wing Rain](./15%20case%20study.md#case-2071)
+
+**System**: Plastic-gen G-Revolution  
+**Mechanism**: COMBO — Wing Rain. Sequence: moveUp → moveLeft → attack (↑ ← A). Cost: 15. Type: attack. First 3 feather contacts only (N=3 of 8): J_3=(1−0.85³)/(1−0.85)×J_base=2.473×J_base=1.563×10⁻² N·s; rebound Δω=+3 rad/s; dmgMult 1.25×; lockMs 150. dmgMult 1.25× ≤ 1.5 ✓; lockMs 150 ≤ 300 ✓.  
+**Gimmick**: Parent: Spirit feather multi-hit (Case 2069)
+
+---
+
+### [Case 2072 — Sword Valtryek Blitz Power Retsu — Spring-Assisted Driver](./15%20case%20study.md#case-2072)
+
+**System**: Burst Rise (4-part)  
+**Blader**: Valt Aoi  
+**Geometry**: m=51.0 g; Sword Valtryek blade r=3.2 cm; Blitz ratchet r=2.8 cm; Power Retsu driver r_BB=0.6 cm (retracted); k_spring=180 N/m; x_preload=3 mm=0.3 cm; E_spring=8.100×10⁻⁴ J; I_total=1.687×10⁻⁵ kg·m²; ω₀=670 rad/s  
+**Mechanism**: Tip speed v_tip=21.44 m/s; Power Retsu: normal mode r_contact=0.6 cm (semi-flat μ≈0.45); spring-release mode: spring k=180 N/m compressed x=3mm, E_spring=½×180×(0.003)²=8.100×10⁻⁴ J released as kinetic energy added to contact. Combined impulse: J_WW=I_total×ω₀×e_spring_boost; e=0.85 (Burst Rise era); J_WW=1.139×10⁻¹ N·s. Spring release requires impact trigger (driver nose depresses ≥ 2mm under contact force). Δω_drain=91.6 rad/s (86.3% retained).  
+**Gimmick**: Spring-assisted driver release (k=180 N/m, x=3mm, E_spring=8.100×10⁻⁴ J) → MechanicRegistry: spring_driver_burst
+
+---
+
+### [Case 2073 — Valt Aoi / Sword Valtryek Blitz Power Retsu — Wing Whip](./15%20case%20study.md#case-2073)
+
+**System**: Burst Rise  
+**Blader**: Valt Aoi  
+**Special Move**: Wing Whip — Spring-assisted Power Retsu driver (k=180 N/m, x=3mm); J_WW=1.139×10⁻¹ N·s → Δv=2.277 m/s (physical, 50g opponent); Δω_drain=91.6 rad/s (86.3% retained). [M] Valt Valtryek dragon ×8.0 → Δv=18.22 m/s. powerCost 100. Spring fires at contact moment, adding kinetic burst to standard wing strike. Used only by Valt Aoi.  
+**Compatible beys**: Burst Rise blade (r ≥ 3.0 cm) + spring-loaded tip driver (k ≥ 150 N/m, x ≥ 2.5mm) + Valtryek dragon BeySpirit; standard: Sword Valtryek Blitz Power Retsu (Valt Aoi, Burst Rise)
+
+---
+
+### [Case 2074 — Valt Aoi / Sword Valtryek Blitz Power Retsu — Power Rush](./15%20case%20study.md#case-2074)
+
+**System**: Burst Rise  
+**Mechanism**: COMBO — Power Rush. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 25. Type: attack. Spring pre-charge then forward surge: driver spring fires mid-orbit approach; J_PR=I_total×ω₀×0.72 (partial spring only, x=2mm sub-full compression)=8.139×10⁻² N·s; rebound Δω=+12 rad/s; dmgMult 1.40×; lockMs 80. dmgMult 1.40× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: Spring-assisted driver (Case 2072)
+
+---
+
+### [Case 2075 — Lycanlor — Spirit Claw Multi-Hit](./15%20case%20study.md#case-2075)
+
+**System**: Plastic-gen G-Revolution (5-part)  
+**Blader**: Lupinex  
+**Geometry**: m=32.0 g; Lycanlor AR r=2.6 cm; Wide Survivor WD r=2.7 cm; Spike Base r_BB=0.5 cm (μ≈0.30); I_total=1.495×10⁻⁵ kg·m²; ω₀=500 rad/s  
+**Mechanism**: Tip speed v_tip=13.00 m/s; orbital speed v_orbital=2.100 m/s. Spirit claw multi-hit: N=5 claw rakes (wolf lycanthrope claw swipes), η_decay=0.88 per hit; series sum S=(1−0.88⁵)/(1−0.88)=3.895; J_WS=3.444×10⁻² N·s (single claw J_base=8.843×10⁻³ N·s). Total Δv_opp=0.861 m/s; Δω_drain=45.6 rad/s (90.9% retained — spike base low friction).  
+**Gimmick**: Spirit claw N=5 η=0.88 multi-hit geometric series → MechanicRegistry: spirit_multi_hit
+
+---
+
+### [Case 2076 — Lupinex / Lycanlor — Wolf Storm](./15%20case%20study.md#case-2076)
+
+**System**: Plastic-gen G-Revolution  
+**Blader**: Lupinex  
+**Special Move**: Wolf Storm — Lycanlor spirit claw multi-hit N=5 η=0.88; J_WS=3.444×10⁻² N·s → Δv=0.861 m/s (physical); Δω_drain=45.6 rad/s. [M] Lupinex Lycanlor wolf lycanthrope ×7.0 → Δv=6.030 m/s. powerCost 100. Five claw rakes in rapid spiral pattern — each deeper than the last. Used only by Lupinex.  
+**Compatible beys**: Plastic-gen claw AR (r ≥ 2.4 cm, ≥4 claw protrusions) + spike or flat tip (μ ≤ 0.35) + lycanthrope BeySpirit; standard: Lycanlor (Lupinex, G-Revolution)
+
+---
+
+### [Case 2077 — Lupinex / Lycanlor — Wolf Claw](./15%20case%20study.md#case-2077)
+
+**System**: Plastic-gen G-Revolution  
+**Mechanism**: COMBO — Wolf Claw. Sequence: moveUp → moveLeft → attack (↑ ← A). Cost: 15. Type: attack. First 3 claw contacts (N=3 of 5): J_3=(1−0.88³)/(1−0.88)×J_base=2.671×J_base=2.362×10⁻² N·s; rebound Δω=+3 rad/s; dmgMult 1.25×; lockMs 160. dmgMult 1.25× ≤ 1.5 ✓; lockMs 160 ≤ 300 ✓.  
+**Gimmick**: Parent: Spirit claw multi-hit (Case 2075)
+
+---
+
+### [Case 2078 — Wizard Fafnir Ratchet Rise Sen — Ratchet Torque Decoupling](./15%20case%20study.md#case-2078)
+
+**System**: Burst DB (4-part)  
+**Blader**: Fumiya Kindo  
+**Geometry**: m=51.0 g; Wizard Fafnir blade r=3.2 cm (left-spin); Ratchet disc r=2.4 cm; Rise driver r_BB=0.5 cm; Sen tip r=0.3 cm; I_total=1.710×10⁻⁵ kg·m²; ω₀=700 rad/s (left-spin, counter-clockwise)  
+**Mechanism**: Tip speed v_tip=22.40 m/s; orbital speed v_orbital=3.200 m/s. Ratchet disc: ratchet teeth engage only vs right-spin opponents (counter-spin contact); k_ratchet=0.90 — ratchet absorbs 90% of contact torque from right-spin opponents; Fafnir retains 99.3% spin per contact (Sen tip low-friction). Ratchet is passive vs same-spin (left-spin) opponents. J_WP=I_total×ω₀×e_ratchet; e=0.80 (counter-spin contact); J_WP=7.491×10⁻² N·s.  
+**Gimmick**: Ratchet disc counter-spin torque decoupling (k_ratchet=0.90, only effective vs right-spin) → MechanicRegistry: ratchet_decoupling
+
+---
+
+### [Case 2079 — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen — Wrench Parry](./15%20case%20study.md#case-2079)
+
+**System**: Burst DB  
+**Blader**: Fumiya Kindo  
+**Special Move**: Wrench Parry (JP: Ratchet Through — Ratcheto Tsūru) — Ratchet disc counter-spin absorption (right-spin opponent only); k_ratchet=0.90; J_WP=7.491×10⁻² N·s → Δv=1.498 m/s (outward, repulsive — defense type); Δω_loss=7.5 rad/s (Fafnir retains 98.9% spin). **Type**: defense/stamina — force applied outward (repels right-spin attacker). [M] Fumiya Fafnir fox ×7.5 → Δv=11.24 m/s. powerCost 100. Effective only vs right-spin opponents; vs left-spin no ratchet engagement (passive). Used only by Fumiya Kindo.  
+**Compatible beys**: Burst DB left-spin blade + ratchet disc (k_ratchet ≥ 0.85, right-spin engagement only) + low-friction Sen-type tip + fox BeySpirit; standard: Wizard Fafnir Ratchet Rise Sen (Fumiya Kindo, Burst DB)
+
+---
+
+### [Case 2080 — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen — Ratchet Redirect](./15%20case%20study.md#case-2080)
+
+**System**: Burst DB  
+**Mechanism**: COMBO — Ratchet Redirect. Sequence: moveRight → defense → attack (→ K A). Cost: 15. Type: defense/stamina. Partial ratchet deflect (θ=20°): v_N_combo=0.855 m/s; η_ratchet_combo=1.10; e_combo=0.84; J_combo=4.412×10⁻² N·s; ratchet spring-back Δω=+6 rad/s (η_ratchet_spin=0.12); dmgMult 1.25×; lockMs 100. dmgMult 1.25× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Ratchet torque decoupling (Case 2078)
+
+---
+
+### [Case 2081 — Wizard Fafnir Ratchet Rise Sen — Rise Tip Rim Friction Speed Boost](./15%20case%20study.md#case-2081)
+
+**System**: Burst DB (4-part)  
+**Blader**: Fumiya Kindo  
+**Geometry**: same assembly as Case 2078; m=51.0 g; I_total=1.710×10⁻⁵ kg·m²; ω₀=700 rad/s  
+**Mechanism**: Rise driver rubber outer rim r_rim=0.8 cm; μ_Rise=0.85; F_rim=μ×m×g=0.425 N; a_rim=8.33 m/s²; t_rim=0.15 s; v_boost=1.250 m/s. Stamina orbit base speed v_base=1.500 m/s; combined approach speed v_attack=2.750 m/s; e_contact=0.78; m_eff=2.550×10⁻² kg; J_WB=1.248×10⁻¹ N·s → Δv_opp=2.447 m/s. Rubber rim floor contact is a one-shot acceleration — NOT a spring mechanism. Rise returns to stamina orbit at reduced spin after attack.  
+**Gimmick**: Rise tip rubber rim floor-friction speed boost (μ=0.85, t=0.15 s, v_boost=1.250 m/s) → MechanicRegistry: rubber_rim_friction_boost
+
+---
+
+### [Case 2082 — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen — Wizard Blow](./15%20case%20study.md#case-2082)
+
+**System**: Burst DB  
+**Blader**: Fumiya Kindo  
+**Special Move**: Wizard Blow (JP: ウィザードブロー — Wizādo Burō) — Rise tip rubber rim friction floor boost (μ=0.85, t_rim=0.15 s, v_boost=1.250 m/s); v_base=1.500 m/s; v_attack=2.750 m/s; J_WB=1.248×10⁻¹ N·s → Δv=2.447 m/s; Δω_drain=189.7 rad/s (72.9% retained — r_Blade=2.6 cm). [M] Fumiya Fafnir fox ×7.5 → Δv=18.35 m/s. powerCost 100. Rim friction (NOT a spring); rubber catches the arena floor for 0.15 s converting 0.425 N friction into 1.250 m/s added velocity. Used only by Fumiya Kindo.  
+**Compatible beys**: Burst DB driver with rubber outer rim (r_rim ≥ 0.6 cm, μ ≥ 0.80, a_rim ≥ 7.0 m/s², t_rim ≥ 0.10 s, v_boost ≥ 0.8 m/s) — must have floor contact capability (NOT spring mechanism); standard: Wizard Fafnir Ratchet Rise Sen (Fumiya Kindo, Burst DB)
+
+---
+
+### [Case 2083 — Fumiya Kindo / Wizard Fafnir Ratchet Rise Sen — Rise Rush](./15%20case%20study.md#case-2083)
+
+**System**: Burst DB  
+**Mechanism**: COMBO — Rise Rush. Sequence: moveRight → moveUp → attack (→ ↑ A). Cost: 15. Type: attack/stamina. Partial rim boost (t_rim_combo=0.10 s): v_boost_combo=0.833 m/s; v_combo=2.333 m/s; e_combo=0.76; J_combo=1.047×10⁻¹ N·s; rubber rim rebound Δω=+13 rad/s (η_rim_rebound=0.08); dmgMult 1.35×; lockMs 90. dmgMult 1.35× ≤ 1.5 ✓; lockMs 90 ≤ 300 ✓.  
+**Gimmick**: Parent: Rise tip rim friction speed boost (Case 2081)
+
+---
+
+### [Case 2084 — World Spryzen Unite' 2B — Aerial Descent Attack-Mode Slope Slam](./15%20case%20study.md#case-2084)
+
+**System**: Burst GT (4-part)  
+**Blader**: Shu Kurenai  
+**Geometry**: m=50.0 g; World Spryzen blade r=2.9 cm (Attack Mode, World Ring metallic band); 2B chassis free-spin ring r=2.4 cm; Unite' disc r=2.1 cm; Base driver r=0.5 cm; I_total=2.205×10⁻⁵ kg·m²; ω₀=670 rad/s  
+**Mechanism**: 2B chassis dual-mode — Attack Mode extends World Ring to r_world=2.9 cm. Aerial launch from h_launch=5.0 cm: v_contact²=v_base²+2gh=2.200²+2×9.81×0.050=5.821 m²/s² → v_contact=2.413 m/s. World Ring metallic band e_world=0.85; m_eff=2.500×10⁻² kg; J_WW=1.116×10⁻¹ N·s → Δv_opp=2.232 m/s. Δω_drain=146.8 rad/s (78.1% retained).  
+**Gimmick**: 2B dual-mode Attack Mode aerial drop (h=5.0 cm, +0.981 m²/s² KE from gravity) → MechanicRegistry: aerial_descent_attack; dual_mode_chassis
+
+---
+
+### [Case 2085 — Shu Kurenai / World Spryzen Unite' 2B — World Whip](./15%20case%20study.md#case-2085)
+
+**System**: Burst GT  
+**Blader**: Shu Kurenai  
+**Special Move**: World Whip (JP: World Slash — Wārudo Surasshu) — 2B Attack Mode aerial descent h=5.0 cm; v_contact=2.413 m/s; World Ring e_world=0.85; J_WW=1.116×10⁻¹ N·s → Δv=2.232 m/s; Δω_drain=146.8 rad/s (78.1% retained). [M] Shu Spryzen Valkyrie ×8.0 → Δv=17.86 m/s. powerCost 100. World Ring metallic band slashes with full aerial fall velocity; sparks on contact. Attack Mode only (World Ring at r=2.9 cm). Used only by Shu Kurenai.  
+**Compatible beys**: Burst GT blade with metallic contact band (r_Blade ≥ 2.5 cm, e_metal ≥ 0.82) + dual-mode chassis with Attack Mode aerial deployment (h_launch ≥ 3.5 cm, v_contact ≥ 2.1 m/s) + Valkyrie spirit; standard: World Spryzen Unite' 2B (Shu Kurenai, Burst GT)
+
+---
+
+### [Case 2086 — Shu Kurenai / World Spryzen Unite' 2B — World Slash](./15%20case%20study.md#case-2086)
+
+**System**: Burst GT  
+**Mechanism**: COMBO — World Slash. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 25. Type: attack. Partial aerial descent (h_combo=3.0 cm, 80% base speed): v_combo_base=1.760 m/s; v_combo=√(1.760²+2×9.81×0.030)=1.920 m/s; e_combo=0.80; J_combo=8.640×10⁻² N·s; World Ring metal rebound Δω=+11 rad/s (η_world_rebound=0.10); dmgMult 1.40×; lockMs 100. dmgMult 1.40× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Aerial descent Attack Mode (Case 2084)
+
+---
+
+### [Case 2087 — World Spryzen Unite' 2B (Defense Mode) — 2B Bound Free-Spin Chassis Torque Deflect](./15%20case%20study.md#case-2087)
+
+**System**: Burst GT (4-part)  
+**Blader**: Shu Kurenai  
+**Geometry**: same assembly as Case 2084; m=50.0 g; I_total=2.205×10⁻⁵ kg·m²; ω₀=670 rad/s. Defense Mode active.  
+**Mechanism**: 2B chassis Defense Mode: World Ring retracted; bound free-spin outer ring at r_2B=2.4 cm becomes primary contact surface. k_2B_decouple=0.82 (free-spin ring decouples 82% contact torque); θ_2B=15°; v_N=v_opp×sin(15°)=2.500×0.259=0.648 m/s; η_2B=1.15 (bound concave geometry +15%); e_bound=0.90 (high-restitution rubber); J_WS=3.539×10⁻² N·s → Δv_opp=0.708 m/s; Spryzen Δω_loss=6.9 rad/s (99.0% spin retained).  
+**Gimmick**: 2B bound free-spin ring torque decoupling (k=0.82, Defense Mode) → MechanicRegistry: free_spin_decoupling; bound_deflect
+
+---
+
+### [Case 2088 — Shu Kurenai / World Spryzen Unite' 2B — World Spin](./15%20case%20study.md#case-2088)
+
+**System**: Burst GT  
+**Blader**: Shu Kurenai  
+**Special Move**: World Spin (JP: ワールドスピン — Wārudo Supin) — 2B Defense Mode bound free-spin ring deflect; k_2B_decouple=0.82; θ_2B=15°; J_WS=3.539×10⁻² N·s → Δv=0.708 m/s (outward — defense/stamina type); Δω_loss=6.9 rad/s (99.0% spin retained). **Type**: defense/stamina — force applied outward. [M] Shu Spryzen Valkyrie ×8.0 → Δv=5.664 m/s. powerCost 100. Defense Mode only (Attack Mode uses World Whip). Bound ring gives slightly (e_bound=0.90) and concave geometry adds 15% deflect force. Used only by Shu Kurenai.  
+**Compatible beys**: Burst GT dual-mode chassis with free-spin bound outer ring in Defense Mode (r_ring ≥ 2.0 cm, k_decouple ≥ 0.78, e_bound ≥ 0.85); standard: World Spryzen Unite' 2B (Shu Kurenai, Burst GT)
+
+---
+
+### [Case 2089 — Shu Kurenai / World Spryzen Unite' 2B — World Guard](./15%20case%20study.md#case-2089)
+
+**System**: Burst GT  
+**Mechanism**: COMBO — World Guard. Sequence: moveUp → defense → attack (↑ K A). Cost: 15. Type: defense/stamina. Shallow 2B bound deflect (θ=8°): v_N_combo=v_opp×sin(8°)=0.348 m/s; η_2B_combo=1.08; e_combo=0.86; J_combo=1.747×10⁻² N·s; bound ring spring-back Δω=+4 rad/s (η_bound_spin=0.20); dmgMult 1.15×; lockMs 80. dmgMult 1.15× ≤ 1.5 ✓; lockMs 80 ≤ 300 ✓.  
+**Gimmick**: Parent: 2B bound free-spin deflect Defense Mode (Case 2087)
+
+---
+
+### [Case 2090 — Wonder Valtryek 12 Volcanic — Recoil-Assisted Volcanic Rim Orbital Attack](./15%20case%20study.md#case-2090)
+
+**System**: Burst Surge/Superking (4-part)  
+**Blader**: Valt Aoi  
+**Geometry**: m=48.0 g; Wonder Valtryek blade r=2.4 cm; 12 disc r=2.3 cm; Volcanic driver rubber rim r_rim=0.6 cm (μ≈0.88); Wonder Base r=0.8 cm; I_total=1.791×10⁻⁵ kg·m²; ω₀=660 rad/s  
+**Mechanism**: Incoming opponent attack v_opp_incoming=2.000 m/s; e_receive=0.70 (Volcanic rubber absorbs); m_eff=2.400×10⁻² kg; J_received=8.160×10⁻² N·s. Volcanic rim eccentric geometry channels η_recoil=0.55 of received impulse as orbital boost: v_boost_recoil=0.935 m/s; v_base=1.600 m/s; v_attack=2.535 m/s; e_attack=0.80; J_WFL=1.095×10⁻¹ N·s → Δv_opp=2.281 m/s. Δω_drain=146.7 rad/s (77.8% retained).  
+**Gimmick**: Volcanic rubber rim recoil-redirect orbital boost (η_recoil=0.55, 55% received impulse → forward orbit) → MechanicRegistry: recoil_redirect_orbit
+
+---
+
+### [Case 2091 — Valt Aoi / Wonder Valtryek 12 Volcanic — Wonder Flash Launch](./15%20case%20study.md#case-2091)
+
+**System**: Burst Surge  
+**Blader**: Valt Aoi  
+**Special Move**: Wonder Flash Launch (JP: Winning Rush Shoot — Uiningu Rasshu Shūto) — Volcanic rim absorbs incoming attack (e_receive=0.70); η_recoil=0.55 redirect to orbit; J_received=8.160×10⁻² N·s; v_boost=0.935 m/s; v_attack=2.535 m/s; J_WFL=1.095×10⁻¹ N·s → Δv=2.281 m/s; Δω_drain=146.7 rad/s (77.8% retained). [M] Valt Valtryek Valkyrie ×8.0 → Δv=18.25 m/s. powerCost 100. Requires incoming attack to absorb — Wonder Valtryek takes the hit, Volcanic channels 55% of opponent's own energy into the counter orbital strike. Used only by Valt Aoi.  
+**Compatible beys**: Burst Surge driver with rubber raised rim (r_rim ≥ 0.5 cm, μ ≥ 0.85, η_recoil ≥ 0.45) + sustained outer-edge orbital approach (v_base ≥ 1.4 m/s) + Valkyrie spirit; standard: Wonder Valtryek 12 Volcanic (Valt Aoi, Burst Surge)
+
+---
+
+### [Case 2092 — Valt Aoi / Wonder Valtryek 12 Volcanic — Flash Rush](./15%20case%20study.md#case-2092)
+
+**System**: Burst Surge  
+**Mechanism**: COMBO — Flash Rush. Sequence: moveUp → moveRight → attack (↑ → A). Cost: 25. Type: attack. Wall recoil only (no incoming opponent; η_recoil_wall=0.35): v_wall_incoming=1.500 m/s; J_wall=5.940×10⁻² N·s; v_boost_wall=0.433 m/s; v_combo=2.033 m/s; e_combo=0.78; J_combo=8.686×10⁻² N·s; Volcanic rim rebound Δω=+10 rad/s (η_volcanic_rebound=0.09); dmgMult 1.35×; lockMs 100. dmgMult 1.35× ≤ 1.5 ✓; lockMs 100 ≤ 300 ✓.  
+**Gimmick**: Parent: Recoil-assisted Volcanic rim orbital attack (Case 2090)
+
+---
+
+> *INDEX_D complete — Cases 1601–2092 fully indexed. Next available: Case 2093.*
+

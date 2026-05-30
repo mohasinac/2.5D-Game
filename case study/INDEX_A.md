@@ -1755,4 +1755,3652 @@ Source: `2 case study.md`
 **Mechanism**: Stamina/Left-Spin Self-KO archetype. Double Snake AR recoil 1.8× higher vs left-spin opponents. Auto Change tip self-KOs vs right-spin attack above trigger threshold. Only viable scenario: same-spin outspin vs right-spin stamina opponent. t_stall=4.7–6.5 s depending on matchup.  
 **Engine Note**: I_total = 2.124e-5 kg·m²; selfKO_risk = high vs RS_attack; viable = same_spin_outspin only.
 
+---
+
+## CS3 — Cases 156–187 + 911–950 {#cs3}
+Source: `3 case study.md`
+
+---
+
+### [Case 156 — Neo SG (Double Bearing Version) Shaft: Three-Point Decoupling, Wide-Plastic Tip Stability, and CGB Precession Assist](./3%20case%20study.md#case-156)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 1.1 g shaft; r_tip_contact ≈ 0.4 cm; r_CGB_rim ≈ 2.2 cm; τ₃ = 1.6×10⁻⁷ N·m  
+**Material**: metal shaft, plastic tip dome  
+**Spin Coupling**: 3 free-spin stages: upper casing bearing → lower casing bearing → tip-welded bearing; τ_residual approaches zero  
+**Mechanism**: Three-bearing decoupling chain. Tip width 4 mm provides 8× more restoring torque than sharp-tip zombie. CGB rim reduces LAD critical spin from 24.7 to 10.56 rad/s (57% reduction). Idle drag 3100× higher than Bearing Base Shaft — relevant only in prolonged same-spin endurance.  
+**Engine Note**: rTip = 0.4 cm; ladMinOmega_tip = 24.7 rad/s; ladMinOmega_CGB = 10.56 rad/s; idleDrag_multiplier = 3100.
+
+---
+
+### [Case 157 — Cross Attack Support Parts: Radially Oriented Triangular Protrusions Produce Near-Zero Smash, Maximum Recoil, and No Viable LAD](./3%20case%20study.md#case-157)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 0.79 g each (1.58 g total); r_tip ≈ 2.5 cm; I = 9.88×10⁻⁷ kg·m²  
+**Material**: ABS  
+**Contact Points**: α ≈ 80° from orbital tangent; J_smash = 0.174J; J_recoil = 0.985J  
+**Mechanism**: Radially-pointing triangular tips produce near-total recoil. No LAD: discrete point contacts cannot form precession disc (ω_LAD_min → ∞). Mid-plane symmetric — orientation labels (Smash/Spike Attack) are cosmetic only. Lowest peripheral I of any SP.  
+**Engine Note**: contactAlpha = 80°; smashFraction = 0.174; noLAD = true; I = 9.88e-7 kg·m².
+
+---
+
+### [Case 158 — Customize Bearing Base: Smooth-Shell Stamina Platform With Three Distinct Shaft Regimes](./3%20case%20study.md#case-158)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~7.5 g base; smooth outer rim; three shaft-type compatibility classes  
+**Material**: ABS housing, metal bearings  
+**Spin Coupling**: External bearing in base; shaft type determines inner coupling  
+**Mechanism**: SP-compatible wide-rim base providing best LAD of plastics BBs. Three shaft regimes: (1) Bearing Base Shaft — lowest friction, best zombie; (2) Neo SG DBV — mid friction, best tilt resistance; (3) standard sharp/flat tips — worst retention. CGB compatibility enables all three.  
+**Engine Note**: spCompatible = true; shaftRegime determines performance tier; LAD best in class.
+
+---
+
+### [Case 159 — Strike Turtle: Rounded Segment Ends as a Dual Penalty on Smash Efficiency and Recoil](./3%20case%20study.md#case-159)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~5 g AR; rounded leading edge geometry  
+**Material**: ABS  
+**Contact Points**: Rounded ends → variable α; no optimal smash angle  
+**Mechanism**: Rounded segment ends simultaneously reduce smash (no flat leading face) and increase recoil (convex surface returns impulse radially). Dual penalty: no attack merit, higher recoil than flat-face ARs. Defense use (smooth deflection) limited by insufficient mass and wrong geometry class.  
+**Engine Note**: contactGeometry = rounded; dualPenalty = reducedSmash + increasedRecoil.
+
+---
+
+### [Case 160 — SG Bolt Base: Why Screw Ballast at Mid-Radius Fails to Compensate for Tip and LAD Deficits](./3%20case%20study.md#case-160)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: mid-radius screw ballast; lower I contribution than WD-radius mass  
+**Material**: ABS with metal screw inserts  
+**Mechanism**: Metal screws at mid-radius add mass but at r well inside WD rim → I contribution far below what same mass at WD radius would provide. Tip performance unchanged. LAD not rescued by mid-radius ballast. Mass penalty from screws increases KO resistance marginally but does not compensate for tip and LAD weaknesses.  
+**Engine Note**: ballastRadius < WD_radius; I_contribution_suboptimal; LAD_deficit_unaddressed.
+
+---
+
+### [Case 161 — Double Attacker: Maximum Flat-Face Smash With Structural Recoil Liability](./3%20case%20study.md#case-161)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~6 g AR; wide flat leading faces; large outer radius  
+**Material**: ABS  
+**Contact Points**: Flat face α ≈ 0–15°; J_smash ≈ 0.966J; high smash efficiency  
+**Mechanism**: Maximum flat-face smash: near-zero α → near-total impulse converts to smash push. Structural liability: wide flat faces crack/deform on repeated hard contacts, widening effective α over time. Best-in-class smash when intact; degrades rapidly under heavy use.  
+**Engine Note**: alpha ≈ 0–15°; smashFraction ≈ 0.966; structuralDegradation = high.
+
+---
+
+### [Case 162 — Revolver Attack: Compact Distribution Undermined by Tab Recoil and Mass Deficit](./3%20case%20study.md#case-162)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: low mass AR; tabs at outer radius  
+**Material**: ABS  
+**Contact Points**: radial tabs → high recoil fraction  
+**Mechanism**: Compact mass distribution adequate for KO-resistance role, but protruding tabs generate recoil on contact — same failure mode as other tab-geometry ARs (Case 949 Ten Wide WD tab recoil). Mass too low for a defensive weight contribution. Outclassed by Wide Defense in all intended applications.  
+**Engine Note**: tabRecoil = high; massDeficit vs WideDefense; compactDistribution only marginal.
+
+---
+
+### [Case 163 — Twin Guard: Thin-Profile Bidirectionality Trades LAD Quality for Orientation Flexibility](./3%20case%20study.md#case-163)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: thin AR profile; symmetric top/bottom faces  
+**Material**: ABS  
+**Mechanism**: Mid-plane symmetric AR works in both left and right spin with identical geometry. Thin profile reduces LAD rim height, degrading precession endurance. Orientation flexibility useful for left-spin attack builds, but LAD quality (reduced rim area) costs against opponents relying on stamina outlasting.  
+**Engine Note**: bidirectional = true; LAD_quality = reduced (thin profile); spinNeutral geometry.
+
+---
+
+### [Case 164 — Corona Saber: Large-Reach Upper Attack With Smash Penalty From Rotational Recoil](./3%20case%20study.md#case-164)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: large outer radius; upper-attack slope geometry  
+**Material**: ABS  
+**Contact Points**: Upper slope α; large r_contact → high rotational recoil torque  
+**Mechanism**: Wide outer radius provides reach advantage for upper contact but large moment arm amplifies rotational recoil torque per hit (τ = J × r_contact). Net: increased tilt perturbation per collision. Upper impulse component useful; rotational recoil partially negates spin conservation advantage.  
+**Engine Note**: r_contact = large; tau_recoil = J × r; upperImpulse partially offset by spin loss.
+
+---
+
+### [Case 165 — Triple Beak: Bevelled Triangle Edges as an Omni-Directional Smash Mechanism](./3%20case%20study.md#case-165)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3-fold symmetric; bevelled triangle leading edges  
+**Material**: ABS  
+**Contact Points**: Bevelled edge α ≈ 20–35°; moderate smash fraction  
+**Mechanism**: Bevelled triangle edges produce consistent smash contact across a range of approach angles (omni-directional effectiveness). Three-fold symmetry means collision frequency × 3 vs single-face ARs. Moderate α gives competitive smash with lower recoil than pure-radial protrusions.  
+**Engine Note**: symmetry = 3; bevelledEdge; omniDirectionalSmash; alpha ≈ 20–35°.
+
+---
+
+### [Case 166 — Reverse Wolf (Hasbro): Inverted Contact Orientation Converts a Defense AR Into the Only Viable Left-Spin Compact](./3%20case%20study.md#case-166)
+
+**System**: Plastics System (Gen 1, SG System) — Hasbro variant  
+**Geometry**: same geometry as standard Wolf; contact orientation inverted  
+**Material**: ABS  
+**Contact Points**: Right-spin defense geometry inverted → left-spin smash contact  
+**Mechanism**: Hasbro mold inverts the contact orientation relative to TT version. What is a smooth deflection surface in right spin becomes a leading smash edge in left spin. Only viable left-spin compact AR for Standard configuration. Competitive left-spin smash with compact mass distribution advantage. TT version non-viable in LS.  
+**Engine Note**: hasbro_inversion = true; LSsmash viable; RSdefense geometry repurposed.
+
+---
+
+### [Case 167 — Wide Defense: Extreme Peripheral Concentration and Rounded Profile Produce the Most Versatile Weight Disk in the Generation](./3%20case%20study.md#case-167)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~14.7 g; maximum r_outer in plastics WD lineup; smooth rounded rim  
+**Material**: ABS  
+**Mechanism**: Maximum peripheral radius + smooth rounded profile: highest I contribution of any plastics WD (maximum r_outer). Rounded profile deflects contact tangentially (low recoil). Versatile: suits defense (LAD assist), stamina (inertia retention), and controlled attack (KO resistance). Outperforms all plastics WDs in most roles.  
+**Engine Note**: r_outer = maximum in class; smoothRoundedRim; I = highest plastics WD; versatile.
+
+---
+
+### [Case 168 — Wide Survivor: Maximum Outer Radius and Smooth Profile Optimise Opposite-Spin Stamina at the Cost of Mass](./3%20case%20study.md#case-168)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: lower mass than Wide Defense; r_outer comparable; smooth profile  
+**Material**: ABS (lighter formulation)  
+**Mechanism**: Same outer radius as Wide Defense but lower total mass → lower I than WD despite similar r. Trade: mass savings reduce inertia but reduce tip normal force (lower spin decay from friction). Optimised for opposite-spin zombie matchups where low normal force = low spin-steal friction loss. Wide Defense outperforms in same-spin by mass; Wide Survivor by friction reduction in opp-spin.  
+**Engine Note**: r_outer ≈ WideDefense; mass < WideDefense; optimised for opposite-spin stamina.
+
+---
+
+### [Case 169 — Spark Disk: Wide Survivor With Friction and Spark Gimmicks That Neither Add Nor Remove Competitive Value](./3%20case%20study.md#case-169)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: friction pads + spark-generating metal inserts  
+**Geometry**: same outer radius as Wide Survivor; added gimmick mass  
+**Material**: ABS + rubber friction pads + metal spark inserts  
+**Mechanism**: Wide Survivor base geometry with two gimmick additions: friction pads (add grip during collision) and spark inserts (cosmetic). Friction pads marginally increase AR contact friction but simultaneously reduce LAD by adding drag during precession. Net: the two gimmick effects cancel in competitive play. Performance identical to Wide Survivor.  
+**Engine Note**: gimmickNetEffect = zero; competitive_equivalence = Wide Survivor.
+
+---
+
+### [Case 170 — Star Attack: 5-Fold Symmetry Produces Severe Recoil From Star-Tip Contact Geometry, Redeemed Only By Penta Wing Alignment](./3%20case%20study.md#case-170)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5-fold symmetric; star tips at outer radius  
+**Material**: ABS  
+**Contact Points**: Star-tip point contacts → near-radial; J_recoil dominant  
+**Mechanism**: Five star-tips point outward → high recoil fraction (similar to Cross Attack). Severe in isolation. Redeeming factor: paired with Penta Wing SP, the wing tips align with star valleys, changing effective contact to wing geometry rather than star tips — SP contact takes priority. Stand-alone Star Attack: non-viable. Penta Wing combo: redeemed.  
+**Engine Note**: standalone recoil = severe; PentaWing_alignment rescues role; SPcontactPriority.
+
+---
+
+### [Case 171 — Wide Attack: Intermediate Distribution Fails Both Wide and Compact Roles While Adding Recoil](./3%20case%20study.md#case-171)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: intermediate r_outer (between Wide Defense and compact WDs); tab protrusions  
+**Material**: ABS  
+**Mechanism**: Intermediate radius provides neither the maximum I of Wide Defense nor the controlled contact of compact WDs. Tab protrusions add recoil (same failure as Revolver Attack). Cannot serve as defensive WD (lacks rim concentration) or stamina WD (lacks smooth profile). Niche: none competitive.  
+**Engine Note**: intermediate_radius = fails both roles; tabRecoil added; no competitive niche.
+
+---
+
+### [Case 172 — Penta Wing: Left-Spin Long-Slope Upper Attack on a 5-Fold Body With RS Contact Obstruction](./3%20case%20study.md#case-172)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5-fold symmetric SP; long wing slope extending to outer radius  
+**Material**: ABS  
+**Contact Points**: Long slope α ≈ 15–25° (LS upper attack); RS wing back obstructs contact  
+**Mechanism**: Five long wings provide excellent left-spin upper attack (slopes lead in LS). Right spin: wing backs obstruct clean contact → SP functionally inactive in RS. Best paired with Star Attack AR (Case 170) — wings align with AR valleys. Pure left-spin upper attack SP with no right-spin value.  
+**Engine Note**: LS_upper_attack = viable; RS_obstructed; paired with StarAttackAR for alignment.
+
+---
+
+### [Case 173 — Smash Turtle Attack Ring: Force Smash Slope Geometry as a Stamina Drain Mechanism, Width-Driven Defense Tradeoffs, and Why Weight-Based Defense Is the Only Role That Fully Exploits the Part](./3%20case%20study.md#case-173)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: wide AR; downward-angled force smash slopes  
+**Material**: ABS  
+**Contact Points**: Downward slope → force smash (presses opponent to floor); wide profile  
+**Mechanism**: Force smash slopes press opponent into arena floor, increasing normal force and floor friction → drains stamina. Width provides peripheral mass advantage. Defense role limited: wide profile increases collision cross-section. Only role that fully exploits both width AND force smash: weight-based defense (absorbs hits via inertia while force smashing opponent into passive drain).  
+**Engine Note**: forceSmash = downward slope; widthAdvantage for mass; bestRole = weight_defense.
+
+---
+
+### [Case 174 — Upper Dragoon Attack Ring: Slope Geometry Differences Between Right and Left Spin, Why Low Recoil Enables the Spin-Stealing Attack Role, and How Mold Mass Reduction Leaves Performance Unchanged](./3%20case%20study.md#case-174)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~6.8 g (M1) / ~6.5 g (M2); r_o ≈ 2.3 cm, r_i ≈ 0.9 cm; α_RS ≈ 25°  
+**Material**: ABS (two molds)  
+**Contact Points**: RS slope α ≈ 25°; eff = cot(25°) = 2.14; LS slope inverted → spin-steal  
+**Mechanism**: RS: competitive upper attack via slope α≈25°. LS: inverted slope creates prolonged tangential friction contact → spin equalization (spin-steal). Low recoil fraction enables multiple spin-steal contacts before spin loss. M2 mass reduction (~0.3 g lighter) does not change contact geometry → identical performance. Best AR for LS spin-steal role.  
+**Engine Note**: alpha_RS = 25°; eff = 2.14; LSspinSteal via tangential friction; moldMass_irrelevant.
+
+---
+
+### [Case 175 — SG Roller Base: Why Free-Spinning Rollers Increase Net Recoil, and Why Every Competitive Role Belongs to SG Semi-Flat Base](./3%20case%20study.md#case-175)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: four free-spinning outer rollers  
+**Geometry**: ~7 g base; rollers at outer radius  
+**Material**: ABS + roller bearings  
+**Mechanism**: Free-spinning rollers intended to deflect attacks tangentially. Physics: roller spin-up during contact stores angular momentum from impact → returned as recoil when roller decelerates post-contact. Net recoil is higher than smooth surface. Flower pattern disrupted by roller contact geometry. SG Semi-Flat Base is strictly superior in every niche (stamina, attack, defense, compact).  
+**Engine Note**: rollerRecoil > smoothSurface; gimmick_counterproductive; SG_SFB = dominant alternative.
+
+---
+
+### [Case 176 — Lizard Blocker Attack Ring: Why Four Outer Rollers Fail the Defense Role, How Frill Geometry Produces Left-Spin Smash, and Why Roller Defense Ring Dominates Both Intended Functions](./3%20case%20study.md#case-176)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: four outer rolling elements  
+**Geometry**: ~5.5 g AR; rollers at outer rim + frill geometry  
+**Material**: ABS + rollers  
+**Mechanism**: Rollers fail defense (same recoil mechanism as Case 175). Frill geometry on the AR body provides useful left-spin smash contact. Best use: LS smash combo. However, Roller Defense Ring (Case 177) outperforms the defensive intent AND provides equal or better LS smash. Lizard Blocker made obsolete by RDR in both roles.  
+**Engine Note**: rollerDefense = fails; frill → LS smash viable; RollerDefenseRing = dominant.
+
+---
+
+### [Case 177 — Roller Defense Ring: Recessed Ball-Bearing Rollers as a Contact Normal Softener, Compact Diameter Enabling Circle Survivor Defense, and Why Passive-Only Geometry Caps the Compact Role](./3%20case%20study.md#case-177)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: recessed ball-bearing rollers  
+**Geometry**: compact diameter (r < Wide Defense); recessed roller positions  
+**Material**: ABS + steel ball bearings  
+**Mechanism**: Recessed rollers soften contact normal force (roller yields under impact, reducing peak J). Compact diameter enables Circle Survivor Defense (CSD) mode — bey orbits at AR perimeter with controlled tilt. Passive-only geometry: cannot initiate attack. Compact role capped by mass limitations vs WD-radius alternatives. Best CSD AR in plastics.  
+**Engine Note**: recessedRollers → normalSoftening; compactDiameter → CSD viable; passive_only caps upper tier.
+
+---
+
+### [Case 178 — Twin Horn Attack Ring: Why Rounded Leading Edges Maximise Spin-Steal in Left Spin, Why the Same Geometry Caps Right-Spin Attack Effectiveness, and the Compact Role Tradeoff Against Tiger Defenser](./3%20case%20study.md#case-178)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~4.5 g AR; two horn protrusions; rounded leading edges  
+**Material**: ABS  
+**Contact Points**: LS: rounded edges → sustained tangential friction → spin-steal; RS: rounded edges → convex recoil  
+**Mechanism**: Rounded horn edges: in LS orbit the rounded face sustains tangential sliding contact → spin equalization (steal). In RS the same rounded convex face recoils radially. Compact mass alternative to Tiger Defenser — tradeoff: LS spin-steal niche (Twin Horn) vs RS defense niche (Tiger Defenser). Not interchangeable.  
+**Engine Note**: LS_spinSteal via rounded tangential contact; RS_recoil; compactRole vs TigerDefenser.
+
+---
+
+### [Case 179 — Fin Tector Support Parts: Why Fin-Shaped Attack SP Adds Net-Negative Value in Attack Mode, Why Defense Mode Is Recoil Without Benefit, and Why Peripheral Mass Is the Correct SP Metric](./3%20case%20study.md#case-179)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: fin-shaped SP; low peripheral mass  
+**Material**: ABS  
+**Contact Points**: Attack mode: fins at contact radius; Defense mode: smooth back face  
+**Mechanism**: Attack mode: fin tips produce sharp point contacts → energy absorbed elastically by fin deformation, not transmitted to opponent → net-negative (removes energy from attacker). Defense mode: smooth back of fin is a flat surface → recoil without defensive benefit. Correct SP metric is peripheral mass (I contribution) — fins fail this: low mass, wrong geometry both modes.  
+**Engine Note**: attackMode = netNegative (fin deformation absorbs energy); defenseMode = recoil; correctMetric = peripheralMass.
+
+---
+
+### [Case 180 — Switch Metal Ball Base: Why a Wide-Radius Ball Tip Fails All Three Base Roles, How Hinge Drift Eliminates the Gimmick, and the Low-Attack Vulnerability from Flat-Platform Geometry](./3%20case%20study.md#case-180)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: hinged platform switch between tip positions  
+**Geometry**: wide-radius ball tip; flat platform underside  
+**Material**: ABS + metal ball  
+**Mechanism**: Ball tip: wide contact radius (r_ball ≈ 1.5 cm) → high friction (poor stamina), wide orbit (no compact control), large normal force (poor LAD). Hinge drift: repeated impacts cause hinge to shift position mid-battle → gimmick unreliable. Flat platform underside vulnerable to Force Smash attacks (large contact area). Fails stamina, attack, and defense.  
+**Engine Note**: ballTip_widRadius = triple_failure; hingeDrift eliminates gimmick; flatPlatform → FSmash_vulnerable.
+
+---
+
+### [Case 181 — Wing Attack Ring: Spring-Wing Centrifugal Deployment as a Spin-Steal Grinding Mechanism, Why Indirect Hits Fold Instead of Strike, and the Fragility Budget That Limits Every Role](./3%20case%20study.md#case-181)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: spring-loaded wings deploy centrifugally at high spin  
+**Geometry**: wings retracted at low spin; deployed radius r_deploy > r_retracted  
+**Material**: ABS + spring  
+**Mechanism**: At high RPM, centrifugal force deploys wings outward → increases effective radius for spin-steal grinding contacts. Indirect hits (glancing angle) fold wings rather than striking → recoil without steal. Spring fatigue limits gimmick life. Fragility budget: wings crack on direct hard contact. Competitive only in prolonged same-spin grinding contexts at sustained high spin.  
+**Engine Note**: centrifugalDeploy at high RPM; indirectHit = foldBack; springFatigue; fragile.
+
+---
+
+### [Case 182 — Spark Attack Ring: Why Friction-Coupled Free-Spin Fails Both Attack and Defense, How Off-Centre Drift Terminates Zombie Utility, and Why the Gimmick Degradation Path Is Self-Defeating](./3%20case%20study.md#case-182)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: friction-coupled free-spin outer ring + spark generation  
+**Geometry**: free-spin outer ring at AR radius; friction coupling  
+**Material**: ABS outer ring, metal spark contacts  
+**Mechanism**: Free-spin ring: intended to absorb attack via spin-decoupling. Physics: friction coupling means full spin is never transmitted → partial decoupling only. Attack: decoupled ring cannot deliver full impulse. Defense: recoil still returns to shell via friction. Off-centre drift during precession causes ring to rub asymmetrically → drag terminates zombie stamina. Gimmick degrades over use: coupling becomes looser → eventually zero coupling → pure dead weight.  
+**Engine Note**: frictionCoupling = partial decoupling only; offCentreDrift → zombie termination; degradationPath = selfDefeating.
+
+---
+
+### [Case 183 — Cross Spiker Attack Ring: Why Triangular Protrusion Interference Degrades Right-Spin Spike Attack, How LS Contact Orientation Achieves Competitive Smash, and the Ten Wide WD Dependency for Contact Exposure](./3%20case%20study.md#case-183)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: triangular spike protrusions; mid-range outer radius  
+**Material**: ABS  
+**Contact Points**: RS: protrusion interference reduces spike contact; LS: favorable contact angle α achieves competitive smash  
+**Mechanism**: RS: spike geometry interferes with itself during orbit → reduced effective contact angle → degraded attack. LS: contact orientation flips → spike face presents favorable smash angle. Ten Wide WD dependency: narrow WDs cause WD rim to shadow the AR spikes, reducing exposure; Ten Wide WD fully exposes spike contact zone.  
+**Engine Note**: RS_degraded; LS_competitive; TenWideWD_dependency for contact_exposure.
+
+---
+
+### [Case 184 — Fire Cracker Attack Ring: Why Oval Geometry and Rounded Sides Produce Inconsistent Smash, How Raised Head Protrusions Create a Height-Selective Contact System, and Why Mold 2 Is Unambiguously Preferable](./3%20case%20study.md#case-184)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: oval AR profile; raised head protrusions at specific height  
+**Material**: ABS (two molds)  
+**Contact Points**: Raised protrusions only contact at specific opponent height band  
+**Mechanism**: Oval body: inconsistent smash (contact angle varies with oval rotation phase). Rounded sides: recoil as usual. Raised heads: contact only opponents whose AR is within the height band — height-selective contact. Mold 2 raises head height to better match opponent AR height in standard setups → unambiguously preferable. Mold 1 too low for most matchups.  
+**Engine Note**: ovalInconsistency; heightSelectiveContact; Mold2 preferred; moldDifference = head height.
+
+---
+
+### [Case 185 — Spin Gear Core: Heavy Metal Core — Maximum Neo Core Mass as a Rotational Inertia Buffer, RPM Maintenance Across All Power Roles, and Why Rotational Smash Attack Is the One Context Where Its Weight Is Decisive](./3%20case%20study.md#case-185)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~4.7 g (heaviest Neo SG core); r ≈ 0.7 cm  
+**Material**: metal core  
+**Mechanism**: Maximum Neo SG core mass → maximum I contribution from core position. RPM maintenance: higher combo inertia → slower spin decay per friction event. In most roles (stamina, defense), HMC adds marginal I vs mid-weight alternatives. Decisive role: rotational smash attack — high combo I means attacker retains more spin per collision (τ_recoil / I_combo = smaller Δω). HMC shifts the spin-loss-per-hit balance to attacker's favor.  
+**Engine Note**: mass_g = 4.7; I_contribution_dominant for core position; rotationalSmash = decisive role.
+
+---
+
+### [Case 186 — Heavy Metal Gear Spin Gear Shells: Tip Height as the Primary Performance Limiter, Why the Semi-Flat Contact Cannot Compensate, and the Narrow WBD Use Case With First Clutch Base](./3%20case%20study.md#case-186)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Engine Gear mechanism  
+**Geometry**: HMG SG shell height; semi-flat tip contact  
+**Material**: metal gear, ABS shell  
+**Mechanism**: Tall SG shell raises combo height → opponent ARs contact at wrong height band. Semi-flat tip cannot compensate for height mismatch (fixed tip geometry). Narrow WBD (Wide Ball Defense) creates one viable context: FCB (First Clutch Base) combo where height mismatch is minimized. All other combos: height deficit dominates, semi-flat tip irrelevant.  
+**Engine Note**: heightMismatch = primaryLimiter; semiFlat_cannotCompensate; narrowUsecaseWithFCB.
+
+---
+
+### [Case 187 — First Clutch Base (Metal Driger Version): Why First Clutch Activation Disrupts Rather Than Assists, Why LAD Is Insufficient Against the CEW Light Sharp Benchmark, and the Triangular Protrusion Recoil Tax](./3%20case%20study.md#case-187)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: First Clutch — tip-retraction mechanism triggered by deceleration threshold  
+**Geometry**: ~9 g base; triangular protrusions at outer rim; first clutch shaft  
+**Material**: ABS + metal clutch mechanism  
+**Mechanism**: First Clutch activates (retracts tip → hole-flat contact) when spin drops to clutch threshold — intended to stabilize. Instead, activation mid-battle disrupts bey trajectory. LAD via hole-flat is insufficient vs CEW Light Sharp (lower friction shaft benchmark). Triangular protrusions at rim: recoil tax on every contact (α near-radial). Competitive use case: minimal.  
+**Engine Note**: firstClutch = disruptive; LAD < CEW_LightSharp benchmark; triangularProtrusions → recoilTax.
+
+---
+
+### [Case 911 — Whale Crusher AR: Width as a Substitute for WD Overhang in Traditional Upper Attack, and Why Spike Geometry Collapses Left-Spin Effectiveness Through Recoil](./3%20case%20study.md#case-911)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 7.3 g; r_o = 2.6 cm, r_i = 1.0 cm; I = 2.83×10⁻⁶ kg·m²; θ_slope = 22°  
+**Material**: ABS  
+**Contact Points**: RS slope α = 22°; J_upper = 0.374J; LS spike α_from_tangent = 75°; J_recoil = 0.966J  
+**Mechanism**: RS: wide wingspan reaches opponent AR without WD overhang dependency (r_contact = 2.6 cm regardless of WD). LS: radial spikes return 96.6% of impulse to attacker as rotational recoil (~251 rad/s Δω per hit at I_combo = 8×10⁻⁶). Force smash slope β = 5° → J_down = 0.007 N·s (below detectable threshold). Left spin non-viable.  
+**Engine Note**: RS_upper viable; LS_spike recoilFraction = 0.966; forcesmash_beta=5° = negligible.
+
+---
+
+### [Case 912 — SG Flat Base: Plastic Flat Tip Height Advantage for Upper Attack Offset by Friction Deficit, and Why LAD Cannot Rescue the Compact Role](./3%20case%20study.md#case-912)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.4 g; shortest plastics BB (H ≈ 1.3 cm vs standard 1.6 cm); r_tip ≈ 0.4 cm  
+**Material**: ABS  
+**Mechanism**: Shortest base: ΔH = 3 mm lower → ~11.5% extra upward impulse for upper attack. Plastic flat tip μ_s ≈ 0.35 → ω_orbit_max = 4.78 rad/s (slips at useful attack speeds of 8–12 rad/s). Restitution e ≈ 0.7 → 75% more impulse reflected vs rubber. LAD acceptable (wide shell decent I) but not competitive with bearing tips.  
+**Engine Note**: H = 1.3 cm (shortest); tipFriction_low; e = 0.7; LAD_acceptable_not_best.
+
+---
+
+### [Case 913 — SG Metal Sharp Base: Near-Zero Contact Radius Tip, Underside Gaps Destroy LAD](./3%20case%20study.md#case-913)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: metal sharp tip r ≈ 0.05 cm; underside gap geometry  
+**Material**: ABS + metal sharp tip  
+**Mechanism**: Near-zero contact radius → maximum stamina (minimum friction) but irrecoverable tilt at low spin (zero restoring torque). Underside rim gaps (from SG clip geometry) interrupt the continuous rim needed for LAD flower precession → LAD effectively disabled. Metal sharp achieves best stamina until tilt onset, then dies instantly. μ_bearing ≈ 0.05 vs μ_sharp ≈ 0.17: sharp is 3.4× higher friction than bearing.  
+**Engine Note**: r_tip ≈ 0.05 cm; LAD_destroyed by underside gaps; tiltRecovery = zero.
+
+---
+
+### [Case 914 — Panther Head AR: Directional Blade Asymmetry as the Sole Determinant of Left-Spin Smash Viability, and Why the Range Ceiling Inverts the WD Choice](./3%20case%20study.md#case-914)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.5 g; r_outer ≈ 2.2 cm; I ≈ 1.61×10⁻⁶ kg·m²  
+**Material**: ABS  
+**Contact Points**: RS convex back: α ≈ 80°, J_smash = 0.174J; LS flat face: α ≈ 30°, J_smash = 0.866J  
+**Mechanism**: RS: convex blade backs produce near-total recoil (non-viable). LS: flat blade faces at α≈30° → J_smash = 0.869J (competitive). Range ceiling r_outer ≈ 2.2 cm: Wide Defense rim protrudes beyond AR → WD rim leads contact → contact priority inverted (WD leads, not AR). Ten Wide WD keeps WD inside AR range → AR contact priority maintained. LS viable only with Ten Wide or compact WD.  
+**Engine Note**: RS non-viable; LS_smash_fraction = 0.866; r_ceiling = 2.2 cm inverts WD priority.
+
+---
+
+### [Case 915 — Spin Gear Core: North Magnecore — Mid-Weight Core as Recoil Buffer, Magnetic Polarity as Assembly Variable](./3%20case%20study.md#case-915)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3.3 g; r_outer_shell ≈ 0.7 cm; I_core ≈ 6.6×10⁻⁸ kg·m² (0.8% of combo)  
+**Material**: ABS shell + permanent magnet (north polarity)  
+**Mechanism**: Mid-weight between Metal Weight Core and Heavy Metal Core. I contribution 0.8% (negligible). Recoil damping: 3.5% better than plastic core vs HMC. Magnetic force at d=5mm ≈ 19.6% of tip normal force — affects assembly ergonomics, not in-play performance. Neo SG shell compatibility only.  
+**Engine Note**: mass_g = 3.3; I_contribution = 0.8%; magneticForce_gameplay = irrelevant; NeoSG_only.
+
+---
+
+### [Case 916 — Spin Gear Core: South Magnecore — Identical Mass Physics to North, Inverted Polarity Interactions](./3%20case%20study.md#case-916)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3.3 g; I_core ≈ 6.6×10⁻⁸ kg·m²; identical geometry to North Magnecore  
+**Material**: ABS shell + permanent magnet (south polarity)  
+**Mechanism**: Physically and mechanically identical to North Magnecore (Case 915). Only difference: south polarity. Attracts magnetized tips (Customize Grip Base Tip, Magne Flat Base Tip) during assembly (north tips snap together). South Magnecore offensive role in Magne Stadia: when south-core bey is repelled by south-pole stadium magnets → involuntary launch toward center.  
+**Engine Note**: identical_mass_physics = Case915; polarity = south; magneStadia_offensive role.
+
+---
+
+### [Case 917 — SG Metal Flat Base (Gaia Dragoon V Version): Low-Friction Metal Flat Tip as Rotational-Recoil-to-Linear-Recoil Converter](./3%20case%20study.md#case-917)
+
+**System**: Plastics System (Gen 1, SG System) — GDV variant  
+**Geometry**: metal flat tip; Tornado Ridge grip band at outer base radius  
+**Material**: ABS base + metal flat tip  
+**Mechanism**: Metal flat tip μ ≈ 0.55–0.65 (vs rubber μ ≈ 0.85): lower friction → less flower-pattern grip but better spin retention. Tornado Ridge (raised ring on base underside) provides grip contact during heavy tilt precession — substitute for full rubber. Rotational recoil from collision converts to linear velocity via metal-flat contact (less tip adhesion = more translational escape velocity). Two-mold distinction: GDV version has wider Tornado Ridge.  
+**Engine Note**: metalFlat_mu = 0.55–0.65; tornadoRidge_grip; recoilToLinear conversion; GDV_widerRidge.
+
+---
+
+### [Case 918 — Dragon Breaker Core AR: Heaviest Core AR, Direction-Dependent Contact System, SAR-Conditional Performance Across Five Setups](./3%20case%20study.md#case-918)
+
+**System**: Plastics System (Gen 1, SG System) — Core AR system  
+**Geometry**: heaviest Core AR in lineup; large contact protrusions  
+**Material**: ABS  
+**Contact Points**: direction-dependent: RS vs LS contact faces differ  
+**Mechanism**: Heaviest Core AR → most mass at AR position → highest I contribution for core AR. Direction-dependent: RS and LS faces present different contact geometries. Five SAR (Sub-Attack Ring) configurations change the effective contact system — each SAR routes contact to different geometry. Performance entirely conditional on SAR choice.  
+**Engine Note**: heaviestCoreAR; directionDependent; 5 SAR configurations determine performance.
+
+---
+
+### [Case 919 — Dragon Breaker Sub AR: Large-Radius Free-Spinning Ring as Impulse Fractioner](./3%20case%20study.md#case-919)
+
+**System**: Plastics System (Gen 1, SG System) — SAR  
+**Geometry**: large outer radius free-spinning ring; long moment arm  
+**Material**: ABS + bearing  
+**Mechanism**: Free-spinning SAR ring at large radius: when contact occurs at ring, ring spins up instead of coupling impulse to core. Impulse fractioned: part accelerates ring (wasted), part transfers to Core AR. Long moment arm → high angular impulse on ring per contact → large fraction wasted. Vertical recoil from ring's long moment arm can destabilize. Useful only in Gyro Engine Gear context where ring spin-up provides power feedback.  
+**Engine Note**: freeSpinRing_large_r; impulseFraction; verticalRecoil; viable in EG Gyro context only.
+
+---
+
+### [Case 920 — Volcano Change Base: Magnetic Tip Retention as Structural Substitute, Height Minimisation Through Bracket-Only Design, and SG Grip Base Tip as Performance Unlock](./3%20case%20study.md#case-920)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: magnetic tip retention; interchangeable tip via bracket  
+**Geometry**: minimised height (bracket-only design); tip swappable  
+**Material**: ABS + magnetic retention  
+**Mechanism**: Magnetic retention keeps tip in bracket without screw — enables rapid tip swaps. Height minimization via bracket removes SG collar → shorter profile. Default tip: inadequate for competitive use. SG Grip Base Tip (Case 928) is the performance unlock: rubber tip provides grip and flower pattern in this base's geometry. Stock tip leaves base non-competitive; SGB Tip makes it viable.  
+**Engine Note**: magneticRetention; tipSwappable; stockTip_noncompetitive; SGGripBaseTip = performanceUnlock.
+
+---
+
+### [Case 921 — Tryhorn: V-Tread Circular Disk as the Only Mechanism That Recovers Smash from a Zero-Smash Radial Profile](./3%20case%20study.md#case-921)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: V-tread circular outer disk; radial profile body  
+**Material**: ABS  
+**Contact Points**: V-tread ridges convert radial contact to smash; body alone = radial (α ≈ 90°, zero smash)  
+**Mechanism**: Body is circular → radial profile → zero smash (α = 90°, J_smash = 0). V-tread ridges on disk circumference are angled → when disk meets opponent AR, ridge angle converts radial impact to partial smash component. Only mechanism on the part that produces any smash at all. Without V-tread, pure recoil and destabilization. Paired with 8 Heavy WD + Right SG + SG Semi-Flat Base.  
+**Engine Note**: bodyAlone_zeroSmash; VtreadRidges_recover smashComponent; uniqueRecoveryMechanism.
+
+---
+
+### [Case 922 — Cross Griffon AR: Four-Wing 90-Degree Symmetry as Contact-Frequency Multiplier](./3%20case%20study.md#case-922)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4-fold symmetric; 4 wings at 90°  
+**Material**: ABS  
+**Contact Points**: 4 contacts per revolution vs 2–3 for most ARs  
+**Mechanism**: 90° symmetry: 4 contact events per revolution at given contact radius. More contact frequency → more spin-steal events per unit time (assuming sustained engagement). Wing geometry determines quality of each contact (smash vs recoil vs steal). Higher frequency amplifies both positive (steal) and negative (recoil) outcomes. Net depends entirely on wing contact angle quality.  
+**Engine Note**: symmetry = 4 at 90°; contactFrequency × 4; netEffect amplifies wing geometry quality.
+
+---
+
+### [Case 923 — Dual Dragon AR: Polycarbonate Sub-Frame Cannot Absorb Shock, Rounded Contact Point Physics](./3%20case%20study.md#case-923)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: polycarbonate sub-frame; rounded contact points  
+**Material**: ABS main body + polycarbonate sub-frame  
+**Mechanism**: Sub-frame intended to flex/absorb impact. Polycarbonate (stiffer than ABS) does not yield sufficiently → no shock absorption. Rounded contact points: recoil-dominant (as per Cases 159, 162 patterns). Dual material construction adds complexity without performance gain. PC sub-frame may cause inconsistent contact if fit loosens over time.  
+**Engine Note**: PCsubframe_noshock; roundedContacts_recoil; dual_material = no net benefit.
+
+---
+
+### [Case 924 — Fantom Grip Base: Narrow Hard-Rubber Tip Trades Peak Grip for Flower-Pattern Accessibility](./3%20case%20study.md#case-924)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: narrow hard-rubber tip; smaller contact radius than standard Grip Flat  
+**Material**: ABS + hard rubber tip  
+**Mechanism**: Narrow hard rubber: lower grip peak than wide rubber (smaller contact area) → flower pattern activates at lower orbit speed (easier to trigger). Flower pattern accessibility: ω_grip = √(μ × g / r_tip) — narrower r_tip raises ω_grip threshold, but hard-rubber lower μ offsets. Net: easier flower pattern than soft-wide rubber but lower grip force ceiling. Trade: accessibility vs peak performance.  
+**Engine Note**: narrowHardRubber; flowerPattern_accessible; peakGrip < wide rubber alternatives.
+
+---
+
+### [Case 925 — Eight Attacker: Flat Contacts Generate Uncontrolled Recoil with No Spin-Direction Asymmetry](./3%20case%20study.md#case-925)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 8-fold symmetric; flat outer contacts  
+**Material**: ABS  
+**Contact Points**: flat contacts at uniform spacing; no directional bias  
+**Mechanism**: Eight flat contacts at uniform 45° spacing: no spin-direction asymmetry (same contact geometry RS and LS). Flat contacts at near-radial orientation → high recoil, low smash (similar to Eight Balance WD contacts). Uncontrolled recoil with no attack or defense benefit from the symmetry. Frequency disadvantage: collision forces spread across 8 equal contacts → lower peak impulse per contact vs concentrated ARs.  
+**Engine Note**: symmetry=8; noSpinAsymmetry; flatContacts_highRecoil; peakImpulse_diluted.
+
+---
+
+### [Case 926 — Magne Flat Base: Removable-Tip SG Base Trades SP Mass for Magnetic Shaft Compatibility](./3%20case%20study.md#case-926)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: removable tip for Magne Flat Base Tip; magnetic shaft compatibility  
+**Geometry**: SG-compatible base; removable tip slot  
+**Material**: ABS  
+**Mechanism**: Removable tip allows Magne Flat Base Tip (Case 927) installation. SP rails removed vs Customize Grip Base → trades SP mass contribution for magnetic shaft compatibility. Magnetic shaft pairs with Magnecore variants (Cases 915, 916). Without SP mass (Defense Ring, Cross Survivor): lower I contribution vs CGB. Niche: Magne Stadia environments where magnetic tip–shaft interaction is exploitable.  
+**Engine Note**: removableTip; SPmass_traded; magneticShaft_compatible; niche = MagneStadia.
+
+---
+
+### [Case 927 — Magne Flat Base Tip: Plastic Flat with Embedded South Magnet Fails at All Three Tip Roles](./3%20case%20study.md#case-927)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: south-pole magnet embedded in plastic flat tip  
+**Geometry**: plastic flat tip geometry; magnet mass added centrally  
+**Material**: ABS + permanent magnet  
+**Mechanism**: Attack role: plastic flat μ too low for reliable flower pattern. Stamina role: magnetic mass at tip center increases tip weight → higher normal force → more friction → faster spin decay. Defense role: magnetic attraction to north-pole cores (Case 915) causes tip to cling asymmetrically → disrupts smooth precession. All three roles: magnet is a liability. Competitive value: none.  
+**Engine Note**: allThreeRoles_fail; magnetAdds_tipMass → higherFriction; magneticCling → precessDisruption.
+
+---
+
+### [Case 928 — SG Grip Base Tip: Lighter Rubber Tip Matches CGB Tip on Grip while Enabling Force Smash and Volcano Change Base Combos](./3%20case%20study.md#case-928)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: rubber tip; lighter than Customize Grip Base Tip; compatible with VCB and SGB  
+**Material**: rubber tip + ABS base  
+**Mechanism**: Lighter rubber tip: same grip coefficient as CGB Tip (both rubber, similar hardness) but lower normal force contribution → slightly less spin decay per orbit. Enables Force Smash combos (tip grip allows attacker to press down on opponent). Volcano Change Base compatibility expands build options. In CGB: identical grip to standard CGB tip. Better in weight-sensitive builds.  
+**Engine Note**: rubber; lighter vs CGBtip; sameGrip; forceSmash_viable; VCB_compatible.
+
+---
+
+### [Case 929 — Sonic Tiger: Separated Three-Segment Wing Geometry Multiplies Recoil Without Compensating Smash](./3%20case%20study.md#case-929)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: three separated wing segments; outer radius contacts  
+**Material**: ABS  
+**Contact Points**: separated segments: each contact event is isolated → no continuous contact for spin-steal  
+**Mechanism**: Three separated segments: each functions as an independent contact event. Separation means no continuous grinding surface for spin-steal (requires sustained contact). Each segment contact: high recoil if angled poorly. Multiplied across three segments per rotation → recoil accumulates faster than spin-steal. Gap between segments: no contact during gap → discontinuous engagement pattern. Net: multiplied recoil, zero sustained steal.  
+**Engine Note**: separatedSegments → isolatedContacts; noSustainedSteal; recoil × 3.
+
+---
+
+### [Case 930 — SG Metal Flat Base: Truncated Cone Tip Sits One Flat-Diameter Away from Competitive Compact Stability](./3%20case%20study.md#case-930)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: truncated cone metal tip; mid-range contact area  
+**Material**: ABS + metal truncated cone tip  
+**Mechanism**: Truncated cone tip: contact radius midway between sharp (r≈0.05 cm) and flat (r≈0.4 cm). μ ≈ 0.55 (metal). Not narrow enough for minimum-friction stamina; not wide enough for compact centring stability. One flat-diameter increase would place it in compact-stable range; current geometry misses both niches. LAD: truncated cone provides intermediate precession — not best, not worst.  
+**Engine Note**: truncatedCone; contactRadius_midrange; missed_both_niches; LAD_intermediate.
+
+---
+
+### [Case 931 — Griffolyon Base (Hasbro): Four Pole Bases Destroy LAD While Shaft Friction Negates Free-Spin Gimmick](./3%20case%20study.md#case-931)
+
+**System**: Plastics System (Gen 1, SG System) — Hasbro  
+**Gimmick**: free-spin outer shell + four support poles  
+**Geometry**: four pole structures at base perimeter; free-spin outer shell  
+**Material**: ABS  
+**Mechanism**: Four structural poles interrupt the continuous rim required for LAD (flower precession requires smooth rim contact — poles create point contacts). Shaft friction between inner and outer shells remains despite free-spin intent → partial coupling preserved → gimmick effectiveness reduced. Hasbro-only base; TT equivalent does not share this geometry.  
+**Engine Note**: fourPoles → LAD_destroyed; shaftFriction → partialCoupling; gimmick_reduced.
+
+---
+
+### [Case 932 — Cybernetic Dragon: Maximum-Area Flat Contact Faces Produce Near-Total Recoil and Structural Threading Failure](./3%20case%20study.md#case-932)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: maximum flat contact face area; large flat face AR  
+**Material**: ABS (thread failure reported)  
+**Contact Points**: maximum area flat face → α near-radial → near-total recoil  
+**Mechanism**: Wide flat faces: largest contact area in plastics AR lineup. Contact angle near-radial → J_recoil dominant (same as Eight Attacker but larger area). Maximum recoil per hit. Structural threading failure: ABS thread stripped on SG mount under repeated hard impacts — AR detaches from assembly. Both contact physics and structural integrity fail.  
+**Engine Note**: maxFlatArea; alpha_near-radial; threadStripping = structuralFailure.
+
+---
+
+### [Case 933 — Spike Dragon: Vertical-Line Flat Faces Generate High Smash-Area Contact but Cannot Reduce Rotational Recoil](./3%20case%20study.md#case-933)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: vertical spike profile; flat leading faces  
+**Material**: ABS  
+**Contact Points**: flat faces → good smash fraction; spike shape → high moment arm recoil  
+**Mechanism**: Vertical-line flat faces: favorable smash angle (α low, J_smash dominant). Good smash-area contact per hit. Cannot reduce rotational recoil: spike protrusion creates large moment arm → angular impulse per hit × r_spike → significant rotational recoil Δω. Trade: good linear smash push but simultaneous rotational recoil. Net: works for KO but destabilizes attacker spin.  
+**Engine Note**: flatFace → goodSmash; spikeProfileMomentArm → rotationalRecoil; linearVsRotational tradeoff.
+
+---
+
+### [Case 934 — Magne Weight Disk: Even Mass Distribution and Magnetic Gimmick Combine to Underperform Specialised WDs](./3%20case%20study.md#case-934)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: embedded magnets  
+**Geometry**: even mass distribution; r_outer mid-range; magnetic inserts  
+**Material**: ABS + magnets  
+**Mechanism**: Even mass distribution (neither rim-concentrated nor compact-centred): mediocre I for any role. Magnetic inserts add mass but at non-optimal radius. Gimmick: magnets interact with Magne Stadia pins → disturbance force in Magne Stadia. Outside Magne Stadia: magnets are dead mass adding I at wrong radius. Underperforms Wide Defense (I), Ten Heavy (mass/balance), Eight Wide (compact alternative). Niche: Magne Stadia exploitation only.  
+**Engine Note**: evenDistribution_mediocreI; magnetsDeadMass outside Magne Stadia; niche = magneStadiaOnly.
+
+---
+
+### [Case 935 — Reverse Attack SP: Moderate Fin Angle Makes It the Least-Recoil-Prone Two-Part SP](./3%20case%20study.md#case-935)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: two fin-shaped pieces; moderate fin angle  
+**Material**: ABS  
+**Contact Points**: moderate fin angle α (not radial, not tangential) → intermediate smash/recoil balance  
+**Mechanism**: Moderate fin angle: less radical than Cross Attack (α≈80°) → lower recoil fraction. "Reverse" orientation: fin faces configured for opposite-spin contact exploitation. Among two-part SPs, lowest recoil due to fin angle compromise. Still outperformed by Defense Ring (peripheral mass) in most roles. Best two-part SP where low recoil is priority over LAD or mass.  
+**Engine Note**: moderateFinAngle → leastRecoil of 2-part SPs; reverseOrientation for opp-spin; outperformed by DR in mass.
+
+---
+
+### [Case 936 — Customize Grip Base: SP-Compatible Wide Rim Provides Exceptional LAD Across Every Shaft and Tip Configuration](./3%20case%20study.md#case-936)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: wide outer rim r_rim ≈ 2.2 cm; SP rail slots; deep rim contact surface  
+**Material**: ABS  
+**Mechanism**: Wide rim at r=2.2 cm provides LAD across all shaft types: ω_LAD_min = √(μ_plastic × g / r_rim) = 10.56 rad/s (vs tip-dependent rates up to 24.7 rad/s). SP rails: Defense Ring or Cross Survivor add peripheral mass. Exceptional LAD because rim dominates precession regardless of tip choice. Best base for zombie combos requiring LAD + SP mass.  
+**Engine Note**: r_rim = 2.2 cm; omega_LAD_min = 10.56 rad/s; SP_compatible; LAD_universal across shaft types.
+
+---
+
+### [Case 937 — Customize Grip Base Tip: Wide Hard-Rubber Flat with Central Magnet Trades Ridge Control for Stamina-Based Outspin](./3%20case%20study.md#case-937)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: embedded central magnet  
+**Geometry**: wide rubber flat tip r ≈ 0.8–1.0 cm; magnet at tip center  
+**Material**: rubber + magnet  
+**Mechanism**: Wide rubber flat: μ_rubber ≈ 0.85 → reliable flower pattern at normal orbit speeds. Central magnet: attracts north-pole cores (South Magnecore, metal tips with north exposure) → tip clings to core shaft → slight tip retraction resistance (stamina-based outspin via reduced drift). Ridge control reduced vs narrow rubber (wider contact = less precise path). Best in zombie stamina combos.  
+**Engine Note**: wideRubber_mu = 0.85; centralMagnet → north-core attraction; ridgeControl_reduced; zombieStamina.
+
+---
+
+### [Case 938 — Upper Claw: Multi-Mode Contact Geometry Combines Upper Attack, Upward Smash, and Smash Attack in Right Spin](./3%20case%20study.md#case-938)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: claw-shaped AR; multiple contact face orientations  
+**Material**: ABS  
+**Contact Points**: RS: upward slope (upper), flat claw face (smash), angled sides (upward smash) — 3 distinct contact modes  
+**Mechanism**: Three RS contact modes: (1) upper slope lifts opponent; (2) flat claw face drives smash; (3) angled sides combine upward and lateral. Left spin: inverted slopes self-destabilize (downward component on attacker). RS combo potential: multi-mode contact means different opponent heights trigger different mechanics. Left spin: avoid (inverted self-destabilisation).  
+**Engine Note**: RS_tripleMode: upperAttack + upwardSmash + smash; LS_selfDestabilising.
+
+---
+
+### [Case 939 — Ten Balance Weight Disk: Compact Edge-Focus vs Wide-Annular Trade-off](./3%20case%20study.md#case-939)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 10-fold symmetric; intermediate r_outer; rim-concentrated mass  
+**Material**: ABS  
+**Mechanism**: Ten Balance: decagonal (n=10) → r_eff_10 = 0.9834 × r_outer (best polygon efficiency after round). Intermediate outer radius: between Wide Defense (maximum r) and compact WDs. Rim concentration: mass at outer edge maximizes I for given total mass. Trade: lacks Wide Defense's absolute r advantage; better I-per-gram than square/hex WDs. General-purpose competitive WD for non-wide-WD builds.  
+**Engine Note**: n=10; r_eff = 0.9834 × r_outer; intermediate_radius; rim_concentrated; competitiveGeneral.
+
+---
+
+### [Case 940 — Upper Attack Support Parts: Slope Extension, Orientation Alignment, and Mass Contribution](./3%20case%20study.md#case-940)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: slope-extension SP geometry; additional mass at SP radius  
+**Material**: ABS  
+**Mechanism**: SP oriented to extend the upper-attack slope of the AR: SP face angles align with AR slope → coherent slope geometry from inner AR to outer SP radius. Mass contribution: SP at outer radius adds I. Orientation alignment critical: mis-orientated by 1 notch → SP slope opposes AR slope → contact incoherence. Best paired with Upper Dragoon AR (Case 174) to extend slope reach.  
+**Engine Note**: slopeExtension; orientationAlignmentCritical; massAtOuterRadius; bestWith = UpperDragoonAR.
+
+---
+
+### [Case 941 — Customize Metal Change Base: Phase-Switching Tip Enables Multi-Role Use at Superior Mass](./3%20case%20study.md#case-941)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: centrifugal phase switch between attack tip and stamina tip  
+**Geometry**: metal phase-switch mechanism; two tip profiles  
+**Material**: ABS + metal switch  
+**Mechanism**: Phase switch: at high spin → centrifugal force deploys attack tip (flat metal); at low spin → tip retracts to stamina tip (sharp). Superior mass vs plastic change bases. Enables legitimately multi-role use: aggressive attack phase early battle, sharp stamina phase late battle. Metal mechanism more reliable than plastic spring mechanisms (vs Case 945). Best change-base implementation.  
+**Engine Note**: centrifugalSwitch: highSpin=flatAttack, lowSpin=sharpStamina; metalMechanism_reliable; superior_mass.
+
+---
+
+### [Case 942 — Customize Metal Sharp Base: Fixed Tip with Plastic Collar Achieves Best Same-Spin Stamina at Cost of Early Nutation](./3%20case%20study.md#case-942)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: fixed metal sharp tip; plastic collar at base rim  
+**Material**: ABS + metal sharp tip  
+**Mechanism**: Fixed metal sharp tip μ ≈ 0.17 (vs bearing μ ≈ 0.05): lower friction than rubber, higher than bearing. Best same-spin stamina for fixed-tip bases. Plastic collar at rim: provides partial LAD (rim contact at deep tilt). Cost: early nutation — metal sharp offers zero restoring torque → any tilt becomes wobble immediately. Same-spin zombie role: excellent; any hit-sustained role: immediate tilt response.  
+**Engine Note**: metalSharp_mu = 0.17; bestSameSpin_stamina; plasticCollar_LAD; earlyNutation = liability.
+
+---
+
+### [Case 943 — Mountain Hammer Attack Ring: High-Mass Smash, Rotational Recoil, and Elevated Contact Point Geometry](./3%20case%20study.md#case-943)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: high mass AR (one of heaviest); elevated contact point height; hammer protrusions  
+**Material**: ABS  
+**Contact Points**: hammer faces at elevated height; high-mass → high I  
+**Mechanism**: High mass: elevated I → more spin conservation post-collision (same τ_recoil / higher I = smaller Δω). Elevated contact height: contacts opponent AR at higher band → useful against tall AR opponents. Rotational recoil still significant due to large moment arm of hammer protrusions. Best in high-mass attack builds where I retention matters more than per-hit recoil control.  
+**Engine Note**: highMass; elevatedContactHeight; I_retention advantage; rotationalRecoil from large moment arm.
+
+---
+
+### [Case 944 — Defense Ring Support Part: Widest LAD Onset, Maximum Peripheral Inertia, and Passive Low-Recoil Surface](./3%20case%20study.md#case-944)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: largest SP outer radius; smooth passive surface; maximum peripheral I  
+**Material**: ABS  
+**Mechanism**: Largest SP radius: maximum I contribution of any SP (I = m × r² → r dominates). Wide smooth rim: best LAD onset of any SP (ω_LAD_min = √(μ×g/r_SP) lowest because r_SP largest). Passive surface: smooth, no protrusions → zero recoil from SP contacts, tangential deflection. Best SP for defense and zombie builds requiring LAD + mass + zero recoil.  
+**Engine Note**: r_SP = maximum; I = highest SP; omega_LAD_min = lowest SP; passive_zeroRecoil.
+
+---
+
+### [Case 945 — Customize Clutch Change Base: Centrifugal Clutch Inverts the Useful Mode Order](./3%20case%20study.md#case-945)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: centrifugal clutch switches tip at spin threshold  
+**Geometry**: clutch mechanism; two tip modes  
+**Material**: ABS + plastic clutch  
+**Mechanism**: Clutch: at high spin → stamina tip deployed; at low spin → attack tip deployed. This is inverted from useful: early battle (high spin) needs attack mode; late battle (low spin) needs stamina. Mechanism delivers stamina early and attack late — opposite of competitive optimum. Plastic clutch less reliable than metal (Case 941). Customize Metal Change Base (Case 941) solves this with correct phase order.  
+**Engine Note**: clutchOrder_inverted: highSpin=stamina, lowSpin=attack; opposite of optimum; CMCBase = superior.
+
+---
+
+### [Case 946 — Cross Dranzer Attack Ring: Four-Fold Symmetry Produces Spin-Neutral Performance with Incomplete Spin-Steal Aggression](./3%20case%20study.md#case-946)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4-fold symmetric; four contact faces  
+**Material**: ABS  
+**Contact Points**: 4-fold symmetry → same contact geometry in all quadrants → spin-neutral  
+**Mechanism**: Perfect 4-fold symmetry: each quadrant is geometrically identical regardless of spin direction → zero spin asymmetry → equal performance RS and LS. Intended for spin-steal aggression (slopes for sustained grinding) but slope geometry incomplete → insufficient sustained contact for equalization. Spin-neutral but not spin-stealing. General stamina/balanced role only.  
+**Engine Note**: 4fold_symmetry → spinNeutral; incompleteSpinSteal; generalBalanced role.
+
+---
+
+### [Case 947 — Cross Survivor Support Parts: Wide Defensive Buffer, 4-Tab Geometry, and Bidirectional Mounting Behaviour](./3%20case%20study.md#case-947)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: wide arc SP with 4-tab mount; outer radius > Defense Ring  
+**Material**: ABS  
+**Mechanism**: Wide arc creates a deflection buffer zone ahead of the base rim. 4-tab mounting: orientable in 4 positions → subtle geometry tuning. Bidirectional: both mounting faces functional. Wider than Defense Ring → greater LAD assist radius and more deflection area. Less peripheral mass concentration than Defense Ring (arc, not full ring). Best where deflection area matters over pure I.  
+**Engine Note**: wideArc; 4tabMount_orientable; LAD_radius > DefenseRing; lowerI vs DefenseRing.
+
+---
+
+### [Case 948 — Triple Attacker Attack Ring: Three Distinct Attack Vectors, Outer-Diagonal Contact Penalty, and Left-Spin Viability](./3%20case%20study.md#case-948)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3-fold symmetric; three distinct contact zone geometries  
+**Material**: ABS  
+**Contact Points**: 3 vectors: upper slope, flat face, diagonal outer; diagonal outer contact → penalty  
+**Mechanism**: Three contact geometries per wing: upper slope (upper attack), flat face (smash), diagonal outer (partial recoil penalty). Inner contacts: favorable angle. Outer-diagonal zone: contact angle steepens → recoil fraction increases. Left spin: slope orientation reverses → left-spin upper attack viable (but penalty zone still active). Good RS attack with acceptable LS cross-spin capability.  
+**Engine Note**: 3vectors per wing; outerDiagonal_penaltyZone; LS_upperAttack viable.
+
+---
+
+### [Case 949 — Ten Wide Weight Disk: Wide Outer Radius with Reduced Rim Concentration and Tab Recoil](./3%20case%20study.md#case-949)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: wide r_outer (near Wide Defense); decagonal; mass distribution wider vs rim-concentrated  
+**Material**: ABS  
+**Mechanism**: Ten Wide: large outer radius (near Wide Defense) → high I. However, mass less rim-concentrated than Wide Defense (distributed across wider band) → lower I-per-gram than WD WD. Tab geometry at edges → recoil events if tabs contact opponent. Good I overall; Wide Defense still preferred for pure LAD/stamina. Ten Wide preferred where WD protrusion past AR must be minimized (Cases 183, 914).  
+**Engine Note**: r_outer ≈ WideDefense; lessRimConcentrated; tabRecoil; AR-range scenarios prefer TenWide.
+
+---
+
+### [Case 950 — Double Bearing Core: Two-Stage Coupling Attenuation and Multi-Shaft Compatibility](./3%20case%20study.md#case-950)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Spin Coupling**: two bearings in series; each bearing τ ≈ 1.05×10⁻⁶ N·m; total residual coupling approaches τ²  
+**Geometry**: two shielded bearings in series; Neo SG shell only  
+**Material**: ABS housing + two shielded bearings  
+**Mechanism**: Two bearings in series: each stage attenuates coupling torque. τ_total = τ₁ × (attenuation₂) ≈ 1.05×10⁻⁶ × (μ₂ × r₂ / r_shaft) — approaches near-zero. Multi-shaft compatibility: accepts all zombie shafts (Neo SG DBV, Bearing Base Shaft, standard sharp). Only compatible casing for Neo SG DBV Shaft (Case 156). Best zombie casing for stamina builds requiring maximum decoupling.  
+**Engine Note**: dualBearing_series; tau_total → near-zero; MultiShaft_compatible; required for NeoSGDBV.
+
+---
+
+## CS4 — Cases 189–285 + 1097 + 1281–1288 {#cs4}
+Source: `4 case study.md`
+
+---
+
+### [Case 189 — Eight Spiker Attack Ring: Eight-Contact Symmetry as a Dead-Zone Eliminator, Why Low Recoil Defines the LS Benchmark Despite Lower Peak Power](./4%20case%20study.md#case-189)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 8-fold symmetric spiker AR; contacts at outer rim  
+**Material**: ABS  
+**Contact Points**: 8 contacts at 45° spacing; LS orientation achieves low recoil fraction  
+**Mechanism**: Eight-contact symmetry eliminates dead zones — no rotation angle produces zero contact exposure. LS spin: spiker faces lead at favorable angle → low recoil benchmark for LS ARs despite lower peak smash than some alternatives. RS: spiker backs lead → high recoil. LS benchmark due to consistency + recoil management.  
+**Engine Note**: symmetry=8; LSbenchmark for recoil; noDeadZone; RS non-viable.
+
+---
+
+### [Case 190 — Left Engine Gear (Metal Semi-Flat): Non-Bevelled Flat Tip Fails Aggressive Attack, EG Burst Net-Negative, Left Spin Removes Compensating Strategies](./4%20case%20study.md#case-190)
+
+**System**: Plastics System (Gen 1, SG System, EG)  
+**Gimmick**: Engine Gear burst mechanism; left-spin EG  
+**Geometry**: metal semi-flat tip; EG spring mechanism  
+**Material**: metal tip + ABS gear  
+**Mechanism**: Non-bevelled flat tip: μ ≈ 0.55 but no bevel edge → attack trajectory undirected (no angle to convert orbital kinetic energy to smash). EG burst: spring fires → tip kicks but delivers net-negative impulse (destabilizes attacker more than opponent). Left spin removes every compensating strategy: no LS-compatible aggressive AR, EG height inverts contact zone.  
+**Engine Note**: nonBevelledFlat; EGburst_netNegative; LS_removesAllCompensation.
+
+---
+
+### [Case 191 — First Clutch Base (Driger G Version): 7.3 g](./4%20case%20study.md#case-191)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: First Clutch mechanism  
+**Geometry**: 7.3 g; first clutch deceleration trigger  
+**Material**: ABS + clutch mechanism  
+**Mechanism**: First Clutch triggers tip retraction at deceleration threshold. Driger G version shares FCB trigger mechanism (see Case 187 and Case 223 for FCB variant comparisons). 7.3 g mid-range FCB mass. Clutch activation disrupts orbital trajectory; LAD modest. Competitive window narrow.  
+**Engine Note**: mass_g = 7.3; firstClutch; DrigerG version; narrowCompetitiveWindow.
+
+---
+
+### [Case 192 — Triple Tiger Attack Ring: 6.3 g](./4%20case%20study.md#case-192)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 6.3 g; three-fold symmetric; tiger-claw contact faces  
+**Material**: ABS  
+**Contact Points**: three claw faces; RS smash primary  
+**Mechanism**: Tiger-claw geometry: three angled flat faces produce competitive RS smash. 6.3 g mass: good inertia retention per hit. Three-fold symmetry: moderate contact frequency. Pairs well with Survivor Ring SP (Case 214) for alignment bonus. RS primary, LS usable but reduced smash fraction.  
+**Engine Note**: mass_g = 6.3; 3fold; RS_smash primary; SurvivorRingSP alignment bonus.
+
+---
+
+### [Case 193 — Right Engine Gear (Metal Semi-Flat): 11.0 g](./4%20case%20study.md#case-193)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Engine Gear spring burst; metal semi-flat tip  
+**Geometry**: 11.0 g; metal semi-flat CEW slot; spring mechanism  
+**Material**: metal + ABS  
+**Mechanism**: 11.0 g EG: heavy enough to contribute significant I. Metal semi-flat tip: μ ≈ 0.55, bevelled semi-flat provides some directional flower pattern. EG height raises attack contact zone. Burst: useful in one specific context (Case 215 V8 combo with metal flat). Standalone: CEW choice determines viability.  
+**Engine Note**: mass_g = 11.0; metalSemiFlat; EGheight raises contact; CEWchoice determines viability.
+
+---
+
+### [Case 194 — Auto Change Base: 8.5 g](./4%20case%20study.md#case-194)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: automatic tip change on impact  
+**Geometry**: 8.5 g; impact-triggered tip retraction  
+**Material**: ABS  
+**Mechanism**: Same impact-trigger mechanism family as SGACB (Case 119) but different base geometry. 8.5 g: competitive mass. Auto-change disruption risk in left spin (same self-KO pattern). Best use: right-spin setups where tip transition beneficial. Heavier than SGACB → better KO resistance.  
+**Engine Note**: mass_g = 8.5; impactTrigger; LS_selfKO risk same as SGACB; RS preferred.
+
+---
+
+### [Case 195 — CEW Circle Defenser: 4.0 g + 0.23 g clip](./4%20case%20study.md#case-195)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 4.0 g main + 0.23 g clip; ring-shaped CEW  
+**Material**: ABS  
+**Mechanism**: Ring-shaped CEW providing wide smooth rim → best CEW for LAD assist and Circle Survivor Defense positioning when mounted in EG. Circular profile: tangential deflection at rim → low recoil on contact. Combined with Right EG (Circle Defenser) provides compact Circle Survivor functionality within EG system.  
+**Engine Note**: mass_g = 4.23 total; ringCEW; LADassist best in class CEW; circularProfile_lowRecoil.
+
+---
+
+### [Case 196 — Double Horn Attack Ring: 5.5 g](./4%20case%20study.md#case-196)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.5 g; two horn protrusions  
+**Material**: ABS  
+**Contact Points**: two horns; direction-dependent contact geometry  
+**Mechanism**: Two-fold symmetric horn AR. Horn geometry similar to Twin Horn (Case 178) but different mass (5.5 g vs 4.5 g). Heavier horns: better spin retention per collision. LS rounded horn edges → spin-steal. RS horn backs → recoil. Direction-dependent performance follows same pattern as Twin Horn.  
+**Engine Note**: mass_g = 5.5; twoHorn; LS_spinSteal; RS_recoil; heavier than TwinHorn.
+
+---
+
+### [Case 197 — Right Engine Gear (Circle Defenser / Mystery Cutter): 6.9 g](./4%20case%20study.md#case-197)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Engine Gear; accepts Circle Defenser or Mystery Cutter CEW  
+**Geometry**: 6.9 g EG shell; CEW slot  
+**Material**: ABS + metal spring  
+**Mechanism**: Lighter EG shell (6.9 g) designed for Circle Defenser CEW configuration. Lower EG mass means CEW contributes larger fraction of combo I. Circle Defenser CEW provides best LAD in this shell. Mystery Cutter CEW: different contact geometry (see supplementary Case 1286). EG height must be managed for contact zone.  
+**Engine Note**: mass_g = 6.9; acceptsCircleDefenser or MysteryCutter; CEWmass_fraction dominant.
+
+---
+
+### [Case 198 — Normal Base (Rock Bison Version): 5.6 g](./4%20case%20study.md#case-198)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Normal Base (no clutch, no spring); EG spring never activates  
+**Geometry**: 5.6 g; standard shaft profile  
+**Material**: ABS  
+**Mechanism**: Normal Base: EG spring never depressed (no tab to trigger). CEW is permanently fixed → acts as standard tip. 5.6 g Rock Bison version. Advantage: no gimmick disruption; EG becomes pure CEW+mass platform. Best paired with CEW Light Sharp (Case 231) for zombie stamina.  
+**Engine Note**: mass_g = 5.6; EGspringNeverFires; CEW_permanent; bestWith = CEWLightSharp zombie.
+
+---
+
+### [Case 199 — Normal Base (Wolborg 4 Version): 5.4 g](./4%20case%20study.md#case-199)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Normal Base — EG spring inactive  
+**Geometry**: 5.4 g; slightly lighter than Rock Bison version  
+**Material**: ABS  
+**Mechanism**: Same Normal Base functionality as Case 198 (spring never fires). Wolborg 4 version 0.2 g lighter. Same CEW-permanent advantage. Marginally lower mass → marginally lower KO resistance. Functionally interchangeable with Rock Bison version; choose heaviest available.  
+**Engine Note**: mass_g = 5.4; functionallyIdentical to RockBison Normal Base; EGspring_inactive.
+
+---
+
+### [Case 200 — Right Engine Gear (Circle Survivor): 6.8 g](./4%20case%20study.md#case-200)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 6.8 g; accepts Circle Survivor CEW  
+**Material**: ABS + metal spring  
+**Mechanism**: EG shell configured for Circle Survivor CEW (Case 201). 6.8 g shell: moderate I contribution. Circle Survivor CEW provides the best sustained stamina/LAD combination in CEW class. EG spring burst adds spin-steal grinding moment if activated in zombie builds. Key stamina EG configuration.  
+**Engine Note**: mass_g = 6.8; pairedWith CircleSurvivorCEW; EGspring for spinSteal in zombie mode.
+
+---
+
+### [Case 201 — CEW Circle Survivor: 4.5 g + 0.23 g clip](./4%20case%20study.md#case-201)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 4.5 g + 0.23 g clip; smooth circular ring CEW  
+**Material**: ABS  
+**Mechanism**: Smooth circular ring CEW: maximum LAD radius, smooth rim, zero recoil profile. Best stamina CEW in class — wider than Circle Defenser, smooth surface → better precession. Zombie configuration: Normal Base + CEW Circle Survivor + Right CG Free Shaft (Case 234) achieves competitive LAD. Paired with Right EG Circle Survivor (Case 200).  
+**Engine Note**: mass_g = 4.73 total; smoothCircularRing; bestStaminaCEW; LAD_best in CEW class.
+
+---
+
+### [Case 202 — Star Wolf Attack Ring: 4.3 g](./4%20case%20study.md#case-202)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.3 g; star/wolf profile contact geometry  
+**Material**: ABS  
+**Contact Points**: star-shaped protrusions; moderate smash  
+**Mechanism**: 4.3 g: light AR. Star/wolf profile: moderate contact geometry between pure radial (zero smash) and optimal flat face. Usable in specific stamina-hybrid builds. Not top-tier in any category — lightweight limits I contribution while contact geometry provides neither best smash nor best recoil absorption.  
+**Engine Note**: mass_g = 4.3; light_AR; moderate contact; no top-tier role.
+
+---
+
+### [Case 203 — Final Clutch Base (Dranzer G Version): 7.9 g](./4%20case%20study.md#case-203)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Final Clutch — tip deploys at minimum spin threshold  
+**Geometry**: 7.9 g; Final Clutch mechanism  
+**Material**: ABS + clutch  
+**Mechanism**: Final Clutch activates when spin drops below threshold: retracts tip to change mode. Dranzer G version: 7.9 g (heavier than most FCBs). Timing inversion problem: tip activates when bey is already slow → wrong mode at wrong time in most archetypes. V8 combo (Case 215 EG Metal Flat) is the primary exception where FCB timing aligns with post-topple LAD mode.  
+**Engine Note**: mass_g = 7.9; finalClutch; timingInverted except V8 combo; DranzerG version.
+
+---
+
+### [Case 204 — Wing Survivor Attack Ring: 4.7 g](./4%20case%20study.md#case-204)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.7 g; wing profile optimized for survival  
+**Material**: ABS  
+**Mechanism**: Wing profile shaped for LAD/survival rather than attack. Smooth wing edges → low recoil on contact (deflection rather than smash). Paired with Circle Survivor-type bases for zombie stamina builds. 4.7 g: moderate mass. Not attack-viable; optimized for passive deflection and spin retention.  
+**Engine Note**: mass_g = 4.7; survivorWing; passiveDeflection; no attack viable.
+
+---
+
+### [Case 205 — Shield Hammer Attack Ring: 6.3 g](./4%20case%20study.md#case-205)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 6.3 g; shield profile + hammer protrusions  
+**Material**: ABS  
+**Contact Points**: shield smooth face (defense) + hammer protrusion (attack) dual-mode  
+**Mechanism**: Dual-profile AR: smooth shield section provides low-recoil defense on one face; hammer protrusion delivers smash on opposing face. 6.3 g mass: competitive. Performance depends on contact orientation at collision. Inconsistent — opponent may contact shield or hammer unpredictably. Neither role fully optimized vs dedicated ARs.  
+**Engine Note**: mass_g = 6.3; dualMode_shield+hammer; inconsistent contact orientation.
+
+---
+
+### [Case 206 — Right Engine Gear (Metal Ball): 11.5 g](./4%20case%20study.md#case-206)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Engine Gear; metal ball CEW slot  
+**Geometry**: 11.5 g; accepts Metal Ball CEW  
+**Material**: metal + ABS  
+**Mechanism**: Heaviest EG shell variant at 11.5 g. Metal ball CEW (Case 207): spherical contact produces inconsistent outcomes. 11.5 g shell mass dominates I. EG burst with metal ball tip: ball rolls at contact → unpredictable contact direction. Heavy shell compensates for CEW deficiencies via mass alone.  
+**Engine Note**: mass_g = 11.5; heaviestEG; metalBallCEW_inconsistent; shellMass_compensates.
+
+---
+
+### [Case 207 — CEW Metal Ball: 3.7 g — Spherical Contact Surface Undermines Every Role](./4%20case%20study.md#case-207)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 3.7 g; spherical ball contact surface  
+**Material**: metal ball  
+**Mechanism**: Spherical CEW: contact normal direction varies with ball rotation angle → inconsistent impulse direction per collision. Attack: unpredictable smash vector. Stamina: ball rolls rather than slides → spin-steal can work in one narrow configuration (see Case 206 note). Defense: ball deflects but direction random. Negligible I due to r_ball small. No competitive role except niche ball-roll geometry exploit.  
+**Engine Note**: mass_g = 3.7; sphericalContact_inconsistent; rollGeometry = 1 niche; noCompetitiveRole.
+
+---
+
+### [Case 208 — Left Customize Engine Gear: 6.6 g — Weaker Spring, No Competitive Attack CEW, Left-Spin Structural Constraints](./4%20case%20study.md#case-208)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW) — Left Spin  
+**Gimmick**: Left-spin EG; weaker spring than Right CEG  
+**Geometry**: 6.6 g; left-spin CEW slot  
+**Material**: ABS + spring  
+**Mechanism**: Left-spin CEG: weaker spring produces lower burst velocity → less burst benefit. No competitive LS attack CEW exists → CEW slot goes unused for attack. Left-spin structural constraints: gear engagement reverses → some CEWs cannot engage properly. Only LS EG platform. Without competitive LS attack CEW, no viable role despite unique LS capability.  
+**Engine Note**: mass_g = 6.6; weakerSpring; noCompetitiveLS_CEW; structuralConstraints_LS.
+
+---
+
+### [Case 209 — Right Customize Gear (Full Auto Clutch Version): 5.1 g — Replicates FAC Without Shielded Bearings, Destroys Free-Spin Phase](./4%20case%20study.md#case-209)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Full Auto Clutch mechanism replica without shielded bearings  
+**Geometry**: 5.1 g; FAC-style clutch  
+**Material**: ABS  
+**Mechanism**: Attempts to replicate Full Auto Clutch free-spin phase without the shielded metal ball bearings of Case 234 (Right CG Free Shaft). Without bearing isolation, shaft friction eliminates free-spin → clutch engages immediately → no actual free-spin phase. Every blade base pairing either negates gimmick immediately or produces result worse than existing alternatives.  
+**Engine Note**: mass_g = 5.1; FACwithoutBearings; freeSpinPhase_destroyed; noViableRole.
+
+---
+
+### [Case 210 — SG (MG Spring Version): 3.8 g — Jumping Gimmick Worsens Stability, Shaft Geometry Is Only Justification, Spring Variation Compounds Failures](./4%20case%20study.md#case-210)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: spring-loaded jumping mechanism  
+**Geometry**: 3.8 g; spring-loaded SG; shaft geometry for specific combos  
+**Material**: ABS + spring  
+**Mechanism**: Spring jump: launched upward by spring on contact → air time → landing. Jump worsens stability: leaves contact with stadium → zero precession control mid-air → random landing tilt. Shaft geometry (specific diameter) justifies the part in limited combos where shaft fit matters more than gimmick. Spring strength varies between copies → inconsistent jump height → unpredictable performance.  
+**Engine Note**: mass_g = 3.8; jumpGimmick_worsensStability; shaftGeometry = only justification; springVariation compounds.
+
+---
+
+### [Case 211 — Final Clutch Base (Draciel G Version): 7.3 g — Independent Non-Bridged Clutch Tabs Create Alignment-Dependent Trigger Failure](./4%20case%20study.md#case-211)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Final Clutch with non-bridged independent tabs  
+**Geometry**: 7.3 g; lightest Final Clutch Base; independent clutch tabs  
+**Material**: ABS  
+**Mechanism**: Non-bridged clutch tabs: each tab operates independently → misalignment between tabs and EG trigger → clutch activates at wrong spin rate relative to design intent. Lightest FCB at 7.3 g → narrowest competitive window (lowest mass support). Alignment-dependent failure means performance varies significantly between assemblies. Only viable in precisely aligned assemblies.  
+**Engine Note**: mass_g = 7.3; nonBridgedTabs; alignmentDependentFailure; lightestFCB.
+
+---
+
+### [Case 212 — Dragon Saucer Attack Ring: 6.5 g total (Core AR 4.5 g) — Default Gear SAR Cancels Core; Screw Zeus Unlocks Top-Tier RS/LS Smash](./4%20case%20study.md#case-212)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: 6.5 g total (Core AR: 4.5 g, Gear SAR: ~2.0 g); SAR slot  
+**Material**: ABS  
+**Contact Points**: SAR-conditional — Gear SAR obstructs Core; Screw Zeus exposes top-tier contacts  
+**Mechanism**: Default Gear SAR: interferes with Core AR contact points → cancels smash → non-competitive stock. Screw Zeus SAR (Case 233) fixed by Dragon Saucer Core: all contacts exposed → one of most powerful RS and LS smash setups. Fast, high-traction tip required to convert full weight mass into ring-outs. SAR choice is binary for performance.  
+**Engine Note**: mass_g = 6.5; defaultSAR_cancels; ScrewZeusSAR = topTier; requiresHighTractionTip.
+
+---
+
+### [Case 213 — Dragon Saucer Sub-AR: 1.9 g — Free-Spinning Gear Ring Disperses Smash Force; Gap-Resonance with Holy Despell Creates Catastrophic Recoil](./4%20case%20study.md#case-213)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Gimmick**: free-spinning gear SAR  
+**Geometry**: 1.9 g; gear-profile ring  
+**Material**: ABS  
+**Mechanism**: Free-spinning gear ring: only SAR that meaningfully disperses smash force (spin-up absorbs impact). Height dynamics critical: must align with opponent AR height for contact. Gap-resonance with Holy Despell Core AR (Case 232): gear teeth engage Despell triangle protrusions → catastrophic recoil failure mode. Avoid pairing. Best in Gyro EG context where gear ring feedback provides power.  
+**Engine Note**: mass_g = 1.9; freeSpinGear; dispersesSmash; HolyDespell_resonance = catastrophic.
+
+---
+
+### [Case 214 — Survivor Ring Support Part: 2.9 g — Near-Complete Ring at Maximum SP Radius, Highest I-Per-Gram, Three-Fold Fin Symmetry Aligns With Triple Tiger](./4%20case%20study.md#case-214)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 2.9 g; near-complete ring at maximum SP radius; 3-fold fin alignment  
+**Material**: ABS  
+**Mechanism**: Near-complete ring at maximum possible SP radius → highest I-per-gram of any SP (I = m × r², maximum r maximizes I). Three-fold fin symmetry: aligns perfectly with Triple Tiger AR (Case 192) — fins slot into AR valleys → coherent contact geometry. Defense Ring still wins LS survival role (higher mass). Survivor Ring excels in RS stamina + maximum I contribution.  
+**Engine Note**: mass_g = 2.9; maxRadius → highestI_perGram; TripleTiger_alignment; DR wins LS survival.
+
+---
+
+### [Case 215 — Right Engine Gear (Metal Flat): 10.9 g — Wide Metal Tip Enables V8 Combo, FCB Burst Into Toppling Creates Post-Topple Spin-Stealing LAD Mode](./4%20case%20study.md#case-215)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Engine Gear spring burst with metal flat tip; V8 combo interaction  
+**Geometry**: 10.9 g; metal flat tip; wide contact radius  
+**Material**: metal flat tip + ABS  
+**Mechanism**: Wide metal flat tip: μ ≈ 0.55–0.65, wide contact enables flower pattern at high spin. V8 combo: metal flat tip + Final Clutch Base → EG burst topples bey at burst threshold → bey transitions to LAD mode, spinning on EG rim → spin-steal contact with opponent from LAD position. Only EG that makes competitive use of the gimmick via this specific post-topple mode.  
+**Engine Note**: mass_g = 10.9; metalFlatTip; V8combo = topple→LAD_spinSteal; only competitive EG gimmick use.
+
+---
+
+### [Case 216 — Final Clutch Base (Gaia Dragoon G Version): 7.4 g — Aggressive Perimeter Irrelevant to V8; Trigger Aligns With Post-Topple EG Burst](./4%20case%20study.md#case-216)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Final Clutch; V8 combo trigger alignment  
+**Geometry**: 7.4 g; aggressive perimeter shape  
+**Material**: ABS  
+**Mechanism**: Perimeter shape looks aggressive but contacts floor, not opponents → irrelevant to performance. Final Clutch trigger timing aligns with post-topple EG burst in V8 combo (Case 215). Marginal advantage vs Dranzer G version (Case 203): Dranzer G slightly heavier (0.2 g) but better LAD. Gaia Dragoon G version does not justify cost premium for marginal timing difference.  
+**Engine Note**: mass_g = 7.4; perimeterShape_irrelevant; V8triggerAlignment; DranzerG_slightlyPreferred.
+
+---
+
+### [Case 217 — Wing Upper Attack Ring: 5.3 g — Rounded Wing Edges, Wider Than Wide Survivor, RS/LS Slope Geometry Mismatch](./4%20case%20study.md#case-217)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.3 g; wide wing profile (wider than Wide Survivor WD); rounded leading edges  
+**Material**: ABS  
+**Contact Points**: rounded edges → partial upper slope; RS primary; LS recoil cost  
+**Mechanism**: Wider than Wide Survivor: physical width blocks Wide Survivor LAD benefit (WS rim hidden behind AR). Rounded wing edges: partial slope → upper attack component exists but reduced vs sharp-edge alternatives. RS: slope geometry functional. LS: slope inverts → recoil costs exceed every offensive gain. Net: neither best upper attack nor best LAD — dual penalty.  
+**Engine Note**: mass_g = 5.3; widerThanWideSurvivor = blocks LAD; roundedSlope; LS_recoilExceedsGain.
+
+---
+
+### [Case 218 — Gyro Engine Gear: 21.2 g](./4%20case%20study.md#case-218)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Gyro EG — internal gyroscopic mass that spins opposite to shell  
+**Geometry**: 21.2 g (heaviest EG); internal rotor mass; CEW slot  
+**Material**: metal rotor + ABS  
+**Mechanism**: Internal rotor spins counter to shell via gear coupling. At high combo spin: rotor provides gyroscopic stabilization (increases effective L = I_total × ω_effective). Heavy at 21.2 g: highest I contribution of any EG. Counter-rotation: creates opposite spin-angular-momentum component → enhances precession resistance. Best for stamina/defense with high-inertia CEW. Rotor wear reduces effectiveness over time.  
+**Engine Note**: mass_g = 21.2; counterRotatingRotor; gyroStabilization; heaviestEG; rotorWear.
+
+---
+
+### [Case 219 — Engine Stopper Base: 5.5 g](./4%20case%20study.md#case-219)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: EG spring stopper — spring fires then locks permanently  
+**Geometry**: 5.5 g; spring stopper mechanism  
+**Material**: ABS  
+**Mechanism**: Spring fires once, then stopper engages — spring cannot re-cock. EG burst is a one-time event: high initial burst at launch, then base functions as Normal Base for remainder. 5.5 g: competitive mass. One-time burst advantage: full spring energy delivered on first opportune contact. After burst: CEW permanently fixed. Use CEW Light Sharp (Case 231) for post-burst stamina.  
+**Engine Note**: mass_g = 5.5; onceFiresLocks; postBurst = NormalBase; bestWith = CEWLightSharp.
+
+---
+
+### [Case 220 — CEW Metal Sharp: 3.3 g](./4%20case%20study.md#case-220)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 3.3 g; metal sharp tip CEW  
+**Material**: metal sharp tip  
+**Mechanism**: Metal sharp CEW: μ ≈ 0.17 → best stamina of any CEW tip type. Paired with Right CG Free Shaft (Case 234) bearing isolation achieves near-bearing stamina performance within EG system. Best stamina CEW alongside Circle Survivor. EG height handicap: sharp tip sits high → contact geometry affected. Best on Normal Base or Engine Stopper Base where spring doesn't interfere.  
+**Engine Note**: mass_g = 3.3; metalSharp_mu=0.17; bestStaminaCEW alongside CircleSurvivor; EGheight handicap.
+
+---
+
+### [Case 221 — G Upper Attack Ring: 5.5 g — Focused Smash Geometry Doubles as Effective Traditional Upper in LS; RS Provides Nothing Useful](./4%20case%20study.md#case-221)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.5 g; focused smash faces with upper-attack slope component  
+**Material**: ABS  
+**Contact Points**: LS: slope face → traditional upper attack; RS: geometry inverts → no useful contact  
+**Mechanism**: G Upper AR: primary design is focused smash but slope geometry doubles as traditional upper attack in left spin (slope leads in LS → both upper lift and lateral smash). RS: same slope inverts → geometry provides no useful contact mode. Pure LS AR. Competitive LS upper attack benchmark alongside Eight Spiker (Case 189) for recoil comparison.  
+**Engine Note**: mass_g = 5.5; LS_upper+smash viable; RS_nothing useful; LSbenchmark.
+
+---
+
+### [Case 222 — Left Engine Gear (Turbo): 7.0 g — Turbo Activation Produces Attack-Class Spin Burst; Height and LS AR Geometry Prevent Effective Contact](./4%20case%20study.md#case-222)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Turbo EG — stronger spring burst than standard EG; left spin  
+**Geometry**: 7.0 g; turbo spring; left-spin orientation  
+**Material**: ABS + high-tension spring  
+**Mechanism**: Turbo spring: delivers attack-class burst velocity on activation. Height penalty: left EG raises combo → AR contact height too high for most opponents. LS AR geometry: inverts most AR contacts → reduces effective smash from available LS ARs. First Clutch Base (Case 223 Dragoon GT variant) is only viable host: FCB timing aligned with burst threshold. Outside of FCB combo, height + LS AR geometry prevents effective contact.  
+**Engine Note**: mass_g = 7.0; turboSpring_attackBurst; height+LS_ARgeometry = prevents contact; FCB_only_viable.
+
+---
+
+### [Case 223 — First Clutch Base (Dragoon GT Version): 7.4 g — Four-Wing Perimeter Recoil in Both Directions; FCB Activation Avoids Self-KO but Breaks Flower Pattern](./4%20case%20study.md#case-223)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: First Clutch; four-wing perimeter  
+**Geometry**: 7.4 g; four-wing perimeter protrusions  
+**Material**: ABS  
+**Mechanism**: Four-wing perimeter: generates unacceptable recoil in both spin directions (Case 223 vs Case 191 comparison: Dragoon GT worse than Driger G). FCB activation avoids Final Clutch's self-KO pattern (activates on deceleration not minimum spin) but replaces with broken flower pattern (tip change disrupts movement trajectory). Dragoon G version (Case 191) strictly superior.  
+**Engine Note**: mass_g = 7.4; fourWingRecoil; FCB_avoidsSelfKO; brokenFlowerPattern; DragoonG_inferior.
+
+---
+
+### [Case 224 — CEW Metal Semi-Flat: 3.6 g — Bevelled Semi-Flat Falls Between Every Useful Role](./4%20case%20study.md#case-224)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 3.6 g; bevelled semi-flat metal tip CEW  
+**Material**: metal semi-flat tip  
+**Mechanism**: Bevelled semi-flat: neither sharp (best stamina) nor wide flat (attack flower pattern). EG height compounds limited output. Bevel provides slight directional tendency but insufficient for competitive attack. Stamina: μ too high vs sharp alternatives. Attack: bevel insufficient for competitive flower. Defense: no advantage. No archetype benefits from this specific geometry combination.  
+**Engine Note**: mass_g = 3.6; bevelledSemiFlat; betweenAllRoles; noArchetype benefits.
+
+---
+
+### [Case 225 — Triangle Wing Attack Ring: 6.1 g — Symmetric Slope Geometry Produces Identical Upper Attack Both Directions; Recoil Disqualifies Defense/Survival](./4%20case%20study.md#case-225)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 6.1 g; symmetric triangular wings; same slope RS and LS  
+**Material**: ABS  
+**Contact Points**: symmetric slope: identical upper attack RS and LS  
+**Mechanism**: Symmetric triangle wing: slope angle same in both spin directions → identical upper attack performance regardless of spin. Bidirectional upper attack AR. Smash component comparable to upper attack AR family. Recoil cost: triangle edges generate recoil → disqualifies defense and survival roles. Attack viable; defense/survival not competitive.  
+**Engine Note**: mass_g = 6.1; symmetricSlope → bidirectionalUpperAttack; recoil disqualifies defense.
+
+---
+
+### [Case 226 — Right Engine Gear (Reverse): 6.7 g — Counter-Rotating Tip Direction Produces Force Competition; Final Clutch Reduces Movement Without Counter-Attack; Metal Grip Is Only Residual Utility](./4%20case%20study.md#case-226)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Reverse EG — tip rotation direction reversed relative to shell  
+**Geometry**: 6.7 g; reverse tip direction; CEW slot  
+**Material**: ABS  
+**Mechanism**: Reverse tip direction: tip rotates opposite to shell → floor friction acts against orbital velocity → creates force competition between orbital tendency and tip resistance. Does not reverse attack direction. Final Clutch interaction: clutch reduces orbital speed without enabling counter-attack. Metal Grip CEW: only configuration where reverse tip provides grip-based orbital control.  
+**Engine Note**: mass_g = 6.7; reverseRotation_forceCompetition; FCB_reducesMovement; MetalGrip = only utility.
+
+---
+
+### [Case 227 — Final Clutch Base (Dranzer GT Version): 7.6 g — Three-Protrusion Mode-Change, Limited Functional Difference, Desert Sphinxer Version Outclasses](./4%20case%20study.md#case-227)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Final Clutch + three-protrusion mode-change perimeter  
+**Geometry**: 7.6 g; three-protrusion perimeter mode-change  
+**Material**: ABS  
+**Mechanism**: Three perimeter protrusions switch between pseudo-attack and pseudo-defense contact geometry on mode-change. Functional difference between modes: limited — geometry overlap means attack mode has recoil (defense features protrude) and defense mode has attack exposure. FCB timing fails all archetypes independently. Desert Sphinxer version FCB (Case 1287) outclasses in the only role where weight matters.  
+**Engine Note**: mass_g = 7.6; threeProngMode; limitedFunctionalDiff; DesertSphinxer_superior.
+
+---
+
+### [Case 228 — CEW Metal Change: 3.6 g — Well-Executed Subtle Point Produces Balanced Movement But Cannot Overcome EG Penalties; Circle Survivor Defeats It for Stamina](./4%20case%20study.md#case-228)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: metal phase-change tip CEW  
+**Geometry**: 3.6 g; phase-change geometry (attack→stamina transition)  
+**Material**: metal  
+**Mechanism**: Well-executed metal phase-change: provides balanced movement across spin range. Point geometry: subtle → balanced impulse without extremes. Cannot overcome EG system height penalties. Circle Survivor CEW (Case 201) defeats it for stamina role by superior rim radius. Sits mid-tier in CEW offensive hierarchy. Best use: multi-role builds where one specific CEW cannot dominate.  
+**Engine Note**: mass_g = 3.6; metalPhaseChange; balanced_no_extreme; CircleSurvivor_beats for stamina.
+
+---
+
+### [Case 229 — Gigantic Claw Attack Ring: 6.6 g — Slope Obstruction Limits RS Smash; Storm Grip Base Tip Inversion Unlocks Top-Tier Status; LS Force Smash Produces Only Upward Recoil](./4%20case%20study.md#case-229)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 6.6 g; large claw profile; slope geometry  
+**Material**: ABS  
+**Contact Points**: RS: slope obstruction reduces smash; inverted with Storm Grip Base Tip → top-tier  
+**Mechanism**: RS standard: slope geometry partially obstructed → limited smash. Upward smash component elevates traditional upper attack capability. Inversion via Storm Grip Base Tip mount: flips contact orientation → removes obstruction → top-tier smash unlocked. LS force smash intent: downward slope inverts in LS → applies upward recoil to attacker instead. LS non-viable.  
+**Engine Note**: mass_g = 6.6; RSobstructed; StormGripTipInversion = topTier; LS_uprightRecoil.
+
+---
+
+### [Case 230 — Final Clutch Base (Gigars Version): 7.6 g — Spike Protrusions Compound EG Recoil, Decent LAD Irrelevant Without Stamina Architecture](./4%20case%20study.md#case-230)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Final Clutch + spike protrusion perimeter  
+**Geometry**: 7.6 g; spike protrusion perimeter  
+**Material**: ABS  
+**Mechanism**: Spike protrusions: high recoil fraction on perimeter contacts (α near-radial, Case 913 pattern). Compounds EG system recoil beyond all other FCB versions. Decent LAD (rim geometry adequate) but LAD irrelevant without competitive stamina CEW architecture. Worst FCB implementation: spike recoil removes every remaining role.  
+**Engine Note**: mass_g = 7.6; spikeProtrusions_compoundRecoil; LAD_decent_but_irrelevant; worstFCB.
+
+---
+
+### [Case 231 — CEW Light Sharp: 0.85 g — POM Material and Change-Shaped Tip Produce Only Competitive CEW Configuration; Right Spin Lock and Inferior LAD Ceiling Keep It Niche](./4%20case%20study.md#case-231)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 0.85 g; change-shaped POM tip; right-spin bearing support from Right CG Free Shaft  
+**Material**: POM (polyoxymethylene — ultra-low friction)  
+**Mechanism**: POM material: μ ≈ 0.05 (same as bearing) → lowest friction CEW tip. Change-shaped tip creates LAD-capable contact surface. Right CG Free Shaft (Case 234) bearing support enables genuine LAD. Right-spin lock: CEW Light Sharp only engages properly in RS → LS incompatible. Inferior LAD ceiling vs dedicated bearing bases (CBS, SG Bearing Base). Niche: best EG zombie when right-spin + bearing EG not available.  
+**Engine Note**: mass_g = 0.85; POM_mu=0.05; LAD_via_CG_FreeShaft; RS_only; niche_EGzombie.
+
+---
+
+### [Case 232 — Core Attack Ring: Holy Despell: 2.8 g — Triangle Protrusions Structural Recoil Liability; Dragon Saucer SAR Jamming; War Lion SAR Cannot Fully Shield](./4%20case%20study.md#case-232)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: 2.8 g; triangle protrusions; Core AR  
+**Material**: ABS  
+**Contact Points**: triangle protrusions → recoil liability (Case 157/Cross Attack pattern)  
+**Mechanism**: Triangle protrusions: structural recoil liability in all roles (near-radial contact angle returns impulse to attacker). Dragon Saucer SAR gap-resonance: Despell triangles engage Dragon Saucer Gear SAR teeth → catastrophic recoil jam. War Lion SAR partially shields but cannot fully cover triangle exposure zone. Use only with War Lion SAR and accept partial shielding.  
+**Engine Note**: mass_g = 2.8; triangleProtrusions_recoilLiability; DragonSaucer_gapJam; WarLion_partial shield.
+
+---
+
+### [Case 233 — Sub Attack Ring: Screw Zeus: 4.4 g — Speed-Dependent Contact Geometry Is Highest-Ceiling Smash SAR When Fixed; Inverted Slopes Create LS Asymmetric Self-Destabilisation](./4%20case%20study.md#case-233)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: 4.4 g; speed-dependent screw contact faces; inverted slopes  
+**Material**: ABS  
+**Contact Points**: speed-dependent: higher RPM → better smash angle alignment; fixed position = optimal  
+**Mechanism**: Speed-dependent geometry: contact angle changes with RPM → at high RPM, screw face presents optimal smash angle. Fixed in position by Core AR (Great Dragon or Dragon Saucer): removes speed-dependency → optimal angle permanent → highest-ceiling smash SAR. Inverted slopes in LS: create asymmetric self-destabilization when struck from behind. RS primary.  
+**Engine Note**: mass_g = 4.4; speedDependent_fixed=optimal; highestCeilingSmashSAR; LS_invertedSlopes_selfDestabilise.
+
+---
+
+### [Case 234 — Right Customize Gear (Free Shaft Version): 4.0 g (shells) + 2 Bearings — Bearing Isolation Is Only EG Component Achieving Competitive LAD](./4%20case%20study.md#case-234)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: bearing-isolated free shaft; CEW slot  
+**Geometry**: 4.0 g shells + bearing mass; shielded metal ball bearings  
+**Material**: ABS shells + shielded bearings  
+**Spin Coupling**: bearing-isolated free shaft → near-zero spin coupling τ ≈ 1.05×10⁻⁶ N·m per bearing  
+**Mechanism**: Bearing isolation: only EG component that achieves competitive LAD. Two shielded bearings → free shaft approaches near-zero friction. CEW choice determines configuration space: Light Sharp → zombie; Circle Survivor → stamina; Metal Sharp → stamina variant. Alternative shafts produce distinct attack applications. Primary use remains stock Right CG shell.  
+**Engine Note**: shells_g = 4.0; bearingIsolation; competitiveLAD_only_EG_component; CEWdeterminesConfig.
+
+---
+
+### [Case 235 — Right Customize Gear (Free Shaft Version) Shaft: 0.87 g — Casing Compatibility Determines Height Penalty; Non-EG Casing Mounting Creates Unavoidable Tallness](./4%20case%20study.md#case-235)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 0.87 g shaft; casing-dependent height  
+**Material**: metal/ABS  
+**Mechanism**: Shaft alone: 0.87 g. When mounted in non-EG casing (Customize Bearing Base, SG Bearing Base): creates unavoidable height increase vs native casing. Height penalty changes contact zone. Primary use: stock Right CG shell (Case 234) where casing height is optimized. Non-EG casing mounting is a height-penalty tradeoff worth taking only when native shell unavailable.  
+**Engine Note**: mass_g = 0.87; casing_determines_height; nonEG_casing = heightPenalty; primaryUse = stockRCGshell.
+
+---
+
+### [Case 236 — First Clutch Base (Zeus Version): 8.0 g — Heaviest EG Base Creates Viable but Outclassed Weight-Based Defense; Poor LAD Limits All Other Roles; Round-Edge Profile Does Not Compensate for Height](./4%20case%20study.md#case-236)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: First Clutch; heaviest FCB  
+**Geometry**: 8.0 g; round-edge perimeter; heaviest FCB  
+**Material**: ABS  
+**Mechanism**: Heaviest FCB at 8.0 g → maximum weight for weight-based defense role. Round-edge perimeter reduces recoil from base contacts. However: EG system height still applies → contact zone elevated → match results inconsistent. Poor LAD limits every other role. Viable (but outclassed) for weight-based defense only. No LAD role without round rim height fix.  
+**Engine Note**: mass_g = 8.0; heaviestFCB; weightDefense_viable_outclassed; poorLAD; roundEdge_insufficient vs height.
+
+---
+
+### [Case 237 — Andre's Yak (Anime-Only): ~38–42 g Full Combo — Pagoda-Dome AR, Yin-Yang Ball-Bearing Pocket, Reversible-Axis Stamina](./4%20case%20study.md#case-237)
+
+**System**: Plastics System (Gen 1, SG System) — Anime-Only  
+**Geometry**: ~38–42 g full combo; pagoda dome AR; ball-bearing pocket yin-yang mechanism; height-doubling mode change  
+**Material**: ABS (anime-only / never released)  
+**Gimmick**: reversible spin-axis via yin-yang ball pocket; height-doubling mode change  
+**Mechanism**: Pagoda-inspired dome AR. Yin-yang ball-bearing pocket enables reversible axis (RS↔LS switch mid-battle in anime). Height-doubling mode change: low-mode (standard, stable stamina) → high-mode (upper attack deflection with full height). Axis inversion becomes unavailable after mode change is triggered. Physics override: BeySpirit power enables anime mechanics that violate EG/clutch limits (see Anime Physics Override memory note).  
+**Engine Note**: animeOnly; reversibleAxis; yinYangBallPocket; heightDoubling; axisInversion_locked post-change.
+
+---
+
+### [Case 238 — Sharkrash Attack Ring: ~6.0 g — Four Curved Shark Profiles Produce High Recoil Without Smash Throughput](./4%20case%20study.md#case-238)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~6.0 g; four curved shark-profile contacts  
+**Material**: ABS  
+**Contact Points**: convex curved backs → bound-style deflection without rubber energy absorption  
+**Mechanism**: Four curved shark profiles: convex backs produce directional variation across contact arc (bound-style) but without rubber → elastic deformation absent → full impulse returns as recoil. High recoil without smash throughput. Below mid-tier attack benchmark. Curved geometry too variable for consistent smash angle — attack is inconsistent.  
+**Engine Note**: mass_g ≈ 6.0; curvedSharkProfile; highRecoil_noSmash; belowMidTier.
+
+---
+
+### [Case 239 — Cyber Dranzer (Anime-Only): ~30–35 g Full Combo — Three-Claw Broad-Face AR Smash; Metal Sting Base Suppresses Attack by Eliminating Orbital Speed](./4%20case%20study.md#case-239)
+
+**System**: Plastics System (Gen 1, SG System) — Anime-Only  
+**Geometry**: ~30–35 g full combo; three-claw broad-face AR; Metal Sting Base  
+**Material**: ABS (anime-only)  
+**Mechanism**: Three-claw broad-face AR: higher RS smash throughput than Triple Wing (broader face → better angle). Metal Sting Base: very low friction tip → zero orbital speed → bey stays in place → no attack (attack requires orbital movement to intercept opponent). Suppresses attack output by eliminating orbital speed despite good AR geometry. No competitive archetype exploitable.  
+**Engine Note**: animeOnly; ThreeClaw_higherSmash_than_TripleWing; MetalStingBase_zeroOrbital → suppresses attack.
+
+---
+
+### [Case 240 — Cross Fang Attack Ring (Driger F): 3.7 g — Four-Fold Thin Construction Outward-Angled Contact Eliminates RS Attack; LS Tier-2 Zombie Survival](./4%20case%20study.md#case-240)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3.7 g; four-fold symmetric; thin construction; outward-angled contact faces  
+**Material**: ABS  
+**Contact Points**: outward-angled: RS near-radial → eliminates attack; LS inverts → moderate contact angle  
+**Mechanism**: Outward-angled contacts: RS → near-radial → eliminates attack viability (J_smash → 0). LS: same geometry inverts → moderate contact angle achieves tier-2 zombie survival (low recoil, reasonable LAD). Tip protrusion width prevents top-tier zombie (protrusions reduce LAD rim effectiveness). Lightweight (3.7 g) limits I.  
+**Engine Note**: mass_g = 3.7; RS_attackEliminated; LS_tier2_zombie; tipProtrusionWidth_prevents_topTier.
+
+---
+
+### [Case 241 — Cyber Driger (Anime-Only): ~27–31 g Full Combo — Thin Cyber-Claw AR Insufficient Contact Mass; Driger S Semi-Flat Tip Improves Orbital Stability](./4%20case%20study.md#case-241)
+
+**System**: Plastics System (Gen 1, SG System) — Anime-Only  
+**Geometry**: ~27–31 g full combo; thin cyber-claw AR  
+**Material**: ABS (anime-only)  
+**Mechanism**: Thin cyber-claw AR: insufficient effective contact mass across both spin directions — thin geometry reduces J at contact. Driger S semi-flat metal tip: μ ≈ 0.55 → better orbital stability than pure sting tip (less tip protrusion). Improvement in orbital stability doesn't rescue contact mass deficiency. Cannot achieve any competitive archetype.  
+**Engine Note**: animeOnly; thinClaw_insufficientContactMass; DrigerS_SemiFlat improves orbital stability; noCompetitiveArchetype.
+
+---
+
+### [Case 242 — Spiral Change Base (Dranzer S): 7.2 g — Notch-Spring Mode Switching, Two Tip Geometries With Opposed Trade-offs, Best-in-Generation LAD, Cannot Compensate for Recoil Self-KO Risk](./4%20case%20study.md#case-242)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: notch-spring mode switch between two tip geometries  
+**Geometry**: 7.2 g; notch-spring mode switch; two distinct tip profiles  
+**Material**: ABS + spring  
+**Mechanism**: Notch-spring switches between tip A (stable, lower LAD) and tip B (maximum LAD, less stable). Smooth spiral profile: best-in-generation LAD — spiral rim provides widest precession surface. Exceptional spin-steal capability from spiral contact. Cannot compensate for recoil self-KO risk: high spin-steal contacts also generate self-destabilizing recoil from spiral geometry. Niche: LAD demonstration build only.  
+**Engine Note**: mass_g = 7.2; notchSpringSwitch; bestInGen_LAD; spinSteal_excellent; recoilSelfKO = disqualifier.
+
+---
+
+### [Case 243 — Double Wing Attack Ring (Dranzer S): 3.5 g — Two-Fold Asymmetric Wing Eliminates RS Viability; Wide Defense Coverage Inverts From Neutral to Beneficial by Shielding Tip Recoil; LS Compact Is Only Competitive Application](./4%20case%20study.md#case-243)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3.5 g; two-fold asymmetric wings  
+**Material**: ABS  
+**Contact Points**: asymmetric: RS obstructed; LS favorable compact angle  
+**Mechanism**: Asymmetric two-fold wings: RS contact obstructed → non-viable RS. LS: favorable wing contact angle → compact smash viable. Wide Defense WD inversion: normally WD protrusion past AR hurts (Case 167); here WD rim shields tip recoil → active benefit. Wide Defense changes from neutral to beneficial by the shield. LS compact: only competitive application.  
+**Engine Note**: mass_g = 3.5; asymmetric_RS_obstructed; LS_compact viable; WD_shieldsRecoil = activelyBeneficial.
+
+---
+
+### [Case 244 — War Bear AR (Galzzly) — Core AR: 4.3 g / Total 6.7 g — Rounded Claw Arms, Free-Spinning Offensive SAR; Core Usable Only With Dragon Saucer SAR in LS](./4%20case%20study.md#case-244)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: Core AR: 4.3 g; Total with War Bear SAR: 6.7 g; rounded claw arms  
+**Material**: ABS (fragile spike sections)  
+**Contact Points**: rounded claw arms; free-spinning SAR for LS smash  
+**Mechanism**: Core AR: rounded claw arms — not optimal alone. Free-spinning War Bear SAR (Case 278): non-functional free-spin (SAR locks to position) → fixed contacts → top-tier LS smash when properly fixed. Core viable only with Dragon Saucer SAR in LS (Case 212 Great Dragon). Fragile spiked sections on core. Non-competitive as stocked.  
+**Engine Note**: coreAR_g = 4.3; total_g = 6.7; WarBearSAR_fixed = LS_topTier; DragonSaucerSAR_for_core_LS; fragile spikes.
+
+---
+
+### [Case 245 — War Monkey AR (Galman) — Core AR: 3.7/4.5 g / Total: 5.6/6.3 g (2 molds) — Four-Fold Symmetric; LS Top-Tier Survival, Zombie, Weight-Based Defense; RS Tier 2 Only](./4%20case%20study.md#case-245)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: M1: core 3.7 g / total 5.6 g; M2: core 4.5 g / total 6.3 g; 4-fold symmetric rounded heads  
+**Material**: ABS  
+**Contact Points**: 4-fold symmetric rounded monkey heads; LS favorable orientation  
+**Mechanism**: Four-fold symmetric rounded heads: in LS favorable contact angle → top-tier survival, zombie, and weight-based defense (Case 277 War Monkey SAR pairs for ~100° coverage). RS: heads present convex backs → tier-2 only (higher recoil). M2 heavier (6.3 g total) preferred for weight-based roles. Both molds competitive in LS; choose M2 where mass matters.  
+**Engine Note**: M1: 5.6g, M2: 6.3g; 4fold; LS_topTier_3roles; RS_tier2; M2_preferred.
+
+---
+
+### [Case 246 — Whale Attacker Attack Ring (Seaborg): ~3.5 g — Rounded Orca-Head Contact Geometry Produces Elastic Bouncing; Non-Competitive All Archetypes](./4%20case%20study.md#case-246)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~3.5 g; rounded orca head protrusions  
+**Material**: ABS  
+**Contact Points**: rounded orca heads → elastic bounce contact; near-zero LS contact angle  
+**Mechanism**: Rounded orca-head geometry: contact produces elastic bouncing (curved surface deflects impulse off angle → inconsistent direction). LS: near-zero contact angle fails to provide smooth recoil absorption. RS: rounded backs produce elastic bounce without smash direction. Both spin directions: non-competitive. Light weight limits I contribution.  
+**Engine Note**: mass_g ≈ 3.5; orcaHead_elasticBounce; LS_nearZeroAngle; RS_bounce; nonCompetitive all.
+
+---
+
+### [Case 247 — Cross Spike Attack Ring (Draciel S): ~3.9 g — Four Radially-Oriented Spike Tips; High Contact Frequency Multiplies Recoil Rather Than Compensating Smash Deficit](./4%20case%20study.md#case-247)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~3.9 g; four radially-oriented spike tips  
+**Material**: ABS  
+**Contact Points**: radial spikes → α ≈ 90°; J_smash ≈ 0; J_recoil ≈ J  
+**Mechanism**: Radially-oriented spikes: α ≈ 90° from orbital tangent → near-zero smash, near-total recoil (cross attack pattern, Case 157). Four-fold symmetry: 4 contacts per revolution → frequency multiplies recoil accumulation rather than compensating smash deficit. High frequency + zero smash = rapid self-destabilization. No competitive advantage from symmetric four-fold geometry in this contact type.  
+**Engine Note**: mass_g ≈ 3.9; radialSpikes_J_smash≈0; highFrequency_multipliesRecoil; noCompetitive advantage.
+
+---
+
+### [Case 248 — SG Metal Ball Base (Draciel S): ~6.1 g — Metal Ball Tip in SG Shell; Moderate Friction Orbital Movement; Tier 2 in Tip Friction Hierarchy](./4%20case%20study.md#case-248)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: ~6.1 g; metal ball tip integrated in SG shell; r_ball ≈ 0.2 cm  
+**Material**: ABS + metal ball  
+**Mechanism**: Metal ball tip integrated in SG shell (vs CEW version Case 207). μ_metal_ball ≈ 0.35 (between sharp and rubber). Provides moderate friction → orbital movement without full rubber grip. Tier 2 in plastics tip friction hierarchy: bearing (μ≈0.05) > metal sharp (μ≈0.17) > metal ball (μ≈0.35) > plastic flat (μ≈0.35). Useful when bearing configurations unavailable. SG-native integration means no CEW height penalty.  
+**Engine Note**: mass_g ≈ 6.1; metalBall integrated; mu≈0.35; tier2 tip hierarchy; no CEW height penalty.
+
+---
+
+### [Case 249 — SG Bearing Base (Wolborg): ~7.2 g — Built-In Ball Bearings Define Top-Tier Zombie Archetype; Purpose-Fit Shaft Tolerance Eliminates Catch Events](./4%20case%20study.md#case-249)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Spin Coupling**: built-in ball bearings (purpose-fit shaft) → near-zero friction; τ ≈ 1.05×10⁻⁶ N·m  
+**Geometry**: ~7.2 g; purpose-fit shaft tolerance; dual bearing positions  
+**Material**: ABS + shielded bearings  
+**Mechanism**: Built-in ball bearings: near-zero tip friction (same tier as Case 234 bearing shaft). Purpose-fit shaft tolerance: eliminates catch events that affect Customize Bearing Base (CBS has slight shaft wobble → intermittent catch → spin loss spikes). SG Bearing Base native fit: consistent near-zero friction throughout battle. Enabling hardware for top-tier zombie-defense. CBS competes but SGBB more consistent.  
+**Engine Note**: mass_g ≈ 7.2; builtInBearings; purposeFitShaft → no catch events; topTier zombie hardware.
+
+---
+
+### [Case 250 — Cross Attacker AR (Dranzer V): 5.6 g — Phoenix-Head Smash/Upper Hybrid; Four-Fold Symmetry, Compound Contact Geometry](./4%20case%20study.md#case-250)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.6 g; four-fold symmetric; phoenix-head compound contact  
+**Material**: ABS  
+**Contact Points**: phoenix-head shape: combined smash + upper components; 4-fold  
+**Mechanism**: Phoenix-head geometry: contact face combines flat smash component (lateral push) with upward slope component (upper attack lift). Four-fold symmetry: contact frequency × 4. RS primary (forward face presents favorable angle). Hybrid smash/upper: neither best-in-class smash nor best-in-class upper but competitive in both.  
+**Engine Note**: mass_g = 5.6; 4fold; phoenixHead_smash+upper hybrid; RS primary.
+
+---
+
+### [Case 251 — Ten Spike AR (Draciel V): 4.1 g — Uneven Ten-Protrusion Ring; Alternating Large/Small Spikes; Extreme Recoil; Non-Competitive](./4%20case%20study.md#case-251)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.1 g; 10-protrusion ring; alternating large/small spikes  
+**Material**: ABS  
+**Contact Points**: 10 spikes alternating size → variable recoil per contact; near-radial orientation  
+**Mechanism**: Alternating large/small spikes: creates two recoil levels per revolution (large spikes → extreme recoil; small spikes → moderate recoil). Near-radial spike orientation → near-total recoil from every contact regardless of size. Ten-spike high contact frequency multiplies total recoil accumulation. Non-competitive in all archetypes.  
+**Engine Note**: mass_g = 4.1; alternatingSpikes; nearRadial_extremeRecoil; nonCompetitive.
+
+---
+
+### [Case 252 — Eight Spike AR (Draciel F): 4.2 g — Eight Symmetric Blunt Spikes; No Smash Angle; No Competitive Value](./4%20case%20study.md#case-252)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.2 g; 8 symmetric blunt spikes  
+**Material**: ABS  
+**Contact Points**: blunt spikes → α near-90°; J_smash ≈ 0  
+**Mechanism**: Eight blunt spikes: symmetric → no spin-direction asymmetry. Blunt profile: contact normal near-radial → J_smash ≈ 0, J_recoil ≈ J. Eight-fold frequency: multiplies recoil. Blunt vs sharp spike: less penetrating — spreads contact energy across blunt face but angle remains radial. No competitive value — non-competitive by contact geometry alone.  
+**Engine Note**: mass_g = 4.2; 8bluntSpikes; J_smash≈0; noCompetitive.
+
+---
+
+### [Case 253 — Weight Ring WD (Hayate-type beys): 12.4 g — Specialty Non-Universal WD; Hayate Base-Only Channel Fit](./4%20case%20study.md#case-253)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 12.4 g; channel-fit geometry; Hayate-base only  
+**Material**: ABS  
+**Mechanism**: Non-universal WD: channel fit mates only with Hayate-type base (specific groove). Same mass as Wide Survivor (12.4 g) but less peripheral concentration (channel fit distributes mass differently). Cannot be used outside Hayate beys. Competitive only in Hayate assemblies; Wide Survivor or Wide Defense universally preferred where interchangeable.  
+**Engine Note**: mass_g = 12.4; channelFit_HayateOnly; notUniversal; sameAsMass_WideSurvivor.
+
+---
+
+### [Case 254 — Balance WD / Eight Balance WD: 14.1 g — Eight-Spoke Compact Distribution; Mid-Weight Universal WD](./4%20case%20study.md#case-254)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 14.1 g; eight-spoke (n=8); r_eff_8 = 0.9745 × r_outer  
+**Material**: ABS  
+**Mechanism**: Eight-spoke octagonal WD: 14.1 g, heaviest compact-class WD. r_eff_8 = 0.9745 × r_outer (vs decagonal r_eff_10 = 0.9834). ~1% I deficit vs Ten Balance. Compact mass distribution: heavier than any 10-spoke compact alternatives. Universal fit. Mid-weight general purpose WD; Wide Defense preferred for stamina/defense; Eight Balance for compact-mass builds.  
+**Engine Note**: mass_g = 14.1; n=8; r_eff=0.9745×r; heaviestCompact; ~1% vs TenBalance.
+
+---
+
+### [Case 255 — Eight Heavy WD: 15.3/15.5 g — Eight-Spoke Heavy; Two Molds; Maximum Mass 8-Spoke WD](./4%20case%20study.md#case-255)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: M1: 15.3 g / M2: 15.5 g; eight-spoke; maximum mass 8-spoke  
+**Material**: ABS (two molds)  
+**Mechanism**: Heaviest 8-spoke WD at 15.3–15.5 g. Two molds (Driger S / Dranzer F / Master Dragoon) with slight mass difference. n=8 → r_eff_8 vs Ten Heavy: ~1% I deficit for same mass. Maximum mass 8-spoke for KO resistance and inertia. Prefer M2 (heavier) when available.  
+**Engine Note**: M1=15.3g, M2=15.5g; n=8; heaviest 8-spoke; preferM2.
+
+---
+
+### [Case 256 — Heavy WD: 15.3 g — Most Compact Standard WD; Hexagonal Corner Geometry; Ten/Eight Heavy Preferred](./4%20case%20study.md#case-256)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 15.3 g; hexagonal (n=6) → lower r_eff vs octagonal/decagonal; compact  
+**Material**: ABS  
+**Mechanism**: Most compact standard WD (small outer radius). Hexagonal corners: n=6 → r_eff_6 = 0.9574 × r_outer (lower than n=8 at 0.9745 or n=10 at 0.9834). Despite equal mass to Eight Heavy M1, lower r_eff → lower I. Broad unit variance: weight varies between copies. Ten/Eight Heavy preferred over Heavy WD due to better polygon efficiency.  
+**Engine Note**: mass_g = 15.3; n=6; r_eff=0.9574×r; lowerI_vs_TenHeavy; broadVariance.
+
+---
+
+### [Case 257 — Heavy Attack WD: 16.0 g — Compact Heavy with Rounded Corner Protrusions; Severe Recoil Limits Use to Shielded Weight-Based Defense](./4%20case%20study.md#case-257)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 16.0 g; compact with rounded corner protrusions; highest-mass WD  
+**Material**: ABS  
+**Contact Points**: rounded corner protrusions → elevated recoil on contact  
+**Mechanism**: Heaviest plastics WD at 16.0 g. Rounded corner protrusions: WD contacts opponent in some geometries → recoil from protrusions. Severe recoil limits use to builds where WD is fully shielded by AR (wide AR prevents WD contact). Only role: shielded weight-based defense where WD mass matters but WD never contacts.  
+**Engine Note**: mass_g = 16.0; heaviestWD; roundedProtrusions_severeRecoil; use_only_shielded.
+
+---
+
+### [Case 258 — Viper Metal Ball Base (Draciel V): 8.2 g — Ball-in-Shaft Design; Magnecore-Dependent; Non-Competitive](./4%20case%20study.md#case-258)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 8.2 g; metal ball on metal pole  
+**Material**: ABS base + metal ball + metal pole  
+**Gimmick**: magnetic Magnecore alignment dependency  
+**Mechanism**: Metal ball on metal pole: ball contact radius r_ball ≈ 0.2 cm provides moderate friction. Magnecore dependency: Magnecore attracts metal pole → holds ball in position. Without Magnecore, ball rattles → unpredictable contact. With Magnecore: controlled ball contact but friction still mid-tier. 8.2 g mass is competitive but tip + gimmick dependency makes it non-competitive vs alternatives.  
+**Engine Note**: mass_g = 8.2; metalBallOnPole; MagnecoreDependent; nonCompetitive overall.
+
+---
+
+### [Case 259 — Great Dragon AR: 5.4 g — Two-Part Smash AR with SAR-Slot; Top-Tier with War Lion or War Bear SAR; Wing Sub-Ring Hurts Performance](./4%20case%20study.md#case-259)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: Core AR: 3.9 g, Wing SAR: 1.5 g; total 5.4 g; r_outer_core ≈ 3.0 cm; I_core ≈ 2.09×10⁻⁶ kg·m²  
+**Material**: ABS (black version: Gold Plastic Syndrome → avoid)  
+**Contact Points**: SAR-conditional: War Lion SAR → RS highly competitive; War Bear SAR → LS top-tier  
+**Mechanism**: Core AR has elevated contact height → hits above Circle Survivor Defense ring. Default Wing SAR obstructs contacts → poor stock. War Lion SAR: RS highly competitive, LS good-but-suboptimal. War Bear SAR (fixed): LS top-tier smash comparable to Square Edge. Screw Zeus SAR (fixed by Great Dragon): both RS and LS top-tier. Black version: Gold Plastic Syndrome (GPS) → brittle → never use.  
+**Engine Note**: coreAR_g=3.9; total_g=5.4; I_core=2.09e-6; WingSAR_hurts; WarBear_LS_topTier; blackVersion_GPS.
+
+---
+
+### [Case 260 — Dark Wing AR: 6.4 g — Hyper-Aggro Three-Sided Thick Contact Ring; Maximum Offensive Power at High Recoil Cost](./4%20case%20study.md#case-260)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: 6.4 g (core 4.9 g + sub AR 1.5 g); I ≈ 3.8×10⁻⁶ kg·m²; 3-fold symmetric  
+**Material**: ABS  
+**Contact Points**: thick blade; smashFraction_RS = 0.56; recoilFactor = 0.52  
+**Mechanism**: Three-sided thick contact ring: strong smash output (RS 0.56) but recoilFactor = 0.52 → significant recoil. Struggles against heavy, low-recoil defenses. Heavy Metal Core recommended to dampen self-destabilization. C-tier competitive: wins vs mid-defense, loses vs heavy defense. Best in hyper-aggressive formats.  
+**Engine Note**: mass_g = 6.4; I=3.8e-6; smashRS=0.56; recoil=0.52; HMC required; CTier_hyper-aggro.
+
+---
+
+### [Case 261 — Wing Attack Ring: 6.1 g — Centripetally-Deployed Spring Wings; Zombie Spin-Steal AR with Indirect-Hit Fold Mechanism](./4%20case%20study.md#case-261)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: spring-loaded centrifugal wing deployment  
+**Geometry**: 6.1 g; r_outer_deployed ≈ 3.4 cm; r_inner ≈ 1.3 cm; wings fold at low spin  
+**Material**: ABS + spring hinges  
+**Mechanism**: Wings deploy centrifugally at >300 RPM. Deployed: spin-steal grinding (spinStealFactor ≈ 0.12, recoilFactor ≈ 0.22). Indirect hits fold wings inward: recoilFactor_indirect ≈ 0.08 → absorbs attacks without destabilizing. Fragility: ~20% wing breakage vs heavy smash ARs (smashFraction > 0.55). Best in zombie + right-spin spin-steal sustained engagement.  
+**Engine Note**: mass_g = 6.1; r_deployed=3.4cm; centrifugalDeploy; spinSteal=0.12; fragile_vs_heavySmash.
+
+---
+
+### [Case 262 — Corona Saber AR: 7.4 g — Combined Upper Attack + Smash via Wing-Tip Slopes; Heaviest Competitive Plastic Gen AR](./4%20case%20study.md#case-262)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 7.4 g; heaviest competitive plastics AR; wing-tip slope + angular edges  
+**Material**: ABS  
+**Contact Points**: wing tips: upper slope + angular edge → compound upper+smash; RS primary  
+**Mechanism**: Heaviest competitive plastics AR at 7.4 g → maximum I contribution from AR position. Wing-tip slopes deliver upper attack component; angular edges add smash. Compound contact: both upper and smash in RS. Primary orientation RS. LS: geometry partially inverts → reduced effectiveness but still usable. High mass advantage for KO resistance.  
+**Engine Note**: mass_g = 7.4; heaviestCompetitiveAR; compound_upper+smash; RS primary; highMass_I advantage.
+
+---
+
+### [Case 263 — Genocide Circle AR: 5.9 g — Inconsistent Contact Geometry; Wing Protrusions + Pole Extensions Produce Either Reasonable Smash or Zero Impact](./4%20case%20study.md#case-263)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.9 g; wing protrusions + pole extensions  
+**Material**: ABS  
+**Contact Points**: wing vs pole: wing produces smash, pole produces zero impact  
+**Mechanism**: Two contact geometry types on same AR: wing protrusions → reasonable smash angle. Pole extensions → contact passes through gap between poles → zero effective impact. Random collision angle determines whether wing or pole contacts → inconsistent performance. Either reasonable smash or zero impact per battle depending on engagement geometry.  
+**Engine Note**: mass_g = 5.9; dualGeometry_wing+pole; inconsistent: wing=smash OR pole=zero.
+
+---
+
+### [Case 264 — Hammer Tusk AR: 4.7 g — Three-Sided Spiked Wing Grinding; Stamina Drain via Low-Recoil Spike Contact](./4%20case%20study.md#case-264)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.7 g; three spiked wings  
+**Material**: ABS  
+**Contact Points**: spiked wings at moderate contact angle → low-recoil grinding  
+**Mechanism**: Three spiked wings at contact angle that produces grinding rather than sharp smash. Low-recoil spike contact: sustained grinding across opponent AR/WD → stamina drain mechanism (spin steal via friction). Not smash-focused. Three-fold contact frequency. Moderate I at 4.7 g. Stamina-drain archetype: effective against other stamina builds, less so vs defense.  
+**Engine Note**: mass_g = 4.7; spikedWings; lowRecoilGrinding; staminaDrain_mechanism.
+
+---
+
+### [Case 265 — Jungle Shock AR: 4.1 g — Round Spiked AR with Alligator Head Protrusions; LS Competitive Smash; RS Passable but Inconsistent](./4%20case%20study.md#case-265)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.1 g; round spiked AR; alligator head protrusions  
+**Material**: ABS  
+**Contact Points**: LS: alligator heads → competitive smash in line with G Upper / Eight Spiker; RS: inconsistent  
+**Mechanism**: Alligator head protrusions: in LS, head orientation provides competitive smash angle (in line with G Upper Case 221 and Eight Spiker Case 189). RS: same protrusions present inconsistent angle → passable but inconsistent, outclassed. 4.1 g light mass → limited I. LS primary usage.  
+**Engine Note**: mass_g = 4.1; alligatorHeads; LS_competitive; RS_inconsistent_passable; lightMass.
+
+---
+
+### [Case 266 — Panther Claw AR: 4.5 g — Compact Wider Profile with Wing Gaps; RS Smash with Manageable Recoil, Low-Moderate Tier](./4%20case%20study.md#case-266)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.5 g; compact wider profile; wing gaps  
+**Material**: ABS  
+**Contact Points**: wing faces: RS smash; wing gaps reduce contact frequency  
+**Mechanism**: Compact wider profile: outer radius slightly wider than standard compact WDs. Wing gaps: reduce contact surface area → lower contact frequency. RS smash: manageable recoil (moderate angle). Low-moderate tier: lighter than competitive smash benchmarks (Triple Wing, G Upper). Flash Leopard stock AR; competitive but not top-tier.  
+**Engine Note**: mass_g = 4.5; compactWider; wingGaps_reduce_frequency; RS_manageable_recoil; lowModerTier.
+
+---
+
+### [Case 267 — Cross Dragon AR: 2.7 g — Lightest Confirmed Plastic Gen AR; Flat Faces, Excessive Recoil, No Competitive Role](./4%20case%20study.md#case-267)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 2.7 g; lightest confirmed plastics AR  
+**Material**: ABS  
+**Contact Points**: flat faces → excessive recoil from low mass  
+**Mechanism**: Lightest confirmed plastics AR at 2.7 g: negligible I contribution. Flat faces: good smash angle theoretically (low α) but minimal mass means J_total at contact is tiny → no KO capability. Excessive recoil fraction because low mass means attacker suffers proportionally more from recoil impulse. No competitive role: weight deficit eliminates every archetype.  
+**Engine Note**: mass_g = 2.7; lightestAR; flatFace_good angle_but_noMass; noCompetitiveRole.
+
+---
+
+### [Case 268 — Knight Claws Ring: 3.5 g — Fragile Thin AR with Severe Recoil; Design Intent Negated by Structural Failure Risk](./4%20case%20study.md#case-268)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3.5 g; thin claw protrusions  
+**Material**: ABS (brittle under stress)  
+**Contact Points**: thin claws → concentration of force → structural failure  
+**Mechanism**: Thin claw geometry: concentrated stress at claw tip under impact → fracture risk. Severe recoil: aggressive claw angle combined with thin construction → high recoil fraction. Design intent (aggressive smash claws) negated by structural failure risk. Even if geometry is favorable, breakage eliminates competitive viability after first few battles.  
+**Engine Note**: mass_g = 3.5; thinClaws_fragile; severeRecoil; structuralFailure negates design.
+
+---
+
+### [Case 269 — Max Shield AR: 3.5 g — Flat-Face Non-Competitive AR; Identical Weight to Knight Claws Ring; Even Fewer Contact Points](./4%20case%20study.md#case-269)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 3.5 g; flat-face shield profile; fewer contact points  
+**Material**: ABS  
+**Mechanism**: Equal mass to Knight Claws Ring (Case 268) but fewer contact points → even lower contact frequency → attack even less viable. Flat face: same mass, same mass deficit problem — insufficient J at contact. Shield profile: intended for defense but 3.5 g too light for weight-based defense role. No competitive role in either attack or defense.  
+**Engine Note**: mass_g = 3.5; flatFace; fewerContacts; insufficientMass all roles; nonCompetitive.
+
+---
+
+### [Case 270 — Revolver Attack WD: 15.0 g — Compact WD with Protruding Contact Points; Same Weight Class as Ten Balance; Non-Competitive Due to AR Recoil](./4%20case%20study.md#case-270)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 15.0 g; compact WD; protruding contact points  
+**Material**: ABS  
+**Mechanism**: 15.0 g compact WD: same weight class as Ten Balance but with protruding contact points. Protrusions generate recoil when WD contacts opponent (same failure as Heavy Attack WD tabs, Case 257 pattern). Non-competitive: same mass as Ten Balance with added recoil liability. Use Ten Balance or Ten Heavy instead.  
+**Engine Note**: mass_g = 15.0; compactWD; protrusions_addRecoil; sameWeightAs_TenBalance; nonCompetitive.
+
+---
+
+### [Case 271 — Star Attack WD: 15.6 g — Five-Pointed Star Geometry; Uniquely Penta Wing-Aligned; Non-Competitive Outside That Configuration](./4%20case%20study.md#case-271)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 15.6 g; five-pointed star WD  
+**Material**: ABS  
+**Mechanism**: Five-pointed star: star tips at WD perimeter generate recoil on contact (Case 170 Star Attack AR pattern). 15.6 g: heavy, good mass. Uniquely aligns with Penta Wing SP and Star Attack AR (Cases 170, 172): tips slot into aligned geometry → contact geometry normalized. Non-competitive in all other configurations. One-combo niche: Penta Wing alignment build only.  
+**Engine Note**: mass_g = 15.6; starGeometry_recoil; PentaWingAlignment_unique niche; nonCompetitive otherwise.
+
+---
+
+### [Case 272 — Metal Ball Base (Draciel Metal Ball Defenser): 8.4 g + up to 6×1.05 g balls — 4LS Built-In Right SG; Gimmick Non-Functional at Competition Speed](./4%20case%20study.md#case-272)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: ball-pocket gimmick (6 ball slots); built-in Right SG (4LS)  
+**Geometry**: 8.4 g base + up to 6.3 g balls (6×1.05 g); Tornado Ridge  
+**Material**: ABS + steel balls  
+**Mechanism**: Built-in Right SG (4LS = 4-legged SG): compact ball base. Ball pockets: 6 slots for 1/4" steel balls → centrifugally extend at high spin for wider contact. At competition speed, balls don't fully extend (centrifugal force insufficient at typical launch RPM) → gimmick non-functional in competition. Tornado Ridge: passive grip during tilt. Passive Tornado Ridge defense is the only competitive function.  
+**Engine Note**: base_g=8.4; ballPockets_nonFunctional_at_competitionRPM; TornadoRidge_passive; 4LS built-in.
+
+---
+
+### [Case 273 — War Lynx AR (Galux — UNRELEASED): ~6.65 g — Speed-Optimised War Lion Variant; 6.3% Lighter; Counter-Oriented Balanced Design](./4%20case%20study.md#case-273)
+
+**System**: Plastics System (Gen 1, SG System) — Unreleased prototype  
+**Geometry**: ~6.65 g (6.3% lighter than War Lion); counter-oriented design  
+**Material**: ABS (unreleased)  
+**Mechanism**: War Lynx: unreleased Galux prototype. Speed-optimised War Lion variant — 6.3% mass reduction → 6.3% higher orbital speed (same motor force, lighter load). Counter-oriented: some contact faces oriented for counter-attack (absorb then redirect). Balanced design reduces specialization. Never commercially released; academic study only.  
+**Engine Note**: mass_g ≈ 6.65; unreleased; 6.3% lighter than WarLion → higher orbital speed; counterOriented.
+
+---
+
+### [Case 274 — Right Spin Gear (G Ball): 1.1 g shells + 0.88 g core + optional 0.448 g ball + optional 1.12 g gear — G Special Base Platform](./4%20case%20study.md#case-274)
+
+**System**: Plastics System (Gen 1, SG System) — G-Series  
+**Gimmick**: ball-weighted SG core; G Special Base retention  
+**Geometry**: shells: 1.1 g each (2.2 g pair); core: 0.88 g; optional 3/16" ball: 0.448 g; optional Metal Weight Gear: 1.12 g  
+**Material**: ABS + optional metal ball + optional gear  
+**Mechanism**: Lightest possible SG configuration without optional parts (shells + core only). Ball in core pocket: centrifugal extension at high spin (same ball-gimmick principle as Case 276). Metal Weight Gear: +1.12 g at SG radius → modest I increase. Black version: fragile (GPS-equivalent in black plastic). G Special Base (Case 276) retention platform.  
+**Engine Note**: shells=2.2g; core=0.88g; blackVersion_fragile; GSB_platform; ballGimmick_centrifugal.
+
+---
+
+### [Case 275 — Neo Right Spin Gear (South Magne Version): 2.3 g shells + 3.3 g Magnecore — Recoil-Managing Attack-Stamina Core; Negligible Magnetic Effect](./4%20case%20study.md#case-275)
+
+**System**: Plastics System (Gen 1, SG System, Gaia Dragoon)  
+**Geometry**: Neo shells: 1.15 g each (2.3 g pair); South Magnecore: 3.3 g; total SG: 5.6 g  
+**Material**: ABS shells + magnet core  
+**Mechanism**: South Magnecore (Case 916) in Neo SG shells. 5.6 g total SG: competitive mass for recoil management. Standard South Magnecore physics: 3.5% better recoil damping vs plastic core. Magnetic effect negligible in standard play (same conclusion as Cases 915, 916). Used in Gaia Dragoon stock combo.  
+**Engine Note**: total_SG_g = 5.6; SouthMagnecore; recoilDamping = 3.5% vs plastic; magnet_negligible.
+
+---
+
+### [Case 276 — G Special Base (Gaia Dragoon): 4.6 g + up to 4×0.448 g balls — Four-Ball Pocket Gimmick; Aggressive Semi-Flat Tip; Poor LAD](./4%20case%20study.md#case-276)
+
+**System**: Plastics System (Gen 1, SG System, G-Series)  
+**Gimmick**: four ball-pocket centrifugal extension  
+**Geometry**: 4.6 g base + up to 1.79 g balls (4×0.448 g); aggressive semi-flat tip; 4 ball pockets  
+**Material**: ABS + optional steel balls  
+**Mechanism**: Four ball pockets: 3/16" balls extend centrifugally at high spin → increase effective tip contact radius → shift from semi-flat to wider orbit. Aggressive semi-flat tip: μ ≈ 0.55, moderate attack movement. Poor LAD: ball pocket rim is interrupted → no smooth precession surface. Black version: fragile. Competitive range limited to high-spin attack phase.  
+**Engine Note**: base_g=4.6; ballPockets×4; semiFlat_tip; poorLAD; blackVersion_fragile.
+
+---
+
+### [Case 277 — War Monkey SAR (Galman): 1.9 g — Dual-Winglet Sub-Ring with ~100° Coverage; Top-Tier LS SAR; RS Requires Wide Defense or Wider](./4%20case%20study.md#case-277)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Geometry**: 1.9 g; dual winglets; ~100° coverage arc  
+**Material**: ABS  
+**Contact Points**: dual winglets ≈ 100° arc coverage; LS orientation favorable  
+**Mechanism**: ~100° arc coverage per winglet pair: high contact zone exposure in LS. Top-tier LS SAR: favorable winglet angle provides excellent LS smash assist. RS: winglet backs present convex surface → requires Wide Defense WD or wider to prevent WD leading contact (Case 914/Panther Head range-ceiling pattern). Wide Defense exposes winglet contact in RS.  
+**Engine Note**: mass_g = 1.9; 100deg_coverage; LS_topTier; RS_requiresWideDefense+.
+
+---
+
+### [Case 278 — War Bear SAR (Galzzly): 2.4 g — Free-Spinning Offensive Sub-Ring; Non-Functional Free-Spin; Fixed-Position LS = Top-Tier Smash; Fragile](./4%20case%20study.md#case-278)
+
+**System**: Plastics System (Gen 1, SG System, SGS)  
+**Gimmick**: intended free-spinning outer ring  
+**Geometry**: 2.4 g; wide free-spin ring geometry  
+**Material**: ABS  
+**Mechanism**: Intended free-spin: ring design supposed to rotate independently. In practice: ring locks to fixed position → SAR is fixed, not free-spinning. Fixed-position LS: top-tier smash (comparable to Square Edge per Case 259 Great Dragon assessment). RS: fragile under heavy RS contacts → avoid RS use. Worn/loose versions: partially free-spin → reduced effectiveness. Fix in position before use.  
+**Engine Note**: mass_g = 2.4; freeSpin_nonFunctional (locks); fixed_LS = topTier smash; RS_fragile.
+
+---
+
+### [Case 279 — Delta Wave AR (Orca Diver): 4.3 g — Three-Fold RS Smash with Limited Range and Above-Average Recoil; No LS Use; Contact Points Wear Quickly](./4%20case%20study.md#case-279)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.3 g; three-fold symmetric wave profile  
+**Material**: ABS (contact surfaces wear quickly)  
+**Contact Points**: RS wave face: limited contact range; above-average recoil  
+**Mechanism**: Three-fold wave AR: RS smash functional but limited range (shorter reach than top-tier alternatives). Above-average recoil: wave geometry doesn't fully convert impulse laterally. LS: wave orientation reverses → non-viable contact. Contact point wear: wave tips wear faster than flat-face ARs → performance degrades with use.  
+**Engine Note**: mass_g = 4.3; 3fold; RS_limitedRange; aboveAvgRecoil; LS_noUse; wear_quick.
+
+---
+
+### [Case 280 — Scissors Arm AR (Crab Diver): 4.6 g — Two-Fold Large Crab-Claw; LS Massive Power with Self-KO Recoil; RS Non-Viable; Best Non-CCL LS Smash AR](./4%20case%20study.md#case-280)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.6 g; two-fold; large crab-claw protrusions  
+**Material**: ABS  
+**Contact Points**: LS: claw faces → massive smash; RS: claw backs → non-viable  
+**Mechanism**: Large crab-claw: in LS the claw interior face presents at favorable smash angle → massive smash power. Self-KO recoil: claw size means recoil fraction remains high despite smash power → attacker destabilized simultaneously. RS: claw backs → non-viable. Best non-Customise Clutch Launcher (CCL) LS smash AR — closest to CCL power without the launcher.  
+**Engine Note**: mass_g = 4.6; 2fold; LS_massivePower + selfKOrecoil; RS_nonViable; bestNonCCL_LS.
+
+---
+
+### [Case 281 — Cross Gator AR: 4.0 g — 4-Fold Balance AR; Moderate RS and LS; Outclassed Both Directions](./4%20case%20study.md#case-281)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 4.0 g; 4-fold symmetric balance AR  
+**Material**: ABS  
+**Contact Points**: 4-fold balanced → moderate performance both directions  
+**Mechanism**: Four-fold balanced AR: moderate smash and moderate recoil in both RS and LS. No spin-direction advantage. Balance design prevents top performance in either direction. 4.0 g: lightweight limits I. Outclassed by direction-specialized ARs in both RS and LS. General purpose but no competitive niche.  
+**Engine Note**: mass_g = 4.0; 4fold_balanced; moderate_both; outclassed_both_directions.
+
+---
+
+### [Case 282 — Vanishing Moot AR (Anime/Manga Exclusive): ~3-fold Swept-Back Turbine Blades; RS Survival/LAD-Optimised; Magnacore Centering; Never Released](./4%20case%20study.md#case-282)
+
+**System**: Plastics System (Gen 1, SG System) — Anime/Manga Exclusive  
+**Geometry**: estimated AR with swept-back turbine blades; Magnacore centering feature  
+**Material**: ABS (never commercially released)  
+**Mechanism**: Swept-back turbine blade geometry: in RS orbital direction, blades present low-drag profile → minimizes AR-induced spin loss. LAD-optimised profile: smooth blade backs serve as LAD surface. Magnacore centering: magnetic centering feature keeps bey oriented toward stadium center. Anime-exclusive; never released commercially. Studied from anime/manga reference only.  
+**Engine Note**: animeExclusive; sweptTurbine; RS_LAD_optimised; MagnacoreCentering; neverReleased.
+
+---
+
+### [Case 283 — Neo Cross Horn AR: 5.7 g — 3-Fold Dual-Direction Hyper-Aggressive Smash; Takara GPS Non-Competitive; Hasbro Version Competitive Both Directions](./4%20case%20study.md#case-283)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.7 g; 3-fold symmetric horn AR  
+**Material**: Takara: GPS (brittle) / Hasbro: standard ABS  
+**Contact Points**: dual-direction horn faces → RS and LS competitive smash  
+**Mechanism**: Three-fold horn AR with dual-direction contact faces → both RS and LS achieve competitive smash. Hyper-aggressive: high smash output but also high recoil. Takara version: GPS (Gold Plastic Syndrome) → brittle → non-competitive (breaks). Hasbro version: standard ABS → fully competitive both directions. Always use Hasbro version.  
+**Engine Note**: mass_g = 5.7; 3fold; dual_direction; Takara_GPS_avoid; Hasbro_competitive_both.
+
+---
+
+### [Case 284 — Trident Vector AR: 5.4 g — 3-Fold High-Recoil Multiple Contact Points; RS Self-Destructive; LS Mediocre; Non-Competitive Both Directions](./4%20case%20study.md#case-284)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 5.4 g; 3-fold trident profile; multiple contact points  
+**Material**: ABS  
+**Contact Points**: multiple trident tines → variable angle, high combined recoil  
+**Mechanism**: Trident profile: three tines per arm → multiple contact points per collision. RS: tine geometry self-destructive (high recoil overwhelms attack output). LS: mediocre tine contact angle. Multiple contact points increase total recoil accumulation without proportional smash increase. Non-competitive both directions.  
+**Engine Note**: mass_g = 5.4; 3fold_trident; multipleContactPoints; RS_selfDestructive; LS_mediocre; nonCompetitive.
+
+---
+
+### [Case 285 — Mirage Goddess AR: 7.8 g — 3-Fold Heaviest Competitive AR; Top-Tier RS Smash; Top-Tier LS Weight-Based Defense + Spin-Steal Attack](./4%20case%20study.md#case-285)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: 7.8 g; 3-fold symmetric; heaviest competitive plastics AR  
+**Material**: ABS  
+**Contact Points**: RS: flat-face smash at optimal angle; LS: smooth deflection + spin-steal contact  
+**Mechanism**: Heaviest competitive AR at 7.8 g → maximum I contribution from AR position → highest KO resistance. RS: flat-face contacts at top-tier smash angle. LS: geometry provides both weight-based defense (mass deflects attacks) and spin-steal attack (smooth face provides sustained grinding). Top-tier in all three LS roles simultaneously. Venus/Venusian G stock AR.  
+**Engine Note**: mass_g = 7.8; heaviestCompetitiveAR; RS_topTierSmash; LS_topTier_weightDefense+spinSteal.
+
+---
+
+### [Case 1097 — CEW Metal Grip: 2.7 g](./4%20case%20study.md#case-1097)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Geometry**: 2.7 g; rubber grip CEW  
+**Material**: rubber grip surface  
+**Mechanism**: Rubber grip CEW: μ_rubber ≈ 0.85 → reliable grip on floor contact. Used with Right Engine Gear (Reverse) (Case 226) where reverse tip direction + rubber grip provides orbital control (one viable use case identified in Case 226). Grip provides flower-pattern capability but EG height system handicap applies. Best in Right EG Reverse configuration for orbital control.  
+**Engine Note**: mass_g = 2.7; rubberGrip_mu=0.85; bestWith_REG_Reverse; EGheight_handicap.
+
+---
+
+### [Case 1281 — Attack Ring: Turtle Survivor (Master Dranzer)](./4%20case%20study.md#case-1281)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: Turtle Survivor AR; rounded turtle-shell profile  
+**Material**: ABS  
+**Mechanism**: Rounded turtle-shell profile: smooth deflection surface → low recoil on contact (tangential deflection). Shell geometry approaches compact defense — deflects rather than absorbs. Survival role: smooth surface aids LAD continuation. Competitive in survival/zombie builds. Not top-tier smash but low recoil allows sustained battle without spin loss spikes.  
+**Engine Note**: TurtleSurvivor; roundedShell; smoothDeflection; lowRecoil; survival role.
+
+---
+
+### [Case 1282 — Blade Base: Metal Sting Base (Master Dranzer)](./4%20case%20study.md#case-1282)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: metal sting (very narrow) tip; minimal contact radius  
+**Material**: ABS + metal sting tip  
+**Mechanism**: Metal sting tip: contact radius → 0 → near-zero orbital speed (bey remains stationary). Zero orbital speed means attack behavior eliminated — bey only defends/spins in place. Best with stamina ARs for pure spin-time optimization. Eliminates every attack role (requires orbital speed). Anti-attack configuration tool.  
+**Engine Note**: metalStingTip; r_contact→0; zeroOrbital; eliminatesAttack; pureStaminaRolePlatform.
+
+---
+
+### [Case 1283 — Blade Base: Flat Base](./4%20case%20study.md#case-1283)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: flat plastic tip; standard-height blade base  
+**Material**: ABS  
+**Mechanism**: Standard flat base configuration. Plastic flat tip: μ ≈ 0.35 → flower pattern difficult at competition orbital speeds (see Case 912 SG Flat Base for full analysis). Standard height. Outperformed by SG Flat Base (shorter) for upper attack and by rubber-tipped bases for aggressive attack. Use when no alternative available.  
+**Engine Note**: plasticFlat_mu=0.35; standardHeight; outperformed by SG_FlatBase and rubber alternatives.
+
+---
+
+### [Case 1284 — Attack Ring: Bound Attack Ring](./4%20case%20study.md#case-1284)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Gimmick**: rubber-edged bound mechanism  
+**Geometry**: rubber edges at contact points  
+**Material**: ABS + rubber edges  
+**Contact Points**: rubber-edged contacts → e = 0.25 / μ_k = 0.50 (rubber restitution)  
+**Mechanism**: Rubber edges provide two effects: high friction (μ_k ≈ 0.50 → spin-steal capability) and low restitution (e ≈ 0.25 → energy absorbed, not returned as recoil). Bound mechanism: rubber deforms on contact → stores energy → returns as secondary kick after primary hit. Spin-steal + secondary kick combined. Rubber wear: effectiveness decreases over matches.  
+**Engine Note**: rubberEdges; e=0.25; mu_k=0.50; spinSteal+boundKick; rubberWear_degradation.
+
+---
+
+### [Case 1285 — Attack Ring: Ark Pyramid (Desert Sphinxer)](./4%20case%20study.md#case-1285)
+
+**System**: Plastics System (Gen 1, SG System)  
+**Geometry**: pyramid-shaped protrusions; moderate outer radius  
+**Material**: ABS  
+**Contact Points**: pyramid faces: angled smash faces + tip concentration  
+**Mechanism**: Pyramid geometry: flat faces at smash angle → competitive smash component. Tip apex: stress concentration on opponent AR at contact point → local deformation or fracture risk (opponent's part). Moderate outer radius. Desert Sphinxer stock AR. Competitive in RS smash with pyramid face angle advantage.  
+**Engine Note**: pyramidProtrusions; flatFace_smash + tipApex_concentration; DesertSphinxer_stock.
+
+---
+
+### [Case 1286 — Spin Gear: Right Engine Gear (Mystery Cutter) [Supplementary to Case 197]](./4%20case%20study.md#case-1286)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Mystery Cutter CEW cutting gimmick  
+**Geometry**: EG shell accepting Mystery Cutter CEW; cutting blade CEW  
+**Material**: ABS + cutting CEW  
+**Mechanism**: Mystery Cutter CEW: blade-shaped cutting extension. On contact: blade attempts to sever opponent ring connections. In practice: blade geometry produces asymmetric contact → partial smash with rotation-dependent angle. Supplementary to Case 197 (Right EG Circle Defenser/Mystery Cutter shell). Mystery Cutter vs Circle Defenser: cutter provides attack bias; Circle Defenser provides LAD bias.  
+**Engine Note**: MysteryCutter_CEW; bladeGeometry; attackBias vs CircleDefenser_LADbias; asymmetricContact.
+
+---
+
+### [Case 1287 — Blade Base: Final Clutch Base (Desert Sphinxer Version)](./4%20case%20study.md#case-1287)
+
+**System**: Plastics System (Gen 1, SG System, EG/CEW)  
+**Gimmick**: Final Clutch  
+**Geometry**: Desert Sphinxer FCB version; mass and geometry optimized for weight-based defense  
+**Material**: ABS  
+**Mechanism**: Desert Sphinxer FCB version outclasses Dranzer GT version (Case 227) in weight-based defense role. Geometry: perimeter optimized for minimal recoil vs Dranzer GT's mode-change protrusions. FCB timing inversion problem persists (same as all FCBs) but weight-based defense role is less timing-sensitive. Best FCB for weight-based defense builds.  
+**Engine Note**: DesertSphinxer_FCB; outclasses_DranzerGT in weightDefense; FCBtimingInverted persists.
+
+---
+
+### [Case 1288 — Assembled Beyblade Analysis: Darllanzer — Hydro-Siphon Tip Mechanism](./4%20case%20study.md#case-1288)
+
+**System**: Plastics System (Gen 1, SG System) — assembled analysis  
+**Gimmick**: hydro-siphon tip (water channeling through tip body)  
+**Geometry**: full combo assembled; hydro-siphon tip channels water during wet-arena battles  
+**Material**: ABS + hydro-siphon tip  
+**Mechanism**: Hydro-siphon tip: tip body contains channels that draw water from wet arena surface into rotation path. Water mass centrifugally distributed → temporary I increase (water adds effective rotating mass). Water drainage rate determines duration of I boost. Gimmick only functional in wet-arena events (non-standard). Outside wet arena: tip acts as standard flat tip with drainage channels (slightly higher friction from channel edges).  
+**Engine Note**: hydroSiphon; waterChanneling → temporaryI_boost; wetArena_only; dryArena = standardFlat.
+
+---
+
+## CS5 — Cases 286–296 + 951–1000 + 1089–1096 {#cs5}
+Source: `5 case study.md`
+
+---
+
+### [Case 286 — 100 Track: Attack-Bracket Height Positioning and Vertical Impulse Geometry](./5%20case%20study.md#case-286)
+
+**System**: Metal Fight Beyblade (MFB/HWS) — Track  
+**Geometry**: 1.0 cm height (100 = 10.0 mm); shaft clears scrape threshold for full practical sliding shoot range  
+**Material**: ABS  
+**Mechanism**: 10 mm height provides floor-scrape clearance for sliding shoot launch tilt range. Wheel overhang compensates 1.5 mm undercut deficit vs Track 85. Contact bracket: wheel sits at height where it can contact opponents' wheels from below (upper attack) or level (smash). 1.0 g mass negligible I contribution.  
+**Engine Note**: height = 1.0 cm; scrapeThreshold_cleared; wheelOverhang_compensates_1.5mm; attackBracket.
+
+---
+
+### [Case 287 — RSF (Rubber Semi-Flat) Bottom: Rubber Friction Geometry, Mold-Hardness Contact Area, and L-Spin Torque Reversal](./5%20case%20study.md#case-287)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: rubber semi-flat tip; contact area mold-dependent  
+**Material**: rubber (varying hardness by mold)  
+**Mechanism**: Rubber semi-flat: μ_rubber ≈ 0.85 → strong floor grip. Semi-flat profile: contact area intermediate between sharp (point) and flat (wide). Mold hardness variation: softer molds → more deformation → larger contact area → more grip. L-spin (left spin): torque reversal — rubber grip direction inverts → LS bey moves differently from RS. Must tune for spin direction.  
+**Engine Note**: rubber; mu≈0.85; mold_hardness_affects_area; torqueReversal_LS.
+
+---
+
+### [Case 288 — Vulcan Metal Wheel: Two-Mold Mass Redistribution, Pseudo-Upper-Attack Slope Analysis, and Rubber-Tip Impulse Threshold](./5%20case%20study.md#case-288)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: two molds; mass redistribution between molds; pseudo-upper-attack slopes  
+**Material**: zinc alloy metal wheel  
+**Contact Points**: pseudo-upper slopes: partial upper-attack component; rubber tip dependency  
+**Mechanism**: Two molds: M1 vs M2 mass redistribution changes effective contact height and smash angle slightly. Pseudo-upper-attack slopes: slope angle insufficient for true upper attack (partial component only). Rubber tip impulse threshold: Vulcan requires rubber tip to exceed the recoil threshold for ring-outs. Metal/plastic tips: insufficient impulse from pseudo-upper contact → no KO.  
+**Engine Note**: twoMolds; pseudoUpper_partialSlope; rubberTip_required for KO impulse.
+
+---
+
+### [Case 289 — Flame Metal Wheel: Crown-Profile Track Exposure, Floor-Scrape Clearance Angle, and Stamina Decay Mechanics](./5%20case%20study.md#case-289)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~29.0 g; crown profile; track exposure geometry  
+**Material**: zinc alloy metal wheel  
+**Mechanism**: Crown profile: rim-concentrated mass at maximum outer radius → high I. Track exposure: crown geometry exposes track (145 or similar) contact zone. Floor-scrape clearance: crown height sets minimum track for safe launch tilt. Stamina decay: crown profile minimizes rim-stadium friction (smooth outer edge) → slow spin decay. Top-tier stamina wheel in MFB initial series.  
+**Engine Note**: mass_g ≈ 29.0; crownProfile; highI_rimConcentrated; slow spinDecay; stamina_topTier.
+
+---
+
+### [Case 290 — Pegasis II Clear Wheel: 3.1 g](./5%20case%20study.md#case-290)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 3.1 g; clear wheel (Energy Ring equivalent in Hybrid Wheel System)  
+**Material**: polycarbonate (PC)  
+**Mechanism**: PC Energy Ring. 3.1 g: minor I contribution (~1–2% of combo). Primary function: launcher hook geometry and Fusion Wheel gap fill. PC material stiffness: contributes to wheel-gap resonance behavior. Pegasis II: second-generation Pegasis ring, slightly different launcher tab geometry vs Pegasis.  
+**Engine Note**: mass_g = 3.1; PC_energyRing; launcherHookGeometry; gapFill; I_minor.
+
+---
+
+### [Case 291 — Galaxy Metal Wheel: 29.4 g](./5%20case%20study.md#case-291)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 29.4 g; metal Fusion Wheel  
+**Material**: zinc alloy  
+**Mechanism**: 29.4 g Galaxy wheel: three-wing compact geometry. Wings provide smash contacts. Not rim-concentrated: mass distributed through wing structure. Compact overall diameter: limits reach vs wider wheels. Mid-tier attack wheel: competitive smash but not best reach or mass for top-tier.  
+**Engine Note**: mass_g = 29.4; threeWing; compactDiameter; midTier_attack.
+
+---
+
+### [Case 292 — Wing 105 Track / W105: 1.2 g](./5%20case%20study.md#case-292)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 1.05 cm height (10.5 mm); wing protrusions; 1.2 g  
+**Material**: ABS  
+**Mechanism**: Wing protrusions on track: create contact surfaces at track height. Wing contacts can deflect opponent tracks laterally — defensive function at track level. 1.05 cm height places track in moderate contact bracket. Wing protrusions also generate recoil if struck directly (similar to track-level contact problems). Niche: defensive track-contact builds.  
+**Engine Note**: height = 1.05 cm; wingProtrusions; trackContact_defensive; recoil if struck.
+
+---
+
+### [Case 293 — R²F Bottom / Right Rubber Flat: 0.8 g](./5%20case%20study.md#case-293)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 0.8 g; wide rubber flat tip; right-spin optimized  
+**Material**: rubber  
+**Mechanism**: Wide rubber flat: μ ≈ 0.85, large contact area → maximum floor grip for right spin. Right-spin optimized: rubber flat generates maximum orbital velocity for RS attack builds. Flower pattern: reliable at competition orbital speeds. Top-tier RS attack tip. LS: torque reversal reduces effectiveness (same R²F principle inverted). Best RS attack tip in MFB attack builds.  
+**Engine Note**: mass_g = 0.8; wideRubberFlat; mu≈0.85; RS_topTier_attack; LS_torqueReversal.
+
+---
+
+### [Case 294 — Ketos Clear Wheel: 2.5 g](./5%20case%20study.md#case-294)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 2.5 g; PC energy ring  
+**Material**: polycarbonate  
+**Mechanism**: 2.5 g PC energy ring. Lighter than average (avg ≈ 3 g) → slightly lower combo mass. Launcher hook geometry: Ketos-type tabs. Wheel gap fill function. I contribution minimal. Marginally lighter than Pegasis II Clear Wheel; use Ketos when minimizing combo mass is priority.  
+**Engine Note**: mass_g = 2.5; PC_lightClearWheel; minimalI; launcherHook.
+
+---
+
+### [Case 295 — Grand Metal Wheel: 29.3 g](./5%20case%20study.md#case-295)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 29.3 g; metal Fusion Wheel  
+**Material**: zinc alloy  
+**Mechanism**: 29.3 g Grand wheel: near-circular defense profile. Smooth outer rim → low recoil on contact. Rim concentration: circular shape provides good I-per-gram. Near-circular outer shape: tangential deflection dominant → defense/stamina. Competitive defense/stamina wheel. Not top-tier attack.  
+**Engine Note**: mass_g = 29.3; nearCircular; smoothRim_lowRecoil; defense/stamina.
+
+---
+
+### [Case 296 — Rubber Sharp / RS: 0.8 g](./5%20case%20study.md#case-296)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 0.8 g; rubber sharp tip; small contact area  
+**Material**: rubber  
+**Mechanism**: Rubber sharp: narrow rubber tip. μ_rubber ≈ 0.70–0.85 (hardness varies). Sharp shape: small contact area → lower friction than rubber flat (R²F) but higher than plastic sharp. Contact radius: ≈ 1–2 mm → moderate LAD capability. Provides grip without full rubber flat orbital speed → stamina/survival hybrid role. Spin-steal via rubber friction.  
+**Engine Note**: mass_g = 0.8; rubberSharp; smallContact_moderateFriction; stamina/survival hybrid; spinSteal.
+
+---
+
+### [Case 951 — 4 Layer System: Four-Component Homogeneity as Physics Prerequisite for All Original Series Customisation](./5%20case%20study.md#case-951)
+
+**System**: Plastics System architecture (Gen 1, 4LS) — system overview  
+**Mechanism**: Four layers (AR + WD + BB + SG implicitly): each layer's stack position determines mechanical role. AR: contact geometry (top). WD: inertia and height. BB: tip and LAD. Homogeneity: all 4LS components must be from 4-layer architecture → no SG-system parts mix in. Absence of SG: tip and weight distribution must be solved within BB single body → limits stamina and gimmick options vs SG system.  
+**Engine Note**: 4LS_architecture; stackPosition_determines_role; noSG_constrains_BBrole.
+
+---
+
+### [Case 952 — Spin Gear System: Fifth Layer Decouples Spin Direction from Blade Base Architecture](./5%20case%20study.md#case-952)
+
+**System**: Plastics System architecture (Gen 1–2, SG System) — system overview  
+**Mechanism**: SG (fifth layer between WD and BB): decouples spin direction from BB. Shell-and-core: shell = SG carrier; core = inner driver (bearings, magnets, EG). Enables bearing and engine gimmicks without changing BB. 4L blade bases mechanically incomplete in this system: 4L BB lacks SG receiver slot → cannot interface with SG gimmicks.  
+**Engine Note**: SG_decouplesSpin; shell+core = modular; 4L_BBs_incomplete.
+
+---
+
+### [Case 953 — Magnacore System (NEO SG System): Separating Core from SG Shell Enables Stadium-Magnetic Coupling](./5%20case%20study.md#case-953)
+
+**System**: Plastics System architecture (Gen 1–2, Magnacore variant) — system overview  
+**Mechanism**: Magnacore: core separated from SG shell → core swappable without changing shell. Stadium magnetic coupling: Magnecore polarity (N/S) interacts with Magne Stadia magnets → augments attack (repulsion) or defense (attraction) depending on polarity. Six-layer structure (AR + WD + SG shell + Magnecore + BB + SG base) requires no new AR/WD architecture — pure core-swap upgrade.  
+**Engine Note**: NEO_SG; Magnecore_swappable; stadiumMagnets_coupling; 6layer; no_new_AR_WD_needed.
+
+---
+
+### [Case 954 — Hard Metal System: 75% Linear Scale Reduction Produces Disproportionate Air-Drag Savings; Metal Frame–ABS Caul Concentrates Hardness at Contact Zone](./5%20case%20study.md#case-954)
+
+**System**: Hard Metal System (HMS) — system overview  
+**Mechanism**: 75% linear scale reduction (HMS beys ~75% of plastics dimensions). Air drag scales as A × v²: area ∝ r² → drag ∝ r² → 75% scale → 56% drag. Mass preserved → same inertia but 56% drag → disproportionate spin retention improvement. Metal frame + ABS caul: metal at contact zone (hardness where needed) + ABS main body (mass savings). RC consolidates SG into running core → breaks prior-system compatibility.  
+**Engine Note**: 75%_scale; drag = 56%; metalFrame_ABS_caul; RC_consolidates_SG; incompatible with 4L/SG.
+
+---
+
+### [Case 955 — Metal System (MFB Initial Series): Discrete Track Layer Decouples Contact-Height from Contact-Geometry Tuning; All-Metal Wheel Changes Impulse Budget](./5%20case%20study.md#case-955)
+
+**System**: Metal Fight Beyblade (MFB) initial system — system overview  
+**Mechanism**: Separate Track layer: contact height tunable independently of wheel (contact geometry). Prior systems: wheel height and geometry coupled. All-metal wheel: higher stiffness → higher e (restitution) → more elastic collision → different impulse budget vs ABS ARs. Bottom three classes (sharp/flat/rubber) directly from friction-velocity phase diagram. Track 85/90/100/105 create discrete height brackets.  
+**Engine Note**: separateTrack → decouples height from geometry; allMetal_wheel; 3bottom_classes from frictionPhase.
+
+---
+
+### [Case 956 — Engine Gear System: Clutch BB Determines Spring Energy Entry; Turbo 4× Power; Reverse EG Spin Budget; Gyro EG Bearing LAD](./5%20case%20study.md#case-956)
+
+**System**: Plastics System (EG System) — system architecture  
+**Mechanism**: EG system: spring stores energy at launch → clutch BB determines when released. First Clutch: deceleration-trigger. Final Clutch: minimum-spin-trigger. Turbo EG: 4× spring release power via spring architecture differences. Reverse EG: trades spin budget for one high-impulse event (spring fires reverse → one controlled counter). Gyro EG: merges spring launch with bearing LAD in single housing.  
+**Engine Note**: clutchBB_determines_entry; Turbo=4x; Reverse=spinBudget_tradeoff; Gyro=spring+bearingLAD.
+
+---
+
+### [Case 957 — Hybrid Wheel System: PC Energy Ring + Metal Fusion Wheel Split Relocates Mass Control to Fusion Wheel](./5%20case%20study.md#case-957)
+
+**System**: Metal Fight Beyblade (MFB/HWS) — system architecture  
+**Mechanism**: MFB split: original single metal wheel → PC Energy Ring + Metal Fusion Wheel. Fusion Wheel: carries nearly all mass (I_total dominated by FW). Energy Ring: PC → minor I. PC material: launcher hook geometry only (no meaningful I). Five-layer stack: physically identical to Metal System except single wheel-split. Mass distribution control: entirely in Fusion Wheel design (Energy Ring negligible).  
+**Engine Note**: FW_dominates_I; ER_PC_launcherHookOnly; 5layer = MetalSystem + oneSplit.
+
+---
+
+### [Case 958 — 4D System: PC Frame + Metal Frame + Core Enables Mode Changes; F:D Merges Track and Tip](./5%20case%20study.md#case-958)
+
+**System**: Metal Fight Beyblade (4D System) — system architecture  
+**Mechanism**: Fusion Wheel subdivided: PC Frame + Metal Frame + Core → in-part mode changes possible (reorder components). Final Drive (F:D): combines track + tip into one speed-dependent tip-transition unit. Four "D" variables: Different Material (PC+Metal+Core) + Divided Wheel (three-part FW) + Dynamic Drive (F:D) + Deep Custom (four FW components combinable). Each variable independent physics axis.  
+**Engine Note**: PCFrame+MetalFrame+Core; modeChange via reorder; FD_merges_track+tip; 4D_4variables.
+
+---
+
+### [Case 959 — Burst System (Base Structure): Three-Layer Stack Forces Disc to Carry All Flywheel Function; Spring-Ratchet Burst Converts Impulse to Two-Point Win](./5%20case%20study.md#case-959)
+
+**System**: Beyblade Burst (Gen 3) — system architecture  
+**Mechanism**: Three layers (Blade/Layer + Disc + Driver): disc must carry all flywheel function (no separate track/WD distinction). Spring-ratchet burst: contact impulse → spring compresses → ratchet clicks → burst (scattered parts = 2-point win). Standardized driver height: eliminates height-mismatch exploit of all prior systems. Disc mass and radius determine combo inertia; blade provides contact geometry only.  
+**Engine Note**: 3layer: Blade+Disc+Driver; disc_flywheel; springRatchet_burst = 2pts; standardDriverHeight.
+
+---
+
+### [Case 960 — Burst Subsystems (Takara Tomy): Each Generation Changes One Physics Axis; Cho-Z Metal-Insert Shifts Burst Balance; DB High/Low Mode Is Contact-Height Selector](./5%20case%20study.md#case-960)
+
+**System**: Beyblade Burst variants (Cho-Z, GT, DB, BU, X) — system architecture  
+**Mechanism**: Each TT generation changes exactly one axis of burst physics framework. Cho-Z: metal inserts in layer → higher layer I + contact stiffness → burst balance shifts toward attack. Three-part layers: chip swapping without full layer replacement. DB High/Low mode: part reorder changes contact height (High=Armor-top/taller; Low=DBCore-top/stable — see DB/BU High vs Low Mode memory note). X: new launcher + disc/driver naming.  
+**Engine Note**: eachGen_oneAxis; ChoZ_metalInsert; 3partLayer_chipSwap; DB_highLow = contactHeightSelector.
+
+---
+
+### [Case 961 — CobaltDrake 4-60F: 38 g Blade Exceeds Contemporaries by 3 g; Upward-Slanting Contacts Decompose to Lateral + Vertical; Flat Bit Rail Couples Xtreme Line](./5%20case%20study.md#case-961)
+
+**System**: Beyblade X (BX) — Layer/Disc/Driver  
+**Geometry**: 38 g blade; 4-disc; 60 track; Flat bit  
+**Material**: metal/PC composite blade  
+**Contact Points**: upward-slanting faces → J decomposes to lateral smash + destabilizing vertical  
+**Mechanism**: 38 g blade: +3 g over contemporaries → higher I + harder hits. Upward-slanting contacts: lateral smash component + vertical destabilizing component. Flat bit: rail coupling to Xtreme Line converts rotational energy to directed translational velocity → attack orbital movement enhanced. Combo total I increases per-collision smash and KO capability.  
+**Engine Note**: blade_g=38; 4disc; 60track; FlatBit_XtremeLine_coupling; verticalComponent_destabilizes.
+
+---
+
+### [Case 962 — DranBuster 1-60A (Unique Line): Single Off-Axis Protrusion Concentrates All Contact Mass at One Angular Position; 1-Protrusion Ratchet Imbalance Creates Eccentric Orbit](./5%20case%20study.md#case-962)
+
+**System**: Beyblade X (BX)  
+**Geometry**: 1-disc; 60 track; Accel bit  
+**Mechanism**: Single off-axis protrusion: all contact mass concentrated at one angular position → single high-impulse event per revolution (maximum J per contact). 1-protrusion ratchet imbalance: blade orbits eccentrically → controlled eccentric orbit (OWD = orbital wobble direction). 16 Accel gears increase Xtreme Dash exit speed at direct spin-energy cost (gear friction loss).  
+**Engine Note**: 1disc; 60track; AccelBit; singleProtrusion_maxJ; eccentricOrbit; 16AccelGears_tradeoff.
+
+---
+
+### [Case 963 — DranBrave S6-60V (Custom Line): Lock Chip + Main Blade + Assist Blade Introduces Secondary Contact; Brave Tall Upper-Attack Trades Bite for Height; Vortex Screw-Pump Force](./5%20case%20study.md#case-963)
+
+**System**: Beyblade X (BX)  
+**Geometry**: S6 blade (chip+main+assist); 60 track; Vortex bit  
+**Mechanism**: Three-part blade: Lock Chip (burst resistance) + Main Blade + Assist Blade (secondary contact surface). Brave: smooth tall upper-attack blades trade bite (sharp contact = high J) for height (contacts upper band of opponent blade). Reduced effective impulse from lower bite. Vortex bit: rightward-spiral spikes generate screw-pump lateral force → increases Xtreme Line coupling speed.  
+**Engine Note**: S6_3partBlade; tall_upper_lowerBite; VortexBit_screwPump → XtremeLine coupling.
+
+---
+
+### [Case 964 — Track 85: 0.86 g — Minimum-Height Track Enables Wheel-Underside Contact Against Taller Opponents](./5%20case%20study.md#case-964)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 0.86 g; 8.5 mm height  
+**Material**: ABS  
+**Mechanism**: Minimum height track: 8.5 mm → wheel sits lowest possible → can contact underside of taller opponents' wheels (upper attack geometry). Floor-scrape threshold: 8.5 mm shaft cuts threshold below sliding shoot tilt envelope → moderate scrape risk at extreme launch angles. Boost Disk 145 and 230 structurally close the low-track attack window against those specific opponents.  
+**Engine Note**: height = 0.85 cm; minimum; upperContact vs taller; floorScrape_risk at extreme angles.
+
+---
+
+### [Case 965 — Track 90: 0.9 g — 0.5 mm Height Increase Over 85 Raises Scrape Threshold by 1.4° Into Safer Window](./5%20case%20study.md#case-965)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 0.9 g; 9.0 mm height  
+**Material**: ABS  
+**Mechanism**: 0.5 mm taller than 85: scrape threshold increases by 1.4° (arctan(0.5/tip_radius)). Retains 92% of CoM-lowering benefit of 85. Deciding factor: marginally safer launch angle window vs T85 while maintaining near-equivalent attack bracket. Choose 90 when scraping with 85 is problematic at full sliding shoot angle.  
+**Engine Note**: height = 0.9 cm; 1.4deg_safer vs T85; 92%_CoM_benefit; marginalSafetyAdvantage.
+
+---
+
+### [Case 966 — Track 100: 1.0 g — 10 mm Shaft Clears Scrape Threshold for Full Practical Sliding Shoot Range](./5%20case%20study.md#case-966)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 1.0 g; 10.0 mm height  
+**Material**: ABS  
+**Mechanism**: 10 mm height clears floor-scrape threshold for the full practical sliding shoot angle range. Wheel overhang compensates 1.5 mm undercut deficit relative to T85. Standard attack bracket height. Most widely used attack track — adequate height without excessive elevation. Reference height for contact zone analysis.  
+**Engine Note**: height = 1.0 cm; scrapeThreshold_cleared; wheelOverhang compensates 1.5mm; standardAttack.
+
+---
+
+### [Case 967 — Track 105: 1.0 g — Identical Mass to 100 With 0.5 mm More Height; No Practical Advantage](./5%20case%20study.md#case-967)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 1.0 g; 10.5 mm height  
+**Material**: ABS  
+**Mechanism**: 0.5 mm taller than T100 at identical mass. 0.5 mm extra height: elevates wheel contact zone slightly above T100 range → marginally worsens all attack metrics (higher contact misses lower-wheel opponents). No practical advantage over T100. Last-resort-only: use T100 whenever available.  
+**Engine Note**: height = 1.05 cm; same mass as T100; marginallyWorseAttack; last_resort_only.
+
+---
+
+### [Case 968 — AD145 (Armor Defense 145): 2.8 g — Funnel-Shaped Track Top-Tier Stamina Despite Failing Defense Role; BD145 Supersedes for Defense](./5%20case%20study.md#case-968)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 2.8 g; 14.5 mm height; funnel-shaped with outward weight distribution  
+**Material**: ABS  
+**Mechanism**: Funnel shape with outward weight at 38 mm max width: I_track = 2.8 g × r² → significant I contribution. Weight distributed outward → best I-per-gram among tracks → top-tier stamina. Named defensive role: funnel deflects downward → doesn't protect wheel → defense fails. BD145 structurally supersedes for defense. AD145 retains stamina niche due to outward mass distribution.  
+**Engine Note**: height=1.45cm; mass=2.8g; r_outer=1.9cm; I_contribution_topTier; stamina niche; BD145_defense.
+
+---
+
+### [Case 969 — DF145 (Down Force 145): 1.5 g — Four Wings Cannot Generate Meaningful Downforce at Beyblade Spin Rates; Outclassed](./5%20case%20study.md#case-969)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 1.5 g; 14.5 mm height; four upward wings  
+**Material**: ABS  
+**Mechanism**: Wing aerodynamics: Downforce = ½ × ρ × v² × A × C_L. At beyblade RPM: v_wing ≈ 1–3 m/s → downforce ≈ 10⁻³ N (negligible vs gravity and contact forces). Four wings cannot generate meaningful downforce at these speeds. Track outclassed in stamina (less mass than AD145) and irrelevant in defense or attack. No competitive role.  
+**Engine Note**: height=1.45cm; mass=1.5g; downforce_negligible; outclassed_all_roles.
+
+---
+
+### [Case 970 — SW145 (Switch 145): 4.2 g — Reversing Wings Changes Contact Face From Smash to Deflection; 4.2 g Highest Track I; Rigid Wings Cap Defense](./5%20case%20study.md#case-970)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 4.2 g; 14.5 mm height; three wings at 38 mm max width; two orientations  
+**Material**: ABS  
+**Mechanism**: Mode switch: reverse three wings → attack mode: wings forward → smash-initiating contact face. Defense mode: wings backward → deflection-optimized face. 4.2 g at r_max = 1.9 cm → highest track-level I in 145-height class. Rigid wing attachment (not free-spin): full contact impulse transmitted → irremovable recoil → structurally caps defensive ceiling. Best I contribution of any track.  
+**Engine Note**: height=1.45cm; mass=4.2g; highestTrack_I; modeSwitch; rigidWings_recoil caps defense.
+
+---
+
+### [Case 971 — WD145 (Wide Defense 145): 3.6 g — Fixed Wings Transmit Full Impulse Unlike ED145; Radial Gap Creates Mechanical Trap; Trap-Coupling Produces Large Mutual Spin Drain](./5%20case%20study.md#case-971)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 3.6 g; 14.5 mm height; wide wing-flange design  
+**Material**: ABS  
+**Mechanism**: Fixed wings (not free-spin unlike ED145): full contact impulse transmitted. Radial gap between wheel outer edge and wing outer edge: mechanical trap — attacker protrusions can lock into gap. Trap-coupling event: both beyblades momentarily linked → large mutual spin drain. High risk for attacker (lost spin). Defensive track: wide flange aids LAD via large precession radius.  
+**Engine Note**: height=1.45cm; mass=3.6g; fixedWings_fullImpulse; mechanicalTrap_in_radialGap; LAD_widePrecessionRadius.
+
+---
+
+### [Case 972 — E230 (Elevator 230): 7.4 g — Gravity-Driven Free-Sliding Disk Acts as Passive Speed Governor on Zero-G Stadium Walls](./5%20case%20study.md#case-972)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 7.4 g; 23.0 mm height; free-sliding disk (gravity-driven, non-rotating)  
+**Material**: ABS  
+**Mechanism**: Free-sliding disk: gravity pulls disk down to one of two positions (Normal or Boost mode, 2 mm difference). Cannot rotate independently. On Zero-G stadium walls: disk acts as passive speed governor — inertial lag as bey climbs wall produces restoring torque that stabilizes during wall climb. 7.4 g at h=2.3 cm: significant mass at track → I contribution. Contact geometry changes 2 mm between Normal and Boost disk position.  
+**Engine Note**: height=2.3cm; mass=7.4g; freeSlidingDisk_nonRotating; wallClimb_governor; 2mm_modeSwitch.
+
+---
+
+### [Case 973 — SP230 (Spike 230): ~4.8 g](./5%20case%20study.md#case-973)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: ~4.8 g (estimated); 23.0 mm height; spike protrusions  
+**Material**: ABS  
+**Mechanism**: 23 mm spike track. Spikes at track perimeter: contact stadium wall during wall-climb precession → generate friction drag on wall contact (slows orbital speed). On Zero-G stadiums: spikes grip wall → increases wall-ride stability but reduces speed. Very tall height (2.3 cm) → lower opponent contact probability vs standard wheels. Niche: Zero-G wall-ride builds.  
+**Engine Note**: height=2.3cm; mass_est≈4.8g; spikePerimeter; wallGrip_on_ZeroG; tallHeight_lowers_contact.
+
+---
+
+### [Case 974 — F230 (Free 230): 4.6 g](./5%20case%20study.md#case-974)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 4.6 g; 23.0 mm height; free-spinning disk extension  
+**Material**: ABS  
+**Mechanism**: Free-spinning disk at 2.3 cm height: disk rotates independently of track body. Impact on disk: disk spins up → impulse partially absorbed (spin-up energy stored) → less recoil to combo. Passive impact absorption: different from E230's gravity-sliding. Free-spin decouples contact impulse from main body. Tall height for Zero-G builds.  
+**Engine Note**: height=2.3cm; mass=4.6g; freeSpinDisk; impulseAbsorption; ZeroG_niche.
+
+---
+
+### [Case 975 — TB (Twin Ball): ~unrecorded weight](./5%20case%20study.md#case-975)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: twin ball contact geometry; weight unrecorded  
+**Material**: ABS + twin ball  
+**Mechanism**: Two contact balls in bottom: similar to single metal ball (Case 248) but dual → wider contact base → more stable orbital precession. Ball radius still limits tip-friction to μ_ball ≈ 0.35. Twin configuration provides symmetry vs single ball. Moderate stamina, moderate attack. Niche between pure sharp (stamina) and flat (attack).  
+**Engine Note**: twinBall; mu_ball≈0.35; stable_precession; moderate niche.
+
+---
+
+### [Case 976 — Storm Metal Wheel: ~28.5 g](./5%20case%20study.md#case-976)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~28.5 g; metal Fusion Wheel; two-wing design  
+**Material**: zinc alloy  
+**Contact Points**: two wing smash faces; RS primary  
+**Mechanism**: Two large wings: aggressive smash contacts at high-radius position. ~28.5 g: competitive mass for wing-based attack. Wing angle: smash-optimized → high lateral impulse per hit. RS primary attack wheel. Paired with R²F or RF for top-tier RS attack combos. Classic MFB attack wheel.  
+**Engine Note**: mass_g≈28.5; twoWing; smash_RSPrimary; RF/R²F_paired.
+
+---
+
+### [Case 977 — Rock Metal Wheel: ~28.0 g](./5%20case%20study.md#case-977)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~28.0 g; compact circular wheel  
+**Material**: zinc alloy  
+**Mechanism**: Compact near-circular wheel: smooth outer profile → low recoil. ~28.0 g at compact radius: I_rock lower than rim-concentrated wheels of same mass. Defense/balance role: smooth profile deflects. Does not reach top-tier in stamina (not rim-concentrated) or attack (compact, limited reach). General-purpose mid-tier.  
+**Engine Note**: mass_g≈28.0; compact_circular; smoothProfile; defense/balance; midTier.
+
+---
+
+### [Case 978 — Lightning Metal Wheel (L-Drago): ~28.0 g](./5%20case%20study.md#case-978)
+
+**System**: MFB (Metal Fight Beyblade) — Left Spin  
+**Geometry**: ~28.0 g; left-spin specific design; three rubber sliders  
+**Material**: zinc alloy + rubber sliders  
+**Contact Points**: rubber sliders (left-spin smash contacts); spin-steal friction  
+**Mechanism**: Left-spin specific wheel with rubber slider contacts. Rubber sliders: μ_rubber provides spin-steal and friction-based smash in LS. Geometry optimized for LS orbital attack. RS use: geometry inverts → non-viable for attack. Only competitive LS attack metal wheel in initial MFB series. L-Drago bey stock wheel.  
+**Engine Note**: mass_g≈28.0; LS_specific; rubberSliders; spinSteal+friction_smash; RS_nonViable.
+
+---
+
+### [Case 979 — Flame Metal Wheel: ~29.0 g](./5%20case%20study.md#case-979)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~29.0 g; crown profile; rim-concentrated mass  
+**Material**: zinc alloy  
+**Mechanism**: Crown profile: see Case 289 (duplicate wheel entry with different analysis focus). Rim concentration → high I for stamina. Smooth outer rim → minimal friction loss. Top-tier stamina wheel in initial MFB series alongside Earth (Case 998). Case 289 covers track exposure; this entry covers wheel mass properties.  
+**Engine Note**: mass_g≈29.0; crownRim; I_topTier; stamina; same part as Case289 different focus.
+
+---
+
+### [Case 980 — Burn Metal Wheel: ~29.5 g](./5%20case%20study.md#case-980)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~29.5 g; smooth wide-rim wheel  
+**Material**: zinc alloy  
+**Mechanism**: Wide smooth rim: rim-concentrated at large radius → high I. ~29.5 g: good mass for stamina. Smooth circular profile: tangential deflection → near-zero recoil. Stamina/defense hybrid wheel. Less I per gram than Earth (heavier, same distribution) but competitive. Paired with WD/SD bottom for stamina builds.  
+**Engine Note**: mass_g≈29.5; wideRim; I_competitive; stamina/defense.
+
+---
+
+### [Case 981 — Earth Metal Wheel: ~30.0 g](./5%20case%20study.md#case-981)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~30.0 g; near-circular; minimal-gap outer rim; two molds  
+**Material**: zinc alloy  
+**Mechanism**: Near-circular with minimal outer gap: best recoil absorption in MFB (smooth tangential contact). ~30.0 g: heaviest standard wheel → highest I. Two-mold structural evolution: later mold reduces structural weakness in outer rim. Top-tier defense and stamina. Earth+WD145+WD = iconic stamina combo. See also Case 998 for detailed analysis.  
+**Engine Note**: mass_g≈30.0; nearCircular_minimalGap; I_highest; bestRecoilAbsorption; defense+stamina.
+
+---
+
+### [Case 982 — L Drago Metal Wheel: 32 g](./5%20case%20study.md#case-982)
+
+**System**: MFB (Metal Fight Beyblade) — Left Spin  
+**Geometry**: 32 g; left-spin design; three-blade structure  
+**Material**: zinc alloy  
+**Contact Points**: three LS attack blades; RS contacts non-competitive  
+**Mechanism**: 32 g: heavier than standard (~28–30 g) → higher I + harder hits. Three-blade LS structure: LS attack-optimized. Higher mass than L-Lightning → more KO force per hit. RS: blade backs present recoil geometry → non-competitive. Top-tier LS attack wheel in MFB.  
+**Engine Note**: mass_g=32; 3blade; LS_topTier_attack; RS_nonCompetitive; higherMass than L-Lightning.
+
+---
+
+### [Case 983 — Leone Metal Wheel: 38.0 g — r_outer = 2.179 cm, h = 8.97 mm](./5%20case%20study.md#case-983)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 38.0 g; r_outer = 2.179 cm; h = 0.897 cm; annular design  
+**Material**: zinc alloy  
+**Mechanism**: 38.0 g: very heavy metal wheel. r_outer = 2.179 cm, h = 0.897 cm. Annular geometry: I = ½ × m × (r_outer² + r_inner²). High mass + large radius → very high I. Heavy wheel → maximum stamina and KO resistance. Defense role: high mass absorbs hits without significant Δω. Contact: smooth outer rim → low recoil. Top-tier defense/stamina.  
+**Engine Note**: mass_g=38.0; r_outer=2.179cm; h=0.897cm; veryHighI; defense/stamina_topTier.
+
+---
+
+### [Case 984 — Libra Metal Wheel: 40.5 g (three molds)](./5%20case%20study.md#case-984)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 40.5 g; heaviest standard MFB metal wheel; three molds  
+**Material**: zinc alloy (three mold variants)  
+**Mechanism**: 40.5 g: heaviest standard MFB metal wheel → highest possible I in class. Three molds: mass varies slightly between molds (all around 40.5 g — verify specific copy). Near-circular profile: low recoil. Maximum KO resistance and maximum stamina. Defense benchmark in MFB.  
+**Engine Note**: mass_g=40.5; heaviestMFB; 3molds; I_maximum; defense+stamina benchmark.
+
+---
+
+### [Case 985 — Pegasis Metal Wheel: 36.0 g — r_outer ≈ 2.220 cm, h = 12.16 mm](./5%20case%20study.md#case-985)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 36.0 g; r_outer ≈ 2.220 cm; h = 1.216 cm; three-wing design  
+**Material**: zinc alloy  
+**Contact Points**: three wing faces; smash contacts  
+**Mechanism**: 36.0 g three-wing wheel. h = 1.216 cm provides good contact height bracket. r_outer = 2.220 cm: competitive reach. Three wings: smash contacts at outer radius. RS primary. Attack role: 36.0 g mass + three-wing smash. I higher than Storm/Galaxy due to mass advantage. Mid-tier between pure attack and pure defense.  
+**Engine Note**: mass_g=36.0; r_outer=2.220cm; h=1.216cm; threeWing; RS_attack.
+
+---
+
+### [Case 986 — Pisces Metal Wheel: 35.4 g](./5%20case%20study.md#case-986)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 35.4 g; two-wing design  
+**Material**: zinc alloy  
+**Contact Points**: two-wing smash faces  
+**Mechanism**: 35.4 g two-wing wheel. Heavy for attack → maximum impulse per hit. Two wings: lower contact frequency than three-wing but higher impulse concentration per contact. RS attack role. High mass → good KO potential vs defense-heavy combos. Not as rim-concentrated as defense wheels.  
+**Engine Note**: mass_g=35.4; twoWing; highMass_attack; lowerFreq_higherImpulse vs threeWing.
+
+---
+
+### [Case 987 — Sagittario Metal Wheel: ~31 g](./5%20case%20study.md#case-987)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~31 g (estimated); arrow-head profile contacts  
+**Material**: zinc alloy  
+**Contact Points**: arrow-head faces; dual smash + upper component  
+**Mechanism**: ~31 g estimated. Arrow-head profile: dual contact geometry — flat smash face + slight upward slope (upper component). Moderate mass. RS primary. Mid-tier in both attack and stamina. Not specialized enough for top-tier in either direction.  
+**Engine Note**: mass_g_est≈31; arrowHead_dual; RS_attack; midTier.
+
+---
+
+### [Case 988 — Virgo Metal Wheel: 37.0 g](./5%20case%20study.md#case-988)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 37.0 g; smooth curved design  
+**Material**: zinc alloy  
+**Mechanism**: 37.0 g: heavy wheel. Smooth curved outer rim: tangential deflection → low recoil. High mass + smooth rim → defense/stamina role. I contribution high due to mass. Competitive defense alongside Leone and Libra. Not top-tier in attack (smooth profile limits smash concentration).  
+**Engine Note**: mass_g=37.0; smoothCurved; defense/stamina; I_high; notAttack.
+
+---
+
+### [Case 989 — Leone Clear Wheel: 3.0 g](./5%20case%20study.md#case-989)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 3.0 g; PC clear wheel  
+**Material**: polycarbonate  
+**Mechanism**: Standard PC energy ring. 3.0 g. Leone-design tabs for launcher. Gap fill for Leone metal wheel. Minimal I contribution. No mechanical function beyond launcher interface and gap fill.  
+**Engine Note**: mass_g=3.0; PC; launcherTabs; gapFill; I_negligible.
+
+---
+
+### [Case 990 — Nemesis 4D Clear Wheel: 3.23 g](./5%20case%20study.md#case-990)
+
+**System**: MFB (4D System)  
+**Geometry**: 3.23 g; PC clear wheel for 4D system  
+**Material**: polycarbonate  
+**Mechanism**: 4D system energy ring. 3.23 g slightly heavier than standard rings. 4D-specific geometry: designed around 4D Fusion Wheel three-piece design. Launcher tab interface for 4D beys. Slightly higher I contribution from 3.23 g vs standard 3.0 g rings.  
+**Engine Note**: mass_g=3.23; PC; 4D_compatible; slightlyHeavier; I_slightly above standard.
+
+---
+
+### [Case 991 — VariAres 4D Metal Wheel: Centrifugal PC Frame Retraction and Three-Wing Smash Geometry](./5%20case%20study.md#case-991)
+
+**System**: MFB (4D System)  
+**Geometry**: 4D composite wheel (PC Frame + Metal Frame + Core); three-wing design  
+**Material**: PC frame + zinc alloy metal frame  
+**Gimmick**: centrifugal PC frame retraction  
+**Mechanism**: Centrifugal retraction: at high spin, PC Frame retracts inward → changes effective wheel radius and contact geometry. Three-wing smash geometry: effective in retracted mode (high spin) for attack. At low spin, frame extends → changes contact profile. Mode-change via RPM threshold. Top-tier 4D attack wheel when PC frame behavior managed.  
+**Engine Note**: PCframe_centrifugalRetract; threeWing_smash; modeChangeByRPM; topTier4D_attack.
+
+---
+
+### [Case 992 — D:D (Delta Drive) Bottom: Three-Tip Manual Mode Selector and CoM Height Gradient](./5%20case%20study.md#case-992)
+
+**System**: MFB (4D System) — Bottom  
+**Geometry**: three-tip configuration; manual mode selector; CoM height changes with mode  
+**Material**: ABS + metal tips  
+**Gimmick**: manual three-position mode selector (attack/stamina/defense)  
+**Mechanism**: Three tips selectable: attack tip (rubber/flat), stamina tip (sharp), defense (rubber ball or wide flat). Manual selection before battle. CoM height gradient: each tip positions combo CoM differently → tilt stability changes per mode. Not centrifugal (unlike F:D): user selects deliberately. Provides genuine mode flexibility without gimmick uncertainty.  
+**Engine Note**: 3tipManual; COMheight varies by mode; deliberateSelection; noGimmickUncertainty.
+
+---
+
+### [Case 993 — Horogium Clear Wheel: Clock-Motif Asymmetry and Gear-Tooth Perimeter Air Drag](./5%20case%20study.md#case-993)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: clock-motif design; gear-tooth perimeter  
+**Material**: polycarbonate  
+**Mechanism**: Asymmetric clock motif: slight mass asymmetry → minor imbalance force during spin. Gear-tooth perimeter: aero drag from gear teeth at outer radius → additional spin decay during high-speed phases (unlike smooth rings). Decorative function primary; gear teeth are a passive stamina penalty. Note for game: gear teeth add aerodrag_coefficient to spin decay rate at high RPM.  
+**Engine Note**: asymmetric; gearTeethPerimeter → aeroDrag penalty; stamina_decayFaster vs smooth rings.
+
+---
+
+### [Case 994 — Basalt Metal Wheel: Maximum-Weight Annular Defense and Spiral Staircase of Death Imbalance](./5%20case%20study.md#case-994)
+
+**System**: MFB (Metal Fight Beyblade) — 4D era  
+**Geometry**: maximum weight annular wheel; spiral staircase geometry on underside  
+**Material**: zinc alloy (very high mass)  
+**Mechanism**: Maximum-weight annular design: highest mass in MFB class → maximum I → maximum KO resistance. Smooth annular outer rim → near-zero recoil (defense dominant). Spiral staircase underside: known "Spiral Staircase of Death" imbalance — microscopic mass distribution irregularity causes wobble resonance at specific spin rates. Competitive despite imbalance due to overwhelming mass advantage.  
+**Engine Note**: maxWeight; annularDefense; I_maximum; spiralStaircase_imbalance at specific RPM.
+
+---
+
+### [Case 995 — 145 Track: Height-Limited Tilt Angle and Precession Amplitude](./5%20case%20study.md#case-995)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: standard 14.5 mm height track; widely used  
+**Material**: ABS  
+**Mechanism**: 14.5 mm height: standard track height. Tilt angle at contact → precession amplitude scales with height (higher = more precession arm during tilt). 145 height: balanced — not too low (track scrape), not too high (contact zone mismatch with 85/100 tracks). Reference track for most stamina/defense builds. I contribution: minimal (T145 ≈ 1.0–1.2 g).  
+**Engine Note**: height=1.45cm; standardHeight; precessionAmp_balanced; I_minimal; referenceForBuilds.
+
+---
+
+### [Case 996 — WD (Wide Defense) Bottom: Annular Contact Geometry and Large-Angle Precession](./5%20case%20study.md#case-996)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: wide annular rubber ring contact; large precession radius  
+**Material**: rubber + ABS  
+**Mechanism**: Wide annular rubber ring: contact area wide → multiple contact points at outer rim → stable during flower precession. Large precession radius: ω_LAD_min = √(μ×g/r_WD) → large r_WD lowers LAD threshold → very late spin-out. Spin decay: rubber drag slightly higher than sharp but annular contact stable. Top-tier stamina/LAD bottom.  
+**Engine Note**: wideRubberRing; r_WD_large → LAD_threshold_low; stableFlower; topTier_stamina/LAD.
+
+---
+
+### [Case 997 — Aquila Clear Wheel: Two-Fold Wing Symmetry, Principal Moment Anisotropy, and Earth-Fit Geometry](./5%20case%20study.md#case-997)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 2-fold symmetric wing design; fits Earth metal wheel  
+**Material**: polycarbonate  
+**Mechanism**: Two-fold wing symmetry: principal moments of inertia anisotropic (I_xx ≠ I_yy) → minor wobble tendency at specific resonance. Earth-fit geometry: wings align with Earth wheel gaps → coherent surface (no protrusion gap). PC wings: minor mass but add aerodynamic effect at outer radius. Aquila chosen over other rings for Earth stamina builds for gap-fill geometry.  
+**Engine Note**: 2fold; anisotropicI_minor_wobble; EarthWheel_fit; gapFill.
+
+---
+
+### [Case 998 — Earth Metal Wheel: Minimal-Gap Near-Circular Defense and Two-Mold Structural Evolution](./5%20case%20study.md#case-998)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: ~30.0 g; near-circular; minimal wheel-to-ring gap  
+**Material**: zinc alloy  
+**Mechanism**: Near-circular outer rim: minimal gap between wheel and energy ring → smooth outer surface → most elastic contact (lowest e for wheel → maximum recoil absorption). Two-mold: early mold has structural stress concentration at outer rim (fracture risk under repeated heavy attack); late mold reinforces. Top-tier defense + stamina. See also Case 981.  
+**Engine Note**: mass_g≈30.0; nearCircular_minimalGap; twoMold_structuralReinforce; defense+stamina.
+
+---
+
+### [Case 999 — Unicorno II 4D Clear Wheel: Iron-Powder Density Augmentation and Three-Fold Inertial Isotropy](./5%20case%20study.md#case-999)
+
+**System**: MFB (4D System)  
+**Geometry**: 4D energy ring; iron-powder density augmentation; three-fold symmetric  
+**Material**: iron-powder composite PC  
+**Mechanism**: Iron-powder embedded in PC → increases density → higher ring mass vs standard PC. Three-fold symmetry: I_xx = I_yy = I_zz (inertial isotropy) → no preferred wobble direction → more stable precession. Higher mass from iron powder: slightly better I contribution than standard ring. Used in 4D Unicorno II for maximum ring-mass contribution.  
+**Engine Note**: ironPowderPC; higherDensity; 3fold_inertialIsotropy; stablePrecession; I_above_standard.
+
+---
+
+### [Case 1000 — Blitz 4D Metal Wheel: Two-Piece Composite Inertia, Mode-Dependent Wing Geometry, and Slope-Bump Contact Profile](./5%20case%20study.md#case-1000)
+
+**System**: MFB (4D System)  
+**Geometry**: 4D two-piece wheel; mode-dependent wing geometry; slope-bump contacts  
+**Material**: metal frame + core  
+**Gimmick**: two pieces enable mode switch via rotation  
+**Mechanism**: Two-piece 4D wheel: Metal Core rotates relative to Metal Frame → switches between wing configurations. Slope-bump contacts: each wing face has both a slope (upper attack component) and a bump (smash component) → dual contact per wing. Mode A: wings aligned for smash-dominant. Mode B: wings rotated for deflection. Composite I: both pieces contribute.  
+**Engine Note**: twopiece; modeSwitch via rotation; slopeBump_dual contact per wing; compositeI.
+
+---
+
+### [Case 1089 — Upper Dragon AR (Dragoon MF): ~19 g — Most Aggressive Plastic Caul Produces Tier-2 Attack; GFC Ultimate Mode Unlocks Throughput Ceiling](./5%20case%20study.md#case-1089)
+
+**System**: Hard Metal System (HMS)  
+**Geometry**: ~19 g; metal frame + plastic caul AR; aggressive caul geometry  
+**Material**: metal frame + ABS caul  
+**Contact Points**: aggressive caul geometry; RS upper attack primary  
+**Mechanism**: HMS composite AR (metal frame + plastic caul). Most aggressive plastic caul design: steep upper-attack angle. ~19 g (heaviest HMS combo component). Tier-2 attack output: aggressive geometry produces recoil along with upper attack. Non-uniform 3-mass distribution limits stamina viability. GFC Ultimate Mode (specific RC configuration): unlocks throughput ceiling → top-tier possible.  
+**Engine Note**: mass_g≈19; HMS_metalFrame+caul; aggressiveCaul; tier2 standard; GFCUltimate unlocks.
+
+---
+
+### [Case 1090 — CWD Chain Attacker (Dragoon MF): ~17 g — Distributed Chain-Link Protrusions; Spin-Steal Niche Only; Functionally Neutral Most Archetypes](./5%20case%20study.md#case-1090)
+
+**System**: Hard Metal System (HMS)  
+**Geometry**: ~17 g; chain-link protrusion profile  
+**Material**: metal  
+**Mechanism**: Chain-link protrusions distributed around circumference: non-committal contact geometry — neither optimal smash angle nor optimal LAD surface. Spin-steal niche: chain-link texture provides sustained grinding friction → equalization. Functionally neutral across most archetypes (not bad, not great). CWD (Counter Weight Disk) adds I at CWD radius.  
+**Engine Note**: mass_g≈17; chainLinkProtrusions; spinSteal_niche; functionallyNeutral_most.
+
+---
+
+### [Case 1091 — CWD Eternal Survivor (Dragoon MF): ~17 g — Gear-Like Protrusions at Oversized Diameter Absorb Attack; Fixed-Rotation Solid Foundation; Diameter Excess Is Single Limiting Factor](./5%20case%20study.md#case-1091)
+
+**System**: Hard Metal System (HMS)  
+**Geometry**: ~17 g; gear-like protrusions; oversized diameter  
+**Material**: metal  
+**Mechanism**: Gear-like protrusions at oversized diameter: protrusion tips absorb impact (stress concentration deforms tip slightly → elastic energy storage → partial return). Fixed-rotation (non-free-spinning): solid foundation vs free-spinning CWDs. Oversized diameter: CWD protrudes past RC → limits effectiveness in some matchups. Diameter excess = single competitive cap.  
+**Engine Note**: mass_g≈17; gearProtrusions_absorb; fixedRotation_stable; oversizedDiameter = limitingFactor.
+
+---
+
+### [Case 1092 — Metal Weight Grip Core (Dragoon MF): ~3 g — Heavier Rubber RC Smaller Tip Trades Orbital Speed for Consistency; Speed Deficit Disqualifies Outside Big Three Attack ARs](./5%20case%20study.md#case-1092)
+
+**System**: Hard Metal System (HMS) — Running Core  
+**Geometry**: ~3 g; rubber RC tip; smaller tip diameter vs standard grip  
+**Material**: ABS + rubber tip  
+**Mechanism**: Heavier rubber RC at ~3 g (heavier than other HMS cores). Smaller tip diameter: lower orbital speed (narrower contact → less floor friction drive). Consistency advantage: smaller tip → more predictable flower pattern path. Speed deficit disqualifies it outside the Big Three Attack ARs (where it provides consistent recoil management without speed requirement). Niche: consistent attack timing.  
+**Engine Note**: mass_g≈3; rubberRC_smallerTip; lowerSpeed_moreConsistent; BigThreeAR_only.
+
+---
+
+### [Case 1093 — Smash Phoenix AR (Dranzer MF): ~18 g — Conservative Phoenix Geometry Excess Recoil for Stamina, Insufficient Smash for Attack; LS Defense Only Viable Role](./5%20case%20study.md#case-1093)
+
+**System**: Hard Metal System (HMS)  
+**Geometry**: ~18 g; phoenix motif AR; conservative contact geometry  
+**Material**: metal frame + ABS caul  
+**Mechanism**: Conservative phoenix geometry: contact angle intermediate — neither steep enough for top-tier smash nor shallow enough for stamina. Too much recoil for stamina role (recoil disrupts LAD). Insufficient smash fraction for attack role (conservative angle reduces impulse). Uneven metal frame distribution: mass not rim-concentrated → limited stamina I. LS defense: the only viable competitive role.  
+**Engine Note**: mass_g≈18; conservative_intermediate_angle; tooMuchRecoil_stamina; insufficientSmash_attack; LS_defense viable.
+
+---
+
+### [Case 1094 — CWD Wing Attacker (Dranzer MF): ~17 g — Large Free-Spinning Wings Beyond AR Diameter; Easy Destabilisation Vector; Liability All Competitive Contexts](./5%20case%20study.md#case-1094)
+
+**System**: Hard Metal System (HMS)  
+**Geometry**: ~17 g; large free-spinning wings extending beyond AR diameter  
+**Material**: metal  
+**Mechanism**: Free-spinning wings extend beyond AR: opponent contacts wing first → wing spins up → impulse absorbed (similar to Case 919/Dragon Breaker SAR). BUT: large radius creates long moment arm → any asymmetric contact torques the CWD → CWD wobble transmitted to combo → destabilization. Easy destabilisation vector for opponents. Net: liability in all competitive contexts.  
+**Engine Note**: mass_g≈17; freespinWings_beyondAR; longMomentArm → wobble; destabilisationVector; liability.
+
+---
+
+### [Case 1095 — CWD Reverse Defenser (Dranzer MF): ~17 g — Functionally Identical to CWD God Ring; Defense and Zombie Role at Potentially Lower Cost](./5%20case%20study.md#case-1095)
+
+**System**: Hard Metal System (HMS)  
+**Geometry**: ~17 g; smooth defensive CWD  
+**Material**: metal  
+**Mechanism**: Functionally identical to CWD God Ring (same defense/zombie role, same geometry class). Obscure alternative: less well-known → potentially available at lower secondary market cost. Smooth perimeter: low recoil on contact. Zombie role: smooth CWD aids LAD precession. If CWD God Ring unavailable: direct substitute. No physics distinction.  
+**Engine Note**: mass_g≈17; functionallyIdentical_CWDGodRing; defense+zombie; lowerCost alternative.
+
+---
+
+### [Case 1096 — Free Shaft Core (Dranzer MF): ~3 g — Early-Precession-Prone Compact RC Cannot Compete Against Bearing Core; High-RPM Flat Launch Is Only Recovery](./5%20case%20study.md#case-1096)
+
+**System**: Hard Metal System (HMS) — Running Core  
+**Geometry**: ~3 g; free-shaft design (non-bearing); compact RC  
+**Material**: ABS  
+**Spin Coupling**: free-shaft (non-bearing) → higher friction than Bearing Core  
+**Mechanism**: Free-shaft (non-bearing) RC: higher friction than Bearing Core → faster spin decay. Early precession onset: compact RC provides less tilt resistance → nutation starts sooner. Cannot compete with Bearing Core for stamina — Bearing Core is strictly superior in zombie/stamina roles. High-RPM flat launch recovery: at max launch spin, free-shaft still competitive briefly — window closes after first significant spin decay. Niche: attack builds where shaft-friction management is secondary.  
+**Engine Note**: mass_g≈3; freeShaft_nonBearing; earlyPrecession; BearingCore_superior; highRPM_flatLaunch_only.
+
+---
+
+## CS6 — Cases 297–353 + 1041–1063 {#cs6}
+Source: `6 case study.md`
+
+---
+
+### [Case 297 — Rubber Flat / RF: 0.8 g](./6%20case%20study.md#case-297)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.8 g; r_tip = 0.2775 cm; h_tip = 0.797 cm; full h = 1.109 cm; housing r = 0.791 cm; annular ring contact when new  
+**Material**: rubber tip + ABS housing  
+**Mechanism**: New tip: central indentation → annular ring contact (r_inner ≈ 0.2 cm, r_outer = 0.2775 cm) → localized high pressure. Worn tip: full disk contact → smoother friction distribution → controllable attack. Locked-tip molds (SonoKong, Hasbro): full angular velocity transferred → maximum traction. Free-spinning TT mold: tip decoupled → ~50% traction reduction. Top-tier RS attack tip (locked mold).  
+**Engine Note**: mass_g=0.8; r_tip=0.2775cm; lockedMold=topTier; freeSpin=50%reduction; worn_moreControllable.
+
+---
+
+### [Case 298 — Move 145 / M145: 4.2 g, 14.5 mm height](./6%20case%20study.md#case-298)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 4.2 g; 14.5 mm height; movable wing protrusions (spring-loaded)  
+**Material**: ABS + spring  
+**Gimmick**: spring-loaded moving wings  
+**Mechanism**: Spring-loaded wings move under centrifugal force: at high spin wings extend outward (attack/defense mode). Wings retract at low spin. 4.2 g: good I contribution for a track. Moving wings can contact opponents → recoil at contact. Net: like SW145 (Case 970) but with spring-loaded motion rather than manual switch. Competitive for same I-contribution reason as SW145.  
+**Engine Note**: mass_g=4.2; height=1.45cm; springWings; centrifugalExtension; I_same_as_SW145.
+
+---
+
+### [Case 299 — Quake / Q Bottom: 0.6 g (second mold)](./6%20case%20study.md#case-299)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; irregular quake tip geometry; second mold  
+**Material**: ABS  
+**Mechanism**: Irregular tip geometry: produces erratic non-smooth movement (quake-like). Not a fixed orbital path — random perturbations at contact. Second mold: slightly different geometry from first mold. Niche: destabilization builds where unpredictable movement is advantageous. Not competitive in standard attack/stamina/defense. Movement unpredictability can confuse opponents but unreliable.  
+**Engine Note**: mass_g=0.6; irregularTip; erraticMovement; secondMold; niche_destabilize.
+
+---
+
+### [Case 300 — Death 4D Metal Wheel: 43.6 g](./6%20case%20study.md#case-300)
+
+**System**: MFB (4D System)  
+**Geometry**: 43.6 g; 4D composite wheel  
+**Material**: metal frame + PC core  
+**Mechanism**: 43.6 g: very heavy 4D wheel. High mass → maximum I → maximum KO resistance and stamina. 4D structure: PC core + metal frame configuration. Death wheel profile: defense-optimized outer rim. Pairs with BD145 for full defensive setup. One of the heaviest 4D wheels alongside Flash (45.6 g) and Fusion (44.0 g).  
+**Engine Note**: mass_g=43.6; 4D; veryHighI; defense_stamina; heavyClass.
+
+---
+
+### [Case 301 — Rubber Defense Flat / RDF: 1.1 g](./6%20case%20study.md#case-301)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 1.1 g; wide rubber flat with defense-oriented outer rim  
+**Material**: rubber + ABS  
+**Mechanism**: Wider rubber flat than RF: wider contact area → more stable orbital path but lower peak speed. Outer rim designed for defense: when tilted, outer rim contacts floor → LAD assist (similar to WD bottom principle). Dual role: attack via rubber grip (flower pattern) + LAD assist at tilt. Good alternative to RF in builds needing both attack and survival.  
+**Engine Note**: mass_g=1.1; wideRubberFlat; outerRim_LAD; dualRole_attack+LAD.
+
+---
+
+### [Case 302 — Eternal Wide Defense / EWD: 1.2 g](./6%20case%20study.md#case-302)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 1.2 g; wide rubber ring + free-spinning outer shell  
+**Material**: rubber + ABS free-spin shell  
+**Spin Coupling**: free-spinning outer shell → contact impulse not transmitted to inner body  
+**Mechanism**: Free-spinning outer rubber ring: when opponent contacts EWD rim, rim rotates freely → impulse not transferred to combo → no spin drain. Wide rubber ring: large r → low LAD threshold (ω_LAD_min = √(μ×g/r)). Top-tier defense/stamina bottom: EWD combines free-spin defense with wide-rim LAD. Rivals WD bottom for stamina; superior in defense role.  
+**Engine Note**: mass_g=1.2; freeSpinShell; wideRubberRing; LAD_topTier; impulse_notTransferred.
+
+---
+
+### [Case 303 — Upper Wing 145 / UW145: 3.6 g](./6%20case%20study.md#case-303)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 3.6 g; 14.5 mm height; upward wing geometry  
+**Material**: ABS  
+**Mechanism**: Upper wings angled upward: when contacted, wings deflect opponent's contact upward → upper-attack-like deflection from a track. 3.6 g: good I contribution at track position. Wings provide peripheral mass + upper-deflect on contact. Competitive stamina track (same mass class as AD145 but less mass concentration). Niche: upper-defense builds.  
+**Engine Note**: mass_g=3.6; height=1.45cm; upwardWings; upperDeflect; I_competitive.
+
+---
+
+### [Case 304 — Fusion 4D Metal Wheel: 44.0 g](./6%20case%20study.md#case-304)
+
+**System**: MFB (4D System)  
+**Geometry**: 44.0 g; 4D composite  
+**Material**: metal frame + PC core  
+**Mechanism**: 44.0 g: among heaviest 4D wheels. Fusion profile: near-circular outer rim for defense. Heavy mass → very high I → maximum defense/stamina. 4D structure allows PC core mode changes. Defense-oriented with maximum I.  
+**Engine Note**: mass_g=44.0; 4D; nearCircular; I_maximum; defense.
+
+---
+
+### [Case 305 — Kerbecs Clear Wheel: 3.3 g](./6%20case%20study.md#case-305)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 3.3 g; PC clear wheel; three-head Cerberus motif  
+**Material**: polycarbonate  
+**Mechanism**: 3.3 g PC ring. Three-head Cerberus motif: three protrusions. Slight mass above average (3.3 vs 3.0 g standard). Launcher tab geometry. Pairs with Hell or Kerbecs/BD145 defense combo. I contribution minor.  
+**Engine Note**: mass_g=3.3; PC; 3head_motif; slightlyAboveAvgMass; launcherTabs.
+
+---
+
+### [Case 306 — Hell Metal Wheel: 39.6 g](./6%20case%20study.md#case-306)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 39.6 g; metal wheel; smooth annular design  
+**Material**: zinc alloy  
+**Mechanism**: 39.6 g near-circular design: very high I. Smooth outer profile → near-zero recoil. Defense benchmark alongside Libra and Basalt. Hell + Kerbecs + BD145 + EWD (or similar): top-tier defense combo. Mass advantage ensures KO resistance and stamina.  
+**Engine Note**: mass_g=39.6; nearCircular; I_veryHigh; defense benchmark; Hell+BD145_combo.
+
+---
+
+### [Case 307 — Boost Disk 145 / BD145: 8.0 g](./6%20case%20study.md#case-307)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 8.0 g; 14.5 mm height; wide flange disk at track level  
+**Material**: ABS  
+**Mechanism**: 8.0 g at 14.5 mm height: highest mass of any standard track. Wide flange: extremely wide outer radius → I_BD145 = 8.0 × r_flange² (largest track I). Defense function: wide flange blocks lower-track attackers (T85/T90/T100 attack combos cannot reach wheel below BD145 flange — flange intercepts). Structurally closes low-track attack window vs T85 (Case 964). Best defensive track I contribution.  
+**Engine Note**: mass_g=8.0; height=1.45cm; widestFlange; I_highest_track; closesLowTrackWindow.
+
+---
+
+### [Case 308 — Lightning Metal Wheel: 30.0 g](./6%20case%20study.md#case-308)
+
+**System**: MFB (Metal Fight Beyblade) — Left Spin  
+**Geometry**: 30.0 g; LS wheel  
+**Material**: zinc alloy  
+**Mechanism**: Left-spin Lightning variant (different from Case 978 which covers initial L-Lightning ~28.0 g). 30.0 g: heavier revision. LS attack contacts improved vs earlier version. Rubber elements still provide spin-steal. RS non-viable. Top-tier LS attack wheel in later MFB series (heavier mass revision).  
+**Engine Note**: mass_g=30.0; LS_specific; heavierRevision_vs_Case978; LS_topTier_attack.
+
+---
+
+### [Case 309 — Flash 4D Metal Wheel: 45.6 g](./6%20case%20study.md#case-309)
+
+**System**: MFB (4D System)  
+**Geometry**: 45.6 g; 4D wheel; flash/lightning protrusions  
+**Material**: metal frame + PC  
+**Mechanism**: 45.6 g: one of heaviest 4D wheels. Flash protrusions: lightning-bolt-shaped contacts add smash component alongside defense mass. 4D: PC frame mode. Very high I from mass. Smash contacts from protrusions: attack-capable despite high mass → hybrid attack/defense. Top-tier in both roles due to mass + smash geometry.  
+**Engine Note**: mass_g=45.6; 4D; lightningProtrusions_smash; veryHighI; attack/defense hybrid.
+
+---
+
+### [Case 310 — Chrome Wheel: Phoenic: 29.8 g](./6%20case%20study.md#case-310)
+
+**System**: MFB (Synchrome / Zero-G System) — Chrome Wheel  
+**Geometry**: 29.8 g; chrome wheel; phoenix motif  
+**Material**: zinc alloy  
+**Mechanism**: Synchrome system Chrome Wheel. 29.8 g: standard mass for chrome wheel. Phoenix motif contacts: moderate smash + upper component (similar to standard phoenix AR logic). Synchrome system allows two chrome wheels to be paired on one beyblade (Synchrome combo = 2× chrome wheel mass). Phoenic in Synchrome: one of the components.  
+**Engine Note**: mass_g=29.8; ChromeWheel; phoenixContacts; Synchrome_compatible.
+
+---
+
+### [Case 311 — Chrome Wheel: Gargole: 29.5 g](./6%20case%20study.md#case-311)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 29.5 g; chrome wheel; gargoyle wing design  
+**Material**: zinc alloy  
+**Mechanism**: 29.5 g gargoyle-wing chrome wheel. Wing geometry: smash contacts. Synchrome-compatible. Paired in Synchrome for dual-wheel mass. Wing design provides moderate attack capability in Zero-G environment.  
+**Engine Note**: mass_g=29.5; ChromeWheel; wingContacts; Synchrome_compatible.
+
+---
+
+### [Case 312 — Track: Switch Attack 165 / SA165: 6.18 g](./6%20case%20study.md#case-312)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 6.18 g; 16.5 mm height; switchable wing attack geometry  
+**Material**: ABS  
+**Gimmick**: switch mechanism changes wing orientation  
+**Mechanism**: 6.18 g at 16.5 mm height: very high mass for a track. Switch mechanism: wings alternate between attack and defense orientation (similar to SW145 but taller). 16.5 mm height: above standard 145 → contact zone elevated. Attack mode: wings extend for smash contacts. Defense: wings retract. High I contribution from 6.18 g mass.  
+**Engine Note**: mass_g=6.18; height=1.65cm; switchWings; I_veryHigh; above145_height.
+
+---
+
+### [Case 313 — Chrome Wheel: Genbull: 30.8 g](./6%20case%20study.md#case-313)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 30.8 g; chrome wheel; bull/taurus motif  
+**Material**: zinc alloy  
+**Mechanism**: 30.8 g: heavier chrome wheel. Bull motif contacts. Synchrome-compatible. Heavier than average chrome wheels → better I contribution per wheel in Synchrome combo. Defense/stamina preferred.  
+**Engine Note**: mass_g=30.8; ChromeWheel; bullMotif; heavier_average; Synchrome_preferred.
+
+---
+
+### [Case 314 — Track: Stamina Ring 200 / SR200: 3.3 g](./6%20case%20study.md#case-314)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 3.3 g; 20.0 mm height; ring-shaped track  
+**Material**: ABS  
+**Mechanism**: 20 mm height: tall track for Zero-G/wall-climb stadiums. Ring shape: smooth outer ring at 2.0 cm height → contact zone primarily at ring. 3.3 g at large ring radius: decent I contribution. Stamina role: smooth ring minimizes aerodrag and friction contact. Tall height in Zero-G builds maintains ring contact with stadium wall during precession.  
+**Engine Note**: mass_g=3.3; height=2.0cm; smoothRing; I_decent; ZeroG_stamina.
+
+---
+
+### [Case 315 — Track: Left Wing 105 / LW105: ~1.1 g](./6%20case%20study.md#case-315)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: ~1.1 g; 10.5 mm height; left-spin oriented wings  
+**Material**: ABS  
+**Mechanism**: Wing geometry optimized for LS orbital movement: wings angled for LS direction. Provides slight orbital guidance in LS (wings generate asymmetric airflow in LS orbit). Small effect at beyblade speeds but aligns with LS attack builds. Height = 1.05 cm: same bracket as W105 but LS-specific. Minor functional difference from standard W105.  
+**Engine Note**: mass_g≈1.1; height=1.05cm; LSwing_oriented; minorOrbitalGuidance_LS.
+
+---
+
+### [Case 316 — Chrome Wheel: Dragooon: 30.90/~29.0 g light mold](./6%20case%20study.md#case-316)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 30.90 g (heavy mold) / ~29.0 g (light mold); chrome wheel  
+**Material**: zinc alloy  
+**Mechanism**: Two molds: heavy (30.90 g) and light (~29.0 g). Heavy mold: better I for defense/stamina. Light mold: faster orbital speed if used in attack role (lower mass). Dragooon chrome wheel: rounded profile contacts. Synchrome builds prefer heavy mold.  
+**Engine Note**: heavyMold=30.90g; lightMold≈29.0g; ChromeWheel; Synchrome_heavy preferred.
+
+---
+
+### [Case 317 — Chrome Wheel: Bahamdia: 29.35 g](./6%20case%20study.md#case-317)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 29.35 g; chrome wheel; sea-creature motif  
+**Material**: zinc alloy  
+**Mechanism**: 29.35 g standard chrome wheel mass. Sea-creature motif contacts. Synchrome-compatible. Standard attack/defense balance in Zero-G environment.  
+**Engine Note**: mass_g=29.35; ChromeWheel; Synchrome_compatible; standard.
+
+---
+
+### [Case 318 — Bottom: Giga Flat / GF: 0.74 g](./6%20case%20study.md#case-318)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.74 g; large flat ABS tip  
+**Material**: ABS  
+**Mechanism**: Large flat ABS tip: μ ≈ 0.35 (plastic). Wide contact area → stable orbital movement at low friction. Better speed/stability than RF (lower friction) but no flower pattern reliability. Zero-G attacks: large flat enables fast linear movement in wall-ride stadiums. Not top-tier attack (no rubber grip) but better control than standard Flat for large-diameter stadium floors.  
+**Engine Note**: mass_g=0.74; largeFlatABS; mu≈0.35; stableOrbit_lowFriction; ZeroG_linear.
+
+---
+
+### [Case 319 — Chrome Wheel: Revizer: 30.6 g](./6%20case%20study.md#case-319)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 30.6 g; chrome wheel  
+**Material**: zinc alloy  
+**Mechanism**: 30.6 g heavier chrome wheel. Revizer contacts: strong smash geometry. Top-tier offensive chrome wheel for Synchrome attack builds. Competitive attack with solid mass.  
+**Engine Note**: mass_g=30.6; ChromeWheel; strongSmash; Synchrome_attack.
+
+---
+
+### [Case 320 — Crystal Wheel: Guardian: 4.1 g](./6%20case%20study.md#case-320)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 4.1 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: PC crystal wheel (energy ring equivalent in Zero-G/Synchrome system). 4.1 g: heavier than standard MFB energy rings. PC contributes minor I. Guardian motif. Launcher tab geometry. I contribution from higher mass (4.1 vs 3.0 g standard).  
+**Engine Note**: mass_g=4.1; PC_CrystalWheel; heavier_standard; launcherTabs; I_slightly_above.
+
+---
+
+### [Case 1041 — Metal Wheel: Mercury: 29.0 g](./6%20case%20study.md#case-1041)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 29.0 g; mercury-themed wheel  
+**Material**: zinc alloy  
+**Mechanism**: 29.0 g standard MFB wheel mass. Mercury: smooth profile contacts. Mid-tier wheel for stamina/defense. Not specialized enough for top-tier in any role but competitive in general builds.  
+**Engine Note**: mass_g=29.0; smoothProfile; midTier_stamina/defense.
+
+---
+
+### [Case 1042 — Crystal Wheel: Archer: 5.16 g](./6%20case%20study.md#case-1042)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 5.16 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 5.16 g: heaviest standard crystal wheel. High mass for PC ring → best I contribution of crystal wheels. Archer motif. Launcher tabs. Used in Synchrome builds where crystal wheel mass matters.  
+**Engine Note**: mass_g=5.16; PC; heaviest_crystal; I_best; Synchrome_preferred.
+
+---
+
+### [Case 1043 — Crystal Wheel: Bandid: 4.8 g](./6%20case%20study.md#case-1043)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 4.8 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 4.8 g: heavy crystal wheel. Second-heaviest after Archer. Good I contribution. Bandid motif. Competitive in builds needing high crystal wheel mass.  
+**Engine Note**: mass_g=4.8; PC; heavy_crystal; I_good.
+
+---
+
+### [Case 1044 — Crystal Wheel: Berserker: 4.5 g](./6%20case%20study.md#case-1044)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 4.5 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 4.5 g: mid-heavy crystal wheel. Berserker motif. Competitive in Synchrome builds. Standard launcher tabs.  
+**Engine Note**: mass_g=4.5; PC; midHeavy_crystal; Synchrome.
+
+---
+
+### [Case 1045 — Crystal Wheel: Dark Knight: 3.87 g](./6%20case%20study.md#case-1045)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 3.87 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 3.87 g: slightly above standard (3.0 g) crystal wheel. Dark Knight motif. Standard launcher tabs. Minor I contribution above baseline.  
+**Engine Note**: mass_g=3.87; PC; slightlyAboveStandard.
+
+---
+
+### [Case 1046 — Crystal Wheel: Gladiator: 5.37 g](./6%20case%20study.md#case-1046)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 5.37 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 5.37 g: very heavy crystal wheel (second-heaviest after Archer at 5.16 g — actually heavier). Gladiator motif. Best I contribution of standard crystal wheels. Competitive in Synchrome builds.  
+**Engine Note**: mass_g=5.37; PC; veryHeavy_crystal; I_topTier_crystal.
+
+---
+
+### [Case 1047 — Crystal Wheel: Pirates: 4.0 g](./6%20case%20study.md#case-1047)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 4.0 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 4.0 g: standard-heavy crystal wheel. Pirates motif. Standard launcher tabs. Competitive in Synchrome builds at typical crystal wheel mass.  
+**Engine Note**: mass_g=4.0; PC; standardHeavy_crystal.
+
+---
+
+### [Case 1048 — Crystal Wheel: Samurai: 5.4 g](./6%20case%20study.md#case-1048)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 5.4 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 5.4 g: among heaviest crystal wheels (Samurai + Shinobi both 5.4 g, tied with Archer~5.16 g only lighter). Samurai motif. Top-tier crystal wheel for I contribution in Synchrome.  
+**Engine Note**: mass_g=5.4; PC; topTier_heavy_crystal; I_topTier.
+
+---
+
+### [Case 1049 — Crystal Wheel: Shinobi / Ninja: 5.4 g](./6%20case%20study.md#case-1049)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 5.4 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 5.4 g: tied for heaviest crystal wheel alongside Samurai. Shinobi/Ninja motif (regional naming variant: Shinobi = Takara Tomy; Ninja = Hasbro). Name conflict: TT vs Hasbro naming only — same part. Top-tier crystal wheel for I contribution.  
+**Engine Note**: mass_g=5.4; PC; Shinobi_TT=Ninja_Hasbro; topTier_heavy_crystal.
+
+---
+
+### [Case 1050 — Crystal Wheel: Thief: 5.3 g](./6%20case%20study.md#case-1050)
+
+**System**: MFB (Synchrome / Zero-G System) — Crystal Wheel  
+**Geometry**: 5.3 g; PC crystal wheel  
+**Material**: polycarbonate  
+**Mechanism**: 5.3 g: very heavy crystal wheel (just below Samurai/Shinobi 5.4 g). Thief motif. Top-tier crystal wheel class for I contribution. Competitive alternative in Synchrome builds.  
+**Engine Note**: mass_g=5.3; PC; nearTopTier_heavy_crystal.
+
+---
+
+### [Case 321 — Chrome Wheel: Killerken: 30.45 g](./6%20case%20study.md#case-321)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 30.45 g; chrome wheel; shark/killer motif  
+**Material**: zinc alloy  
+**Mechanism**: 30.45 g: competitive chrome wheel mass. Killerken contacts: aggressive shark-profile attack geometry. Synchrome-compatible. Good attack chrome wheel for Zero-G builds.  
+**Engine Note**: mass_g=30.45; ChromeWheel; sharkContacts_attack; Synchrome.
+
+---
+
+### [Case 322 — Track: Armor 230 / A230: 5.5 g](./6%20case%20study.md#case-322)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 5.5 g; 23.0 mm height; armor-disk protrusions  
+**Material**: ABS  
+**Mechanism**: 5.5 g at 2.3 cm height: high mass tall track. Armor disk: wide protrusions at track mid-height. In Zero-G stadiums: armor disk contacts wall before bottom → provides wall-grip buffer. On normal stadiums: armor prevents low-track attackers from reaching bottom. High I contribution from 5.5 g mass. Defense-oriented tall track.  
+**Engine Note**: mass_g=5.5; height=2.3cm; armorDisk; wallBuffer_ZeroG; preventsLowTrackAttack; I_high.
+
+---
+
+### [Case 323 — Chrome Wheel: Pegasis: ~29.5 g](./6%20case%20study.md#case-323)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: ~29.5 g (weight not confirmed); chrome wheel; Pegasus motif  
+**Material**: zinc alloy  
+**Mechanism**: ~29.5 g estimate. Pegasis motif: three-wing smash contacts (same design language as MFB Pegasis metal wheel Case 985). Chrome wheel version for Synchrome system. Competitive attack chrome wheel.  
+**Engine Note**: mass_g_est≈29.5; ChromeWheel; threeWingSmash; Synchrome.
+
+---
+
+### [Case 324 — Chrome Wheel: Wyvang: ~31.5 g](./6%20case%20study.md#case-324)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: ~31.5 g (weight not confirmed); chrome wheel; wyvern wing design  
+**Material**: zinc alloy  
+**Mechanism**: ~31.5 g: heavier chrome wheel. Wyvern wing contacts: large wing sweep → good smash angle. Heavier mass → better KO force. One of the heavier chrome wheels → competitive in Synchrome defense/attack hybrid.  
+**Engine Note**: mass_g_est≈31.5; ChromeWheel; wyvernWing; heavier; Synchrome_hybrid.
+
+---
+
+### [Case 325 — Bottom: Ball / B: 0.6 g](./6%20case%20study.md#case-325)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; ball tip r ≈ 0.2 cm  
+**Material**: ABS  
+**Mechanism**: ABS ball tip: μ ≈ 0.35 → moderate friction. Ball shape: multi-directional contact → stable low-friction orbit. Less directional than flat. Moderate stamina (higher friction than sharp). Precession: r_ball ≈ 0.2 cm → intermediate LAD (ω_LAD_min = √(0.35×9.8/0.002) ≈ 41 rad/s). Mid-tier general use.  
+**Engine Note**: mass_g=0.6; ABSball; mu≈0.35; moderate_orbit; LAD_intermediate.
+
+---
+
+### [Case 326 — Bottom: Wide Ball / WB: 0.7 g](./6%20case%20study.md#case-326)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.7 g; wide ball tip r ≈ 0.35 cm  
+**Material**: ABS  
+**Mechanism**: Wider ball than standard B: r_ball ≈ 0.35 cm → lower ω_LAD_min = √(0.35×9.8/0.0035) ≈ 31 rad/s (better LAD than B). More stable precession. Better LAD than B at same friction. Slightly more orbital movement spread (wider contact = less centred orbit). Stamina/survival hybrid.  
+**Engine Note**: mass_g=0.7; widerBall_r≈0.35cm; betterLAD vs B; stable_precession.
+
+---
+
+### [Case 1051 — Bottom: Jog Ball / JB: ~0.7 g](./6%20case%20study.md#case-1051)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: ~0.7 g; jogging ball (irregular surface ball)  
+**Material**: ABS  
+**Mechanism**: Irregular surface ball: jogging contact creates non-smooth movement (similar to Quake tip but ball-shaped). Less erratic than Q but more unpredictable than standard ball. Niche: destabilization via irregular contact. Not competitive in standard roles.  
+**Engine Note**: mass_g_est≈0.7; irregularBall; nonSmooth_movement; niche_destabilize.
+
+---
+
+### [Case 327 — Bottom: Metal Ball / MB: 1.4 g](./6%20case%20study.md#case-327)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 1.4 g; metal ball tip  
+**Material**: metal ball  
+**Mechanism**: Metal ball: μ_metal ≈ 0.35 (same class as ABS ball but smoother over time — metal doesn't wear like ABS). 1.4 g: heavier than ABS alternatives → higher normal force on floor → slightly more friction drag vs ABS ball. Metal surface: more consistent μ over time (doesn't wear to change μ). Moderate stamina/control.  
+**Engine Note**: mass_g=1.4; metalBall; mu≈0.35; consistent_mu_over_time; slightlyMoreDrag vs ABS.
+
+---
+
+### [Case 328 — Bottom: Rubber Ball / RB: 0.82 g](./6%20case%20study.md#case-328)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.82 g; rubber ball tip  
+**Material**: rubber  
+**Mechanism**: Rubber ball: μ_rubber ≈ 0.70 → higher friction than ABS/metal ball. Ball shape: multi-directional grip but sustained (not directional like flat). Flower pattern: accessible at lower orbit speeds than RF (ball doesn't require directional grip). Good spin-steal vs opponent via rubber surface. Hybrid: partial attack grip + LAD stability from ball shape.  
+**Engine Note**: mass_g=0.82; rubberBall; mu≈0.70; multiDirGrip; spinSteal+LAD.
+
+---
+
+### [Case 329 — Bottom: Sharp Ball / SB: 0.6 g](./6%20case%20study.md#case-329)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; sharp-ball hybrid tip  
+**Material**: ABS  
+**Mechanism**: Sharp point at tip center, ball profile around it: at rest/low spin → sharp tip contacts (near-zero friction → stamina). At heavy tilt → ball profile contacts (provides LAD). Hybrid: stamina phase (sharp) + LAD phase (ball). ABS material: μ varies between phases. Smart design: automatically transitions phases without spring mechanism.  
+**Engine Note**: mass_g=0.6; sharpBallHybrid; auto_phase: sharp=stamina, ball=LAD.
+
+---
+
+### [Case 330 — Bottom: Defense / D: 0.68 g](./6%20case%20study.md#case-330)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.68 g; wide rounded base; flat underside  
+**Material**: ABS  
+**Mechanism**: Wide rounded base: at tilt, base edge contacts floor → wide precession radius → good LAD. Flat underside: near-zero sharp point → some friction but not grip-type. Stable at low spin due to wide contact base. Defense role: wide base resists lateral displacement from hits. Mid-tier LAD from wide base radius.  
+**Engine Note**: mass_g=0.68; wideRoundedBase; flatUnderside; LAD_mid; lateralResistance.
+
+---
+
+### [Case 331 — Bottom: Semi-Defense / SD: 0.6 g](./6%20case%20study.md#case-331)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; semi-wide base between sharp and D  
+**Material**: ABS  
+**Mechanism**: Between D (wide base) and Sharp (point) in geometry. Moderate friction: some orbital movement (not stationary like D) + some LAD (not zero like sharp). Standard stamina + moderate LAD hybrid. Top-tier for traditional stamina combos in MFB. SD + 145 + high-mass wheel: iconic stamina formula.  
+**Engine Note**: mass_g=0.6; semiWideBase; moderate_orbital+LAD; stamina_topTier.
+
+---
+
+### [Case 332 — Bottom: Wide Defense / WD: 0.7 g](./6%20case%20study.md#case-332)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.7 g; wide rubber ring; r_ring ≈ 0.3–0.5 cm  
+**Material**: rubber + ABS  
+**Mechanism**: Wide rubber ring: at tilt → rubber ring contacts → LAD. During normal spin: tip contact (sharp or center point) provides low friction. Wide ring radius: low ω_LAD_min (√(μ×g/r_ring)). Rubber ring also provides spin-steal on contact. Top-tier LAD bottom alongside EWD. WD = most important stamina/LAD bottom in MFB.  
+**Engine Note**: mass_g=0.7; wideRubberRing; LAD_topTier; ω_LAD_min_low; spinSteal_ring.
+
+---
+
+### [Case 333 — Bottom: Sharp Wide Defense / SWD: 0.82 g](./6%20case%20study.md#case-333)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.82 g; sharp center tip + wide defense ring  
+**Material**: ABS + rubber ring  
+**Mechanism**: Combines Sharp (low friction center tip) with WD outer ring (LAD). Sharp phase: near-zero friction → maximum stamina. WD ring: triggers at heavy tilt → LAD. Best of both phases: sharp center = long stamina; WD ring = extended LAD. Marginally heavier than WD alone. Top-tier for stamina + LAD simultaneously.  
+**Engine Note**: mass_g=0.82; sharpCenter + wideDfenseRing; sharpPhase+LADphase; topTier_both.
+
+---
+
+### [Case 334 — Bottom: Wide Semi Flat / WSF: ~0.7 g](./6%20case%20study.md#case-334)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: ~0.7 g; wide semi-flat profile  
+**Material**: ABS  
+**Mechanism**: Wide semi-flat: between standard semi-flat (SD) and wide flat (WF). Slightly wider contact than SD → more stable orbit but slightly higher friction. Used in Zero-G wall-climb builds where wider contact aids wall grip. General-purpose: competes with SD for stamina but slightly wider movement range.  
+**Engine Note**: mass_g≈0.7; wideSemiFlat; between_SD_and_WF; ZeroG_wallClimb.
+
+---
+
+### [Case 335 — Bottom: Sharp / S: 0.6 g](./6%20case%20study.md#case-335)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; ABS sharp tip r ≈ 0.05 cm  
+**Material**: ABS  
+**Mechanism**: ABS sharp tip: μ_ABS ≈ 0.25–0.35 → near-zero contact area → lower friction than rubber but higher than metal sharp (μ ≈ 0.17). Moderate stamina (not best in class). Usable for beginner builds. Outperformed by MS (metal sharp) for stamina and by WD for LAD. Basic reference tip.  
+**Engine Note**: mass_g=0.6; ABSsharp; mu≈0.30; moderate_stamina; outclassed by MS+WD.
+
+---
+
+### [Case 336 — Bottom: Ball Sharp / BS: 0.6 g](./6%20case%20study.md#case-336)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; ball-point sharp hybrid  
+**Material**: ABS  
+**Mechanism**: Ball-shaped lower body with sharp point: similar to Sharp Ball (Case 329) but slightly different geometry. Sharp center → low friction. Ball body → LAD phase at heavy tilt. Same principle: automatic phase transition. Slight geometry difference from SB may change LAD onset angle. Mid-tier stamina + LAD.  
+**Engine Note**: mass_g=0.6; ballSharpHybrid; similar to SB; auto_phase_LAD.
+
+---
+
+### [Case 337 — Bottom: Eternal Sharp / ES: 1.0 g](./6%20case%20study.md#case-337)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 1.0 g; sharp center + free-spinning outer ring  
+**Material**: ABS + free-spin ring  
+**Spin Coupling**: free-spinning outer ring decouples contact impulse  
+**Mechanism**: Free-spinning outer ring: contact impulse on ring decoupled from body (ring spins up). Sharp center: near-zero friction → stamina. Eternal (persistent) spin: outer ring free-spin = minimal drag on body during orbital movement. Heavier than S (1.0 vs 0.6 g) → more floor normal force → slightly more friction. Best for builds needing both stamina and minimal contact impulse.  
+**Engine Note**: mass_g=1.0; sharpCenter+freeSpinRing; decoupledContact; EternalSpin.
+
+---
+
+### [Case 338 — Bottom: Metal Sharp / MS: 1.30 g](./6%20case%20study.md#case-338)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 1.30 g; metal sharp tip r ≈ 0.05 cm  
+**Material**: metal tip + ABS housing  
+**Mechanism**: Metal sharp: μ ≈ 0.17 → near-bearing friction. Best ABS-housed stamina tip. 1.30 g: heavier than plastic sharp → higher normal force but μ still very low. Top-tier stamina alongside SD+WD combos. Heavier mass vs S: slightly more floor friction but metal compensates with lower μ.  
+**Engine Note**: mass_g=1.30; metalSharp_mu=0.17; topTier_stamina; nearBearing_friction.
+
+---
+
+### [Case 339 — Bottom: Flat / F: 1.0 g](./6%20case%20study.md#case-339)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 1.0 g; ABS flat tip  
+**Material**: ABS  
+**Mechanism**: ABS flat tip: μ ≈ 0.35, wide contact → flower pattern at lower orbital speeds than rubber (rubber preferred). 1.0 g. Outperformed by RF for attack (rubber provides better grip). Useful baseline: any flat tip provides orbital movement for attack; ABS flat is lower tier. Anti-sync: in same-direction contact, ABS flat loses to rubber grip decisively.  
+**Engine Note**: mass_g=1.0; ABSflat; mu≈0.35; attack_baseline; outclassed_by_RF.
+
+---
+
+### [Case 340 — Bottom: Wide Flat / WF: 0.6 g](./6%20case%20study.md#case-340)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; wide ABS flat tip  
+**Material**: ABS  
+**Mechanism**: Wider ABS flat: larger contact area than F → more stable orbit (wider contact = less tip-path deviation). Lower orbital speed than F (wider = more friction distribution but larger area → overall similar μ). Better floor coverage for Zero-G stadium base contact. Not as fast as RF but stable.  
+**Engine Note**: mass_g=0.6; wideABSflat; stableOrbit; ZeroG_baseContact.
+
+---
+
+### [Case 341 — Bottom: Extreme Flat / XF: 0.68 g](./6%20case%20study.md#case-341)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.68 g; very wide ABS flat tip  
+**Material**: ABS  
+**Mechanism**: Extreme (very wide) ABS flat: wider than WF. Maximum contact area → maximum floor coverage → fastest orbital speed of ABS flat types (at same μ, wider contact → same friction magnitude but entire floor area engaged → orbital path maximized). Most aggressive ABS flat for attack builds where rubber unavailable.  
+**Engine Note**: mass_g=0.68; extremeWideFlat; maximumOrbitalSpeed_ABS; bestAttack_ABSflat.
+
+---
+
+### [Case 342 — Bottom: Metal Flat / MF: ~1.3 g](./6%20case%20study.md#case-342)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: ~1.3 g; metal flat tip  
+**Material**: metal  
+**Mechanism**: Metal flat: μ_metal ≈ 0.55–0.65 → between ABS flat and rubber flat. Good orbital speed + more controlled than rubber. Heavier (~1.3 g) → higher floor normal force. Best of flat types when rubber unavailable: more controlled flower pattern than rubber (lower μ = less aggressive jerking) but still faster than ABS. Top attack tip when RF unavailable.  
+**Engine Note**: mass_g≈1.3; metalFlat_mu≈0.60; bestAlt when RF_unavailable; controlled_flower.
+
+---
+
+### [Case 343 — 4D Metal Wheel: Big Bang: 41.83 g](./6%20case%20study.md#case-343)
+
+**System**: MFB (4D System)  
+**Geometry**: 41.83 g; 4D wheel  
+**Material**: metal frame + PC  
+**Mechanism**: 41.83 g: heavy 4D wheel. Big Bang configuration: attack-oriented contacts with high mass. 4D PC frame provides mode. Attack role: mass + contact geometry deliver heavy hits. High I → KO resistance during attack phase. Competitive top-tier 4D wheel for attack/defense hybrid.  
+**Engine Note**: mass_g=41.83; 4D; attackContacts; highMass; attack/defense_hybrid.
+
+---
+
+### [Case 344 — 4D Bottom: Final Drive / F:D: 5.85 g](./6%20case%20study.md#case-344)
+
+**System**: MFB (4D System) — Bottom  
+**Geometry**: 5.85 g; speed-dependent tip transition; combined track+tip unit  
+**Material**: ABS + metal tips  
+**Gimmick**: centrifugal speed-dependent tip change (high spin = attack tip; low spin = stamina tip)  
+**Mechanism**: Final Drive: tip transitions automatically with RPM. High spin: wide flat or semi-flat → attack orbital movement. Low spin: sharp → stamina/LAD mode. Automatic and continuous (not one-shot like clutch). Track + tip combined → saves one layer slot. 5.85 g: adds track-level I. Best 4D bottom for multi-role use.  
+**Engine Note**: mass_g=5.85; speedDependent_continuous; highRPM=attack, lowRPM=stamina; track+tip_combined.
+
+---
+
+### [Case 345 — 4D Bottom: X:Drive / X:D: 7.19 g](./6%20case%20study.md#case-345)
+
+**System**: MFB (4D System) — Bottom  
+**Geometry**: 7.19 g; extreme version of F:D; speed-dependent transitions  
+**Material**: ABS + metal  
+**Gimmick**: speed-dependent tip with three positions  
+**Mechanism**: Heavier than F:D (7.19 vs 5.85 g). Three tip positions with RPM: high-spin flat attack, mid-spin semi-flat, low-spin sharp stamina. Extreme transitions: more aggressive position change vs F:D. 7.19 g: highest mass of 4D bottoms → highest I contribution. Top-tier 4D bottom for builds needing maximum control across all RPM phases.  
+**Engine Note**: mass_g=7.19; 3positions_RPM; heaviest_4Dbottom; I_topTier; extremeTransitions.
+
+---
+
+### [Case 346 — 4D Metal Wheel: Diablo: 51.26 g](./6%20case%20study.md#case-346)
+
+**System**: MFB (4D System)  
+**Geometry**: 51.26 g; heaviest 4D wheel (possibly heaviest standard MFB wheel)  
+**Material**: metal frame + PC  
+**Mechanism**: 51.26 g: heaviest known MFB wheel. Extreme I → maximum KO resistance. Diablo contacts: very aggressive smash geometry on a near-circular body. Attack + defense simultaneously: heaviest contact impulse deliverable with any wheel. Top-tier 4D wheel. Note: Chrome Wheel Ifraid (Case 1062) ties at 51.26 g.  
+**Engine Note**: mass_g=51.26; heaviestMFBwheel (tied w/ Ifraid); I_extreme; attack+defense.
+
+---
+
+### [Case 347 — 4D Metal Wheel: L-Drago Destroy: 44.33 g](./6%20case%20study.md#case-347)
+
+**System**: MFB (4D System) — Left Spin  
+**Geometry**: 44.33 g; 4D left-spin wheel  
+**Material**: metal frame + PC  
+**Mechanism**: 44.33 g: very heavy 4D LS wheel. L-Drago Destroy: destruction-oriented contacts. Left-spin optimized with metal and PC frame combination. 4D mode changes available. LS attack + defense hybrid from high mass. Top-tier LS 4D wheel.  
+**Engine Note**: mass_g=44.33; 4D; LS_specific; destructionContacts; attack/defense_4D.
+
+---
+
+### [Case 348 — 4D Bottom: F:S Final:Survive: 5.73 g](./6%20case%20study.md#case-348)
+
+**System**: MFB (4D System) — Bottom  
+**Geometry**: 5.73 g; survival-optimized final drive variant  
+**Material**: ABS + metal  
+**Gimmick**: speed-dependent but survival-optimized transitions  
+**Mechanism**: Final:Survive variant: speed-dependent transitions tuned for maximum survival (stamina-oriented). High spin: mild flat movement. Low spin: sharp for maximum stamina. Survival-focus means less aggressive attack at high spin vs standard F:D. 5.73 g: track+tip combined. Best for stamina builds needing speed-phase management.  
+**Engine Note**: mass_g=5.73; finalSurvive; stamina_tuned; survivalFocus vs F:D_attack_focus.
+
+---
+
+### [Case 349 — 4D Clear Wheel: Orion: 3.0 g](./6%20case%20study.md#case-349)
+
+**System**: MFB (4D System)  
+**Geometry**: 3.0 g; 4D clear wheel  
+**Material**: polycarbonate  
+**Mechanism**: Standard 4D energy ring at 3.0 g. Orion constellation motif. Launcher tabs. Compatible with 4D metal wheels. Standard I contribution for PC ring.  
+**Engine Note**: mass_g=3.0; PC; 4D_standard; Orion_motif.
+
+---
+
+### [Case 350 — 4D Metal Wheel: Phantom: 44.50 g](./6%20case%20study.md#case-350)
+
+**System**: MFB (4D System)  
+**Geometry**: 44.50 g; 4D wheel; circular defense profile  
+**Material**: metal frame + PC  
+**Mechanism**: 44.50 g: very heavy 4D wheel. Phantom: near-circular defense-dominant profile. Smooth outer rim → near-zero recoil. High I → maximum defense/stamina. 4D mode enables PC core configuration. Top-tier 4D defense wheel alongside Fusion.  
+**Engine Note**: mass_g=44.50; 4D; nearCircular; I_veryHigh; defense.
+
+---
+
+### [Case 351 — 4D Bottom: B:D Bearing Drive: 3.45 g](./6%20case%20study.md#case-351)
+
+**System**: MFB (4D System) — Bottom  
+**Geometry**: 3.45 g; bearing-based drive  
+**Material**: ABS + bearing  
+**Spin Coupling**: bearing isolation → near-zero tip friction  
+**Mechanism**: Bearing Drive: bearing in bottom → near-zero tip friction (μ ≈ 0.05). Top-tier stamina bottom in 4D system. Combined track + tip unit. 3.45 g. Bearing wears over time → friction increases gradually. Competitive while bearings are fresh. Best 4D bottom for pure stamina.  
+**Engine Note**: mass_g=3.45; bearing_mu≈0.05; topTier_stamina; bearingWear_over_time.
+
+---
+
+### [Case 352 — Track: S130 Shield 130: 3.3 g](./6%20case%20study.md#case-352)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 3.3 g; 13.0 mm height; shield disk protrusions  
+**Material**: ABS  
+**Mechanism**: Shield disk at 1.3 cm height: protrusions extend outward at track level. Provides coverage against lower-track attackers while being shorter than 145. 3.3 g: good I contribution. Defense track: shield protrusions deflect attacks that would otherwise reach wheel. Shorter than BD145 but provides lateral protection at track level.  
+**Engine Note**: mass_g=3.3; height=1.3cm; shieldDisk; lateralProtection; I_good.
+
+---
+
+### [Case 353 — Bottom: CS Coat Sharp: 0.8 g](./6%20case%20study.md#case-353)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.8 g; coated sharp tip  
+**Material**: metal/coated tip  
+**Mechanism**: Coat Sharp: sharp tip with special surface coating → μ lower than standard ABS sharp but higher than MS. Coat reduces friction via low-friction polymer layer. Better stamina than ABS sharp; slightly more friction than metal sharp. 0.8 g: moderate mass. Competitive in builds without MS access.  
+**Engine Note**: mass_g=0.8; coatedSharp; mu_between_ABSsharp_and_MS; competitive_without_MS.
+
+---
+
+### [Case 1052 — Fusion Wheel: Forbidden: 31.7 g](./6%20case%20study.md#case-1052)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 31.7 g; Fusion Wheel  
+**Material**: zinc alloy  
+**Mechanism**: 31.7 g Fusion Wheel. Forbidden motif. Contact geometry: moderate smash with wide profile. Competitive in defense/stamina applications due to mass. Not a top-tier attack wheel. General-purpose mid-to-heavy wheel.  
+**Engine Note**: mass_g=31.7; FusionWheel; moderate contact; defense/stamina.
+
+---
+
+### [Case 1053 — Track: Eternal Defense 145 / ED145: 3.6 g](./6%20case%20study.md#case-1053)
+
+**System**: MFB (Metal Fight Beyblade) — Track  
+**Geometry**: 3.6 g; 14.5 mm height; free-spinning disk wings  
+**Material**: ABS + free-spin bearings  
+**Spin Coupling**: free-spinning wings → contact impulse dissipated  
+**Mechanism**: Free-spinning wing disk: wings spin independently on contact → impulse absorbed (wings spin up). Unlike WD145 (Case 971): ED145 wings ARE free-spinning → full impulse absorption. 3.6 g at 14.5 mm: same mass as WD145 but free-spin. Lower recoil than WD145 (no mechanical trap risk). Trade: free-spin means trap mechanism impossible. Pure defense track.  
+**Engine Note**: mass_g=3.6; height=1.45cm; freeSpinWings; impulseAbsorbed; noTrap vs WD145.
+
+---
+
+### [Case 1054 — Bottom: Flat Ball / FB: 0.6 g](./6%20case%20study.md#case-1054)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; flat-ball hybrid (flat base with ball-shaped lower profile)  
+**Material**: ABS  
+**Mechanism**: Flat base with ball-shaped lower profile: standard movement + ball-curve edge. Ball curve on flat → when tilted, ball edge rolls vs flat hard edge. Provides slight LAD benefit at tilt vs standard flat. Attack character from flat base. LAD assist from ball edge. Mid-tier attack+survival hybrid.  
+**Engine Note**: mass_g=0.6; flatBase+ballEdge; attack+minorLAD.
+
+---
+
+### [Case 1055 — Clear Wheel: Eonis / Ionis: 2.8 g](./6%20case%20study.md#case-1055)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 2.8 g; PC clear wheel  
+**Material**: polycarbonate  
+**Mechanism**: 2.8 g: slightly below standard PC ring (3.0 g avg). Eonis/Ionis — regional naming variant (TT vs Hasbro). Name note: same part, two names. Lightweight clear wheel → marginal mass advantage in builds needing minimum combo mass.  
+**Engine Note**: mass_g=2.8; PC; belowStandard_mass; Eonis_TT=Ionis_Hasbro; lightClearWheel.
+
+---
+
+### [Case 1056 — Fusion Wheel: Dark: 31.4 g](./6%20case%20study.md#case-1056)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 31.4 g; Fusion Wheel; smooth dark profile  
+**Material**: zinc alloy  
+**Mechanism**: 31.4 g: competitive Fusion Wheel mass. Dark profile: smooth, round outer rim → low recoil → defense/stamina. Comparable to Earth/Burn for stamina but slightly lighter. Mid-upper tier defense wheel.  
+**Engine Note**: mass_g=31.4; smoothDark; lowRecoil; defense/stamina; mid-upper tier.
+
+---
+
+### [Case 1057 — Bottom: Flat Spike / Flat Sharp / FS: 0.6 g](./6%20case%20study.md#case-1057)
+
+**System**: MFB (Metal Fight Beyblade) — Bottom  
+**Geometry**: 0.6 g; flat tip with central spike  
+**Material**: ABS  
+**Mechanism**: Flat tip with central spike protruding below: during high-speed spin, flat outer rim contacts (attack mode). During tilt/low spin, spike contacts (sharp mode for minimal friction). Dual profile: automatic transition. Similar to Sharp Ball but inverted geometry (spike in center vs ball body). Competitive alternative to SB/BS.  
+**Engine Note**: mass_g=0.6; flatOuter+spikeCenter; auto_phase: flat=attack, spike=stamina.
+
+---
+
+### [Case 1058 — Clear Wheel: Wolf: 3.1 g](./6%20case%20study.md#case-1058)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 3.1 g; PC clear wheel; wolf motif  
+**Material**: polycarbonate  
+**Mechanism**: 3.1 g: standard mass PC ring. Wolf motif. Standard launcher tabs. Compatible with most Fusion Wheels. Standard I contribution.  
+**Engine Note**: mass_g=3.1; PC; standard; wolfMotif.
+
+---
+
+### [Case 1059 — Fusion Wheel: Poison: 29.8 g](./6%20case%20study.md#case-1059)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 29.8 g; Fusion Wheel  
+**Material**: zinc alloy  
+**Mechanism**: 29.8 g: lower mid-range Fusion Wheel mass. Poison design: somewhat aggressive contact geometry with moderate recoil. Not top-tier attack or defense — mid-range competitor. Pairs with standard attack bottoms.  
+**Engine Note**: mass_g=29.8; FusionWheel; moderate contact; midRange.
+
+---
+
+### [Case 1060 — Fusion Wheel: Spiral: 34.2 g](./6%20case%20study.md#case-1060)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 34.2 g; Fusion Wheel; spiral groove contacts  
+**Material**: zinc alloy  
+**Mechanism**: 34.2 g: heavier Fusion Wheel. Spiral groove contacts: rotational contact provides screw-pump lateral force (similar to Vortex bit in BX, Case 963). Moderate attack + good mass for KO resistance. Higher mass enables heavy hits with spiral-groove contact directing spin energy.  
+**Engine Note**: mass_g=34.2; spiralGroove; screwPump_lateral; heavier; attack+KO.
+
+---
+
+### [Case 1061 — Clear Wheel: Serpent: 2.9 g](./6%20case%20study.md#case-1061)
+
+**System**: MFB (Metal Fight Beyblade)  
+**Geometry**: 2.9 g; PC clear wheel  
+**Material**: polycarbonate  
+**Mechanism**: 2.9 g: near-standard PC ring. Serpent motif. Standard launcher tabs. Slightly below 3.0 g average → marginal lightness.  
+**Engine Note**: mass_g=2.9; PC; serpentMotif; nearStandard.
+
+---
+
+### [Case 1062 — Chrome Wheel: Ifraid: 51.26 g](./6%20case%20study.md#case-1062)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 51.26 g; chrome wheel; fire-beast motif  
+**Material**: zinc alloy  
+**Mechanism**: 51.26 g: tied with Diablo (Case 346) for heaviest standard MFB wheel. Ifraid Chrome Wheel. Extreme I → maximum KO resistance and inertia in Synchrome setup. Fire-beast contacts: aggressive smash geometry. In Synchrome: Ifraid + another heavy wheel → extreme combined mass. Top-tier Synchrome offensive wheel.  
+**Engine Note**: mass_g=51.26; heaviest_ChromeWheel (tied w/ Diablo); I_extreme; Synchrome_topTier.
+
+---
+
+### [Case 1063 — Chrome Wheel: Begirados: 45.6 g](./6%20case%20study.md#case-1063)
+
+**System**: MFB (Synchrome / Zero-G System)  
+**Geometry**: 45.6 g; chrome wheel; dragon motif  
+**Material**: zinc alloy  
+**Mechanism**: 45.6 g: very heavy chrome wheel. Begirados: dragon-motif contacts → smash geometry. Heavy for Synchrome → excellent I contribution. Top-tier offensive chrome wheel by mass. Competes with Revizer for Synchrome attack builds.  
+**Engine Note**: mass_g=45.6; ChromeWheel; dragonContacts; veryHeavy; Synchrome_topTier.
+
+---
+
+## CS7 — Cases 354–374 {#cs7}
+Source: `7 case study.md`
+
+---
+
+### [Case 354 — Basic Line System (BX)](./7%20case%20study.md#case-354)
+
+**System**: Beyblade X (BX)  
+**Geometry**: Blade: zinc contact points at outer perimeter, metal launcher hooks ×3 at mid-radius, PMMA body; Ratchet: twist-lock tooth ring; Bit: 12-tooth pinion gear  
+**Material**: Blade — zinc alloy (contact points) + metal (hooks) + PMMA body; Ratchet — ABS; Bit — ABS  
+**Mechanism**: Three-component BX stack. Metal launcher hooks pull mass toward axis vs UX resin hooks → balanced stable spin geometry. Ratchet twist-lock: more indent engagement = higher burst torque threshold. Bit 12-tooth pinion meshes X-Celerator Rail → Xtreme Dash per 30° arc. Spin direction fixed by Blade stopper; cross-launch physically blocked. L/R spin set at Blade manufacture level — not changeable by Ratchet selector.  
+**Engine Note**: system=BX_BasicLine; hookMaterial=metal; inertiaBalance=inward; ratchet=twistLock; bit_teeth=12; dashPer30deg=true; spinLock=physical.
+
+---
+
+### [Case 355 — Unique Line System (UX)](./7%20case%20study.md#case-355)
+
+**System**: Beyblade X (UX)  
+**Geometry**: Blade: zinc contact points outer perimeter, resin launcher hooks ×3 at mid-radius (lower density than BX metal hooks); Ratchet: same twist-lock as BX; Bit: gimmick variants per model  
+**Material**: Blade — zinc alloy (contact points) + resin (hooks) + PMMA body; Ratchet-Integrated Blade: fused single unit (BulletGriffon type)  
+**Mechanism**: UX advances BX by replacing metal launcher hooks with resin — same geometry, lower density → less inward mass pull → zinc outer ring dominates I more completely → higher Outward Weight Distribution (OWD). Each UX release specialised in one distinct mechanical/geometric axis beyond OWD. Ratchet-Integrated Blades fuse Ratchet into Blade enabling cross-boundary gimmick mechanisms. Expand Blade (Feb 2026) integrates Ratchet; no rotating Gear Chip; avatar = sticker.  
+**Engine Note**: system=UX_UniqueLine; hookMaterial=resin; OWD=high; RatchetIntegrated=available; ExpandBlade=2026.
+
+---
+
+### [Case 356 — Custom Line System (CX)](./7%20case%20study.md#case-356)
+
+**System**: Beyblade X (CX)  
+**Geometry**: Standard CX: Lock Chip (ABS, inner) + Main Blade (zinc contacts, r_outer varies) + Assist Blade (PMMA, height/reach variable) + Ratchet + Bit — 5 components. Expand CX: Lock Chip + Over Blade (PMMA outer) + Metal Blade (zinc, beneath) + Assist Blade + Ratchet + Bit — 6 components. Metal Lock Chip variant: denser/taller at center.  
+**Material**: Lock Chip — ABS (standard) or metal (Metal LC); Main Blade — zinc alloy + PMMA; Assist Blade — PMMA; Over Blade — PMMA; Metal Blade — zinc alloy  
+**Mechanism**: Modular 3-part Blade stack. I_blade_total = I_lock_chip + I_main_blade + I_assist_blade (standard); + I_over_blade + I_metal_blade for Expand. Any single component swappable without disturbing others — unique tuning axis vs BX/UX. Assist Blade changes vertical contact height and secondary contact timing. Over Blade (Expand) shifts outermost contact to PMMA → less recoil than zinc-on-zinc.  
+**Engine Note**: system=CX_CustomLine; bladeComponents=3(standard)/4(expand); modularity=per_zone; Expand_2layer=overBlade+metalBlade.
+
+---
+
+### [Case 357 — Ratchet System Architecture (BX / UX / CX)](./7%20case%20study.md#case-357)
+
+**System**: Beyblade X (BX / UX / CX) — Ratchet sub-architecture  
+**Geometry**: Height encoded in part name: X-YY where YY × 0.1 mm = height. 3-60: 6.0 mm, 6 indents (C₃). 4-70: 7.0 mm, 7 indents (3+4, C₁ asymmetric). 4-80: 8.0 mm, 8 indents (C₄-like). Outer protrusion count = first digit.  
+**Material**: ABS  
+**Mechanism**: Ratchet performs 3 simultaneous functions: (1) sets total Bey height → controls contact-plane elevation and CoM; (2) burst resistance via indent count — W_burst ∝ N_indents × F_indent × d_travel; (3) shaft-lock preload. 70-height C₁ pattern: 3-indent and 4-indent halves produce direction-dependent burst threshold — lower-resistance arc is burst window. Higher Ratchet = more tilt-sensitive CoM; lower = more stable. Spin-direction selector ring: marks only assembly orientation, does not override Blade stopper.  
+**Engine Note**: heightConvention=YY×0.1mm; indents_60=6; indents_70=7(C1_asymmetric); indents_80=8; burstWindow=3indentArc(70h); CoM_scales_with_height.
+
+---
+
+### [Case 358 — Bit System Architecture (BX / UX / CX)](./7%20case%20study.md#case-358)
+
+**System**: Beyblade X (BX / UX / CX) — Bit sub-architecture  
+**Geometry**: Bit pinion: 12 teeth (standard Flat), 10 teeth (Rush). Rack pitch p_tooth fixed by stadium. Linear distance per revolution = N_teeth × p_tooth. Floor contact: flat tip = large disk patch; ball/dome = near-point Hertzian contact. Shaft ridges = high burst resistance; smooth shaft = low.  
+**Material**: ABS  
+**Mechanism**: Bit controls two independent functions: (1) X-Celerator Rail engagement — pinion tooth count sets dash frequency: fewer teeth = shorter pitch circle = more engagements per metre = more/faster dashes. Rush (10T) produces more Xtreme Dashes per lap than Flat (12T). (2) Shaft surface controls secondary burst resistance stacked on Ratchet indent count. (3) Tip geometry sets floor contact patch → movement type. Dash sequence: Bit pinion contacts rail → reaction impulse → successive tooth engagements → higher tangential exit speed.  
+**Engine Note**: bitTeeth_flat=12; bitTeeth_rush=10; rushHigherDashFreq=true; shaftRidges=highBurstResist; tipFlat=erratic; tipBall=stable.
+
+---
+
+### [Case 359 — 4 Layer System (4LS): Original Series Architecture](./7%20case%20study.md#case-359)
+
+**System**: Plastics Gen 1 — 4 Layer System (4LS)  
+**Geometry**: Bit Chip: r≈0.9 cm, h≈0.3 cm, m≈1.0 g; AR: r_outer≈2.2–2.8 cm, r_inner≈1.0 cm, m≈6 g (representative); WD (Wide): r_outer≈2.2 cm, r_inner≈0.4 cm, m≈14 g → I_WD≈3.50×10⁻⁶ kg·m²; BB: r_outer≈2.0–2.6 cm, m≈5 g → I_BB≈1.04×10⁻⁶ kg·m²; I_total (Wide WD representative)≈6.63×10⁻⁶ kg·m²; WD share≈52.8%; tip r≈0.1–0.4 cm  
+**Material**: AR — ABS (optional metal tips); WD — zinc/steel; BB — ABS; BC — ABS  
+**Mechanism**: 4-component axial stack (Bit Chip / AR / WD / BB). Chirality fixed in BB at manufacture — no hot-swap. AR is first and only contact point (r_AR ≥ r_WD enforced). WD contributes >50% of I. AR contact face φ: smash = cos(φ), recoil = sin(φ). BB tip sets spin decay: flat (μ=0.35, r_tip=0.4 cm) → dω/dt≈−68 rad/s²; spike (μ=0.17, r_tip=0.1 cm) → dω/dt≈−8 rad/s². No mid-battle mode change. Chip Cover clips over BC (obsolete in SGS+).  
+**Engine Note**: gen=Plastics_4LS; layers=4; chiralityIn=BB(fixed); WD_I_share=52.8%; tipDecay_flat=68rad_s2; tipDecay_spike=8rad_s2; noModeChange.
+
+---
+
+### [Case 360 — Spin Gear System (SGS): Five-Layer Architecture and Chirality Modularisation](./7%20case%20study.md#case-360)
+
+**System**: Plastics Gen 1 — Spin Gear System (SGS)  
+**Geometry**: SG shells (pair): m≈2.24 g, r_outer≈1.9 cm, r_inner≈0.4 cm → I_SG_shells≈4.22×10⁻⁷ kg·m²; Metal Weight Gear (MWG): m≈1.12 g, r≈1.5 cm (thin ring) → I_MWG≈2.52×10⁻⁷ kg·m²; I_SG_total (shells+MWG)≈6.74×10⁻⁷ kg·m²; BC extended: r≈0.9–1.1 cm (no Chip Cover needed); Sub-AR (representative): m≈3 g, r_outer≈2.2 cm → I_subAR≈8.76×10⁻⁷ kg·m²; 5-layer I_total (Wide WD)≈7.10×10⁻⁶ kg·m²; WD share≈49.3%; SG share≈9.5%  
+**Material**: SG shells — ABS; MWG — metal; Sub-AR — ABS  
+**Spin Coupling**: SG Left/Right shells — physically incompatible with wrong-spin launcher (Left tabs block Right shooter insertion). SG chirality hot-swappable (swap shells, BB unchanged). Sub-AR free-spins on collar: transmitted impulse fraction = I_bey / (I_bey + I_subAR) ≈ 89% for representative Sub-AR.  
+**Mechanism**: SGS adds SG layer between WD and BB — extracts chirality from BB into swappable SG shells. Gimmick SGs: Full Auto Clutch (ball bearings + ratchet decoupler); Engine Gear (spring-wound, separate system Case 362). BB compatibility: 4LS BBs lack SG cavity.  
+**Engine Note**: gen=Plastics_SGS; layers=5; chiralityIn=SG_shells(swappable); SubAR_impulseAbsorb=11pct; SG_I_share=9.5pct; EG_pushes_SG_share_25_40pct.
+
+---
+
+### [Case 361 — Magnacore System (MGS): Six-Layer Architecture and Magnetic Normal-Force Modulation](./7%20case%20study.md#case-361)
+
+**System**: Plastics Gen 1 — Magnacore System (MGS)  
+**Geometry**: 6-layer stack. NEO SG shells: hollow centre, accepts Core inserts. Magnecore: permanent magnet (N or S pole). Magnetic WD: two-sided, flip for N/S polarity. Support Parts: reversible BB accessories that change contact geometry/height. Stadium magnet: South pole always faces up (Magnacore Tray).  
+**Material**: NEO SG shells — ABS; Magnecore — ABS + permanent magnet; Magnetic WD — metal + permanent magnet  
+**Gimmick**: Magnecore (South): repels stadium magnet → ↓N_normal → ↓tip friction → erratic low-drag movement; easier ring-out. Magnecore (North): attracts stadium magnet → ↑N_normal → ↑tip friction → harder to displace defensive; faster spin decay. Magnetic WD enables SGS beys with Gimmick SGs to access magnetic modulation without swapping base. Support Parts reversible — change contact height without part swap.  
+**Mechanism**: MGS splits SGS SG into NEO SG shells + Core (6th layer). Core is swappable inertia/gimmick module: Metal Weight Core (mass only), Standard SG Core (legacy), Magnecore (magnetic). Normal-force modulation via magnetic attraction/repulsion is the sole new physics variable vs SGS.  
+**Engine Note**: gen=Plastics_MGS; layers=6; Core=swappable; Magnecore_S=reduceNormal; Magnecore_N=increaseNormal; MagneticWD=SGS_compatible.
+
+---
+
+### [Case 362 — Engine Gear System (EGS): Spring-Energy Storage, Clutch-Timed Release, and EG-Dominant Inertia](./7%20case%20study.md#case-362)
+
+**System**: Plastics Gen 1 — Engine Gear System (EGS)  
+**Geometry**: EG: r_outer≈1.9–2.2 cm, mass≈10–21 g (variant-dependent); replaces NEO SG+Core. BB clutch types: First (releases at launch), Final (releases on impact/low spin), No Clutch (steady release), Stopper (no release). CEW slot at EG bottom accepts interchangeable tip inserts.  
+**Material**: EG body — ABS; spring — steel; CEW tip inserts — varies by type  
+**Gimmick**: Turbo Winder pre-winds spring before launch. Clutch timing: First Clutch → peak ω at launch; Final Clutch → peak ω at low-spin or impact moment; No Clutch → gradual release across match. EG mass (10–21 g) is 4–10× SGS shell mass → EG becomes co-dominant or dominant I contributor (25–40% of I_total). Reverse Engine Gear applies counter-spin torque to Bey at activation → deliberate spin-loss event (Dranzer GT reverse attack strategy). Custom Engine Weights (CEW) decouple tip geometry from spring mechanism.  
+**Mechanism**: EG replaces NEO SG+Core as single enlarged unit. Spring stores potential energy pre-launch; BB clutch tab geometry triggers release. Builder controls not just what Bey does but when peak ω occurs in match timeline. Anime note: Special moves override all clutch/mechanical limits via BeySpirit power.  
+**Engine Note**: gen=Plastics_EGS; EG_mass_g=10_21; clutchTypes=First/Final/NoCrutch/Stopper; Reverse_EG=counterSpin; CEW=tipModular; EG_I_share=25_40pct; animeOverride=BeySpirit.
+
+---
+
+### [Case 363 — Hard Metal System (HMS): Complete Architecture Break, Running Core Consolidation, and Metal AR Contact Physics](./7%20case%20study.md#case-363)
+
+**System**: Plastics Gen 1 — Hard Metal System (HMS)  
+**Geometry**: HMS≈75% scale of plastics gen: AR r_outer≈1.6–2.2 cm; WD r_outer≈1.6–2.0 cm. I scales as r² → HMS I ≈ 56% of equivalent plastics build at same mass → higher launch ω at equal launch energy. Bit Protector: r≈1.4–1.6 cm (structural lock atop RC). RC: central spine — BP/AR/WD slide over RC upper post; tip exits from RC lower.  
+**Material**: AR — ABS Caul + zinc Metal Frame; WD — metal (standard) or notched with ABS inserts (CWD, Free Spinning or Stationary); RC — ABS + tip; BP — ABS  
+**Mechanism**: Complete compatibility break with 4LS/SGS/MGS/EGS. 4-layer stack: BP / AR / WD / RC. Assembly inverted: RC is spine; all other parts slide over it. AR = ABS Caul + zinc Metal Frame → zinc-on-zinc contact: higher impulse (density ≈6.3× ABS), zero contact deformation, no energy loss to indentation. AR co-dominant I with WD. Dual Shooter: L and R ripcord insertion holes → chirality = launcher choice, not assembly property. No separate Spin Gear.  
+**Engine Note**: gen=Plastics_HMS; scale=75pct; I_scale_factor=0.56; metalFrame_AR=zinc; dualShooter=chiralityFree; RC=spine; noSG_layer; complete_break_from_4LS_SGS.
+
+---
+
+### [Case 364 — Metal System (MFS): Generation 2 Architecture, Wheel-Dominant Inertia, and Track Height Parametrisation](./7%20case%20study.md#case-364)
+
+**System**: MFB Gen 2 — Metal System (MFS)  
+**Geometry**: Wheel: r_outer≈2.2–2.8 cm, m≈20–30 g, zinc/aluminum → I_Wheel≈95% of I_total. Track height = part number × 0.1 mm (145=1.45 cm, 230=2.30 cm, 100=1.00 cm). Face Bolt: threaded steel screw through Wheel into Track.  
+**Material**: Wheel — zinc alloy; Track — ABS; Bottom — varies (rubber, PC, metal); Face Bolt — steel  
+**Mechanism**: Gen 2 (Metal Saga) opening architecture. Complete compatibility break with Gen 1. 4-layer stack: Face Bolt / Wheel / Track / Bottom. Face Bolt = threaded screw (secure vs press-fit). Wheel contributes ≈95% of I_total — Track and Bottom are I-irrelevant. Track height = discrete tunable variable (part number encodes height in 0.1 mm). Bottom three-class: Attack (flat/rubber), Defense (wide/ball), Stamina (sharp/free-spin). Gimmick Tracks (GB145 gyro balls, DF145 disk fins, etc.) add aerodynamic/gravitational effects. Wheel choice determines all spin retention.  
+**Engine Note**: gen=MFB_MetalSystem; Wheel_I_share=95pct; trackHeight=partNumber×0.1mm; FB=threadedScrew; bottomClass=Attack/Defense/Stamina; complete_break_from_Gen1.
+
+---
+
+### [Case 365 — Hybrid Wheel System (HWS): Wheel Bifurcation, Energy Ring, and Two-Dimensional Customisation](./7%20case%20study.md#case-365)
+
+**System**: MFB Gen 2 — Hybrid Wheel System (HWS)  
+**Geometry**: Energy Ring (ER): r_outer≈2.3–2.7 cm, polycarbonate (ρ≈1200 kg/m³); Fusion Wheel (FW): r_inner≈0.6 cm, r_outer≈2.2 cm, zinc (ρ≈6600 kg/m³); FW lighter than one-piece Metal System Wheel. I_FW≈55% of I_total; I_ER≈31%; combined wheel assembly≈86% of I_total. Spin Track and Performance Tip: unchanged from Metal System.  
+**Material**: ER — polycarbonate; FW — zinc alloy; Track — ABS; Tip — varies  
+**Mechanism**: HWS bifurcates Metal System one-piece Wheel into FW (metal contact) + ER (PC outer-rim launcher hooks). ER at maximum radius: contributes ~31% I despite low PC density. 2D customisation matrix: any FW × any ER = independent contact geometry + outer-rim profile selection. FW contact protrusions may protrude past ER. PC is 1/5 density of zinc → ER shifts effective specific inertia inward vs metal ring at same r. Spin Track height convention unchanged (part number × 0.1 mm). Track and Tip roles identical to Metal System.  
+**Engine Note**: gen=MFB_HWS; FW_I_share=55pct; ER_I_share=31pct; wheelAssembly_I=86pct; customMatrix=FW×ER; trackUnchanged=true.
+
+---
+
+### [Case 366 — 4D System: Sub-Part Fusion Wheel Reconfiguration, Mode-Change Contact Geometry, and Final Drive Centrifugal Tip Switch](./7%20case%20study.md#case-366)
+
+**System**: MFB Gen 2 — 4D System  
+**Geometry**: 4D FW sub-parts: PC Frame (r_outer≈2.2–2.5 cm, polycarbonate), Metal Frame (zinc), Core (ABS or light metal) — repositionable. F:D Bottom (Final Drive): combines Spin Track + Performance Tip into single unit with centrifugal tip-switch mechanism. PC Frame + ER together make polycarbonate I share largest in any Metal Saga system. I_wheel_assembly≈90–95% of I_total.  
+**Material**: PC Frame — polycarbonate; Metal Frame — zinc/steel; Core — ABS; F:D — ABS  
+**Gimmick**: 4D Fusion Wheel: 2–3 sub-parts repositionable pre-launch → discrete contact-geometry modes without replacing parts (Divided Wheel). F:D Final Drive: centrifugal mechanism switches tip contact regime automatically at spin threshold (Dynamic Drive). Two new performance variable classes vs HWS: (1) pre-launch mechanical mode selection at FW level; (2) mid-battle automatic tip-regime switching.  
+**Mechanism**: 4D retains HWS 5-component stack but restructures FW and Bottom. Four 4D principles: Different Material (multi-material FW), Divided Wheel (repositionable sub-parts), Dynamic Drive (F:D auto tip switch), Deep Custom (expanded matrix). Wheel assembly still dominant at 90–95% I.  
+**Engine Note**: gen=MFB_4D; FW_subParts=3; modeChange=preLaunch; FD_autoTipSwitch=midBattle; polycarbonate_I_share=highest_in_MetalSaga; I_wheel=90_95pct.
+
+---
+
+### [Case 367 — Synchrome System (Zero-G): Warrior Wheel Asymmetry, Three-Mode Flip Assembly, and Synchrome Inertia Amplification](./7%20case%20study.md#case-367)
+
+**System**: MFB Gen 2 — Synchrome System (Zero-G)  
+**Geometry**: Warrior Wheel (Chrome Wheel): r_outer≈2.2–2.6 cm, zinc, C₁ symmetry (asymmetric). Element Wheel (Crystal Wheel): r_outer≈2.3–2.7 cm, polycarbonate. Shogun Face Bolt: longer screw vs standard FB (extends through double-wheel Synchrome stack). Zero-G stadium floor tilts during battle.  
+**Material**: Warrior Wheel — zinc alloy; Element Wheel — polycarbonate crystal; Shogun Face Bolt — steel  
+**Gimmick**: Three battle modes from one assembly: (1) Chromium Up — Warrior Wheel at top, metal contact height (default); (2) Crystal Up — flip assembly, Element Wheel at contact height; (3) Synchrome — replace Element Wheel with second Warrior Wheel → double zinc mass → extreme I amplification. Synchrome assembly alignment: 180° offset → asymmetries partially cancel; 0° offset → asymmetries compound → max I imbalance and contact frequency.  
+**Mechanism**: Warrior Wheel C₁ symmetry → dynamic imbalance, continuously varying contact angle φ(θ), uneven collision frequency per revolution. Synchrome mass amplification: two heavy Chrome Wheels (e.g. Ifraid+Diablo at ~102 g combined) → extreme I. Zero-G stadium tilts → requires CF (Circle Flat) tip designs maintaining contact on non-horizontal floor.  
+**Engine Note**: gen=MFB_ZeroG_Synchrome; WarriorWheel_C1=asymmetric; modes=3(ChromeUp/CrystalUp/Synchrome); SynchromeAlignment=0deg_max/180deg_cancel; ZeroG_floor=tilts; CF_tip_required.
+
+---
+
+### [Case 368 — Burst System (Gen 3 Overview): Three-Component Architecture, Ratchet Burst Mechanism, and Subsystem Progression](./7%20case%20study.md#case-368)
+
+**System**: Burst System Gen 3 (overview)  
+**Geometry**: Layer: dual-piece PC (hard outer + softer inner); ratchet teeth inner ring; NFC chip slot (TT only). Disc (Forge Disc): all metal, r_outer≈2.2–2.8 cm, I budget second-largest; Core Disc variant accepts Disc Frames. Driver: upside-down pyramid body + internal spring; combines Track + Tip functions. Scope: Takara Tomy only (Hasbro excluded from Gen 3 case studies).  
+**Material**: Layer — PC (dual hardness); Disc — metal; Driver — ABS + steel spring  
+**Mechanism**: 3-component stack: Layer / Disc / Driver. New loss condition: Burst = Layer separates when collision torque > ratchet engagement threshold. Burst ratchet: Driver spring tabs engage Layer ratchet teeth; burst probability = f(tooth count, face angle, spring preload). Disc positioned below Layer (not between contact and base as in Metal Saga). Driver replaces Spin Track + Performance Tip as combined unit. Gen 3 subsystems: Initial Burst → DLS (Case 369) → GLS (Case 370) → Cho-Z (Case 371) → Gatinko (Case 372) → Superking (Case 373) → DB/BU (Case 374).  
+**Engine Note**: gen=Burst_Gen3_Overview; components=3(Layer/Disc/Driver); burstMechanism=ratchet_tabs; Disc_below_Layer; TT_only_scope; subsystems=7.
+
+---
+
+### [Case 369 — Dual Layer System (DLS): Upper/Lower Layer Split, Thickness-Driven Inertia Increase, and Matched-Pair Constraint](./7%20case%20study.md#case-369)
+
+**System**: Burst System Gen 3 — Dual Layer System (DLS)  
+**Geometry**: DLS Layer: Upper Layer (hard PC, contact geometry) + Lower Layer (softer PC, ratchet housing), fastened by central screw (r≈0.3 cm, I negligible). Total thickness: t_DLS≈1.0–1.4 cm (vs t_initial≈0.6–0.8 cm, ≈40–75% thicker). I_Layer share increases from ≈34% to ≈42% of I_total vs initial Burst Layers.  
+**Material**: Upper Layer — high-hardness PC (E≈2.4–2.8 GPa); Lower Layer — lower-hardness PC (E≈1.8–2.2 GPa); screw — metal  
+**Mechanism**: Single architectural change: Layer splits into two matched-pair sub-pieces (Upper + Lower). Upper: primary contact geometry; 3D overhangs/undercuts enabled by separate die not achievable in single-shot mould. Lower: ratchet housing. Compliance step at screw interface damps impulse slightly before burst tabs loaded. Layer mass increases (more PC per two separate mouldings) → I_Layer +40–50% vs initial Burst. Upper/Lower sold as matched pairs — no inter-bey interchangeability (unlike Gatinko).  
+**Engine Note**: gen=Burst_DLS; layerSplit=Upper+Lower; thickness_increase=40_75pct; I_Layer_share_42pct; matchedPair=noInterchangeability; screwJoint=compliance.
+
+---
+
+### [Case 370 — God Layer System (GLS): Two-Part Disc Architecture, Core Disc Protrusion I, and God Ability Layer Gimmicks](./7%20case%20study.md#case-370)
+
+**System**: Burst System Gen 3 — God Layer System (GLS)  
+**Geometry**: Core Disc: metal, numbered by protrusion count N; central annulus r_body≈0.4–1.6 cm, each protrusion extends to r_prot≈2.0–2.4 cm. Disc Frame: plastic ring, r_inner≈1.8 cm, r_outer≈2.5–2.8 cm. Naming: [Core Disc number][Frame first letter] e.g. 5G (5 Core + Glaive), 6M (6 Core + Meteor). Layer naming: lowercase first letter + uppercase beast name (gV = God Valkyrie). PC-only GLS Layer: I_Layer≈4.80×10⁻⁶ kg·m² (representative m≈17 g, r_o=2.2 cm).  
+**Material**: Core Disc — metal; Disc Frame — ABS or PC; Layer — PC dual-hardness  
+**Gimmick**: God Abilities — named gimmicks built into each God Layer: rubber contact zones, spring-actuated mode shifts, asymmetric protrusion configurations. These are the first Layer-level mechanical gimmicks in any Burst subsystem.  
+**Mechanism**: Two simultaneous changes: (1) Disc splits into Core Disc (metal protrusions) + Disc Frame (plastic outer ring) — same density trade-off logic as HWS FW/ER split. Core protrusions carry metal mass to larger r than body alone. I_Core = I_body + I_protrusions. Disc Frame contributes I at max r with plastic density penalty (~5.5× lower than equivalent zinc). (2) God Ability gimmicks added to Layer. Shorthand notation (e.g. 5G, 6M) carries forward through all subsequent subsystems.  
+**Engine Note**: gen=Burst_GLS; CoreDisc_protrusions=variable_N; DiscFrame_plastic; GodAbility=per_layer_gimmick; naming_convention=GLS_established; I_Layer_PC≈4.80e-6.
+
+---
+
+### [Case 371 — Cho-Z Layer System (CZL): Die-Cast Metal Layer Insert, Level Chip Compliance, and Awakening Wing Burst-Stop](./7%20case%20study.md#case-371)
+
+**System**: Burst System Gen 3 — Cho-Z Layer System (CZL)  
+**Geometry**: Cho-Z Layer: PC frame m≈10 g (r_i=0.6 cm, r_o=2.0 cm) + metal insert m≈10 g (r_i=1.8 cm, r_o=2.4 cm) → I_metal_insert≈4.50×10⁻⁶ kg·m²; I_ChoZ_Layer≈6.68×10⁻⁶ kg·m² → +39.2% vs GLS PC-only Layer. Layer I share≈55%; Disc assembly≈44%. Awakening wing deployment: extends effective r_outer by wing-arm mass contribution. r_turbo_wing≈3.7 cm at full deploy.  
+**Material**: Layer PC shell — polycarbonate; metal insert — zinc alloy (die-cast); Level Chip — ABS hoop; Xtend Chip — ABS (Z Achilles exclusive)  
+**Gimmick**: Awakening System: launch-strength-gated wing deployment at high spin. Wings deploy → ↑I (hoop term from wing arm mass) + engage Burst Stoppers (physical blocks preventing Driver tab ratchet-slip → burst mechanically impossible while wings deployed). Level Chip (beneath Layer face): adds mass at inner-to-mid r; three controllable properties: stability (CoM shift), locking (burst ratchet preload ↑), weight (ΔI). Xtend Chip (Z Achilles only): manual 3-mode Driver tip selection.  
+**Mechanism**: First Burst subsystem with die-cast metal in Layer. Reverses Layer/Disc density relationship: Layer now PC+metal composite → Layer dominates I. Zinc metal insert: E≈43× ABS → contact patch r ↓20% vs PC, eliminates deformation energy loss. Cho-Z contact is harder and shorter than any prior Burst subsystem. Anime note: Special moves override Awakening/clutch limits via BeySpirit power.  
+**Engine Note**: gen=Burst_ChoZ; metalInsert_in_Layer; I_Layer_6.68e-6; I_Layer_share=55pct; AwakenWings=BurstStopper; LevelChip=stabilityLockingWeight; animeOverride=BeySpirit.
+
+---
+
+### [Case 372 — Gatinko Layer System (GT): Three-Part Layer Modularity, Mugen Lock Free-Spin Burst Inhibition, and Power Core Electric Driver Spin Modulation](./7%20case%20study.md#case-372)
+
+**System**: Burst System Gen 3 — Gatinko Layer System (GT)  
+**Geometry**: GT Chip: r_outer≈1.3–1.5 cm, m≈3–5 g, ABS/PC; carries bayonet ring. Weight: r_inner≈0.9 cm, r_outer≈1.9–2.2 cm, m≈5–9 g (zinc or heavy ABS). Base: r_outer≈2.3–2.7 cm, m≈6–10 g, ABS. I shares (representative): Chip≈9%; Weight≈36%; Base≈55%. Bayonet interface: quarter-turn lock; repeatable angular positioning ±1–2°.  
+**Material**: GT Chip — ABS/PC; Weight — zinc or heavy ABS; Base — ABS; Mugen Lock hub — ABS  
+**Gimmick**: Mugen Lock System (mid-series): free-spinning central hub mechanically decouples Disc from outer Layer body under normal load → no burst-threshold torque accumulates. Vulnerability indicator turns red when perimeter tab retracts → single-strike burst possible (stopper jams disc). Power Core System: motorised or spring-actuated Driver shafts whose output speed = f(launch impulse or spring energy) → launch mechanics couple into in-battle tip behaviour.  
+**Mechanism**: First Burst subsystem with 3-part interchangeable Layer: Chip (identity + bayonet) / Weight (inertia adjuster, no contact) / Base (contact geometry + burst ratchet + driver socket). Swap only Base to change attack/stamina character while retaining Chip+Weight. Bayonet: hard-stop angular repeatability critical for asymmetric Weights.  
+**Engine Note**: gen=Burst_Gatinko; layerParts=3(Chip/Weight/Base); Base_dominates_I; MugenLock=freeSpin_decouples_burst; PowerCore=motorizedDriver; bayonet=repeatable.
+
+---
+
+### [Case 373 — Superking Layer System (SK): Ring-Dominant Three-Part Architecture, Limit Break Centrifugal Blade Deployment, and Free-Spinning Ring Burst Decoupling](./7%20case%20study.md#case-373)
+
+**System**: Burst System Gen 3 — Superking Layer System (SK)  
+**Geometry**: Superking Chip: r_outer≈1.2–1.5 cm, m≈3–4 g, ABS/PC. Ring: r_inner≈1.0 cm, r_outer≈2.7 cm, m≈11–14 g, ABS or rubber blend → dominant I. Chassis: r_inner≈0.4 cm, r_outer≈1.9 cm, m≈5–7 g, ABS. I shares (representative): Chip≈6%; Ring≈62%; Chassis≈32%. Limit Break Burn Ring: 4 blades deploy centrifugally above threshold. Volcano Ring: 5 primary + 5 secondary blades (cam pivot). The End Ring: outer section free-spins on bearing.  
+**Material**: Ring — ABS or rubber blend; Chassis — ABS; Superking Chip — ABS/PC  
+**Gimmick**: Limit Break System (mid-series): 3 specialised Rings integrating Chassis boss → reduces to 2-part assembly (Chip + LB Ring). Burn Ring: blade deploy → ↑I + wider contact arc. Volcano Ring: cam pivot reveals secondary blades → 5→10 contact faces, double collision frequency per revolution. The End Ring: outer partition free-spins on bearing → impulse accelerates outer partition only; transmitted torque to ratchet = I_chassis / I_Ring_outer fraction → stamina-class burst-resist without state-switching.  
+**Mechanism**: Restructures Gatinko roles: Ring collapses Weight (inertia) + Base (contact) into single outer piece — outermost component is Ring (contact + dominant I). Chassis is inner structural skeleton (ratchet + driver socket) at smaller r. Shift from Gatinko: largest-r component now also carries contact blades.  
+**Engine Note**: gen=Burst_Superking; Ring_I_share=62pct; Ring=contact+inertia(combined); LimitBreak_3variants; TheEnd=bearingDecoupled; collisionFreq_Volcano=2x.
+
+---
+
+### [Case 374 — Dynamite Battle / BU Layer System: Blade-Dominant Three-Part Architecture, Mode-Invariant Inertia, and Evolution Gear Stacking](./7%20case%20study.md#case-374)
+
+**System**: Burst System Gen 3 — Dynamite Battle (DB) + Burst Ultimate (BU)  
+**Geometry**: DB Blade: r_inner≈0.6 cm, r_outer≈2.8 cm, m≈15 g, ABS + rubber inserts → dominant I component. DB Armor: r_inner≈0.5 cm, r_outer≈2.1 cm, m≈8 g, ABS. Dynamite Core: r_inner≈0.3 cm, r_outer≈1.3 cm, m≈5 g, ABS. Low Mode (−): Core at bottom; High Mode (+): Armor at bottom, raises contact height by Armor axial thickness. Mode switching changes no radial position → I_total identical in both modes (annular formula depends only on mass and r). BU Blade: larger r and heavier than DB Blade → higher I_Layer share.  
+**Material**: Blade — ABS + rubber inserts; Armor — ABS; Core — ABS  
+**Gimmick**: Evolution Gear (EG) sub-system: named clip-on mass accessories (F, V, S, L, D, A, H, VS Gears) mount at fixed r on Blade or Driver shaft. Each adds discrete ΔI. Stackable to named ceiling: 1→2→3→Perfect Gear (4 standard gears); Ultimate Gear (4 special gears D/A/H/VS). VS Gear mounts on Driver tip shaft (Venture/Adventure) — only EG that modifies I at Driver level rather than Layer level.  
+**Mechanism**: DB/BU: 3-part Layer (Core/Blade/Armor) with physically reversible assembly order for High/Low Mode. Mode is pure contact-height strategy (not I change). High Mode: raises CoM by Armor thickness → faster precession at low spin, destabilizes sooner. Low Mode: lower contact plane. High Mode gyroscopic coupling: precession rate Ω_p = τ/(I·ω); torque arm d is mode-dependent. BU extends DB with larger-radius BU Blade and A/H Gear exclusive ports. Anime note: Special moves override DB/BU mechanical limits via BeySpirit power.  
+**Engine Note**: gen=Burst_DB_BU; modeInvariant_I=true; modeChange=contactHeight_only; HighMode_CoM_higher=fasterPrecession; EG_stackable_to_Perfect/Ultimate; VS_Gear=Driver_level; animeOverride=BeySpirit.
+
+---
+
+
 
