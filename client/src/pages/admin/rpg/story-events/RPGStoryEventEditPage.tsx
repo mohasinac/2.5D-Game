@@ -19,7 +19,7 @@ function CompletionFlagsEditor({ flags, onChange }: { flags: Record<string, bool
             const nk = e.target.value.trim() || k;
             if (nk === k) return;
             const rec = { ...flags }; const val = rec[k]; delete rec[k]; rec[nk] = val; onChange(rec);
-          }} className="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white" placeholder="flag key" />
+          }} className="flex-1 bg-bg2 border border-border-c rounded px-2 py-1 text-sm text-theme-text" placeholder="flag key" />
           <button type="button" onClick={() => { const rec = { ...flags }; rec[k] = !rec[k]; onChange(rec); }}
             className={`px-2 py-0.5 rounded text-xs font-bold ${v ? "bg-green-700 text-green-100" : "bg-red-700 text-red-100"}`}>
             {v ? "TRUE" : "FALSE"}
@@ -29,7 +29,7 @@ function CompletionFlagsEditor({ flags, onChange }: { flags: Record<string, bool
         </div>
       ))}
       <button type="button" onClick={() => onChange({ ...flags, new_flag: true })}
-        className="text-xs text-blue-400 hover:text-blue-300">+ Add Flag</button>
+        className="text-xs text-accent hover:opacity-80">+ Add Flag</button>
     </div>
   );
 }
@@ -99,13 +99,13 @@ export default function RPGStoryEventEditPage() {
     } catch (e) { console.error(e); toast.error("Failed to delete story event"); }
   };
 
-  if (loading) return <div className="p-6 text-gray-500 text-sm">Loading...</div>;
+  if (loading) return <div className="p-6 text-theme-muted text-sm">Loading...</div>;
 
   return (
     <div className="p-6 w-full max-w-3xl">
       <div className="mb-5">
-        <Link to="/admin/rpg/story-events" className="text-blue-400 text-sm hover:underline">&larr; Back to Story Events</Link>
-        <h1 className="text-[22px] font-bold text-white mt-2">Edit Story Event: {id}</h1>
+        <Link to="/admin/rpg/story-events" className="text-accent text-sm hover:underline">&larr; Back to Story Events</Link>
+        <h1 className="text-[22px] font-bold text-theme-text mt-2">Edit Story Event: {id}</h1>
       </div>
       <div className={CARD + " space-y-4"}>
         <div><label className={LBL}>Display Name</label><input className={INP} value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>
@@ -113,12 +113,12 @@ export default function RPGStoryEventEditPage() {
         <div><label className={LBL}>Route Exclusive For</label><input className={INP} value={routeExclusiveFor} onChange={e => setRouteExclusiveFor(e.target.value)} /></div>
         <div><label className={LBL}>Category</label><input className={INP} value={category} onChange={e => setCategory(e.target.value)} /></div>
         <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm text-gray-300">
-            <input type="checkbox" checked={triggerOnce} onChange={e => setTriggerOnce(e.target.checked)} className="accent-blue-500" />
+          <label className="flex items-center gap-2 text-sm text-theme-text">
+            <input type="checkbox" checked={triggerOnce} onChange={e => setTriggerOnce(e.target.checked)} className="accent-accent" />
             Trigger Once
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-300">
-            <input type="checkbox" checked={blocksPlayerInput} onChange={e => setBlocksPlayerInput(e.target.checked)} className="accent-blue-500" />
+          <label className="flex items-center gap-2 text-sm text-theme-text">
+            <input type="checkbox" checked={blocksPlayerInput} onChange={e => setBlocksPlayerInput(e.target.checked)} className="accent-accent" />
             Blocks Player Input
           </label>
         </div>

@@ -54,16 +54,18 @@ gameServer.define(ROOM_NAMES["2.5d"].battle, Parts25DBattleRoom)
 gameServer.define(ROOM_NAMES["2.5d"].aiBattle, Parts25DAIBattleRoom);
 gameServer.define(ROOM_NAMES["2.5d"].tournament, Parts25DTournamentBattleRoom);
 
-// Team Battle rooms (Phase K / K2)
-gameServer.define("team_battle_room", TeamBattleRoom);
-gameServer.define("parts25d_team_battle_room", Parts25DTeamBattleRoom);
+// Team Battle rooms — also filterBy bestOf so BO1 and BO3 lobbies don't mix
+gameServer.define(ROOM_NAMES.global.teamBattle, TeamBattleRoom)
+  .filterBy(["bestOf"]);
+gameServer.define(ROOM_NAMES.global.teamBattle25d, Parts25DTeamBattleRoom)
+  .filterBy(["bestOf"]);
 
 // Royale Battle room — filterBy size so 4/8/12-player lobbies don't mix
-gameServer.define("royale_battle_room", RoyaleBattleRoom)
+gameServer.define(ROOM_NAMES.global.royale, RoyaleBattleRoom)
   .filterBy(["size"]);
 
 // RPG Story Battle room — extends AIBattleRoom with RPG narrative context
-gameServer.define("story_battle_room", StoryBattleRoom);
+gameServer.define(ROOM_NAMES.global.story, StoryBattleRoom);
 
 // Legacy room names — kept as aliases for one release cycle so existing
 // clients continue to connect. They route to the classic 2D pipeline.
@@ -86,6 +88,19 @@ app.get("/health", (req, res) => {
     status: "ok",
     timestamp: new Date().toISOString(),
   });
+});
+
+// Private room lookup by room code — used by client Join-with-Code flow
+app.get("/rooms/by-code/:code", async (req, res) => {
+  const code = (req.params.code ?? "").toUpperCase();
+  try {
+    const rooms = await gameServer.driver.query({ metadata: { roomCode: code } } as any);
+    const match = rooms.find((r: any) => r.metadata?.roomCode === code);
+    if (!match) { res.status(404).json({ error: "Room not found" }); return; }
+    res.json({ roomId: match.roomId });
+  } catch (err) {
+    res.status(500).json({ error: "Lookup failed" });
+  }
 });
 
 // Start server

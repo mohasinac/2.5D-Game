@@ -1,15 +1,17 @@
-// LaunchPhase — 5-second launch setup overlay shown during status="launching".
-// Controls: A/D=tilt, W/S=position, Hold Space=charge+lock, Release Space=launch.
-// Once Space is held, position and tilt are locked.
-// Shows arena world background behind the scrim and teammate launch progress below.
-//
-// launcherType="string"  (default) — hold SPACE to charge, release to launch.
-// launcherType="ripcord"           — oscillating gauge, press SPACE at peak for PERFECT.
+// LaunchPhase — mobile-first launch setup overlay during status="launching".
+// String launcher: PowerArc charge meter, TiltPositionDragger, big hold-to-charge button.
+// Ripcord launcher: oscillating bar, tap at peak (unchanged mechanics).
+// Touch: TiltPositionDragger (2D drag) + hold button → sends input bitmask.
+// Keyboard (desktop): A/D tilt · W/S position · SPACE charge (existing hook).
 
-import { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { ServerBeyblade, ServerArenaState } from "@/types/game";
 import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
+import { PowerArc } from "./PowerArc";
+import { TiltPositionDragger } from "./TiltPositionDragger";
+
+const CHARGE_BIT = 0x100;
 
 interface LaunchPhaseProps {
   launchTimer: number;
@@ -25,6 +27,12 @@ interface LaunchPhaseProps {
   arena?: ServerArenaState | null;
   /** @default "string" */
   launcherType?: "string" | "ripcord";
+  /**
+   * Optional touch input callback. When provided the mobile touch controls are
+   * active (TiltPositionDragger + hold button). Called with a bitmask; parent
+   * forwards to Colyseus sendInput. When absent only keyboard controls work.
+   */
+  onSendInput?: (mask: number) => void;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -34,7 +42,7 @@ const TYPE_COLORS: Record<string, string> = {
   balanced: "#ffcc44",
 };
 
-function worldBgCssStyle(arena?: ServerArenaState | null): CSSProperties {
+function worldBgStyle(arena?: ServerArenaState | null): CSSProperties {
   const type  = arena?.worldBgType    ?? "none";
   const color = arena?.worldBgColor   ?? "";
   const url   = arena?.worldBgImageUrl ?? "";
@@ -52,6 +60,7 @@ function worldBgCssStyle(arena?: ServerArenaState | null): CSSProperties {
   return {};
 }
 
+// ─── Teammate row ─────────────────────────────────────────────────────────────
 function TeammateBar({ bey, isMe }: { bey: ServerBeyblade; isMe: boolean }) {
   const power  = bey.launchPower  ?? 0;
   const ready  = bey.launchReady  ?? false;
@@ -60,19 +69,11 @@ function TeammateBar({ bey, isMe }: { bey: ServerBeyblade; isMe: boolean }) {
   const powerColor = power > 100 ? "#ff6b35" : power > 60 ? "#44ff88" : power > 25 ? "#ffcc44" : "#888";
 
   return (
-    <div
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg min-w-0 border ${failed ? "opacity-40" : ""} ${isMe ? "border-[#ff6b35] bg-[rgba(255,107,53,0.08)]" : "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)]"}`}
-    >
-      <div
-        style={{ "--tc": typeColor } as React.CSSProperties}
-        className="w-2 h-2 rounded-full shrink-0 bg-[color:var(--tc)]"
-      />
-      <span
-        className={`text-[11px] font-semibold truncate max-w-[80px] ${isMe ? "text-[#ff6b35]" : "text-theme-text"}`}
-      >
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${failed ? "opacity-40" : ""} ${isMe ? "border-[#ff6b35] bg-[rgba(255,107,53,0.08)]" : "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)]"}`}>
+      <div className="w-2 h-2 rounded-full shrink-0" style={{ background: typeColor }} />
+      <span className={`text-[11px] font-semibold truncate max-w-[80px] ${isMe ? "text-[#ff6b35]" : "text-theme-text"}`}>
         {bey.username}{isMe ? " (you)" : ""}
       </span>
-
       {failed ? (
         <span className="text-[10px] text-[#ff4444] font-bold ml-auto">FAILED</span>
       ) : ready ? (
@@ -80,9 +81,9 @@ function TeammateBar({ bey, isMe }: { bey: ServerBeyblade; isMe: boolean }) {
       ) : (
         <>
           <div className="flex-1 h-[6px] rounded-[3px] overflow-hidden mx-1 min-w-[40px] bg-white/10">
-            <div className="h-full rounded-[3px] [transition:width_80ms_linear] bg-[color:var(--pc)]" style={{ "--pct": `${Math.min(100, (power / 150) * 100)}%`, "--pc": powerColor, width: `var(--pct)` } as React.CSSProperties} />
+            <div className="h-full rounded-[3px] transition-[width_80ms_linear]" style={{ width: `${Math.min(100, (power / 150) * 100)}%`, background: powerColor }} />
           </div>
-          <span style={{ "--pc": powerColor } as React.CSSProperties} className="text-[10px] font-mono w-[32px] text-right shrink-0 text-[color:var(--pc)]">
+          <span className="text-[10px] font-mono w-[32px] text-right shrink-0" style={{ color: powerColor }}>
             {power.toFixed(0)}%
           </span>
         </>
@@ -94,547 +95,331 @@ function TeammateBar({ bey, isMe }: { bey: ServerBeyblade; isMe: boolean }) {
 // ─── "LET IT RIP" banner ─────────────────────────────────────────────────────
 function LetItRipBanner() {
   return (
-    <div
-      className="absolute top-0 left-0 right-0 z-[200] overflow-hidden animate-[slideDown_0.3s_ease-out_forwards]"
-      aria-hidden
-    >
-      {/* Red/orange base with speed lines */}
+    <div className="absolute top-0 left-0 right-0 z-[200] overflow-hidden [animation:slideDown_0.3s_ease-out_forwards]" aria-hidden>
       <div className="relative w-full py-5 bg-gradient-to-r from-red-700 via-red-500 to-orange-500">
-        {/* Speed lines overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-60 [background-image:repeating-linear-gradient(90deg,transparent_0%,transparent_45%,rgba(255,255,255,0.12)_46%,rgba(255,255,255,0.12)_54%,transparent_55%)]"
-        />
+        <div className="absolute inset-0 pointer-events-none opacity-60 [background-image:repeating-linear-gradient(90deg,transparent_0%,transparent_45%,rgba(255,255,255,0.12)_46%,rgba(255,255,255,0.12)_54%,transparent_55%)]" />
         <div className="relative flex items-center justify-center gap-3">
-          <span className="lir-word text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0s_both]">
-            LET
-          </span>
-          <span className="lir-word text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0.15s_both]">
-            IT
-          </span>
-          <span className="lir-word text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0.3s_both]">
-            RIP!
-          </span>
+          {["LET", "IT", "RIP!"].map((w, i) => (
+            <span key={w} className="text-white font-black italic text-[clamp(1rem,3vw,1.8rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]"
+              style={{ animation: `lirWord 0.15s ease-out ${i * 0.15}s both` }}>
+              {w}
+            </span>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-// ─── String launcher UI ───────────────────────────────────────────────────────
-function StringLauncherUI({
-  launchPower,
-  launchTimer,
-  launchTilt,
-  launchPosition,
-  chargingStarted,
-  isSpectating,
-  perfectFlash,
-}: {
-  launchPower: number;
-  launchTimer: number;
-  launchTilt: number;
-  launchPosition: number;
-  chargingStarted: boolean;
-  isSpectating: boolean;
-  perfectFlash: boolean;
+// ─── Ripcord launcher (unchanged mechanics) ───────────────────────────────────
+function RipcordLauncherUI({ launchTimer, launchPower, launchTilt, launchPosition, chargingStarted, isSpectating, pressResult }: {
+  launchTimer: number; launchPower: number; launchTilt: number; launchPosition: number;
+  chargingStarted: boolean; isSpectating: boolean; pressResult: "perfect"|"good"|"miss"|null;
 }) {
-  const isPerfectZone = launchPower >= 95;
-  const pct = Math.min(100, (launchPower / 150) * 100);
-  // Beyblade slides left along the string as power charges
-  const beyLeftPct = 90 - (pct / 100) * 75;
-
-  const barColor =
-    launchPower > 130 ? "#ff2222" :
-    launchPower > 100 ? "#ff6b35" :
-    launchPower >= 95  ? "#44ff88" :
-    launchPower > 60   ? "#ffcc44" :
-    launchPower > 25   ? "#88aaff" :
-    "#555577";
-
-  const timerColor = launchTimer <= 2 ? "#ff4444" : launchTimer <= 3 ? "#ffcc44" : "#4488ff";
-
-  return (
-    <div className="relative w-full flex flex-col items-center gap-3">
-      {/* Perfect-zone screen flash */}
-      {isPerfectZone && !isSpectating && (
-        <div
-          className={`absolute inset-0 pointer-events-none z-[10] rounded-[20px] border-4 border-[#44ff88] ${perfectFlash ? "opacity-100" : "opacity-50"} [transition:opacity_100ms]`}
-          aria-hidden
-        />
-      )}
-
-      {/* Timer row */}
-      <div className="w-full flex items-center gap-3">
-        <div
-          className="font-black font-mono shrink-0 text-[clamp(1.8rem,5vw,3rem)] text-[color:var(--tc)] [text-shadow:0_0_16px_var(--tc88)]"
-          style={{ "--tc": timerColor, "--tc88": `${timerColor}88` } as React.CSSProperties}
-        >
-          {Math.ceil(Math.max(0, launchTimer))}s
-        </div>
-        <div className="flex-1 h-[6px] rounded-[3px] overflow-hidden bg-white/10">
-          <div
-            className="h-full rounded-[3px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
-            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / LAUNCH_DURATION_S) * 100)}%` } as React.CSSProperties}
-          />
-        </div>
-      </div>
-
-      {/* String rail + sliding beyblade */}
-      <div className="relative w-full flex items-center justify-center h-16">
-        <div
-          className="absolute h-[3px] bg-gradient-to-r from-white/20 via-white/50 to-white/20 rounded-full"
-          style={{ left: "10%", right: "10%" }}
-          aria-hidden
-        />
-        <div
-          className={`absolute flex items-center justify-center w-12 h-12 rounded-full border-2 select-none [transition:left_80ms_linear] ${isPerfectZone ? "border-[#44ff88] shadow-[0_0_16px_#44ff88]" : "border-white/50"} bg-[rgba(255,255,255,0.06)]`}
-          style={{ left: `${beyLeftPct}%`, transform: "translate(-50%,-50%)", top: "50%" }}
-          aria-hidden
-        >
-          <span className={`text-xl ${chargingStarted ? "[animation:spin_0.25s_linear_infinite]" : "[animation:spin_1s_linear_infinite]"}`} role="img" aria-label="beyblade">⚙</span>
-        </div>
-      </div>
-
-      {/* Horizontal power bar */}
-      <div className="w-full">
-        <div className="flex justify-between text-[11px] mb-1">
-          <span className="text-theme-faint uppercase tracking-wider">Power</span>
-          <span className="font-mono font-bold text-[color:var(--bc)]" style={{ "--bc": barColor } as React.CSSProperties}>
-            {launchPower.toFixed(0)}%
-          </span>
-        </div>
-        <div className="relative h-[14px] rounded-[7px] overflow-hidden bg-white/10">
-          {/* Perfect zone band */}
-          <div
-            className="absolute top-0 bottom-0 opacity-25 bg-[#44ff88]"
-            style={{ left: `${(95 / 150) * 100}%`, right: `${100 - (100 / 150) * 100}%` }}
-            aria-hidden
-          />
-          {/* 100% marker */}
-          <div
-            className="absolute top-0 bottom-0 w-[2px] bg-white/50 z-[1]"
-            style={{ left: `${(100 / 150) * 100}%` }}
-            aria-hidden
-          />
-          {/* Fill */}
-          <div
-            className="absolute top-0 left-0 bottom-0 rounded-[7px] [transition:width_80ms_linear,background_200ms]"
-            style={{
-              width: `${pct}%`,
-              background: `linear-gradient(90deg, ${barColor}88, ${barColor})`,
-              boxShadow: isPerfectZone ? `0 0 10px ${barColor}` : "none",
-            }}
-          />
-        </div>
-        <div className="flex justify-between text-[9px] text-theme-faint mt-0.5 px-0.5">
-          <span>0</span>
-          <span className="text-[#44ff88]">PERFECT</span>
-          <span>MAX</span>
-        </div>
-      </div>
-
-      {/* Tilt + Position side by side */}
-      <div className={`grid grid-cols-2 gap-3 w-full [transition:opacity_200ms] ${chargingStarted ? "opacity-40" : "opacity-100"}`}>
-        <div>
-          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
-            <span>Tilt <span className="text-[#4488ff]">A/D</span></span>
-            <span className="text-theme-text font-mono font-bold">{launchTilt > 0 ? "+" : ""}{launchTilt.toFixed(0)}°</span>
-          </div>
-          <div className="relative h-[10px] rounded-[5px] overflow-hidden bg-bg3">
-            <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-white/10 -translate-x-1/2" />
-            <div
-              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms] ${Math.abs(launchTilt) > 30 ? "bg-[#ff4444]" : "bg-[#4488ff]"}`}
-              style={{ left: `calc(50% + ${(launchTilt / 45) * 42}% - 4px)` }}
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
-            <span>Pos <span className="text-[#44ff88]">W/S</span></span>
-            <span className="text-theme-text font-mono font-bold">
-              {launchPosition < 0.33 ? "Fwd" : launchPosition > 0.66 ? "Back" : "Ctr"}
-            </span>
-          </div>
-          <div className="relative h-[10px] rounded-[5px] overflow-hidden bg-bg3">
-            <div
-              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms] ${launchPosition > 0.66 ? "bg-[#ff8844]" : launchPosition < 0.33 ? "bg-[#44aaff]" : "bg-[#44ff88]"}`}
-              style={{ left: `calc(${launchPosition * 100}% - 4px)` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Instruction */}
-      <div className="w-full text-center">
-        {isSpectating ? (
-          <span className="text-theme-muted text-[13px]">Watching launch phase...</span>
-        ) : chargingStarted ? (
-          <div className={`text-[15px] font-black tracking-[0.08em] ${isPerfectZone ? "text-[#44ff88] [animation:pulse_0.4s_ease-in-out_infinite]" : "text-[#ff6b35]"}`}>
-            {isPerfectZone ? "✦ PERFECT — RELEASE SPACE!" : "CHARGING... RELEASE SPACE TO LAUNCH"}
-          </div>
-        ) : (
-          <div className="text-[13px] leading-[1.6]">
-            <span className="font-black text-theme-text block mb-0.5">HOLD SPACE to charge · Release to launch</span>
-            <span className="text-theme-muted text-[11px]">
-              Set tilt with <span className="text-[#4488ff]">A / D</span> and position with <span className="text-[#44ff88]">W / S</span> first
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Ripcord launcher UI ──────────────────────────────────────────────────────
-function RipcordLauncherUI({
-  launchTimer,
-  launchTilt,
-  launchPosition,
-  launchPower,
-  chargingStarted,
-  isSpectating,
-  ripcordPressResult,
-}: {
-  launchTimer: number;
-  launchTilt: number;
-  launchPosition: number;
-  launchPower: number;
-  chargingStarted: boolean;
-  isSpectating: boolean;
-  ripcordPressResult: "perfect" | "good" | "miss" | null;
-}) {
-  // Power mapped to 0-100 for display (max 150 from oscillation)
   const pct = Math.min(100, Math.max(0, (launchPower / 150) * 100));
   const isPeak = launchPower >= 130;
-
-  const fillColor =
-    launchPower >= 130 ? "#44ff88" :
-    launchPower >= 90  ? "#ffcc44" :
-    launchPower >= 45  ? "#ff8844" :
-    "#ff4444";
-
+  const fillColor = launchPower >= 130 ? "#44ff88" : launchPower >= 90 ? "#ffcc44" : launchPower >= 45 ? "#ff8844" : "#ff4444";
   const timerColor = launchTimer <= 2 ? "#ff4444" : launchTimer <= 4 ? "#ffcc44" : "#4488ff";
-
-  const resultColors: Record<string, string> = {
-    perfect: "#44ff88",
-    good:    "#ffcc44",
-    miss:    "#ff4444",
-  };
+  const resultColor = pressResult ? ({ perfect: "#44ff88", good: "#ffcc44", miss: "#ff4444" }[pressResult]) : "#fff";
 
   return (
-    <div className="relative w-full flex flex-col items-center gap-3">
-      {/* Countdown */}
-      <div className="w-full text-center">
-        <div
-          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-[clamp(1rem,3vw,1.8rem)] text-[color:var(--tc)] [text-shadow:0_0_20px_var(--tc88)]"
-          style={{ "--tc": timerColor, "--tc88": `${timerColor}88` } as React.CSSProperties}
-        >
+    <div className="w-full flex flex-col items-center gap-3">
+      {/* Timer */}
+      <div className="w-full">
+        <div className="font-black font-mono text-center" style={{ color: timerColor, fontSize: "clamp(1.5rem,4vw,2.2rem)", textShadow: `0 0 16px ${timerColor}88` }}>
           {Math.ceil(Math.max(0, launchTimer))}s
         </div>
-        <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
-          <div
-            className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
-            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / LAUNCH_DURATION_S) * 100)}%` } as React.CSSProperties}
-          />
+        <div className="h-[4px] rounded mt-1 overflow-hidden bg-white/10">
+          <div className="h-full rounded transition-[width_100ms_linear]" style={{ width: `${Math.max(0,(launchTimer/LAUNCH_DURATION_S)*100)}%`, background: timerColor }} />
         </div>
       </div>
-
-      {/* Ripcord visual — oscillating bar with needle */}
-      <div className="w-full flex flex-col items-center gap-2">
-        <span className="text-[10px] text-theme-faint uppercase tracking-wider">Ripcord Power</span>
-        <div className="relative w-full h-[36px] rounded-full overflow-hidden bg-white/10">
-          {/* Sweet spot band — top 15% region */}
-          <div
-            className="absolute top-0 bottom-0 opacity-25 rounded-r-full bg-[#44ff88]"
-            style={{ left: "86%", right: 0 }}
-            aria-hidden
-          />
-          {/* Oscillating fill */}
-          <div
-            className="absolute top-0 left-0 bottom-0 rounded-full [transition:width_50ms_linear,background_80ms] w-[--opw] bg-[--opbg] shadow-[--opshadow]"
-            style={{
-              "--opw": `${pct}%`,
-              "--opbg": `linear-gradient(90deg, #ff444444, ${fillColor})`,
-              "--opshadow": isPeak ? `0 0 16px ${fillColor}` : "none",
-            } as React.CSSProperties}
-          />
-          {/* Peak marker line */}
-          <div
-            className="absolute top-0 bottom-0 w-[3px] bg-[#44ff88]/70 z-[2]"
-            style={{ left: "86%" }}
-            aria-hidden
-          />
-          {/* Needle */}
-          <div
-            className="absolute top-1 bottom-1 w-[4px] bg-white rounded-full z-[3] [transition:left_50ms_linear]"
-            style={{ left: `calc(${pct}% - 2px)` }}
-            aria-hidden
-          />
-        </div>
-        <div className="flex justify-between w-full text-[10px] text-theme-faint px-1">
-          <span>LOW</span>
-          <span className="text-[#44ff88] font-bold">{launchPower.toFixed(0)}%</span>
-          <span>MAX</span>
+      {/* Oscillating bar */}
+      <div className="w-full">
+        <span className="text-[10px] text-white/40 uppercase tracking-wider">Ripcord Power</span>
+        <div className="relative w-full h-9 rounded-full overflow-hidden mt-1 bg-white/10">
+          <div className="absolute top-0 bottom-0 opacity-25 rounded-r-full bg-[#44ff88]" style={{ left: "86%", right: 0 }} />
+          <div className="absolute top-0 left-0 bottom-0 rounded-full transition-[width_50ms_linear]" style={{ width: `${pct}%`, background: `linear-gradient(90deg,#ff444444,${fillColor})`, boxShadow: isPeak ? `0 0 16px ${fillColor}` : "none" }} />
+          <div className="absolute top-1 bottom-1 w-1 bg-[#44ff88]/70 z-[2]" style={{ left: "86%" }} />
+          <div className="absolute top-1 bottom-1 w-1 bg-white rounded-full z-[3] transition-[left_50ms_linear]" style={{ left: `calc(${pct}% - 2px)` }} />
         </div>
       </div>
-
-      {/* Tilt + Position gauges */}
-      <div className="w-full flex flex-col gap-2">
-        <div className={`w-full transition-opacity duration-200 ${chargingStarted ? "opacity-45" : "opacity-100"}`}>
-          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
-            <span>Tilt (A/D)</span>
-            <span className="text-theme-text font-bold">{launchTilt > 0 ? "+" : ""}{launchTilt.toFixed(0)}°</span>
+      {/* Tilt + Position */}
+      <div className={`grid grid-cols-2 gap-2 w-full transition-opacity ${chargingStarted ? "opacity-40" : "opacity-100"}`}>
+        {[
+          { label: "Tilt (A/D)", val: `${launchTilt > 0 ? "+" : ""}${launchTilt.toFixed(0)}°`, pct: 50 + (launchTilt/45)*45, color: Math.abs(launchTilt) > 30 ? "#ff4444" : "#4488ff" },
+          { label: "Pos (W/S)", val: launchPosition < 0.33 ? "Fwd" : launchPosition > 0.66 ? "Back" : "Ctr", pct: launchPosition * 100, color: launchPosition > 0.66 ? "#ff8844" : launchPosition < 0.33 ? "#44aaff" : "#44ff88" },
+        ].map(g => (
+          <div key={g.label}>
+            <div className="flex justify-between text-[10px] text-white/40 mb-1">
+              <span>{g.label}</span><span className="font-mono text-white/70">{g.val}</span>
+            </div>
+            <div className="relative h-2 rounded overflow-hidden bg-bg3">
+              {g.label.startsWith("Tilt") && <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/15 -translate-x-1/2" />}
+              <div className="absolute top-0.5 bottom-0.5 w-2.5 rounded transition-[left_50ms]" style={{ left: `calc(${g.pct}% - 5px)`, background: g.color }} />
+            </div>
           </div>
-          <div className="relative h-3 rounded-[6px] overflow-hidden bg-bg3">
-            <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#334155] -translate-x-1/2" />
-            <div
-              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms,background_200ms] ${Math.abs(launchTilt) > 30 ? "bg-[#ff4444]" : "bg-[#4488ff]"}`}
-              style={{ left: `calc(50% + ${(launchTilt / 45) * 42}% - 4px)` }}
-            />
-          </div>
-        </div>
-
-        <div className={`w-full transition-opacity duration-200 ${chargingStarted ? "opacity-45" : "opacity-100"}`}>
-          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
-            <span>Position (W/S)</span>
-            <span className="text-theme-text font-bold">
-              {launchPosition < 0.33 ? "Forward" : launchPosition > 0.66 ? "Backward" : "Center"}
-            </span>
-          </div>
-          <div className="relative h-3 rounded-[6px] overflow-hidden bg-bg3">
-            <div
-              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms,background_200ms] ${launchPosition > 0.66 ? "bg-[#ff8844]" : launchPosition < 0.33 ? "bg-[#44aaff]" : "bg-[#44ff88]"}`}
-              style={{ left: `calc(${launchPosition * 100}% - 4px)` }}
-            />
-          </div>
-        </div>
+        ))}
       </div>
-
-      {/* Press result overlay */}
-      {ripcordPressResult && (
-        <div
-          className="text-[clamp(1.5rem,4vw,2.5rem)] font-black tracking-[0.2em] [animation:scaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)_forwards] text-[color:var(--rc)]"
-          style={{ "--rc": resultColors[ripcordPressResult] ?? "#fff" } as React.CSSProperties}
-        >
-          {ripcordPressResult === "perfect" && "PERFECT!"}
-          {ripcordPressResult === "good"    && "GOOD!"}
-          {ripcordPressResult === "miss"    && "MISS!"}
+      {pressResult ? (
+        <div className="text-[clamp(1.5rem,4vw,2.2rem)] font-black tracking-[0.2em] [animation:scaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)_forwards]" style={{ color: resultColor }}>
+          {pressResult === "perfect" ? "PERFECT!" : pressResult === "good" ? "GOOD!" : "MISS!"}
+        </div>
+      ) : !isSpectating && (
+        <div className={`text-[13px] font-bold text-center ${isPeak ? "text-[#44ff88] [animation:pulse_0.3s_ease-in-out_infinite]" : "text-[#ffcc44]"}`}>
+          {isPeak ? "PRESS SPACE NOW!" : "PRESS SPACE AT PEAK!"}
         </div>
       )}
-
-      {/* Prompt */}
-      {!ripcordPressResult && !isSpectating && (
-        <div className="text-theme-muted text-[12px] text-center leading-[1.5]">
-          <div className="text-theme-text font-semibold mb-1">Set your launch</div>
-          <span className="text-[#4488ff]">A / D</span> tilt ·
-          <span className="text-[#44ff88]"> W / S</span> position<br />
-          <span className={`font-black tracking-[0.1em] ${isPeak ? "text-[#44ff88] [animation:pulse_0.3s_ease-in-out_infinite]" : "text-[#ffcc44]"}`}>
-            {isPeak ? "PRESS SPACE NOW!" : "PRESS SPACE AT PEAK!"}
-          </span>
-        </div>
-      )}
-      {isSpectating && (
-        <div className="text-theme-muted text-[13px]">Watching ripcord launch...</div>
-      )}
-    </div>
-  );
-}
-
-// ─── Perfect launch announcement ──────────────────────────────────────────────
-function PerfectBadge() {
-  return (
-    <div className="flex flex-col items-center gap-1 mt-3">
-      <div
-        className="text-[clamp(1rem,3vw,1.5rem)] font-black tracking-[0.25em] [animation:scaleUp_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards] text-[#ffd700] [text-shadow:0_0_20px_#ffd700aa]"
-      >
-        BOOST 100% ✦ PERFECT
-      </div>
     </div>
   );
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export function LaunchPhase({
-  launchTimer,
-  launchTilt,
-  launchPosition,
-  launchPower,
-  chargingStarted,
-  launched,
-  failed,
-  isSpectating = false,
-  myBeyId,
-  beyblades,
-  arena,
+  launchTimer, launchTilt, launchPosition, launchPower,
+  chargingStarted, launched, failed,
+  isSpectating = false, myBeyId, beyblades, arena,
   launcherType = "string",
+  onSendInput,
 }: LaunchPhaseProps) {
-  const prevTimerRef = useRef(launchTimer);
-  const [timerFlash, setTimerFlash] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [showPerfect, setShowPerfect] = useState(false);
-  // Ripcord-specific: freeze result when A is pressed
-  const [ripcordPressResult, setRipcordPressResult] = useState<"perfect" | "good" | "miss" | null>(null);
-  // Flashing flag for perfect zone
-  const [perfectFlash, setPerfectFlash] = useState(false);
-  const flashTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [ripcordPressResult, setRipcordPressResult] = useState<"perfect"|"good"|"miss"|null>(null);
 
-  // Timer flash on tick
-  useEffect(() => {
-    if (launchTimer <= 2 && launchTimer > 0 && Math.floor(prevTimerRef.current) !== Math.floor(launchTimer)) {
-      setTimerFlash(true);
-      const t = setTimeout(() => setTimerFlash(false), 300);
-      prevTimerRef.current = launchTimer;
-      return () => clearTimeout(t);
+  // Touch input state
+  const maskRef = useRef(0);
+  const sendIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevPowerRef = useRef(0);
+  const touchActive = useRef(false);
+
+  const updateMask = useCallback((newMask: number) => {
+    maskRef.current = newMask;
+    onSendInput?.(newMask);
+    if (newMask !== 0 && !sendIntervalRef.current) {
+      sendIntervalRef.current = setInterval(() => {
+        if (maskRef.current !== 0) onSendInput?.(maskRef.current);
+      }, 50);
+    } else if (newMask === 0 && sendIntervalRef.current) {
+      clearInterval(sendIntervalRef.current);
+      sendIntervalRef.current = null;
     }
-    prevTimerRef.current = launchTimer;
-  }, [launchTimer]);
+  }, [onSendInput]);
 
-  // "LET IT RIP" banner on launch
+  const handleDragMask = useCallback((dragBits: number) => {
+    updateMask((maskRef.current & CHARGE_BIT) | (chargingStarted ? 0 : dragBits));
+  }, [updateMask, chargingStarted]);
+
+  const handleChargeStart = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    touchActive.current = true;
+    updateMask(maskRef.current | CHARGE_BIT);
+    navigator.vibrate?.(20);
+  }, [updateMask]);
+
+  const handleChargeEnd = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    touchActive.current = false;
+    updateMask(maskRef.current & ~CHARGE_BIT);
+  }, [updateMask]);
+
+  // Haptic feedback on power milestones
   useEffect(() => {
-    if (launched) {
-      setShowBanner(true);
+    if (!onSendInput) return;
+    const pct = (launchPower / 150) * 100;
+    const prevPct = (prevPowerRef.current / 150) * 100;
+    if (Math.floor(pct / 10) > Math.floor(prevPct / 10) && pct > 10) {
+      navigator.vibrate?.(10);
     }
-  }, [launched]);
-
-  // Perfect zone flash effect (string launcher)
-  useEffect(() => {
-    if (launcherType === "string" && launchPower >= 95 && !isSpectating) {
-      if (!flashTimerRef.current) {
-        flashTimerRef.current = setInterval(() => {
-          setPerfectFlash(f => !f);
-        }, 150);
-      }
-    } else {
-      if (flashTimerRef.current) {
-        clearInterval(flashTimerRef.current);
-        flashTimerRef.current = null;
-      }
-      setPerfectFlash(false);
+    if (prevPct < 85 && pct >= 85) {
+      navigator.vibrate?.([30, 10, 30]);
     }
-    return () => {
-      if (flashTimerRef.current) {
-        clearInterval(flashTimerRef.current);
-        flashTimerRef.current = null;
-      }
-    };
-  }, [launchPower, launcherType, isSpectating]);
+    prevPowerRef.current = launchPower;
+  }, [launchPower, onSendInput]);
 
-  // Detect launch result for both launcher types
+  useEffect(() => { if (launched) setShowBanner(true); }, [launched]);
+
   useEffect(() => {
     if (!launched || isSpectating) return;
-
     if (launcherType === "ripcord" && !ripcordPressResult) {
-      const result: "perfect" | "good" | "miss" =
-        launchPower >= 130 ? "perfect" :
-        launchPower >= 90  ? "good" :
-        "miss";
-      setRipcordPressResult(result);
-      if (result === "perfect") setShowPerfect(true);
+      const r = launchPower >= 130 ? "perfect" : launchPower >= 90 ? "good" : "miss";
+      setRipcordPressResult(r);
+      if (r === "perfect") setShowPerfect(true);
     }
-
-    if (launcherType === "string" && launchPower >= 95) {
-      setShowPerfect(true);
-    }
+    if (launcherType === "string" && launchPower >= 95) setShowPerfect(true);
   }, [launched, launchPower, launcherType, isSpectating, ripcordPressResult]);
 
-  // Keep showing the banner+perfect even after launched (parent may unmount us shortly)
+  useEffect(() => () => {
+    if (sendIntervalRef.current) clearInterval(sendIntervalRef.current);
+  }, []);
+
   if (failed && !launched) return null;
 
   const hasWorldBg = (arena?.worldBgType ?? "none") !== "none";
-  const bgOpacity  = arena?.worldBgOpacity ?? 1;
-  const bgBlur     = arena?.worldBgBlurPx  ?? 0;
-  const wbStyle    = worldBgCssStyle(arena);
-
+  const wbStyle = worldBgStyle(arena);
   const allPlayers = beyblades ? Array.from(beyblades.values()).filter(b => !b.isAI) : [];
-  const teammates  = allPlayers.filter(b => b.id !== myBeyId);
-  const showStrip  = allPlayers.length > 1;
+  const teammates = allPlayers.filter(b => b.id !== myBeyId);
+  const showStrip = allPlayers.length > 1;
+  const isTouchMode = !!onSendInput;
 
-  // Screen-flash border color for timerFlash
   const timerColor = launchTimer <= 2 ? "#ff4444" : launchTimer <= 3 ? "#ffcc44" : "#4488ff";
-  void timerColor; // used via timerFlash
-  void timerFlash;
+  const timerPct = Math.max(0, (launchTimer / LAUNCH_DURATION_S) * 100);
 
   return (
     <div
       data-testid="launch-phase-overlay"
-      className="absolute inset-0 z-[80] flex flex-col items-center justify-center pointer-events-none select-none"
+      className="absolute inset-0 z-[80] flex flex-col items-center justify-center select-none"
+      style={{ pointerEvents: isTouchMode ? "auto" : "none" }}
     >
       {/* World background */}
       {hasWorldBg && (
-        <div
-          aria-hidden
-          className="absolute inset-0 z-0"
-          style={{
-            "--wbbf": bgBlur > 0 ? `blur(${bgBlur}px)` : undefined,
-            opacity: bgOpacity,
-            filter: "var(--wbbf)",
-            ...wbStyle,
-          } as React.CSSProperties}
-        />
+        <div aria-hidden className="absolute inset-0 z-0 pointer-events-none"
+          style={{ opacity: arena?.worldBgOpacity ?? 1, filter: (arena?.worldBgBlurPx ?? 0) > 0 ? `blur(${arena?.worldBgBlurPx}px)` : undefined, ...wbStyle }} />
       )}
 
       {/* Dark scrim */}
-      <div
-        aria-hidden
-        className={`absolute inset-0 z-[1] ${hasWorldBg ? "bg-[rgba(0,0,0,0.55)]" : "bg-[rgba(0,0,0,0.72)]"}`}
-      />
+      <div aria-hidden className={`absolute inset-0 z-[1] pointer-events-none ${hasWorldBg ? "bg-black/55" : "bg-black/72"}`} />
 
-      {/* "LET IT RIP" banner — slides in from top on launch */}
       {showBanner && <LetItRipBanner />}
 
       {/* Content */}
-      <div className="relative z-[2] flex flex-col items-center gap-3 w-full px-4 max-h-full overflow-y-auto">
+      <div className="relative z-[2] flex flex-col items-center gap-3 w-full px-4 max-h-full overflow-y-auto pointer-events-none">
 
-        {/* Main launch panel */}
-        <div
-          className={`flex flex-col items-center gap-4 px-8 py-7 bg-[rgba(15,23,42,0.92)] rounded-[20px] w-full max-w-[460px] border-2 [transition:border-color_200ms,box-shadow_200ms] ${chargingStarted ? "border-[#ff6b35] shadow-[0_0_32px_rgba(255,107,53,0.4)]" : "border-[#334155]"}`}
-        >
+        {/* Main panel */}
+        <div className={`flex flex-col items-center gap-3 px-6 py-5 rounded-[20px] w-full max-w-[420px] pointer-events-auto border-2 transition-[border-color,box-shadow] duration-200 ${chargingStarted ? "border-[#ff6b35] shadow-[0_0_28px_rgba(255,107,53,0.4)]" : "border-white/10"}`}
+          style={{ background: "rgba(10,15,30,0.92)" }}>
+
+          {/* Timer bar */}
+          <div className="w-full">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">LAUNCH TIMER</span>
+              <span className="text-[14px] font-black font-mono" style={{ color: timerColor }}>{Math.ceil(Math.max(0,launchTimer))}s</span>
+            </div>
+            <div className="h-1.5 rounded overflow-hidden bg-white/10">
+              <div className="h-full rounded transition-[width_100ms_linear,background_300ms]"
+                style={{ width: `${timerPct}%`, background: timerColor }} />
+            </div>
+          </div>
+
           {launcherType === "string" ? (
-            <StringLauncherUI
-              launchPower={launchPower}
-              launchTimer={launchTimer}
-              launchTilt={launchTilt}
-              launchPosition={launchPosition}
-              chargingStarted={chargingStarted}
-              isSpectating={isSpectating}
-              perfectFlash={perfectFlash}
-            />
+            <>
+              {/* Tilt + Position dragger (mobile touch mode) */}
+              {isTouchMode && !isSpectating && (
+                <TiltPositionDragger
+                  tilt={launchTilt}
+                  position={launchPosition}
+                  locked={chargingStarted}
+                  onMaskChange={handleDragMask}
+                />
+              )}
+
+              {/* Desktop tilt/position gauges (keyboard mode) */}
+              {!isTouchMode && !isSpectating && (
+                <div className={`grid grid-cols-2 gap-3 w-full transition-opacity ${chargingStarted ? "opacity-40" : "opacity-100"}`}>
+                  <div>
+                    <div className="flex justify-between text-[10px] text-white/40 mb-1">
+                      <span>Tilt <span className="text-[#4488ff]">A/D</span></span>
+                      <span className="font-mono text-white/70">{launchTilt > 0 ? "+" : ""}{launchTilt.toFixed(0)}°</span>
+                    </div>
+                    <div className="relative h-2 rounded overflow-hidden bg-bg3">
+                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/15 -translate-x-1/2" />
+                      <div className="absolute top-0.5 bottom-0.5 w-2.5 rounded transition-[left_50ms]"
+                        style={{ left: `calc(${50 + (launchTilt/45)*45}% - 5px)`, background: Math.abs(launchTilt) > 30 ? "#ff4444" : "#4488ff" }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[10px] text-white/40 mb-1">
+                      <span>Pos <span className="text-[#44ff88]">W/S</span></span>
+                      <span className="font-mono text-white/70">{launchPosition < 0.33 ? "Fwd" : launchPosition > 0.66 ? "Back" : "Ctr"}</span>
+                    </div>
+                    <div className="relative h-2 rounded overflow-hidden bg-bg3">
+                      <div className="absolute top-0.5 bottom-0.5 w-2.5 rounded transition-[left_50ms]"
+                        style={{ left: `calc(${launchPosition * 100}% - 5px)`, background: launchPosition > 0.66 ? "#ff8844" : launchPosition < 0.33 ? "#44aaff" : "#44ff88" }} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PowerArc */}
+              <div className="flex flex-col items-center gap-2">
+                <PowerArc power={launchPower} size={110} strokeWidth={10} />
+                {showPerfect && (
+                  <div className="text-[clamp(0.9rem,2.5vw,1.3rem)] font-black tracking-[0.25em] text-[#ffd700] [animation:scaleUp_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards]"
+                    style={{ textShadow: "0 0 20px #ffd700aa" }}>
+                    BOOST 100% ✦ PERFECT
+                  </div>
+                )}
+              </div>
+
+              {/* Charge button (touch mode) */}
+              {isTouchMode && !isSpectating && !launched && (
+                <button
+                  className="w-full rounded-xl font-black text-[15px] uppercase tracking-[0.1em] transition-all duration-100 active:scale-[0.97] touch-none"
+                  style={{
+                    height: 56,
+                    background: chargingStarted
+                      ? "linear-gradient(135deg,#ff6b35,#ff3333)"
+                      : "linear-gradient(135deg,#1e3a5f,#2563eb)",
+                    border: `2px solid ${chargingStarted ? "#ff6b35" : "#3b82f6"}`,
+                    boxShadow: chargingStarted ? "0 0 20px rgba(255,107,53,0.5)" : "0 0 12px rgba(59,130,246,0.3)",
+                    color: "#fff",
+                    pointerEvents: "auto",
+                  }}
+                  onPointerDown={handleChargeStart}
+                  onPointerUp={handleChargeEnd}
+                  onPointerCancel={handleChargeEnd}
+                  onPointerLeave={handleChargeEnd}
+                >
+                  {chargingStarted ? "RELEASE TO LAUNCH ↑" : "HOLD TO CHARGE ↓"}
+                </button>
+              )}
+
+              {/* Desktop charge hint */}
+              {!isTouchMode && !isSpectating && (
+                <div className={`text-[14px] font-bold text-center ${chargingStarted && launchPower >= 95 ? "text-[#44ff88] [animation:pulse_0.4s_ease-in-out_infinite]" : chargingStarted ? "text-[#ff6b35]" : "text-white/60"}`}>
+                  {chargingStarted
+                    ? (launchPower >= 95 ? "✦ PERFECT — RELEASE SPACE!" : "CHARGING... RELEASE SPACE TO LAUNCH")
+                    : "HOLD SPACE to charge · Release to launch"}
+                </div>
+              )}
+
+              {isSpectating && (
+                <span className="text-white/40 text-[13px]">Watching launch phase...</span>
+              )}
+            </>
           ) : (
             <RipcordLauncherUI
               launchTimer={launchTimer}
+              launchPower={launchPower}
               launchTilt={launchTilt}
               launchPosition={launchPosition}
-              launchPower={launchPower}
               chargingStarted={chargingStarted}
               isSpectating={isSpectating}
-              ripcordPressResult={ripcordPressResult}
+              pressResult={ripcordPressResult}
             />
           )}
-
-          {/* Perfect badge */}
-          {showPerfect && <PerfectBadge />}
         </div>
 
-        {/* Teammate / all-players launch strip */}
+        {/* Teammate / all-players strip */}
         {showStrip && (
-          <div
-            className="rounded-[14px] px-4 py-3 w-full max-w-[460px] bg-[rgba(15,23,42,0.85)] border border-border-c"
-          >
-            <div className="text-[10px] text-theme-faint uppercase tracking-widest mb-2">
+          <div className="rounded-[14px] px-4 py-3 w-full max-w-[420px] border border-border-c pointer-events-auto"
+            style={{ background: "rgba(15,23,42,0.85)" }}>
+            <div className="text-[10px] text-white/30 uppercase tracking-widest mb-2">
               {isSpectating ? "All players launching" : "Other players launching"}
             </div>
             <div className="flex flex-col gap-1.5">
               {myBeyId && beyblades?.has(myBeyId) && !isSpectating && (
-                <TeammateBar bey={beyblades.get(myBeyId)!} isMe={true} />
+                <TeammateBar bey={beyblades.get(myBeyId)!} isMe />
               )}
-              {teammates.map(b => (
-                <TeammateBar key={b.id} bey={b} isMe={false} />
-              ))}
+              {teammates.map(b => <TeammateBar key={b.id} bey={b} isMe={false} />)}
             </div>
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes slideDown  { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        @keyframes lirWord    { from { opacity:0; transform:scale(0.7) translateY(-8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        @keyframes scaleUp    { from { opacity:0; transform:scale(0.4); } to { opacity:1; transform:scale(1); } }
+      `}</style>
     </div>
   );
 }

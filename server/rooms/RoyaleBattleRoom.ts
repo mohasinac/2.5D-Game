@@ -18,6 +18,9 @@ const MAX_ROYALE_CLIENTS = 20;
 
 export class RoyaleBattleRoom extends BattleRoom {
   private royaleEnabled = false;
+  private safeZoneTargetX = 0;
+  private safeZoneTargetY = 0;
+  private _arenaRadius = 0;
 
   maxClients = MAX_ROYALE_CLIENTS;
 
@@ -27,17 +30,29 @@ export class RoyaleBattleRoom extends BattleRoom {
     this.initSafeZone();
   }
 
+  private arenaRadius(): number {
+    if (this._arenaRadius > 0) return this._arenaRadius;
+    const arena = this.state.arena;
+    this._arenaRadius = Math.min((arena.width || 1080) * 0.45, (arena.height || 1080) * 0.45);
+    return this._arenaRadius;
+  }
+
+  private pickNewTarget(): void {
+    const r = this.arenaRadius() * 0.3; // target within 30% of center
+    const angle = Math.random() * Math.PI * 2;
+    this.safeZoneTargetX = Math.cos(angle) * r * Math.random();
+    this.safeZoneTargetY = Math.sin(angle) * r * Math.random();
+  }
+
   private initSafeZone() {
     const arena = this.state.arena;
-    const arenaRadius = Math.min(
-      (arena.width || 1080) * 0.45,
-      (arena.height || 1080) * 0.45,
-    );
-    arena.safeZoneRadius = arenaRadius;
+    arena.safeZoneRadius = this.arenaRadius();
     arena.safeZoneX = 0;
     arena.safeZoneY = 0;
     arena.safeZoneTimer = PHASE_DURATION_S;
     arena.safeZonePhase = 0;
+    this.safeZoneTargetX = 0;
+    this.safeZoneTargetY = 0;
   }
 
   protected tick(deltaMs: number): void {
@@ -50,6 +65,17 @@ export class RoyaleBattleRoom extends BattleRoom {
     const arena = this.state.arena;
     const dtS = deltaMs / 1000;
 
+    // Lerp zone center toward target (5px/ms → up to 300px/s)
+    const lerpSpeed = 5 * dtS;
+    const dxTarget = this.safeZoneTargetX - arena.safeZoneX;
+    const dyTarget = this.safeZoneTargetY - arena.safeZoneY;
+    const distToTarget = Math.sqrt(dxTarget * dxTarget + dyTarget * dyTarget);
+    if (distToTarget > 0.5) {
+      const move = Math.min(lerpSpeed, distToTarget);
+      arena.safeZoneX += (dxTarget / distToTarget) * move;
+      arena.safeZoneY += (dyTarget / distToTarget) * move;
+    }
+
     arena.safeZoneTimer = Math.max(0, arena.safeZoneTimer - dtS);
 
     if (arena.safeZoneTimer <= 0) {
@@ -57,15 +83,15 @@ export class RoyaleBattleRoom extends BattleRoom {
       if (nextPhase < SAFE_ZONE_PHASES.length) {
         arena.safeZonePhase = nextPhase as typeof arena.safeZonePhase;
         arena.safeZoneTimer = PHASE_DURATION_S;
-        const arenaRadius = Math.min(
-          (arena.width || 1080) * 0.45,
-          (arena.height || 1080) * 0.45,
-        );
-        arena.safeZoneRadius = arenaRadius * SAFE_ZONE_PHASES[nextPhase].radiusFraction;
+        arena.safeZoneRadius = this.arenaRadius() * SAFE_ZONE_PHASES[nextPhase].radiusFraction;
+        // Pick a new drift target on phase transition
+        this.pickNewTarget();
         this.broadcast("safe-zone-shrink", {
           phase: nextPhase,
           radius: arena.safeZoneRadius,
           drain: SAFE_ZONE_PHASES[nextPhase].drainRate,
+          targetX: this.safeZoneTargetX,
+          targetY: this.safeZoneTargetY,
         });
       }
     }

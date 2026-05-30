@@ -3,10 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { modeFromPath } from "@/shared/utils/gameMode";
+import { modeFromPath, ROOM_NAMES } from "@/shared/utils/gameMode";
 import { useGame } from "@/contexts/GameContext";
-
-const TEAM_BATTLE_ROOM = "team_battle_room";
 
 export function TeamBattleLobbyPage() {
   const navigate = useNavigate();
@@ -25,7 +23,8 @@ export function TeamBattleLobbyPage() {
     const serverUrl = import.meta.env.VITE_GAME_SERVER_URL ?? "ws://localhost:2567";
     const client = new Client(serverUrl);
     try {
-      const room = await client.joinOrCreate(TEAM_BATTLE_ROOM, {
+      const teamRoomName = settings.enable25D ? ROOM_NAMES.global.teamBattle25d : ROOM_NAMES.global.teamBattle;
+      const room = await client.joinOrCreate(teamRoomName, {
         beybladeId: settings.beybladeId ?? "default",
         arenaId: settings.arenaId ?? "default",
         userId: settings.userId,

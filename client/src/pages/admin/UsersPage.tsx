@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, doc, updateDoc, query, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, COLLECTIONS } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 interface UserDoc {
@@ -25,7 +25,7 @@ export function UsersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    getDocs(query(collection(db, "users"), orderBy("createdAt", "desc")))
+    getDocs(query(collection(db, COLLECTIONS.USERS), orderBy("createdAt", "desc")))
       .then((snap) => setUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() } as UserDoc))))
       .catch(() => toast.error("Failed to load users"))
       .finally(() => setLoading(false));
@@ -39,7 +39,7 @@ export function UsersPage() {
     }
     setUpdatingId(user.id);
     try {
-      await updateDoc(doc(db, "users", user.id), { role: newRole });
+      await updateDoc(doc(db, COLLECTIONS.USERS, user.id), { role: newRole });
       setUsers((prev) => prev.map((u) => u.id === user.id ? { ...u, role: newRole } : u));
       toast.success(`${user.displayName ?? user.email ?? user.id} is now ${newRole}`);
     } catch {

@@ -49,36 +49,36 @@ export default function RPGDialogueEditPage() {
     navigate("/admin/rpg/dialogues");
   };
 
-  if (loading) return <div className="p-6 text-gray-500 text-sm">Loading...</div>;
+  if (loading) return <div className="p-6 text-theme-muted text-sm">Loading...</div>;
 
   const nodeEntries = Object.values(nodes);
 
   return (
     <div className="p-6 w-full max-w-4xl">
       <div className="mb-5">
-        <Link to="/admin/rpg/dialogues" className="text-blue-400 text-sm hover:underline">&larr; Back to Dialogues</Link>
-        <h1 className="text-[22px] font-bold text-white mt-2">Edit Dialogue: {id}</h1>
+        <Link to="/admin/rpg/dialogues" className="text-accent text-sm hover:underline">&larr; Back to Dialogues</Link>
+        <h1 className="text-[22px] font-bold text-theme-text mt-2">Edit Dialogue: {id}</h1>
       </div>
 
       {/* Node summary list */}
       {nodeEntries.length > 0 && (
-        <div className="mb-5 bg-gray-900 border border-gray-800 rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-gray-300 mb-3">Node Overview ({nodeEntries.length} nodes)</h2>
+        <div className="mb-5 bg-bg1 border border-border-c rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-theme-text mb-3">Node Overview ({nodeEntries.length} nodes)</h2>
           <div className="space-y-1">
             {nodeEntries.map(n => (
               <div key={n.id} className="flex items-center gap-3 text-sm py-1">
-                <span className="text-blue-400 font-mono w-28 shrink-0">{n.id}</span>
+                <span className="text-accent font-mono w-28 shrink-0">{n.id}</span>
                 <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                   n.type === "speech" ? "bg-green-900 text-green-300" :
                   n.type === "choice" ? "bg-yellow-900 text-yellow-300" :
                   n.type === "branch" ? "bg-purple-900 text-purple-300" :
                   n.type === "trigger" ? "bg-orange-900 text-orange-300" :
-                  "bg-gray-700 text-gray-300"
+                  "bg-bg3 text-theme-muted"
                 }`}>
                   {n.type}
                 </span>
-                {n.speakerId && <span className="text-gray-500">[{n.speakerId}]</span>}
-                <span className="text-gray-400 truncate">{n.text?.slice(0, 60)}{(n.text?.length ?? 0) > 60 ? "..." : ""}</span>
+                {n.speakerId && <span className="text-theme-muted">[{n.speakerId}]</span>}
+                <span className="text-theme-muted truncate">{n.text?.slice(0, 60)}{(n.text?.length ?? 0) > 60 ? "..." : ""}</span>
               </div>
             ))}
           </div>

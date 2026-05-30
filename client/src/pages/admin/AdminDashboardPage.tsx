@@ -4,6 +4,7 @@ import { collection, getDocs, query, orderBy, limit, where } from "firebase/fire
 import { db, COLLECTIONS } from "@/lib/firebase";
 interface DashboardStats { beyblades: number; arenas: number; matches: number; players: number; }
 interface TournamentStats { active: number; upcoming: number; }
+interface LiveStats { activeRooms: number; onlinePlayers: number; }
 interface AdminLogEntry { id: string; timestamp: any; userId?: string; step?: string; errorType?: string; message?: string; roomType?: string; }
 
 const statCards = [
@@ -33,6 +34,7 @@ const quickLinks = [
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({ beyblades:0, arenas:0, matches:0, players:0 });
   const [tournamentStats, setTournamentStats] = useState<TournamentStats>({ active:0, upcoming:0 });
+  const [liveStats, setLiveStats] = useState<LiveStats>({ activeRooms: 0, onlinePlayers: 0 });
   const [recentMatches, setRecentMatches] = useState<any[]>([]);
   const [recentErrors, setRecentErrors] = useState<AdminLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,14 @@ export function AdminDashboardPage() {
         setTournamentStats({ active:activeSnap.size, upcoming:upcomingSnap.size });
         setRecentMatches(matchSnap.docs.map(d => ({ id:d.id, ...d.data() })));
         if (errorSnap) setRecentErrors(errorSnap.docs.map(d => ({ id: d.id, ...d.data() } as AdminLogEntry)));
+        try {
+          const roomsRes = await fetch("/colyseus/api/rooms");
+          if (roomsRes.ok) {
+            const data = await roomsRes.json() as { rooms?: { clients: number }[] };
+            const rooms = data.rooms ?? [];
+            setLiveStats({ activeRooms: rooms.length, onlinePlayers: rooms.reduce((s, r) => s + (r.clients ?? 0), 0) });
+          }
+        } catch { /* server offline — keep zeros */ }
       } catch (err) { console.error("Dashboard fetch error:", err); }
       finally { setLoading(false); }
     })();
@@ -101,6 +111,28 @@ export function AdminDashboardPage() {
         <Link to="/admin/tournaments" className="py-2 px-4 bg-yellow-13 border border-yellow-40 rounded-lg text-theme-yellow text-[12px] font-semibold no-underline">
           Manage →
         </Link>
+      </div>
+
+      {/* Live server stats */}
+      <div className="bg-bg2 border border-border-c rounded-[14px] p-4 mb-7 flex flex-wrap items-center gap-3 sm:gap-6">
+        <span className="text-[28px]">📡</span>
+        <div className="flex-1">
+          <div className="text-[13px] font-semibold text-text mb-1">Live Server</div>
+          <div className="flex gap-5">
+            <div>
+              <span className="text-[20px] font-bold text-green font-mono">{liveStats.activeRooms}</span>
+              <span className="text-xs text-muted ml-1.5">active rooms</span>
+            </div>
+            <div>
+              <span className="text-[20px] font-bold text-blue font-mono">{liveStats.onlinePlayers}</span>
+              <span className="text-xs text-muted ml-1.5">online players</span>
+            </div>
+          </div>
+        </div>
+        <a href="http://localhost:2567/colyseus" target="_blank" rel="noreferrer"
+          className="py-2 px-4 bg-bg3 border border-border-c rounded-lg text-theme-text text-[12px] font-semibold no-underline">
+          Monitor →
+        </a>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

@@ -2284,6 +2284,63 @@ export class BeybladeGameRenderer {
     requestAnimationFrame(shake);
   }
 
+  /** Named-intensity convenience wrapper for triggerScreenShake.
+   *  Maps semantic hit types to (magnitude, duration) pairs derived from game-feel research. */
+  public triggerImpactShake(type: "light" | "heavy" | "burst" | "ring-out"): void {
+    const params: Record<typeof type, [number, number]> = {
+      "light":    [2,  120],
+      "heavy":    [6,  220],
+      "burst":    [12, 350],
+      "ring-out": [8,  280],
+    };
+    const [mag, dur] = params[type];
+    this.triggerScreenShake(mag, dur);
+  }
+
+  private _vignetteOverlay: PIXI.Graphics | null = null;
+  private _vignetteIntensity = 0;
+  private _vignetteAnimFrame = 0;
+  private _vignetteStartTime = 0;
+
+  /** Sets an animated red vignette at screen edges — used for low-spin warning.
+   *  intensity 0 removes the effect; 1 = full danger red.  Pulses at 1.5s cycle. */
+  public setVignetteIntensity(intensity: number): void {
+    this._vignetteIntensity = Math.min(1, Math.max(0, intensity));
+    if (!this._vignetteOverlay) {
+      const g = new PIXI.Graphics();
+      this.app.stage.addChild(g);
+      this._vignetteOverlay = g;
+      this._vignetteStartTime = performance.now();
+      const animate = () => {
+        this._vignetteAnimFrame = requestAnimationFrame(animate);
+        this._drawVignette();
+      };
+      animate();
+    }
+    if (this._vignetteIntensity <= 0 && this._vignetteOverlay) {
+      cancelAnimationFrame(this._vignetteAnimFrame);
+      this._vignetteOverlay.clear();
+    }
+  }
+
+  private _drawVignette(): void {
+    const g = this._vignetteOverlay;
+    if (!g || this._vignetteIntensity <= 0) return;
+    const W = this.app.screen.width;
+    const H = this.app.screen.height;
+    const t = (performance.now() - this._vignetteStartTime) / 1000;
+    const pulse = 0.5 + 0.5 * Math.sin((t / 1.5) * 2 * Math.PI);
+    const alpha = this._vignetteIntensity * pulse * 0.35;
+    g.clear();
+    // Four edge rectangles tinted red
+    g.fill({ color: 0xff2222, alpha });
+    g.rect(0, 0, W, H * 0.15);         // top
+    g.rect(0, H * 0.85, W, H * 0.15);  // bottom
+    g.rect(0, 0, W * 0.08, H);         // left
+    g.rect(W * 0.92, 0, W * 0.08, H);  // right
+    g.fill();
+  }
+
   /**
    * Flashes a bey sprite white for 80ms — gives clear visual hit feedback.
    */

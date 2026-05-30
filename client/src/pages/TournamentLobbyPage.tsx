@@ -2,12 +2,13 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import {
-  doc, onSnapshot, collection, query, where, setDoc, serverTimestamp, addDoc, getDocs,
+  collection, doc, query, setDoc, serverTimestamp, addDoc, getDocs,
 } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/cn";
+import { useTournamentStore } from "@/stores/tournamentStore";
 
 const PILL_BASE = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border";
 const STATUS_PILL: Record<string, string> = {
@@ -50,48 +51,25 @@ export function TournamentLobbyPage() {
   const { settings } = useGame();
   const { currentUser } = useAuth();
 
-  const [tournament, setTournament] = useState<TournamentDoc | null>(null);
-  const [participants, setParticipants] = useState<TournamentParticipantDoc[]>([]);
-  const [matches, setMatches] = useState<TournamentMatchDoc[]>([]);
+  // TournamentStore replaces local state for tournament/participants/bracket/myMatch
+  const {
+    tournament, participants, bracket: matches,
+    myMatch, isLoading: tournamentLoading,
+    loadTournament, unsubscribe: unsubscribeTournament,
+  } = useTournamentStore();
+
   const [countdown, setCountdown] = useState("");
-  const [myMatch, setMyMatch] = useState<TournamentMatchDoc | null>(null);
   const [beyOptions, setBeyOptions] = useState<BeybladePickerOption[]>([]);
   const [pickedBeyId, setPickedBeyId] = useState<string>("");
   const [registering, setRegistering] = useState(false);
   const [readyBusy, setReadyBusy] = useState(false);
 
-  // Load tournament doc
+  // Load tournament via store (onSnapshot handled internally)
   useEffect(() => {
     if (!tournamentId) return;
-    const unsub = onSnapshot(doc(db, COLLECTIONS.TOURNAMENTS, tournamentId), (snap) => {
-      if (snap.exists()) setTournament({ id: snap.id, ...snap.data() } as TournamentDoc);
-    });
-    return unsub;
-  }, [tournamentId]);
-
-  // Load participants
-  useEffect(() => {
-    if (!tournamentId) return;
-    const unsub = onSnapshot(
-      query(collection(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS), where("tournamentId", "==", tournamentId)),
-      (snap) => {
-        setParticipants(snap.docs.map((d) => ({ id: d.id, ...d.data() } as TournamentParticipantDoc)));
-      },
-    );
-    return unsub;
-  }, [tournamentId]);
-
-  // Load bracket matches
-  useEffect(() => {
-    if (!tournamentId) return;
-    const unsub = onSnapshot(
-      query(collection(db, COLLECTIONS.TOURNAMENT_BRACKETS), where("tournamentId", "==", tournamentId)),
-      (snap) => {
-        setMatches(snap.docs.map((d) => ({ id: d.id, ...d.data() } as TournamentMatchDoc)));
-      },
-    );
-    return unsub;
-  }, [tournamentId]);
+    loadTournament(tournamentId, settings.userId ?? undefined);
+    return () => { unsubscribeTournament(); };
+  }, [tournamentId, settings.userId]);
 
   // Countdown tick
   useEffect(() => {
@@ -106,27 +84,13 @@ export function TournamentLobbyPage() {
     return () => clearInterval(id);
   }, [tournament?.scheduledStartTime]);
 
-  // Find the current user's participant doc, then their active match
-  useEffect(() => {
-    if (!settings.userId || participants.length === 0 || matches.length === 0) return;
-    const myParticipant = participants.find((p) => p.userId === settings.userId);
-    if (!myParticipant) return;
-
-    const active = matches.find(
-      (m) =>
-        (m.participant1Id === myParticipant.id || m.participant2Id === myParticipant.id) &&
-        (m.status === "room-opening" || m.status === "in-progress"),
-    );
-    setMyMatch(active ?? null);
-  }, [participants, matches, settings.userId]);
-
   // Auto-navigate when colyseusRoomId is set on my match
   useEffect(() => {
     if (!myMatch?.colyseusRoomId) return;
     navigate(`/game/${mode}/tournament/battle/${tournamentId}/${myMatch.id}`);
   }, [myMatch?.colyseusRoomId, tournamentId, navigate, myMatch?.id]);
 
-  if (!tournament) {
+  if (tournamentLoading || !tournament) {
     return (
       <div className="min-h-screen bg-bg0 flex items-center justify-center">
         <div className="spin w-10 h-10 border-2 border-border-c border-t-theme-yellow rounded-full" />

@@ -215,13 +215,18 @@ export class TournamentScheduler {
           if (!p1Quit && !p2Quit) continue;
           // Both quit → just complete the match with no winner.
           // One quit → opponent walks over.
-          const winnerParticipantId = p1Quit && p2Quit ? "" : (p1Quit ? match.participant2Id : match.participant1Id);
-          console.log(`[TournamentScheduler] Walkover on match ${match.id}: winner participant=${winnerParticipantId}`);
-          await updateMatchStatus(match.id, { status: "completed", winnerId: winnerParticipantId || null });
+          const bothQuit = p1Quit && p2Quit;
+          const winnerParticipantId = bothQuit ? "" : (p1Quit ? match.participant2Id : match.participant1Id);
+          console.log(`[TournamentScheduler] Walkover on match ${match.id}: winner participant=${winnerParticipantId}${bothQuit ? " (both quit → draw)" : ""}`);
+          await updateMatchStatus(match.id, {
+            status: "completed",
+            winnerId: winnerParticipantId || null,
+            ...(bothQuit ? { isDraw: true } : {}),
+          });
           if (winnerParticipantId) {
             await this.advanceRound(match.tournamentId, match.id, match.round, match.matchNumber, winnerParticipantId, "");
           } else {
-            // Both participants quit — no winner to advance; still check if humans remain
+            // Both participants quit → mark as draw, no winner to advance; still check if humans remain
             await this.checkHumanPlayersRemaining(match.tournamentId).catch(console.error);
           }
         }

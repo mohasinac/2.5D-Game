@@ -79,6 +79,13 @@ function generateQTESequence(rand: () => number, powerCost: number): string[] {
   return result;
 }
 
+function generateRoomCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
 // [SERVER-ROOM] BattleRoom — live PVP for 2-4 players + spectators.
 // Runs full beyblade-vs-beyblade collision detection.
 // Arena config cached in onCreate() — never loaded inside tick.
@@ -107,6 +114,7 @@ export class BattleRoom extends BaseRoom<GameState> {
   private lastInputTime = 0;
   private isPrivateRoom = false;
   private idleTimer: ReturnType<typeof setTimeout> | null = null;
+  private matchmakingTimer: ReturnType<typeof setTimeout> | null = null;
   // #9: Per-client input rate limiting — max 10 inputs per 100ms window
   private inputRateMap: Map<string, { count: number; windowStart: number }> = new Map();
   // #9: Per-client special-tap cooldown (800ms minimum between special-tap inputs)
@@ -261,6 +269,12 @@ export class BattleRoom extends BaseRoom<GameState> {
     this.autoDispose = true;
     this.isPrivateRoom = !!options.private;
     console.log("BattleRoom created", options);
+
+    if (this.isPrivateRoom) {
+      const code = generateRoomCode();
+      this.setMetadata({ roomCode: code });
+      console.log(`Private room code: ${code}`);
+    }
 
     this.globalSettings = await loadGlobalSettings();
     if (this.globalSettings?.maintenanceMode) throw new Error("Maintenance");
@@ -538,6 +552,18 @@ export class BattleRoom extends BaseRoom<GameState> {
 
       this.broadcast("bey-link-hijack-failed", { stackKey: data.stackKey, blockerId: sidA, victimId: sidB });
     });
+
+    // 60s matchmaking timeout for public rooms — notify clients if room isn't full
+    if (!this.isPrivateRoom) {
+      this.matchmakingTimer = setTimeout(() => {
+        this.matchmakingTimer = null;
+        if (!this.matchStarted && this.playerSessions.size > 0) {
+          this.broadcast("matchmaking-timeout", {
+            playersFound: this.playerSessions.size,
+          });
+        }
+      }, 60_000);
+    }
   }
 
   async onJoin(client: Client, options: JoinOptions) {
@@ -682,6 +708,7 @@ export class BattleRoom extends BaseRoom<GameState> {
 
   private startWarmup() {
     if (this.matchStarted) return;
+    if (this.matchmakingTimer) { clearTimeout(this.matchmakingTimer); this.matchmakingTimer = null; }
     this.matchStarted = true;
     this.state.status = "warmup";
     this.lastInputTime = Date.now();
@@ -689,11 +716,28 @@ export class BattleRoom extends BaseRoom<GameState> {
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
   }
 
-  onLeave(client: Client, consented: boolean) {
+  async onLeave(client: Client, consented: boolean) {
     if (this.spectatorSessions.has(client.sessionId)) {
       this.state.spectatorCount = Math.max(0, this.state.spectatorCount - 1);
       this.spectatorSessions.delete(client.sessionId);
       return;
+    }
+
+    // Allow 30s reconnect window for unexpected disconnects during active game
+    if (!consented && this.state.status === "in-progress") {
+      console.log(`Player ${client.sessionId} disconnected — holding slot for 30s`);
+      try {
+        await this.allowReconnection(client, 30);
+        // Reconnected — restore beyblade as active if it was eliminated by disconnect
+        console.log(`Player ${client.sessionId} reconnected`);
+        const bey = this.state.beyblades.get(client.sessionId);
+        if (bey && !bey.isRingOut && !bey.isBurst) {
+          bey.isActive = true;
+        }
+        return;
+      } catch {
+        console.log(`Player ${client.sessionId} reconnect timeout — eliminating`);
+      }
     }
 
     console.log(`Player ${client.sessionId} left BattleRoom`);
@@ -731,6 +775,8 @@ export class BattleRoom extends BaseRoom<GameState> {
 
   onDispose() {
     console.log("BattleRoom disposed");
+    if (this.matchmakingTimer) { clearTimeout(this.matchmakingTimer); this.matchmakingTimer = null; }
+    if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
     releaseRoom();
     this.physics.destroy();
   }
@@ -3666,7 +3712,7 @@ export class BattleRoom extends BaseRoom<GameState> {
 
   // ─── Win condition + series logic — delegates to shared/rooms/SeriesManager ─
 
-  private checkWinCondition() {
+  protected checkWinCondition() {
     const decision = determineGameWinner(this.state);
     if (!decision) return;
 
@@ -3703,7 +3749,7 @@ export class BattleRoom extends BaseRoom<GameState> {
     }
   }
 
-  private resetForNextGame() {
+  protected resetForNextGame() {
     if (this.playerSessions.size === 0) return;
 
     // Reset per-game combo state (QTE gate + charge state)

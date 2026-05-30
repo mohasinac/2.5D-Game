@@ -4,7 +4,7 @@ import { AI_LAUNCH_DELAY_S, WARMUP_DURATION_S } from "../shared/constants/gameCo
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
-import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
+import { loadGlobalSettings, updateMatchStatus, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { loadGimmickDefs } from "../utils/firestoreLoaders";
 import { expandGimmicks } from "../utils/gimmickExpander";
 import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
@@ -795,6 +795,12 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
       seriesScore,
       reason: "room-cap",
     });
+
+    // Write isDraw to Firestore bracket doc immediately (plan §2.5)
+    if (tie && this.state.tournamentMatchId) {
+      updateMatchStatus(this.state.tournamentMatchId, { isDraw: true, status: "completed", winnerId: null })
+        .catch(console.error);
+    }
 
     this.persistMatch(tie ? null : leader).then((matchFirestoreId) => {
       if (this.onMatchEnd) this.onMatchEnd(this.state.winner, matchFirestoreId);

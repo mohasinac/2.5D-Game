@@ -9,6 +9,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { GameModeLandingPage } from "./pages/GameModeLandingPage";
 import { GameModeSelectPage } from "./pages/GameModeSelectPage";
+import { GameHubPage } from "./pages/GameHubPage";
+import MatchmakingPage from "./pages/MatchmakingPage";
 import { StoryModeCardsPage } from "./pages/StoryModeCardsPage";
 import { BattleModeCardsPage } from "./pages/BattleModeCardsPage";
 import { GameRoomPage } from "./pages/GameRoomPage";
@@ -33,6 +35,7 @@ import SpectatorLobbyPage from "./pages/SpectatorLobbyPage";
 import EpisodeIntroPage from "./pages/EpisodeIntroPage";
 import EpisodeOutroPage from "./pages/EpisodeOutroPage";
 import ReplayViewerPage from "./pages/ReplayViewerPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 // Admin pages
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
@@ -206,7 +209,9 @@ export const router = createBrowserRouter([
       { path: "demo", element: <RendererDemoPage /> },
 
       // ── New unified game flow ──
-      { path: "game", element: <ProtectedRoute><GameModeSelectPage /></ProtectedRoute> },
+      { path: "game", element: <ProtectedRoute><GameHubPage /></ProtectedRoute> },
+      { path: "game/hub", element: <ProtectedRoute><GameHubPage /></ProtectedRoute> },
+      { path: "game/matchmaking", element: <ProtectedRoute><MatchmakingPage /></ProtectedRoute> },
       { path: "game/battle", element: <ProtectedRoute><BattleModeCardsPage /></ProtectedRoute> },
       { path: "game/story", element: <ProtectedRoute><StoryModeCardsPage /></ProtectedRoute> },
       { path: "game/room", element: <ProtectedRoute><GameRoomPage /></ProtectedRoute> },
@@ -273,6 +278,9 @@ export const router = createBrowserRouter([
 
       // Leaderboard (public — no ProtectedRoute)
       { path: "leaderboard", element: <LeaderboardPage /> },
+
+      // 404 catch-all
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
   {

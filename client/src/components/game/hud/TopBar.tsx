@@ -49,7 +49,7 @@ export function TopBar({ timerSec, status, tournamentName, roundLabel, modifiers
 
         {/* Spectator count */}
         {spectatorCount !== undefined && spectatorCount > 0 && (
-          <span className="text-[0.45rem] text-white/30 tracking-wide">{spectatorCount} watching</span>
+          <span className="text-[0.45rem] text-white/30 tracking-wide">👁 {spectatorCount}</span>
         )}
       </div>
     </div>

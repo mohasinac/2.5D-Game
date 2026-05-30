@@ -915,8 +915,32 @@ export function useColyseus({
         setConnectionState("error");
       });
 
-      connectedRoom.onLeave(() => {
+      connectedRoom.onLeave((code) => {
         if (step4TimerRef.current) { clearTimeout(step4TimerRef.current); step4TimerRef.current = null; }
+        // code 4000+ = consented leave; 1000–3999 = unexpected disconnect
+        const wasUnexpected = code < 4000;
+        const savedToken = wasUnexpected ? connectedRoom.reconnectionToken : null;
+        const savedRoomId = connectedRoom.roomId;
+        if (savedToken) {
+          try {
+            sessionStorage.setItem("bey-reconnect-token", savedToken);
+            sessionStorage.setItem("bey-reconnect-room", savedRoomId);
+          } catch { /* ignore */ }
+          // Attempt auto-reconnect after 2s backoff
+          setTimeout(async () => {
+            if (!clientRef.current || roomRef.current) return;
+            try {
+              setConnectionState("connecting");
+              const reconnectedRoom = await clientRef.current.reconnect(savedToken);
+              roomRef.current = reconnectedRoom;
+              setConnectionState("connected");
+              sessionStorage.removeItem("bey-reconnect-token");
+              sessionStorage.removeItem("bey-reconnect-room");
+            } catch {
+              setConnectionState("disconnected");
+            }
+          }, 2000);
+        }
         setConnectionState("disconnected");
         roomRef.current = null;
         setRoom(null);

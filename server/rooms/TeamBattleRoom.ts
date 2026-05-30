@@ -8,6 +8,7 @@ import { BattleRoom } from "./BattleRoom";
 import { Client } from "colyseus";
 import type { PlayerInput } from "../shared/utils/bitmask";
 import type { Beyblade } from "./schema/GameState";
+import { buildSeriesScore, isSeriesOver } from "../shared/rooms/SeriesManager";
 
 interface TeamJoinOptions {
   beybladeId: string;
@@ -348,5 +349,77 @@ export class TeamBattleRoom extends BattleRoom {
     }
 
     super.handleInput(client, input);
+  }
+
+  // ─── Team win condition ───────────────────────────────────────────────────
+
+  protected override checkWinCondition(): void {
+    if (this.state.status !== "in-progress") return;
+
+    // Count active beyblades per team
+    const activeCounts: Record<"red" | "blue", number> = { red: 0, blue: 0 };
+    const spinSums: Record<"red" | "blue", number> = { red: 0, blue: 0 };
+    this.state.beyblades.forEach((bey, sid) => {
+      const ownerSid = beyOwner.get(sid) ?? sid;
+      const team = teamMap.get(ownerSid);
+      if (!team) return;
+      if (bey.isActive) {
+        activeCounts[team]++;
+        spinSums[team] += bey.spin;
+      }
+    });
+
+    const allActive = activeCounts.red + activeCounts.blue;
+    const timeExpired = this.state.timer <= 0;
+
+    // Need at least one team fully eliminated (or timer expired) to decide
+    if (activeCounts.red > 0 && activeCounts.blue > 0 && !timeExpired) return;
+
+    let winnerTeam: "red" | "blue" | null = null;
+    let reason: string;
+
+    if (activeCounts.red === 0 && activeCounts.blue === 0) {
+      reason = "simultaneous-spinout";
+    } else if (activeCounts.red === 0) {
+      winnerTeam = "blue";
+      reason = "last-standing";
+    } else if (activeCounts.blue === 0) {
+      winnerTeam = "red";
+      reason = "last-standing";
+    } else {
+      // Timer expired — team with more survivors wins; tie → higher total spin
+      if (activeCounts.red > activeCounts.blue) {
+        winnerTeam = "red";
+      } else if (activeCounts.blue > activeCounts.red) {
+        winnerTeam = "blue";
+      } else {
+        winnerTeam = spinSums.red >= spinSums.blue ? "red" : "blue";
+      }
+      reason = "timer";
+    }
+
+    // Record win using team color as the key
+    if (winnerTeam) {
+      const current = this.state.seriesWins.get(winnerTeam) ?? 0;
+      this.state.seriesWins.set(winnerTeam, current + 1);
+      this.state.seriesLeader = winnerTeam;
+    }
+
+    const seriesScore = buildSeriesScore(this.state);
+    const seriesOver = winnerTeam
+      ? (this.state.seriesWins.get(winnerTeam) ?? 0) >= this.state.targetWins
+      : false;
+
+    if (seriesOver) {
+      this.state.status = "series-finished";
+      this.state.winner = winnerTeam ?? "";
+      this.broadcast("series-end", { winnerTeam, seriesScore, reason });
+      setTimeout(() => this.disconnect(), 5000);
+    } else {
+      this.state.status = "finished";
+      this.state.winner = winnerTeam ?? "";
+      this.broadcast("game-end", { winnerTeam, gameNumber: this.state.currentGame, seriesScore, reason });
+      setTimeout(() => this.resetForNextGame(), 3000);
+    }
   }
 }

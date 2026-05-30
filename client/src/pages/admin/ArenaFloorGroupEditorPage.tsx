@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, alpha } from "@/styles/theme";
 
 const PILL_BASE = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border";
@@ -272,7 +272,7 @@ export default function ArenaFloorGroupEditorPage() {
     if (isNew) return;
     (async () => {
       try {
-        const snap = await getDoc(doc(db, "arena_floor_groups", id!));
+        const snap = await getDoc(doc(db, COLLECTIONS.ARENA_FLOOR_GROUPS, id!));
         if (!snap.exists()) { toast.error("Group not found"); navigate("/admin/arena-floor-groups"); return; }
         const data = snap.data() as ArenaFloorGroup & { description?: string; status?: string; links?: ArenaLink[] };
         setName(data.name ?? "");
@@ -379,7 +379,7 @@ export default function ArenaFloorGroupEditorPage() {
         rotationDirection: f.rotationDirection,
         rotationMode: f.rotationMode,
       }));
-      await setDoc(doc(db, "arena_floor_groups", docId), {
+      await setDoc(doc(db, COLLECTIONS.ARENA_FLOOR_GROUPS, docId), {
         name: name.trim(),
         description: description.trim(),
         status,

@@ -21,22 +21,22 @@ function ActorsEditor({ actors, onChange }: { actors: CutsceneActorPlacement[]; 
   return (
     <div className="space-y-2">
       {actors.map((a, i) => (
-        <div key={i} className="flex items-center gap-2 p-2 bg-gray-900 border border-gray-700 rounded-lg">
+        <div key={i} className="flex items-center gap-2 p-2 bg-bg1 border border-border-c rounded-lg">
           <input type="text" value={a.npcId} onChange={e => update(i, { ...a, npcId: e.target.value })}
-            className="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white" placeholder="NPC ID" />
+            className="flex-1 bg-bg2 border border-border-c rounded px-2 py-1 text-sm text-theme-text" placeholder="NPC ID" />
           <input type="number" value={a.tile.x} onChange={e => update(i, { ...a, tile: { ...a.tile, x: Number(e.target.value) } })}
-            className="w-16 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white" placeholder="X" />
+            className="w-16 bg-bg2 border border-border-c rounded px-2 py-1 text-sm text-theme-text" placeholder="X" />
           <input type="number" value={a.tile.y} onChange={e => update(i, { ...a, tile: { ...a.tile, y: Number(e.target.value) } })}
-            className="w-16 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white" placeholder="Y" />
+            className="w-16 bg-bg2 border border-border-c rounded px-2 py-1 text-sm text-theme-text" placeholder="Y" />
           <select value={a.facing} onChange={e => update(i, { ...a, facing: e.target.value as FacingDirection })}
-            className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white">
+            className="bg-bg2 border border-border-c rounded px-2 py-1 text-sm text-theme-text">
             {facings.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
           <button type="button" onClick={() => remove(i)} className="text-red-400 hover:text-red-300 text-sm">x</button>
         </div>
       ))}
       <button type="button" onClick={add}
-        className="w-full py-2 border border-dashed border-gray-600 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:border-gray-500">
+        className="w-full py-2 border border-dashed border-border-c rounded-lg text-sm text-accent hover:opacity-80">
         + Add Actor
       </button>
     </div>
@@ -91,13 +91,13 @@ export default function RPGCutsceneEditPage() {
     } catch (e) { console.error(e); toast.error("Failed to delete cutscene"); }
   };
 
-  if (loading) return <div className="p-6 text-gray-500 text-sm">Loading...</div>;
+  if (loading) return <div className="p-6 text-theme-muted text-sm">Loading...</div>;
 
   return (
     <div className="p-6 w-full max-w-3xl">
       <div className="mb-5">
-        <Link to="/admin/rpg/cutscenes" className="text-blue-400 text-sm hover:underline">&larr; Back to Cutscenes</Link>
-        <h1 className="text-[22px] font-bold text-white mt-2">Edit Cutscene: {id}</h1>
+        <Link to="/admin/rpg/cutscenes" className="text-accent text-sm hover:underline">&larr; Back to Cutscenes</Link>
+        <h1 className="text-[22px] font-bold text-theme-text mt-2">Edit Cutscene: {id}</h1>
       </div>
       <div className={CARD + " space-y-4"}>
         <div><label className={LBL}>Display Name</label><input className={INP} value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>

@@ -3,8 +3,16 @@
 // Game pages pre-load by calling fetchAll() before mounting the game canvas.
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
+
+const CATALOG_TTL_MS = 60 * 60 * 1000; // 60 min
+
+function isFresh(fetchedAt: Record<string, number>, key: string): boolean {
+  const t = fetchedAt[key];
+  return typeof t === "number" && Date.now() - t < CATALOG_TTL_MS;
+}
 
 // ─── Document shapes ─────────────────────────────────────────────────────────
 
@@ -150,6 +158,8 @@ interface GameDataState {
   // Per-slice loading/error
   loading: Record<string, boolean>;
   errors: Record<string, string | null>;
+  // TTL timestamps — set on successful fetch, cleared by invalidate()
+  _fetchedAt: Record<string, number>;
 
   fetchCombos: () => Promise<void>;
   fetchSpecialMoves: () => Promise<void>;
@@ -175,7 +185,7 @@ interface GameDataState {
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
-export const useGameDataStore = create<GameDataState>()((set, get) => ({
+export const useGameDataStore = create<GameDataState>()(persist((set, get) => ({
   combos: [],
   combosLoaded: false,
   specialMoves: [],
@@ -212,210 +222,211 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
   assetsLoaded: {},
   loading: {},
   errors: {},
+  _fetchedAt: {},
 
   fetchCombos: async () => {
-    if (get().combosLoaded) return;
+    if (isFresh(get()._fetchedAt, 'combos')) return;
     set(s => ({ loading: { ...s.loading, combos: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.COMBOS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ComboDoc));
       docs.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
-      set(s => ({ combos: docs, combosLoaded: true, loading: { ...s.loading, combos: false }, errors: { ...s.errors, combos: null } }));
+      set(s => ({ combos: docs, combosLoaded: true, _fetchedAt: { ...s._fetchedAt, combos: Date.now() }, loading: { ...s.loading, combos: false }, errors: { ...s.errors, combos: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, combos: false }, errors: { ...s.errors, combos: "Failed to load combos" } }));
     }
   },
 
   fetchSpecialMoves: async () => {
-    if (get().specialMovesLoaded) return;
+    if (isFresh(get()._fetchedAt, 'specialMoves')) return;
     set(s => ({ loading: { ...s.loading, specialMoves: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.SPECIAL_MOVES));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as SpecialMoveDoc));
       docs.sort((a, b) => a.name.localeCompare(b.name));
-      set(s => ({ specialMoves: docs, specialMovesLoaded: true, loading: { ...s.loading, specialMoves: false }, errors: { ...s.errors, specialMoves: null } }));
+      set(s => ({ specialMoves: docs, specialMovesLoaded: true, _fetchedAt: { ...s._fetchedAt, specialMoves: Date.now() }, loading: { ...s.loading, specialMoves: false }, errors: { ...s.errors, specialMoves: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, specialMoves: false }, errors: { ...s.errors, specialMoves: "Failed to load special moves" } }));
     }
   },
 
   fetchTurretAttackTypes: async () => {
-    if (get().turretAttackTypesLoaded) return;
+    if (isFresh(get()._fetchedAt, 'turretAttackTypes')) return;
     set(s => ({ loading: { ...s.loading, turretAttackTypes: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.TURRET_ATTACK_TYPES));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as TurretAttackTypeDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ turretAttackTypes: docs, turretAttackTypesLoaded: true, loading: { ...s.loading, turretAttackTypes: false }, errors: { ...s.errors, turretAttackTypes: null } }));
+      set(s => ({ turretAttackTypes: docs, turretAttackTypesLoaded: true, _fetchedAt: { ...s._fetchedAt, turretAttackTypes: Date.now() }, loading: { ...s.loading, turretAttackTypes: false }, errors: { ...s.errors, turretAttackTypes: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, turretAttackTypes: false }, errors: { ...s.errors, turretAttackTypes: "Failed to load turret attack types" } }));
     }
   },
 
   fetchArenaFeatureConfigs: async () => {
-    if (get().arenaFeatureConfigsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'arenaFeatureConfigs')) return;
     set(s => ({ loading: { ...s.loading, arenaFeatureConfigs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.ARENA_FEATURE_CONFIGS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaFeatureConfigDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ arenaFeatureConfigs: docs, arenaFeatureConfigsLoaded: true, loading: { ...s.loading, arenaFeatureConfigs: false }, errors: { ...s.errors, arenaFeatureConfigs: null } }));
+      set(s => ({ arenaFeatureConfigs: docs, arenaFeatureConfigsLoaded: true, _fetchedAt: { ...s._fetchedAt, arenaFeatureConfigs: Date.now() }, loading: { ...s.loading, arenaFeatureConfigs: false }, errors: { ...s.errors, arenaFeatureConfigs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, arenaFeatureConfigs: false }, errors: { ...s.errors, arenaFeatureConfigs: "Failed to load arena feature configs" } }));
     }
   },
 
   fetchBeyLinkConfigs: async () => {
-    if (get().beyLinkConfigsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'beyLinkConfigs')) return;
     set(s => ({ loading: { ...s.loading, beyLinkConfigs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.BEY_LINK_CONFIGS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as BeyLinkConfigDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ beyLinkConfigs: docs, beyLinkConfigsLoaded: true, loading: { ...s.loading, beyLinkConfigs: false }, errors: { ...s.errors, beyLinkConfigs: null } }));
+      set(s => ({ beyLinkConfigs: docs, beyLinkConfigsLoaded: true, _fetchedAt: { ...s._fetchedAt, beyLinkConfigs: Date.now() }, loading: { ...s.loading, beyLinkConfigs: false }, errors: { ...s.errors, beyLinkConfigs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, beyLinkConfigs: false }, errors: { ...s.errors, beyLinkConfigs: "Failed to load bey link configs" } }));
     }
   },
 
   fetchPartMaterials: async () => {
-    if (get().partMaterialsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'partMaterials')) return;
     set(s => ({ loading: { ...s.loading, partMaterials: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.PART_MATERIALS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as PartMaterialDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ partMaterials: docs, partMaterialsLoaded: true, loading: { ...s.loading, partMaterials: false }, errors: { ...s.errors, partMaterials: null } }));
+      set(s => ({ partMaterials: docs, partMaterialsLoaded: true, _fetchedAt: { ...s._fetchedAt, partMaterials: Date.now() }, loading: { ...s.loading, partMaterials: false }, errors: { ...s.errors, partMaterials: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, partMaterials: false }, errors: { ...s.errors, partMaterials: "Failed to load tip materials" } }));
     }
   },
 
   fetchTipShapes: async () => {
-    if (get().tipShapesLoaded) return;
+    if (isFresh(get()._fetchedAt, 'tipShapes')) return;
     set(s => ({ loading: { ...s.loading, tipShapes: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.TIP_SHAPE_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as TipShapeDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ tipShapes: docs, tipShapesLoaded: true, loading: { ...s.loading, tipShapes: false }, errors: { ...s.errors, tipShapes: null } }));
+      set(s => ({ tipShapes: docs, tipShapesLoaded: true, _fetchedAt: { ...s._fetchedAt, tipShapes: Date.now() }, loading: { ...s.loading, tipShapes: false }, errors: { ...s.errors, tipShapes: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, tipShapes: false }, errors: { ...s.errors, tipShapes: "Failed to load tip shapes" } }));
     }
   },
 
   fetchCoreGimmicks: async () => {
-    if (get().coreGimmicksLoaded) return;
+    if (isFresh(get()._fetchedAt, 'coreGimmicks')) return;
     set(s => ({ loading: { ...s.loading, coreGimmicks: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.CORE_GIMMICK_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as CoreGimmickDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ coreGimmicks: docs, coreGimmicksLoaded: true, loading: { ...s.loading, coreGimmicks: false }, errors: { ...s.errors, coreGimmicks: null } }));
+      set(s => ({ coreGimmicks: docs, coreGimmicksLoaded: true, _fetchedAt: { ...s._fetchedAt, coreGimmicks: Date.now() }, loading: { ...s.loading, coreGimmicks: false }, errors: { ...s.errors, coreGimmicks: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, coreGimmicks: false }, errors: { ...s.errors, coreGimmicks: "Failed to load core gimmicks" } }));
     }
   },
 
   fetchAttackTypeDefs: async () => {
-    if (get().attackTypeDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'attackTypeDefs')) return;
     set(s => ({ loading: { ...s.loading, attackTypeDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.ATTACK_TYPE_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as AttackTypeDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ attackTypeDefs: docs, attackTypeDefsLoaded: true, loading: { ...s.loading, attackTypeDefs: false }, errors: { ...s.errors, attackTypeDefs: null } }));
+      set(s => ({ attackTypeDefs: docs, attackTypeDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, attackTypeDefs: Date.now() }, loading: { ...s.loading, attackTypeDefs: false }, errors: { ...s.errors, attackTypeDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, attackTypeDefs: false }, errors: { ...s.errors, attackTypeDefs: "Failed to load attack type defs" } }));
     }
   },
 
   fetchArenaThemeDefs: async () => {
-    if (get().arenaThemeDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'arenaThemeDefs')) return;
     set(s => ({ loading: { ...s.loading, arenaThemeDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.ARENA_THEME_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaThemeDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ arenaThemeDefs: docs, arenaThemeDefsLoaded: true, loading: { ...s.loading, arenaThemeDefs: false }, errors: { ...s.errors, arenaThemeDefs: null } }));
+      set(s => ({ arenaThemeDefs: docs, arenaThemeDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, arenaThemeDefs: Date.now() }, loading: { ...s.loading, arenaThemeDefs: false }, errors: { ...s.errors, arenaThemeDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, arenaThemeDefs: false }, errors: { ...s.errors, arenaThemeDefs: "Failed to load arena theme defs" } }));
     }
   },
 
   fetchArenaShapeDefs: async () => {
-    if (get().arenaShapeDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'arenaShapeDefs')) return;
     set(s => ({ loading: { ...s.loading, arenaShapeDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.ARENA_SHAPE_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaShapeDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ arenaShapeDefs: docs, arenaShapeDefsLoaded: true, loading: { ...s.loading, arenaShapeDefs: false }, errors: { ...s.errors, arenaShapeDefs: null } }));
+      set(s => ({ arenaShapeDefs: docs, arenaShapeDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, arenaShapeDefs: Date.now() }, loading: { ...s.loading, arenaShapeDefs: false }, errors: { ...s.errors, arenaShapeDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, arenaShapeDefs: false }, errors: { ...s.errors, arenaShapeDefs: "Failed to load arena shape defs" } }));
     }
   },
 
   fetchBowlProfileDefs: async () => {
-    if (get().bowlProfileDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'bowlProfileDefs')) return;
     set(s => ({ loading: { ...s.loading, bowlProfileDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.BOWL_PROFILE_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as BowlProfileDoc));
       docs.sort((a, b) => (a.wallAngle ?? 0) - (b.wallAngle ?? 0));
-      set(s => ({ bowlProfileDefs: docs, bowlProfileDefsLoaded: true, loading: { ...s.loading, bowlProfileDefs: false }, errors: { ...s.errors, bowlProfileDefs: null } }));
+      set(s => ({ bowlProfileDefs: docs, bowlProfileDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, bowlProfileDefs: Date.now() }, loading: { ...s.loading, bowlProfileDefs: false }, errors: { ...s.errors, bowlProfileDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, bowlProfileDefs: false }, errors: { ...s.errors, bowlProfileDefs: "Failed to load bowl profile defs" } }));
     }
   },
 
   fetchTriggerTypeDefs: async () => {
-    if (get().triggerTypeDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'triggerTypeDefs')) return;
     set(s => ({ loading: { ...s.loading, triggerTypeDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.TRIGGER_TYPE_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as TriggerTypeDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ triggerTypeDefs: docs, triggerTypeDefsLoaded: true, loading: { ...s.loading, triggerTypeDefs: false }, errors: { ...s.errors, triggerTypeDefs: null } }));
+      set(s => ({ triggerTypeDefs: docs, triggerTypeDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, triggerTypeDefs: Date.now() }, loading: { ...s.loading, triggerTypeDefs: false }, errors: { ...s.errors, triggerTypeDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, triggerTypeDefs: false }, errors: { ...s.errors, triggerTypeDefs: "Failed to load trigger type defs" } }));
     }
   },
 
   fetchStatEventDefs: async () => {
-    if (get().statEventDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'statEventDefs')) return;
     set(s => ({ loading: { ...s.loading, statEventDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.STAT_EVENT_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as StatEventDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ statEventDefs: docs, statEventDefsLoaded: true, loading: { ...s.loading, statEventDefs: false }, errors: { ...s.errors, statEventDefs: null } }));
+      set(s => ({ statEventDefs: docs, statEventDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, statEventDefs: Date.now() }, loading: { ...s.loading, statEventDefs: false }, errors: { ...s.errors, statEventDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, statEventDefs: false }, errors: { ...s.errors, statEventDefs: "Failed to load stat event defs" } }));
     }
   },
 
   fetchPartLayerDefs: async () => {
-    if (get().partLayerDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'partLayerDefs')) return;
     set(s => ({ loading: { ...s.loading, partLayerDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.PART_LAYER_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as PartLayerDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
-      set(s => ({ partLayerDefs: docs, partLayerDefsLoaded: true, loading: { ...s.loading, partLayerDefs: false }, errors: { ...s.errors, partLayerDefs: null } }));
+      set(s => ({ partLayerDefs: docs, partLayerDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, partLayerDefs: Date.now() }, loading: { ...s.loading, partLayerDefs: false }, errors: { ...s.errors, partLayerDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, partLayerDefs: false }, errors: { ...s.errors, partLayerDefs: "Failed to load part layer defs" } }));
     }
   },
 
   fetchStatDefs: async () => {
-    if (get().statDefsLoaded) return;
+    if (isFresh(get()._fetchedAt, 'statDefs')) return;
     set(s => ({ loading: { ...s.loading, statDefs: true } }));
     try {
       const snap = await getDocs(collection(db, COLLECTIONS.STAT_DEFS));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as StatDefDoc));
       docs.sort((a, b) => a.name.localeCompare(b.name));
-      set(s => ({ statDefs: docs, statDefsLoaded: true, loading: { ...s.loading, statDefs: false }, errors: { ...s.errors, statDefs: null } }));
+      set(s => ({ statDefs: docs, statDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, statDefs: Date.now() }, loading: { ...s.loading, statDefs: false }, errors: { ...s.errors, statDefs: null } }));
     } catch {
       set(s => ({ loading: { ...s.loading, statDefs: false }, errors: { ...s.errors, statDefs: "Failed to load stat defs" } }));
     }
@@ -423,7 +434,7 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
 
   fetchAssets: async (collectionName: string, tag?: string) => {
     const key = tag ? `${collectionName}:${tag}` : collectionName;
-    if (get().assetsLoaded[key]) return;
+    if (isFresh(get()._fetchedAt, key)) return;
     set(s => ({ loading: { ...s.loading, [key]: true } }));
     try {
       const snap = await getDocs(collection(db, collectionName));
@@ -435,6 +446,7 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
       set(s => ({
         assets: { ...s.assets, [key]: docs },
         assetsLoaded: { ...s.assetsLoaded, [key]: true },
+        _fetchedAt: { ...s._fetchedAt, [key]: Date.now() },
         loading: { ...s.loading, [key]: false },
         errors: { ...s.errors, [key]: null },
       }));
@@ -449,21 +461,25 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
   },
 
   invalidate: (slice) => {
-    if (slice === "combos") set({ combosLoaded: false, combos: [] });
-    if (slice === "specialMoves") set({ specialMovesLoaded: false, specialMoves: [] });
-    if (slice === "turretAttackTypes") set({ turretAttackTypesLoaded: false, turretAttackTypes: [] });
-    if (slice === "arenaFeatureConfigs") set({ arenaFeatureConfigsLoaded: false, arenaFeatureConfigs: [] });
-    if (slice === "beyLinkConfigs") set({ beyLinkConfigsLoaded: false, beyLinkConfigs: [] });
-    if (slice === "partMaterials") set({ partMaterialsLoaded: false, partMaterials: [] });
-    if (slice === "tipShapes") set({ tipShapesLoaded: false, tipShapes: [] });
-    if (slice === "coreGimmicks") set({ coreGimmicksLoaded: false, coreGimmicks: [] });
-    if (slice === "attackTypeDefs") set({ attackTypeDefsLoaded: false, attackTypeDefs: [] });
-    if (slice === "arenaThemeDefs") set({ arenaThemeDefsLoaded: false, arenaThemeDefs: [] });
-    if (slice === "arenaShapeDefs") set({ arenaShapeDefsLoaded: false, arenaShapeDefs: [] });
-    if (slice === "bowlProfileDefs") set({ bowlProfileDefsLoaded: false, bowlProfileDefs: [] });
-    if (slice === "triggerTypeDefs") set({ triggerTypeDefsLoaded: false, triggerTypeDefs: [] });
-    if (slice === "statEventDefs") set({ statEventDefsLoaded: false, statEventDefs: [] });
-    if (slice === "partLayerDefs") set({ partLayerDefsLoaded: false, partLayerDefs: [] });
-    if (slice === "statDefs") set({ statDefsLoaded: false, statDefs: [] });
+    const clearTs = (s: GameDataState) => {
+      const { [slice]: _, ...rest } = s._fetchedAt;
+      return rest;
+    };
+    if (slice === "combos") set(s => ({ combosLoaded: false, combos: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "specialMoves") set(s => ({ specialMovesLoaded: false, specialMoves: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "turretAttackTypes") set(s => ({ turretAttackTypesLoaded: false, turretAttackTypes: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "arenaFeatureConfigs") set(s => ({ arenaFeatureConfigsLoaded: false, arenaFeatureConfigs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "beyLinkConfigs") set(s => ({ beyLinkConfigsLoaded: false, beyLinkConfigs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "partMaterials") set(s => ({ partMaterialsLoaded: false, partMaterials: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "tipShapes") set(s => ({ tipShapesLoaded: false, tipShapes: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "coreGimmicks") set(s => ({ coreGimmicksLoaded: false, coreGimmicks: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "attackTypeDefs") set(s => ({ attackTypeDefsLoaded: false, attackTypeDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "arenaThemeDefs") set(s => ({ arenaThemeDefsLoaded: false, arenaThemeDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "arenaShapeDefs") set(s => ({ arenaShapeDefsLoaded: false, arenaShapeDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "bowlProfileDefs") set(s => ({ bowlProfileDefsLoaded: false, bowlProfileDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "triggerTypeDefs") set(s => ({ triggerTypeDefsLoaded: false, triggerTypeDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "statEventDefs") set(s => ({ statEventDefsLoaded: false, statEventDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "partLayerDefs") set(s => ({ partLayerDefsLoaded: false, partLayerDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "statDefs") set(s => ({ statDefsLoaded: false, statDefs: [], _fetchedAt: clearTs(s) }));
   },
-}));
+}), { name: "bey-catalog-v1" }));

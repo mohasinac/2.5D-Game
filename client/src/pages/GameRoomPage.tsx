@@ -15,7 +15,8 @@ import { useCombos } from '../hooks/useCombos';
 import { useSpecialMoves } from '../hooks/useSpecialMoves';
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from '../types/game';
 import type { ServerGameState } from '../types/game';
-import { isLocalRoom, COLYSEUS_ROOM_NAME, type GameRoomConfig } from '../types/gameRoom';
+import { isLocalRoom, roomNameForConfig, type GameRoomConfig } from '../types/gameRoom';
+import { ROOM_NAMES } from '../shared/utils/gameMode';
 import { LocalGameSimulation, type SimSnapshot } from '../game/simulation/LocalGameSimulation';
 
 import { GameShell } from '../components/game/GameShell';
@@ -31,6 +32,9 @@ import BurstOverlay from '../components/game/BurstOverlay';
 import LaunchCinematic from '../components/game/LaunchCinematic';
 import { BitBeastCinematic } from '../components/game/BitBeastCinematic';
 import { SequenceQTE, MashQTE, SingleKeyQTE, DebuffNotice } from '../components/game/QTENotificationSystem';
+import { RoyaleHUD } from '../components/game/RoyaleHUD';
+import { SafeZoneOverlay } from '../components/game/SafeZoneOverlay';
+import { ZoneDangerMeter } from '../components/game/ZoneDangerMeter';
 import type { SingleKeyQTEData, DebuffNoticeData } from '../components/game/QTENotificationSystem';
 import type { QTEPromptData } from '../game/hooks/useColyseus';
 import { LAUNCH_DURATION_S } from '../shared/constants/gameConstants';
@@ -119,9 +123,7 @@ export function GameRoomPage() {
     modifierIds: config?.modifierIds ?? [],
   }), [config, settings]);
 
-  const roomName = config && !local
-    ? (COLYSEUS_ROOM_NAME[config.roomType as keyof typeof COLYSEUS_ROOM_NAME] ?? 'battle_room')
-    : 'battle_room';
+  const roomName = config && !local ? roomNameForConfig(config) : ROOM_NAMES["2d"].battle;
 
   // Always call useColyseus (hooks must be unconditional); for local rooms autoConnect=false
   const colyseus = useColyseus({
@@ -580,6 +582,21 @@ export function GameRoomPage() {
             power={myBeyblade?.power}
             comboMap={comboMap}
           />
+        )}
+
+        {/* Battle Royale HUD — zone timer + player strip */}
+        {config?.roomType === 'royale' && gameState.status === 'in-progress' && (
+          <RoyaleHUD gameState={gameState} myId={settings.userId ?? 'guest'} />
+        )}
+
+        {/* Battle Royale — zone closing overlay flash + outside-zone vignette */}
+        {config?.roomType === 'royale' && gameState.status === 'in-progress' && (
+          <SafeZoneOverlay gameState={gameState} myId={settings.userId ?? 'guest'} />
+        )}
+
+        {/* Battle Royale — mobile danger meter (right side bar) */}
+        {config?.roomType === 'royale' && gameState.status === 'in-progress' && (
+          <ZoneDangerMeter gameState={gameState} myId={settings.userId ?? 'guest'} />
         )}
 
         {/* Tournament-AI bracket badge */}

@@ -7,6 +7,8 @@ import { BUILT_IN_MODIFIERS, MODIFIER_MAP } from "@/types/roundModifier";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/cn";
+import { ROOM_NAMES, modeFromPath } from "@/shared/utils/gameMode";
+import { useRoomStore } from "@/stores/roomStore";
 
 // ─── Mode detection from pathname ────────────────────────────────────────────
 
@@ -18,10 +20,11 @@ function modeFromPathname(pathname: string): LobbyMode {
   return 'pvp';
 }
 
-function roomNameForMode(mode: LobbyMode): string {
-  if (mode === 'royale') return 'royale_battle_room';
-  if (mode === 'tournament') return 'tournament_battle_25d_room';
-  return 'battle_25d_room';
+function roomNameForMode(mode: LobbyMode, pathname: string): string {
+  const pipeline = modeFromPath(pathname);
+  if (mode === 'royale') return ROOM_NAMES.global.royale;
+  if (mode === 'tournament') return ROOM_NAMES[pipeline].tournament;
+  return ROOM_NAMES[pipeline].battle;
 }
 
 function maxPlayersForMode(mode: LobbyMode): number {
@@ -197,9 +200,10 @@ export function BattleLobbyPage() {
   const navigate    = useNavigate();
   const location    = useLocation();
   const { settings } = useGame();
+  const { setPhase: setRoomPhase, setRoom, reset: resetRoom } = useRoomStore();
 
   const lobbyMode   = modeFromPathname(location.pathname);
-  const roomName    = roomNameForMode(lobbyMode);
+  const roomName    = roomNameForMode(lobbyMode, location.pathname);
   const maxPlayers  = maxPlayersForMode(lobbyMode);
 
   // Phase state
@@ -270,20 +274,35 @@ export function BattleLobbyPage() {
   useEffect(() => {
     if (!triggerConnect) return;
     setTriggerConnect(false);
+    setRoomPhase("matchmaking");
+    setRoom({
+      roomType: lobbyMode === 'royale' ? 'royale' : lobbyMode === 'tournament' ? 'tournament' : 'pvp',
+      beybladeId: settings.beybladeId ?? 'default',
+      arenaId: settings.arenaId ?? 'default',
+    });
     connect();
-  }, [triggerConnect]); // intentionally omit `connect` — called once per trigger
+  }, [triggerConnect]); // intentionally omit other deps — called once per trigger
 
-  // Transition to in-lobby when connected
+  // Transition to in-lobby when connected; sync colyseusRoomId + prefs into store
   useEffect(() => {
     if (connectionState === 'connected' && phase !== 'in-lobby') {
       setPhase('in-lobby');
+      setRoomPhase("in-lobby");
+      if (room?.roomId) {
+        setRoom({
+          colyseusRoomId: room.roomId,
+          bestOf: isPrivate ? bestOf : randomBestOf,
+          modifierIds: selectedModifierIds,
+        });
+      }
     }
-  }, [connectionState, phase]);
+  }, [connectionState, phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Navigate to game room when server starts warmup (or later), not just in-progress.
   // This ensures both players leave the lobby as soon as the server begins the match.
   useEffect(() => {
     if (room && (gameState?.status === 'warmup' || gameState?.status === 'launching' || gameState?.status === 'in-progress')) {
+      setRoomPhase("in-game");
       navigate('/game/room', { replace: true, state: {
         config: {
           roomType: lobbyMode === 'pvp' ? 'pvp' : lobbyMode === 'royale' ? 'royale' : 'tournament',
@@ -294,7 +313,7 @@ export function BattleLobbyPage() {
         },
       }});
     }
-  }, [gameState?.status, room, navigate, lobbyMode, settings]);
+  }, [gameState?.status, room, navigate, lobbyMode, settings]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Server closed room (idle timeout) — bounce back to Phase 1
   useEffect(() => {
@@ -303,8 +322,9 @@ export function BattleLobbyPage() {
       setPhase('choose');
       setConnectRoomId(undefined);
       roomIdRef.current = undefined;
+      setRoomPhase("idle");
     }
-  }, [connectionState, phase]);
+  }, [connectionState, phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const playerList = Array.from(beyblades.values());
   const myUserId   = settings.userId;
@@ -321,7 +341,8 @@ export function BattleLobbyPage() {
     setPhase('choose');
     setConnectRoomId(undefined);
     roomIdRef.current = undefined;
-  }, [disconnect]);
+    resetRoom();
+  }, [disconnect, resetRoom]);
 
   const handleCopyCode = () => {
     if (!room?.roomId) return;
@@ -559,6 +580,7 @@ export function BattleLobbyPage() {
             <ActionBtn label="Cancel" onClick={() => {
               disconnect();
               setPhase('choose');
+              resetRoom();
             }} />
           </PhaseCard>
         </div>
@@ -602,6 +624,7 @@ export function BattleLobbyPage() {
               <ActionBtn label="← Back" onClick={() => {
                 disconnect();
                 setPhase('choose');
+                resetRoom();
               }} />
             </div>
           </PhaseCard>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { Link } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, alpha } from "@/styles/theme";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -171,7 +171,7 @@ export default function ArenaFloorGroupListPage() {
   useEffect(() => {
     (async () => {
       try {
-        const snap = await getDocs(collection(db, "arena_floor_groups"));
+        const snap = await getDocs(collection(db, COLLECTIONS.ARENA_FLOOR_GROUPS));
         setGroups(snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<FloorGroupRow, "id">) })));
       } catch {
         toast.error("Failed to load floor groups");
@@ -183,7 +183,7 @@ export default function ArenaFloorGroupListPage() {
 
   async function handleDelete(group: FloorGroupRow) {
     try {
-      await deleteDoc(doc(db, "arena_floor_groups", group.id));
+      await deleteDoc(doc(db, COLLECTIONS.ARENA_FLOOR_GROUPS, group.id));
       setGroups(g => g.filter(x => x.id !== group.id));
       toast.success(`Deleted "${group.name}"`);
     } catch {

@@ -31,8 +31,8 @@ export default function RPGDialogueCreatePage() {
   return (
     <div className="p-6 w-full max-w-3xl">
       <div className="mb-5">
-        <Link to="/admin/rpg/dialogues" className="text-blue-400 text-sm hover:underline">&larr; Back to Dialogues</Link>
-        <h1 className="text-[22px] font-bold text-white mt-2">Create Dialogue</h1>
+        <Link to="/admin/rpg/dialogues" className="text-accent text-sm hover:underline">&larr; Back to Dialogues</Link>
+        <h1 className="text-[22px] font-bold text-theme-text mt-2">Create Dialogue</h1>
       </div>
       <div className={CARD + " space-y-4"}>
         <div><label className={LBL}>ID</label><input className={INP} value={id} onChange={e => setId(e.target.value)} placeholder="e.g. npc_kai_intro" /></div>

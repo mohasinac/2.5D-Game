@@ -1,4 +1,5 @@
 import type { BattleParams, BattleResult, NPC, InventoryItem } from "../data/schemas";
+import { ROOM_NAMES } from "@/shared/utils/gameMode";
 import type { RPGStore } from "../stores/rpgStore";
 import type { DialogueSystem } from "./DialogueSystem";
 import type { QuestSystem } from "./QuestSystem";
@@ -134,7 +135,7 @@ export class BattleTransitionSystem {
     try {
       const { Client } = await import("colyseus.js");
       const client = new Client(this.getServerUrl());
-      const room = await client.create("story_battle_room", {
+      const room = await client.create(ROOM_NAMES.global.story, {
         beybladeId: enriched.playerBeybladeId,
         aiBeybladeId: enriched.opponentBeybladeId,
         arenaId: enriched.arenaId,
@@ -153,7 +154,7 @@ export class BattleTransitionSystem {
         state: { battleParams: enriched, roomId: room.roomId },
       });
     } catch (err) {
-      console.error("[BattleTransitionSystem] Failed to create story_battle_room:", err);
+      console.error("[BattleTransitionSystem] Failed to create story battle room:", err);
       s.setPlayerLocked(false);
       s.setPendingBattleParams(null);
     }
