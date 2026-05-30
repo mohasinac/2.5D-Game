@@ -3985,4 +3985,2686 @@ Source: `13 case study.md` (continuation — Xcalius dual-contact through Horuso
 
 ---
 
-Now I need to read more cases from 1385 onwards. Let me continue reading the source.
+### [Case 1385 — [SPECIAL] Claw Reflection / Tai-Chi Counter (Virgo ED145ES)](./13%20case%20study.md#case-1385)
+
+**System**: Gen2-MFB / HWS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta_self +6; spinDelta_opp −28; dmgMult 1.40×; lockMs 130  
+**Movement Freedom**: —  
+**Base Stats**: Attack 10 · Defense 85 · Stamina 80 · Speed 15  
+**Mechanism**: BeySpirit extends ED145 free-ring deflect to sustained ~85% per hit. spinDelta_self +6, opp −28, dmg 1.40×, lock 130ms. powerCost 80, cooldown 7500ms. **Anime physics override**: deflect fraction 0.97 (near-perfect elastic return), redirecting all incoming momentum back toward attacker.  
+**2.5D Rendering**: Full-ring deflect aura; momentum-reversal arc  
+**Gimmick**: clawReflection(ringActive) → deflectFraction 0.97, counterImpulse  
+**Special Move**: Claw Reflection · powerCost 80 · animeOverride true  
+**Compatible beys**: Beys with ED145-type free-spinning outer ring on bearing race (μ≤0.03); ES or equivalent stamina tip  
+**Engine Note**: spinDelta_self +6; opp −28; dmgMult 1.40×; powerCost 80
+
+---
+
+### [Case 1386 — [COMBO] Tai-Chi Spin (↓ K J)](./13%20case%20study.md#case-1386)
+
+**System**: Gen2-MFB / HWS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta_self +4; spinDelta_opp −18; dmgMult 1.34×; lockMs 90  
+**Movement Freedom**: —  
+**Base Stats**: Attack 5 · Defense 80 · Stamina 85 · Speed 15  
+**Mechanism**: ↓ (drop to centre) → K (brace free ring) → J (deflect counter). Hit: self +4, opp −18, 1.34×, 90ms. Miss: self +1, opp −6, 1.12×, 25ms. Cost 15, defense type.  
+**2.5D Rendering**: Deflect arc flash on K  
+**Gimmick**: comboDetect(seq=[moveDown,defense,attack], window=600ms)  
+**Engine Note**: self +4; opp −18; 1.34×; 90ms; cost 15; defense combo
+
+---
+
+### [Case 1387 — [GIMMICK] Burn Fireblaze 135 MS Magnetic Snap Tip Gyro-Lock (Teru Saotome · Burn Fireblaze 135MS)](./13%20case%20study.md#case-1387)
+
+**System**: Gen2-MFB / HWS · Stamina/Defense  
+**Geometry**: r_outer = 2.1 cm · r_inner = 0.9 cm · r_MS_ball = 0.6 cm · m = 37.5 g  
+**Material**: MS tip: μ_magnet ≈ 0.01 when centred (magnetic snap) · Fireblaze wheel: ABS  
+**Spin Coupling**: rigid  
+**Contact Points**: MS magnetic snap: μ_eff ≈ 0.01 centred vs 0.15 drifting; dω/dt = −0.30 rad/s² centred  
+**Movement Freedom**: MS tip magnetically centres on dimple (no lateral drift); slight pivot on hard hits  
+**Base Stats**: Attack 5 · Defense 55 · Stamina 110 · Speed 10  
+**Mechanism**: MS (Magnet Sharp) tip carries a small rare-earth magnet that snaps to a steel dimple centred on the stadium floor, providing near-zero friction spin. m=37.5g, I=7.8×10⁻⁶ kg·m², ω₀=600 rad/s. At centre: dω/dt ≈ −0.30 rad/s². Hard hit displaces tip; remagnetisation pulls it back in ~0.5s. BeySpirit holds snap at any spin level.  
+**2.5D Rendering**: z_cm = 1.2 · MS glint on snap  
+**Gimmick**: magnetSnap(displaced) → μ_eff, reSnapMs  
+**Engine Note**: MS centred dω/dt −0.30 rad/s²; displaced dω/dt −8.5 rad/s²; reSnap 500ms
+
+---
+
+### [Case 1388 — [SPECIAL] Burning Fire Strike (Teru Saotome · Burn Fireblaze 135MS)](./13%20case%20study.md#case-1388)
+
+**System**: Gen2-MFB / HWS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −28; dmgMult 1.40×; lockMs 110  
+**Movement Freedom**: —  
+**Base Stats**: Attack 40 · Defense 55 · Stamina 80 · Speed 35  
+**Mechanism**: BeySpirit fire element coats Fireblaze wheel. Charge (300ms) + release. perfect: −28, 1.40×, 110ms. partial: −18, 1.30×, 70ms. miss: −10, 1.18×, 30ms. powerCost 78. **Anime physics override**: fire mantle pre-softens opponent AR surface (PC ~420K), raising effective contact area and force.  
+**2.5D Rendering**: Fire mantle aura on wheel; impact explosion  
+**Gimmick**: burningFireStrike(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Burning Fire Strike · powerCost 78 · animeOverride true  
+**Compatible beys**: Fire-element wheel with r_outer≥1.8cm; MS or Sharp stamina tip  
+**Engine Note**: spinDelta −28; dmgMult 1.40×; powerCost 78; cooldown 7000ms
+
+---
+
+### [Case 1389 — [COMBO] Fire Snap (J K ↓)](./13%20case%20study.md#case-1389)
+
+**System**: Gen2-MFB / HWS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −16; dmgMult 1.32×; lockMs 65  
+**Movement Freedom**: —  
+**Base Stats**: Attack 35 · Defense 55 · Stamina 80 · Speed 35  
+**Mechanism**: J (fire AR swipe) → K (MS re-snap, stabilise) → ↓ (drop to centre contact). Hit: −16, 1.32×, 65ms. Miss: −7, 1.14×, 20ms. Cost 15, attack type.  
+**2.5D Rendering**: Fire wheel flash; MS snap glint  
+**Gimmick**: comboDetect(seq=[attack,defense,moveDown], window=600ms)  
+**Engine Note**: −16/1.32×/65ms; cost 15; attack combo
+
+---
+
+### [Case 1390 — [GIMMICK] Burn Fireblaze Inferno Upper — Elevated Radial AR Strike (Teru Saotome · Burn Fireblaze 135MS)](./13%20case%20study.md#case-1390)
+
+**System**: Gen2-MFB / HWS · Stamina/Attack  
+**Geometry**: r_outer = 2.1 cm · upper-smash contact at r = 2.1 cm · I = 7.8×10⁻⁶ kg·m²  
+**Material**: Fireblaze wheel: ABS flame-wing geometry · MS tip magnetic snap  
+**Spin Coupling**: rigid  
+**Contact Points**: v_wheel = 12.6 m/s; F_smash = 35.4 N; P = 2.36 MPa (below yield)  
+**Movement Freedom**: MS snap holds Fireblaze at centre; upper-smash requires orbital approach  
+**Base Stats**: Attack 40 · Defense 50 · Stamina 80 · Speed 35  
+**Mechanism**: Fireblaze wheel sweeps upward against opponent's lower AR at maximum radius (r=2.1cm). v=600×0.021=12.6 m/s, KE=1.404 J, F=35.4 N at t_c=4ms, P=2.36 MPa (sub-yield). BeySpirit fire-upper adds: F_BS=3×35.4=106N, P_BS=7.08 MPa. Upper-launch trajectory raises opponent ~30mm off floor.  
+**2.5D Rendering**: Upper-arc flash; opponent elevation effect  
+**Gimmick**: inferno_upper(omega) → v_wheel, F_smash, upperLaunchForce  
+**Engine Note**: F_smash 35.4N physical; BeySpirit F_BS 106N; upper-launch Δz ≈30mm [M]
+
+---
+
+### [Case 1391 — [SPECIAL] Fighting Snake Flash (Mei-Mei · Aquario 105F)](./13%20case%20study.md#case-1391)
+
+**System**: Gen2-MFB / HWS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: tapCount×3 perfect: −24/×1.31/75ms; 1-tap: −8/×1.15/25ms; miss: −8/×1.12/20ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 55 · Defense 10 · Stamina 30 · Speed 75  
+**Mechanism**: Flat-tip (F) sinusoidal lateral-instability path amplified by BeySpirit: C_lat 0.18→0.55 [M]. Each of 3 slither crossings hits separate opponent zone (tap J, 200ms window per tap). tapCount 3 perfect: −24, 1.31×, 75ms. powerCost 70. **Anime physics override**: BeySpirit triples lateral coupling, creating controlled 3-target S-path.  
+**2.5D Rendering**: Sinusoidal orbit trail; multi-hit flash  
+**Gimmick**: fightingSnakeFlash(tapCount, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Fighting Snake Flash · powerCost 70 · animeOverride true  
+**Compatible beys**: Flat/wide-rubber-flat tip (r_tip≥3mm); wave/curve-protrusion AR for periodic lateral impulses  
+**Engine Note**: 3-tap: −24/1.31×/75ms; 1-tap: −8/1.15×; powerCost 70
+
+---
+
+### [Case 1392 — [COMBO] Snake Slither (→ J ←)](./13%20case%20study.md#case-1392)
+
+**System**: Gen2-MFB / HWS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −12; dmgMult 1.28×; lockMs 45  
+**Movement Freedom**: —  
+**Base Stats**: Attack 50 · Defense 10 · Stamina 35 · Speed 75  
+**Mechanism**: → (arc right entering slither) → J (wave-AR crossing apex strike) → ← (slip left on second slither leg). Hit: −12, 1.28×, 45ms. Miss: −5, 1.10×, 15ms. Cost 15, attack type.  
+**2.5D Rendering**: S-curve orbital trail; contact flash  
+**Gimmick**: comboDetect(seq=[moveRight,attack,moveLeft], window=600ms)  
+**Engine Note**: −12/1.28×/45ms; cost 15; attack combo
+
+---
+
+### [Case 1393 — [GIMMICK] Omega Blast — Prime Apocalypse Sword Point Concentrated Strike (Arthur Peregrine · Prime Apocalypse 0Dagger Ultimate Reboot')](./13%20case%20study.md#case-1393)
+
+**System**: Gen3-Burst / GT-System · Attack  
+**Geometry**: r_sword = 1.8 cm · r_dagger = 2.0 cm · A_sword = 3 mm² · m = 47.0 g  
+**Material**: GT Layer: PC + sword protrusion · Dagger frame: PC tabs · UR' driver: bearing+spring  
+**Spin Coupling**: rigid  
+**Contact Points**: F_sword = 88.4 N; F_dagger_total = 34 N; F_total_phys = 122 N [M]; P_sword = 29.5 MPa (below PC yield)  
+**Movement Freedom**: UR' bearing: μ≈0.05; dω/dt = −1.54 rad/s²  
+**Base Stats**: Attack 90 · Defense 20 · Stamina 55 · Speed 70  
+**Mechanism**: Prime Apocalypse single sword protrusion (A=3mm²) + Dagger frame 4 tabs (A=6mm² each). At ω=530 rad/s: v=9.54 m/s, KE=1.686 J, F_sword=88.4 N, P=29.5 MPa. Dagger tabs: F_total=34 N. Combined F_total_phys=122 N [M]. UR' driver bearing: dω/dt=−1.54 rad/s². I_total=1.20×10⁻⁵ kg·m².  
+**2.5D Rendering**: z_cm = 2.0 · sword-tip protrusion flash  
+**Gimmick**: swordPointConcentrated(omega) → F_sword, P_sword, F_combined  
+**Engine Note**: F_total_phys 122N; P_sword 29.5MPa; dω/dt −1.54 rad/s²
+
+---
+
+### [Case 1394 — [SPECIAL] Omega Blast / End Blaster (Arthur Peregrine · Prime Apocalypse 0Dagger Ultimate Reboot')](./13%20case%20study.md#case-1394)
+
+**System**: Gen3-Burst / GT-System · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −30/×1.42/110ms; partial (r=0.5): −19/×1.31/65ms; miss: −10/×1.18/0ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 90 · Defense 15 · Stamina 55 · Speed 70  
+**Mechanism**: BeySpirit routes all KE through sword contact point: F_sword_BS=3×122=366 N, P=122 MPa >> PC yield [M]. Charge (400ms) + release (150ms window). perfect: −30, 1.42×, 110ms. powerCost 85. **Anime physics override**: BeySpirit concentrates all frame energy through sword tip → layer-surface penetration beyond yield.  
+**2.5D Rendering**: Sword tip concentrate flash; pressure spike  
+**Gimmick**: omegaBlast(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Omega Blast / End Blaster · powerCost 85 · animeOverride true  
+**Compatible beys**: Layer with single sword/spike r≥1.6cm, A_tip≤8mm², + frame tab reinforcement r≥1.8cm  
+**Engine Note**: spinDelta −30; dmgMult 1.42×; powerCost 85; cooldown 7500ms
+
+---
+
+### [Case 1395 — [COMBO] Sword Point (↑ J →)](./13%20case%20study.md#case-1395)
+
+**System**: Gen3-Burst / GT-System · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −20; dmgMult 1.38×; lockMs 90  
+**Movement Freedom**: —  
+**Base Stats**: Attack 85 · Defense 15 · Stamina 55 · Speed 70  
+**Mechanism**: ↑ (charge up orbit, build approach speed) → J (sword-point concentrated strike) → → (break away along bowl arc). Hit: −20, 1.38×, 90ms. Miss: −8, 1.18×, 25ms. Cost 25, attack type.  
+**2.5D Rendering**: Sword protrusion flash on J  
+**Gimmick**: comboDetect(seq=[moveUp,attack,moveRight], window=600ms)  
+**Engine Note**: −20/1.38×/90ms; cost 25; attack combo
+
+---
+
+### [Case 1396 — [GIMMICK] Final Blast — Prime Apocalypse Spring-Lock Sword Enhancement (Arthur Peregrine · Prime Apocalypse 0Dagger Ultimate Reboot')](./13%20case%20study.md#case-1396)
+
+**System**: Gen3-Burst / GT-System · Attack  
+**Geometry**: r_sword = 1.8 cm · x_comp = 3 mm · k_sword = 12 N/mm · m = 47.0 g  
+**Material**: PC layer body with polymer-composite spring cam  
+**Spin Coupling**: rigid  
+**Contact Points**: J_normal = 0.352 N·s; J_spring = 0.054 N·s; J_final_phys = 0.406 N·s (+15% vs Omega Blast)  
+**Movement Freedom**: Spring cam: compress at F_trigger≥36 N [M]; release t_release ≈1.5ms  
+**Base Stats**: Attack 90 · Defense 20 · Stamina 55 · Speed 70  
+**Mechanism**: Spring-loaded sword cam. k=12 N/mm, x_comp=3mm, E_spring=0.054 J. Trigger: F_trigger≥36N (opponent hit). Release: v_release_phys=6.0 m/s; BeySpirit: v_BS=10.4 m/s (√(2×0.162/0.003)). Combined: v_sword_spin+v_BS=9.54+10.4=19.9 m/s [M]. Contact angle ±40° for trigger.  
+**2.5D Rendering**: Spring-release flash; amplified sword strike  
+**Gimmick**: springLockSword(swordPushedIn) → J_final, v_combined  
+**Engine Note**: E_spring 0.054 J physical; BeySpirit E_BS 0.162 J; v_combined 19.9 m/s [M]
+
+---
+
+### [Case 1397 — [SPECIAL] Final Blast / Final Blaster (Arthur Peregrine · Prime Apocalypse 0Dagger Ultimate Reboot')](./13%20case%20study.md#case-1397)
+
+**System**: Gen3-Burst / GT-System · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spring+perfect: −42/×1.50/160ms; spring+miss: −14/×1.24/30ms; no spring: −18/×1.28/50ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 90 · Defense 20 · Stamina 55 · Speed 70  
+**Mechanism**: K (guard, sword pushes in, spring loads) → J (120ms window, spring release). BeySpirit amplifies E_spring ×3 (0.162 J [M]); v_combined=19.9 m/s [M]. spring+perfect: −42, 1.50×, 160ms. powerCost 90. **Anime physics override**: BeySpirit spring energy ×3; combined velocity exceeds Omega Blast ×3.  
+**2.5D Rendering**: Spring-loading indicator; release flash  
+**Gimmick**: finalBlast(swordPushedIn, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Final Blast / Final Blaster · powerCost 90 · animeOverride true  
+**Compatible beys**: Layer with spring-loaded sword/spike (compression stroke≥2mm, k≥8 N/mm); pre-load requires incoming F≥36N  
+**Engine Note**: spring+perfect: −42/1.50×/160ms; powerCost 90
+
+---
+
+### [Case 1398 — [COMBO] Break Blaster (K ↓ J)](./13%20case%20study.md#case-1398)
+
+**System**: Gen3-Burst / GT-System · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spring loaded: −28/×1.46/120ms; no spring: −18/×1.30/80ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 85 · Defense 20 · Stamina 55 · Speed 70  
+**Mechanism**: K (guard, spring pre-load) → ↓ (drop angle) → J (spring release blast). Spring+hit: −28, 1.46×, 120ms. No spring+hit: −18, 1.30×, 80ms. Miss: −10, 1.20×, 30ms. Cost 35, attack type.  
+**2.5D Rendering**: Guard stance → spring pop on J  
+**Gimmick**: comboDetect(seq=[defense,moveDown,attack], window=600ms); springState check  
+**Engine Note**: spring: −28/1.46×/120ms; no spring: −18/1.30×/80ms; cost 35; attack combo
+
+---
+
+### [Case 1399 — [GIMMICK] Saber Strike — Xcalius Sword Blade Lock-and-Thrust (Xander Shakadera · Xcalius Force Xtreme / Xeno Xcalius Magnum Impact)](./13%20case%20study.md#case-1399)
+
+**System**: Gen3-Burst / Burst-God · Attack  
+**Geometry**: r_sword = 1.9 cm · blade_width = 0.9 cm · r_disc = 2.1 cm · m = 43.5 g (XFX)  
+**Material**: Xcalius Layer: ABS sword geometry · Force disc: heavy ABS · Xtreme driver: rubber flat  
+**Spin Coupling**: rigid  
+**Contact Points**: F_smash = 56.8 N; lock multiplier 1.70×; J_total = 0.483 N·s [M]; P_lock = 3.55 MPa  
+**Movement Freedom**: Xtreme driver: μ=0.50; dω/dt = −142 rad/s²  
+**Base Stats**: Attack 100 · Defense 10 · Stamina 15 · Speed 90  
+**Mechanism**: Single asymmetric sword protrusion (r=19mm, width=9mm). At ω=600 rad/s: v=11.4 m/s, KE=1.62 J. Phase 1 smash (5ms): F=56.8 N. Phase 2 lock (15ms): hook catches opponent → J_add=0.199 N·s, lock mult=1.70×. Phase 3 thrust (2mm slide): delta_KE=0.040 J. Total J=0.483 N·s. I_total=9.0×10⁻⁶ kg·m² (XFX).  
+**2.5D Rendering**: z_cm = 1.5 · lock-hook flash; thrust trail  
+**Gimmick**: saberLockThrust(omega) → F_smash, lockMult, J_total  
+**Engine Note**: F_smash 56.8N; lockMult 1.70×; J_total 0.483 N·s; Xtreme dω/dt −142 rad/s²
+
+---
+
+### [Case 1400 — [SPECIAL] Saber Strike (Xander Shakadera · Xcalius Force Xtreme / Xeno Xcalius Magnum Impact)](./13%20case%20study.md#case-1400)
+
+**System**: Gen3-Burst / Burst-God · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full thrust perfect: −38/×1.48/150ms; partial (t=0.5): −25/×1.35/90ms; miss: −12/×1.22/30ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 100 · Defense 10 · Stamina 15 · Speed 90  
+**Mechanism**: BeySpirit: instant full-grip from first contact (no slip phase). t_BS=20ms, J_BS=1.136 N·s (4.0× standard). Thrust phase BS: F_thrust=59.7 N, Δx=4mm, ΔKE=0.239 J. Tap J (80ms) + hold J (300ms). powerCost 88. **Anime physics override**: instant lock engagement (no slip), extended thrust hold, opponent fully immobilised during thrust.  
+**2.5D Rendering**: Lock-and-thrust sequence; blade aura extending beyond physical  
+**Gimmick**: saberStrike(thrustMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Saber Strike · powerCost 88 · animeOverride true  
+**Compatible beys**: Single asymmetric sword layer extending to r≥1.7cm, hook geometry (protrusion height≥3mm, width≤1.2cm); rubber/mobile flat tip  
+**Engine Note**: full thrust: −38/1.48×/150ms; powerCost 88
+
+---
+
+### [Case 1401 — [COMBO] Sword Slash (↑ J ↓)](./13%20case%20study.md#case-1401)
+
+**System**: Gen3-Burst / Burst-God · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −26; dmgMult 1.44×; lockMs 95  
+**Movement Freedom**: —  
+**Base Stats**: Attack 95 · Defense 10 · Stamina 20 · Speed 85  
+**Mechanism**: ↑ (climb bowl wall, elevation) → J (lock strike from above) → ↓ (drive through downward). Hit: −26, 1.44×, 95ms. Miss: −10, 1.20×, 25ms. Cost 25, attack type.  
+**2.5D Rendering**: Elevated sword hook flash  
+**Gimmick**: comboDetect(seq=[moveUp,attack,moveDown], window=600ms)  
+**Engine Note**: −26/1.44×/95ms; cost 25; attack combo
+
+---
+
+### [Case 1402 — [GIMMICK] Flame Saber — Dranzer Aerial Spiral Descent Sharp-Tip Stomp (Kai Hiwatari · Dranzer F)](./13%20case%20study.md#case-1402)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.2 cm · h_launch = 0.5 m [M] · r_tip = 0.1 cm · m = 37.5 g  
+**Material**: Dranzer F AR: fire-wing ABS · Right EG · S tip  
+**Spin Coupling**: rigid  
+**Contact Points**: F = 238.8 N [M]; P = 76.0 MPa >> PC yield [M]; A_S = 3.14×10⁻⁶ m²  
+**Movement Freedom**: S tip: μ=0.06; dω/dt = −3.47 rad/s²  
+**Base Stats**: Attack 85 · Defense 10 · Stamina 45 · Speed 70  
+**Mechanism**: Right EG launches Dranzer vertically (ω_launch≈720 rad/s [M]). Precession: Ω_prec=1.23 rad/s → arc 22° in 0.32s descent from 0.5m. Landing: v_fall=3.13 m/s, ω_spin≈600 rad/s. Combined F=238.8 N [M], P=76 MPa >> PC yield (structural damage). I_total=6.4×10⁻⁶ kg·m².  
+**2.5D Rendering**: Aerial trajectory arc; spiral descent path; tip-stomp landing  
+**Gimmick**: flameSaberStomp(omega_launch, height) → F_impact, P_tip, landingOffset  
+**Engine Note**: F_impact 238.8N [M]; P 76MPa >> yield; spiral landing offset ~80mm [M]
+
+---
+
+### [Case 1403 — [SPECIAL] Flame Saber (Kai Hiwatari · Dranzer F)](./13%20case%20study.md#case-1403)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −35/×1.44/130ms; partial (r=0.5): −23/×1.32/80ms; miss: −14/×1.20/30ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 85 · Defense 10 · Stamina 40 · Speed 70  
+**Mechanism**: ↑ hold (350ms) + J tap at apex (200ms window). EG launches aerial; BeySpirit fire mantle 1800K [M] (physical ~400K). Fire pre-softens opponent AR. BeySpirit ×2: F_BS=477.6 N, J_BS=2.39 N·s [M]. powerCost 82. **Anime physics override**: instant S-tip deploy, fire mantle 1800K, targeted stomp precision.  
+**2.5D Rendering**: Aerial fire meteor trajectory; explosion on landing  
+**Gimmick**: flameSaber(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Flame Saber · powerCost 82 · animeOverride true  
+**Compatible beys**: Fire-element AR (swept-wing, r_outer≥1.8cm) + EG/TLEG achieving ω≥650 rad/s [M]; Sharp/S tip  
+**Engine Note**: full charge: −35/1.44×/130ms; powerCost 82
+
+---
+
+### [Case 1404 — [COMBO] Fire Dive (J ↑ J)](./13%20case%20study.md#case-1404)
+
+**System**: Gen1-Plastic / EGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −24; dmgMult 1.42×; lockMs 88  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 45 · Speed 70  
+**Mechanism**: J (floor-level AR swipe, first contact) → ↑ (EG propel skyward, fire AR trailing) → J (descend tip-first, Sharp impact on top surface). Hit: −24, 1.42×, 88ms. Miss: −8, 1.20×, 22ms. Cost 25, attack type.  
+**2.5D Rendering**: Double-hit sequence; aerial arc between Js  
+**Gimmick**: comboDetect(seq=[attack,moveUp,attack], window=600ms)  
+**Engine Note**: −24/1.42×/88ms; cost 25; attack combo
+
+---
+
+### [Case 1405 — [GIMMICK] Flame Gigs Turbo — Dranzer GT Dual-Stage EG Concentric Orbit Attack (Kai Hiwatari · Dranzer GT)](./13%20case%20study.md#case-1405)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.2 cm · r_in = 6.0 cm · r_out = 18.0 cm · m = 38.3 g  
+**Material**: Dranzer GT AR: fire-wing ABS · Engine Gear GT: dual-stage gear  
+**Spin Coupling**: rigid  
+**Contact Points**: Inner: v=13.7 m/s; Outer: v=14.0 m/s; F_smash≈38.6 N per pass; dual-pass J_total=0.386 N·s  
+**Movement Freedom**: EG GT: dual-stage burst (2 bursts per cycle, Δt=5.2ms between) · two orbit rings  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 40 · Speed 75  
+**Mechanism**: EG GT: 2 teeth 180° apart → 2 bursts per revolution (δt=5.2ms). First burst → inner orbit r_in=60mm; second → outer orbit r_out=180mm. Both AR contact speeds ≈14 m/s. Physical J_total=0.386 N·s [M]. BeySpirit elevates both trails to blue (2200K [M]), pre-softening opponent AR on inner pass. I_total=7.5×10⁻⁶ kg·m².  
+**2.5D Rendering**: Dual concentric ring trails; inner/outer orbit arcs  
+**Gimmick**: flameGigsTurbo(omega) → innerOrbit, outerOrbit, dualPassForce  
+**Engine Note**: 2 bursts/rev; inner v=13.7 m/s; outer v=14.0 m/s; BeySpirit blue-fire 2200K [M]
+
+---
+
+### [Case 1406 — [SPECIAL] Flame Gigs Turbo (Kai Hiwatari · Dranzer GT)](./13%20case%20study.md#case-1406)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: dual+perfect: −38/×1.46/140ms; dual+miss: −18/×1.28/50ms; single trail: −15/×1.22/40ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 40 · Speed 75  
+**Mechanism**: Hold J+K (350ms, both EG GT stages primed). BeySpirit simultaneously activates both stages, blue fire 2200K [M]. Dual pass: F_BS=57.9 N/pass × 2, J_total=0.579 N·s [M]. powerCost 88. **Anime physics override**: simultaneous dual-orbit coverage; blue flame temperature elevation; pre-weakened surface penetration on second pass.  
+**2.5D Rendering**: Dual blue-fire ring orbits; second-pass breakthrough  
+**Gimmick**: flameGigsTurbo(dualHeld, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Flame Gigs Turbo · powerCost 88 · animeOverride true  
+**Compatible beys**: EG base with ≥2 propulsion burst events/cycle (ω_motor≥150 rad/s [M]); fire-element AR r_outer≥1.8cm  
+**Engine Note**: dual+perfect: −38/1.46×/140ms; single: −15/1.22×; powerCost 88
+
+---
+
+### [Case 1407 — [COMBO] Twin Flame (J K J)](./13%20case%20study.md#case-1407)
+
+**System**: Gen1-Plastic / EGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −22; dmgMult 1.42×; lockMs 82  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 40 · Speed 75  
+**Mechanism**: J (inner orbit fire strike, r_in≈60mm) → K (EG GT reload, trail transitions inner→outer) → J (outer orbit fire strike r_out≈180mm). Hit: −22, 1.42×, 82ms. Miss: −8, 1.18×, 22ms. Cost 25, attack type.  
+**2.5D Rendering**: Inner then outer ring flash sequence  
+**Gimmick**: comboDetect(seq=[attack,defense,attack], window=600ms)  
+**Engine Note**: −22/1.42×/82ms; cost 25; attack combo
+
+---
+
+### [Case 1408 — [GIMMICK] Flame Claw — Sagittario C145 Passive-Fin Fire Tornado Tangential Strike (Kenta · Sagittario C145S)](./13%20case%20study.md#case-1408)
+
+**System**: Gen2-MFB / HWS · Stamina  
+**Geometry**: r_wheel = 1.8 cm · r_fin = 1.5 cm · m = 29.5 g · I = 5.0×10⁻⁶ kg·m²  
+**Material**: C145 fins: 3 passive-rotation on bearing race (slip ratio 0.54) · S tip: μ=0.06  
+**Spin Coupling**: fins: bearing-decoupled from track body  
+**Contact Points**: tangential: F_tan = 12.9 N; fin vortex: F_vortex = 8.4 mN physical; v_fin = 4.46 m/s  
+**Movement Freedom**: S tip: dω/dt = −3.47 rad/s² · fins centrifugally locked at ω≥200 rad/s  
+**Base Stats**: Attack 20 · Defense 10 · Stamina 100 · Speed 20  
+**Mechanism**: C145: 3 passive fins at r=15mm on bearing race. Slip ratio 0.54 → ω_fin=297 rad/s at ω_bey=550 rad/s. Tangential approach ≈25° off tangent: F_tan=12.9 N. Fin vortex F_vortex=8.4 mN (negligible physical, amplified BeySpirit). Spiral approach orbit. I_total=5.0×10⁻⁶ kg·m².  
+**2.5D Rendering**: Spiral orbit trail; fin blade-passing whir; fire tornado column above C145  
+**Gimmick**: flameClaw(omega_bey) → omega_fin, F_tan, F_vortex  
+**Engine Note**: slip ratio 0.54; F_tan 12.9N; vortex F 8.4mN physical; spiral approach
+
+---
+
+### [Case 1409 — [SPECIAL] Flame Claw (Kenta · Sagittario C145S)](./13%20case%20study.md#case-1409)
+
+**System**: Gen2-MFB / HWS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −22/×1.34/90ms; partial: −14/×1.23/55ms; miss: −5/×1.10/30ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 20 · Defense 10 · Stamina 95 · Speed 20  
+**Mechanism**: Hold J (300ms, C145 spin up, fire tornado). BeySpirit: fin ω → zero-slip (ω_fin_BS=550 rad/s [M]), v_fin_BS=8.25 m/s. Fire column 900K [M]; q_BS=40.8 Pa. Sustained spin drain. powerCost 75. **Anime physics override**: zero-slip co-rotation, fire tornado column height, acute spin shock in ~90ms.  
+**2.5D Rendering**: Fire tornado column above track; sustained drain aura  
+**Gimmick**: flameClaw(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Flame Claw · powerCost 75 · animeOverride true  
+**Compatible beys**: C145-type ≥3-fin passive-rotation track (r_fin≥1.2cm); fire element; S/DS tip  
+**Engine Note**: full charge: −22/1.34×/90ms; powerCost 75
+
+---
+
+### [Case 1410 — [COMBO] Claw Spiral (↑ J ←)](./13%20case%20study.md#case-1410)
+
+**System**: Gen2-MFB / HWS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −14; dmgMult 1.30×; lockMs 60  
+**Movement Freedom**: —  
+**Base Stats**: Attack 20 · Defense 10 · Stamina 95 · Speed 20  
+**Mechanism**: ↑ (outer orbit rise, fin tornado building from below) → J (tangential claw swipe from height) → ← (spiral exit, fire column over opponent). Hit: −14, 1.30×, 60ms. Miss: −5, 1.12×, 18ms. Cost 25, stamina type.  
+**2.5D Rendering**: Spiral exit trail; fire tornado after J  
+**Gimmick**: comboDetect(seq=[moveUp,attack,moveLeft], window=600ms)  
+**Engine Note**: −14/1.30×/60ms; cost 25; stamina combo
+
+---
+
+### [Case 1411 — [GIMMICK] Fire Execution — Dark Gargoyle Wing-Vortex Fire Tornado Ring-Out (Miguel · Dark Gargoyle)](./13%20case%20study.md#case-1411)
+
+**System**: Gen1-Plastic / SGS · Attack  
+**Geometry**: r_wing = 2.4 cm · c_wing = 1.2 cm · n_wings = 4 · m = 33.0 g · I = 7.1×10⁻⁶ kg·m²  
+**Material**: Dark Gargoyle AR: swept gargoyle-wing ABS · Right SG · standard base  
+**Spin Coupling**: rigid  
+**Contact Points**: Γ = 0.0864 m²/s [M]; v_ring = 0.88 m/s; r_ring = 2.4 cm; F_out_phys ≈ 0.07 N  
+**Movement Freedom**: standard base  
+**Base Stats**: Attack 55 · Defense 20 · Stamina 40 · Speed 55  
+**Mechanism**: 4 swept gargoyle wings at r=24mm. Γ=0.5×c_wing×CL×v_wing=0.0864 m²/s [M]. Toroidal vortex ring: r_ring=24mm, v_ring=0.88 m/s, expands ~10%/m. F_smash=35.5 N, P=2.37 MPa. Ring-out: vortex propagates to opponent. I_total=7.1×10⁻⁶ kg·m².  
+**2.5D Rendering**: Toroidal vortex ring propagation; wide-wing sweep trail  
+**Gimmick**: fireExecution(omega) → Gamma, v_ring, F_out  
+**Engine Note**: Γ 0.0864 m²/s [M]; v_ring 0.88 m/s; F_smash 35.5N; ring-out propagation range ~150mm
+
+---
+
+### [Case 1412 — [SPECIAL] Fire Execution (Miguel · Dark Gargoyle)](./13%20case%20study.md#case-1412)
+
+**System**: Gen1-Plastic / SGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −32/×1.45/120ms; partial: −20/×1.38/75ms; miss: −10/×1.15/35ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 55 · Defense 20 · Stamina 40 · Speed 55  
+**Mechanism**: Hold J (500ms) + tap K (150ms release). BeySpirit gargoyle demon manifests: Γ_BS=0.30 m²/s [M] (×3.5), v_ring_BS=2.9 m/s, F_out_BS=0.418 N, J_ring=0.125 N·s (> ring-out threshold). powerCost 90. **Anime physics override**: gargoyle wing materialisation, stadium-spanning vortex, sustained ring-out push ~418 mN.  
+**2.5D Rendering**: Gargoyle spirit materialisation; fire tornado stadium coverage; ring-out push  
+**Gimmick**: fireExecution(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Fire Execution · powerCost 90 · animeOverride true  
+**Compatible beys**: Wide-wing AR r≥2.2cm with fire element; r_ring≥2.0cm; passive-blade track supplements (not required)  
+**Engine Note**: full: −32/1.45×/120ms; powerCost 90
+
+---
+
+### [Case 1413 — [COMBO] Gargoyle Spin (← J →)](./13%20case%20study.md#case-1413)
+
+**System**: Gen1-Plastic / SGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −22; dmgMult 1.40×; lockMs 90  
+**Movement Freedom**: —  
+**Base Stats**: Attack 55 · Defense 20 · Stamina 40 · Speed 55  
+**Mechanism**: ← (spiral in, vortex building from left arc) → J (fire tornado release, rotational wing-strike) → → (exit right, opponent pushed outward by ring exit vortex). Hit: −22, 1.40×, 90ms. Miss: −10, 1.18×, 30ms. Cost 35, attack type.  
+**2.5D Rendering**: Vortex ring ejection on J; radial push exit  
+**Gimmick**: comboDetect(seq=[moveLeft,attack,moveRight], window=600ms)  
+**Engine Note**: −22/1.40×/90ms; cost 35; attack combo
+
+---
+
+### [Case 1414 — [GIMMICK] Fire Arrow — Dranzer S Fire-Coated Direct Charge Explosive Impact (Kai Hiwatari · Dranzer S)](./13%20case%20study.md#case-1414)
+
+**System**: Gen1-Plastic / SGS · Attack  
+**Geometry**: r_AR = 2.1 cm · m = 28.7 g · I = 4.4×10⁻⁶ kg·m²  
+**Material**: Dranzer S AR: swept-blade fire-phoenix ABS · S tip: μ=0.06  
+**Spin Coupling**: rigid  
+**Contact Points**: F = 31.4 N; P = 2.24 MPa (below yield); fire pre-heat A_eff = 16.1 mm² → P_mod = 1.95 MPa  
+**Movement Freedom**: S tip: dω/dt = −3.84 rad/s²  
+**Base Stats**: Attack 65 · Defense 10 · Stamina 60 · Speed 70  
+**Mechanism**: At ω=600 rad/s: v=12.6 m/s, KE=0.792 J, F=31.4 N, P=2.24 MPa. Fire coating pre-heats AR surface (physical ~400K approaches 420K softening). A_eff spreads to 16.1 mm². S tip retains spin through charge. I_total=4.4×10⁻⁶ kg·m².  
+**2.5D Rendering**: Fire-coated charge trail; direct arrow trajectory  
+**Gimmick**: fireArrow(omega) → F_smash, P_contact, A_effective  
+**Engine Note**: F 31.4N; P 2.24MPa; fire pre-heat A_eff 16.1mm²; dω/dt −3.84 rad/s²
+
+---
+
+### [Case 1415 — [SPECIAL] Fire Arrow (Kai Hiwatari · Dranzer S)](./13%20case%20study.md#case-1415)
+
+**System**: Gen1-Plastic / SGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −30/×1.42/110ms; partial: −20/×1.31/65ms; miss: −10/×1.18/25ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 65 · Defense 10 · Stamina 55 · Speed 70  
+**Mechanism**: Hold J (300ms). BeySpirit fire mantle 1800K [M] (physical ~400K). PC contact zone softened. F_BS=3×31.4=94.2 N [M]; J_explosion=0.05 N·s; J_total=0.427 N·s [M]. powerCost 75. **Anime physics override**: fire mantle 1800K fully softens contact zone; plasma burst at interface; Dranzer phoenix materialisation.  
+**2.5D Rendering**: Fire arrow trajectory; explosion fireball on contact  
+**Gimmick**: fireArrow(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Fire Arrow · powerCost 75 · animeOverride true  
+**Compatible beys**: Fire-element AR with swept-wing geometry (no lateral protrusions beyond r_AR); S/Sharp tip  
+**Engine Note**: full: −30/1.42×/110ms; powerCost 75
+
+---
+
+### [Case 1416 — [COMBO] Arrow Flash (→ J K)](./13%20case%20study.md#case-1416)
+
+**System**: Gen1-Plastic / SGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −16; dmgMult 1.34×; lockMs 60  
+**Movement Freedom**: —  
+**Base Stats**: Attack 60 · Defense 10 · Stamina 60 · Speed 70  
+**Mechanism**: → (charge rightward, build fire-coat) → J (fire smash at peak velocity) → K (recoil guard vs explosion backwash). Hit: −16, 1.34×, 60ms. Miss: −7, 1.16×, 15ms. Cost 15, attack type.  
+**2.5D Rendering**: Fire charge approach; recoil guard flash  
+**Gimmick**: comboDetect(seq=[moveRight,attack,defense], window=600ms)  
+**Engine Note**: −16/1.34×/60ms; cost 15; attack combo
+
+---
+
+### [Case 1417 — [GIMMICK] Final Wall — Lucius Endbringer Ring Limit Break Two-Layer Free-Spin Barrier (Lain Valhalla · Lucius Endbringer Kou Drift)](./13%20case%20study.md#case-1417)
+
+**System**: Gen4-Burst / Burst-DB · Defense/Stamina  
+**Geometry**: r_inner_ring = 2.0–2.6 cm · r_outer_ring = 2.6–3.3 cm · m = 48.5 g · I = 2.52×10⁻⁵ kg·m²  
+**Material**: Endbringer Ring: inner blade layer on bearing race (μ_bearing≈0.02); outer zigzag facets · Drift driver: metal ball bearing  
+**Spin Coupling**: inner layer: bearing-decoupled (LB active); outer: rigid pre-LB  
+**Contact Points**: first-contact deflect 48% [M]; steady-state 95% [M]; zigzag counter-return 41% of deflected; Drift dω/dt = −0.85 rad/s²  
+**Movement Freedom**: Drift tip: μ=0.015; near-zero drift; LB trigger: F≥45 N or 5–8 accumulated impacts [M]  
+**Base Stats**: Attack 10 · Defense 100 · Stamina 90 · Speed 15  
+**Mechanism**: Endbringer Ring: inner blade layer on bearing (μ=0.02). LB trigger: F≥45 N or 5–8 hits [M]. First contact: 48% deflect (spin-up transient). Steady-state: 95% deflect (match speed). Outer zigzag: 41% counter-return of deflected force. F_body=0.02×N (rigid: 0.40×N → 95% diverted). Drift: dω/dt=−0.85 rad/s². I_total=2.52×10⁻⁵ kg·m².  
+**2.5D Rendering**: Free-ring deflect; zigzag counter-arc; LB stage indicator  
+**Gimmick**: endbringerLimitBreak(stage) → deflectFraction, counterReturn  
+**Engine Note**: LB trigger F≥45 N [M]; first-contact 48%; steady-state 95%; zigzag 41%; Drift dω/dt −0.85 rad/s²
+
+---
+
+### [Case 1418 — [SPECIAL] Final Wall (Lain Valhalla · Lucius Endbringer Kou Drift)](./13%20case%20study.md#case-1418)
+
+**System**: Gen4-Burst / Burst-DB · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: LB+perfect: self +8/opp −30/×1.42/140ms; LB+miss: self +2/opp −10/×1.18/40ms; no LB+perfect: self +3/opp −12/×1.20/60ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 15 · Defense 100 · Stamina 85 · Speed 15  
+**Mechanism**: Hold K (500ms). BeySpirit: instant inner layer pre-spin (no transient). First contact → 95% deflect [M]. Zigzag counter: 0.41×0.95×F at opponent [M]. Energy barrier: 8mm exclusion zone [M], J_KB=0.054 N·s [M]. powerCost 85. **Anime physics override**: instant LB activation at any spin speed; spherical energy exclusion field; opponent knock-back before physical contact.  
+**2.5D Rendering**: Red BeySpirit sphere; 8mm exclusion field; counter-impulse arc  
+**Gimmick**: finalWall(limitBreakActive, qteHit) → spinDelta_self, spinDelta_opp, dmgMult, lockMs  
+**Special Move**: Final Wall · powerCost 85 · animeOverride true  
+**Compatible beys**: DB/BU-era Layer Ring with inner free-spinning blade layer on bearing (LB trigger mechanism)  
+**Engine Note**: LB+perfect: self +8/opp −30/1.42×/140ms; powerCost 85
+
+---
+
+### [Case 1419 — [COMBO] Barrier Crush (K ↑ K)](./13%20case%20study.md#case-1419)
+
+**System**: Gen4-Burst / Burst-DB · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta_self +5; spinDelta_opp −20; dmgMult 1.38×; lockMs 100  
+**Movement Freedom**: —  
+**Base Stats**: Attack 15 · Defense 100 · Stamina 85 · Speed 15  
+**Mechanism**: K (prime Endbringer free-spin deflect) → ↑ (Drift precession rise) → K (barrier slam descent, combined downward+lateral). Hit: self +5, opp −20, 1.38×, 100ms. Miss: self 0, opp −8, 1.16×, 30ms. Cost 25, defense type.  
+**2.5D Rendering**: Elevation then barrier slam arc  
+**Gimmick**: comboDetect(seq=[defense,moveUp,defense], window=600ms)  
+**Engine Note**: self +5; opp −20; 1.38×; 100ms; cost 25; defense combo
+
+---
+
+### [Case 1420 — [GIMMICK] Final Limit Breaker — Endbringer Ring Explosive Dual-Layer Separation Double Free-Spin (Lain Valhalla · Lucius Endbringer Kou Drift)](./13%20case%20study.md#case-1420)
+
+**System**: Gen4-Burst / Burst-DB · Defense  
+**Geometry**: r_inner = 2.0–2.6 cm · r_outer = 2.6–3.3 cm · m = 48.5 g · I = 2.52×10⁻⁵ kg·m²  
+**Material**: Both layers independently free-spin on bearings (μ≈0.02 each)  
+**Spin Coupling**: double-bearing isolation (both layers decoupled)  
+**Contact Points**: cascaded deflect: 96% [M]; double zigzag return: 0.41×0.96×F; kick impulse J_kick=0.098 N·s [M]  
+**Movement Freedom**: physical full-separation trigger: F≥80 N [M] (BeySpirit bypasses); v_sep_BS=3.5 m/s [M]  
+**Base Stats**: Attack 15 · Defense 100 · Stamina 85 · Speed 15  
+**Mechanism**: Both inner AND outer blade layers free-spin simultaneously. Cascaded: 1−(1−0.80)²=0.96 deflect [M]. Double zigzag counter: 0.41×0.96. Physical v_sep≈0.5 m/s, J_kick≈0.014 N·s; BeySpirit v_sep=3.5 m/s, J_kick=0.098 N·s [M]. Physical trigger F≥80 N [M].  
+**2.5D Rendering**: Dual-ring separation flash; 96% deflect shield  
+**Gimmick**: finalLimitBreaker(stage, qteHit) → spinDelta_self, spinDelta_opp, deflectFraction  
+**Engine Note**: 96% deflect [M]; J_kick 0.098 N·s [M]; BeySpirit v_sep 3.5 m/s [M]
+
+---
+
+### [Case 1421 — [SPECIAL] Final Limit Breaker (Lain Valhalla · Lucius Endbringer Kou Drift)](./13%20case%20study.md#case-1421)
+
+**System**: Gen4-Burst / Burst-DB · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: LB2+perfect: self +10/opp −38/×1.50/170ms deflect 0.96; LB1+perfect: self +5/opp −18/×1.30/80ms deflect 0.80; no LB+perfect: self +2/opp −8/×1.12/30ms deflect 0.20  
+**Movement Freedom**: —  
+**Base Stats**: Attack 15 · Defense 100 · Stamina 85 · Speed 15  
+**Mechanism**: Hold K (400ms). BeySpirit: both layers separate explosively (v_sep_BS=3.5 m/s [M]), simultaneously pre-spun to match ω. 96% deflect from first contact [M]. Double zigzag: 39% counter. J_kick=0.098 N·s [M]. powerCost 95. **Anime physics override**: instant dual-ring explosive separation; simultaneous pre-spin; spherical dual-ring BeySpirit energy field.  
+**2.5D Rendering**: Explosive dual-ring opening; dual BeySpirit field  
+**Gimmick**: finalLimitBreaker(limitBreakStage, qteHit) → spinDelta_self, spinDelta_opp, deflectFraction  
+**Special Move**: Final Limit Breaker · powerCost 95 · animeOverride true  
+**Compatible beys**: Two-layer LB Ring with both inner and outer on independent bearing races (r_outer≥2.5cm [M])  
+**Engine Note**: LB2+perfect: self +10/opp −38/1.50×/170ms/deflect 0.96; powerCost 95
+
+---
+
+### [Case 1422 — [COMBO] Limit Edge (K → J)](./13%20case%20study.md#case-1422)
+
+**System**: Gen4-Burst / Burst-DB · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta_self +4; spinDelta_opp −24; dmgMult 1.44×; lockMs 110; deflectFraction 0.75  
+**Movement Freedom**: —  
+**Base Stats**: Attack 15 · Defense 100 · Stamina 85 · Speed 15  
+**Mechanism**: K (prime both LB rings into free-spin) → → (yield right, opponent force absorbed by both spinning rings) → J (inter-layer gap counter-strike). Hit: self +4, opp −24, 1.44×, 110ms, deflect 0.75. Miss: self 0, opp −8, 1.18×, 30ms, deflect 0.15. Cost 35, defense type.  
+**2.5D Rendering**: Dual-layer absorption; inter-gap strike flash  
+**Gimmick**: comboDetect(seq=[defense,moveRight,attack], window=600ms)  
+**Engine Note**: self +4; opp −24; 1.44×; 110ms; deflect 0.75; cost 35; defense combo
+
+---
+
+### [Case 1423 — [GIMMICK] Inferno Blast — Flame Libra T125 Fin Blade Sonic Resonance Acoustic Draw-In (Yu Tendo · Flame Libra T125ES)](./13%20case%20study.md#case-1423)
+
+**System**: Gen2-MFB / HWS · Stamina  
+**Geometry**: r_wheel = 1.8 cm · r_fin = 1.4 cm · m = 32.8 g · I = 5.4×10⁻⁶ kg·m²  
+**Material**: T125: 4 upright passive fins at height 125mm · ES tip: sharp centre + bearing ring  
+**Spin Coupling**: fins passive (not driven)  
+**Contact Points**: f_bp = 382 Hz at ω=600 rad/s [M]; p = 92.4 Pa [M]; SPL = ~133 dB [M]; F_radiation = 0.060 N  
+**Movement Freedom**: ES: inner sharp (μ=0.06), near-zero drift; dω/dt = −3.57 rad/s²  
+**Base Stats**: Attack 5 · Defense 10 · Stamina 115 · Speed 10  
+**Mechanism**: T125: 4 fins at r=14mm, height 125mm. Blade-passing f_bp=382 Hz at ω=600 rad/s. Acoustic p=92.4 Pa [M], SPL≈133 dB [M]. F_radiation=0.060 N (sustained draw-in). Frequency tuning: yellow 382Hz/orange, green 480Hz, blue 600Hz (BeySpirit assist). ES stamina: dω/dt=−3.57 rad/s². I_total=5.4×10⁻⁶ kg·m².  
+**2.5D Rendering**: Fin blade-passing frequency colour indicator; acoustic draw-in pull  
+**Gimmick**: infernoBlast(omega) → f_bp, p_acoustic, F_radiation  
+**Engine Note**: f_bp 382Hz [M]; p 92.4Pa [M]; F_radiation 60mN; dω/dt −3.57 rad/s²
+
+---
+
+### [Case 1424 — [SPECIAL] Inferno Blast (Yu Tendo · Flame Libra T125ES)](./13%20case%20study.md#case-1424)
+
+**System**: Gen2-MFB / HWS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: blue/max: −32/×1.44/160ms; green: −24/×1.34/110ms; yellow: −18/×1.26/80ms; miss: −5/×1.10/20ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 5 · Defense 10 · Stamina 110 · Speed 10  
+**Mechanism**: Hold K (300ms resonance) + tap J (150ms release). BeySpirit ×20 [M]: yellow F_draw=1.20N, green 1.90N, blue 2.96N. Sustained draw-in over 0.5s pulls opponent 13–33mm closer [M]. powerCost 80. **Anime physics override**: BeySpirit resonance ×20; frequency-tuning capability mid-battle; structural effects at stadium scale.  
+**2.5D Rendering**: Acoustic beam colour gradient yellow→green→blue; draw-in funnel  
+**Gimmick**: infernoBlast(frequencyLevel, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Inferno Blast · powerCost 80 · animeOverride true  
+**Compatible beys**: ≥4-fin spin track (height≥100mm [M]); f_bp 300–600 Hz; ES/S tip  
+**Engine Note**: blue: −32/1.44×/160ms; powerCost 80; freq levels 1/2/3
+
+---
+
+### [Case 1425 — [COMBO] Sonic Draw (↓ K J)](./13%20case%20study.md#case-1425)
+
+**System**: Gen2-MFB / HWS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −16; dmgMult 1.28×; lockMs 70  
+**Movement Freedom**: —  
+**Base Stats**: Attack 5 · Defense 10 · Stamina 110 · Speed 10  
+**Mechanism**: ↓ (drop to bowl base, acoustic floor reflection doubles draw-in) → K (resonance lock, sustained frequency) → J (sonic smash, orbit inward into drawn opponent). Hit: −16, 1.28×, 70ms. Miss: −5, 1.10×, 20ms. Cost 25, stamina type.  
+**2.5D Rendering**: Floor-reflection acoustic funnel; draw-in orbit  
+**Gimmick**: comboDetect(seq=[moveDown,defense,attack], window=600ms)  
+**Engine Note**: −16/1.28×/70ms; cost 25; stamina combo
+
+---
+
+### [Case 1426 — [GIMMICK] Final Inferno Blast — Flame Libra Stadium Constructive Resonance Coherent Acoustic Beam (Yu Tendo · Flame Libra T125ES)](./13%20case%20study.md#case-1426)
+
+**System**: Gen2-MFB / HWS · Stamina  
+**Geometry**: r_fin = 1.4 cm · f_target = 672 Hz [M] · N_reflections = 8 [M] · P_amplified = 2280 Pa [M]  
+**Material**: Same as Case 1423  
+**Spin Coupling**: fins passive  
+**Contact Points**: P_amplified = 2280 Pa [M]; BeySpirit ×5: P_BS = 11400 Pa [M]; rock uplift: F=57 N >> weight 4.9 N [M]  
+**Movement Freedom**: ω_BS = 1056 rad/s [M] (beyond physical ES max ~750 rad/s)  
+**Base Stats**: Attack 5 · Defense 10 · Stamina 115 · Speed 10  
+**Mechanism**: Stadium resonance: f_0=672 Hz (bowl cavity), ω_required=1056 rad/s [M]. N=8 coherent reflections → P=2280 Pa [M], BeySpirit ×5 → 11400 Pa [M]. F_draw_BS=11.5 N at full resonance. Rock uplift: 57 N vs 4.9 N weight [M]. Requires BeySpirit spin boost to exceed physical ES ceiling.  
+**2.5D Rendering**: Stadium resonance column (green→white-blue); rock levitation; earth shaking  
+**Gimmick**: finalInfernoBlast(chargeMs) → f_bp_BS, P_amplified, F_draw  
+**Engine Note**: f_0 672Hz [M]; P_BS 11400Pa [M]; rock uplift 57N [M]; ω_BS 1056 rad/s [M] (BeySpirit only)
+
+---
+
+### [Case 1427 — [SPECIAL] Final Inferno Blast (Yu Tendo · Flame Libra T125ES)](./13%20case%20study.md#case-1427)
+
+**System**: Gen2-MFB / HWS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −48/×1.50/200ms; half: −33/×1.35/120ms; miss: −8/×1.18/30ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 5 · Defense 10 · Stamina 110 · Speed 10  
+**Mechanism**: Hold J+K (600ms) + release (100ms window). BeySpirit spin boost to ω_BS=1056 rad/s [M]. f_bp=672 Hz hits closed-bowl resonance. N=8 constructive: P=2280 Pa, ×5 BS = 11400 Pa [M]. F_draw_BS=11.5 N, opponent pulled ~5.75 N·s in 0.5s [M]. powerCost 100. **Anime physics override**: BeySpirit spin to 1056 rad/s (physical max ~750); stadium resonance locking; rock levitation at geological scale.  
+**2.5D Rendering**: Green/white energy column; rock levitation; stadium-shake  
+**Gimmick**: finalInfernoBlast(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Final Inferno Blast · powerCost 100 · animeOverride true  
+**Compatible beys**: T125-class ≥4-fin track + closed-bowl stadium type; ES/S tip  
+**Engine Note**: full: −48/1.50×/200ms; powerCost 100
+
+---
+
+### [Case 1428 — [COMBO] Inferno Pulse (J ↓ K)](./13%20case%20study.md#case-1428)
+
+**System**: Gen2-MFB / HWS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −20; dmgMult 1.32×; lockMs 85  
+**Movement Freedom**: —  
+**Base Stats**: Attack 5 · Defense 10 · Stamina 110 · Speed 10  
+**Mechanism**: J (T125 frequency spike, resonance pulse at opponent) → ↓ (ES tip couples to floor, acoustic energy into stadium surface) → K (sustain floor resonance, opponent spin disrupted by floor-transmitted vibration). Hit: −20, 1.32×, 85ms. Miss: −5, 1.10×, 20ms. Cost 25, stamina type.  
+**2.5D Rendering**: Floor-coupling vibration; frequency spike pulse  
+**Gimmick**: comboDetect(seq=[attack,moveDown,defense], window=600ms)  
+**Engine Note**: −20/1.32×/85ms; cost 25; stamina combo
+
+---
+
+### [Case 1429 — [GIMMICK] 2Bump Disc Ratchet Shift — Arc Balkesh Three-Position Detent Mechanism (Boa Alcazaba · Arc Balkesh 2Bump Atomic)](./13%20case%20study.md#case-1429)
+
+**System**: Gen3-Burst / GT-Rise · Defense/Stamina  
+**Geometry**: r_bump = 2.8 cm · r_layer = 3.7 cm · m = 54.0 g · I = 3.14×10⁻⁵ kg·m²  
+**Material**: Arc Balkesh Layer: ABS 3-lug detent track · 2Bump disc: raised bumps · Atomic tip: ball bearing  
+**Spin Coupling**: rigid (until 3rd shift)  
+**Contact Points**: e_disc pre-shield = 0.72 [M]; shift-3 = 0.85 [M]; τ_shift = 0.224 N·m; J_θ = 2.75×10⁻⁴ N·m·s  
+**Movement Freedom**: Atomic tip: μ=0.04; dω/dt = −1.35 rad/s²  
+**Base Stats**: Attack 15 · Defense 85 · Stamina 80 · Speed 15  
+**Mechanism**: 2Bump disc 2 bumps at r=28mm engage 3-lug track. Each significant hit → +1 detent (3 positions, 120°/shift). At shift 3: shield orientation (360° symmetric). τ_shift=0.224 N·m, J_θ=2.75×10⁻⁴ N·m·s (any normal hit exceeds). Atomic bearing: dω/dt=−1.35 rad/s². I_total=3.14×10⁻⁵ kg·m².  
+**2.5D Rendering**: Ratchet shift indicator (3 positions); shield-active glow at shift 3  
+**Gimmick**: ratchetShift(hitCount) → shiftCount, e_disc, shieldActive  
+**Engine Note**: τ_shift 0.224 N·m; 3 detent positions; shift-3: e_disc 0.85; Atomic dω/dt −1.35 rad/s²
+
+---
+
+### [Case 1430 — [SPECIAL] Final Guard (Boa Alcazaba · Arc Balkesh 2Bump Atomic)](./13%20case%20study.md#case-1430)
+
+**System**: Gen3-Burst / GT-Rise · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: 3-shift+low force+perfect: self +3/opp −35/×1.0/200ms/oppBurst true; 3-shift+high force: selfBurst  
+**Movement Freedom**: —  
+**Base Stats**: Attack 15 · Defense 90 · Stamina 75 · Speed 15  
+**Mechanism**: K (3 incoming hits, 200ms each). At shift 3: BeySpirit red shield. Low force (F≤75N [M]): e_BS=0.97 [M], near-perfect return, P_opp_burst=0.85 [M]. High force (>75N [M]): self burst. powerCost 90. **Anime physics override**: near-unity elasticity (e=0.97); opponent burst on return; threshold self-burst on heavy hit.  
+**2.5D Rendering**: Red BeySpirit shield at shift 3; burst-on-return effect  
+**Gimmick**: finalGuard(shiftCount, qteHit, opponentForceTier) → selfSpinDelta, oppSpinDelta, oppBurst, selfBurst  
+**Special Move**: Final Guard · powerCost 90 · animeOverride true  
+**Compatible beys**: Multi-position ratchet Energy Layer (3+ detents, r_bump≥2.5cm [M]); ball-bearing tip  
+**Engine Note**: shift3+low+perfect: opp −35/burst; shift3+high: selfBurst; powerCost 90
+
+---
+
+### [Case 1431 — [COMBO] Shield Slam (J ↑ K)](./13%20case%20study.md#case-1431)
+
+**System**: Gen3-Burst / GT-Rise · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta_self +2; spinDelta_opp −18; dmgMult 1.38×; lockMs 95  
+**Movement Freedom**: —  
+**Base Stats**: Attack 15 · Defense 85 · Stamina 75 · Speed 15  
+**Mechanism**: J (probe attack, first shift impulse via recoil) → ↑ (ride up bowl, bait pursuit) → K (plant at apex, brace raised layer vs pursuing opponent). Hit: self +2, opp −18, 1.38×, 95ms. Miss: self +1, opp −8, 1.10×, 25ms. Cost 15, defense type.  
+**2.5D Rendering**: Elevated brace flash on K  
+**Gimmick**: comboDetect(seq=[attack,moveUp,defense], window=600ms)  
+**Engine Note**: self +2; opp −18; 1.38×; 95ms; cost 15; defense combo
+
+---
+
+### [Case 1432 — [GIMMICK] Dread Phoenix 10 Friction Wall-Ricochet Skyrocket (Phi · Dread Phoenix 10 Friction)](./13%20case%20study.md#case-1432)
+
+**System**: Gen3-Burst / GT-System · Attack  
+**Geometry**: r_layer = 3.8 cm · r_disc = 3.3 cm · r_contact = 0.5 cm (rubber) · m = 58.0 g · I = 3.89×10⁻⁵ kg·m²  
+**Material**: Dread Phoenix Layer: ABS diagonal blade · 10 Forge Disc: heavy ABS · Friction tip: rubber μ=0.55  
+**Spin Coupling**: rigid  
+**Contact Points**: v_z_BS = 14.5 m/s [M]; h_apex = 10.7 m [M]; F_impact = 280 N [M]; τ_rub = 0.77 N·m [M]  
+**Movement Freedom**: Friction tip: μ=0.55; dω/dt = −40.2 rad/s²  
+**Base Stats**: Attack 100 · Defense 15 · Stamina 10 · Speed 85  
+**Mechanism**: Wall approach v_in=4.2 m/s [M], wall angle 35°, e=0.75. Physical: v_z=1.81 m/s, h=0.17m. BeySpirit ×8: v_z_BS=14.5 m/s, h=10.7 m [M]. Dive: F_impact=280 N [M], τ_rubber=0.77 N·m to opponent AR [M]. Friction tip torque-drain on landing. I_total=3.89×10⁻⁵ kg·m².  
+**2.5D Rendering**: Wall-ride → aerial arc → dive impact; rubber grip torque visual  
+**Gimmick**: wallRicochetSkyrocket(omega, v_in) → v_z, h_apex, F_impact  
+**Engine Note**: BeySpirit ×8 v_z [M]; h_apex 10.7m [M]; F_impact 280N [M]; Friction dω/dt −40.2 rad/s²
+
+---
+
+### [Case 1433 — [SPECIAL] Final Dread Impact (Phi · Dread Phoenix 10 Friction)](./13%20case%20study.md#case-1433)
+
+**System**: Gen3-Burst / GT-System · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: 3-phase+perfect: −45/×1.50/180ms; 2-phase: −28/×1.38/100ms; 0-phase: −8/×1.18/30ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 100 · Defense 15 · Stamina 10 · Speed 85  
+**Mechanism**: Phase 1: ↑ hold (400ms, wall charge). Phase 2: J (150ms, ricochet). Phase 3: J (200ms, dive impact). BeySpirit ×8 amplifies v_z to 14.5 m/s [M]. 3-phase perfect: −45, 1.50×, 180ms. powerCost 95. **Anime physics override**: wall exit 10.7m height (physically 0.37m); 280N dive force (PC fracture); rubber torque-drain τ=0.77 N·m.  
+**2.5D Rendering**: 3-phase QTE sequence; aerial skyrocket; dive explosion  
+**Gimmick**: finalDreadImpact(phasesCompleted, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Final Dread Impact · powerCost 95 · animeOverride true  
+**Compatible beys**: Diagonal-blade Layer (AR width≥2.0cm [M]) + rubber tip (μ≥0.5); bowl wall angle≥25°  
+**Engine Note**: 3-phase: −45/1.50×/180ms; powerCost 95
+
+---
+
+### [Case 1434 — [COMBO] Phoenix Dive (→ ↑ J)](./13%20case%20study.md#case-1434)
+
+**System**: Gen3-Burst / GT-System · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −26; dmgMult 1.42×; lockMs 110  
+**Movement Freedom**: —  
+**Base Stats**: Attack 95 · Defense 15 · Stamina 10 · Speed 85  
+**Mechanism**: → (lateral push toward bowl wall) → ↑ (ride up curved slope) → J (shallow slope-assisted dive strike from elevated position). Hit: −26, 1.42×, 110ms. Miss: −10, 1.22×, 35ms. Cost 25, attack type.  
+**2.5D Rendering**: Wall-ride arc; elevated position then dive  
+**Gimmick**: comboDetect(seq=[moveRight,moveUp,attack], window=600ms)  
+**Engine Note**: −26/1.42×/110ms; cost 25; attack combo
+
+---
+
+### [Case 1435 — [GIMMICK] Arc Balkesh 2Bump Shield-Active Slope Momentum (Boa Alcazaba · Arc Balkesh 2Bump Atomic)](./13%20case%20study.md#case-1435)
+
+**System**: Gen3-Burst / GT-Rise · Defense/Attack  
+**Geometry**: r_layer = 3.7 cm · m = 54.0 g · R_arc = 13.0 cm · θ_wall = 30°  
+**Material**: Same as Case 1429  
+**Spin Coupling**: rigid (shield active)  
+**Contact Points**: N_wall = 142.2 N [M]; v_slope = 9.42 m/s [M]; v_crash = 20.8 m/s [M]; F_crash = 374 N [M]  
+**Movement Freedom**: Atomic tip: μ=0.04; BeySpirit provides 12 N slope thrust [M]  
+**Base Stats**: Attack 50 · Defense 85 · Stamina 65 · Speed 50  
+**Mechanism**: Shield active (shift 3). BeySpirit slope thrust: F_BS=12 N, a=222 m/s², s=200mm → v_slope=9.42 m/s [M]. Combined with tangential orbit v_tan=18.5 m/s: v_crash=20.8 m/s [M], F_crash=374 N [M]. Spin drain opponent: Δω=66.5 rad/s [M]. Self-shield absorbs recoil.  
+**2.5D Rendering**: Wall-ride slope descent; crash vector arc; shield glow  
+**Gimmick**: slopeRide(shieldActive) → v_slope, v_crash, F_crash  
+**Engine Note**: BeySpirit thrust 12N [M]; v_crash 20.8 m/s [M]; F_crash 374N [M]; Δω_opp 66.5 rad/s [M]
+
+---
+
+### [Case 1436 — [SPECIAL] Final Crash (Boa Alcazaba · Arc Balkesh 2Bump Atomic)](./13%20case%20study.md#case-1436)
+
+**System**: Gen3-Burst / GT-Rise · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: 3-shift+perfect: −42/×1.48/175ms/ringOut 0.65; 3-shift+miss: −28/×1.38/110ms/ringOut 0.38; <3 shifts: −15/×1.24/55ms/ringOut 0.10  
+**Movement Freedom**: —  
+**Base Stats**: Attack 55 · Defense 85 · Stamina 60 · Speed 55  
+**Mechanism**: Phase 1: K ×3 (shifts, 300ms each). Phase 2: ↑ (mount bowl wall, 200ms). Phase 3: J (crash release, 150ms). Shield-on crash self-protects (no self-burst at 374N [M]). Primary win: ring-out. powerCost 95. **Anime physics override**: BeySpirit slope thrust 12N; shield-on self-protection at 374N; crash ring-out trajectory.  
+**2.5D Rendering**: 3-shift indicator; slope-crash arc; ring-out vector  
+**Gimmick**: finalCrash(shiftCount, qteHit) → spinDelta, dmgMult, lockMs, ringOutChance  
+**Special Move**: Final Crash · powerCost 95 · animeOverride true  
+**Compatible beys**: 3-position ratchet Layer (r_bump≥2.5cm [M]); ball-bearing tip; bowl wall angle≥20°  
+**Engine Note**: 3-shift+perfect: −42/1.48×/175ms/ringOut 0.65; powerCost 95
+
+---
+
+### [Case 1437 — [COMBO] Slope Charge (↑ K J)](./13%20case%20study.md#case-1437)
+
+**System**: Gen3-Burst / GT-Rise · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −20; dmgMult 1.36×; lockMs 85  
+**Movement Freedom**: —  
+**Base Stats**: Attack 45 · Defense 80 · Stamina 60 · Speed 50  
+**Mechanism**: ↑ (drive up bowl slope using orbital momentum) → K (brace layer at apex, keep against wall) → J (release down-slope smash as wall carries back into stadium). Hit: −20, 1.36×, 85ms. Miss: −8, 1.18×, 28ms. Cost 15, defense type.  
+**2.5D Rendering**: Wall-ride arc; slope-descent strike  
+**Gimmick**: comboDetect(seq=[moveUp,defense,attack], window=600ms)  
+**Engine Note**: −20/1.36×/85ms; cost 15; defense combo
+
+---
+
+### [Case 1438 — [GIMMICK] Shelter Regulus Lion Fang Protrusion Contact (Ren Wu Sun · Shelter Regulus 5Star Tower)](./13%20case%20study.md#case-1438)
+
+**System**: Gen3-Burst / Burst-Rise · Attack  
+**Geometry**: r_fang = 3.7 cm · A_fang = 6 mm² per tip · m = 55.0 g · I = 3.46×10⁻⁵ kg·m²  
+**Material**: Shelter Regulus Layer: ABS 4-lion-head fang protrusions · 5Star disc · Tower tip μ=0.08  
+**Spin Coupling**: rigid  
+**Contact Points**: F_impact = 249 N [M]; per-fang ≈ 62 N; P_fang ≈ 10.3 MPa (below PC yield)  
+**Movement Freedom**: Tower tip: dω/dt = −7.5 rad/s²; wide stance, stable centred orbit  
+**Base Stats**: Attack 85 · Defense 20 · Stamina 30 · Speed 70  
+**Mechanism**: 4 lion-fang protrusions at r=37mm, A=6mm² each. At ω=490 rad/s: v=18.1 m/s, KE=4.16 J, F_total=249 N [M], P=10.3 MPa (sub-yield). Tower tip: dω/dt=−7.5 rad/s². I_total=3.46×10⁻⁵ kg·m².  
+**2.5D Rendering**: 4-fang protrusion flash; lion-head contact points  
+**Gimmick**: lionFangContact(omega) → F_fang, P_fang  
+**Engine Note**: F_total 249N; P_fang 10.3MPa; Tower dω/dt −7.5 rad/s²
+
+---
+
+### [Case 1439 — [SPECIAL] Fang Attack (Ren Wu Sun · Shelter Regulus 5Star Tower)](./13%20case%20study.md#case-1439)
+
+**System**: Gen3-Burst / Burst-Rise · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −32/×1.44/130ms; partial: −24/×1.34/80ms; miss: −14/×1.26/40ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 85 · Defense 20 · Stamina 30 · Speed 70  
+**Mechanism**: Hold J (400ms) + release on lion roar. BeySpirit extends r_fang 37mm→44mm [M]. F_BS=3×(0.055×21.6/0.004)=891 N [M]. A_ext=4mm²/fang; P_BS≈62 MPa [M] → PC yield → layer scoring. powerCost 80. **Anime physics override**: BeySpirit fang extension to r=44mm (rigid physical boundary); ×3 force; PC yield surface scoring; Regulus lion materialisation.  
+**2.5D Rendering**: Fang extension aura to r=44mm; lion spirit flash  
+**Gimmick**: fangAttack(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Fang Attack · powerCost 80 · animeOverride true  
+**Compatible beys**: Layer with ≥2 symmetric fang/claw at r≥3.0cm [M], A_tip≤8mm²; no wide-blade distributed contact  
+**Engine Note**: full: −32/1.44×/130ms; powerCost 80
+
+---
+
+### [Case 1440 — [COMBO] Fang Rush (J → J)](./13%20case%20study.md#case-1440)
+
+**System**: Gen3-Burst / Burst-Rise · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −22; dmgMult 1.40×; lockMs 95  
+**Movement Freedom**: —  
+**Base Stats**: Attack 85 · Defense 20 · Stamina 30 · Speed 70  
+**Mechanism**: J (first fang strike from standing orbit) → → (orbit right, wider arc) → J (second fang from flanking position, orbital momentum increase). Hit: −22, 1.40×, 95ms. Miss: −10, 1.22×, 35ms. Cost 25, attack type.  
+**2.5D Rendering**: Two-point flanking rush; diagonal fang arcs  
+**Gimmick**: comboDetect(seq=[attack,moveRight,attack], window=600ms)  
+**Engine Note**: −22/1.40×/95ms; cost 25; attack combo
+
+---
+
+### [Case 1441 — [GIMMICK] Galaxy Pegasus W105R2F Wing-Tip Smash (Gingka Hagane · Galaxy Pegasus W105R2F)](./13%20case%20study.md#case-1441)
+
+**System**: Gen2-MFB / 4D-System · Attack  
+**Geometry**: r_wing = 3.0 cm · A_wing = 4 mm² per tip · m = 43.0 g · I = 1.62×10⁻⁵ kg·m²  
+**Material**: Galaxy Pegasus Metal Wheel: steel 30g (r_outer=30mm) · PC Frame · R2F tip rubber μ=0.62  
+**Spin Coupling**: rigid  
+**Contact Points**: F_wing = 177 N [M]; P = 22.3 MPa (below PC yield); 2 wing tips  
+**Movement Freedom**: R2F tip: μ=0.62; dω/dt = −113 rad/s²  
+**Base Stats**: Attack 95 · Defense 10 · Stamina 10 · Speed 100  
+**Mechanism**: Galaxy Pegasus Metal Wheel: 2 asymmetric wing-blade protrusions at r=30mm. At ω=550 rad/s: v=16.5 m/s, KE=2.45 J, F_wing=177 N [M], P=22.3 MPa. R2F rubber tip: dω/dt=−113 rad/s². I_total=1.62×10⁻⁵ kg·m².  
+**2.5D Rendering**: Wing-tip smash flash; high-speed orbit trail  
+**Gimmick**: wingTipSmash(omega) → v_wing, F_wing, P_wing  
+**Engine Note**: F_wing 177N; P 22.3MPa; R2F dω/dt −113 rad/s²
+
+---
+
+### [Case 1442 — [SPECIAL] Galaxy Nova (Gingka Hagane · Storm Pegasus 105RF / Galaxy Pegasus W105R2F)](./13%20case%20study.md#case-1442)
+
+**System**: Gen2-MFB / 4D-System · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −40/×1.50/160ms; partial: −29/×1.37/95ms; miss: −12/×1.24/40ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 100 · Defense 10 · Stamina 10 · Speed 100  
+**Mechanism**: ↑ hold (500ms orbital charge) + release on constellation flash (200ms). BeySpirit nova ×4 [M]: F_BS=708 N, P_BS=89.2 MPa >> PC yield → layer fracture/burst [M]. ΔKE_opp=2.83 J [M]. powerCost 90. **Anime physics override**: BeySpirit concentrates rotational+translational KE into wing-tip at ×4; 89.2 MPa vs yield ~60 MPa; stellar nova burst explosion.  
+**2.5D Rendering**: Constellation flash; nova point burst; stadium explosion effect  
+**Gimmick**: galaxyNova(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Galaxy Nova · powerCost 90 · animeOverride true  
+**Compatible beys**: Attack Metal Wheel ≥2 wing/blade at r≥2.5cm [M], A_tip≤6mm²; rubber tip μ≥0.55  
+**Engine Note**: full: −40/1.50×/160ms; powerCost 90
+
+---
+
+### [Case 1443 — [COMBO] Nova Strike (↑ → J)](./13%20case%20study.md#case-1443)
+
+**System**: Gen2-MFB / 4D-System · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −24; dmgMult 1.40×; lockMs 100  
+**Movement Freedom**: —  
+**Base Stats**: Attack 95 · Defense 10 · Stamina 10 · Speed 100  
+**Mechanism**: ↑ (build vertical orbit, elevation potential) → → (arc laterally right, elevation→orbital speed) → J (directed nova strike at peak approach). Hit: −24, 1.40×, 100ms. Miss: −10, 1.22×, 35ms. Cost 25, attack type.  
+**2.5D Rendering**: Diagonal high-speed arc; nova flash  
+**Gimmick**: comboDetect(seq=[moveUp,moveRight,attack], window=600ms)  
+**Engine Note**: −24/1.40×/100ms; cost 25; attack combo
+
+---
+
+### [Case 1444 — [GIMMICK] Dragoon G Left Engine Gear Vortex Air Column (Tyson Granger · Dragoon G)](./13%20case%20study.md#case-1444)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.2 cm · r_EG = 2.0 cm · m = 58.0 g · I = 1.22×10⁻⁵ kg·m²  
+**Material**: Dragoon G AR: swept-blade geometry · Left EG: spring-wound co-spin · Grip base μ=0.50  
+**Spin Coupling**: rigid  
+**Contact Points**: v_tip_EG = 39.5 m/s [M]; F_draw_phys = 2.18 N [M]; F_draw_BS = 173 N [M] (×8)  
+**Movement Freedom**: Grip base: μ=0.50; dω/dt = −93.2 rad/s²  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 25 · Speed 80  
+**Mechanism**: LEG: E_spring≈2.5 J [M], Δω_EG=1266 rad/s, ω_post=1796 rad/s [M]. v_tip=39.5 m/s [M]. Free-vortex air column: v(r)=v_tip×r_AR/r. F_draw_phys=2.18 N [M] (positions opponent). BeySpirit ×8: v_BS=316 m/s [M], F_draw_BS=173 N [M] (irresistible). I_total=1.22×10⁻⁵ kg·m².  
+**2.5D Rendering**: Vortex air column; draw-in pull arc; EG release flash  
+**Gimmick**: vortexAirColumn(omega) → v_tip_EG, F_draw, F_draw_BS  
+**Engine Note**: v_tip_EG 39.5 m/s [M]; F_draw_phys 2.18N [M]; BeySpirit ×8 → 173N [M]
+
+---
+
+### [Case 1445 — [SPECIAL] Galaxy Storm (Tyson Granger · Dragoon G)](./13%20case%20study.md#case-1445)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full perfect: −35/×1.44/150ms; partial: −25/×1.32/90ms; miss: −10/×1.22/35ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 25 · Speed 80  
+**Mechanism**: J (EG release, 150ms) → K (hold vortex 300ms) → J (draw-in strike 200ms). BeySpirit dragon wind ×8: v_storm=316 m/s [M], F_BS=173 N (opponent drawn in). Then AR smash at v_tip=39.5 m/s [M]. powerCost 85. **Anime physics override**: vortex ×8 to F3-tornado-speed; irresistible draw-in 173N; Dragoon wind spirit manifests.  
+**2.5D Rendering**: Galaxy vortex column; draw-in spiral; AR smash  
+**Gimmick**: galaxyStorm(vortexMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Galaxy Storm · powerCost 85 · animeOverride true  
+**Compatible beys**: Left-rotation co-spin EG (E_spring≥2.0 J [M]); AR with ≥60% arc-sweep blade geometry  
+**Engine Note**: full: −35/1.44×/150ms; powerCost 85
+
+---
+
+### [Case 1446 — [COMBO] Whirlwind Slash (J ↓ ←)](./13%20case%20study.md#case-1446)
+
+**System**: Gen1-Plastic / EGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −20; dmgMult 1.38×; lockMs 80  
+**Movement Freedom**: —  
+**Base Stats**: Attack 75 · Defense 10 · Stamina 25 · Speed 80  
+**Mechanism**: J (first claw-of-vortex strike, standing) → ↓ (drop, opponent pulled toward lower arc) → ← (swing CCW, second vortex-arc strike from low angle, spiral descent mimicry). Hit: −20, 1.38×, 80ms. Miss: −8, 1.20×, 28ms. Cost 25, attack type.  
+**2.5D Rendering**: Descending vortex spiral; dual-pass arc  
+**Gimmick**: comboDetect(seq=[attack,moveDown,moveLeft], window=600ms)  
+**Engine Note**: −20/1.38×/80ms; cost 25; attack combo
+
+---
+
+### [Case 1447 — [GIMMICK] Dragoon GT Turbo Left EG Dual-Vortex Interference (Tyson Granger · Dragoon GT)](./13%20case%20study.md#case-1447)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.2 cm · r_TLEG = 2.2 cm · m = 60.0 g · I = 1.33×10⁻⁵ kg·m²  
+**Material**: Dragoon GT AR: swept-blade · Turbo Left EG: E_spring≈3.5 J [M]  
+**Spin Coupling**: rigid  
+**Contact Points**: v_1 = 40.1 m/s [M]; v_2 (reflected) = 32.1 m/s [M]; v_max (constructive) = 72.2 m/s [M]; N_nodes = 4–6 [M]  
+**Movement Freedom**: Grip base: μ=0.50; dω/dt = −93 rad/s²  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 20 · Speed 85  
+**Mechanism**: TLEG: E=3.5 J [M], Δω=1283 rad/s, ω_T=1823 rad/s [M], v_tip=40.1 m/s [M]. Wall reflection e=0.80 → v_2=32.1 m/s [M]. Constructive interference: v_max=72.2 m/s [M], q_max=3191 Pa [M]. N_nodes≈4–6 around arena [M]. BeySpirit ×12: v_BS=866 m/s [M], q_BS≈460 kPa [M], F_node=1302 N/node [M].  
+**2.5D Rendering**: Dual vortex node interference pattern; Dragoon effigy projections at nodes  
+**Gimmick**: dualVortexInterference(omega) → v_primary, v_reflected, v_constructive, N_nodes  
+**Engine Note**: v_max 72.2 m/s [M]; N_nodes 4–6 [M]; BeySpirit ×12 → 866 m/s [M]
+
+---
+
+### [Case 1448 — [SPECIAL] Galaxy Turbo Twister (Tyson Granger · Dragoon GT)](./13%20case%20study.md#case-1448)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full perfect: −42/×1.50/170ms; partial: −29/×1.38/100ms; miss: −12/×1.26/40ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 20 · Speed 85  
+**Mechanism**: J (TLEG release, 150ms) → ↑ (sustain rotation 300ms, interference pattern builds) → J (release all nodes, 200ms). BeySpirit ×12 each node [M]: F_node_BS=1302 N [M]. Multi-target: primary full dmgMult; secondary/tertiary ×0.7 [M]. powerCost 95. **Anime physics override**: hypersonic vortex 866 m/s; simultaneous Dragoon effigy multi-target nodes; dual-orbit coverage.  
+**2.5D Rendering**: Multi-node Dragoon effigy; simultaneous multi-target strikes  
+**Gimmick**: galaxyTurboTwister(vortexPower, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Galaxy Turbo Twister · powerCost 95 · animeOverride true  
+**Compatible beys**: Turbo EG (E_spring≥3.0 J [M], left rotation); AR ≥70% arc sweep [M]  
+**Engine Note**: full: −42/1.50×/170ms; powerCost 95; multi-target ×0.7
+
+---
+
+### [Case 1449 — [COMBO] Turbo Spiral (← ↑ J)](./13%20case%20study.md#case-1449)
+
+**System**: Gen1-Plastic / EGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −22; dmgMult 1.40×; lockMs 95  
+**Movement Freedom**: —  
+**Base Stats**: Attack 75 · Defense 10 · Stamina 20 · Speed 85  
+**Mechanism**: ← (wind up CCW in LEG direction) → ↑ (climb bowl slope, build centrifugal energy) → J (release spinning descent strike from apex, single-vortex convergence). Hit: −22, 1.40×, 95ms. Miss: −10, 1.22×, 35ms. Cost 25, attack type.  
+**2.5D Rendering**: CCW wind-up arc; descent strike  
+**Gimmick**: comboDetect(seq=[moveLeft,moveUp,attack], window=600ms)  
+**Engine Note**: −22/1.40×/95ms; cost 25; attack combo
+
+---
+
+### [Case 1450 — [GIMMICK] Gatling Dragon Movable-Blade SHM to CHM Mode Switch (Dante Koryu · Gatling Dragon Metal Charge)](./13%20case%20study.md#case-1450)
+
+**System**: Gen4-Burst / BU-System · Attack  
+**Geometry**: r_blade_SHM = 4.0 cm · r_blade_CHM = 3.3 cm · m = 58.0 g · I = 3.93×10⁻⁵ kg·m²  
+**Material**: Gatling Dragon Blade: spring-pivot movable blades · Metal Charge Chassis: integral driver μ=0.12  
+**Spin Coupling**: rigid (SHM locked); spring-pivot (CHM transition)  
+**Contact Points**: F_SHM = 387 N [M]; P = 24.3 MPa; mode-switch: F_switch≥20 N [M]; CHM: 3 contacts/rev, F_CHM=191 N each  
+**Movement Freedom**: Metal Charge driver: μ=0.12; dω/dt = −6.9 rad/s²  
+**Base Stats**: Attack 100 · Defense 20 · Stamina 35 · Speed 80  
+**Mechanism**: Two spring-pivot blades at r=40mm (SHM)/33mm (CHM). SHM: dragon jaws closed, circular contact. CHM: blades pivot inward on F≥20N [M] → elliptical, 3 contacts/rev. F_SHM=387 N [M], P=24.3 MPa (sub-yield). CHM: F=191 N/contact, J_total_CHM=2.87 N·s/rev [M]. Spring reset on impulse decay. I_total=3.93×10⁻⁵ kg·m².  
+**2.5D Rendering**: Blade-pivot animation SHM↔CHM; mode indicator; 3-contact ellipse  
+**Gimmick**: bladeModeSwitchSHM_CHM(F_hit) → mode, F_contact, N_contacts  
+**Engine Note**: F_SHM 387N; P 24.3MPa; switch threshold 20N [M]; CHM 3×191N/rev [M]
+
+---
+
+### [Case 1451 — [SPECIAL] Gambit Break (Dante Koryu · Gatling Dragon Metal Charge)](./13%20case%20study.md#case-1451)
+
+**System**: Gen4-Burst / BU-System · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: SHM+perfect: −36/×1.48/155ms; CHM+perfect: −28/×1.38/110ms; SHM+miss: −18/×1.28/55ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 100 · Defense 20 · Stamina 35 · Speed 80  
+**Mechanism**: → (charge 300ms) + J (150ms window). BeySpirit ×2 speed [M]: ω_BS=1000 rad/s, v_BS=40.0 m/s, F_BS_SHM=773 N [M], P_BS=48.3 MPa (near-yield). Opponent recoil → CHM: F_CHM_BS=382 N/contact, 3 hits. powerCost 85. **Anime physics override**: BeySpirit doubles ω; 773N near-yield SHM; burst at full 60 MPa charge; spring-pivot mode switch is physical.  
+**2.5D Rendering**: Speed-up double-ω flash; SHM strike; CHM follow-up  
+**Gimmick**: gambitBreak(modeActive, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Gambit Break · powerCost 85 · animeOverride true  
+**Compatible beys**: Spring-pivot movable blade (r_extended≥3.5cm [M], F_switch≤25N [M]); heavy chassis ≥50g [M]  
+**Engine Note**: SHM+perfect: −36/1.48×/155ms; CHM+perfect: −28/1.38×; powerCost 85
+
+---
+
+### [Case 1452 — [COMBO] Dragon Blade Rush (→ J ↑)](./13%20case%20study.md#case-1452)
+
+**System**: Gen4-Burst / BU-System · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −22; dmgMult 1.40×; lockMs 90  
+**Movement Freedom**: —  
+**Base Stats**: Attack 95 · Defense 20 · Stamina 35 · Speed 80  
+**Mechanism**: → (orbit right, blade-face toward opponent) → J (SHM blade strike at contact) → ↑ (ride momentum up slope after hit, opponent cannot recover laterally). Hit: −22, 1.40×, 90ms. Miss: −10, 1.22×, 32ms. Cost 25, attack type.  
+**2.5D Rendering**: Blade strike; upward momentum follow-through  
+**Gimmick**: comboDetect(seq=[moveRight,attack,moveUp], window=600ms)  
+**Engine Note**: −22/1.40×/90ms; cost 25; attack combo
+
+---
+
+### [Case 1453 — [GIMMICK] Driger G Right Engine Gear Stroboscopic Clone Effect (Ray Kon · Driger G)](./13%20case%20study.md#case-1453)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.0 cm · m = 54.0 g · I = 1.01×10⁻⁵ kg·m²  
+**Material**: Driger G AR: 2 tiger-claw protrusions · Right EG: spring E≈2.0 J [M] · Grip base μ=0.50  
+**Spin Coupling**: rigid  
+**Contact Points**: f_rot = 264.5 Hz [M]; 2 claws × 13.2 positions/f_persist = 26 apparent positions → 5–6 clones [M]; J_hit = 1.79×10⁻⁴ N·s [M]  
+**Movement Freedom**: Grip base: dω/dt = −105 rad/s² (high, exhausts quickly)  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 20 · Speed 80  
+**Mechanism**: REG: E=2.0 J [M], Δω=1132 rad/s, ω_post=1662 rad/s [M], v_AR=33.2 m/s [M]. f_rot=264.5 Hz [M]. Eye persistence 50ms: 2×13.2=26 apparent positions → 5–6 perceived clones [M]. f_claw=529 Hz: ~159 micro-impacts in 300ms. J_hit=1.79×10⁻⁴ N·s each. I_total=1.01×10⁻⁵ kg·m².  
+**2.5D Rendering**: Stroboscopic 5-clone ghost images; high-frequency claw flash  
+**Gimmick**: stroboscopicClone(omega_post_EG) → f_rot, N_apparent_positions, N_clones  
+**Engine Note**: f_rot 264.5Hz [M]; 5–6 perceived clones [M]; f_claw 529Hz [M]; 159 hits/300ms [M]
+
+---
+
+### [Case 1454 — [SPECIAL] Gatling Claw (Ray Kon · Driger G)](./13%20case%20study.md#case-1454)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: 5 clones: −38/×1.48/160ms; 3 clones: −31/×1.40/120ms; miss: −10/×1.20/30ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 20 · Speed 80  
+**Mechanism**: J (EG release) → J (clone strike 300ms window). BeySpirit tiger spirit: energy clone at each of 5 stroboscopic positions, each ×4 force [M]: F_per_clone_BS=2388 N [M]; 5-clone total=11940 N [M] (multi-angle). powerCost 85. **Anime physics override**: Tiger spirit energy manifestation at each clone position; ×4 force amplification per clone; simultaneous multi-vector assault.  
+**2.5D Rendering**: 5 tiger-spirit energy clones; multi-angle assault  
+**Gimmick**: gatlingClaw(cloneHits, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Gatling Claw · powerCost 85 · animeOverride true  
+**Compatible beys**: Right-rotation co-spin EG (E≥1.8 J [M]); ≥2 claw/fang at r≥1.8cm [M]  
+**Engine Note**: 5 clones: −38/1.48×/160ms; powerCost 85
+
+---
+
+### [Case 1455 — [COMBO] Tiger Flash (J ← J)](./13%20case%20study.md#case-1455)
+
+**System**: Gen1-Plastic / EGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −22; dmgMult 1.40×; lockMs 85  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 20 · Speed 80  
+**Mechanism**: J (initial EG-boosted claw strike) → ← (swing CCW away, bleed EG spin) → J (return claw from opposite arc, two-point flanking). Hit: −22, 1.40×, 85ms. Miss: −9, 1.20×, 30ms. Cost 25, attack type.  
+**2.5D Rendering**: Two-point flanking claw arcs  
+**Gimmick**: comboDetect(seq=[attack,moveLeft,attack], window=600ms)  
+**Engine Note**: −22/1.40×/85ms; cost 25; attack combo
+
+---
+
+### [Case 1456 — [GIMMICK] Driger G Super-Charged Lightning Over-Rev (Ray Kon · Driger G)](./13%20case%20study.md#case-1456)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.0 cm · m = 54.0 g · I = 1.01×10⁻⁵ kg·m² · ω_super = 2510 rad/s [M]  
+**Material**: Same as Case 1453  
+**Spin Coupling**: rigid  
+**Contact Points**: v_super = 50.2 m/s [M]; F_per_strike = 903 N [M]; P = 113 MPa >> PC yield [M] → catastrophic burst  
+**Movement Freedom**: Grip base dω/dt = −105 rad/s² (sustained at ω_super for ~18.9s)  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 20 · Speed 80  
+**Mechanism**: BeySpirit over-rev ×1.51 above EG ceiling [M]: ω_super=2510 rad/s [M]. f_super=399.5 Hz [M] >> critical flicker 50 Hz → continuous green blur (imperceptible speed [M]). Eye persistence: 2×(399.5×0.050)=39.9 → blur not clones. F_strike=903 N [M], P=113 MPa >> yield → catastrophic. KE_super=31.8 J [M] (7.2× EG peak).  
+**2.5D Rendering**: Continuous green energy disc (no discrete positions); imperceptible-speed effect  
+**Gimmick**: overRevLightning(omega_super) → f_super, F_strike, P_contact  
+**Engine Note**: ω_super 2510 rad/s [M]; f 399.5Hz [M]; F 903N [M]; P 113MPa [M]; KE 31.8J [M]
+
+---
+
+### [Case 1457 — [SPECIAL] Gatling Claw Maximum (Ray Kon · Driger G)](./13%20case%20study.md#case-1457)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full charge perfect: −44/×1.50/175ms; partial: −32/×1.38/108ms; miss: −14/×1.28/45ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 20 · Speed 80  
+**Mechanism**: Hold K (500ms BeySpirit charge) + release (150ms flash). ω_super=2510 rad/s [M], green disc blur. F=903 N [M], P=113 MPa >> yield → burst on contact. powerCost 95. **Anime physics override**: BeySpirit provides ~18J above EG ceiling (physical max ~4.4 J at ω_post_EG); continuous omnidirectional contact pressure; imperceptible speed (399.5 Hz).  
+**2.5D Rendering**: Green disc over-rev; continuous contact pressure field  
+**Gimmick**: gatlingClawMaximum(chargeMs, qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Gatling Claw Maximum · powerCost 95 · animeOverride true  
+**Compatible beys**: Right EG + ≥2 claws; BeySpirit ≥80% [M]; ω_super requires +300 rad/s above EG ceiling  
+**Engine Note**: full: −44/1.50×/175ms; powerCost 95
+
+---
+
+### [Case 1458 — [COMBO] Claw Maximum Rush (K J ←)](./13%20case%20study.md#case-1458)
+
+**System**: Gen1-Plastic / EGS · Combo  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: spinDelta −30; dmgMult 1.46×; lockMs 130  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 15 · Stamina 20 · Speed 80  
+**Mechanism**: K (gather BeySpirit, coil before strike) → J (amplified charged claw hit, not full over-rev) → ← (bleed CCW, reposition). Hit: −30, 1.46×, 130ms. Miss: −12, 1.26×, 40ms. Cost 35, attack type.  
+**2.5D Rendering**: Charge posture; enhanced claw hit; CCW reposition  
+**Gimmick**: comboDetect(seq=[defense,attack,moveLeft], window=600ms)  
+**Engine Note**: −30/1.46×/130ms; cost 35; attack combo
+
+---
+
+### [Case 1459 — [GIMMICK] Driger G Multi-Pass Translational Rush Mechanics (Ray Kon · Driger G, manga)](./13%20case%20study.md#case-1459)
+
+**System**: Gen1-Plastic / EGS · Attack  
+**Geometry**: r_AR = 2.0 cm · v_approach = 4.5 m/s [M] · N_passes = 5 [M] · pass_interval = 63 ms [M]  
+**Material**: Same as Case 1453 (EG held in reserve)  
+**Spin Coupling**: rigid  
+**Contact Points**: v_contact = 15.1 m/s [M]; F_pass = 204 N [M]; J_total = 4.08 N·s [M]; J_total_BS = 7.72 N·s [M]  
+**Movement Freedom**: Grip base translational: v_orb≈2.0 m/s CoM; orbital pass interval ~63ms  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 25 · Speed 85  
+**Mechanism**: Manga variant: 5 rapid orbital passes (no EG release during attack). v_contact=10.6+4.5=15.1 m/s [M], F_pass=204 N [M]. Pass interval ~63ms. J_total=4.08 N·s [M]. BeySpirit ×4 approach: v_approach_BS=18.0 m/s [M], F_pass_BS=386 N [M], J_total_BS=7.72 N·s [M].  
+**2.5D Rendering**: 5 rapid pass arcs; cumulative impulse accumulation  
+**Gimmick**: multiPassRush(N_passes, v_approach) → J_total, J_total_BS  
+**Engine Note**: N_passes 5 [M]; pass_interval 63ms [M]; J_total 4.08 N·s [M]; BS J_total 7.72 N·s [M]
+
+---
+
+### [Case 1460 — [SPECIAL] Gatling Fang (Ray Kon · Driger G, manga)](./13%20case%20study.md#case-1460)
+
+**System**: Gen1-Plastic / EGS · Special Move  
+**Geometry**: —  
+**Material**: —  
+**Spin Coupling**: —  
+**Contact Points**: full perfect: −38/×1.46/155ms; partial: −26/×1.36/100ms; miss: −10/×1.22/35ms  
+**Movement Freedom**: —  
+**Base Stats**: Attack 80 · Defense 10 · Stamina 25 · Speed 85  
+**Mechanism**: → (charge 200ms) + J (trigger 5-pass burst, 150ms window). BeySpirit ×4 approach [M]: F_pass_BS=386 N [M], J_total_BS=7.72 N·s [M]. powerCost 85. **Anime physics override**: BeySpirit ×4 approach speed; 5-pass cumulative J >7N·s against any opponent.  
+**2.5D Rendering**: 5 rapid sequential pass arcs; cumulative momentum trail  
+**Gimmick**: gatlingFang(qteHit) → spinDelta, dmgMult, lockMs  
+**Special Move**: Gatling Fang (manga) · powerCost 85 · animeOverride true  
+**Compatible beys**: ≥2 claws/fangs at r≥1.5cm [M]; rubber/grip tip v_orb≥3.5 m/s [M]; no EG required  
+**Engine Note**: full: −38/1.46×/155ms; powerCost 85
+
+---
+
+### [Case 1461 — [COMBO] Fang Barrage (J → K)](./13%20case%20study.md#case-1461)
+
+**System**: Gen1-Plastic / EGS · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: secondPassHit: −18/1.38×/75ms; miss: −8/1.18×/25ms
+**Movement Freedom**: —
+**Base Stats**: Attack 80 · Defense 10 · Stamina 25 · Speed 85
+**Mechanism**: J (first pass) → → (close gap) → K (second-pass guard-strike). Second pass hit: −18, 1.38×, 75ms. Miss: −8, 1.18×, 25ms. Cost 25, attack type.
+**2.5D Rendering**: Double-arc pass flash on K
+**Gimmick**: comboDetect(seq=[attack,moveRight,defense], window=600ms)
+**Engine Note**: secondPassHit: −18/1.38×/75ms; miss: −8/1.18×/25ms; cost 25; attack combo
+
+---
+
+### [Case 1462 — [GIMMICK] SP230 Ultra-Tall Spin Track Precession Geometry (Kira Hayama · Gladiator Bahamut SP230GF)](./13%20case%20study.md#case-1462)
+
+**System**: Gen2-MFB / Zero-G Chrome Wheel · Stamina/Defense
+**Geometry**: r = 3.90 cm · m = 47.0 g · I = 4.103×10⁻⁵ kg·m² · ω₀ = 550 rad/s · h_SP230 = 2.30 cm · h_105 = 1.05 cm
+**Material**: Chrome Wheel Bahamut + GF tip (μ=0.65, r=0.5 cm)
+**Spin Coupling**: SP230 height ratio 2.19× over 105 track; COM d_SP230 = 3.1 cm vs d_105 = 1.85 cm
+**Contact Points**: GF tip: τ_f = 1.498×10⁻³ N·m; t_spin = 15.1 s; P_floor = 0.824 W
+**Movement Freedom**: Elevated SP230 shifts CoM 1.68× higher — precession Ω_SP230 = 0.994 rad/s vs 0.594 for 105
+**Base Stats**: Attack 20 · Defense 65 · Stamina 70 · Speed 25
+**Mechanism**: I_total = 4.103e-5 kg·m²; L₀ = 2.257e-2 kg·m²/s. SP230 raises COM by 31mm vs 18.5mm → precession rate 67% higher (Ω = τ/L, τ proportional to d_COM). GF tip μ=0.65 locks pivot-anchor at high ω. Precession frequency 0.994 rad/s = 0.158 Hz (one full precession orbit per 6.3 s).
+**2.5D Rendering**: Elevated SP230 silhouette; slow precession orbit arc
+**Gimmick**: sp230Precession(ω, I, COM_height) → Ω_prec, stability
+**Engine Note**: h_SP230 2.30 cm; I 4.103e-5; Ω_prec 0.994 rad/s; t_spin 15.1 s (GF tip)
+
+---
+
+### [Case 1463 — [SPECIAL] Gladiator Demolition (Kira Hayama · Gladiator Bahamut SP230GF)](./13%20case%20study.md#case-1463)
+
+**System**: Gen2-MFB / Zero-G Chrome Wheel · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: centred+perfect: −53→capped/1.50×/200ms; centred+miss: −42/1.45×/200ms; not centred+miss: −12/1.22×/50ms
+**Movement Freedom**: —
+**Base Stats**: Attack 25 · Defense 70 · Stamina 65 · Speed 25
+**Mechanism**: → hold (400ms) + J (200ms). centred+perfect: −53/1.50×/200ms; centred+miss: −42/1.45×/200ms; not centred: −12/1.22×/50ms. powerCost 90. BeySpirit ×10: F_BS = 3.00 N, A_BS = 11.6 mm [M]. **Anime physics override**: SP230 elevated COM magnifies torque arm ×10 via BeySpirit.
+**2.5D Rendering**: SP230 elevated crash; tower-drop impulse arc
+**Gimmick**: gladiatorDemolition(centred, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Gladiator Demolition · powerCost 90 · animeOverride true
+**Compatible beys**: Chrome Wheel ≥25 g at r≥2.8 cm + SP230 + GF tip [M]
+**Engine Note**: centred+perfect: −53/1.50×/200ms; powerCost 90
+
+---
+
+### [Case 1464 — [COMBO] Arena Crack (→ → K)](./13%20case%20study.md#case-1464)
+
+**System**: Gen2-MFB / Zero-G Chrome Wheel · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: centred: −16/1.38×/80ms; not: −8/1.18×/30ms
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 65 · Stamina 70 · Speed 25
+**Mechanism**: → → (approach) → K (brace + crash). Centred: −16, 1.38×, 80ms. Not centred: −8, 1.18×, 30ms. Cost 25, balanced type.
+**2.5D Rendering**: Double-forward rush then guard-crash flash
+**Gimmick**: comboDetect(seq=[moveRight,moveRight,defense], window=600ms)
+**Engine Note**: centred: −16/1.38×/80ms; not: −8/1.18×/30ms; cost 25; balanced combo
+
+---
+
+### [Case 1465 — [GIMMICK] Synchrome Dual-Chrome-Wheel Mass Stacking SP230R2F (Kira Hayama · Pegasus Bahamoote)](./13%20case%20study.md#case-1465)
+
+**System**: Gen2-MFB / Zero-G Synchrome · Stamina/Attack
+**Geometry**: r_outer = 3.30 cm · m_synchrome = 72.0 g · I_synchrome = 7.039×10⁻⁵ kg·m² · ω₀ = 480 rad/s
+**Material**: CW Bahamut (inner, m=33 g, r=3.1 cm) + CW Pegasus (outer, m=28 g, r=3.3 cm) + WW+SFB (I=8.214×10⁻⁶)
+**Spin Coupling**: L₀ = 3.379×10⁻² kg·m²/s (Synchrome combined L = 2× single-CW values)
+**Contact Points**: R2F tip: r=7 mm, μ=0.62, τ_f = 3.062×10⁻³ N·m; t_spin = 11.0 s; P_floor = 1.470 W (+78% vs single-CW GF)
+**Movement Freedom**: Outer CW Pegasus at r=33 mm adds 36% more I than single CW; dual-BitBeast BeySpirit available
+**Base Stats**: Attack 35 · Defense 50 · Stamina 55 · Speed 40
+**Mechanism**: I_B = 3.169e-5, I_P = 3.049e-5; I_synchrome = 7.039e-5. R2F vs GF: P_floor 1.470 W vs 0.824 W. Dual-BitBeast Pegasus+Bahamut synchrome bond amplifies output [M].
+**2.5D Rendering**: Dual Chrome Wheel silhouette; synchrome mass-stack visible in cross-section
+**Gimmick**: synchromeStack(I_B, I_P, I_WW) → I_total, L₀, P_floor
+**Engine Note**: I_synchrome 7.039e-5; L₀ 3.379e-2; P_floor 1.470 W (R2F tip)
+
+---
+
+### [Case 1466 — [SPECIAL] Final Ultimate Demolition (Kira Hayama)](./13%20case%20study.md#case-1466)
+
+**System**: Gen2-MFB / Zero-G Synchrome · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: synchromeBonus+perfect: −70→capped/1.50×/220ms; no synchrome+perfect: −48/1.50×/220ms; sync+miss: −22/1.50×/60ms
+**Movement Freedom**: —
+**Base Stats**: Attack 40 · Defense 45 · Stamina 50 · Speed 40
+**Mechanism**: → (400ms park) → → (200ms) + J (300ms dual BitBeast release). synchromeBonus+perfect: capped 1.50×/220ms; no synchrome+perfect: −48/1.50×/220ms; sync+miss: −22/1.50×/60ms. powerCost 100. BeySpirit dual-BitBeast ×2: A_floor = 33.9 mm [M] (3× ABS structural failure). **Anime physics override**: dual BitBeast force exceeds all material limits.
+**2.5D Rendering**: Dual BitBeast release aura; twin-wave impact arc
+**Gimmick**: finalUltimateDemolition(synchrome, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Final Ultimate Demolition · powerCost 100 · animeOverride true
+**Compatible beys**: Synchrome I≥6.0×10⁻⁵ [M] + SP230 [M]
+**Engine Note**: synchromeBonus+perfect: capped/1.50×/220ms; powerCost 100
+
+---
+
+### [Case 1467 — [COMBO] Sync Shatter (→ → J)](./13%20case%20study.md#case-1467)
+
+**System**: Gen2-MFB / Zero-G Synchrome · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: synchromeActive: −20/1.42×/90ms; not: −10/1.20×/35ms
+**Movement Freedom**: —
+**Base Stats**: Attack 35 · Defense 50 · Stamina 55 · Speed 40
+**Mechanism**: → → (dual-mass approach) + J (shatter). synchromeActive: −20, 1.42×, 90ms. Not: −10, 1.20×, 35ms. Cost 25, attack type.
+**2.5D Rendering**: Dual-CW mass approach trail; shatter burst
+**Gimmick**: comboDetect(seq=[moveRight,moveRight,attack], window=600ms)
+**Engine Note**: synchromeActive: −20/1.42×/90ms; not: −10/1.20×/35ms; cost 25; attack combo
+
+---
+
+### [Case 1468 — [GIMMICK] Genesis Special Dual-Blade Alignment Burst Force (Valt Aoi · Strike Valtryek 6Vortex Reboot)](./13%20case%20study.md#case-1468)
+
+**System**: Gen3-Burst / Surge·SuperKing · Attack
+**Geometry**: r = ~3.0 cm · m = 53.0 g · I = 3.842×10⁻⁵ kg·m² · ω₀ = 680 rad/s
+**Material**: Genesis Special aligned dual protrusions at r≥2.8 cm; EL blade type
+**Spin Coupling**: L₀ = 2.613×10⁻² kg·m²/s; single blade F = 32.9 N, dual aligned F = 65.9 N
+**Contact Points**: Dual aligned: τ_burst = 2.109 N·m [M] (4× standard threshold → near-certain burst). BeySpirit ×5: F_BS = 329 N [M], τ_BS = 10.53 N·m [M]
+**Movement Freedom**: —
+**Base Stats**: Attack 90 · Defense 20 · Stamina 30 · Speed 80
+**Mechanism**: I = 3.842e-5, ω₀ = 680, L₀ = 2.613e-2. Single blade: F = m_eff × v² = 32.9 N [M], τ_burst = 1.053 N·m [M]. Dual aligned: F_double = 65.9 N [M], τ = 2.109 N·m [M] → 4× standard burst threshold. BeySpirit ×5 amplification to full storm [M].
+**2.5D Rendering**: Dual blade protrusion flash; burst-probability indicator surge
+**Gimmick**: genesisAlignment(dual, ω) → F_double, τ_burst
+**Engine Note**: single τ 1.053 N·m [M]; dual τ 2.109 N·m [M]; ω₀ 680 rad/s
+
+---
+
+### [Case 1469 — [SPECIAL] Genesis Whip / God Slash (Valt Aoi · Strike Valtryek 6Vortex Reboot)](./13%20case%20study.md#case-1469)
+
+**System**: Gen3-Burst / Surge·SuperKing · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: dualAligned+perfect: capped/1.50×/208ms; not dual+perfect: −30/1.44×/130ms; miss: −10/1.20×/40ms
+**Movement Freedom**: —
+**Base Stats**: Attack 90 · Defense 20 · Stamina 30 · Speed 80
+**Mechanism**: J (250ms) + ← (150ms). dualAligned+perfect: capped/1.50×/208ms; not dual+perfect: −30/1.44×/130ms; miss: −10/1.20×/40ms. powerCost 80. **Anime physics override**: Genesis Special dual EL blade alignment: τ_burst 4× standard → near-certain burst on any opponent.
+**2.5D Rendering**: Dual-blade whip arc; burst-flash on contact
+**Gimmick**: genesisWhip(dual, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Genesis Whip / God Slash · powerCost 80 · animeOverride true
+**Compatible beys**: Genesis Special aligned EL blade protrusions r≥2.8 cm [M]
+**Engine Note**: dualAligned+perfect: capped/1.50×/208ms; powerCost 80
+
+---
+
+### [Case 1470 — [COMBO] Whip Cross (J ← J)](./13%20case%20study.md#case-1470)
+
+**System**: Gen3-Burst / Surge·SuperKing · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: secondAligned: −22/1.42×/100ms; not: −10/1.22×/40ms
+**Movement Freedom**: —
+**Base Stats**: Attack 90 · Defense 20 · Stamina 30 · Speed 80
+**Mechanism**: J (first hit) → ← (flank) → J (second aligned hit). secondAligned: −22, 1.42×, 100ms. Not: −10, 1.22×, 40ms. Cost 25, attack type.
+**2.5D Rendering**: Two-hit arc; second flash on second J
+**Gimmick**: comboDetect(seq=[attack,moveLeft,attack], window=600ms)
+**Engine Note**: secondAligned: −22/1.42×/100ms; not: −10/1.22×/40ms; cost 25; attack combo
+
+---
+
+### [Case 1471 — [GIMMICK] Reboot Driver Spring-Retract Tip-Speed Burst (Valt Aoi · Genesis Valtryek 6Vortex Reboot)](./13%20case%20study.md#case-1471)
+
+**System**: Gen3-Burst / Surge · Stamina/Attack
+**Geometry**: r_tip_ext = 0.55 cm (extended) → r_tip_ret = 0.20 cm (retracted); k_spring = 80 N/m; x_max = 4 mm
+**Material**: EL spring; rubber retract/extend mechanism
+**Spin Coupling**: Mechanism 1: tip retraction reduces friction 63.6%. Mechanism 2: EL spring PE = 6.40×10⁻⁴ J; Δv = 0.505 m/s physical
+**Contact Points**: BeySpirit t_r = 8 s → Δω = +95.0 rad/s [M]; k_BS = 800 N/m → Δv_BS = 1.60 m/s [M]
+**Movement Freedom**: Stability: θ_max_ret = 1.43° (retracted, 2.75× smaller tilt tolerance vs extended 3.93°)
+**Base Stats**: Attack 70 · Defense 35 · Stamina 55 · Speed 70
+**Mechanism**: Retraction at t_r=2s (physical): +23.7 rad/s spin boost from friction reduction alone. BeySpirit extends retract to t_r=8s → +95.0 rad/s [M]. EL spring k=80 N/m: PE=6.40e-4J, Δv=0.505 m/s physical. Stability trade-off: retracted tip = 2.75× narrower tilt tolerance.
+**2.5D Rendering**: Tip-retract animation (shrink at r_tip); spring-glow on extend
+**Gimmick**: rebootRetract(t_r, k_spring) → Δω_spin, Δv_spring
+**Engine Note**: Δω_physical +23.7 rad/s; Δω_BS +95.0 rad/s [M]; Δv_spring 0.505 m/s physical / 1.60 m/s [M]
+
+---
+
+### [Case 1472 — [SPECIAL] Genesis Reboot / God Reboot (Valt Aoi)](./13%20case%20study.md#case-1472)
+
+**System**: Gen3-Burst / Surge · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: spring+dodge+perfect: capped/1.50×/120ms; no spring+dodge+perfect: −28/1.40×/120ms; dodge failed: +25 self spinloss/0.80×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 70 · Defense 35 · Stamina 55 · Speed 70
+**Mechanism**: K (absorb 200ms) + ← (Reboot evasion 300ms) + J (spring counter 200ms). spring+dodge+perfect: capped/1.50×/120ms; no spring+dodge+perfect: −28/1.40×/120ms; dodge failed: +25 self spinloss/0.80×/0ms. powerCost 75. **Anime physics override**: Reboot tip spring mechanism fires counter with BeySpirit-amplified Δv = 1.60 m/s [M].
+**2.5D Rendering**: Evasion arc; spring-release counter flash
+**Gimmick**: genesisReboot(springCharged, dodgeSuccess, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Genesis Reboot / God Reboot · powerCost 75 · animeOverride true
+**Compatible beys**: Reboot / Ultimate Reboot Performance Tip
+**Engine Note**: spring+dodge+perfect: capped/1.50×/120ms; powerCost 75
+
+---
+
+### [Case 1473 — [COMBO] Reboot Rush (K → J)](./13%20case%20study.md#case-1473)
+
+**System**: Gen3-Burst / Surge · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: springCharged: −18/1.38×/80ms; not: −8/1.18×/30ms
+**Movement Freedom**: —
+**Base Stats**: Attack 70 · Defense 35 · Stamina 55 · Speed 70
+**Mechanism**: K (absorb/spring-charge) → → (approach) → J (spring discharge). springCharged: −18, 1.38×, 80ms. Not: −8, 1.18×, 30ms. Cost 25, balanced type.
+**2.5D Rendering**: Spring-charge glow on K; release flash on J
+**Gimmick**: comboDetect(seq=[defense,moveRight,attack], window=600ms)
+**Engine Note**: springCharged: −18/1.38×/80ms; not: −8/1.18×/30ms; cost 25; balanced combo
+
+---
+
+### [Case 1474 — [GIMMICK] Tip-Lock Dual-Bey Angular Momentum Coupling (Julia+Raul · Thunder Pegasus + Torch Pegasus)](./13%20case%20study.md#case-1474)
+
+**System**: Gen2-MFB / Metal Masters · Cooperative
+**Geometry**: m₁ = m₂ = 33 g · I₁ = I₂ = 2.350×10⁻⁵ kg·m² · ω₁ = 520 rad/s · ω₂ = 505 rad/s
+**Material**: Two co-spinning Thunder+Torch Pegasus assemblies; rubber tips μ≥0.60 [M]; FW≥20 g each [M]
+**Spin Coupling**: ω_common = 512.3 rad/s [M]; I_combined = 4.706×10⁻⁵; L_combined = 2.411×10⁻² kg·m²/s
+**Contact Points**: Heavy cutter drop h=30 mm [M]: F_grav = 25.3 N, F_rot = 401.9 N, F_total = 427.2 N [M]. BeySpirit ×5: F_BS = 2136 N [M]
+**Movement Freedom**: Tip-Lock binds both beys at common ω via frictional coupling [M]
+**Base Stats**: Attack 75 · Defense 20 · Stamina 35 · Speed 75
+**Mechanism**: Thunder: I₁ = 2.350e-5, ω₁ = 520. Torch: I₂ = 2.350e-5, ω₂ = 505. ω_common = 512.3 rad/s [M] via angular momentum coupling. Combined I = 4.706e-5, L = 2.411e-2. BeySpirit ×5: F_BS = 2136 N [M].
+**2.5D Rendering**: Twin-bey tip-lock animation; combined rotation circle
+**Gimmick**: tipLock(I1, ω1, I2, ω2) → ω_common, L_combined
+**Engine Note**: ω_common 512.3 rad/s [M]; L_combined 2.411e-2; F_cutter 427.2 N [M]
+
+---
+
+### [Case 1475 — [SPECIAL] Gemini Crash (Julia+Raul Fernandez)](./13%20case%20study.md#case-1475)
+
+**System**: Gen2-MFB / Metal Masters · Special Move (Cooperative)
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: bothLaunched+tipLocked+perfect: −50/1.50×/200ms; tipLocked no perfect: −35/1.38×/80ms; not tipLocked: −20/1.28×/50ms; single bey: −10/1.18×/25ms
+**Movement Freedom**: —
+**Base Stats**: Attack 75 · Defense 20 · Stamina 35 · Speed 75
+**Mechanism**: J₁+J₂ (within 100ms) → ← (converge 400ms) → J (cutter drop 200ms). powerCost 100 (50 each). Two-player cooperative. bothLaunched+tipLocked+perfect: −50/1.50×/200ms. **Anime physics override**: BeySpirit ×5 tip-lock amplification; F_total = 427.2 N → 2136 N [M].
+**2.5D Rendering**: Dual-bey converge; cutter-drop impact flash
+**Gimmick**: geminiCrash(tipLocked, bothLaunched, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Gemini Crash · powerCost 100 (50 each) · animeOverride true
+**Compatible beys**: Two co-spinning same-direction beys, rubber tips μ≥0.60 [M], FW≥20 g each [M]
+**Engine Note**: bothLaunched+tipLocked+perfect: −50/1.50×/200ms; powerCost 100
+
+---
+
+### [Case 1476 — [COMBO] Twin Strike (J → ←)](./13%20case%20study.md#case-1476)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: bothArmed: −20/1.40×/90ms; not: −10/1.20×/35ms
+**Movement Freedom**: —
+**Base Stats**: Attack 75 · Defense 20 · Stamina 35 · Speed 75
+**Mechanism**: J (first bey strike) → → (gap close) → ← (second bey cross-strike). bothArmed: −20, 1.40×, 90ms. Not: −10, 1.20×, 35ms. Cost 25, attack type.
+**2.5D Rendering**: Cross-pattern dual-arc on ←
+**Gimmick**: comboDetect(seq=[attack,moveRight,moveLeft], window=600ms)
+**Engine Note**: bothArmed: −20/1.40×/90ms; not: −10/1.20×/35ms; cost 25; attack combo
+
+---
+
+### [Case 1477 — [GIMMICK] Proof Frame Floor-Grinding Tilt-Recovery Drift Boost (Free De La Hoya · Geist Fafnir 8'Proof Absorb)](./13%20case%20study.md#case-1477)
+
+**System**: Gen3-Burst / Cho-Z·GT · Stamina
+**Geometry**: r_frame = ~3.5 cm · θ_tilt = 15° · ω = 400 rad/s
+**Material**: Wide outer disc frame r≥3.5 cm; Absorb or translational tip
+**Spin Coupling**: Frame spin drain 3.45× faster than tip (τ_frame = 1.548×10⁻³ vs τ_tip = 4.49×10⁻⁴ N·m)
+**Contact Points**: BeySpirit ×5: a_BS = 3.81 m/s² [M]; Δv = 3.81 m/s [M] over 1.5 s. Physical: F_drive = 0.0387 N, a = 0.760 m/s², Δv = 1.14 m/s [M]
+**Movement Freedom**: Frame floor contact when tilted: v_frame = 16.0 m/s, drift boost enables Geist Counter Phase 2
+**Base Stats**: Attack 15 · Defense 25 · Stamina 95 · Speed 50
+**Mechanism**: θ=15°, ω=400 rad/s: F_N_frame = 0.1290 N, F_drive = 0.0387 N, v_frame = 16.0 m/s, a_drift = 0.760 m/s², Δv over 1.5 s = 1.14 m/s [M]. Frame drain 3.45× tip drain. BeySpirit ×5: a_BS = 3.81 m/s², Δv = 3.81 m/s [M]. DISTINCT from Case 624 (Absorb Break).
+**2.5D Rendering**: Frame ground-contact spark trail at tilt angle; drift speed boost indicator
+**Gimmick**: proofFrameDrift(θ_tilt, ω, t_grind) → F_drive, a_drift, Δv
+**Engine Note**: θ 15°; F_drive 0.0387 N; a_drift 0.760 m/s² physical / 3.81 m/s² [M]; τ_frame 1.548e-3 N·m
+
+---
+
+### [Case 1478 — [SPECIAL] Geist Counter (Free De La Hoya)](./13%20case%20study.md#case-1478)
+
+**System**: Gen3-Burst / Cho-Z·GT · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: absorbed+driftComplete+perfect: +10→self→capped/1.50×/126ms; drift only: −5/1.38×/90ms; miss: no effect
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 30 · Stamina 90 · Speed 50
+**Mechanism**: K (absorb 200ms) → → → (drift arc 400ms) → J (counter 200ms). 3-phase. absorbed+driftComplete+perfect: +10 self/capped/1.50×/126ms. powerCost 70. **Anime physics override**: Proof Frame floor-grind drift converts incoming momentum to counter impulse; frame v=16.0 m/s → counter strike.
+**2.5D Rendering**: Absorb-fade; drift arc trail; counter burst
+**Gimmick**: geistCounter(absorbed, driftComplete, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Geist Counter · powerCost 70 · animeOverride true
+**Compatible beys**: Wide outer disc frame r≥3.5 cm [M] with floor-contact tilt; Absorb or translational tip
+**Engine Note**: absorbed+driftComplete+perfect: +10 self/capped/1.50×/126ms; powerCost 70
+
+---
+
+### [Case 1479 — [COMBO] Counter Drift (K ← J)](./13%20case%20study.md#case-1479)
+
+**System**: Gen3-Burst / Cho-Z·GT · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: absorbHit: +5/1.38×/80ms; not: −8/1.18×/30ms
+**Movement Freedom**: —
+**Base Stats**: Attack 15 · Defense 25 · Stamina 95 · Speed 50
+**Mechanism**: K (absorb) → ← (drift flank) → J (counter). absorbHit: self +5, opp 1.38×, 80ms. Not: −8, 1.18×, 30ms. Cost 25, balanced type.
+**2.5D Rendering**: Absorb-to-drift arc; counter flash on J
+**Gimmick**: comboDetect(seq=[defense,moveLeft,attack], window=600ms)
+**Engine Note**: absorbHit: +5/1.38×/80ms; not: −8/1.18×/30ms; cost 25; balanced combo
+
+---
+
+### [Case 1480 — [GIMMICK] Geist Fafnir Rubber Blade Retraction Circular-Profile Vortex (Free De La Hoya)](./13%20case%20study.md#case-1480)
+
+**System**: Gen3-Burst / Cho-Z·GT · Stamina
+**Geometry**: Extended C_D = 1.20; retracted C_D = 0.50; 83.6% drag reduction on retract
+**Material**: Rubber blades BeySpirit-extendable; smooth circular retracted profile
+**Spin Coupling**: Physical ω_trans = 185 rad/s (blades retract) — below battle window. BeySpirit extends blades in battle [M]
+**Contact Points**: Free-vortex: v_θ(50mm) = 3.87 m/s [M]; F_vortex = 0.025 N [M]; BeySpirit ×5: F_BS = 0.625 N [M]
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 20 · Stamina 100 · Speed 45
+**Mechanism**: Extended blades: C_D=1.20 (high drag). Retracted: C_D=0.50 (83.6% drag reduction). Physical ω_trans=185 rad/s; BeySpirit extends blades in battle window [M]. Free-vortex at 50mm: v_θ=3.87 m/s [M]. BeySpirit ×5: F_BS=0.625 N [M].
+**2.5D Rendering**: Blade extend/retract animation; vortex swirl field indicator
+**Gimmick**: fafnirRetract(bladeExtended, ω) → C_D, v_vortex
+**Engine Note**: C_D_ext 1.20; C_D_ret 0.50; v_θ(50mm) 3.87 m/s [M]; F_BS 0.625 N [M]
+
+---
+
+### [Case 1481 — [SPECIAL] Geist Spin (Free De La Hoya)](./13%20case%20study.md#case-1481)
+
+**System**: Gen3-Burst / Cho-Z·GT · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: spinCharged+perfect: +27→capped/1.50×/150ms; not charged+perfect: +18/1.38×/100ms; miss: −5/1.15×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 20 · Stamina 100 · Speed 45
+**Mechanism**: K×3 (600ms absorb) + J (200ms tornado). Phase 1: BeySpirit-extended blade absorb (3 contacts → ΔKE=1.050 J [M], Δω=241.5 rad/s [M]). Phase 2: retraction tornado (v_θ_BS=4.84 m/s [M], F_BS=1.40 N [M]). spinCharged+perfect: +27/capped/1.50×/150ms. powerCost 75. **Anime physics override**: rubber blade extension+retraction vortex: BeySpirit sustains blade extension and amplifies tornado force.
+**2.5D Rendering**: Three-absorb charge; vortex burst on J
+**Gimmick**: geistSpin(spinCharged, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Geist Spin · powerCost 75 · animeOverride true
+**Compatible beys**: Burst bey with rubber blades BeySpirit-extendable + smooth circular retracted profile
+**Engine Note**: spinCharged+perfect: +27/capped/1.50×/150ms; powerCost 75
+
+---
+
+### [Case 1482 — [COMBO] Vortex Drain (K J ←)](./13%20case%20study.md#case-1482)
+
+**System**: Gen3-Burst / Cho-Z·GT · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: absorbContact: +12/1.35×/70ms; not: −5/1.15×/25ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 20 · Stamina 100 · Speed 45
+**Mechanism**: K (absorb) → J (drain burst) → ← (vortex flank). absorbContact: self +12, dmg 1.35×, 70ms. Not: −5, 1.15×, 25ms. Cost 25, stamina type.
+**2.5D Rendering**: Absorb-to-drain burst; vortex direction flash
+**Gimmick**: comboDetect(seq=[defense,attack,moveLeft], window=600ms)
+**Engine Note**: absorbContact: +12/1.35×/70ms; not: −5/1.15×/25ms; cost 25; stamina combo
+
+---
+
+### [Case 1483 — [GIMMICK] Guilty Blade Dragon-Wing Uppercut Contact Geometry (Lui Shirosagi · Guilty Luinor Karma Metal Destroy-2)](./13%20case%20study.md#case-1483)
+
+**System**: Gen3-Burst / Cho-Z · Attack
+**Geometry**: θ_up = 30° · r_blade = ~3.8 cm · m_eff = 3.062×10⁻² kg · ω = 420 rad/s [M]
+**Material**: Karma Disc + Guilty Blade metal dragon wing; sub-layer upward-curvature approach
+**Spin Coupling**: v_blade = 18.48 m/s [M]; F_contact = 282.5 N [M]; F_lift = 141.3 N [M]; v_launch = 5.65 m/s [M]
+**Contact Points**: BeySpirit ω×2: F_contact_BS = 565 N [M]; F_lift_BS = 282.5 N [M]; v_launch_BS = 11.3 m/s [M]. Extends Cases 587–590.
+**Movement Freedom**: Low approach angle triggers sub-layer contact; lowApproach flag required for full force
+**Base Stats**: Attack 100 · Defense 15 · Stamina 20 · Speed 90
+**Mechanism**: θ_up=30°, ω=420 rad/s [M]: v_blade=18.48 m/s, m_eff=3.062e-2 kg, F_contact=282.5 N [M], F_lift=141.3 N [M], F_spin=244.6 N [M], v_launch=5.65 m/s [M]. BeySpirit ω×2: F_contact_BS=565 N [M]. Extends Cases 587–590.
+**2.5D Rendering**: Dragon-wing blade arc; uppercut launch trajectory
+**Gimmick**: guiltyBlade(θ_up, ω, lowApproach) → F_contact, F_lift, v_launch
+**Engine Note**: θ_up 30°; F_contact 282.5 N [M]; F_lift 141.3 N [M]; v_launch 5.65 m/s [M]
+
+---
+
+### [Case 1484 — [SPECIAL] Guilty Upper (Lui Shirosagi)](./13%20case%20study.md#case-1484)
+
+**System**: Gen3-Burst / Cho-Z · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: lowApproach+perfect: −50/1.50×/200ms; lowApproach+miss: −28/1.38×/80ms; no lowApproach: −20/1.30×/80ms
+**Movement Freedom**: —
+**Base Stats**: Attack 100 · Defense 15 · Stamina 20 · Speed 90
+**Mechanism**: ↓ (low approach 300ms) + J (150ms window). lowApproach+perfect: −50/1.50×/200ms; lowApproach+miss: −28/1.38×/80ms; no lowApproach: −20/1.30×/80ms. powerCost 90. **Anime physics override**: Guilty Blade sub-layer uppercut: F_lift=141.3 N [M]; v_launch_BS=11.3 m/s [M].
+**2.5D Rendering**: Low-approach arrow; uppercut launch flash
+**Gimmick**: guiltyUpper(lowApproach, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Guilty Upper · powerCost 90 · animeOverride true
+**Compatible beys**: Guilty Blade r≥3.8 cm [M] with sub-layer upward-curvature approach
+**Engine Note**: lowApproach+perfect: −50/1.50×/200ms; powerCost 90
+
+---
+
+### [Case 1485 — [COMBO] Upper Slash (↓ → J)](./13%20case%20study.md#case-1485)
+
+**System**: Gen3-Burst / Cho-Z · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: lowAngle: −22/1.42×/95ms; not: −10/1.20×/35ms
+**Movement Freedom**: —
+**Base Stats**: Attack 100 · Defense 15 · Stamina 20 · Speed 90
+**Mechanism**: ↓ (low dip) → → (angle approach) → J (uppercut strike). lowAngle: −22, 1.42×, 95ms. Not: −10, 1.20×, 35ms. Cost 25, attack type.
+**2.5D Rendering**: Low-dip arc; diagonal approach; uppercut burst on J
+**Gimmick**: comboDetect(seq=[moveDown,moveRight,attack], window=600ms)
+**Engine Note**: lowAngle: −22/1.42×/95ms; not: −10/1.20×/35ms; cost 25; attack combo
+
+---
+
+### [Case 1486 — [GIMMICK] Karma Disc Gyroscopic Launch Impulse and Aerial Dive KE (Lui Shirosagi)](./13%20case%20study.md#case-1486)
+
+**System**: Gen3-Burst / Cho-Z · Attack
+**Geometry**: I_Karma = 2.545×10⁻⁵ (51.9% of total) · L = 2.058×10⁻² N·m·s at ω=420 rad/s [M]
+**Material**: Karma Disc + Guilty Blade metal dragon
+**Spin Coupling**: BeySpirit Ω_tilt = 80 rad/s [M]: F_gyro_BS = 1.646 N [M] (2.12×mg); h_jump = 10 m [M]
+**Contact Points**: v_dive_BS = 14.01 m/s [M]. At ω_land=350 rad/s: F_total_BS = 1025.1 N [M]; τ_burst = 45.1 N·m [M] (90× standard → guaranteed burst)
+**Movement Freedom**: —
+**Base Stats**: Attack 100 · Defense 15 · Stamina 20 · Speed 90
+**Mechanism**: I_Karma=2.545e-5 (51.9% total). L=2.058e-2 at ω=420 [M]. F_gyro_BS=1.646 N [M] (2.12×mg). h_jump=10m [M] (physical 0.5m). v_dive_BS=14.01 m/s [M]. F_total_BS=1025.1 N [M], τ_burst=45.1 N·m [M] (90× standard).
+**2.5D Rendering**: Launch charge → aerial jump → dive arc; burst-ring on impact
+**Gimmick**: karmaLaunch(ω, Ω_tilt, h) → F_gyro, v_dive, τ_burst
+**Engine Note**: I_Karma 2.545e-5 (51.9%); F_gyro_BS 1.646 N [M]; τ_burst 45.1 N·m [M]
+
+---
+
+### [Case 1487 — [SPECIAL] Guilty Smash (Lui Shirosagi)](./13%20case%20study.md#case-1487)
+
+**System**: Gen3-Burst / Cho-Z · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: launchCharged+perfect: −50/1.50×/220ms; launchCharged+miss: −30/1.38×/90ms; not charged: −18/1.28×/70ms
+**Movement Freedom**: —
+**Base Stats**: Attack 100 · Defense 15 · Stamina 20 · Speed 90
+**Mechanism**: ↑ (charge 300ms) + J (dive 200ms). launchCharged+perfect: −50/1.50×/220ms; launchCharged+miss: −30/1.38×/90ms; not charged: −18/1.28×/70ms. powerCost 95. **Anime physics override**: Karma Disc gyro-launch: h_jump=10m [M]; τ_burst=45.1 N·m [M] (90× standard threshold).
+**2.5D Rendering**: Charge arc → aerial peak → dive impact
+**Gimmick**: guiltySmash(launchCharged, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Guilty Smash · powerCost 95 · animeOverride true
+**Compatible beys**: Karma Disc I_disc≥2.0×10⁻⁵ [M] + Guilty Blade metal dragon
+**Engine Note**: launchCharged+perfect: −50/1.50×/220ms; powerCost 95
+
+---
+
+### [Case 1488 — [COMBO] Smash Dive (↑ ↓ J)](./13%20case%20study.md#case-1488)
+
+**System**: Gen3-Burst / Cho-Z · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: highArc: −22/1.42×/100ms; not: −10/1.20×/35ms
+**Movement Freedom**: —
+**Base Stats**: Attack 100 · Defense 15 · Stamina 20 · Speed 90
+**Mechanism**: ↑ (charge rise) → ↓ (dive approach) → J (smash). highArc: −22, 1.42×, 100ms. Not: −10, 1.20×, 35ms. Cost 25, attack type.
+**2.5D Rendering**: Rise-then-dive arc; smash burst on J
+**Gimmick**: comboDetect(seq=[moveUp,moveDown,attack], window=600ms)
+**Engine Note**: highArc: −22/1.42×/100ms; not: −10/1.20×/35ms; cost 25; attack combo
+
+---
+
+### [Case 1489 — [GIMMICK] Stationary Gyroscopic Anchor Defense (Joseph · Vanishing Moot)](./13%20case%20study.md#case-1489)
+
+**System**: Gen1-Plastic · Defense/Stamina
+**Geometry**: m = 35 g · I = 2.10×10⁻⁵ kg·m² · ω₀ = 650 rad/s [M] · L₀ = 1.365×10⁻² kg·m²/s
+**Material**: Controlled-traction tip μ≥0.35 [M]; plastic-gen I≥1.5×10⁻⁵ [M]
+**Spin Coupling**: BeySpirit L_BS = 6.825×10⁻² [M]; Ω_manageable = 22 rad/s [M] ("immovable")
+**Contact Points**: Mass-wall rebound: attacker slows 82.4%; ~36% lower spin drain vs mobile [M]
+**Movement Freedom**: Planted/stationary: gyroscopic stiffness prevents displacement [M]
+**Base Stats**: Attack 5 · Defense 100 · Stamina 60 · Speed 10
+**Mechanism**: I=2.10e-5, ω₀=650 [M], L₀=1.365e-2. BeySpirit L_BS=6.825e-2 [M]. Ω=22 rad/s [M] manageable precession → "immovable" anchor. Mass-wall rebound: attacker slows 82.4% [M]; 36% lower spin drain vs mobile [M].
+**2.5D Rendering**: Planted-state indicator; rebound arc on attacker contact
+**Gimmick**: gyroAnchor(ω, L_BS) → Ω_prec, reboundFactor
+**Engine Note**: ω₀ 650 [M]; L_BS 6.825e-2 [M]; Ω_mng 22 rad/s [M]; rebound 82.4% [M]
+
+---
+
+### [Case 1490 — [SPECIAL] Great Rock (Joseph)](./13%20case%20study.md#case-1490)
+
+**System**: Gen1-Plastic · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: planted+perfect: +8/0.60× incoming/0ms; planted+miss: +3/0.75×; not planted: −5/0.90×
+**Movement Freedom**: —
+**Base Stats**: Attack 5 · Defense 100 · Stamina 60 · Speed 10
+**Mechanism**: K hold (500ms). planted+perfect: self +8, incoming ×0.60 (40% mitigation). planted+miss: self +3, ×0.75. not planted: −5, ×0.90. powerCost 60. **Anime physics override**: BeySpirit gyroscopic anchor renders Moot immovable; all incoming impulse reflected [M].
+**2.5D Rendering**: Planted anchor stance; incoming-reduction aura
+**Gimmick**: greatRock(planted, qteHit) → spinDelta, incomingMult
+**Special Move**: Great Rock · powerCost 60 · animeOverride true
+**Compatible beys**: Plastic-gen I≥1.5×10⁻⁵ [M]; controlled-traction tip μ≥0.35 [M]
+**Engine Note**: planted+perfect: +8/0.60× incoming; powerCost 60
+
+---
+
+### [Case 1491 — [COMBO] Stone Wall (K K K)](./13%20case%20study.md#case-1491)
+
+**System**: Gen1-Plastic · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: threeHolds: +6/0.65× incoming/0ms; not: +2/0.80×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 5 · Defense 100 · Stamina 60 · Speed 10
+**Mechanism**: K K K (triple defense hold). threeHolds: self +6, incoming ×0.65 (35% mitigation). Not: self +2, ×0.80. Cost 0, defense type. Cross-reference: Great Cutter covered by Cases 769–772.
+**2.5D Rendering**: Triple-hold animation; damage-mitigation aura
+**Gimmick**: comboDetect(seq=[defense,defense,defense], window=600ms)
+**Engine Note**: threeHolds: +6/0.65× incoming; not: +2/0.80×; cost 0; defense combo
+
+---
+
+### [Case 1492 — [GIMMICK] Draciel G Assembly Orbital Vortex Circulation (Max Tate · Draciel G, G-Revolution)](./13%20case%20study.md#case-1492)
+
+**System**: Gen1-Plastic / G-Revolution · Stamina/Defense
+**Geometry**: r = ~4.0 cm · m = 43 g · I = 2.744×10⁻⁵ kg·m² · ω₀ = 500 rad/s · L₀ = 1.372×10⁻² kg·m²/s
+**Material**: Draciel G assembly; controlled-traction tip
+**Spin Coupling**: τ_tip = 8.43×10⁻⁶ N·m; τ_total ≈ 4.22×10⁻⁵ N·m; t_spin ≈ 325 s
+**Contact Points**: Γ_self = 2.036 m²/s; Γ_orbital = 0.251 m²/s; v_θ_total = 9.1 m/s at r=40mm
+**Movement Freedom**: Counter-orbit v_rel = 33.7 m/s vs same-orbit 2.3 m/s (14.7× ratio)
+**Base Stats**: Attack 10 · Defense 90 · Stamina 75 · Speed 20
+**Mechanism**: I=2.744e-5, L₀=1.372e-2, t_spin≈325s. Γ_self=2.036 m²/s (self-rotation), Γ_orbital=0.251 m²/s (orbital path). v_θ_total=9.1 m/s at r=40mm. Counter-orbit vs same-orbit v_rel ratio 14.7×: counter-orbiting opponent drains 14.7× faster than co-orbiting.
+**2.5D Rendering**: Orbital vortex circulation trail; counter-orbit slow-zone indicator
+**Gimmick**: dracielVortex(ω, Γ_self, r_orbit) → v_θ_total, drainRatio
+**Engine Note**: Γ_self 2.036 m²/s; v_θ 9.1 m/s at 40mm; counter-orbit ratio 14.7×; t_spin 325 s
+
+---
+
+### [Case 1493 — [SPECIAL] Gravity Control (Max Tate · Draciel G)](./13%20case%20study.md#case-1493)
+
+**System**: Gen1-Plastic / G-Revolution · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: counterOrbit+waterspout+perfect: opp −35/0.70× on Draciel/150ms; same-dir: −20/0.80×/80ms; miss: −10/0.90×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 90 · Stamina 75 · Speed 20
+**Mechanism**: Orbital stamina-drain/counter-rotation waterspout. Counter-orbit v_rel=33.7 m/s vs same-orbit 2.3 m/s (14.7× ratio). counterOrbit+waterspout+perfect: opp −35/0.70× on Draciel/150ms; same-dir: −20/0.80×/80ms. powerCost 80. forceState: 'must_keep_distance'. **Anime physics override**: BeySpirit conjures full-stadium waterspout from orbital vortex [M].
+**2.5D Rendering**: Counter-orbit waterspout field; drain multiplier on counter direction
+**Gimmick**: gravityControl(counterOrbit, waterspout, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Gravity Control · powerCost 80 · animeOverride true
+**Compatible beys**: Draciel G (Max Tate); orbital stamina-type bey with v_θ≥9 m/s at r≤40mm
+**Engine Note**: counterOrbit+perfect: −35/0.70×/150ms; same-dir: −20/0.80×/80ms; powerCost 80
+
+---
+
+### [Case 1494 — [COMBO] Tidal Counter (↓ J ↑)](./13%20case%20study.md#case-1494)
+
+**System**: Gen1-Plastic / G-Revolution · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: bowlPosition+perfect: +8/1.10×/80ms; hit (no bowl): +4/1.05×/40ms; miss: 0/1.00×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 90 · Stamina 75 · Speed 20
+**Mechanism**: ↓ (bowl drop) → J (orbital surge hit) → ↑ (counter rising). bowlPosition+perfect: self +8, 1.10×, 80ms. Hit (no bowl): +4, 1.05×, 40ms. Miss: no effect. Cost 0, defense/stamina restriction.
+**2.5D Rendering**: Bowl-drop arc; orbital surge; rising counter
+**Gimmick**: comboDetect(seq=[moveDown,attack,moveUp], window=600ms)
+**Engine Note**: bowlPosition+perfect: +8/1.10×/80ms; hit: +4/1.05×/40ms; miss: 0/1.00×; cost 0
+
+---
+
+### [Case 1495 — [GIMMICK] Gravity Wheel Left-Spin Blade-Edge Pressure-Pulse Cascade (Julian Konzern · Gravity Destroyer AD145WD)](./13%20case%20study.md#case-1495)
+
+**System**: Gen2-MFB / HWS · Attack/Stamina
+**Geometry**: r_FW ≈ 2.3 cm · right-spin 1 bolt / left-spin 3 scatter bolts
+**Material**: Gravity FW with left-spin counter mode; AD145 wing interference; WD tip
+**Spin Coupling**: ΔP = 408.6 Pa per pass; F_pulse = 0.123 N/pass; f_pulse = 801 Hz. Range: ~30 mm physical; BeySpirit → gravity bolt [M]
+**Contact Points**: Right-spin: convex leading → 1 bolt. Left-spin/counter: concave → 3 scatter bolts (AD145 scatter). EXTENDS Cases 723 & 1261.
+**Movement Freedom**: —
+**Base Stats**: Attack 60 · Defense 45 · Stamina 60 · Speed 65
+**Mechanism**: Right-spin: convex leading face → 1 pressure bolt. Left-spin (counter): concave face → 3 scatter bolts (AD145 wing interference). ΔP=408.6 Pa, F_pulse=0.123 N/pass, f_pulse=801 Hz. Physical range ~30mm; BeySpirit → gravity bolt [M]. Extends Cases 723 & 1261.
+**2.5D Rendering**: Right-spin single bolt; left-spin triple scatter arc
+**Gimmick**: gravityPulse(leftSpin, ω, f_pulse) → F_pulse, numBolts
+**Engine Note**: ΔP 408.6 Pa; F_pulse 0.123 N; f_pulse 801 Hz; left-spin 3×scatter [M]
+
+---
+
+### [Case 1496 — [SPECIAL] Gravity Brave (Julian Konzern)](./13%20case%20study.md#case-1496)
+
+**System**: Gen2-MFB / HWS · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: right-spin high+perfect: −40/1.50×/200ms; left-spin high+perfect: −45/1.35×/100ms; right hit (low ω): −25/1.30×/120ms; left hit (low ω): −28/1.20×/60ms; miss: −15/1.10×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 60 · Defense 45 · Stamina 60 · Speed 65
+**Mechanism**: Gravity Wheel high-spin + QTE-aimed. right-spin high+perfect: −40/1.50×/200ms; left-spin high+perfect: −45/1.35×/100ms; low-ω hits reduced. powerCost 85. Left-spin counter mode fires 3-arrow scatter bonus. **Anime physics override**: Gravity Wheel concave face pressure cascade amplified by BeySpirit to gravity bolt [M].
+**2.5D Rendering**: Right-spin single bolt; left-spin triple scatter arc; gravity-pull field
+**Gimmick**: gravityBrave(leftSpin, highSpin, qteHit) → spinDelta, dmgMult, lockMs
+**Special Move**: Gravity Brave · powerCost 85 · animeOverride true
+**Compatible beys**: Gravity-wheel bey; left-spin counter mode for 3-arrow bonus
+**Engine Note**: right-spin high: −40/1.50×/200ms; left-spin high: −45/1.35×/100ms; powerCost 85
+
+---
+
+### [Case 1497 — [COMBO] Gravity Volley (↑ ↑ J)](./13%20case%20study.md#case-1497)
+
+**System**: Gen2-MFB / HWS · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: left-spin+hit: −18/1.20×/60ms; right-spin+hit: −15/1.25×/100ms; miss: −8/1.08×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 60 · Defense 45 · Stamina 60 · Speed 65
+**Mechanism**: ↑ ↑ (double upper-bowl approach) + J (partial blade-edge burst). left-spin+hit: −18, ×1.20, 60ms; right-spin+hit: −15, ×1.25, 100ms; miss: −8, ×1.08. Cost 15, universal type. Ceiling: dmgMult 1.25× ≤ 1.5 ✓.
+**2.5D Rendering**: Double approach arc; partial bolt discharge on J
+**Gimmick**: comboDetect(seq=[moveUp,moveUp,attack], window=600ms)
+**Engine Note**: left-spin: −18/1.20×/60ms; right-spin: −15/1.25×/100ms; miss: −8/1.08×; cost 15
+
+*Cases 1498–1499 are CS13 buffer slots (unassigned). Cases 1500–1524 are CS9 overflow blocks (see INDEX.md). CS13 resumes at Case 1525.*
+
+---
+
+### [Case 1525 — [GIMMICK] Grand Cetus T125RS Rubber Sharp Pivot-Anchor & T125 Triple-Wing Air Pump (Sophie · Grand Cetus T125RS)](./13%20case%20study.md#case-1525)
+
+**System**: Gen2-MFB / Metal Masters · Stamina
+**Geometry**: r = 3.90 cm · m = 32.5 g · I = 2.904×10⁻⁵ kg·m² · ω₀ = 628 rad/s · L₀ = 1.824×10⁻² kg·m²/s
+**Material**: Crystal Wheel Grand + Fusion Wheel Cetus (27 g at 3.9 cm) + T125 track + RS tip (rubber r=0.5mm, μ=0.38)
+**Spin Coupling**: τ_RS_actual = 8.19×10⁻⁵ N·m; τ_T125 = 9.59×10⁻⁵ N·m; τ_total = 1.778×10⁻⁴ N·m; t_spin = 102.6 s
+**Contact Points**: RS pivot-anchor: ω_anchor = 1.41 rad/s throughout battle; controlled drift only at near-stopped spin
+**Movement Freedom**: RS tip: pivot-anchor at high ω; controlled drift at ω<300 rad/s
+**Base Stats**: Attack 10 · Defense 40 · Stamina 95 · Speed 25
+**Mechanism**: I_FW=2.875e-5, I_total=2.904e-5, t_spin=102.6s. RS rubber deformation: r_eff_rubber=0.675mm (×1.35 Hertz). τ_RS_actual=8.19e-5 N·m. T125 wings: τ=9.59e-5 N·m at v_tip=12.56 m/s. Pivot-anchor holds Grand Maelstrom Phase 1 centre; drift only at ω<300 rad/s.
+**2.5D Rendering**: T125 triple-wing silhouette; RS rubber tip contact point
+**Gimmick**: pivotAnchor(ω, τ_RS, I) → ω_anchor, driftMode
+**Engine Note**: τ_RS_actual 8.19e-5 N·m; τ_T125 9.59e-5 N·m; t_spin 102.6 s; ω_anchor 1.41 rad/s
+
+---
+
+### [Case 1526 — [SPECIAL] Grand Maelstrom (Sophie · Grand Cetus T125RS)](./13%20case%20study.md#case-1526)
+
+**System**: Gen2-MFB / Metal Masters · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: highSpin+QTE: drain −18/s/10000ms/speed ×0.55/self +8/s; lowSpin+QTE: −12/s/7000ms/×0.70/+5/s; miss: −6/s/4000ms/×0.85/+2/s
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 40 · Stamina 95 · Speed 25
+**Mechanism**: AoE persistent stamina-drain / whirlpool trap field; multi-target (3 opponents confirmed canon); 10 s duration (canon-explicit). Rankine vortex: Γ=3.002 m²/s [M]; v_θ(100mm)=4.78 m/s; F_cp=10.28 N [M] on 45g opponent. Primes `grand_victoire` (×1.8 amplification) + `water_field_primed` for Grand Deucalion. forceState: 'must_attack'. powerCost 90. **Anime physics override**: BeySpirit amplifies T125 airflow to stadium-filling water whirlpool [M].
+**2.5D Rendering**: Stadium-wide whirlpool field; opponent drain-per-second indicator; speed-mult overlay
+**Gimmick**: grandMaelstrom(highSpin, qteHit, opponentCount) → spinDeltaPerSecond, durationMs, speedMult, selfRecovery, primes
+**Special Move**: Grand Maelstrom · powerCost 90 · animeOverride true
+**Compatible beys**: Grand Cetus T125RS (Sophie); RS pivot-anchor + T125 triple-wing air pump required
+**Engine Note**: highSpin+QTE: −18/s/10000ms/×0.55; primes grand_victoire ×1.8; powerCost 90
+
+---
+
+### [Case 1527 — [COMBO] Tidal Surge (↓ J ←)](./13%20case%20study.md#case-1527)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: inWhirlpool+QTE: −14/1.38×/80ms; base+QTE: −12/1.20×/80ms; miss: −6/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 40 · Stamina 95 · Speed 25
+**Mechanism**: ↓ (vortex eye approach) → J (orbital surge) → ← (lateral water-ram). inWhirlpool bonus ×1.15: −14, 1.38×, 80ms. Base: −12, 1.20×, 80ms. Miss: −6, 1.05×. Cost 15, stamina type. Ceiling: 1.38× ≤ 1.5 ✓.
+**2.5D Rendering**: Bowl-descent arc; lateral ram flash
+**Gimmick**: comboDetect(seq=[moveDown,attack,moveLeft], window=600ms); whirlpoolBonus ×1.15
+**Engine Note**: inWhirlpool: −14/1.38×/80ms; base: −12/1.20×/80ms; cost 15; stamina combo
+
+---
+
+### [Case 1528 — [GIMMICK] Grand Cetus T125RS Aerial-Launch Whirlpool-Exit — Vortex Angular-Momentum-to-Vertical-Impulse Conversion (Sophie)](./13%20case%20study.md#case-1528)
+
+**System**: Gen2-MFB / Metal Masters · Stamina
+**Geometry**: I_vort_col = 1.5625 kg·m² [M]; L_vort_col = 981 kg·m²/s [M]; J_vert = 0.981 N·s [M]
+**Material**: T125 wing aerodynamic pump (real); BeySpirit water column launch ramp [M]
+**Spin Coupling**: v_launch_BS = 30.2 m/s [M] (physical 0.750 m/s at bowl lip); h_max_BS = 46 m [M]; physical h = 28.7 mm
+**Contact Points**: Impact: KE_spin = 5.727 J (97.3% of total); KE_trans = 0.159 J (physical h=0.5m); J_impact = 0.102 N·s physical
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 40 · Stamina 95 · Speed 25
+**Mechanism**: Physical: T125 wings generate downward air jet → reaction upward (F_uplift=1.24e-3 N, negligible). BeySpirit: L_vort_col=981 kg·m²/s [M] → J_vert=0.981 N·s [M] → v_launch=30.2 m/s [M]. Spin KE dominates impact (97.3%); aerial height entirely [M]. EXTENDS Case 1526.
+**2.5D Rendering**: Vortex-column launch arc; aerial peak; spin-KE dominant impact
+**Gimmick**: vortexLaunch(L_vort, m_Cetus, η) → v_launch, h_apex, J_impact
+**Engine Note**: v_launch_BS 30.2 m/s [M]; h_max 46 m [M]; physical h_max 28.7 mm; J_impact physical 0.102 N·s
+
+---
+
+### [Case 1529 — [SPECIAL] Grand Victoire (Sophie · Grand Cetus T125RS)](./13%20case%20study.md#case-1529)
+
+**System**: Gen2-MFB / Metal Masters · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: waterPrimed+highSpin+QTE: −35/2.34×[M]/120ms/ringOut 85%; waterPrimed+QTE: −35/2.34×/120ms/55%; QTE miss: −15/1.10×/0ms/20%
+**Movement Freedom**: —
+**Base Stats**: Attack 15 · Defense 35 · Stamina 90 · Speed 30
+**Mechanism**: Aerial dive / water-crash ring-out. waterMult = 1.80× (Grand Maelstrom primed, Case 1526). highSpin+QTE: −35/×1.30×1.80=×2.34[M]/120ms/55%; waterPrimed+highSpin: ringOut 85% [M]. Miss: −15/×1.10/20%. powerCost 85. forceState: 'must_stay_still'. **Anime physics override**: aerial dive from vortex axis; combined spin+water impact rings out all but heaviest opponents.
+**2.5D Rendering**: Aerial dive arc; water-primed multiply indicator; ring-out force bar
+**Gimmick**: grandVictoire(waterFieldPrimed, highSpin, qteHit) → spinDelta, dmgMult, lockMs, ringOutForce
+**Special Move**: Grand Victoire · powerCost 85 · animeOverride true
+**Compatible beys**: Grand Cetus T125RS (Sophie); also combinable with Grand Fleet (Wales) → Grand Deucalion
+**Engine Note**: waterPrimed+high+QTE: −35/×2.34[M]/120ms/ringOut 85%; powerCost 85
+
+---
+
+### [Case 1530 — [COMBO] Cetus Rise (↑ ↑ K)](./13%20case%20study.md#case-1530)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: waterActive+QTE: −11/1.265×/60ms; base+QTE: −10/1.15×/60ms; miss: −5/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 40 · Stamina 95 · Speed 25
+**Mechanism**: ↑ ↑ (upper-bowl approach) → K (ascent-deflect). waterActive bonus ×1.10: −11, 1.265×, 60ms. Base: −10, 1.15×, 60ms. Miss: −5, 1.05×. Cost 15, stamina/defense. Ceiling: 1.265× ≤ 1.5 ✓.
+**2.5D Rendering**: Double-up arc; defense-deflect glow on K
+**Gimmick**: comboDetect(seq=[moveUp,moveUp,defense], window=600ms); waterBonus ×1.10
+**Engine Note**: waterActive: −11/1.265×/60ms; base: −10/1.15×/60ms; cost 15
+
+---
+
+### [Case 1531 — [GIMMICK] Grand Cetus WD145RS Wing Defense 145 Track Platform & Protective Wing Barrier (Wales · Grand Cetus WD145RS)](./13%20case%20study.md#case-1531)
+
+**System**: Gen2-MFB / Metal Masters · Defense
+**Geometry**: r = 3.90 cm · m = 34.0 g · I = 2.909×10⁻⁵ kg·m² · ω₀ = 628 rad/s · L₀ = 1.827×10⁻² kg·m²/s
+**Material**: Crystal Wheel Grand + Fusion Wheel Cetus + WD145 (3 large fins, A_wing=8.0×10⁻⁵ m² each) + RS tip
+**Spin Coupling**: τ_WD145 = 1.253×10⁻³ N·m (13× more drag than T125); τ_total = 1.335×10⁻³ N·m; t_spin = 13.7 s
+**Contact Points**: WD145 wing deflection: φ_wing=7.6°; effective impulse transmitted = 13.2% (86.8% of sub-14.5mm attacks deflected)
+**Movement Freedom**: WD145 wing barrier h=14.5mm; attacks below this height deflected 86.8%
+**Base Stats**: Attack 15 · Defense 90 · Stamina 35 · Speed 25
+**Mechanism**: I_WD145=2.909e-5 (similar to Sophie's T125RS). t_spin=13.7s (7.5× shorter than T125RS 102.6s). WD145 wing area 5.3× larger than T125. Wing defense: 86.8% deflect for sub-14.5mm attacks. Wales must act fast at peak spin; sacrifices stamina for defensive crash platform.
+**2.5D Rendering**: Wide WD145 fin silhouette; sub-14.5mm attack deflect indicator
+**Gimmick**: wd145Defense(h_attack, φ_wing) → deflectFraction
+**Engine Note**: τ_WD145 1.253e-3 N·m; t_spin 13.7 s; deflect 86.8% (h<14.5mm); WD145 wing barrier
+
+---
+
+### [Case 1532 — [SPECIAL] Grand Fleet (Wales · Grand Cetus WD145RS)](./13%20case%20study.md#case-1532)
+
+**System**: Gen2-MFB / Metal Masters · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: waterPrimed+highSpin+QTE: −50/×2.61[M]/180ms/ringOut 80%; waterPrimed+QTE: −30/×2.25[M]/100ms/50%; miss: −12/×1.10/0ms/15%
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 85 · Stamina 30 · Speed 30
+**Mechanism**: Aerial dive / crash ring-out; WD145 wing platform leading edge. waterMult=1.80×. highSpin+QTE: −50/×1.45×1.80=×2.61[M]/180ms/80% ring-out. Short spin (13.7s) means Wales fires at peak; wider wing platform gives larger collision radius than Grand Victoire. powerCost 85. Combines with Grand Victoire → Grand Deucalion. **Anime physics override**: aerial WD145 platform crash from vortex; stadium-width effective collision zone [M].
+**2.5D Rendering**: WD145 wing-platform dive arc; water-primed multiply indicator
+**Gimmick**: grandFleet(waterFieldPrimed, highSpin, qteHit) → spinDelta, dmgMult, lockMs, ringOutForce
+**Special Move**: Grand Fleet · powerCost 85 · animeOverride true
+**Compatible beys**: Grand Cetus WD145RS (Wales); combines with Grand Victoire (Sophie) for Grand Deucalion
+**Engine Note**: waterPrimed+high+QTE: −50/×2.61[M]/180ms/ringOut 80%; powerCost 85
+
+---
+
+### [Case 1533 — [COMBO] Fleet Wave (↓ ↑ ↑)](./13%20case%20study.md#case-1533)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: inWater+QTE: −16/1.366×/70ms; base+QTE: −14/1.22×/70ms; miss: −7/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 15 · Defense 90 · Stamina 35 · Speed 25
+**Mechanism**: ↓ (bowl base) → ↑ ↑ (double-surge). inWater bonus ×1.12: −16, 1.366×, 70ms. Base: −14, 1.22×, 70ms. Miss: −7, 1.05×. Cost 15, defense. WD145 wing platform broadside contact; 86.8% deflect during surge. Ceiling: 1.366× ≤ 1.5 ✓.
+**2.5D Rendering**: Bowl-dip then double-surge arc; WD145 wing broadside flash
+**Gimmick**: comboDetect(seq=[moveDown,moveUp,moveUp], window=600ms); waterBonus ×1.12
+**Engine Note**: inWater: −16/1.366×/70ms; base: −14/1.22×/70ms; cost 15; defense combo
+
+---
+
+### [Case 1534 — [GIMMICK] Dual-Cetus Cooperative Angular Momentum Superposition — Grand Deucalion Physics (Sophie + Wales)](./13%20case%20study.md#case-1534)
+
+**System**: Gen2-MFB / Metal Masters · Cooperative (Two Assemblies)
+**Geometry**: L_Sophie = 1.824×10⁻² · L_Wales = 1.827×10⁻² · L_total = 3.651×10⁻² kg·m²/s
+**Material**: Sophie Grand Cetus T125RS + Wales Grand Cetus WD145RS (Cases 1525–1533)
+**Spin Coupling**: Γ_combined = 6.004 m²/s [M]; v_θ(150mm) = 6.37 m/s [M] (extends to stadium boundary)
+**Contact Points**: Tsunami: J_Sophie = 0.102 N·s + J_Wales = 0.106 N·s = 0.208 N·s physical; BeySpirit amplifies [M]
+**Movement Freedom**: Counter-counters: linear slash (Ray Striker) / matched tornado (Earth Eagle) / pre-emption (Ryuga) — canon confirmed weak points
+**Base Stats**: Attack 15 · Defense 65 · Stamina 65 · Speed 30
+**Mechanism**: L_total = 3.651e-2. Γ_combined = 6.004 m²/s [M]. v_θ(150mm) = 6.37 m/s [M] → stadium boundary reach. Tsunami: J_combined physical = 0.208 N·s; BeySpirit scales to wave front [M]. Weak points: linear slash, matched tornado, pre-emption.
+**2.5D Rendering**: Dual vortex superposition; combined-L indicator; stadium-boundary wave reach
+**Gimmick**: dualCetusL(L_S, L_W) → L_total, Γ_combined, v_θ_boundary
+**Engine Note**: L_total 3.651e-2; Γ_combined 6.004 m²/s [M]; v_θ(150mm) 6.37 m/s [M]
+
+---
+
+### [Case 1535 — [SPECIAL] Grand Deucalion (Sophie · Grand Cetus T125RS + Wales · Grand Cetus WD145RS)](./13%20case%20study.md#case-1535)
+
+**System**: Gen2-MFB / Metal Masters · Special Move (Joint)
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: bothHighSpin+QTE: −80/×2.80[M]/300ms/ringOut 95%/AoE stadium; QTE only: −60/×2.20[M]/200ms/80%; miss: −40/×1.80[M]/120ms/65%
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 60 · Stamina 60 · Speed 30
+**Mechanism**: JOINT SPECIAL: Grand Maelstrom primed + Grand Fleet initiated + both Cetus aerial crash simultaneously. powerCost 0 (energy from angular momentum). bothHighSpin+QTE: −80/×2.80[M]/300ms/ringOut 95%/tsunamiRadius 250px. Partial (one Cetus missing): −35/×1.40/150ms/60%. Canon: 3-vs-1 defeat of Julian+Sophie+Wales [M]. Weak points: linear slash, matched tornado, pre-emption. **Anime physics override**: combined L=3.651e-2 → stadium-width tsunami wave [M].
+**2.5D Rendering**: Dual aerial crash; tsunami wave across full stadium; multi-target ring-out zone
+**Gimmick**: grandDeucalion(waterFieldPrimed, grandFleetActive, bothHighSpin, qteHit) → spinDelta, dmgMult, lockMs, ringOutForce, multiTarget, tsunamiRadius
+**Special Move**: Grand Deucalion · powerCost 0 (joint) · animeOverride true
+**Compatible beys**: Sophie Grand Cetus T125RS + Wales Grand Cetus WD145RS; Grand Maelstrom primed prerequisite
+**Engine Note**: bothHigh+QTE: −80/×2.80[M]/300ms/tsunamiRadius 250px/ringOut 95%; powerCost 0
+
+---
+
+### [Case 1536 — [COMBO] Grand Wave (↓ ↓ ↑)](./13%20case%20study.md#case-1536)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: coop+waterActive+QTE: −26/1.459×[coop]/200ms; waterActive+QTE: −20/1.456×/100ms; base+QTE: −18/1.30×/100ms; miss: −9/1.10×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 15 · Defense 60 · Stamina 65 · Speed 30
+**Mechanism**: ↓↓ (double bowl-descent) + ↑ (upswing wave). waterBonus ×1.12, coopBonus ×1.30 (tag-battle partner also executing). waterActive: −20, 1.456×, 100ms. coop+water: −26, 1.459×[M], 200ms. Coop mode exceeds 1.5× ceiling as joint-special territory. Cost 25, stamina. Solo ceiling: 1.456× ≤ 1.5 ✓.
+**2.5D Rendering**: Double bowl-descent; upswing surge arc
+**Gimmick**: comboDetect(seq=[moveDown,moveDown,moveUp], window=600ms); coop tag-battle flag
+**Engine Note**: waterActive: −20/1.456×/100ms; coop+water: −26/1.459×/200ms; cost 25
+
+---
+
+### [Case 1537 — [GIMMICK] Glory Regnar Greatest Armor Low-Spin Clasp Mode & Halo Formation (Rashad Goodman · Glory Regnar Over High Xtend+')](./13%20case%20study.md#case-1537)
+
+**System**: Gen4-Burst / DB · Defense/Stamina
+**Geometry**: r_arm_ext = 4.0 cm · r_arm_clasped = 1.2 cm · m_assembly = 41 g · I_ext = 3.527×10⁻⁵ kg·m² · I_clasped = 2.799×10⁻⁵ kg·m²
+**Material**: DB Energy Layer Glory Regnar (Greatest Armor plates ×2) + Forge Disc Over + High Xtend+' tip
+**Spin Coupling**: ΔI = 7.28×10⁻⁶ kg·m²; ω_activation = 200 rad/s → ω_after = 252 rad/s (+52 rad/s, +26%)
+**Contact Points**: Halo deflect: φ_halo=59°; effective impulse = 51.5% (48.5% deflected). τ_HXT = 2.89×10⁻⁵ N·m; t_spin = 152.8 s
+**Movement Freedom**: BeySpirit drives upward clasp against gravity at low ω [M]; +52 rad/s spin boost is physically grounded
+**Base Stats**: Attack 10 · Defense 85 · Stamina 80 · Speed 15
+**Mechanism**: I_ext=3.527e-5 → I_clasped=2.799e-5; ΔI=7.28e-6. L conservation at ω=200: ω_after=252 rad/s (+52 rad/s, +26% [CALCULATED]). Halo at h=20mm, r=12mm: φ=59°; 48.5% deflect [CALCULATED]. BeySpirit provides upward clasp at low spin [M]; physical spin boost consequence is real.
+**2.5D Rendering**: Armor-plate rise animation; halo crown formation; deflect-arc field
+**Gimmick**: greatestArmorClasp(ω, I_ext, I_clasped) → ω_after, deflectFraction
+**Engine Note**: ΔI 7.28e-6; +52 rad/s spin boost [CALCULATED]; halo deflect 48.5%; t_spin 152.8 s
+
+---
+
+### [Case 1538 — [SPECIAL] Glory Crown (Rashad Goodman · Glory Regnar Over High Xtend+')](./13%20case%20study.md#case-1538)
+
+**System**: Gen4-Burst / DB · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: defenseMode+lowSpin+QTE: +52/incoming ×0.515/300ms; lowSpin+QTE: +35/×0.65/200ms; QTE: +15/×0.80/100ms; miss: +8/×0.90/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 85 · Stamina 80 · Speed 15
+**Mechanism**: Greatest Armor low-spin clasp: +52 rad/s spin boost [CALCULATED] + incoming ×0.515 (48.5% deflect halo). defenseMode+lowSpin+QTE: +52/×0.515/300ms (max lockMs = combo ceiling). powerCost 70. forceState: 'cannot_attack_freely'. **Anime physics override**: upward clasp against gravity at low spin; BeySpirit drives arm rise [M]; physical spin boost consequence real.
+**2.5D Rendering**: Crown formation animation; spin-boost pulse; deflect-barrier glow
+**Gimmick**: gloryCrown(defenseMode, lowSpin, qteHit) → spinDelta, incomingMult, lockMs
+**Special Move**: Glory Crown · powerCost 70 · animeOverride true
+**Compatible beys**: Glory Regnar Over High Xtend+' (Rashad Goodman); any DB bey with hinged-plate I-reduction mechanism
+**Engine Note**: defenseMode+lowSpin+QTE: +52/×0.515/300ms [CALCULATED spin boost]; powerCost 70
+
+---
+
+### [Case 1539 — [COMBO] Crown Guard (K K ↓)](./13%20case%20study.md#case-1539)
+
+**System**: Gen4-Burst / DB · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: defenseMode+QTE: +10/incoming ×0.72/200ms; QTE: +6/×0.82/120ms; miss: +3/×0.92/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 10 · Defense 85 · Stamina 80 · Speed 15
+**Mechanism**: K K (double defense posture tighten) + ↓ (deepest bowl drop). defenseMode+QTE: self +10, incoming ×0.72, 200ms. QTE: +6, ×0.82, 120ms. Cost 0, defense/balanced. Ceiling: ×0.72 = incoming reduction (defensive; not outgoing cap); lockMs 200 ≤ 300 ✓.
+**2.5D Rendering**: Double armor-plate rise on K×2; bowl-drop repositioning
+**Gimmick**: comboDetect(seq=[defense,defense,moveDown], window=600ms)
+**Engine Note**: defenseMode+QTE: +10/×0.72 incoming/200ms; QTE: +6/×0.82/120ms; cost 0; defense combo
+
+---
+
+### [Case 1540 — [GIMMICK] Glory Regnar Greatest Armor High-Spin Extension Reach & Catch Mechanism (Rashad Goodman) [EXTENDS Case 1537]](./13%20case%20study.md#case-1540)
+
+**System**: Gen4-Burst / DB · Attack/Defense
+**Geometry**: r_arm_ext = 4.0 cm · v_tip = 25.1 m/s · KE_arms = 1.578 J (×2 arms) · F_cent = 39.4 N per arm
+**Material**: Same Greatest Armor plates (Case 1537) in high-spin extended position
+**Spin Coupling**: I_opponent ≈ 3.5×10⁻⁵; I_combined_closed = 6.299×10⁻⁵; ω_final = 351.6 rad/s [M]; J_vert = 1.567×10⁻² N·s [M]
+**Contact Points**: BeySpirit holds closure against F_cent = 39.4 N [M]; seismic-toss redirect via precession at θ_tilt=45° [M]
+**Movement Freedom**: At high spin: F_cent = 39.4 N dominates gravity 1642× → arms rigidly locked at r=40mm (no BeySpirit needed for extension)
+**Base Stats**: Attack 70 · Defense 70 · Stamina 35 · Speed 65
+**Mechanism**: v_tip=25.1 m/s, KE_arms=1.578 J. Catch: plates snap from r=40mm to r=10mm [M] within 5ms arm sweep. ω_final=351.6 rad/s after opponent absorption [M]. J_vert=1.567e-2 N·s via precession redirect at 45° [M]. EXTENDS Case 1537.
+**2.5D Rendering**: Extended arm sweep arc; catch-snap animation; seismic-toss precession redirect
+**Gimmick**: armCatch(ω, catchSuccess, I_opp) → ω_final, J_vert
+**Engine Note**: v_tip 25.1 m/s; KE_arms 1.578 J; F_cent 39.4 N; J_vert_slam 1.567e-2 N·s [M]
+
+---
+
+### [Case 1541 — [SPECIAL] Glory Slam (Rashad Goodman · Glory Regnar Over High Xtend+')](./13%20case%20study.md#case-1541)
+
+**System**: Gen4-Burst / DB · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: highSpin+catch+QTE: −60/×1.80/250ms/ringOut 90%; catch+QTE: −40/×1.50/180ms/70%; QTE glancing: −20/×1.25/80ms/25%; miss: −10/×1.05/0ms/5%
+**Movement Freedom**: —
+**Base Stats**: Attack 70 · Defense 70 · Stamina 35 · Speed 65
+**Mechanism**: Greatest Armor high-spin catch + seismic-toss slam. highSpin+catch+QTE: −60/×1.80[M]/250ms/ringOut 90%. BeySpirit holds catch against F_cent=39.4 N [M]; seismic toss J_vert=1.567e-2 N·s [M]. powerCost 90. forceState: 'must_keep_distance'. **Anime physics override**: arm closure held against 39.4 N centrifugal force; gyroscopic precession slam [M].
+**2.5D Rendering**: Arm-sweep catch; seismic-slam arc; ring-out bounce
+**Gimmick**: glorySlam(highSpin, catchSuccess, qteHit) → spinDelta, dmgMult, lockMs, ringOutForce
+**Special Move**: Glory Slam · powerCost 90 · animeOverride true
+**Compatible beys**: Glory Regnar Over High Xtend+' (Rashad Goodman)
+**Engine Note**: highSpin+catch+QTE: −60/×1.80/250ms/ringOut 90%; powerCost 90
+
+---
+
+### [Case 1542 — [COMBO] Slam Down (J ↓ J)](./13%20case%20study.md#case-1542)
+
+**System**: Gen4-Burst / DB · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: bowlConfinement+QTE: −20/1.35×/150ms; QTE: −14/1.22×/100ms; miss: −7/1.08×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 70 · Defense 70 · Stamina 35 · Speed 65
+**Mechanism**: J (approach dash) → ↓ (bowl-base confinement) → J (slam upswing). bowlConfinement+QTE: −20, 1.35×, 150ms. QTE: −14, 1.22×, 100ms. Cost 25, balanced/attack. Ceiling: 1.35× ≤ 1.5 ✓.
+**2.5D Rendering**: Approach dash; bowl-base catch; slam upswing burst
+**Gimmick**: comboDetect(seq=[attack,moveDown,attack], window=600ms)
+**Engine Note**: bowlConfinement+QTE: −20/1.35×/150ms; QTE: −14/1.22×/100ms; cost 25
+
+---
+
+### [Case 1543 — [GIMMICK] Earth Virgo GB145BS Bowl-Wall Launch Ramp & Top-Contact Landing Physics (Teru Saotome) [EXTENDS Cases 641 & 642]](./13%20case%20study.md#case-1543)
+
+**System**: Gen2-MFB / HWS · Stamina/Defense
+**Geometry**: m = 37 g · v_horiz = 1.299 m/s · v_vert = 0.750 m/s · h_max = 28.7 mm · x_range = 198.6 mm
+**Material**: Earth FW + GB145 (ball channel) + BS tip (ball-mode r_ball=3mm, μ=0.08)
+**Spin Coupling**: p_horiz = 0.048 N·s; Δv_Aquario = 1.78 m/s; Δv_Pegasus = 1.50 m/s; Δv_Eagle = 1.04 m/s
+**Contact Points**: Link: τ_friction = 8.70×10⁻⁵ N·m; spin drain = 2.49 rad/s/s; F_added = 0.363 N downward; F_expel = 14.6 N at r_offset=1mm [M]
+**Movement Freedom**: Physical h_max=28.7mm barely crests opponent at ~20–25mm; BeySpirit amplifies for clean crest [M]; DISTINCT from Cases 641 (horizontal evasion) & 642 (Allegro Entrechat)
+**Base Stats**: Attack 40 · Defense 55 · Stamina 70 · Speed 50
+**Mechanism**: Bowl lip θ_bowl=30°: v_horiz=1.299 m/s, v_vert=0.750 m/s. h_max=28.7mm [CALCULATED]. p_horiz=0.048 N·s → Δv_Aquario=1.78 m/s (ring-out). Link: BS ball tip spin drain=2.49 rad/s/s [CALCULATED], F_added=0.363 N. Gyroscopic link stability Ω_prec=0.137–0.179 rad/s; mount holds for 5s canon duration.
+**2.5D Rendering**: Bowl-lip launch arc; parabolic trajectory; top-mount link timer
+**Gimmick**: bowlLaunch(θ_bowl, v_orbit, m_Virgo, m_opp) → p_horiz, Δv_opp, h_max
+**Engine Note**: h_max 28.7mm; p_horiz 0.048 N·s; Δv_Aquario 1.78 m/s; drain 2.49 rad/s/s [CALCULATED]
+
+---
+
+### [Case 1544 — [SPECIAL] Grand Jeté (Teru Saotome · Earth Virgo GB145BS)](./13%20case%20study.md#case-1544)
+
+**System**: Gen2-MFB / HWS · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: light+linkQTE+3presses: −(12+15)=−27/×1.40/200ms/ringOut up to 90%; light+QTE miss: −10/×1.30/80ms/85%; heavy+QTE miss: −10/×1.05/80ms/30%
+**Movement Freedom**: —
+**Base Stats**: Attack 45 · Defense 50 · Stamina 65 · Speed 50
+**Mechanism**: Aerial leap + top-mount link (5s, 3 QTE presses). Link: drain=2.49 rad/s/s × linkMs/1000 [CALCULATED]; linkDurationMs = min(1500+1500×presses, 5000). lightOpponent (m<35g): ringOut bonus high (Aquario Δv=1.78 m/s). powerCost 80. forceState: 'must_stay_still'. **Anime physics override**: h_max physical 28.7mm [CALCULATED]; aerial height BeySpirit amplified [M]; full mount stable for canon 5s.
+**2.5D Rendering**: Parabolic arc; top-mount link timer; periodic QTE prompt; dismount slam
+**Gimmick**: grandJete(lightOpponent, linkQteHit, linkPressCount) → spinDelta, dmgMult, linkDurationMs, ringOutForce
+**Special Move**: Grand Jeté · powerCost 80 · animeOverride true
+**Compatible beys**: Earth Virgo GB145BS (Teru Saotome); low-profile design enables top-crest of opponent ARs
+**Engine Note**: drain 2.49 rad/s/s [CALCULATED]; max link 5000ms (canon); light-opp ringOut bonus +0.05/1500ms; powerCost 80
+
+---
+
+### [Case 1545 — [COMBO] Graceful Leap (↑ J ↑)](./13%20case%20study.md#case-1545)
+
+**System**: Gen2-MFB / HWS · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: light+QTE: −18/1.30×/100ms/ringOutBonus +0.25; heavy+QTE: −12/1.20×/100ms/+0.05; miss: −6/1.05×/0ms/0
+**Movement Freedom**: —
+**Base Stats**: Attack 40 · Defense 55 · Stamina 70 · Speed 50
+**Mechanism**: ↑ (bowl-wall approach) → J (bowl-lip launch) → ↑ (post-landing forward drive). light (m<35g): −18, 1.30×, 100ms, ringOutBonus +0.25. heavy: −12, 1.20×, 100ms, +0.05. Cost 15, stamina/balanced. Ceiling: 1.30× ≤ 1.5 ✓.
+**2.5D Rendering**: Bowl-lip arc; brief top-contact flash; forward continuation
+**Gimmick**: comboDetect(seq=[moveUp,attack,moveUp], window=600ms); lightOpponentFlag
+**Engine Note**: light: −18/1.30×/100ms/+0.25 ringOut; heavy: −12/1.20×/100ms; cost 15; stamina combo
+
+---
+
+### [Case 1574 — [GIMMICK] Hades Kerbecs BD145DS — BD145 Flywheel Ring & DS Tip Ground Coupling (Damian Hart · Hades Kerbecs BD145DS)](./13%20case%20study.md#case-1574)
+
+**System**: Gen2-MFB / Metal Masters · Defense/Stamina
+**Geometry**: r_BD = 3.0 cm · m_BD = 4 g · I_BD = 1.80×10⁻⁶ kg·m² (24.3% of total) · m_total = 38 g · I_total = 7.40×10⁻⁶ kg·m² · ω₀ = 628 rad/s
+**Material**: Crystal Wheel Hades + Kerbecs Metal Wheel (3-segment Cerberus, m_MW=28 g, r=2.3 cm) + BD145 + DS tip
+**Spin Coupling**: L₀ = 4.647×10⁻³ kg·m²/s; E_kinetic = 1.459 J; P_burst (0.1s) = 14.6 W
+**Contact Points**: BD near-floor suction: v_rim=18.84 m/s; Δp=217.5 Pa; F_suction=0.615 N (1.65× effective weight). DS high-spin: τ=1.42×10⁻⁴ N·m; DS low-spin dome: τ=5.22×10⁻⁴ N·m. Cerberus f_contact=300 Hz
+**Movement Freedom**: BD32% longer spin life vs without; DS hybrid sharp/dome mode switch at ω=200 rad/s
+**Base Stats**: Attack 35 · Defense 80 · Stamina 60 · Speed 35
+**Mechanism**: I_total=7.40e-6. BD disk: I_BD=1.80e-6 (24.3%); h_gap≈3mm; F_suction=0.615 N [CALCULATED]. DS: sharp at high ω, dome at low ω. Cerberus: 3 segments, f_contact=300Hz [CALCULATED]. P_burst=14.6W at 0.1s.
+**2.5D Rendering**: BD145 disk near-floor; Cerberus three-head segments; DS dual-mode indicator
+**Gimmick**: bd145Suction(ω, r_BD, h_gap) → F_suction, τ_DS, f_Cerberus
+**Engine Note**: F_suction 0.615 N; BD t_spin +32%; f_Cerberus 300 Hz; E_kinetic 1.459 J; P_burst 14.6 W
+
+---
+
+### [Case 1575 — [SPECIAL] Hades Drive (Damian Hart · Hades Kerbecs BD145DS)](./13%20case%20study.md#case-1575)
+
+**System**: Gen2-MFB / Metal Masters · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: fullSpin+ground+QTE: −50/×1.65[M]/200ms/AoE 200mm/spinDrain −20 all; fullSpin+ground: −30/×1.35/150ms/AoE 100mm/−10; miss: −15/×1.10/50ms/no AoE
+**Movement Freedom**: —
+**Base Stats**: Attack 40 · Defense 80 · Stamina 55 · Speed 35
+**Mechanism**: BD145 flywheel discharge + DS near-floor venturi ground wave. Physical: v_rim=18.84 m/s, E_kinetic=1.459 J, P_burst=14.6W. BeySpirit: full-stadium ground vortex r=200mm [M]. QTE: Hell-Lock (350ms). fullSpin+ground+QTE: −50/×1.65[M]/200ms/AoE 200mm/drain −20 all [M]. forceState: 'must_hold_center'. Note: similar to Storm Bringer (Ryuga) but ground-coupled chthonic inversion. powerCost 90. **Anime physics override**: BD ground wave amplified to stadium-filling hellfire vortex [M].
+**2.5D Rendering**: Ground-wave radial expansion; AoE spin-drain zone; center-hold indicator
+**Gimmick**: hadesDrive(fullSpin, groundContact, qteHit) → spinDelta, dmgMult, lockMs, aoeRadius, spinDrainAoe
+**Special Move**: Hades Drive · powerCost 90 · animeOverride true
+**Compatible beys**: Hades Kerbecs BD145DS (Damian Hart); BD-class disk r_BD≥2.8cm, h_gap≤5mm + low-friction tip
+**Engine Note**: fullSpin+ground+QTE: −50/×1.65[M]/AoE 200mm/drain −20; powerCost 90
+
+---
+
+### [Case 1576 — [COMBO] Hades Press (↓ J ↓)](./13%20case%20study.md#case-1576)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: heavy+QTE: −18/1.25×/150ms/ringOutBonus +0.05; base+QTE: −12/1.15×/150ms/+0.02; miss: −7/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 35 · Defense 80 · Stamina 60 · Speed 35
+**Mechanism**: ↓ (center approach/DS ground contact) → J (floor-coupling impulse) → ↓ (press resume). heavy (m>35g): −18, 1.25×, 150ms, ringOut+0.05. Base: −12, 1.15×, 150ms. Cost 25, defense/stamina. Ceiling: 1.25× ≤ 1.5 ✓.
+**2.5D Rendering**: Center drop; DS ground-stamp flash; press-resume arc
+**Gimmick**: comboDetect(seq=[moveDown,attack,moveDown], window=600ms); heavyBeyFlag
+**Engine Note**: heavy: −18/1.25×/150ms; base: −12/1.15×/150ms; cost 25; defense combo
+
+---
+
+### [Case 1577 — [GIMMICK] Hades Kerbecs BD145DS — BD145 Centripetal Vortex Inversion & Cerberus Devour Contact [EXTENDS Case 1574]](./13%20case%20study.md#case-1577)
+
+**System**: Gen2-MFB / Metal Masters · Defense/Attack
+**Geometry**: Physical inward pull at d=10cm: F_pull = 9.7×10⁻⁴ N (entirely negligible) → chain pull entirely BeySpirit [M]
+**Material**: BD145 in centripetal-pull configuration; Kerbecs 3-segment Cerberus devour
+**Spin Coupling**: Chain reach: base 80mm + 25mm per J press [M]; max 200mm (arena radius cap). Cerberus devour: Δp=2.535 N·s per arrival (3 segments, f=300Hz)
+**Contact Points**: Cerberus devour: F_segment=253.6 N [M]; Δp per segment=0.845 N·s; net devour impulse=2.535 N·s [CALCULATED — sufficient ring-out on sub-50g opponent]
+**Movement Freedom**: —
+**Base Stats**: Attack 45 · Defense 75 · Stamina 55 · Speed 30
+**Mechanism**: Physical pull 9.7e-4 N at 10cm — chain pull 100% BeySpirit [M]. Chain reach=80+25×presses [M] (max 200mm). Cerberus 3-segment devour: F=253.6N [M], Δp=0.845 N·s, total=2.535 N·s [CALCULATED]. L=4.647e-3 kg·m²/s gyroscopic anchor. EXTENDS Case 1574.
+**2.5D Rendering**: Chain-pull beam extending; Cerberus devour sequence on arrival
+**Gimmick**: hadesGateChain(J_presses, I_target) → chainReach, devourImpulse
+**Engine Note**: chain +25mm/J press [M]; max 200mm; devour Δp 2.535 N·s [CALCULATED]; F_segment 253.6 N [M]
+
+---
+
+### [Case 1578 — [SPECIAL] Hades Gate (Damian Hart · Hades Kerbecs BD145DS)](./13%20case%20study.md#case-1578)
+
+**System**: Gen2-MFB / Metal Masters · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: 10 presses: reach 200mm/×2.20[M]/−60/ringOut 0.95; 5 presses: 200mm/×1.85[M]/−45/0.73; 0 presses: 80mm/×1.50/−30/0.50
+**Movement Freedom**: —
+**Base Stats**: Attack 50 · Defense 70 · Stamina 50 · Speed 30
+**Mechanism**: 3000ms J button-mash QTE; chain reach=80+25×presses (max 200mm) [M]; devour Δp=2.535 N·s on arrival. spinDelta=−(30+presses×3); dmgMult=1.50+(presses/10)×0.70; ringOutForce=0.50+(presses/10)×0.45. powerCost 95. forceState: 'must_hold_center'. Canon: 10 presses → defeats Julian+Sophie+Wales simultaneously [M]. **Anime physics override**: BeySpirit chain-pull draws 3 opponents; Cerberus devour 100% [M].
+**2.5D Rendering**: Gate-open animation; chain beams extending; Cerberus devour on each arrival; multi-target counter
+**Gimmick**: hadesGate(chainPresses, opponentsInRange) → spinDelta, dmgMult, chainReachMm, targetsHit, ringOutForce
+**Special Move**: Hades Gate · powerCost 95 · animeOverride true
+**Compatible beys**: Hades Kerbecs BD145DS (Damian Hart); L≥4.5×10⁻³ kg·m²/s gyroscopic anchor required
+**Engine Note**: 10 presses: −60/×2.20[M]/ringOut 0.95; chain +25mm/press [M]; powerCost 95
+
+---
+
+### [Case 1579 — [COMBO] Cerberus Drag (← J ↓)](./13%20case%20study.md#case-1579)
+
+**System**: Gen2-MFB / Metal Masters · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: nearWall+QTE: −16/1.30×/150ms/ringOutBonus +0.20; base+QTE: −16/1.20×/150ms/+0.05; miss: −7/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 45 · Defense 75 · Stamina 55 · Speed 30
+**Mechanism**: ← (lateral flank, BD vortex alignment) → J (single grab contact) → ↓ (wall-press drive). nearWall: −16, 1.30×, 150ms, +0.20 ringOut. Base: −16, 1.20×, 150ms. Cost 25, defense/stamina. Ceiling: 1.30× ≤ 1.5 ✓.
+**2.5D Rendering**: Lateral flank arc; grab-contact flash; wall-press drive
+**Gimmick**: comboDetect(seq=[moveLeft,attack,moveDown], window=600ms); nearWallFlag
+**Engine Note**: nearWall: −16/1.30×/150ms/+0.20; base: −16/1.20×/150ms; cost 25; defense combo
+
+---
+
+### [Case 1580 — [GIMMICK] Scythe Kronos T125EDS — Dual-Axis Vertical Impact Geometry [EXTENDS Cases 1267 & 1270]](./13%20case%20study.md#case-1580)
+
+**System**: Gen2-MFB / Metal Fury · Attack
+**Geometry**: θ_blade = 15° · r_arm_tip = 2.2 cm · m_arm = 12 g [M] · ω = 628 rad/s (Case 1267/1270 baseline)
+**Material**: Scythe Fusion Wheel asymmetric arm; T125+EDS from Cases 1267/1270
+**Spin Coupling**: F_normal = 103.5 N [M]; F_horiz = 99.9 N [CALCULATED]; F_vert_up = 26.8 N [CALCULATED]
+**Contact Points**: τ_tilt = 0.616 N·m [CALCULATED]; Δω_tilt = 35.1 rad/s per 2ms contact [CALCULATED]; L_tilt impulse = 1.23×10⁻³ N·m·s
+**Movement Freedom**: Height-advantage contact required; Kronos elevated via T125 track (Case 1267)
+**Base Stats**: Attack 80 · Defense 30 · Stamina 35 · Speed 75
+**Mechanism**: θ=15° blade angle. F_horiz=103.5×cos(15°)=99.9 N [CALCULATED]; F_up=103.5×sin(15°)=26.8 N [CALCULATED]. τ_tilt=26.8×0.023=0.616 N·m [CALCULATED]; Δω_tilt=35.1 rad/s [CALCULATED]. Dual-axis (horizontal smash + vertical lift) simultaneously — distinct from Case 1267 debris vortex and Case 1270 radial ring. Mythology: Uranus (sky/heaven) + Gaea (earth) reference.
+**2.5D Rendering**: Dual-axis strike arc; vertical-lift indicator + horizontal-smash flash; height-advantage marker
+**Gimmick**: dualAxisContact(θ_blade, ω, m_arm, heightAdv) → F_horiz, F_up, τ_tilt
+**Engine Note**: F_horiz 99.9 N [CALC]; F_up 26.8 N [CALC]; τ_tilt 0.616 N·m; Δω_tilt 35.1 rad/s [CALC]
+
+---
+
+### [Case 1581 — [SPECIAL] Heaven and Earth Strike (Aguma · Scythe Kronos T125EDS)](./13%20case%20study.md#case-1581)
+
+**System**: Gen2-MFB / Metal Fury · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: height+QTE: −65/×2.10[M]/250ms/tiltInduced 35.1 rad/s; height miss: −35/×1.50/150ms/10.0 rad/s; no height: −20/×1.15/80ms/0
+**Movement Freedom**: —
+**Base Stats**: Attack 80 · Defense 30 · Stamina 35 · Speed 75
+**Mechanism**: Simultaneous J+↑ dual-input (200ms). height+QTE: −65/×2.10[M]/250ms/tiltInduced=35.1 rad/s [CALCULATED]. powerCost 100 (full drain — single canonical use vs Diablo Nemesis X:D). **Anime physics override**: dual-axis simultaneous Uranus+Gaea force; single-use desperation [M]. tiltInduced=35.1 rad/s physically grounded (Case 1580).
+**2.5D Rendering**: Dual-axis flash; height-advantage elevation; tilt-induction gauge
+**Gimmick**: heavenAndEarthStrike(heightAdvantage, qteHit) → spinDelta, dmgMult, lockMs, tiltInduced, dualAxisBonus
+**Special Move**: Heaven and Earth Strike · powerCost 100 · animeOverride true
+**Compatible beys**: Scythe Kronos T125EDS (Aguma); asymmetric FW with upward-angled blade φ>10° + height-giving track
+**Engine Note**: height+QTE: −65/×2.10[M]/250ms/tiltInduced 35.1 rad/s [CALC]; powerCost 100
+
+---
+
+### [Case 1582 — [COMBO] Divine Cross (↑ J ↓)](./13%20case%20study.md#case-1582)
+
+**System**: Gen2-MFB / Metal Fury · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: heightGained+QTE: −22/1.35×/150ms/ringOutBonus +0.10; base+QTE: −14/1.20×/150ms/+0.03; miss: −8/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 80 · Defense 30 · Stamina 35 · Speed 75
+**Mechanism**: ↑ (bowl-lip height gain) → J (dual-axis contact) → ↓ (earth-exit follow-through). heightGained: −22, 1.35×, 150ms, +0.10 ringOut. Base: −14, 1.20×, 150ms. Cost 35, balanced/attack. Ceiling: 1.35× ≤ 1.5 ✓.
+**2.5D Rendering**: Rise arc; dual-axis flash; downward follow-through
+**Gimmick**: comboDetect(seq=[moveUp,attack,moveDown], window=600ms); heightGainedFlag
+**Engine Note**: heightGained: −22/1.35×/150ms/+0.10 ringOut; base: −14/1.20×/150ms; cost 35; balanced combo
+
+---
+
+### [Case 1583 — [GIMMICK] Thermal Lacerta WA130HF — Wing Attack Forced-Convection Column & HF Orbital Positioning [EXTENDS Case 816]](./13%20case%20study.md#case-1583)
+
+**System**: Gen2-MFB / Metal Masters·Fury · Stamina/Balanced
+**Geometry**: r_wing = 2.8 cm · m_WA130 = 3 g · m_Thermal = 25 g · m_total = 37 g · I_total = 5.90×10⁻⁶ kg·m²
+**Material**: Thermal Metal Wheel (smooth curved lacerta segments) + WA130 (radial wings deployed at h=130mm) + HF tip
+**Spin Coupling**: F_deploy = 33.1 N (wings at ω₀) [CALCULATED]; v_wing_tip = 17.58 m/s; Q_retained ≈ 1.04 W per wing; h_conv = 120 W/(m²·K)
+**Contact Points**: E_kinetic = 1.163 J; E_combined with Zurafa = 2.345 J [CALCULATED]. HF tip: 15% faster pivot-redirect (cooperative approach alignment)
+**Movement Freedom**: WA130 wings concentrate R145 friction heat (Case 816) rather than dispersing; cooperative proximity required for fireball build
+**Base Stats**: Attack 50 · Defense 30 · Stamina 65 · Speed 55
+**Mechanism**: I_Thermal=4.23e-6, I_total=5.90e-6. WA130 wings: F_deploy=33.1N [CALCULATED]; v_tip=17.58 m/s; Q_retained≈1.04W per wing [CALCULATED]. HF tip 15% faster redirect → cooperative orbit alignment with Zurafa. E_combined=2.345J [CALCULATED]. EXTENDS Case 816.
+**2.5D Rendering**: WA130 radial wings deployed; forced-convection column around bey pair; fireball build indicator
+**Gimmick**: wa130Convection(ω, A_wing, r_wing) → F_deploy, v_tip, Q_retained
+**Engine Note**: F_deploy 33.1 N; v_tip 17.58 m/s; Q_retained 1.04 W/wing; E_combined 2.345 J (with Zurafa)
+
+---
+
+### [Case 1584 — [SPECIAL] Heaven's Supreme Destruction Palm (Chi-yun Li + Dashan Wang · Thermal Lacerta WA130HF + Rock Zurafa R145WB)](./13%20case%20study.md#case-1584)
+
+**System**: Gen2-MFB / Metal Masters·Fury · Special Move (Joint)
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: both+primed+QTE: −55 each/×2.40[M]/300ms/fireball 150mm[M]/AoE ringOut; both+primed: −35/×1.80[M]/200ms/80mm; partial: −15/×1.10/50ms/no AoE
+**Movement Freedom**: —
+**Base Stats**: Attack 55 · Defense 30 · Stamina 60 · Speed 55
+**Mechanism**: JOINT SPECIAL: Thermal Lacerta WA130HF (Chi-yun) + Rock Zurafa R145WB (Dashan). thermalPrimed: beys within 60mm for ≥2s. E_combined=2.345J physical base. BeySpirit ignites combined thermal field → fireball [M]. powerCost 0 (drawn from angular momentum). both+primed+QTE: −55/×2.40[M]/300ms/fireball r=150mm[M]. Canon: Yuki nearly fell off cliff [M]. forceState: 'must_stay_near_partner'. **Anime physics override**: thermal field combustion; fireball projectile [M].
+**2.5D Rendering**: Partner proximity indicator; fireball build; fireball launch arc; AoE blast
+**Gimmick**: heavensSupremeDestructionPalm(bothActive, thermalPrimed, qteHit) → spinDelta, dmgMult, lockMs, fireballRadius, aoeRingOut
+**Special Move**: Heaven's Supreme Destruction Palm · powerCost 0 (joint) · animeOverride true
+**Compatible beys**: Thermal Lacerta WA130HF (Chi-yun Li) + Rock Zurafa R145WB (Dashan Wang)
+**Engine Note**: both+primed+QTE: −55/×2.40[M]/fireball 150mm[M]; powerCost 0
+
+---
+
+### [Case 1585 — [COMBO] Thermal Cross (↑ ← J)](./13%20case%20study.md#case-1585)
+
+**System**: Gen2-MFB / Metal Masters·Fury · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: clustered+QTE: −20/1.30×/100ms/ringOutBonus +0.05; base+QTE: −14/1.20×/100ms/+0.05; miss: −7/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 50 · Defense 30 · Stamina 65 · Speed 55
+**Mechanism**: ↑ (upper-bowl approach + WA130 deploy) → ← (lateral sweep + convective burst) → J (thermal-augmented strike). clustered: −20, 1.30×, 100ms. Base: −14, 1.20×, 100ms. Cost 25, balanced/stamina. Ceiling: 1.30× ≤ 1.5 ✓.
+**2.5D Rendering**: Wing-deploy arc; lateral convective sweep; thermal strike flash
+**Gimmick**: comboDetect(seq=[moveUp,moveLeft,attack], window=600ms); clusterFlag
+**Engine Note**: clustered: −20/1.30×/100ms; base: −14/1.20×/100ms; cost 25; balanced combo
+
+---
+
+### [Case 1586 — [GIMMICK] Draciel V / Draciel V2 — Turtle AR Hydrodynamic Impeller & V2 Blade Upgrade [EXTENDS Cases 1492–1494]](./13%20case%20study.md#case-1586)
+
+**System**: Gen1-Plastic / V-Force · G-Revolution · Defense/Stamina
+**Geometry**: r_AR = 2.0 cm · A_wing = 1.20×10⁻⁴ m² per wing · v_wing_tip = 12.56 m/s · 4 symmetric wings
+**Material**: Draciel V AR (4-wing turtle shell, h=8mm) → V2 AR (h=10mm, +25% wave momentum)
+**Spin Coupling**: V: F_hydro=37.9 N / p_wave=0.0176 kg·m/s (50ms). V2: F_hydro=47.3 N / p_wave=0.022 kg·m/s (+25% physically grounded). Both: Δv < 1.0 m/s ring-out threshold → BeySpirit amplifies [M]
+**Contact Points**: τ_visc = 5.17×10⁻⁸ N·m (physical, BeySpirit amplifies water depth [M]). Q=2.51×10⁻³ m³/s [CALCULATED]
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 85 · Stamina 65 · Speed 30
+**Mechanism**: v_tip=12.56 m/s. F_hydro per wing (V): 9.47 N [CALCULATED]; total: 37.9 N [CALCULATED]. V2 (+25%): 47.3 N [CALCULATED]. p_wave V=0.0176 kg·m/s; V2=0.022 kg·m/s [CALCULATED]. Both below physical ring-out Δv → BeySpirit amplifies [M]. Extends Cases 1492–1494 (Draciel G orbital drain — distinct mechanism).
+**2.5D Rendering**: 4-wing turtle AR rotation; wave burst ring; V2 upgrade indicator (+25%)
+**Gimmick**: dracielVWave(v2Version, A_wing, v_tip) → F_hydro, p_wave, Q
+**Engine Note**: V F_hydro 37.9 N; V2 F_hydro 47.3 N (+25% [CALC]); p_wave V 0.0176 / V2 0.022 kg·m/s
+
+---
+
+### [Case 1587 — [SPECIAL] Heavy Viper Wall (Max Tate · Draciel V / Draciel V2)](./13%20case%20study.md#case-1587)
+
+**System**: Gen1-Plastic / V-Force · G-Revolution · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: V2+drown+QTE: −20/×1.94[M]/150ms/drownDrain −25/ringOut 0.80; V+drown+QTE: −20/×1.55[M]/150ms/drain −18/0.65; QTE V: −15/×1.30/100ms/0.45; miss: −10/×1.05/0ms/0.20
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 90 · Stamina 60 · Speed 30
+**Mechanism**: Hydrodynamic wave burst + drown phase (standing wave submerge) + wave-carrier ring-out. waveBonus=1.25× (V2 physically grounded, Case 1586). V2+drown+QTE: −20/×1.94[M]/150ms/drownDrain −25/ringOut 0.80. powerCost 85. forceState: 'must_hold_center'. Wave Launch QTE 300ms. **Anime physics override**: BeySpirit conjures water field [M]; ring-out from wave carrier [M].
+**2.5D Rendering**: Wave burst ring; drown phase submerge; wave-carry ring-out arc
+**Gimmick**: heavyViperWall(v2Version, drowningPhaseHit, qteHit) → spinDelta, dmgMult, lockMs, drownSpinDrain, ringOutForce
+**Special Move**: Heavy Viper Wall · powerCost 85 · animeOverride true
+**Compatible beys**: Draciel V / Draciel V2 (Max Tate); 4-wing balanced AR at r≥1.8cm + BeySpirit water
+**Engine Note**: V2+drown+QTE: −20/×1.94[M]/drain −25/ringOut 0.80; V2 waveBonus 1.25× [CALC]; powerCost 85
+
+---
+
+### [Case 1588 — [COMBO] Viper Surge (↑ ↑ J)](./13%20case%20study.md#case-1588)
+
+**System**: Gen1-Plastic / V-Force · G-Revolution · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: orbitalHigh+QTE: −16/1.25×/80ms/ringOutBonus +0.10; base+QTE: −10/1.15×/80ms/+0.03; miss: −6/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 20 · Defense 85 · Stamina 65 · Speed 30
+**Mechanism**: ↑ ↑ (double upper-bowl orbital build) → J (AR tangential contact). orbitalHigh (>80% max orbital speed): −16, 1.25×, 80ms, +0.10 ringOut. Base: −10, 1.15×, 80ms. Cost 15, defense/stamina. Ceiling: 1.25× ≤ 1.5 ✓.
+**2.5D Rendering**: Double-up orbital arc; AR tangential contact flash
+**Gimmick**: comboDetect(seq=[moveUp,moveUp,attack], window=600ms); orbitalSpeedFlag
+**Engine Note**: orbitalHigh: −16/1.25×/80ms/+0.10; base: −10/1.15×/80ms; cost 15; stamina combo
+
+---
+
+### [Case 1589 — [GIMMICK] Krusher Doomscizor 2Vortex Hunter — Hunter Rubber Tip Floor-Grinding Tribology & Doomscizor Unbalanced Layer Wobble [EXTENDS Cases 1155 & 1358]](./13%20case%20study.md#case-1589)
+
+**System**: Gen3-Burst / Turbo · Attack
+**Geometry**: r_Hunter_flat = 0.7 cm · μ_rubber = 0.80 · m_total = 43.5 g · ω₀ = 720 rad/s · Δr_eccentric = 1.5 mm
+**Material**: Hunter rubber tip (semi-sharp, floor-grinding mode) + Doomscizor Ring (asymmetric, CM offset Δr=1.5mm)
+**Spin Coupling**: F_drive = 0.342 N [CALCULATED]; a_linear = 7.86 m/s² [CALCULATED]; Δv over 0.5s = 3.93 m/s [CALCULATED]
+**Contact Points**: p_impact = 0.152 N·s at v=3.5 m/s [CALCULATED]; Δv_Aquario(27g) = 5.63 m/s [CALCULATED]. f_eccentric = 114.6 Hz [CALCULATED]; F_eccentric = 7.0 N at ω₀ [CALCULATED]
+**Movement Freedom**: DISTINCT from Case 1358 (wall-climb); this case = floor-grinding (flat contact, horizontal mode). Wobble at mid-spin (ω=360 rad/s): f=57.3 Hz, AMPLITUDE increases (higher visual unpredictability)
+**Base Stats**: Attack 90 · Defense 20 · Stamina 35 · Speed 85
+**Mechanism**: F_drive=μ×F_N=0.80×0.427=0.342 N [CALC]; a_linear=0.342/0.0435=7.86 m/s² [CALC]; Δv=3.93 m/s over 0.5s [CALC]. f_eccentric=720/(2π)=114.6 Hz [CALC]; F_eccentric=7.0 N [CALC]. p_impact=0.152 N·s → Δv_Aquario=5.63 m/s [CALC]. EXTENDS Cases 1155 & 1358.
+**2.5D Rendering**: Rubber-flat floor-grind spark trail (dark purple [M]); eccentric wobble path overlay; speed boost indicator
+**Gimmick**: hunterGrind(μ, F_N, t_grind) → F_drive, a_linear, Δv; doomscizorWobble(ω, Δr) → f_eccentric, F_eccentric
+**Engine Note**: F_drive 0.342 N; a_linear 7.86 m/s²; f_eccentric 114.6 Hz; p_impact 0.152 N·s [all CALC]
+
+---
+
+### [Case 1590 — [SPECIAL] Hunt Launch (Daigo Kurogami · Krusher Doomscizor 2Vortex Hunter)](./13%20case%20study.md#case-1590)
+
+**System**: Gen3-Burst / Turbo · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: highSpin+grindLock+wobble: −40/×1.70[M]/200ms/approachSpeed 3930mm/s/hitBonus +0.55; highSpin+lock: −40/×1.70[M]/200ms/3930mm/s/+0.10; high no lock: −25/×1.40/100ms/2000mm/s; lowSpin: −15/×1.15/50ms/500mm/s
+**Movement Freedom**: —
+**Base Stats**: Attack 90 · Defense 20 · Stamina 35 · Speed 85
+**Mechanism**: K hold (250ms) = Edge Grind Lock (sustains Hunter flat-rubber a=7.86 m/s²). After 0.5s grind: v=3.93 m/s, p=0.152 N·s → Δv_Aquario=5.63 m/s [CALC]. 114.6 Hz wobble: +0.55 hit-chance bonus (physically grounded — 115 direction-changes/s beyond human reaction). powerCost 90. forceState: 'must_maintain_grind'. **Anime physics override**: dark-purple BeySpirit trail from friction heat [M]; dmgMult>1.5 [M].
+**2.5D Rendering**: Floor-grind approach trail; dark-purple energy trail; wobble path overlay; hit-bonus indicator
+**Gimmick**: huntLaunch(grindLockHeld, highSpin, wobbleActive) → spinDelta, dmgMult, lockMs, approachSpeedMms, hitChanceBonus
+**Special Move**: Hunt Launch · powerCost 90 · animeOverride true
+**Compatible beys**: Krusher Doomscizor 2Vortex Hunter (Daigo Kurogami); rubber flat-grinding tip r≥0.6cm, μ≥0.70 + unbalanced EL Δr≥1mm
+**Engine Note**: highSpin+lock+wobble: −40/×1.70[M]/3930mm/s/+0.55; f_eccentric 114.6 Hz [CALC]; powerCost 90
+
+---
+
+### [Case 1591 — [COMBO] Hunt Sweep (↑ → J)](./13%20case%20study.md#case-1591)
+
+**System**: Gen3-Burst / Turbo · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: diagonal+QTE: −19/1.28×/120ms/ringOutBonus +0.12; base+QTE: −12/1.18×/120ms/+0.04; miss: −7/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 90 · Defense 20 · Stamina 35 · Speed 85
+**Mechanism**: ↑ (upper-arc approach, partial grind build) → → (rightward directional cut, angle shift) → J (peak-momentum strike). diagonal (both ↑ and → registered before J): −19, 1.28×, 120ms, +0.12 ringOut. Base: −12, 1.18×, 120ms. Cost 25, attack/balanced. Ceiling: 1.28× ≤ 1.5 ✓.
+**2.5D Rendering**: Diagonal approach arc; rightward cut; strike flash
+**Gimmick**: comboDetect(seq=[moveUp,moveRight,attack], window=600ms); diagonalApproachFlag
+**Engine Note**: diagonal: −19/1.28×/120ms/+0.12; base: −12/1.18×/120ms; cost 25; attack combo
+
+---
+
+### [Case 1592 — [GIMMICK] Omega Dragonis 85XF — XF ABS-Plastic Flat-Face Triboelectric Accumulation (Ryuto) [EXTENDS Cases 1546–1554]](./13%20case%20study.md#case-1592)
+
+**System**: Gen3-Burst / Beyblade 4D · Attack
+**Geometry**: r_XF = 1.88 cm · w_strip = 1.5 mm · A_c = 1.77×10⁻⁴ m² · m_total = 38.0 g · v_contact = 6.30 m/s
+**Material**: Omega Dragonis 85XF; ABS-on-PC tribopair (σ_t=1.0×10⁻⁹ C/m²)
+**Spin Coupling**: Physical: V_acc≈0.014 V (sub-volt, leaks in damp air). BeySpirit amplification ≈1.1×10⁵ → arc-discharge threshold 1.5 kV [M]
+**Contact Points**: p_strike = m×v = 0.038×2.0 = 0.076 N·s [CALCULATED]; Δv_Pegasus (33g) = 2.3 m/s [CALCULATED]; crosses 400mm stadium in ~0.17s
+**Movement Freedom**: chargeRunMs accumulates on continuous XF floor contact; reset on aerial manoeuvre or collision
+**Base Stats**: Attack 85 · Defense 20 · Stamina 30 · Speed 80
+**Mechanism**: dQ/dt=1.12e-12 C/s [CALC]; V_physical≈0.014V [CALC]. BeySpirit amplification ×1.1e5 [M] → sustained arc discharge at 1.5kV arc threshold. p_strike=0.076 N·s [CALC]; Δv_Pegasus=2.3 m/s [CALC]. Stone-pillar fracture entirely [M] (0.076J vs ~5J/m²×area required). EXTENDS Cases 1546–1554.
+**2.5D Rendering**: XF flat-face charge run; turquoise lightning trail (BeySpirit [M]); charge accumulation bar
+**Gimmick**: xfTriboCharge(v_contact, A_c, σ_t, t_run) → V_acc, p_strike
+**Engine Note**: p_strike 0.076 N·s [CALC]; Δv_Pegasus 2.3 m/s [CALC]; V_physical 0.014V [CALC]; BeySpirit arc [M]
+
+---
+
+### [Case 1593 — [SPECIAL] Hammer Bolt (Ryuto · Omega Dragonis 85XF)](./13%20case%20study.md#case-1593)
+
+**System**: Gen3-Burst / Beyblade 4D · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: chargeRunMs 800+QTE+wall: −80/×1.80[M]/0ms/ringOut 0.80; full+QTE open: −80/×1.80[M]/0ms/0.25; min+QTE: −55/×1.45/0ms/0.10; miss: −18/×1.10/0ms/0
+**Movement Freedom**: —
+**Base Stats**: Attack 85 · Defense 20 · Stamina 30 · Speed 80
+**Mechanism**: chargeRunMs accumulates (max effective 800ms); QTE: timed J on XF floor contact. spinDelta=−(55+round(chargeNorm×25)); dmgMult=1.45+chargeNorm×0.35 (1.45×→1.80×[M]). powerCost 105 (sustained BeySpirit during run). No lockMs (directional strike). **Anime physics override**: Dragonis constellation BeySpirit maintains charge rate ×1.1e5; stone-shattering output [M].
+**2.5D Rendering**: Charge-run accumulation trail; turquoise lightning sheath; directional strike burst
+**Gimmick**: hammerBolt(chargeRunMs, qteHit, oppAtWall) → spinDelta, dmgMult, lockMs, powerCost, ringOutBonus
+**Special Move**: Hammer Bolt · powerCost 105 · animeOverride true
+**Compatible beys**: Any XF-tip bey with sufficient approach time; full output requires Omega Dragonis constellation BeySpirit
+**Engine Note**: full charge+QTE+wall: −80/×1.80[M]/ringOut 0.80; powerCost 105 (above standard cap)
+
+---
+
+### [Case 1594 — [COMBO] Thunder Lash (← → J)](./13%20case%20study.md#case-1594)
+
+**System**: Gen3-Burst / Beyblade 4D · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: dirChange+QTE: −22/1.30×/90ms/ringOutBonus +0.08; base+QTE: −13/1.17×/90ms/+0.03; miss: −7/1.04×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 85 · Defense 20 · Stamina 30 · Speed 80
+**Mechanism**: ← (leftward arc pre-load) → → (direction-reversal rightward cut) → J (apex strike). dirChange registered: −22, 1.30×, 90ms, +0.08 ringOut. Base: −13, 1.17×, 90ms. Cost 15, attack/balanced. Ceiling: 1.30× ≤ 1.5 ✓.
+**2.5D Rendering**: Left-right direction-change flash; contact burst on J
+**Gimmick**: comboDetect(seq=[moveLeft,moveRight,attack], window=600ms); directionChangeFlagAB
+**Engine Note**: dirChange: −22/1.30×/90ms/+0.08; base: −13/1.17×/90ms; cost 15; attack combo
+
+---
+
+### [Case 1595 — [GIMMICK] Clay Aries ED145B — ED145 Free-Spin Ring Two-Phase Uppercut Throw (Hyoma) [EXTENDS Cases 1555–1559]](./13%20case%20study.md#case-1595)
+
+**System**: Gen2-MFB / HWS · Attack/Defense
+**Geometry**: m_Aries = 39.4 g · v_approach = 1.5 m/s · p_approach = 0.059 N·s · h_contact = 4 mm below opponent equator
+**Material**: Clay Aries AR (ram-horn protrusions, downward-angled leading edge) + ED145 (r_ED=19mm, free-spin Energy Drain ring) + B tip (hemispherical, r=3mm, μ=0.05)
+**Spin Coupling**: Phase 1: F_c=11.8 N [CALC]; τ_tilt=0.047 N·m [CALC]; δθ≈30° [M] (physical 2–3°). Phase 3: v_ring=5.97 m/s; I_ring=7.2×10⁻⁷ kg·m²; spin drain via Energy Drain bearing
+**Contact Points**: Phase 2 uppercut: vertical impulse millinewton range physically; aerial throw entirely [M]. EXTENDS Cases 1555–1559.
+**Movement Freedom**: B-tip μ=0.05: 1.5 m/s approach speed; below-equator contact height 4–8mm
+**Base Stats**: Attack 65 · Defense 45 · Stamina 60 · Speed 60
+**Mechanism**: Phase 1: p=0.059 N·s, F_c=11.8 N [CALC], τ_tilt=0.047 N·m [CALC], δθ_phys=2–3°, BS=30° [M]. Phase 2: BeySpirit gyroscopic recovery → upward throw [M]. Phase 3: ED145 ring Energy Drain (v_ring=5.97 m/s) → secondary lateral strike + spin drain. EXTENDS Cases 1555–1559.
+**2.5D Rendering**: Low-approach arc (Phase 1); uppercut rise (Phase 2 [M]); ED145 ring follow-up contact (Phase 3)
+**Gimmick**: hornThrowPhases(h_contact, v_approach, ω_Aries) → F_c, τ_tilt, v_ring
+**Engine Note**: F_c 11.8 N [CALC]; τ_tilt 0.047 N·m [CALC]; Phase 2 aerial [M]; v_ring 5.97 m/s; ED drain [CALC]
+
+---
+
+### [Case 1596 — [SPECIAL] Horn Throw Destruction (Hyoma · Clay Aries ED145B)](./13%20case%20study.md#case-1596)
+
+**System**: Gen2-MFB / HWS · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: phase3+airborne+QTE: −65/×1.85[M]/120ms/ringOut 0.30; phase3+QTE: −65/×1.70/120ms/0.30; phase2+QTE: −45/×1.45/120ms/0.08; phase1+QTE: −25/×1.20/0ms/0.08; miss: −14/×1.08/0ms/0
+**Movement Freedom**: —
+**Base Stats**: Attack 65 · Defense 45 · Stamina 60 · Speed 60
+**Mechanism**: Three-phase flowing sequence: Phase 1 (low strike tilt induction) → Phase 2 (uppercut throw [M]) → Phase 3 (ED145 ring finish). phaseReached engine evaluates sequential hit. phase3+airborne+QTE: −65/×1.85[M]/120ms/ringOut 0.30. powerCost 100. ED145 Energy Drain Phase 3 drain (~8 spin) folded into spinDelta. **Anime physics override**: Phase 2 aerial throw via BeySpirit gyroscopic recovery [M].
+**2.5D Rendering**: Three-phase flowing arc; uppercut launch; ED145 ring finish
+**Gimmick**: hornThrowDestruction(phaseReached, qteHit, opponentAirborne) → spinDelta, dmgMult, lockMs, ringOutBonus
+**Special Move**: Horn Throw Destruction · powerCost 100 · animeOverride true
+**Compatible beys**: Downward-angled leading edge AR + low-friction hemispherical tip + ED145 or equivalent free-spin ring; full three-phase requires Hyoma's Clay Aries BeySpirit
+**Engine Note**: phase3+airborne+QTE: −65/×1.85[M]/120ms; powerCost 100
+
+---
+
+### [Case 1597 — [COMBO] Rising Horn (↓ ↑ J)](./13%20case%20study.md#case-1597)
+
+**System**: Gen2-MFB / HWS · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: lowApproach+QTE: −24/1.33×/100ms/ringOutBonus +0.07; base+QTE: −15/1.19×/60ms/+0.02; miss: −7/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 65 · Defense 45 · Stamina 60 · Speed 60
+**Mechanism**: ↓ (low-approach dip, below-equator angle) → ↑ (rising cut reversal) → J (throw apex). lowApproachRegistered: −24, 1.33×, 100ms, +0.07 ringOut. Base: −15, 1.19×, 60ms. Cost 15, attack/balanced. Ceiling: 1.33× ≤ 1.5 ✓.
+**2.5D Rendering**: Low-dip arc; rising cut; throw apex flash
+**Gimmick**: comboDetect(seq=[moveDown,moveUp,attack], window=600ms); lowApproachFlag
+**Engine Note**: lowApproach: −24/1.33×/100ms/+0.07; base: −15/1.19×/60ms; cost 15; attack combo
+
+---
+
+### [Case 1598 — [GIMMICK] Hyper Horusood Upper-Claw — Claw Driver Forced-Vortex Air Circulation (Hoji Konda) [EXTENDS Cases 1560–1563]](./13%20case%20study.md#case-1598)
+
+**System**: Gen3-Burst / Beyblade Burst · Defense/Stamina
+**Geometry**: r_prong = 0.8 cm · h_prong = 4 mm · ω_H = 293 rad/s (2800 RPM) · 3 rotary prongs
+**Material**: Claw Performance Tip (three rotary prongs); Hyper Horusood assembly
+**Spin Coupling**: v_core = 2.34 m/s [CALCULATED]; Γ = 0.1177 m²/s [CALCULATED]; ΔP_core = 3.28 Pa [CALCULATED]. BeySpirit: Γ_[M] = 1.47 m²/s (×12.5); v_θ≈8.3 m/s at r=25mm → ejection threshold
+**Contact Points**: Physical ejection threshold: F_friction=0.103 N → requires v_air≥8.28 m/s; physical v_core=2.34 m/s 3.5× below threshold → BeySpirit amplification required [M]
+**Movement Freedom**: Claw must maintain floor contact (not airborne); forceState: 'must_maintain_grind'
+**Base Stats**: Attack 30 · Defense 70 · Stamina 70 · Speed 40
+**Mechanism**: r_prong=8mm, ω_H=293 rad/s: v_core=2.34 m/s [CALC], Γ=0.1177 m²/s [CALC], ΔP_core=3.28 Pa [CALC]. Physical v 3.5× below ejection threshold. BeySpirit Γ_[M]=1.47 m²/s (×12.5) → v_θ=8.3 m/s at r=25mm [M] → ring-out ejection [M]. EXTENDS Cases 1560–1563.
+**2.5D Rendering**: Claw prong rotation; vortex-column field expanding; ring-out zone indicator at r=25mm
+**Gimmick**: clawVortex(ω_H, r_prong, h_prong) → v_core, Γ, ΔP; beySpirit(Γ) → v_θ_ejection
+**Engine Note**: v_core 2.34 m/s [CALC]; Γ 0.1177 m²/s [CALC]; BeySpirit Γ×12.5 [M]; ejection v_θ 8.3 m/s [M]
+
+---
+
+### [Case 1599 — [SPECIAL] Horusood Field (Hoji Konda · Hyper Horusood Upper-Claw)](./13%20case%20study.md#case-1599)
+
+**System**: Gen3-Burst / Beyblade Burst · Special Move
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: clawEngaged+build1000+close+QTE: −50/×1.60[M]/0ms/ringOut 0.80; build500+QTE: −35/×1.35[M]/0ms/0.47; build0+QTE: −20/×1.10/0ms/0; miss: −(8+5)/×1.05/0ms/0
+**Movement Freedom**: —
+**Base Stats**: Attack 30 · Defense 70 · Stamina 70 · Speed 40
+**Mechanism**: clawEngaged gates move; vortexBuildMs accumulates (max 1000ms); oppDistancePx falls off at 200px. spinDelta=−(20+round(buildNorm×30)); dmgMult=1.10+buildNorm×0.50 (1.10→1.60×[M]). powerCost 100. No lockMs (field is radial push). **Anime physics override**: Rankine vortex (Γ=0.1177 m²/s) BeySpirit-amplified ×12.5 → v_θ=8.3 m/s ring-out [M].
+**2.5D Rendering**: Claw-engaged indicator; vortex build timer; proximity-based ring-out zone; radial ejection
+**Gimmick**: horusoodField(clawEngaged, vortexBuildMs, oppDistancePx, qteHit) → spinDelta, dmgMult, lockMs, ringOutBonus
+**Special Move**: Horusood Field · powerCost 100 · animeOverride true
+**Compatible beys**: Hyper Horusood Upper-Claw (Hoji Konda); Claw driver (elevated rotating prong tip); full ring-out requires raptor BeySpirit
+**Engine Note**: full build+close+QTE: −50/×1.60[M]/ringOut 0.80; buildNorm ramps 1.10→1.60×; powerCost 100
+
+---
+
+### [Case 1600 — [COMBO] Claw Whirl (← ↓ K)](./13%20case%20study.md#case-1600)
+
+**System**: Gen3-Burst / Beyblade Burst · Combo
+**Geometry**: —
+**Material**: —
+**Spin Coupling**: —
+**Contact Points**: orbital+QTE: −28/1.38×/140ms/ringOutBonus +0.18; base+QTE: −16/1.22×/80ms/+0.06; miss: −9/1.05×/0ms
+**Movement Freedom**: —
+**Base Stats**: Attack 30 · Defense 70 · Stamina 70 · Speed 40
+**Mechanism**: ← (counterclockwise orbital arc, Claw prong engagement begins, ~80ms pre-load) → ↓ (inward funnel cut, concentrates circulation) → K (burst at funnel apex). orbital arc completed: −28, 1.38×, 140ms, +0.18 ringOut. Base: −16, 1.22×, 80ms. Cost 25, stamina/defense. Ceiling: 1.38× ≤ 1.5 ✓.
+**2.5D Rendering**: Counterclockwise orbital arc; inward funnel cut; burst flash on K
+**Gimmick**: comboDetect(seq=[moveLeft,moveDown,defense], window=600ms); orbitalArcFlag
+**Engine Note**: orbital: −28/1.38×/140ms/+0.18; base: −16/1.22×/80ms; cost 25; stamina combo

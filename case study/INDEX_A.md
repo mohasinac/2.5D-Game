@@ -5402,5 +5402,431 @@ Source: `7 case study.md`
 
 ---
 
+## CS8 — Cases 375–415 {#cs8}
+Source: `8 case study.md`
+
+---
+
+### [Case 375 — Shark Edge (BX Blade): C₃ Dual-Face Attack Geometry, Upper Attack Force Decomposition, and Recoil-Driven Spin Depletion](./8%20case%20study.md#case-375)
+
+**System**: Beyblade X (BX)  
+**Geometry**: C₃ symmetry; m≈34.5 g; 3 fins: hub m≈9 g (r_i=0.3 cm, r_o=1.2 cm), fins m≈25.5 g (r=1.2–2.6 cm); I_blade≈1.031×10⁻⁵ kg·m²; I_system≈1.106×10⁻⁵ kg·m² (93.2% blade). Fin arc: 40° each; inter-fin gap: 80°. Upper face α≈35° above horizontal; smash face φ≈20° from radial. r_o≈2.6 cm.  
+**Material**: zinc alloy (E≈100 GPa, ρ≈6600 kg/m³)  
+**Contact Points**: Upper attack face (α=35°): J_horiz=0.819J, J_vert=0.574J → lifts opponent, reduces burst T_burst_eff by 12.5%. Smash face (φ=20°): smash=cos20°=0.940, recoil=sin20°=0.342. Zinc-on-zinc contact: peak pressure≈316 MPa (exceeds elastic limit → surface micro-yielding).  
+**Mechanism**: Glass cannon: recoil decay≈−304 rad/s² at contact; blended ≈−66.6 rad/s²; battle window≈10.5 s. Must ring-out or burst within window. Counter: PhoenixWing (Case 377) — SE's aggressive Bit drains SE faster than PW's stamina Bit drains PW.  
+**Engine Note**: symm=C3; m_g=34.5; I_blade=1.031e-5; smashFraction=0.940; recoilFraction=0.342; upperAlpha_deg=35; battleWindow_s=10.5; glassCannon.
+
+---
+
+### [Case 376 — Dran Dagger (BX Blade): C₆ Barrage Frequency, Moderate-φ Flat-Blade Contact, and Stalemate Failure Condition](./8%20case%20study.md#case-376)
+
+**System**: Beyblade X (BX)  
+**Geometry**: C₆ symmetry; m≈34.9–35.7 g; 6 swept flat-dagger blades; r_o≈2.4 cm (estimated); I_system≈1.031×10⁻⁵ kg·m². Contact face φ≈40° from radial. 50% arc coverage.  
+**Material**: zinc alloy  
+**Contact Points**: φ=40°: smash=cos40°=0.766, recoil=sin40°=0.643. C₆ frequency: f=ω×6/(2π)≈573 Hz at ω=600 rad/s. 6 moderate-push per revolution.  
+**Mechanism**: Barrage failure mode: if per-hit impulse J×cos(40°) < m_opp×v_rim, no single strike ejects opponent → cumulative shove absorbed by high-I defense or free-spin stamina. C₆ provides 50% annular coverage → more uniform I tensor → suppresses dynamic imbalance vs C₃. Flat-dagger trailing surface deflects incoming impacts tangentially (defensive side effect).  
+**Engine Note**: symm=C6; m_g=35.3; smashFraction=0.766; recoilFraction=0.643; stalemateRisk=highI_opponent; uniformI=C6_advantage.
+
+---
+
+### [Case 377 — Phoenix Wing (BX Blade): Weight-Class Inertia Dominance, 9-Tab Burst Hardening, Gap Vulnerability, and Top-Heavy Precession Onset](./8%20case%20study.md#case-377)
+
+**System**: Beyblade X (BX)  
+**Geometry**: C₃ symmetry; m≈39.0 g (Mold 3); hub m≈9 g (r_i=0.4 cm, r_o=1.3 cm); wings m≈30 g (r=1.3–2.8 cm); I_blade≈1.400×10⁻⁵ kg·m²; I_system≈1.474×10⁻⁵ kg·m² (+35.8% vs Shark Edge). Wing arc: 55° each (45.8% coverage); inter-wing gap: 65°. r_o≈2.8 cm. z_CoM≈4.62 mm above mid-plane.  
+**Material**: zinc alloy  
+**Contact Points**: Smash face φ≈25°: smash=cos25°=0.906, recoil=sin25°=0.423. Upper attack α≈40°: J_vert=0.643J (largest upper-attack fraction in BX lineup). Wide wing arc 55° → 1.375× contact duration vs Shark Edge → single-hit ring-out potential (Δv≈0.138 m/s, borderline).  
+**Mechanism**: I-dominant: absorbs hits with less spin loss than all lighter BX blades. Gap vulnerability: 65° gap exposes Ratchet at r≈1.3 cm; 9-tab Ratchet at gap requires J≈0.235 N·s to burst (achievable but non-trivial). Precession onset: ω≈120 rad/s (≈1145 RPM) — earlier than flat-profile blade (≈61 rad/s). Recommended: 9-60 or 5-60 Ratchet to lower CoM height.  
+**Engine Note**: symm=C3; m_g=39.0; I_system=1.474e-5; ratchetTabs=9; topple_rad_s=120; wingArc_deg=55; Mold3_I_increase=3.6pct.
+
+---
+
+### [Case 378 — Cobalt Drake (BX Blade): C₄ Blocky-Rectangle Contact, Dual-Role Deflection and Moderate Smash, and Round-Profile Gyroscopic Balance](./8%20case%20study.md#case-378)
+
+**System**: Beyblade X (BX)  
+**Geometry**: C₄ symmetry; m≈37.1 g; hub m≈9 g (r_i=0.4 cm, r_o=1.1 cm); 4 blocks m≈28.1 g (r=1.1–2.6 cm); I_blade≈1.077×10⁻⁵ kg·m²; I_system≈1.151×10⁻⁵ kg·m². Block arc: 40° each (44.4% coverage); inter-block concavity: 50° (shallow). r_o≈2.6 cm. z_CoM≈4 mm above mid-plane.  
+**Material**: zinc alloy  
+**Contact Points**: φ≈42°: smash=cos42°=0.743, recoil=sin42°=0.669. C₄ frequency: f=ω×4/(2π). Round/octagonal perimeter → incoming attacks glance rather than lock in concavity → minimises burst torque coupling per event.  
+**Mechanism**: Defensive character from deflection geometry. Near-circular outer profile: more uniform I than C₃ fins → suppresses dynamic imbalance. Precession onset: ω≈83 rad/s (intermediate: better than Phoenix Wing 120 rad/s, worse than flat blade 61 rad/s).  
+**Engine Note**: symm=C4; m_g=37.1; I_system=1.151e-5; smashFraction=0.743; topple_rad_s=83; roundProfile=deflectionDefense.
+
+---
+
+### [Case 379 — Dran Buster (UX Blade): C₂ Oval One-Shot Maximisation, 1-Tab Ratchet Glass-Cannon Architecture, and Impulse-Duration Amplification](./8%20case%20study.md#case-379)
+
+**System**: Beyblade X (UX)  
+**Geometry**: C₂ oval; m≈36.75 g; 2 lobes m≈20 g (r_CoM≈2.2 cm); hub+bridge m≈16.75 g (r=0.4–1.4 cm); I_blade≈1.118×10⁻⁵ kg·m²; I_system≈1.192×10⁻⁵ kg·m². Lobe arc≈90° each; r_major≈2.8 cm; 50% arc coverage at poles. Smash face φ≈12° from radial.  
+**Material**: zinc alloy  
+**Contact Points**: φ=12°: smash=cos12°=0.978 (highest in lineup), recoil=sin12°=0.208 (lowest). Contact duration C₂/C₃ ratio≈2.06 → J_DB≈2.06×J_SE_ref. Single-hit ring-out: Δv≈0.224 m/s (1.49× ring-out threshold of 0.15 m/s).  
+**Mechanism**: 1-tab Ratchet: T_burst≈2.65×10⁻³ N·m (minimum in lineup). Gap burst: J≈0.204 N·s to burst through oval gap — achievable. Recoil decay≈−215 rad/s²; battle window≈13.6 s. One clean hit wins; miss → spin-out before stamina opponents. UX-01 paired with 1-60A Ratchet-Bit.  
+**Engine Note**: symm=C2_oval; m_g=36.75; I_system=1.192e-5; smashFraction=0.978; ratchetTabs=1; oneShot_ringOut_ms=0.224; battleWindow_s=13.6.
+
+---
+
+### [Case 380 — Hells Hammer (UX Blade): C₃ Down-Smash Geometry, Negative-Elevation Impulse Decomposition, and Height-Restricted Contact Window](./8%20case%20study.md#case-380)
+
+**System**: Beyblade X (UX)  
+**Geometry**: C₃ symmetry; m≈33.0 g (lightest BX/UX blade); 3 broad curved wings sweeping downward below mid-plane. Geometric tip r_3D≈2.7 cm; effective horizontal projection r_eff≈2.4 cm. Downward slope α≈−25° from horizontal. I_system≈8.63×10⁻⁶ kg·m² (−22% vs Dran Dagger; −41% vs Phoenix Wing). UX-02 paired with 3-70H Ratchet-Bit.  
+**Material**: zinc alloy  
+**Contact Points**: Down-smash 3D normal: smash=cos(φ)×cos(α), recoil=sin(φ)×cos(α), downward=sin(α). Downward component drives opponent Layer into floor → ↑Bit friction → ↑spin decay → presses contact zone down into Ratchet tab-exposure region.  
+**Mechanism**: Specialist Slam (Down Smash). Height-critical: H-type Bit at 70 mm total height positions wing contact at 54 mm → contacts upper Layer (wrong target, misses Ratchet zone). At ≤60 mm total height → descends to 38–50 mm → aligns with lower Layer/Ratchet for correct Slam. Light I = fastest self-depleter. Recommended: sub-60 mm stable Bit.  
+**Engine Note**: symm=C3; m_g=33.0; I_system=8.63e-6; downSmash=true; downAlpha_deg=−25; heightCritical=60mm_or_less; lightestBXUX.
+
+---
+
+### [Case 381 — Wizard Rod (UX Blade): C₅ Outward Weight Distribution, Gyroscopic Angular-Momentum Reserve, and Attack-Deflection AVA Superiority](./8%20case%20study.md#case-381)
+
+**System**: Beyblade X (UX)  
+**Geometry**: C₅ near-circular; m≈35.5 g; outer rim mass≈73% of blade mass; r_o≈2.8 cm (rim r_i≈2.0 cm, r_o≈2.8 cm); hub r≈0.4–1.2 cm; I_system≈1.742×10⁻⁵ kg·m² (highest in BX/UX lineup, +18% vs Phoenix Wing, 2.02× Hells Hammer). UX-03 paired with 5-70DB.  
+**Material**: zinc alloy  
+**Contact Points**: 5 slight bump-protrusions on near-circular rim; φ≈5° (near-circular); R_rim≈2.8 cm (large curvature → shallow Hertz patch). Per-event J≈0.0015 N·s; Δω≈0.20 rad/s per contact. Attacker recoil on circular rim: fin redirected nearly tangentially → large recoil fraction on attacker.  
+**Mechanism**: OWD maximises I → slowest spin decay: dω/dt≈−5.99 rad/s² (DB Bit); theoretical window≈117 s. L=I×ω=6.97×10⁻³ kg·m²/s at ω=400 rad/s (57% more gyro resistance than Shark Edge). 5-tab Ratchet T_burst≈1.326×10⁻² N·m. Optimal: DB Bit for maximum stamina and wall-orbit gyroscopic stability.  
+**Engine Note**: symm=C5_nearCircular; m_g=35.5; I_system=1.742e-5; OWD=73pctRim; spinDecay_rad_s2=−5.99; ratchetTabs=5; stamina_window_s=117; highest_I_BXUX.
+
+---
+
+### [Case 382 — Cobalt Dragoon (BX Blade): Left-Spin Counter-Rotation Velocity Amplification, C₄ Upper-Blade Bit-Burst Mechanics, and Hollow-Section Inertia Deficit](./8%20case%20study.md#case-382)
+
+**System**: Beyblade X (BX)  
+**Geometry**: C₄ left-spin; m≈37.8 g; 4 upper-sloped hollow wings: outer shells m≈20 g (r_i=1.9 cm, r_o=2.6 cm); hollow zone r=1.0–1.9 cm (through-holes). I_system≈1.289×10⁻⁵ kg·m². r_o≈2.6 cm. α≈30° above horizontal; φ≈25° from radial. BX-34 paired with 2-60C.  
+**Material**: zinc alloy (hollowed mid-radius)  
+**Contact Points**: Counter-spin velocity amplification: v_rel_counter=r×(ω_L+ω_R) vs v_rel_same≈0→0.5 m/s → 40× amplification factor at equal ω=400 rad/s. 3D normal: smash=cos25°×cos30°≈0.784, recoil=sin25°×cos30°≈0.366, upper-lift=sin30°=0.500. Bit Burst: large J_counter → angular impulse exceeds Ratchet-Bit retention torque → Bit physical ejection.  
+**Mechanism**: 2-tab Ratchet: T_burst≈5.30×10⁻³ N·m (second-lowest). Self-burst risk through C₄ gaps if KO missed. Optimal: hard-launch early KO so ω_L >> ω_R at first contact. Hollow I_deficit penalises same-direction spin equalization.  
+**Engine Note**: symm=C4_leftSpin; m_g=37.8; I_system=1.289e-5; counterSpinAmplification=40x; ratchetTabs=2; BitBurst=possible; hollowZone_I_deficit.
+
+---
+
+### [Case 383 — Aero Pegasus (UX Blade): C₃ Wide-Wing Smash-Upper Duality, Double-Metal-Coat Mass Premium, and Top-Heavy Nutation Onset](./8%20case%20study.md#case-383)
+
+**System**: Beyblade X (UX)  
+**Geometry**: C₃ symmetry; m≈38.1 g (Double Metal Coat adds ≈0.3 g); 3 wide smooth wings: m≈27 g (r_i=1.4 cm, r_o=3.0 cm); hub m≈11.1 g. I_system≈1.539×10⁻⁵ kg·m² (2nd highest, after Wizard Rod). Wing arc≈90° each; gap≈30°; r_o≈3.0 cm. z_CoM_wings≈3.5 mm above mid-plane. UX-00 paired with 3-70A.  
+**Material**: zinc alloy (Double Metal Coat)  
+**Contact Points**: Primary smash: φ≈22°, α≈15° (upper). Contact normal: smash=cos22°×cos15°≈0.895J; upper=sin15°≈0.259J; recoil=sin22°×cos15°≈0.361J. Wide-wing 90° arc → long contact duration.  
+**Mechanism**: Precession at ω=100 rad/s: ω_precess≈3.42 rad/s (visible tilting). Nutation onset≈9.44 rad/s (near-stopped). Stamina: dω/dt≈−7.29 rad/s² on Ball → near-Wizard Rod performance. Most versatile blade: attack + stamina + defense-capable. 3-tab Ratchet; C₃ 120° gaps expose Ratchet at 70 mm height.  
+**Engine Note**: symm=C3; m_g=38.1; I_system=1.539e-5; doubleMetalCoat=0.3g_premium; smashDual=true; stamina_decay=7.29rad_s2; nutationOnset=9.44rad_s.
+
+---
+
+### [Case 384 — Silver Wolf (UX Blade): Specialist Free Spin, Free-Spin Ring Contact Decoupling, Bearing-Reduced Tip Friction, and Top-Heavy Orbital Instability](./8%20case%20study.md#case-384)
+
+**System**: Beyblade X (UX)  
+**Geometry**: Composite: zinc C₃ core m≈22 g (r_i=1.0 cm, r_o=2.6 cm) + free-spin PC ring m≈6.65 g (r_i=2.6 cm, r_o=3.0 cm) on bearing. Total m≈36.65 g. I_main≈8.757×10⁻⁶ kg·m² (zinc only; decoupled ring not counted). z_CoM≈4 mm above mid-plane; nutation onset≈11.7 rad/s. UX-08 paired with 3-80FB.  
+**Material**: Zinc core + polycarbonate free-spin outer ring + bearing  
+**Gimmick**: Free-spin ring: opponent strikes ring → ring rotates freely → main assembly Δω=0 (complete decoupling). FB Bit: bearing decouples ball tip from Ratchet → tip spin rate ≠ assembly spin rate → μ_bearing≈0.005 vs μ_ball≈0.10 → dω/dt≈−0.615 rad/s² → theoretical window≈1138 s. Spin-equalization paradox: cannot gain or lose spin from opponents.  
+**Mechanism**: Dual decoupling: (1) outer ring absorbs blade-level collisions; (2) FB Bit absorbs tip-friction torque. 3-tab Ratchet. Optimal Bit: FB for maximum decoupling. Liability: no XD capability; 80 mm default height worsens gap exposure.  
+**Engine Note**: symm=C3_zincCore+freeSpin_ring; m_g=36.65; I_main=8.757e-6; ringDecouple=true; FBBit_decay=0.615rad_s2; spinEqualizationImmune; bearing_mu=0.005.
+
+---
+
+### [Case 385 — Impact Drake (UX Blade): Specialist Rubber Attack, Bi-Material C₄ Contact Mechanics, Anti-Slide Condition, and Rubber Self-Friction Spin Budget](./8%20case%20study.md#case-385)
+
+**System**: Beyblade X (UX)  
+**Geometry**: C₄ bi-material; m≈38.85 g; zinc wings upper m≈26 g (r_i=1.2 cm, r_o=2.7 cm); rubber inserts lower section (r≈2.2–2.6 cm). I_system estimated ≈1.3×10⁻⁵ kg·m² (approximate). φ≈35°; α≈25° (zinc upper zone). r_o≈2.7 cm. UX-11 paired with 9-60LR.  
+**Material**: Zinc alloy upper contact + rubber lower contact inserts (E_rubber≈0.002 GPa; μ_rubber≈0.80; e_rubber≈0.25)  
+**Contact Points**: Anti-slide: μ_rubber=0.80 > tan(35°)=0.70 → no tangential slide at φ=35° (zinc would slide at φ>16.7°). Extended contact duration: rubber E×28-fold larger contact patch (a_rubber≈0.065 cm) → t_contact≈15 ms → progressive Ratchet spring loading ("sniping" the Ratchet at low height). Rubber does NOT increase J vs zinc (e=0.25 vs e=0.65 → lower J_rubber).  
+**Mechanism**: 9-tab Ratchet (max burst resistance, same as Phoenix Wing). Severe self-friction: Δω≈8.69 rad/s per hit + LR Bit μ≈0.45 r_tip=0.6 cm → dω/dt_tip≈−70.3 rad/s²; battle window≈4.2 s (shortest in lineup). Precession onset≈10.5 rad/s. Glass-cannon: wins quickly or spins out.  
+**Engine Note**: symm=C4_biMaterial; m_g=38.85; rubber_antiSlide=true; extendedContact_15ms=true; ratchetTabs=9; battleWindow_s=4.2; shortestWindow_lineup.
+
+---
+
+### [Case 386 — M-85 (BX Ratchet): Metal-Ring Inertia Augmentation, O-Type Snap Joint Binary Burst Mechanics, and Weight Pre-Load Burst Resistance](./8%20case%20study.md#case-386)
+
+**System**: Beyblade X (BX) — Ratchet  
+**Geometry**: 5-protrusion (C₅); height=8.5 mm (tallest in lineup); m=10.6 g (heaviest); metal ring riveted to underside (m_ring≈3.6 g, r_i≈0.5 cm, r_o≈1.5 cm); I_M85≈1.148×10⁻⁶ kg·m² (+55% vs standard 5-tab reference 7.42×10⁻⁷ kg·m²). BX-44 (TT) / G3028 (Hasbro).  
+**Material**: PC body + metal ring (inner)  
+**Mechanism**: O-type snap joint ("Simple Type Ratchet") — single-position snap ring; NO rotation mechanism → binary burst (full hold or catastrophic release; no progressive partial-burst states). Snap ring yield governs vs tab-spring. Gravitational pre-load: F_preload≈0.0236 N → ΔT_burst≈2.50×10⁻⁴ N·m ≈+1.9%. ΔI≈4.06×10⁻⁷ kg·m² over standard → +3.5% system stamina. T_burst = tab formula NOT applicable (no tabs); burst = snap ring deflection yield.  
+**Engine Note**: type=Ratchet_BX; protrusions=5; height_mm=8.5; mass_g=10.6; joint=OType_snap; I=1.148e-6; binaryBurst; metalRing_underside.
+
+---
+
+### [Case 387 — 2-60 (BX Ratchet): Minimum-Tab Burst Catastrophe, Blocky Protrusion Gap Geometry, and Tall-Height Contact-Zone Mismatch](./8%20case%20study.md#case-387)
+
+**System**: Beyblade X (BX) — Ratchet  
+**Geometry**: 2-protrusion (C₂); height=6.0 mm; m=6.2 g; I≈6.22×10⁻⁷ kg·m²; protrusion arc≈25° (blocky/wider than CG render); inter-protrusion gap≈155°; gap fraction≈86.1% (highest in lineup). BX-34 (TT) / G1491 (Hasbro). Paired: Cobalt Dragoon (Case 382).  
+**Material**: PC  
+**Mechanism**: T_burst=2×F_spring×cos(β)×r = ≈5.31×10⁻³ N·m (2nd lowest after 1-tab). Single moderate contact (J≈0.060 N·s at r=2.6 cm) → τ_peak≈7.80×10⁻³ N·m → 47% above 2-tab threshold → immediate burst. Blocky protrusion: wider leading face + greater protrusion → wider burst-unlock angular window. Gap fraction 86%: 86% of angular orientations vulnerable. Production discrepancy: shipped protrusions wider/further than CG spec.  
+**Engine Note**: type=Ratchet_BX; protrusions=2; height_mm=6.0; mass_g=6.2; joint=rotatingTab; T_burst=5.31e-3; gapFraction=86pct; cobaltDragoon_paired.
+
+---
+
+### [Case 388 — 4-50 (UX Ratchet): Minimum-Height Profile Optimisation, Low-Stack Customisation Mechanics, and 4-Tab Burst Equilibrium](./8%20case%20study.md#case-388)
+
+**System**: Beyblade X (UX) — Ratchet  
+**Geometry**: 4-protrusion (C₄); height=5.0 mm (lowest in entire BX/UX lineup); m=5.9 g; I≈5.919×10⁻⁷ kg·m² (lowest PC-only Ratchet). UX-15 (TT) / G2731 (Hasbro).  
+**Material**: PC (no metal ring)  
+**Mechanism**: T_burst=4-tab≈1.061×10⁻² N·m (80% of 5-tab threshold; moderate risk). Dominant purpose: stack-height minimisation — places Blade 1.5–3.0 mm below standard-height opponents → height-mismatch evasion → hits land below opponent's burst-locking geometry. Axial thinness (5 mm) reduces off-axis tilt torque moment arm → marginally improves tilt-induced burst resistance. I contribution (5.9×10⁻⁷) = only 4–6% of system I → Ratchet mass savings <0.3% system I variation.  
+**Engine Note**: type=Ratchet_UX; protrusions=4; height_mm=5.0; mass_g=5.9; joint=rotatingTab; T_burst=1.061e-2; minimumHeight_lineup; heightEvasion.
+
+---
+
+### [Case 389 — 4-55 (CX Ratchet): O-Type Snap Joint on a 4-Protrusion Body, Lightest-Ratchet Inertia Minimum, and Binary Burst at the Mass Floor](./8%20case%20study.md#case-389)
+
+**System**: Beyblade X (CX) — Ratchet  
+**Geometry**: 4-protrusion (C₄); height=5.5 mm (mid-low); m=4.8 g (lightest production Ratchet); I≈4.816×10⁻⁷ kg·m² (system floor). CX-02 (TT) / G1679 (Hasbro).  
+**Material**: PC (no metal ring)  
+**Mechanism**: O-type snap joint ("Simple Type Ratchet") — same mechanism as M-85. T_snap≈1.44 N·m (136× the 4-tab progressive threshold). Binary burst: hold or catastrophic snap. 4-protrusion C₄ geometry: 90° sectors, 20° protrusion arc, 70° inter-snap gap — gap is irrelevant for snap-joint (radially symmetric retention). Minimum mass for builds prioritising snap-joint burst immunity over system inertia.  
+**Engine Note**: type=Ratchet_CX; protrusions=4; height_mm=5.5; mass_g=4.8; joint=OType_snap; T_snap=1.44Nm; lightestRatchet; binaryBurst.
+
+---
+
+### [Case 390 — 7-70 (UX Ratchet): Maximum-Tab Burst Suppression, Tallest Protrusion Height-Tier Mechanics, and Gap-Geometry Defence at C₇ Spacing](./8%20case%20study.md#case-390)
+
+**System**: Beyblade X (UX) — Ratchet  
+**Geometry**: 7-protrusion (C₇); height=7.0 mm (tallest standard rotating-tab tier); m=7.3 g; I≈7.324×10⁻⁷ kg·m². 40° sector repeat; protrusion arc≈20°; gap≈31.4°; gap fraction=61.1% (lowest rotating-tab in lineup). UX-10 (TT) / G3195 (Hasbro).  
+**Material**: PC  
+**Mechanism**: T_burst=7-tab≈1.857×10⁻² N·m (+40% over 5-tab; 3.5× the 2-60). Highest rotating-tab burst resistance. Gap fraction 61% vs 2-60's 86% → 36% less vulnerable orientations. Diminishing returns: each additional tab adds +2.65×10⁻³ N·m linearly (not multiplicative). Preferred over snap-joint for players wanting progressive burst feedback.  
+**Engine Note**: type=Ratchet_UX; protrusions=7; height_mm=7.0; mass_g=7.3; joint=rotatingTab; T_burst=1.857e-2; gapFraction=61pct; maxTab_rotatingFamily.
+
+---
+
+### [Case 391 — 7-80 (BX Ratchet): 7-Tab Burst Threshold at Maximum Standard Height, Heavy-Body Inertia Ceiling, and Tall-Stack Contact-Zone Elevation](./8%20case%20study.md#case-391)
+
+**System**: Beyblade X (BX) — Ratchet  
+**Geometry**: 7-protrusion (C₇); height=8.0 mm (tallest PC rotating-tab; only M-85 at 8.5 mm is taller); m=7.8 g (heaviest PC rotating-tab); I≈7.824×10⁻⁷ kg·m² (+6.8% over 5-tab reference). 40° sector repeat; gap fraction=61.1% (same as 7-70). BX-39 (TT) / G1675 (Hasbro).  
+**Material**: PC  
+**Mechanism**: T_burst=7-tab≈1.857×10⁻² N·m (same as 7-70; tab count unchanged). Height 8.0 mm: contact zone at z≈8.0 mm → 1 mm higher than 7-70 → engages fins reaching z>7.0 mm. Optimal for tall-profile Blades (Phoenix Wing, Aero Pegasus). For short-profile Blades: no height advantage over 7-70; ΔI≈4×10⁻⁸ kg·m² only additional value.  
+**Engine Note**: type=Ratchet_BX; protrusions=7; height_mm=8.0; mass_g=7.8; joint=rotatingTab; T_burst=1.857e-2; tallestPC_rotatingTab; pairedWith=tallBlades.
+
+---
+
+### [Case 392 — 1-60 (UX Ratchet): Minimum-Tab Burst Floor, Single-Protrusion Contact Frequency Collapse, and Concentrated-Impact Attack Pairing](./8%20case%20study.md#case-392)
+
+**System**: Beyblade X (UX) — Ratchet  
+**Geometry**: 1-protrusion (C₁); height=6.0 mm; m=6.0 g; I≈6.0×10⁻⁷ kg·m² (estimated). Gap arc=340° (94.4% of circumference). UX-01 (paired with Dran Buster 1-60A).  
+**Material**: PC  
+**Mechanism**: T_burst_1tab≈2.651×10⁻³ N·m (minimum rotating-tab). Light contact J=0.010 N·s at r=2.6 cm → τ_peak≈0.130 N·m → 49× threshold → immediate burst. Contact frequency collapse: f=ω/(2π)≈63.7 Hz at ω=400 (vs 318 Hz for 5-tab). Single tab accumulates kinetic energy from 340° free rotation → impulse spike at engagement. Paired with Dran Buster: deliberate attack trade-off — one decisive hit before opponent can burst back.  
+**Engine Note**: type=Ratchet_UX; protrusions=1; height_mm=6.0; mass_g=6.0; joint=rotatingTab; T_burst=2.651e-3; gapFraction=94pct; pairedWith=DranBuster.
+
+---
+
+### [Case 393 — 1-70 (Ratchet): Single-Tab Contact Dynamics at Tall Height, Gap-Arc Wobble Amplification, and Balance-Destabilising Asymmetry](./8%20case%20study.md#case-393)
+
+**System**: Beyblade X (Ratchet)  
+**Geometry**: 1-protrusion (C₁); height=7.0 mm; m≈6.0 g (estimated ±5%); gap arc=340°. C₁ mass imbalance: Δr_CoM≈1.25 mm from geometric centre. Note: product code not confirmed at time of writing.  
+**Material**: PC (estimated)  
+**Mechanism**: T_burst_1tab≈2.651×10⁻³ N·m (identical to 1-60). Height advantage: engages tall-fin Blades (z>6.0 mm). Height disadvantage: raises CoM by 0.5 mm → precession at higher ω (ω_nut ∝ 1/h → nutates earlier than 1-60). C₁ imbalance: F_imbal≈1.20 N at ω=400 rad/s → once-per-revolution wobble forcing. Use case: niche — attack rhythm synchroniser via imbalance dynamics.  
+**Engine Note**: type=Ratchet; protrusions=1; height_mm=7.0; mass_g=approx6; joint=rotatingTab; T_burst=2.651e-3; C1_imbalance=1.25mm_offset; worsePrecession_than_1_60.
+
+---
+
+### [Case 394 — 0-60 (Ratchet): Zero-Protrusion Friction-Retention Free-Spin Mechanics, Tab-Formula Breakdown, and Rotational Decoupling Burst Immunity](./8%20case%20study.md#case-394)
+
+**System**: Beyblade X (Ratchet)  
+**Geometry**: 0-protrusion (C∞, rotationally symmetric); height=6.0 mm; m≈5.5 g (estimated ±8%); smooth flat top face. Note: product code not confirmed at time of writing.  
+**Material**: PC (estimated)  
+**Mechanism**: T_burst_tab_formula=0 (N=0 → no tab retention). Friction-only retention: T_friction=μ_PC×F_axial×r_eff≈0.30×15N×0.0095m≈0.0428 N·m (≈16.2× the 5-tab threshold). But failure mode is gradual slip (not discrete burst): Blade spins freely relative to Ratchet when τ>T_friction, absorbing contact impulse through sliding rather than tab cam-over. No conventional burst (Blade does not eject). XD mechanism also lost during slip (Blade-Bit coupling needed for XD). Best as passive stamina/balance avoiding contact.  
+**Engine Note**: type=Ratchet; protrusions=0; height_mm=6.0; mass_g=approx5.5; joint=frictionOnly; T_friction=0.0428Nm; noBurst_conventional; XD_disabled_on_slip.
+
+---
+
+### [Case 395 — 9-70 (UX Ratchet): Maximum Rotating-Tab Count, Near-50% Gap Fraction at C₉ Geometry, and Rounded-Protrusion Reduced Contact Impulse](./8%20case%20study.md#case-395)
+
+**System**: Beyblade X (UX) — Ratchet  
+**Geometry**: 9-protrusion (C₉, rounded); height=7.0 mm; m=6.4 g; dual-component construction (lighter outer ring + darker inner body). 40° sector repeat; protrusion arc≈18° (rounded); gap≈22°; gap fraction=55% (lowest rotating-tab). UX-07 (TT, Phoenix Rudder Deck Set).  
+**Material**: PC dual-component (two-shot moulding likely)  
+**Mechanism**: T_burst_9tab≈2.386×10⁻² N·m (maximum rotating-tab; 80% above 5-tab; same as Phoenix Wing Ratchet). Rounded protrusion: progressive cam angle β during engagement → lower impulse spike vs flat-face tabs → resists single-spike attacks. Gap fraction 55% vs 2-60's 86% → 36% fewer vulnerable orientations. Near-uniform annular mass at N=9 → I≈6.4×10⁻⁷ kg·m² → neutral stamina.  
+**Engine Note**: type=Ratchet_UX; protrusions=9; height_mm=7.0; mass_g=6.4; joint=rotatingTab_rounded; T_burst=2.386e-2; gapFraction=55pct; maxTab_rotating_9.
+
+---
+
+### [Case 396 — 7-60 (UX Ratchet): Asymmetric Single-Superprotrusion Bimodal Burst Behaviour, Heaviest Low-Height Body, and Defence-Weight Distribution](./8%20case%20study.md#case-396)
+
+**System**: Beyblade X (UX) — Ratchet  
+**Geometry**: 7-protrusion asymmetric (6 standard ≈20° arc + 1 superprotrusion ≈30° arc, extends 1–2 mm further); height=6.0 mm; m=7.0 g (heaviest PC-only 60-height Ratchet); I≈7.021×10⁻⁷ kg·m². UX-06 (TT, Leon Crest 7-60GN).  
+**Material**: PC  
+**Mechanism**: Nominal T_burst_7tab≈1.857×10⁻² N·m but bimodal behaviour: (1) most orientations: standard 7-tab protection; (2) ≈5–10° arc adjacent to superprotrusion: superprotrusion extra height → if attacker tab catches at tip → guaranteed burst (larger cam-over travel → spring always reaches release). Heaviest 60-height body: low CoM (vs 7-70/7-80) → better gyroscopic stability at mid-to-late match.  
+**Engine Note**: type=Ratchet_UX; protrusions=7; height_mm=6.0; mass_g=7.0; joint=rotatingTab_asymmetric; T_burst_nominal=1.857e-2; bimodal=true; superprotrusion_burstWindow=5_10deg.
+
+---
+
+### [Case 397 — Kick / K (CX Bit): Flat-Tip XD Rail Engagement, Hexagonal Body Stabilisation, and Dual-Tooth Burst Architecture](./8%20case%20study.md#case-397)
+
+**System**: Beyblade X (CX) — Bit  
+**Geometry**: m=2.2 g; Balance type; flat disc tip with central indent: r_o≈2.5 mm, r_indent≈0.8 mm, r_eff≈1.80 mm; hexagonal outer body (6 flat faces at 60° spacing); XD teeth (between tip face and disc flange); shaft teeth (stat-80). CX-05 (TT) / G1678 (Hasbro).  
+**Material**: PC  
+**Mechanism**: Tip: dω/dt≈−9.9 rad/s² (same tier as Flat). XD: reliable from hard launch. Shaft stat-80: T_bit≈4.16×10⁻³ N·m (strong burst lock). Hex body: at low-spin tilt, flat hexagonal faces contact bowl → periodic restoring moment → delays catastrophic wobble collapse (does not extend spin window, but extends functional spin window). Self-KO risk comparable to Flat but hex faces partially damp orbital velocity before XD → lower self-KO probability.  
+**Engine Note**: type=Bit_CX; mass_g=2.2; role=Balance; tipGeom=flatAnnular; r_eff_mm=1.80; hexBody=bowlStabilisation; stat=80; dOmega_dt=−9.9.
+
+---
+
+### [Case 398 — Flat / F (BX Bit): Maximum XD Rail Grip, Annular-Indent Tip Mechanics, and Controlled-Trajectory Self-KO Risk](./8%20case%20study.md#case-398)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.3 g; Attack type; flat disc tip with central indent: r_o≈2.5 mm, r_i≈0.8 mm, r_eff≈1.796 mm; smooth cylindrical body (no hex); XD teeth (η_xd≈1.00 baseline, highest); shaft teeth stat-80. BX-01 (TT, Dransword 3-60F).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−9.89 rad/s² (highest in lineup); tip-friction window≈70.8 s. Central indent: raises r_eff 7.7% vs full-disc flat; self-centring pressure distribution. XD: baseline maximum grip. T_bit≈4.16×10⁻³ N·m (stat-80). Self-KO risk: at orbital v>0.343 m/s, XD redirects Bey past safe wall-stopping velocity. Recommended: 70–80% power launch or slight tilt.  
+**Engine Note**: type=Bit_BX; mass_g=2.3; role=Attack; r_eff_mm=1.796; eta_xd=1.00; stat=80; dOmega_dt=−9.89; selfKO_risk=high; window_s=70.8.
+
+---
+
+### [Case 399 — Taper / T (BX Bit): Semi-Flat Indent Tip, Reduced XD Rail Contact Area, and Stamina-Attack Balance via Contact-Area Reduction](./8%20case%20study.md#case-399)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.2 g; Balance type; semi-flat convex dome tip + central indent: r_o≈1.5 mm, r_i≈0.5 mm, r_eff≈1.083 mm (−39.7% vs Flat); XD teeth moderate (η_xd≈0.55); shaft teeth stat-80. BX-02 (TT, Hells Scythe 4-60T).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−4.80 rad/s² (2× better than Flat); window≈145.8 s. Reduced contact area: 241/678 of Flat area. XD: η_xd≈0.55 — requires hard/precise launch for XD activation. Mixed-attack weakness: sub-optimal launch → aggressive movement but no XD → spin wasted on random contacts. T_bit≈4.16×10⁻³ N·m (stat-80 identical to Flat). Lower self-KO risk than Flat.  
+**Engine Note**: type=Bit_BX; mass_g=2.2; role=Balance; r_eff_mm=1.083; eta_xd=0.55; stat=80; dOmega_dt=−4.80; window_s=145.8.
+
+---
+
+### [Case 400 — Ball / B (BX Bit): Hertzian Point Contact Minimum Friction, Stat-20 Shaft Lock Vulnerability, and Maximum Stamina via Near-Zero XD Engagement](./8%20case%20study.md#case-400)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.1 g (lightest base Bit); Stamina type; hemisphere tip: R_ball≈3 mm; Hertzian contact patch a≈9.1×10⁻⁵ m (0.091 mm); contact area≈2.60×10⁻⁸ m² (678× smaller than Flat); r_eff≈a≈9.1×10⁻⁵ m. XD teeth minimal (η_xd≈0.05); shaft teeth stat-20 (shallow). BX-03 (TT, Wizard Arrow 4-80B).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−0.335 rad/s²; theoretical window≈2090 s (Hertzian near-zero friction). T_bit≈1.04×10⁻³ N·m (stat-20 — 7.8% supplemental vs Ratchet). No XD engagement → no self-KO risk. KO vulnerability: hemisphere provides minimal lateral friction vs impulse → more ring-out susceptible per unit impulse than flat-tip. Optimal: pair with high-tab Ratchets to compensate low shaft burst resistance.  
+**Engine Note**: type=Bit_BX; mass_g=2.1; role=Stamina; R_ball_mm=3.0; a_contact_m=9.1e-5; eta_xd=0.05; stat=20; dOmega_dt=−0.335; window_s=2090.
+
+---
+
+### [Case 401 — Needle Bit (N)](./8%20case%20study.md#case-401)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.0 g; Defense type; PC cone tip θ≈75° half-angle; contact area≈10⁻¹¹ m² (Boussinesq penetration); dω/dt≈−0.200 rad/s²; XD teeth vestigial (η_xd≈0.03); shaft teeth stat-20. BX-04 (TT, Knight Shield 3-80N).  
+**Material**: PC  
+**Mechanism**: Cone anchoring: apex bites into stadium surface (0.441 N weight) → resists lateral displacement. Lateral stability unmatched by hemisphere or flat tips. No XD capability. T_bit≈1.04×10⁻³ N·m (stat-20; pair with high-tab Ratchet). Passive defensive stamina role.  
+**Engine Note**: type=Bit_BX; mass_g=2.0; role=Defense; cone_halfAngle_deg=75; dOmega_dt=−0.200; eta_xd=0.03; stat=20; lateralAnchoring=true.
+
+---
+
+### [Case 402 — Low Flat Bit (LF)](./8%20case%20study.md#case-402)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.1 g; Attack type; full disc tip (no indent): r_o≈2.5 mm; r_eff=(2/3)×r_o=1.667 mm; body ≈1 mm shorter than Flat. XD teeth (η_xd≈1.00); shaft teeth stat-80. BX-14 (TT, SharkEdge 3-60LF).  
+**Material**: PC  
+**Mechanism**: r_eff=1.667 mm (vs Flat 1.796 mm) → marginally better tip-friction stamina on paper. But lower CoM → more aggressive/frequent XD engagement → more wall contacts → practical stamina worse than Flat. Same stat-80 shaft (T_bit≈4.16×10⁻³ N·m). Niche: arenas without Xtreme Line rail; or lower CoM reduces nutation onset rate.  
+**Engine Note**: type=Bit_BX; mass_g=2.1; role=Attack; r_eff_mm=1.667; eta_xd=1.00; stat=80; practicalStamina=worse_than_Flat; lowerCoM=niche.
+
+---
+
+### [Case 403 — Orb Bit (Orb)](./8%20case%20study.md#case-403)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.0 g; Stamina/Defense type; smaller semi-sphere: R≈2 mm; Hertzian a≈8.04×10⁻⁵ m; dω/dt≈−0.296 rad/s²; wider/flatter body disc than Ball; XD vestigial (η_xd≈0.03); stat-20. BX-16 (TT, ViperTail 5-80Orb).  
+**Material**: PC  
+**Mechanism**: Near-identical stamina to Ball (−0.296 vs −0.335 rad/s²; "comparable" as wiki notes). Distinguishing feature: wider disc → larger second moment of area about tilt axis → higher tilt-stiffness → better resistance to destabilising opponents. Preferred over Ball for opponents using destabilise-rather-than-burst strategy.  
+**Engine Note**: type=Bit_BX; mass_g=2.0; role=Stamina_Defense; R_orb_mm=2.0; dOmega_dt=−0.296; stat=20; tiltStiffness=higher_than_Ball.
+
+---
+
+### [Case 404 — Point Bit (P)](./8%20case%20study.md#case-404)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.2 g; Balance type; flat annulus (r_o=2.5 mm, r_i=0.8 mm) with central sphere bump (R≈0.8 mm) rather than hollow indent; XD teeth (η_xd≈1.00 upright → ≈0.60 tilted); stat-80. No confirmed product code; appears in Random Booster assortments.  
+**Material**: PC  
+**Mechanism**: Dual-mode tip: upright → flat annular contact (r_eff≈1.796 mm, dω/dt≈−9.89 rad/s²); tilted (>40% spin stability) → sphere bump becomes primary contact (Hertzian regime, dramatically lower r_eff). Mode switch origin of "flower movement": sphere bump pivot → wide precession circles → lower friction + unpredictable attack vector. Highest-stamina flat-family Bit via passive geometry adaptation. XD naturally suppresses at tilt (preserves stamina late-match).  
+**Engine Note**: type=Bit_BX; mass_g=2.2; role=Balance; dualMode=flatAnnular_upright→sphereBump_tilted; eta_xd=1.00→0.60; stat=80; flowerMovement=true.
+
+---
+
+### [Case 405 — Rush Bit (R)](./8%20case%20study.md#case-405)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.1 g; Attack type; small flat annulus tip: r_o≈1.8 mm, r_i≈0.6 mm, r_eff≈1.300 mm; elevated XD gear tooth (higher on shaft than any other Bit); η_xd≈1.15 (highest XD efficiency); stat-80. BX-20 (TT, DranDagger 4-60R).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−7.16 rad/s² from tip alone (better than Flat) but negated by high XD frequency → each XD wall contact transfers 15–25 rad/s. Elevated gear = deepest rail mesh = highest XD reliability. Wear failure mode: raised teeth wear faster than recessed → η_xd degrades over part life (highest maintenance Bit). T_bit≈4.16×10⁻³ N·m (stat-80).  
+**Engine Note**: type=Bit_BX; mass_g=2.1; role=Attack; r_eff_mm=1.300; eta_xd=1.15; stat=80; dOmega_dt=−7.16; wearRate=highest; XD_reliability=max.
+
+---
+
+### [Case 406 — High Taper Bit (HT)](./8%20case%20study.md#case-406)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.2 g; Balance type; semi-flat annular tip identical to Taper: r_o≈1.5 mm, r_i≈0.5 mm, r_eff≈1.083 mm; body ≈1.5 mm taller than Taper → CoM h≈6.0 mm vs Taper≈4.5 mm; XD (η_xd≈0.55); stat-80. BX-21 (TT, HellsChain 5-60HT).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−4.80 rad/s² (identical to Taper from same tip). Taller body: higher CoM → ω_nut ∝ 1/h → nutates at higher ω than Taper → enters unstable wobble earlier → shorter functional battle window. Wiki: "slightly worse than Taper." No competitive scenario where HT outperforms Taper. Set-fill variant only.  
+**Engine Note**: type=Bit_BX; mass_g=2.2; role=Balance; r_eff_mm=1.083; eta_xd=0.55; stat=80; dOmega_dt=−4.80; coM_h_mm=6.0; nutatesEarlier_than_Taper.
+
+---
+
+### [Case 407 — Accel Bit (A)](./8%20case%20study.md#case-407)
+
+**System**: Beyblade X (UX) — Bit  
+**Geometry**: m=2.6 g (heaviest attack Bit); Attack type; flat annular tip: r_o≈2.5 mm, r_i≈0.8 mm, r_eff≈1.736 mm; 16-tooth XD gear (doubles standard 8-tooth count); stat-80. UX-01 (TT, Dran Buster 1-60A).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−9.57 rad/s² (similar to Flat). XD: 16-tooth at 22.5° pitch mismatches rail's 45° design → only alternating teeth engage cleanly → bouncing inconsistent orbital path (η_xd_effective≈0.85 vs 1.20 nominal). Viable Rush substitute when unavailable; outperformed by Rush on XD reliability and by Flat on path consistency. Heavier mass moderates spin decay marginally.  
+**Engine Note**: type=Bit_UX; mass_g=2.6; role=Attack; r_eff_mm=1.736; eta_xd_eff=0.85; stat=80; dOmega_dt=−9.57; pitchMismatch=16tooth_22.5deg.
+
+---
+
+### [Case 408 — Disc Ball Bit (DB)](./8%20case%20study.md#case-408)
+
+**System**: Beyblade X (UX) — Bit  
+**Geometry**: m=3.2 g (heaviest Bit alongside Elevate); Stamina type; hemisphere tip: R≈3 mm, a≈9.21×10⁻⁵ m; wide stabilising disc flange (r_disc≈7.5 mm, wider than Ball's ≈6 mm); body ≈2 mm taller than Ball; XD vestigial (η_xd≈0.05); stat-20. UX-03 (TT, Wizard Rod 5-70DB).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−0.339 rad/s² (identical to Ball from same tip). Wide disc: ↑I_sys + ↑gyroscopic stiffness (slower precession); but disc drag∝r_disc⁵ → (1.2)⁵≈2.49× more aerodynamic drag than Ball. Higher CoM: lower nutation threshold (onset at higher ω) vs Ball. Best for low-contact stamina scenarios where aero drag is acceptable trade for gyro stiffness.  
+**Engine Note**: type=Bit_UX; mass_g=3.2; role=Stamina; R_ball_mm=3.0; a_contact_m=9.21e-5; eta_xd=0.05; stat=20; discFlange=gyrroStiffness; aeroDrag=2.49x_Ball.
+
+---
+
+### [Case 409 — Hexa Bit (H)](./8%20case%20study.md#case-409)
+
+**System**: Beyblade X (UX) — Bit  
+**Geometry**: m=2.6 g; Defense/Balance type; hexagonal faceted cone body (6 flat faces); cone apex ≈flat-annular contact upright; 16-tooth XD gear (η_xd≈0.85 eff; same pitch mismatch as Accel); stat-80. UX-02 (TT, Hells Hammer 3-70H).  
+**Material**: PC  
+**Mechanism**: Hammer motion: when Bey tilts past critical angle φ_crit → flat hexagonal facet contacts floor → high-friction braking pulse + upward restoring impulse → fights back against destabilisation. Upright: flat-annular apex contact → spin decay comparable to other flat-tip Bits. Best defense Bit in BX/UX catalogue. 16-tooth cone can catch rail edge at steep angles → lateral torque redirecting attack. T_bit≈4.16×10⁻³ N·m (stat-80).  
+**Engine Note**: type=Bit_UX; mass_g=2.6; role=Defense_Balance; hexFacets=6; hammerMotion=true; eta_xd=0.85; stat=80; bestDefenseBit.
+
+---
+
+### [Case 410 — Quake Bit (Q)](./8%20case%20study.md#case-410)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.3 g; Attack type; flat tip with diagonal cut (bottom face angled ≈10–15° from perpendicular to shaft axis → one side lower than other); one-sided XD gear teeth exposed on lower side; stat-80. BX-31 (TT, Tyranno Beat 4-70Q).  
+**Material**: PC  
+**Mechanism**: Diagonal cut → periodic bounce at spin frequency: lower side contacts floor first → vertical impulse per revolution → bouncing/jumping motion. One-sided XD: stronger orbital activation from exposed-gear side → directional asymmetry in attack trajectories. Diagonal reduces effective contact area → higher pressure per unit area (↑friction) but lower total frictional torque vs full-face. Bounce adds downward velocity component during re-contact → ↑collision force at XD events. Niche: requires exploiting directional asymmetry and bouncing trajectory.  
+**Engine Note**: type=Bit_BX; mass_g=2.3; role=Attack; diagonalCut=true; bounceMotion=true; stat=80; directionalXD=asymmetric.
+
+---
+
+### [Case 411 — Metal Needle Bit (MN)](./8%20case%20study.md#case-411)
+
+**System**: Beyblade X (UX) — Bit  
+**Geometry**: m=2.7 g; Defense type; PC body + steel cone tip insert (E_steel≈200 GPa, E*_MN≈94 GPa vs E*_Needle≈1.33 GPa); XD vestigial (η_xd≈0.03); stat-20. UX-05 (TT, Shinobi Shadow 1-80MN).  
+**Material**: PC body + steel tip  
+**Mechanism**: Steel rigid indenter vs PC stadium: plastic deformation of floor (permanent dents, not elastic recovery). Three consequences: (1) deeper channel per pass → ↑lateral resistance long-term; (2) plastic indent ratchets deeper each pass → progressive floor surface destabilisation; (3) energy consumed as plastic work (not returned as spin-recovery). Heavier, damages equipment, mechanically inferior to standard Needle in every category. Wiki: worst Bit in lineup.  
+**Engine Note**: type=Bit_UX; mass_g=2.7; role=Defense; steelTip=true; plasticDeformation=true; eta_xd=0.03; stat=20; worstBit=true.
+
+---
+
+### [Case 412 — Cyclone Bit (C)](./8%20case%20study.md#case-412)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.1 g; Attack type; curved star/vane pattern on tip face (centrifugal pump impeller geometry); r_eff≈1.5 mm (estimated); XD (η_xd≈1.10–1.15, centrifugal pump + rail); stat-80. BX-34 (TT, Cobalt Dragoon 2-60C).  
+**Material**: PC  
+**Mechanism**: dω/dt≈−8.27 rad/s²; window≈84.7 s. Centrifugal pumping: vane geometry converts floor contact into centrifugal acceleration → orbital pumping action during XD (distinct from Rush's gear depth mechanism). Requires flat launch: tilted launch → asymmetric vane contact → reduced orbital consistency. Viable Rush alternative when flat launch guaranteed. η_xd comparable to Rush but via different energy pathway.  
+**Engine Note**: type=Bit_BX; mass_g=2.1; role=Attack; curvedVane=centrifugalPump; r_eff_mm=1.5; eta_xd=1.10_1.15; stat=80; dOmega_dt=−8.27; flatLaunch_required.
+
+---
+
+### [Case 413 — Elevate Bit (E)](./8%20case%20study.md#case-413)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=3.2 g (heaviest alongside DB); Balance type; flat annular tip + central sphere bump (as in Point Bit) + large outer disc (r_disc≈7.5 mm); curved XD gear teeth (spiral outward path); stat-20. BX-36 (TT, Whale Wave 5-80E).  
+**Material**: PC  
+**Mechanism**: Curved XD gear: cam-lift mechanism converts lateral rail groove → vertical lift force → physically elevates Bey off floor 20–50 ms per XD cycle (unique in catalogue). During elevation: tip-friction contribution=0 (airborne). Creates "side-curve unique motion": sweeps upward/inward along ballistic arc → unpredictable attack vector. Stat-20: T_bit≈1.04×10⁻³ N·m (pair with high-tab Ratchet). Large disc: ↑I + aerodynamic drag penalty (same as DB).  
+**Engine Note**: type=Bit_BX; mass_g=3.2; role=Balance; curvedXD_camLift=true; elevation_ms=20_50; stat=20; sideCurveMotion=unique; largDisc=aeroDrag.
+
+---
+
+### [Case 414 — Free Ball Bit (FB)](./8%20case%20study.md#case-414)
+
+**System**: Beyblade X (BX) — Bit  
+**Geometry**: m=2.0 g; Stamina/Defense type; semi-sphere tip R≈2.5 mm on bearing/snap mount — tip rotates freely and independently of Ratchet-Blade system; XD vestigial (η_xd≈0.03); stat-20. No product code listed; appears in assortments.  
+**Material**: PC + bearing  
+**Mechanism**: Free-spin tip: tip angular velocity ≠ assembly angular velocity → floor friction torque applies to tip's own I (not I_sys) → braking force ratio I_tip/I_sys → drastically reduced spin-braking. Partially decouples rotational impulse from attack impacts (tip does not resist or transmit rotational impulse back). No XD engagement (free tip cannot mesh rail). T_bit≈1.04×10⁻³ N·m (stat-20). Second independent ω-vector: minor destabilisation of opponents in head-on collision (perturbs combined contact response). Comparable stamina to Orb; better destabilising capability.  
+**Engine Note**: type=Bit_BX; mass_g=2.0; role=Stamina_Defense; freeTip=bearing; tipDecoupled=true; eta_xd=0.03; stat=20; impulseDecoupled=partial.
+
+---
+
+### [Case 415 — Level Bit (L)](./8%20case%20study.md#case-415)
+
+**System**: Beyblade X (UX) — Bit  
+**Geometry**: m=2.6 g; Attack/Balance type; 16-tooth XD gear on large circular disc with 3 concentric speed zones: outer (r_o, high speed), middle (r_m), inner/green (r_i, low speed); flat tip below disc (tilt-launch required); stat-80. UX-09 (TT, Samurai Saber 2-70L).  
+**Material**: PC  
+**Mechanism**: 3-zone radial engagement: at high spin/large orbital radius → outer zone → max lever arm → highest orbital velocity; as spin decays → engagement migrates inward → conservative balance orbit. Natural attack→balance transition built into geometry. η_xd_eff≈0.85 (same 16-tooth 22.5°/45° pitch mismatch as Accel/Hexa). Tilt launch requirement: flat disc face at zero tilt → extreme initial friction torque → wastes spin; tilt δ≈15° reduces launch spin loss by cos²(15°)≈0.933. Large disc: ↑gyroscopic stiffness. T_bit≈4.16×10⁻³ N·m (stat-80).  
+**Engine Note**: type=Bit_UX; mass_g=2.6; role=Attack_Balance; 3zoneDisc=true; eta_xd_eff=0.85; stat=80; tiltLaunch_required; attackToBalance_transition_natural.
+
+---
+
 
 
