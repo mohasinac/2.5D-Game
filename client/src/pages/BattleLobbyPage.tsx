@@ -249,8 +249,8 @@ export function BattleLobbyPage() {
   }, []);
 
   const colyseusOptions = useMemo(() => ({
-    beybladeId:  settings.beybladeId ?? 'default',
-    arenaId:     settings.arenaId    ?? 'classic_stadium',
+    beybladeId:  settings.beybladeId ?? 'storm_pegasus_105rf',
+    arenaId:     settings.arenaId    ?? 'default_black_arena',
     username:    settings.username   ?? 'Player',
     userId:      settings.userId,
     private:     isPrivate,
@@ -277,8 +277,8 @@ export function BattleLobbyPage() {
     setRoomPhase("matchmaking");
     setRoom({
       roomType: lobbyMode === 'royale' ? 'royale' : lobbyMode === 'tournament' ? 'tournament' : 'pvp',
-      beybladeId: settings.beybladeId ?? 'default',
-      arenaId: settings.arenaId ?? 'classic_stadium',
+      beybladeId: settings.beybladeId ?? 'storm_pegasus_105rf',
+      arenaId: settings.arenaId ?? 'default_black_arena',
     });
     connect();
   }, [triggerConnect]); // intentionally omit other deps — called once per trigger
@@ -306,8 +306,8 @@ export function BattleLobbyPage() {
       navigate('/game/room', { replace: true, state: {
         config: {
           roomType: lobbyMode === 'pvp' ? 'pvp' : lobbyMode === 'royale' ? 'royale' : 'tournament',
-          beybladeId: settings.beybladeId ?? 'default',
-          arenaId:    settings.arenaId    ?? 'classic_stadium',
+          beybladeId: settings.beybladeId ?? 'storm_pegasus_105rf',
+          arenaId:    settings.arenaId    ?? 'default_black_arena',
           is25D:      true,
           pvpRoomId:  room.roomId,
         },

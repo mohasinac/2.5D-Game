@@ -81,7 +81,18 @@ export function useGameInput(sendInput: SendInputFn, enabled = true) {
     window.addEventListener("gamepaddisconnected", onGpOut);
 
     // ── Keyboard ─────────────────────────────────────────────────────────────
+    // Returns true when keyboard focus is on a real text/form element.
+    // Game keys are suppressed in that case so the player can type in chat or settings.
+    function isTypingFocused(): boolean {
+      const el = document.activeElement;
+      if (!el) return false;
+      const tag = (el as HTMLElement).tagName;
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||
+        (el as HTMLElement).isContentEditable;
+    }
+
     const onKeyDown = (e: KeyboardEvent) => {
+      if (isTypingFocused()) return;
       const km = keyMapRef.current;
       // Charge key (default: Space) handled separately
       if (e.code === km.charge) {
@@ -100,6 +111,7 @@ export function useGameInput(sendInput: SendInputFn, enabled = true) {
     };
 
     const onKeyUp = (e: KeyboardEvent) => {
+      if (isTypingFocused()) return;
       const km = keyMapRef.current;
       if (e.code === km.charge) {
         const held = chargeDownTimeRef.current > 0

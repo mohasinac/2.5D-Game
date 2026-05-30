@@ -398,8 +398,10 @@ test.describe("A04: PvAI gauntlet — fight and bracket updates", () => {
         await ss(page, "A04-match-result");
         console.log("[A04] ✅ Match result screen shown");
 
-        // Navigate back to tournament to verify bracket updated
-        await page.goBack().catch(() => {});
+        // Navigate back to tournament to verify bracket updated.
+        // Do NOT use page.goBack() — the game room's back-button intercept will
+        // show the exit confirmation modal instead of navigating away.
+        await gotoProtected(page, "/game/tournament");
         await page.waitForTimeout(2_000);
         await ss(page, "A04-back-to-bracket");
 

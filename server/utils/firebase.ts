@@ -16,6 +16,7 @@ import { FIREBASE_COLLECTIONS } from "../constants/firebase";
 import {
   PARTS_25D_COLLECTIONS,
 } from "../constants/collections";
+import { getFallbackPart } from "./fallbackBeys";
 
 // Initialize Firebase Admin (if not already initialized)
 let db: admin.firestore.Firestore | null = null;
@@ -214,17 +215,26 @@ export async function loadBeybladeSystemBundle(systemId: string): Promise<Resolv
     Promise.all(subPartIds.map(id => loadDoc<SubPart>(PARTS_25D_COLLECTIONS.SUB_PARTS, id))),
   ]);
 
+  // For each part, fall back to inline preset when Firestore returns nothing.
+  const resolvedTip       = tip       ?? getFallbackPart<TipPart>(system.tipId ?? "");
+  const resolvedAr        = ar        ?? getFallbackPart<ARPart>(system.attackRingId ?? "");
+  const resolvedWd        = wd        ?? getFallbackPart<WDPart>(system.weightDiskId ?? "");
+  const resolvedCore      = core      ?? getFallbackPart<CorePart>(system.coreId ?? "");
+  const resolvedCasing    = casing    ?? getFallbackPart<CasingPart>(system.casingId ?? "");
+  const resolvedBitBeast  = bitBeast  ?? getFallbackPart<BitBeastPart>(system.bitBeastId ?? "");
+  const resolvedSpinTrack = spinTrack ?? getFallbackPart<SpinTrackPart>(system.spinTrackId ?? "");
+
   return {
     system,
     parts: {
-      tip: tip ?? undefined,
-      ar: ar ?? undefined,
-      wd: wd ?? undefined,
-      core: core ?? undefined,
-      casing: casing ?? undefined,
-      bitBeast: bitBeast ?? undefined,
-      spinTrack: spinTrack ?? undefined,
-      subParts: subParts.filter((p): p is SubPart => p != null),
+      tip:       resolvedTip,
+      ar:        resolvedAr,
+      wd:        resolvedWd,
+      core:      resolvedCore,
+      casing:    resolvedCasing,
+      bitBeast:  resolvedBitBeast,
+      spinTrack: resolvedSpinTrack,
+      subParts:  subParts.filter((p): p is SubPart => p != null),
     },
   };
 }

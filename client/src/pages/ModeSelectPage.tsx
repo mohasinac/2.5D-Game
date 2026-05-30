@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRoomStore, type RoomType } from "../stores/roomStore";
 import { usePlayerStore } from "../stores/playerStore";
+import { FALLBACK_BEYS, FALLBACK_ARENAS, isFallbackBeyId, isFallbackArenaId } from "../constants/fallbackEntities";
 
 interface ModeCard {
   type: RoomType;
@@ -25,8 +26,8 @@ export default function ModeSelectPage() {
   const { ownedBeyblades } = usePlayerStore();
   const [selected, setSelected] = useState<RoomType | null>(null);
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(3);
-  const [beybladeId, setBeybladeId] = useState("default");
-  const [arenaId, setArenaId] = useState("classic_stadium");
+  const [beybladeId, setBeybladeId] = useState("storm_pegasus_105rf");
+  const [arenaId, setArenaId] = useState("default_black_arena");
 
   function openSetup(type: RoomType) {
     setSelected(type);
@@ -35,7 +36,7 @@ export default function ModeSelectPage() {
   function handleQuickMatch() {
     const bey = ownedBeyblades[0]?.id ?? "default";
     reset();
-    setRoom({ roomType: "pvp", beybladeId: bey, arenaId: "classic_stadium", bestOf: 1 });
+    setRoom({ roomType: "pvp", beybladeId: bey, arenaId: "default_black_arena", bestOf: 1 });
     setPhase("matchmaking");
     navigate("/game/matchmaking");
   }
@@ -94,6 +95,66 @@ export default function ModeSelectPage() {
       {selected && (
         <div className="bg-bg2 border border-border-c rounded-xl p-4 mb-4 space-y-3">
           <h2 className="font-semibold text-theme-text">Setup</h2>
+
+          {/* Beyblade picker — fallback beys always visible */}
+          <div>
+            <span className="text-xs text-theme-muted">Your Beyblade</span>
+            <div className="flex gap-2 mt-1">
+              {FALLBACK_BEYS.map(bey => (
+                <button
+                  key={bey.id}
+                  onClick={() => setBeybladeId(bey.id)}
+                  className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg border-2 transition-colors ${
+                    beybladeId === bey.id
+                      ? "border-accent bg-accent/10"
+                      : "border-border-c text-theme-muted hover:border-accent/50"
+                  }`}
+                >
+                  <div className="relative">
+                    <div
+                      className="w-8 h-8 rounded-full border-2 border-white/20"
+                      style={{ background: bey.color }}
+                    />
+                    {isFallbackBeyId(bey.id) && (
+                      <span className="absolute -top-1 -right-1 text-[8px] font-bold px-0.5 rounded bg-orange-500/25 text-orange-400 border border-orange-500/40 leading-tight">F</span>
+                    )}
+                  </div>
+                  <span className="text-xs font-semibold text-theme-text leading-tight">{bey.name}</span>
+                  <span className="text-[10px] text-theme-muted">{bey.subtitle.split(" · ")[0]}</span>
+                  <span className="text-[10px] capitalize" style={{ color: bey.color }}>{bey.type}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Arena picker — fallback arenas always visible */}
+          <div>
+            <span className="text-xs text-theme-muted">Arena</span>
+            <div className="flex gap-2 mt-1">
+              {FALLBACK_ARENAS.map(arena => (
+                <button
+                  key={arena.id}
+                  onClick={() => setArenaId(arena.id)}
+                  className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg border-2 transition-colors ${
+                    arenaId === arena.id
+                      ? "border-accent bg-accent/10"
+                      : "border-border-c text-theme-muted hover:border-accent/50"
+                  }`}
+                >
+                  <div className="relative">
+                    <div className="w-8 h-8 rounded-full border-2 border-white/20 bg-neutral-800 flex items-center justify-center">
+                      <span className="text-xs">🏟️</span>
+                    </div>
+                    {isFallbackArenaId(arena.id) && (
+                      <span className="absolute -top-1 -right-1 text-[8px] font-bold px-0.5 rounded bg-orange-500/25 text-orange-400 border border-orange-500/40 leading-tight">F</span>
+                    )}
+                  </div>
+                  <span className="text-xs font-semibold text-theme-text leading-tight">{arena.name}</span>
+                  <span className="text-[10px] text-theme-muted">{arena.subtitle.split(" · ")[0]}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <label className="block">
             <span className="text-xs text-theme-muted">Best Of</span>

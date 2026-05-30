@@ -235,6 +235,14 @@ export function LaunchPhase({
     prevPowerRef.current = launchPower;
   }, [launchPower, onSendInput]);
 
+  // When the launch phase mounts (status just became "launching"), steal focus away
+  // from any UI element that may be holding it (setup drawer, countdown button, etc.)
+  // so that Space / A / D / W / S are received immediately without a manual click.
+  useEffect(() => {
+    const el = document.activeElement;
+    if (el instanceof HTMLElement && el !== document.body) el.blur();
+  }, []);
+
   useEffect(() => { if (launched) setShowBanner(true); }, [launched]);
 
   useEffect(() => {

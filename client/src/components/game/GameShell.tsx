@@ -225,13 +225,14 @@ function ActionCluster({ btnSize = 40, containerSize = 110 }: { btnSize?: number
 
 // ─── Small oval button ─────────────────────────────────────────────────────────
 function OvalBtn({
-  label, subLabel, action = '_noop', onPress, wide = false,
+  label, subLabel, action = '_noop', onPress, wide = false, danger = false,
 }: {
   label: string;
   subLabel?: string;
   action?: string;
   onPress?: () => void;
   wide?: boolean;
+  danger?: boolean;
 }) {
   const h = useTouchBtn(action);
   const handlers = onPress
@@ -244,11 +245,14 @@ function OvalBtn({
   return (
     <div {...handlers} style={{
       width: wide ? 52 : 44, height: 20, borderRadius: 10,
-      background: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
-      border: '1px solid rgba(0,0,0,0.45)',
+      background: danger
+        ? 'linear-gradient(180deg, #7f1d1d 0%, #450a0a 100%)'
+        : 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
+      border: danger ? '1px solid rgba(220,38,38,0.5)' : '1px solid rgba(0,0,0,0.45)',
       boxShadow: '0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      color: 'rgba(255,255,255,0.45)', fontSize: 7, fontWeight: 800,
+      color: danger ? 'rgba(252,165,165,0.85)' : 'rgba(255,255,255,0.45)',
+      fontSize: 7, fontWeight: 800,
       letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1.2,
       cursor: 'pointer', touchAction: 'none', userSelect: 'none',
     }}>
@@ -471,16 +475,19 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
       {/* Main row — no shoulder row at top; L/R are inline with their controls */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'stretch', padding: '4px 14px 10px', gap: 10, minHeight: 0, height: 0, touchAction: 'none' }}>
 
-        {/* Left gutter — joystick + CHARGE below */}
+        {/* Left gutter — joystick + CHARGE below — increased gaps */}
         <div style={{
           width: controlsHidden ? 0 : '22%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 10, flexShrink: 0, minHeight: 0,
+          gap: 18, flexShrink: 0, minHeight: 0,
           transition: `width ${T}`,
         }}>
           <VirtualJoystick size={90} />
           <BigActionBtn label="CHARGE" subLabel="hold" action="chargeHeld" color="#1d4ed8" />
-          <OvalBtn label="⏸ PAUSE" onPress={onExit} wide />
+          <div style={{ display: 'flex', gap: 6 }}>
+            <OvalBtn label="⏸" onPress={onExit} />
+            <OvalBtn label="✕ EXIT" onPress={onExit} wide danger />
+          </div>
         </div>
 
         {/* Center — screen (always visible, expands when controls hidden) */}
@@ -500,12 +507,12 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
           </div>
         </div>
 
-        {/* Right gutter — action cluster + SPACE below */}
+        {/* Right gutter — action cluster + SPACE below — increased gap */}
         <div style={{
           width: controlsHidden ? 0 : '26%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', minHeight: 0,
-          paddingTop: 4, paddingBottom: 8, gap: 10, flexShrink: 0,
+          paddingTop: 4, paddingBottom: 8, gap: 18, flexShrink: 0,
           transition: `width ${T}`,
         }}>
           <ActionCluster btnSize={42} containerSize={114} />
@@ -597,19 +604,20 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
 
         {/* Main controls row — joystick left, action cluster right, generous gap */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', minHeight: 0, gap: 16, touchAction: 'none' }}>
-          {/* Left: joystick + CHARGE below */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 8 }}>
+          {/* Left: joystick + CHARGE below — increased gap so they don't touch */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 18 }}>
             <VirtualJoystick size={110} />
             <BigActionBtn label="CHARGE" subLabel="hold" action="chargeHeld" color="#1d4ed8" />
           </div>
 
-          {/* Center: pause */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 12 }}>
-            <OvalBtn label="⏸" onPress={onExit} />
+          {/* Center: pause + exit stacked */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 6, paddingBottom: 8 }}>
+            <OvalBtn label="⏸ PAUSE" onPress={onExit} wide />
+            <OvalBtn label="✕ EXIT" onPress={onExit} wide danger />
           </div>
 
-          {/* Right: action cluster + SPACE below */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 8 }}>
+          {/* Right: action cluster + SPACE below — increased gap so they don't touch */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 18 }}>
             <ActionCluster btnSize={48} containerSize={126} />
             <BigActionBtn label="SPACE" subLabel="tap" action="specialTap" color="#7c3aed" />
           </div>
@@ -716,6 +724,55 @@ function KeyPressFlash() {
   );
 }
 
+// ─── Exit confirmation modal ──────────────────────────────────────────────────
+function ExitConfirmModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'rgba(0,0,0,0.80)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <div style={{
+        background: 'linear-gradient(145deg, #1e1e2e 0%, #111118 100%)',
+        border: '1px solid rgba(255,255,255,0.13)',
+        borderRadius: 18,
+        padding: '28px 28px 24px',
+        maxWidth: 300, width: '88vw',
+        boxShadow: '0 20px 56px rgba(0,0,0,0.85)',
+        textAlign: 'center',
+      }}>
+        <div style={{ fontSize: 36, marginBottom: 10 }}>🚪</div>
+        <div style={{ color: '#fff', fontWeight: 800, fontSize: 17, marginBottom: 6, letterSpacing: '0.02em' }}>Exit Battle?</div>
+        <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 13, marginBottom: 24, lineHeight: 1.55 }}>
+          Your current battle progress will be lost.
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            onClick={onCancel}
+            style={{
+              flex: 1, padding: '12px 0', borderRadius: 10,
+              border: '1px solid rgba(255,255,255,0.18)',
+              background: 'rgba(255,255,255,0.07)', color: '#e5e7eb',
+              fontWeight: 700, fontSize: 14, cursor: 'pointer', outline: 'none',
+            }}
+          >Keep Playing</button>
+          <button
+            onClick={onConfirm}
+            style={{
+              flex: 1, padding: '12px 0', borderRadius: 10, border: 'none',
+              background: 'linear-gradient(180deg, #dc2626 0%, #991b1b 100%)',
+              color: '#fff', fontWeight: 800, fontSize: 14, cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(220,38,38,0.45)', outline: 'none',
+            }}
+          >Exit Battle</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── GameShell (root) ─────────────────────────────────────────────────────────
 export interface GameShellProps {
   children: React.ReactNode;
@@ -735,9 +792,44 @@ export function GameShell({
   onZoomReset,
 }: GameShellProps) {
   const portrait = useIsPortrait();
+  const shellRef = useRef<HTMLDivElement>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
   const [controlsHidden, setControlsHidden] = useState<boolean>(() => {
     try { return localStorage.getItem('bey.hideControls') === '1'; } catch { return false; }
   });
+
+  // Auto-focus the shell on mount so keyboard events (Space charge, IJKL actions)
+  // are received immediately without requiring the player to click first.
+  useEffect(() => {
+    shellRef.current?.focus();
+  }, []);
+
+  // Intercept browser back button — show confirmation instead of navigating away.
+  useEffect(() => {
+    window.history.pushState({ gamePlaying: true }, '');
+    const onPopState = () => {
+      // Push state back so URL stays the same, then show confirm dialog.
+      window.history.pushState({ gamePlaying: true }, '');
+      setShowExitConfirm(true);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  function requestExit() {
+    setShowExitConfirm(true);
+  }
+
+  function confirmExit() {
+    setShowExitConfirm(false);
+    onExit?.();
+  }
+
+  function cancelExit() {
+    setShowExitConfirm(false);
+    shellRef.current?.focus();
+  }
 
   function toggleControls() {
     setControlsHidden(prev => {
@@ -747,15 +839,24 @@ export function GameShell({
     });
   }
 
-  const shellProps = { onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls: toggleControls, show25D: show25DRotate };
+  const shellProps = { onExit: requestExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls: toggleControls, show25D: show25DRotate };
 
   return (
-    <div className="game-shell">
+    // tabIndex={-1}: focusable programmatically without entering the Tab order.
+    // onClick: re-focus if a child element (button, select) stole focus mid-game.
+    <div
+      ref={shellRef}
+      className="game-shell"
+      tabIndex={-1}
+      style={{ outline: 'none' }}
+      onClick={() => { if (!showExitConfirm) shellRef.current?.focus(); }}
+    >
       {portrait
         ? <PortraitShell {...shellProps}>{children}</PortraitShell>
         : <LandscapeShell {...shellProps}>{children}</LandscapeShell>
       }
       <KeyPressFlash />
+      {showExitConfirm && <ExitConfirmModal onConfirm={confirmExit} onCancel={cancelExit} />}
     </div>
   );
 }

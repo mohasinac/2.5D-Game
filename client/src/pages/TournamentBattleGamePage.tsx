@@ -93,7 +93,7 @@ export function TournamentBattleGamePage() {
     matchId,
     userId,
     username: settings.username ?? "Player",
-    beybladeId: settings.beybladeId ?? "default",
+    beybladeId: settings.beybladeId ?? "storm_pegasus_105rf",
   }), [spectate, tournamentId, matchId, userId, settings.username, settings.beybladeId]);
 
   const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition } =

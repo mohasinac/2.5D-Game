@@ -27,10 +27,18 @@ function parseBeyColor(bey: ServerBeyblade): number {
   return TYPE_COLORS[bey.type] ?? 0xffffff;
 }
 
+/** Returns display size in px. Falls back to radius*24 if actualSize not stored, then 48. */
+function beyDisplaySize(bey: ServerBeyblade): number {
+  if (bey.actualSize && bey.actualSize > 0) return bey.actualSize;
+  if (bey.radius && bey.radius > 0) return bey.radius * PX_PER_CM_BASE;
+  return 48;
+}
+
 // Arena floor base colors — vivid enough to read on a dark canvas background.
 // Keep mid-range brightness (not neon) so bey sprites remain legible.
 const THEME_COLORS: Record<string, number> = {
-  default:     0xe8e8e8,  // light grey-white (readable fallback)
+  default:     0x0a0a12,  // dark charcoal — matches Default Black Arena floor
+  black:       0x0a0a12,  // alias
   metrocity:   0x1e4080,  // steel blue city
   forest:      0x1a6b2e,  // green forest floor
   mountains:   0x2d4a6e,  // slate-blue highland
@@ -1165,7 +1173,7 @@ export class BeybladeGameRenderer {
     // Beyblade body (spinning top shape)
     const sprite = new PIXI.Graphics();
     this.drawBeybladeShape(
-      sprite, typeColor, beyblade.actualSize || 48,
+      sprite, typeColor, beyDisplaySize(beyblade),
       beyblade.tipEvolutionStage ?? 0,
       beyblade.materialWearLevel ?? 100,
     );
@@ -1323,7 +1331,7 @@ export class BeybladeGameRenderer {
     const shieldRing = this.shieldRings.get(id);
     if (!container || !sprite || !healthBar || !spinBar || !label) return;
 
-    const r = (beyblade.actualSize || 48) / 2;
+    const r = (beyDisplaySize(beyblade)) / 2;
 
     // Use interpolated position/angle for smooth motion; fall back to raw server values.
     // #29: For the controlled bey, prefer client-side predicted position (sub-RTT feel).
@@ -1432,7 +1440,7 @@ export class BeybladeGameRenderer {
         this._lastSpins.get(id)    !== spinBucket
       ) {
         const typeColor = parseBeyColor(beyblade);
-        this.drawBeybladeShape(sprite, typeColor, beyblade.actualSize || 48, tipStage, wearPct);
+        this.drawBeybladeShape(sprite, typeColor, beyDisplaySize(beyblade), tipStage, wearPct);
         this.prevTipStages.set(id, tipStage);
         this.prevWearLevels.set(id, wearPct);
         this._lastSpins.set(id, spinBucket);

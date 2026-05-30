@@ -6,6 +6,7 @@
 import type { Client, Room } from "colyseus";
 import { PartSystemManager } from "../PartSystemManager";
 import { loadBeybladeSystemBundle, type ResolvedBeybladeSystem } from "../../utils/firebase";
+import { getFallbackBundle } from "../../utils/fallbackBeys";
 import type { Beyblade, GameState } from "../schema/GameState";
 import type { ArenaState } from "../schema/GameState";
 
@@ -34,7 +35,7 @@ export async function registerBeyOnManager(
   bey: Beyblade,
   opts: RegisterOptions,
 ): Promise<ResolvedBeybladeSystem | null> {
-  const bundle = await loadBeybladeSystemBundle(beybladeSystemId);
+  const bundle = await loadBeybladeSystemBundle(beybladeSystemId) ?? getFallbackBundle(beybladeSystemId) ?? null;
   if (!bundle) return null;
   // Sync system-level fields BEFORE registerBey so the manager sees the
   // correct spinDirection (it caches defaultSpinDirection from the schema).

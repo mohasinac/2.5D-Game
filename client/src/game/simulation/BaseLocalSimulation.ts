@@ -16,24 +16,30 @@ const MAX_SPEED    = 350;
 const SPIN_DECAY   = 7;
 const POWER_REGEN  = 0.04;
 
-const DEFAULT_ARENA_W = 1080;
-const DEFAULT_ARENA_H = 1080;
+// Default Black Arena — 60 cm × 60 cm (1440 arena-px at 1cm=24px).
+const DEFAULT_ARENA_W = 1440;
+const DEFAULT_ARENA_H = 1440;
 
 // ─── Default arena ────────────────────────────────────────────────────────────
-function defaultArena(id = 'default'): ServerArenaState {
+function defaultArena(id = 'default_black_arena'): ServerArenaState {
   return {
-    id, name: 'Standard Arena',
+    id, name: 'Default Black Arena',
     width: DEFAULT_ARENA_W, height: DEFAULT_ARENA_H,
     shape: 'circle',
-    theme: 'default',
+    theme: 'black',
     rotation: 0,
     autoRotate: false, rotationSpeed: 0,
     rotationDirection: 'clockwise',
-    wallEnabled: true, wallAngle: 0,
+    wallEnabled: true, wallAngle: 25,
     worldBgType: 'none',
     worldBgColor: '', worldBgImageUrl: '',
     worldBgOpacity: 1.0, worldBgFit: 'cover', worldBgBlurPx: 0,
-  };
+    // Zone radii (arena-px): flat=168 (7cm), ridge=480 (20cm), pink=624 (26cm), ring-out=648 (27cm)
+    arenaPixelRadius: 648,
+    flatZoneRadius: 168,
+    ridgeRadius: 480,
+    pinkWallRadius: 624,
+  } as ServerArenaState;
 }
 
 // ─── Difficulty helpers ───────────────────────────────────────────────────────
@@ -88,6 +94,58 @@ export const PLAYER_COLORS = [
   '#ff4444', '#4488ff', '#44ff44', '#ffaa00', '#ff44ff', '#00ffff',
   '#ffff00', '#ff8888', '#aaff44', '#8844ff', '#ff4488', '#44ffaa',
 ];
+
+function applyStormPegasusStats(bey: ServerBeyblade) {
+  Object.assign(bey, {
+    // Storm Pegasus 105RF — Attack-type MFB bey
+    // AR: storm_pegasus_ar_fallback (r=33px, 3 smash blades, 1.375cm, 1.5× dmg multiplier)
+    // Track: track_105_fallback (10.5mm, low CoM for aggressive ground contact)
+    // Tip: storm_pegasus_tip_fallback (RF Rubber Flat, grip=0.75, aggressiveness=0.9)
+    // Casing: storm_pegasus_casing_fallback (r=20px)
+    attackRingId: 'storm_pegasus_ar_fallback',
+    spinTrackId: 'track_105_fallback',
+    tipId: 'storm_pegasus_tip_fallback',
+    casingId: 'storm_pegasus_casing_fallback',
+    type: 'attack', color: '#1a6fe8', spinDirection: 'right',
+    mass: 46, radius: 3.8,
+    attackPoints: 145, defensePoints: 75, staminaPoints: 140,
+    damageMultiplier: 2.015, damageTaken: 0.78,
+    knockbackDistance: 8.8, invulnerabilityChance: 0.08,
+    spinStealFactor: 0.20, spinDecayRate: 6.88,
+    maxStamina: 1600, stamina: 1600,
+    health: 1600, maxHealth: 1600,
+    maxSpin: 2224, spin: 2224,
+    speedBonus: 2.20,
+    specialMove: 'stampede_rush',
+    comboIds: ['quick-dash-r', 'power-thrust', 'pivot-strike'],
+  });
+}
+
+function applyDarkWolfStats(bey: ServerBeyblade) {
+  Object.assign(bey, {
+    // Dark Wolf DF145FS — Balanced-type MFB bey
+    // AR: dark_wolf_ar_fallback (r=24px, 4 absorb contact points, 1.1× dmg multiplier)
+    // Track: track_df145_fallback (DF145 Defense Frame 14.5mm, 0.75× damage received reduction)
+    // Tip: dark_wolf_tip_fallback (FS Flat Sharp, grip=0.35, aggressiveness=0.5)
+    // Casing: dark_wolf_casing_fallback (r=19px)
+    attackRingId: 'dark_wolf_ar_fallback',
+    spinTrackId: 'track_df145_fallback',
+    tipId: 'dark_wolf_tip_fallback',
+    casingId: 'dark_wolf_casing_fallback',
+    type: 'balanced', color: '#7a0a2b', spinDirection: 'right',
+    mass: 34, radius: 2.1,
+    attackPoints: 110, defensePoints: 100, staminaPoints: 150,
+    damageMultiplier: 1.77, damageTaken: 0.70,
+    knockbackDistance: 7.5, invulnerabilityChance: 0.15,
+    spinStealFactor: 0.35, spinDecayRate: 6.80,
+    maxStamina: 1600, stamina: 1600,
+    health: 1600, maxHealth: 1600,
+    maxSpin: 2240, spin: 2240,
+    speedBonus: 1.65,
+    specialMove: 'spin_recovery',
+    comboIds: ['guard-tap', 'spin-leech-jab', 'quick-dash-l'],
+  });
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -156,6 +214,7 @@ export class BaseLocalSimulation {
   protected launchPosition = 0.5;
   protected launchPower = 0;
   protected launchReady = false;
+  protected launchCharging = false; // true while Space is held
 
   // Tournament-AI bracket state
   protected tournamentRound = 0;
@@ -215,7 +274,14 @@ export class BaseLocalSimulation {
       if (input.moveRight)  this.launchTilt = Math.min(45, this.launchTilt + 1.5);
       if (input.moveUp)     this.launchPosition = Math.max(0, this.launchPosition - 0.02);
       if (input.moveDown)   this.launchPosition = Math.min(1, this.launchPosition + 0.02);
-      if (input.chargeHeld) this.launchPower = Math.min(150, this.launchPower + 1.5);
+      if (input.chargeHeld) {
+        this.launchPower = Math.min(150, this.launchPower + 1.5);
+        this.launchCharging = true;
+      } else if (this.launchCharging) {
+        // Space released after holding — mirrors server-side launch trigger
+        this.launchReady = true;
+        this.launchCharging = false;
+      }
       if (input.specialTap && this.launchPower > 0) this.launchReady = true;
       return;
     }
@@ -238,7 +304,7 @@ export class BaseLocalSimulation {
   // ─── Data loading ─────────────────────────────────────────────────────────
 
   protected async loadData() {
-    const { beybladeId = 'default', arenaId = 'classic_stadium', aiCount = 1, aiDifficulty = 'medium' } = this.config;
+    const { beybladeId = 'storm_pegasus_105rf', arenaId = 'default_black_arena', aiCount = 1, aiDifficulty = 'medium' } = this.config;
     const cx = DEFAULT_ARENA_W / 2, cy = DEFAULT_ARENA_H / 2;
     const roomType = this.config.roomType;
 
@@ -293,7 +359,8 @@ export class BaseLocalSimulation {
     const arCy = (this.arena.height ?? DEFAULT_ARENA_H) / 2;
 
     const playerBey = makeBeySpaced('player', 'Player', PLAYER_COLORS[0], false, arCx, arCy, this.arenaRadius, 0, total);
-    if (beybladeId !== 'default') {
+    if (beybladeId) {
+      let loadedFromFirestore = false;
       try {
         const snap = await getDoc(doc(db, COLLECTIONS.BEYBLADE_STATS, beybladeId));
         if (snap.exists()) {
@@ -315,8 +382,19 @@ export class BaseLocalSimulation {
             comboIds: (d.comboIds as string[]) ?? [],
             beybladeId,
           });
+          loadedFromFirestore = true;
         }
-      } catch { /* use player defaults */ }
+      } catch { /* fall through to local fallback */ }
+
+      if (!loadedFromFirestore) {
+        if (beybladeId === 'dark_wolf_df145fs') {
+          applyDarkWolfStats(playerBey);
+        } else {
+          // storm_pegasus_105rf or any other unknown id
+          applyStormPegasusStats(playerBey);
+        }
+        Object.assign(playerBey, { beybladeId });
+      }
     }
     if (!playerBey.maxSpin || playerBey.maxSpin <= 0) playerBey.maxSpin = 2192;
     playerBey.spin = playerBey.maxSpin;
@@ -340,7 +418,8 @@ export class BaseLocalSimulation {
             : aiDifficulty;
         this.botDifficulties.set(id, botDiff);
         const label = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
-        const ai = makeBeySpaced(id, `CPU ${roundIndex + 1} ${label}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, i + 1, total);
+        const ai = makeBeySpaced(id, `Dark Wolf ${label}`, '#7a0a2b', true, arCx, arCy, this.arenaRadius, i + 1, total);
+        applyDarkWolfStats(ai);
         this.beyblades.set(id, ai);
         this.aiControllers.set(id, new AIController(botDiff));
       }
@@ -379,7 +458,8 @@ export class BaseLocalSimulation {
     const botDiff = tournamentRoundDifficulty(roundIndex, this.tournamentTotalRounds);
     this.botDifficulties.set(id, botDiff);
     const label = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
-    const ai = makeBeySpaced(id, `CPU ${roundIndex + 1} ${label}`, PLAYER_COLORS[(roundIndex + 1) % PLAYER_COLORS.length], true, arCx, arCy, this.arenaRadius, 1, total);
+    const ai = makeBeySpaced(id, `Dark Wolf ${label}`, '#7a0a2b', true, arCx, arCy, this.arenaRadius, 1, total);
+    applyDarkWolfStats(ai);
     this.beyblades.set(id, ai);
     this.aiControllers.set(id, new AIController(botDiff));
     this.winner = '';
@@ -415,6 +495,7 @@ export class BaseLocalSimulation {
     this.launchPosition = 0.5;
     this.launchPower = 0;
     this.launchReady = false;
+    this.launchCharging = false;
     this.emitSnapshot();
 
     this.launchInterval = setInterval(() => {

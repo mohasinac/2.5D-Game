@@ -78,7 +78,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
   private aiSpawnPos = { x: 0, y: 0, angle: 0 };
   private aiLaunchTimer = AI_LAUNCH_DELAY_S;
   private aiDifficulty: AIDifficulty = "medium";
-  private aiBeybladeId = "default";
+  private aiBeybladeId = "dark_wolf_df145fs";
   private comboTrackers = new Map<string, ComboTracker>();
   // Separate tracker for the AI beyblade (no session id).
   private aiComboTracker: ComboTracker = createComboTracker();
@@ -221,10 +221,10 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     const bey = new Beyblade();
     bey.id = sessionId;
     bey.userId = sessionId;
-    bey.username = data?.displayName ? `${data.displayName} (${difficulty})` : `Computer ${sessionId} (${difficulty})`;
+    bey.username = data?.displayName ? `${data.displayName} (${difficulty})` : `Dark Wolf (${difficulty})`;
     bey.beybladeId = beybladeId;
     bey.isAI = true;
-    if (data) this.applyBeybladeStats(bey, data); else this.applyDefaultStats(bey);
+    if (data) this.applyBeybladeStats(bey, data); else this.applyDefaultAiStats(bey);
     bey.health = bey.maxStamina;
     bey.maxHealth = bey.maxStamina;
     bey.power = 100;
@@ -272,7 +272,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
     const difficulty: AIDifficulty = options.aiDifficulty || "medium";
     this.aiDifficulty = difficulty;
-    this.aiBeybladeId = options.aiBeybladeId || "default";
+    this.aiBeybladeId = options.aiBeybladeId || "dark_wolf_df145fs";
     this.aiController = new AIController(difficulty);
 
     const arenaHalfW = (this.state.arena.width * 16) / 2;
@@ -286,7 +286,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     human.id = client.sessionId;
     human.userId = options.userId || client.sessionId;
     human.username = options.username || "Player";
-    human.beybladeId = options.beybladeId || "default";
+    human.beybladeId = options.beybladeId || "storm_pegasus_105rf";
     human.isAI = false;
 
     if (humanData) {
@@ -1050,4 +1050,34 @@ export class AIBattleRoom extends BaseRoom<GameState> {
   }
 
   protected override get defaultArenaName(): string { return "AI Battle Arena"; }
+
+  /**
+   * Fallback AI beyblade — Dark Wolf DF145FS (CS13 Case 852).
+   * attack=110  defense=100  stamina=150  (total 360)
+   * mass=33.5 g, r_DW=21 mm (2.1 cm), FS tip μ≈0.25
+   */
+  private applyDefaultAiStats(bey: Beyblade): void {
+    bey.type              = "balanced";
+    bey.color             = "#7a0a2b";   // dark-red wolf
+    bey.spinDirection     = "right";
+    bey.mass              = 34;
+    bey.radius            = 2.1;
+    bey.attackPoints      = 110;
+    bey.defensePoints     = 100;
+    bey.staminaPoints     = 150;
+    bey.damageMultiplier  = 1.77;        // 1.0 + 110 × 0.007
+    bey.damageTaken       = 0.70;        // 1 − 100 × 0.003
+    bey.knockbackDistance = 7.5;
+    bey.invulnerabilityChance = 0.15;
+    bey.spinStealFactor   = 0.35;
+    bey.spinDecayRate     = 6.80;        // 8 × (1 − 150 × 0.001)
+    bey.maxStamina        = 1600;
+    bey.stamina           = 1600;
+    bey.maxSpin           = 2240;        // 2000 × (1 + 150 × 0.0008)
+    bey.spin              = 2240;
+    bey.speedBonus        = 1.65;
+    bey.specialMove       = "spin_recovery";
+    bey.comboIds.clear();
+    for (const id of ["guard-tap", "spin-leech-jab", "quick-dash-l"]) bey.comboIds.push(id);
+  }
 }

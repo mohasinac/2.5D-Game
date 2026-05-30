@@ -78,9 +78,9 @@ export function BattleModeCardsPage() {
     ]).then(([beySnap, arenaSnap]) => {
       const beys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id, isDefault: !!(d.data().isDefault) }));
       const arns = arenaSnap.docs.map(d => ({ id: d.id, name: (d.data().name as string) || d.id }));
-      setBeyblades(beys.length ? beys : [{ id: DEFAULT_BEYBLADE_ID, name: 'Ultimate Dragoon', isDefault: true }]);
+      setBeyblades(beys.length ? beys : [{ id: DEFAULT_BEYBLADE_ID, name: 'Storm Pegasus', isDefault: true }]);
       // Prepend the random option — always available
-      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...(arns.length ? arns : [{ id: DEFAULT_ARENA_ID, name: 'Classic Stadium' }])]);
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...(arns.length ? arns : [{ id: DEFAULT_ARENA_ID, name: 'Default Black Arena' }])]);
 
       // Bey: prefer saved preference → isDefault flag → known default ID → first in list
       if (!settings?.beybladeId) {
@@ -90,7 +90,7 @@ export function BattleModeCardsPage() {
         setSelectedBey(settings.beybladeId);
       }
 
-      // Arena: prefer saved preference → classic_stadium (if present in list) → first real arena
+      // Arena: prefer saved preference → default_black_arena (if present in list) → first real arena
       if (!settings?.arenaId) {
         const hasClassic = arns.some(a => a.id === DEFAULT_ARENA_ID);
         setSelectedArena(hasClassic ? DEFAULT_ARENA_ID : (arns[0]?.id ?? DEFAULT_ARENA_ID));
@@ -98,8 +98,8 @@ export function BattleModeCardsPage() {
         setSelectedArena(settings.arenaId);
       }
     }).catch(() => {
-      setBeyblades([{ id: DEFAULT_BEYBLADE_ID, name: 'Ultimate Dragoon', isDefault: true }]);
-      setArenas([{ id: 'random', name: '🎲 Random Arena' }, { id: DEFAULT_ARENA_ID, name: 'Classic Stadium' }]);
+      setBeyblades([{ id: DEFAULT_BEYBLADE_ID, name: 'Storm Pegasus', isDefault: true }]);
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, { id: DEFAULT_ARENA_ID, name: 'Default Black Arena' }]);
     }).finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

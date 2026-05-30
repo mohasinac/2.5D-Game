@@ -36,6 +36,11 @@ export interface EntityPickerProps {
   tabs: EntityTab[];
   /** Optional: dim these option ids in the list (e.g. AI bey list dims the player's pick). */
   dimIds?: Set<string>;
+  /**
+   * Optional: ids of fallback (built-in) entities. These always appear in the list
+   * and receive a small orange "F" badge so players can identify them.
+   */
+  fallbackIds?: Set<string>;
   /** Optional: empty-list copy. */
   emptyMessage?: string;
 }
@@ -48,6 +53,7 @@ export function EntityPicker({
   onSelect,
   tabs,
   dimIds,
+  fallbackIds,
   emptyMessage = "No options available.",
 }: EntityPickerProps) {
   const [query, setQuery] = useState("");
@@ -157,7 +163,12 @@ export function EntityPicker({
                         isDim && "opacity-45",
                       )}
                     >
-                      <div className={cn("text-[13px]", isSel ? "font-bold" : "font-medium")}>{o.name}</div>
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn("text-[13px]", isSel ? "font-bold" : "font-medium")}>{o.name}</span>
+                        {fallbackIds?.has(o.id) && (
+                          <span className="text-[9px] font-bold px-1 py-px rounded bg-orange-500/20 text-orange-400 border border-orange-500/30 leading-none">F</span>
+                        )}
+                      </div>
                       {o.subtitle && (
                         <div className="text-[11px] text-theme-faint mt-0.5">{o.subtitle}</div>
                       )}

@@ -363,21 +363,28 @@ export async function waitForGameMount(page: Page, timeoutMs = 35_000): Promise<
 /**
  * Wait through the 3s warmup countdown and 5s launch phase.
  * Automatically charges + releases the beyblade via Space key.
+ * Uses data-testid="launch-phase-overlay" to avoid matching the persistent
+ * CHARGE button that lives in GameShell outside the overlay.
  */
 export async function waitThroughLaunch(page: Page, tag: string): Promise<void> {
   await page.waitForTimeout(3_500);
   await ss(page, `${tag}-post-warmup`);
 
-  const launchEl = page
-    .locator("text=/tilt|charge|power|launch|Let It Rip/i")
-    .first();
-  const inLaunch = await launchEl
-    .waitFor({ state: "visible", timeout: 18_000 })
+  // Use data-testid so we never accidentally match the GameShell's persistent
+  // "CHARGE" big-action button which is always in the DOM.
+  const launchOverlay = page.locator('[data-testid="launch-phase-overlay"]');
+  const inLaunch = await launchOverlay
+    .waitFor({ state: "attached", timeout: 18_000 })
     .then(() => true)
     .catch(() => false);
 
   if (inLaunch) {
     await ss(page, `${tag}-launch-phase`);
+    // Focus the game canvas so keyboard events reach the input listener
+    const canvas = page.locator("canvas").first();
+    if (await canvas.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await canvas.click({ force: true });
+    }
     await page.keyboard.down("Space");
     await page.waitForTimeout(2_500);
     await ss(page, `${tag}-charging`);

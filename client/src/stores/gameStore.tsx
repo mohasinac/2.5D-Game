@@ -101,8 +101,8 @@ const encryptedStorage = {
 // ─── Default state ───────────────────────────────────────────────────────────
 
 // Known Firestore document IDs set by the seed scripts.
-export const DEFAULT_ARENA_ID    = "classic_stadium";
-export const DEFAULT_BEYBLADE_ID = "ultimate-dragoon";
+export const DEFAULT_ARENA_ID    = "default_black_arena";
+export const DEFAULT_BEYBLADE_ID = "storm_pegasus_105rf";
 
 export const defaultSettings: GameSettings = {
   beybladeId: DEFAULT_BEYBLADE_ID,

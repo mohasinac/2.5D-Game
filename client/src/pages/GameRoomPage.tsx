@@ -114,8 +114,8 @@ export function GameRoomPage() {
 
   // ─── Server room (Colyseus) ───────────────────────────────────────────────
   const colyseusOptions = useMemo(() => ({
-    beybladeId: config?.beybladeId ?? settings.beybladeId ?? 'default',
-    arenaId: config?.arenaId ?? settings.arenaId ?? 'classic_stadium',
+    beybladeId: config?.beybladeId ?? settings.beybladeId ?? 'storm_pegasus_105rf',
+    arenaId: config?.arenaId ?? settings.arenaId ?? 'default_black_arena',
     username: settings.username ?? 'Player',
     userId: settings.userId ?? 'guest',
     spectate: config?.spectate ?? false,

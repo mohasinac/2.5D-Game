@@ -2644,6 +2644,181 @@ Any feature can spin in place (`selfRotation: { speedDegPerSec, direction }`) �
 
 ---
 
+## 10.5 Default Black Arena — 4-Quadrant Multi-Player Stadium (Cases 1592–1600)
+
+**Name:** Default Black Arena  
+**Generation:** Game-original (non-canonical; all-era multi-player)  
+**Outer diameter:** 600 mm [FACT]  
+**Shape:** Circular bowl  
+**Player capacity:** 4 (one per quadrant)  
+**Quadrant design:** Cross-dividers at 0°/90°/180°/270° (visual-only red lines; no physical barriers)
+
+### Six-Zone Bowl Profile
+
+```
+Zone 1 — Defense Flat        r = 0–70 mm       slope = 0°     g_lat = 0 m/s²       [ESTIMATED]
+Zone 2 — Interior Barrier    r ≈ 85 mm          h_wall ≈ 5 mm  face angle ≈ 18°     [ESTIMATED]
+Zone 3 — Main Curved Bowl    r = 90–190 mm      slope ≈ 25°    g_lat = 4.14 m/s²    [ESTIMATED]
+Zone 4 — Speed Ridge         r ≈ 190–210 mm     h_ridge ≈ 4 mm high-grip contact    [ESTIMATED]
+Zone 5 — Upper Slope         r = 210–260 mm     slope ≈ 45°    g_lat = 6.94 m/s²    [ESTIMATED]
+Zone 6 — Outer Wall + Gaps   r = 260–300 mm     H_wall ≈ 40 mm exit pockets through wall [ESTIMATED]
+```
+
+### Case 1592 — Arena Dimensions and Zone Map
+
+```
+Arena type:    Default Black Arena
+Diameter:      600 mm   [FACT]
+Radius:        300 mm
+Play area:     π × 300² = 282,743 mm²
+Scale vs. MFB Attack Type: 300/170 = 1.76× radius → 3.10× play area
+
+Zone 1 (Defense Flat):   r = 0–70 mm    (flat ABS, μ = 0.17)            [ESTIMATED]
+Zone 2 (Inner Barrier):  r ≈ 85 mm      (ABS ring wall, h ≈ 5 mm)       [ESTIMATED]
+Zone 3 (Main Bowl):      r = 90–190 mm  (curved bowl, slope ≈ 25°)      [ESTIMATED]
+Zone 4 (Speed Ridge):    r = 190–210 mm (raised ridge, h ≈ 4 mm)        [ESTIMATED]
+Zone 5 (Upper Slope):    r = 210–260 mm (steep inner wall, slope ≈ 45°) [ESTIMATED]
+Zone 6 (Outer Wall):     r = 260–300 mm (H_wall ≈ 40 mm; gaps at quadrant boundaries) [ESTIMATED]
+```
+
+### Case 1593 — Zone Lateral Gravity and Key Heights
+
+```
+Zone 1 lateral gravity:   g_lat = 0 m/s²   (flat floor — tip friction only)
+Zone 3 lateral gravity:   g_lat = 9.81 × sin(25°) = 4.14 m/s²   [INFERRED]
+Zone 4 lateral gravity:   g_lat = 9.81 × sin(35°) = 5.63 m/s²   [INFERRED — ridge slope steeper]
+Zone 5 lateral gravity:   g_lat = 9.81 × sin(45°) = 6.94 m/s²   [INFERRED]
+
+Zone 3 height span:  h₃ = (190 − 90) × tan(25°) = 100 × 0.466 = 46.6 mm   [INFERRED]
+Zone 5 height span:  h₅ = (260 − 210) × tan(45°) = 50.0 mm                [INFERRED]
+
+Zone 3 descent speed gain (η = 0.70):
+  Δv₃ = √(2 × 9.81 × 0.0466 × 0.70) = 0.800 m/s   [INFERRED]
+
+Minimum escape speed from Zone 5 (inward from outer wall):
+  v_min = √(2 × 9.81 × 0.050) = 0.990 m/s   [INFERRED]
+```
+
+### Case 1594 — Interior Barrier Wall (Red Inner Ring)
+
+A raised annular wall at r ≈ 85 mm sits just outside the yellow defense circle. This wall blocks direct straight-line entry to the defense zone. A bey approaching head-on at shallow angle is deflected and pushed back up the bowl. However, a bey approaching at a **tangential angle** uses the curved face as a ramp — receiving a lateral speed boost and slingshot redirect into or around Zone 1.
+
+```
+Barrier radius:     r_b ≈ 85 mm         [ESTIMATED]
+Barrier height:     h_b ≈ 5 mm          [ESTIMATED]
+Face angle:         β_b = atan(5/15) ≈ 18°   [INFERRED]
+ABS-on-ABS COR:     ε ≈ 0.70            [CONFIRMED CS10 style rules]
+
+Minimum surmount speed (head-on):
+  v_min = √(2 × g × h_b) = √(2 × 9.81 × 0.005) ≈ 0.31 m/s   [INFERRED]
+  (nearly always achievable — beys arrive at Zone 3 at v ≈ 0.8–2.0 m/s)
+
+Tangential speed boost (v = 1.5 m/s, 30° approach angle):
+  Δv_tangent ≈ v × sin(β_b) × ε = 1.5 × 0.309 × 0.70 ≈ 0.32 m/s   [INFERRED]
+```
+
+**Defense access routes:**
+1. **Straight charge** — any bey with v > 0.31 m/s can surmount the barrier directly.
+2. **Tangential slingshot** — bey approaches at an angle, uses barrier face as a ramp, redirects at higher tangential speed; ideal for attack-type sweeps around the defense line.
+3. **Speed ridge descent** — a bey orbiting Zone 4 at sub-orbital speed (v < 0.91 m/s) decays inward through Zone 3, passing the barrier naturally via bowl momentum.
+
+### Case 1595 — Speed Ridge / Blue Line Physics
+
+The blue ring at r ≈ 190–210 mm is a raised ridge analogous to the MFB Tornado Ridge but at larger scale. When a bey's lowest structural feature contacts this ridge, it receives an inward impulse and the edge-contact increases effective grip, enabling sustained high-speed orbits.
+
+```
+Ridge radius:        r_ridge ≈ 200 mm   [ESTIMATED]
+Ridge height:        h_ridge ≈ 4 mm above local slope line   [ESTIMATED]
+Face angle:          β_ridge = atan(4/12) ≈ 18.4°   [INFERRED]
+Engagement condition: bey z_rim ≤ 4 mm (must have low-profile tip or worn body)   [INFERRED]
+
+Stable orbit speed at r = 200 mm (Zone 4 slope g_lat):
+  v_orbit = √(g_lat × r) = √(5.63 × 0.200) = 1.061 m/s   [INFERRED]
+  Orbital period at stable speed: T = 2π × 0.200 / 1.061 = 1.184 s   [INFERRED]
+
+Inward engagement impulse (scaled from MFB Tornado Ridge, CS12 Case 605):
+  J_inward ≈ 0.0948 × (300/170) × (4/3) ≈ 0.222 N·s   [INFERRED — scaled]
+
+Ridge grip enhancement:
+  Effective μ increase ≈ +0.15–0.25 during ridge edge contact   [ESTIMATED]
+```
+
+**Speed separator effect:** Beys entering Zone 4 at v < v_orbit (< 1.06 m/s) are drawn inward by lateral gravity → drift toward Zone 3 → eventually reach barrier. Beys at v > v_orbit are flung outward → Zone 5 → outer wall. The ridge acts as a natural speed-based routing gate.
+
+### Case 1596 — Exit Geometry and Ring-Out Probability
+
+The outer wall has gaps aligned near quadrant boundaries, creating four ring-out corridors. Beys reaching the outer wall have a high probability of ring-out.
+
+```
+Outer wall circumference: C = π × 600 = 1885 mm   [INFERRED]
+Estimated gap arc per corridor: ≈ 50°              [ESTIMATED from image]
+Total gap count: 4
+Total gap arc coverage: 4 × 50° = 200°
+Gap chord coverage: 200/360 × 1885 = 1047 mm
+
+P(ring-out | reaches outer wall) ≈ 200/360 ≈ 0.556   [ESTIMATED]
+```
+
+### Case 1597 — Spawn Geometry and Opening Dynamics
+
+```
+Spawn radius:   r_spawn ≈ 150 mm (mid-bowl, Zone 3)   [ESTIMATED]
+Spawn angles:   45° / 135° / 225° / 315° (quadrant centers)   [INFERRED]
+Spawn layout:   each bey in its own quadrant, positioned at ≈ 90° from adjacent beys
+
+Diagonal pair separation (NE ↔ SW, NW ↔ SE):
+  d_diag = 2 × r_spawn × sin(90°) = 2 × 150 = 300 mm   [INFERRED]
+
+Adjacent pair chord distance (90° apart):
+  d_adj = 2 × r_spawn × sin(45°) = 2 × 150 × 0.707 = 212 mm   [INFERRED]
+
+Opening approach time to first contact (v₀ = 2.0 m/s):
+  Diagonal: t = 300 / 2000 = 0.150 s   [INFERRED]
+  Adjacent:  t = 212 / 2000 = 0.106 s  [INFERRED]
+```
+
+**Opposite-sides rule:** In all multi-bey configurations the two beys of a matched diagonal pair (e.g. Player 1 at 45° and Player 3 at 225°) face each other directly at launch. Adjacent beys (90° apart) do not head-on collide immediately — they converge through orbital drift or active movement.
+
+### Quadrant Markings (Red Cross Lines)
+
+The straight red cross-lines are **visual-only** quadrant dividers. They carry **no physical barrier effect**. Beys cross freely between quadrants at all times. Their only functional role is defining spawn zones during the launch phase.
+
+### Strategic Zone Summary
+
+| Zone | Favored Type | Reason |
+|------|-------------|--------|
+| Zone 1 (Defense Flat) | Stamina / Defense | Zero lateral gravity; only tip friction; shielded by inner barrier |
+| Zone 2 (Barrier ramp) | Attack | Tangential slingshot off barrier face for entry or redirection |
+| Zone 3 (Main bowl) | Attack / Balanced | High KE from bowl descent; wide circling arcs for hit-and-run |
+| Zone 4 (Speed Ridge) | Balanced / Attack | Fast orbital speed; ridge inward impulse; high-grip contact |
+| Zone 5 (Upper slope) | Attack | High lateral acceleration toward outer wall → ring-out push |
+| Zone 6 (Outer wall) | — | Ring-out zone; P(exit) ≈ 0.56 for any bey reaching this radius |
+
+### Defense Zone Access Rule
+
+The interior barrier does **not** make Zone 1 impenetrable — minimum surmount speed is only 0.31 m/s. Its real effect is to **deny orbital access**: a bey in pure circular orbit around Zone 1 cannot stay in orbit below r ≈ 85 mm without first crossing the barrier wall. This means a defensive bey that reaches Zone 1 and holds position (e.g. with an extremely low-friction tip like B:D, μ = 0.05) can effectively sit inside the barrier while opponents either waste energy surmounting it or circle Zone 3.
+
+```
+B:D zombie in Zone 1:
+  dω/dt = (0.05 × m × g × r_tip) / I_total   [REAL-WORLD]
+  At m = 35 g, r_tip = 1.5 mm, I = 7.3×10⁻⁶:
+  dω/dt = (0.05 × 0.035 × 9.81 × 0.0015) / 7.3×10⁻⁶ = 3.52 rad/s²   [INFERRED]
+  Spin life from ω₀ = 600: t_spin = 600 / 3.52 = 170 s   [INFERRED]
+```
+
+---
+
+## 10.6 Cross-Arena Comparison
+
+| Arena | Diameter | Flat zone | Exit probability | Player slots |
+|-------|----------|-----------|-----------------|--------------|
+| MFB Attack Type (CS10) | 340 mm | 40 mm r | 0.492 (3 pockets) | 2 |
+| Default Black Arena | 600 mm | 70 mm r | 0.556 (4 gaps) | 4 |
+
+Key difference: the Default Black Arena's interior barrier gives stamina-type beys a defensive refuge not present in the MFB Attack Type, while the wider bowl and higher exit probability make it simultaneously more offensive. The net effect is a high-variance arena where defense-in-center and ring-out-via-wall are both viable endgame strategies.
+
+---
+
 # PART XI: LAUNCHERS AND ACCESSORIES
 
 ---
@@ -3062,6 +3237,7 @@ All physics constants, formulas, and engine mappings derive exclusively from the
 | `8 case study.md` | BX/UX blades, ratchets, bits (Cases 375–415) |
 | `9 case study.md` | Burst full lineage — God Layer through BU (Cases 416–1524+): individual parts, Xcalibur chain 1001–1017, God Layer assemblies 1018–1024, full assembly configs to Case 1524+ |
 | `10 case study.md` | Arena mechanics, stadium physics, material constants (Cases 545–585) |
+| `Default Black Arena` | 4-quadrant 600 mm multi-player stadium; interior barrier, speed ridge, defense flat, exit gaps (Cases 1592–1600) |
 | `11 case study.md` | Special move physics — game engine (Cases 586–600) |
 | `12 case study.md` | Combo system physics (Cases 601–618) |
 | `13 case study.md` | Franchise special moves, gimmick mechanics (Cases 619–866+) |

@@ -131,19 +131,7 @@ export class TryoutRoom extends BaseRoom<GameState> {
       console.log(`✅ Loaded arena: ${arenaData.name}`);
     } else {
       console.log(`⚠️ Arena not found: ${options.arenaId}, using defaults`);
-      this.state.arena.id = options.arenaId || "classic_stadium";
-      this.state.arena.name = "Standard Arena";
-      this.state.arena.width = 50;
-      this.state.arena.height = 50;
-      this.state.arena.shape = "circle";
-      this.state.arena.theme = "default";
-      this.state.arena.gravity = 0;
-      this.state.arena.airResistance = 0.01;
-      this.state.arena.surfaceFriction = 0.01;
-      this.state.arena.wallEnabled = true;
-      this.state.arena.wallBaseDamage = 5;
-      this.state.arena.wallRecoilDistance = 2;
-      this.state.arena.wallAngle = 0;
+      this.applyDefaultArena(options.arenaId || "classic_stadium");
     }
 
     if (options.arenaSystemId) {
@@ -196,7 +184,7 @@ export class TryoutRoom extends BaseRoom<GameState> {
     beyblade.id = client.sessionId;
     beyblade.userId = options.userId || client.sessionId;
     beyblade.username = options.username || "Player";
-    beyblade.beybladeId = options.beybladeId || "default";
+    beyblade.beybladeId = options.beybladeId || "storm_pegasus_105rf";
     beyblade.isAI = false;
 
     if (beybladeData) {
@@ -596,4 +584,6 @@ export class TryoutRoom extends BaseRoom<GameState> {
   protected override onTickedBey(_beyblade: Beyblade, _dt: number): void {
     // override in 2.5D subclass to call partSystemManager.tickBey()
   }
+
+  protected override get defaultArenaName(): string { return "Default Black Arena"; }
 }

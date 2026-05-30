@@ -136,28 +136,34 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
     for (const et of elemTypes.slice(0, 2)) beyblade.elementTypes.push(et);
   }
 
-  /** Fallback stats when Firestore has no record for a beyblade. */
+  /**
+   * Fallback stats — Storm Pegasus 105RF (CS13 Case 1715).
+   * attack=145  defense=75  stamina=140  (total 360)
+   * mass=46 g, r_outer=38 mm (3.8 cm), RF tip μ_k≈0.85
+   */
   protected applyDefaultStats(beyblade: Beyblade): void {
-    beyblade.type              = "balanced";
-    beyblade.color             = "#2288ff";
+    beyblade.type              = "attack";
+    beyblade.color             = "#1a6fe8";   // Pegasus blue
     beyblade.spinDirection     = "right";
-    beyblade.mass              = 50;
-    beyblade.radius            = 4;
-    beyblade.actualSize        = 96;
-    beyblade.attackPoints      = 120;
-    beyblade.defensePoints     = 120;
-    beyblade.staminaPoints     = 120;
-    beyblade.damageMultiplier  = 1.84;
-    beyblade.damageTaken       = 0.64;
-    beyblade.knockbackDistance = 7.99;
-    beyblade.invulnerabilityChance = 0.18;
-    beyblade.spinStealFactor   = 0.42;
-    beyblade.spinDecayRate     = 7.88;
+    beyblade.mass              = 46;
+    beyblade.radius            = 3.8;         // renderer derives display size from radius
+    beyblade.attackPoints      = 145;
+    beyblade.defensePoints     = 75;
+    beyblade.staminaPoints     = 140;
+    beyblade.damageMultiplier  = 2.015;       // 1.0 + 145 × 0.007
+    beyblade.damageTaken       = 0.78;        // 1 − 75 × 0.003
+    beyblade.knockbackDistance = 8.8;         // RF high-traction attack
+    beyblade.invulnerabilityChance = 0.08;    // no defense gimmick
+    beyblade.spinStealFactor   = 0.20;        // pure attack, no spin-steal
+    beyblade.spinDecayRate     = 6.88;        // 8 × (1 − 140 × 0.001)
     beyblade.maxStamina        = 1600;
     beyblade.stamina           = 1600;
-    beyblade.maxSpin           = 2192;
-    beyblade.spin              = 2192;
-    beyblade.speedBonus        = 1.84;
+    beyblade.maxSpin           = 2224;        // 2000 × (1 + 140 × 0.0008)
+    beyblade.spin              = 2224;
+    beyblade.speedBonus        = 2.20;        // RF ballistic traction
+    beyblade.specialMove       = "stampede_rush";
+    beyblade.comboIds.clear();
+    for (const id of ["quick-dash-r", "power-thrust", "pivot-strike"]) beyblade.comboIds.push(id);
   }
 
   // ─── Arena state helpers ──────────────────────────────────────────────────
@@ -245,29 +251,62 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
   }
 
   /**
-   * Minimal fallback arena applied when Firestore has no doc for the arena id.
-   * Subclasses may override `defaultArenaName` to customise the display name.
+   * Default Black Arena — 4-quadrant 60 cm circular bowl.
+   * Applied when Firestore has no doc for the arena id.
+   *
+   * Dimensions are in arena-px (1 cm = 24 px). The renderer divides by 24 to get cm.
+   *   width / height  1440 / 1440  (= 60 cm × 24 px/cm)
+   *   flatZoneRadius   168  (= 7 cm × 24)   — yellow defense flat
+   *   ridgeRadius      480  (= 20 cm × 24)  — blue speed-ridge centre
+   *   pinkWallRadius   624  (= 26 cm × 24)  — inner edge of outer recoil wall
+   *   arenaPixelRadius 648  (= 27 cm × 24)  — KO boundary (30 cm × 0.90 × 24)
+   *
+   * arenaCache is also populated so BattleRoom's zone-physics block activates.
    */
   protected applyDefaultArena(arenaId: string): void {
     this.state.arena.id              = arenaId;
     this.state.arena.name            = this.defaultArenaName;
-    this.state.arena.width           = 50;
-    this.state.arena.height          = 50;
+    this.state.arena.width           = 1440;
+    this.state.arena.height          = 1440;
     this.state.arena.shape           = "circle";
-    this.state.arena.theme           = "default";
+    this.state.arena.theme           = "black";
     this.state.arena.gravity         = 0;
     this.state.arena.airResistance   = 0.01;
     this.state.arena.surfaceFriction = 0.01;
     this.state.arena.wallEnabled     = true;
     this.state.arena.wallBaseDamage  = 5;
     this.state.arena.wallRecoilDistance = 2;
-    this.state.arena.wallAngle       = 0;
+    this.state.arena.wallAngle       = 25;
     this.state.arena.wallHasSprings  = false;
     this.state.arena.wallSpringRecoilMultiplier = 1.0;
+    this.state.arena.arenaPixelRadius = 648;
+    this.state.arena.flatZoneRadius   = 168;
+    this.state.arena.ridgeRadius      = 480;
+    this.state.arena.pinkWallRadius   = 624;
+
+    // Populate arenaCache so BattleRoom's classic zone-physics block fires.
+    this.arenaCache = {
+      id:     arenaId,
+      name:   this.defaultArenaName,
+      width:  1440,
+      height: 1440,
+      shape:  "circle",
+      theme:  "black",
+      arenaPixelRadius: 648,
+      flatZoneRadius:   168,
+      ridgeRadius:      480,
+      pinkWallRadius:   624,
+      wallBounceFactor: 1.2,
+      spinZones: [{ ringWidth: 36, spinStrength: 0.35 } as any],
+      wall: { enabled: true, baseDamage: 5, recoilDistance: 2, hasSpikes: false, spikeDamageMultiplier: 1 },
+      gravity: 0,
+      airResistance: 0.01,
+      surfaceFriction: 0.01,
+    } as any;
   }
 
   /** Display name used by applyDefaultArena.  Subclasses can override. */
-  protected get defaultArenaName(): string { return "Standard Battle Arena"; }
+  protected get defaultArenaName(): string { return "Default Black Arena"; }
 
   // ─── Physics wall setup ───────────────────────────────────────────────────
 

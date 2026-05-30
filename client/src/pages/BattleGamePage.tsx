@@ -104,8 +104,8 @@ export function BattleGamePage() {
   }, []);
 
   const colyseusOptions = useMemo(() => ({
-    beybladeId: settings.beybladeId ?? "default",
-    arenaId: settings.arenaId ?? "classic_stadium",
+    beybladeId: settings.beybladeId ?? "storm_pegasus_105rf",
+    arenaId: settings.arenaId ?? "default_black_arena",
     username: settings.username ?? "Player",
     userId,
     spectate,

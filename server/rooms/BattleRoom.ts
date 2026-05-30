@@ -596,7 +596,7 @@ export class BattleRoom extends BaseRoom<GameState> {
     beyblade.id = client.sessionId;
     beyblade.userId = options.userId || client.sessionId;
     beyblade.username = options.username || `Player${this.playerSessions.size}`;
-    beyblade.beybladeId = options.beybladeId || "default";
+    beyblade.beybladeId = options.beybladeId || "storm_pegasus_105rf";
     beyblade.isAI = false;
 
     if (beybladeData) {
