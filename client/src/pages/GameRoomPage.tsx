@@ -18,6 +18,7 @@ import type { ServerGameState } from '../types/game';
 import { isLocalRoom, roomNameForConfig, type GameRoomConfig } from '../types/gameRoom';
 import { ROOM_NAMES } from '../shared/utils/gameMode';
 import { LocalGameSimulation, type SimSnapshot } from '../game/simulation/LocalGameSimulation';
+import { getScenario } from '../constants/gameModeScenarios';
 
 import { GameShell } from '../components/game/GameShell';
 import { PauseMenu } from '../components/game/PauseMenu';
@@ -113,15 +114,18 @@ export function GameRoomPage() {
   const { resolve: resolveSpecialMove } = useSpecialMoves();
 
   // ─── Server room (Colyseus) ───────────────────────────────────────────────
-  const colyseusOptions = useMemo(() => ({
-    beybladeId: config?.beybladeId ?? settings.beybladeId ?? 'storm_pegasus_105rf',
-    arenaId: config?.arenaId ?? settings.arenaId ?? 'default_black_arena',
-    username: settings.username ?? 'Player',
-    userId: settings.userId ?? 'guest',
-    spectate: config?.spectate ?? false,
-    bestOf: config?.bestOf ?? 1,
-    modifierIds: config?.modifierIds ?? [],
-  }), [config, settings]);
+  const colyseusOptions = useMemo(() => {
+    const scenario = getScenario(config?.roomType ?? 'pvp');
+    return {
+      beybladeId: config?.beybladeId || settings.beybladeId || scenario.beybladeId,
+      arenaId:    config?.arenaId    || settings.arenaId    || scenario.arenaId,
+      username:   settings.username  ?? 'Player',
+      userId:     settings.userId    ?? 'guest',
+      spectate:   config?.spectate   ?? false,
+      bestOf:     config?.bestOf     ?? scenario.bestOf,
+      modifierIds: config?.modifierIds ?? [],
+    };
+  }, [config, settings]);
 
   const roomName = config && !local ? roomNameForConfig(config) : ROOM_NAMES["2d"].battle;
 

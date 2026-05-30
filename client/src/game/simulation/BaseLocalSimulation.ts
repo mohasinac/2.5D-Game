@@ -8,6 +8,7 @@ import type { GameRoomConfig } from '../../types/gameRoom';
 import type { FullGameInput } from '../hooks/useGameInput';
 import { AIController, type BeybladeSnapshot, type AIDifficulty } from '../ai/AIController';
 import { PHYSICS_SCALE } from '../../constants/units';
+import { getScenario } from '../../constants/gameModeScenarios';
 
 // ─── Physics constants ────────────────────────────────────────────────────────
 const FRICTION     = 0.97;
@@ -145,6 +146,76 @@ function applyDarkWolfStats(bey: ServerBeyblade) {
     specialMove: 'spin_recovery',
     comboIds: ['guard-tap', 'spin-leech-jab', 'quick-dash-l'],
   });
+}
+
+function applyRockLeoneStats(bey: ServerBeyblade) {
+  Object.assign(bey, {
+    // Rock Leone LB145SB — Defense-type MFB bey
+    // AR: rock_leone_ar_fallback (r=26px, 4 guard points, 0.95× dmg multiplier)
+    // Track: track_lb145_fallback (LB145 Lock Blade 14.5mm, 0.65× damage received)
+    // Tip: rock_leone_tip_fallback (SB Semi-Flat Ball, grip=0.45, aggressiveness=0.3)
+    attackRingId: 'rock_leone_ar_fallback',
+    spinTrackId: 'track_lb145_fallback',
+    tipId: 'rock_leone_tip_fallback',
+    casingId: 'rock_leone_casing_fallback',
+    type: 'defense', color: '#d4a017', spinDirection: 'right',
+    mass: 50, radius: 2.6,
+    attackPoints: 80, defensePoints: 140, staminaPoints: 140,
+    damageMultiplier: 1.56, damageTaken: 0.58,
+    knockbackDistance: 5.0, invulnerabilityChance: 0.25,
+    spinStealFactor: 0.10, spinDecayRate: 7.00,
+    maxStamina: 1600, stamina: 1600,
+    health: 1600, maxHealth: 1600,
+    maxSpin: 2080, spin: 2080,
+    speedBonus: 1.20,
+    specialMove: 'gyro_anchor',
+    comboIds: ['guard-tap', 'riposte', 'quick-dash-l'],
+  });
+}
+
+function applyEarthEagleStats(bey: ServerBeyblade) {
+  Object.assign(bey, {
+    // Earth Eagle 145WD — Stamina-type MFB bey
+    // AR: earth_eagle_ar_fallback (r=22px, 4 absorb wings, 1.0× dmg multiplier)
+    // Track: track_145_fallback (145 standard 14.5mm, low aero drag)
+    // Tip: earth_eagle_tip_fallback (WD Wide Defense, grip=0.20, aggressiveness=0.2)
+    attackRingId: 'earth_eagle_ar_fallback',
+    spinTrackId: 'track_145_fallback',
+    tipId: 'earth_eagle_tip_fallback',
+    casingId: 'earth_eagle_casing_fallback',
+    type: 'stamina', color: '#2e7d32', spinDirection: 'right',
+    mass: 38, radius: 2.3,
+    attackPoints: 90, defensePoints: 120, staminaPoints: 150,
+    damageMultiplier: 1.63, damageTaken: 0.64,
+    knockbackDistance: 6.0, invulnerabilityChance: 0.18,
+    spinStealFactor: 0.50, spinDecayRate: 6.60,
+    maxStamina: 1600, stamina: 1600,
+    health: 1600, maxHealth: 1600,
+    maxSpin: 2320, spin: 2320,
+    speedBonus: 1.40,
+    specialMove: 'spin_recovery',
+    comboIds: ['spin-leech-jab', 'guard-tap', 'quick-dash-r'],
+  });
+}
+
+// Routes to the correct code-level stat function for each known fallback bey id.
+export function applyFallbackBeyStats(bey: ServerBeyblade, beybladeId: string) {
+  switch (beybladeId) {
+    case 'dark_wolf_df145fs':   return applyDarkWolfStats(bey);
+    case 'rock_leone_lb145sb':  return applyRockLeoneStats(bey);
+    case 'earth_eagle_145wd':   return applyEarthEagleStats(bey);
+    default:                     return applyStormPegasusStats(bey);
+  }
+}
+
+// Returns [displayName, color] for an AI beyblade based on its fallback id.
+function aiBeyDisplayInfo(beybladeId: string, difficultyLabel: string): [string, string] {
+  switch (beybladeId) {
+    case 'dark_wolf_df145fs':  return [`Dark Wolf ${difficultyLabel}`,  '#7a0a2b'];
+    case 'rock_leone_lb145sb': return [`Rock Leone ${difficultyLabel}`, '#d4a017'];
+    case 'earth_eagle_145wd':  return [`Earth Eagle ${difficultyLabel}`, '#2e7d32'];
+    default:                   return [`Storm Pegasus ${difficultyLabel}`, '#1a6fe8'];
+  }
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -304,9 +375,21 @@ export class BaseLocalSimulation {
   // ─── Data loading ─────────────────────────────────────────────────────────
 
   protected async loadData() {
-    const { beybladeId = 'storm_pegasus_105rf', arenaId = 'default_black_arena', aiCount = 1, aiDifficulty = 'medium' } = this.config;
-    const cx = DEFAULT_ARENA_W / 2, cy = DEFAULT_ARENA_H / 2;
     const roomType = this.config.roomType;
+    const scenario = getScenario(roomType);
+
+    // Apply scenario defaults for any field not explicitly set in config
+    const beybladeId = this.config.beybladeId || scenario.beybladeId;
+    const arenaId    = this.config.arenaId    || scenario.arenaId;
+    const aiCount    = this.config.aiCount    ?? scenario.aiCount;
+    const aiDifficulty: AIDifficulty = this.config.aiDifficulty ?? scenario.aiDifficulty;
+    // Write resolved values back so resetForNextTournamentRound() can read them
+    this.config.beybladeId   = beybladeId;
+    this.config.arenaId      = arenaId;
+    this.config.aiCount      = aiCount;
+    this.config.aiDifficulty = aiDifficulty;
+
+    const cx = DEFAULT_ARENA_W / 2, cy = DEFAULT_ARENA_H / 2;
 
     const aiCountThisRound = roomType === 'tryout' ? 0
       : roomType === 'tournament-ai' ? 1
@@ -387,12 +470,7 @@ export class BaseLocalSimulation {
       } catch { /* fall through to local fallback */ }
 
       if (!loadedFromFirestore) {
-        if (beybladeId === 'dark_wolf_df145fs') {
-          applyDarkWolfStats(playerBey);
-        } else {
-          // storm_pegasus_105rf or any other unknown id
-          applyStormPegasusStats(playerBey);
-        }
+        applyFallbackBeyStats(playerBey, beybladeId);
         Object.assign(playerBey, { beybladeId });
       }
     }
@@ -408,6 +486,9 @@ export class BaseLocalSimulation {
     };
 
     if (roomType !== 'tryout') {
+      const aiBeyIds = scenario.aiBeybladeIds.length > 0
+        ? scenario.aiBeybladeIds
+        : ['dark_wolf_df145fs'];
       for (let i = 0; i < aiCountThisRound; i++) {
         const roundIndex = roomType === 'tournament-ai' ? this.tournamentRound : i;
         const id = roomType === 'tournament-ai' ? `ai_round_${roundIndex}` : `ai_${i}`;
@@ -417,9 +498,14 @@ export class BaseLocalSimulation {
             ? royaleRandomDifficulty(aiDifficulty)
             : aiDifficulty;
         this.botDifficulties.set(id, botDiff);
-        const label = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
-        const ai = makeBeySpaced(id, `Dark Wolf ${label}`, '#7a0a2b', true, arCx, arCy, this.arenaRadius, i + 1, total);
-        applyDarkWolfStats(ai);
+
+        const aiBeyId = aiBeyIds[i % aiBeyIds.length];
+        const label   = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
+        // Derive display name and color from the fallback bey id
+        const [aiName, aiColor] = aiBeyDisplayInfo(aiBeyId, label);
+        const ai = makeBeySpaced(id, aiName, aiColor, true, arCx, arCy, this.arenaRadius, i + 1, total);
+        applyFallbackBeyStats(ai, aiBeyId);
+        Object.assign(ai, { beybladeId: aiBeyId });
         this.beyblades.set(id, ai);
         this.aiControllers.set(id, new AIController(botDiff));
       }
@@ -429,7 +515,6 @@ export class BaseLocalSimulation {
   // ─── Tournament round reset ───────────────────────────────────────────────
 
   protected resetForNextTournamentRound() {
-    const { aiDifficulty = 'medium' } = this.config;
     const arCx = (this.arena.width ?? DEFAULT_ARENA_W) / 2;
     const arCy = (this.arena.height ?? DEFAULT_ARENA_H) / 2;
     const total = 2;
@@ -458,16 +543,21 @@ export class BaseLocalSimulation {
     const botDiff = tournamentRoundDifficulty(roundIndex, this.tournamentTotalRounds);
     this.botDifficulties.set(id, botDiff);
     const label = botDiff === 'hell' ? '🔥' : botDiff === 'hard' ? '⚡' : '●';
-    const ai = makeBeySpaced(id, `Dark Wolf ${label}`, '#7a0a2b', true, arCx, arCy, this.arenaRadius, 1, total);
-    applyDarkWolfStats(ai);
+
+    // Rotate through scenario AI beyblades so each bracket round has a different opponent
+    const scenario = getScenario(this.config.roomType);
+    const aiBeyIds = scenario.aiBeybladeIds.length > 0 ? scenario.aiBeybladeIds : ['dark_wolf_df145fs'];
+    const aiBeyId  = aiBeyIds[roundIndex % aiBeyIds.length];
+    const [aiName, aiColor] = aiBeyDisplayInfo(aiBeyId, label);
+
+    const ai = makeBeySpaced(id, aiName, aiColor, true, arCx, arCy, this.arenaRadius, 1, total);
+    applyFallbackBeyStats(ai, aiBeyId);
+    Object.assign(ai, { beybladeId: aiBeyId });
     this.beyblades.set(id, ai);
     this.aiControllers.set(id, new AIController(botDiff));
     this.winner = '';
     this.elapsed = 0;
     this.spawnImmunity.clear();
-
-    // suppress unused-var warning
-    void aiDifficulty;
   }
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────

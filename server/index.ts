@@ -19,6 +19,7 @@ import { RoyaleBattleRoom } from "./rooms/RoyaleBattleRoom";
 import { StoryBattleRoom } from "./rooms/StoryBattleRoom";
 import { ROOM_NAMES } from "./shared/utils/gameMode";
 import { TournamentScheduler } from "./tournament/TournamentScheduler";
+import { warmServerCache } from "./utils/serverDataCache";
 
 const port = Number(process.env.PORT || 2567);
 const app = express();
@@ -94,7 +95,7 @@ app.get("/health", (req, res) => {
 app.get("/rooms/by-code/:code", async (req, res) => {
   const code = (req.params.code ?? "").toUpperCase();
   try {
-    const rooms = await gameServer.driver.query({ metadata: { roomCode: code } } as any);
+    const rooms = await (gameServer as any).driver.query({ metadata: { roomCode: code } } as any);
     const match = rooms.find((r: any) => r.metadata?.roomCode === code);
     if (!match) { res.status(404).json({ error: "Room not found" }); return; }
     res.json({ roomId: match.roomId });
@@ -108,6 +109,11 @@ gameServer.listen(port);
 console.log(`🎮 Beyblade Game Server listening on port ${port}`);
 console.log(`📊 Monitor panel: http://localhost:${port}/colyseus`);
 console.log(`🏥 Health check: http://localhost:${port}/health`);
+
+// Pre-load arenas, beyblades, combo effects, and special moves into memory so
+// room creates never block on cold Firestore reads. Runs in the background
+// so the server starts immediately even if Firestore is slow.
+warmServerCache().catch(err => console.warn("[startup] warmServerCache failed:", err));
 
 // Start tournament scheduler (polls Firestore every 30s for upcoming bracket matches)
 const scheduler = new TournamentScheduler();

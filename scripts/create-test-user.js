@@ -26,9 +26,9 @@ if (!getApps().length) {
 const auth = getAuth();
 const db   = getFirestore();
 
-const TEST_EMAIL    = "testadmin@letitrip.in";
-const TEST_PASSWORD = "TestAdmin1234!";
-const TEST_NAME     = "E2E Test Admin";
+const TEST_EMAIL    = "admin@letitrip.in";
+const TEST_PASSWORD = "BeyAdmin#2025";
+const TEST_NAME     = "Beyblade Admin";
 
 async function run() {
   let uid;

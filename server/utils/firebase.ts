@@ -50,6 +50,10 @@ if (!admin.apps.length) {
 
 export function getFirestoreDb(): admin.firestore.Firestore | null { return db; }
 
+// Lazy import of the server data cache to avoid circular deps at module load time.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const serverDataCache = () => require('./serverDataCache') as typeof import('./serverDataCache');
+
 /**
  * Load beyblade data from Firestore
  */
@@ -61,6 +65,12 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | null> {
+  // Check in-process cache first
+  try {
+    const cached = await serverDataCache().getCachedBeyblade(beybladeId);
+    if (cached) return cached;
+  } catch { /* fall through to direct load */ }
+
   if (!db) {
     console.error('Firebase not initialized');
     return null;
@@ -88,6 +98,12 @@ export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | 
  * Load arena data from Firestore
  */
 export async function loadArena(arenaId: string): Promise<ArenaConfig | null> {
+  // Check in-process cache first
+  try {
+    const cached = await serverDataCache().getCachedArena(arenaId);
+    if (cached) return cached;
+  } catch { /* fall through to direct load */ }
+
   if (!db) {
     console.error('Firebase not initialized');
     return null;

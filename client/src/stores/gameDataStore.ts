@@ -84,6 +84,60 @@ export interface StatEventDoc { id: string; label: string; description?: string;
 export interface PartLayerDoc { id: string; label: string; description?: string; }
 export interface StatDefDoc { id: string; name: string; category: string; type: string; description: string; min?: number; max?: number; default?: number; step?: number; unit?: string; affectsPhysics?: boolean; }
 
+// ─── Game entity doc types ────────────────────────────────────────────────────
+
+export interface ArenaDoc {
+  id: string;
+  name: string;
+  shape?: string;
+  theme?: string;
+  width?: number;
+  height?: number;
+  wallAngle?: number;
+  arenaPixelRadius?: number;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface BeybladeStatDoc {
+  id: string;
+  name: string;
+  type?: string;
+  color?: string;
+  spinDirection?: string;
+  radius?: number;
+  maxSpin?: number;
+  specialMoveId?: string;
+  comboIds?: string[];
+  [key: string]: unknown;
+}
+
+export interface GimmickDefDoc {
+  id: string;
+  name: string;
+  description?: string;
+  behaviorRefs?: string[];
+  mechanicInstances?: unknown[];
+  [key: string]: unknown;
+}
+
+export interface MechanicDefDoc {
+  id: string;
+  name: string;
+  handler?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface RoundModifierDoc {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  effects?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export interface BeyLinkConfigDoc {
   id: string;
   label: string;
@@ -116,7 +170,8 @@ type InvalidateSlice =
   | "beyLinkConfigs" | "partMaterials"
   | "tipShapes" | "coreGimmicks" | "attackTypeDefs" | "arenaThemeDefs"
   | "arenaShapeDefs" | "bowlProfileDefs" | "triggerTypeDefs" | "statEventDefs"
-  | "partLayerDefs" | "statDefs";
+  | "partLayerDefs" | "statDefs"
+  | "arenas" | "beyblades" | "gimmickDefs" | "mechanicDefs" | "roundModifiers";
 
 interface GameDataState {
   combos: ComboDoc[];
@@ -179,6 +234,25 @@ interface GameDataState {
   fetchStatDefs: () => Promise<void>;
   fetchAssets: (collectionName: string, tag?: string) => Promise<void>;
   /** Pre-load all catalog data — call this at game page mount. */
+  // Game entity slices
+  arenas: ArenaDoc[];
+  arenasLoaded: boolean;
+  beyblades: BeybladeStatDoc[];
+  beyblaDes: boolean;  // backward-compat typo guard — use beyblaDes internally
+  beybladeStats: BeybladeStatDoc[];
+  beybladeStatsLoaded: boolean;
+  gimmickDefs: GimmickDefDoc[];
+  gimmickDefsLoaded: boolean;
+  mechanicDefs: MechanicDefDoc[];
+  mechanicDefsLoaded: boolean;
+  roundModifiers: RoundModifierDoc[];
+  roundModifiersLoaded: boolean;
+
+  fetchArenas: () => Promise<void>;
+  fetchBeybladeStats: () => Promise<void>;
+  fetchGimmickDefs: () => Promise<void>;
+  fetchMechanicDefs: () => Promise<void>;
+  fetchRoundModifiers: () => Promise<void>;
   fetchAll: () => Promise<void>;
   invalidate: (slice: InvalidateSlice) => void;
 }
@@ -223,6 +297,19 @@ export const useGameDataStore = create<GameDataState>()(persist((set, get) => ({
   loading: {},
   errors: {},
   _fetchedAt: {},
+  // Game entity initial values
+  arenas: [],
+  arenasLoaded: false,
+  beyblades: [],
+  beyblaDes: false,
+  beybladeStats: [],
+  beybladeStatsLoaded: false,
+  gimmickDefs: [],
+  gimmickDefsLoaded: false,
+  mechanicDefs: [],
+  mechanicDefsLoaded: false,
+  roundModifiers: [],
+  roundModifiersLoaded: false,
 
   fetchCombos: async () => {
     if (isFresh(get()._fetchedAt, 'combos')) return;
@@ -455,9 +542,98 @@ export const useGameDataStore = create<GameDataState>()(persist((set, get) => ({
     }
   },
 
+  fetchArenas: async () => {
+    if (isFresh(get()._fetchedAt, 'arenas')) return;
+    set(s => ({ loading: { ...s.loading, arenas: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.ARENAS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaDoc));
+      docs.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+      set(s => ({ arenas: docs, arenasLoaded: true, _fetchedAt: { ...s._fetchedAt, arenas: Date.now() }, loading: { ...s.loading, arenas: false }, errors: { ...s.errors, arenas: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, arenas: false }, errors: { ...s.errors, arenas: "Failed to load arenas" } }));
+    }
+  },
+
+  fetchBeybladeStats: async () => {
+    if (isFresh(get()._fetchedAt, 'beyblades')) return;
+    set(s => ({ loading: { ...s.loading, beyblades: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as BeybladeStatDoc));
+      docs.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+      set(s => ({ beyblades: docs, beybladeStats: docs, beyblaDes: true, beybladeStatsLoaded: true, _fetchedAt: { ...s._fetchedAt, beyblades: Date.now() }, loading: { ...s.loading, beyblades: false }, errors: { ...s.errors, beyblades: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, beyblades: false }, errors: { ...s.errors, beyblades: "Failed to load beyblade stats" } }));
+    }
+  },
+
+  fetchGimmickDefs: async () => {
+    if (isFresh(get()._fetchedAt, 'gimmickDefs')) return;
+    set(s => ({ loading: { ...s.loading, gimmickDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.GIMMICK_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as GimmickDefDoc));
+      docs.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+      set(s => ({ gimmickDefs: docs, gimmickDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, gimmickDefs: Date.now() }, loading: { ...s.loading, gimmickDefs: false }, errors: { ...s.errors, gimmickDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, gimmickDefs: false }, errors: { ...s.errors, gimmickDefs: "Failed to load gimmick defs" } }));
+    }
+  },
+
+  fetchMechanicDefs: async () => {
+    if (isFresh(get()._fetchedAt, 'mechanicDefs')) return;
+    set(s => ({ loading: { ...s.loading, mechanicDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.MECHANIC_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as MechanicDefDoc));
+      docs.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+      set(s => ({ mechanicDefs: docs, mechanicDefsLoaded: true, _fetchedAt: { ...s._fetchedAt, mechanicDefs: Date.now() }, loading: { ...s.loading, mechanicDefs: false }, errors: { ...s.errors, mechanicDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, mechanicDefs: false }, errors: { ...s.errors, mechanicDefs: "Failed to load mechanic defs" } }));
+    }
+  },
+
+  fetchRoundModifiers: async () => {
+    if (isFresh(get()._fetchedAt, 'roundModifiers')) return;
+    set(s => ({ loading: { ...s.loading, roundModifiers: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.ROUND_MODIFIERS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as RoundModifierDoc));
+      docs.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+      set(s => ({ roundModifiers: docs, roundModifiersLoaded: true, _fetchedAt: { ...s._fetchedAt, roundModifiers: Date.now() }, loading: { ...s.loading, roundModifiers: false }, errors: { ...s.errors, roundModifiers: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, roundModifiers: false }, errors: { ...s.errors, roundModifiers: "Failed to load round modifiers" } }));
+    }
+  },
+
   fetchAll: async () => {
-    const { fetchCombos, fetchSpecialMoves, fetchTurretAttackTypes, fetchArenaFeatureConfigs, fetchBeyLinkConfigs, fetchPartMaterials } = get();
-    await Promise.all([fetchCombos(), fetchSpecialMoves(), fetchTurretAttackTypes(), fetchArenaFeatureConfigs(), fetchBeyLinkConfigs(), fetchPartMaterials()]);
+    const g = get();
+    // Core game data — all fetched in parallel; each respects its own TTL guard
+    await Promise.all([
+      g.fetchCombos(),
+      g.fetchSpecialMoves(),
+      g.fetchArenas(),
+      g.fetchBeybladeStats(),
+      g.fetchGimmickDefs(),
+      g.fetchMechanicDefs(),
+      g.fetchRoundModifiers(),
+      // Config/def slices also pre-loaded so admin + game pages hit cache on first render
+      g.fetchTurretAttackTypes(),
+      g.fetchArenaFeatureConfigs(),
+      g.fetchBeyLinkConfigs(),
+      g.fetchPartMaterials(),
+      g.fetchTipShapes(),
+      g.fetchCoreGimmicks(),
+      g.fetchAttackTypeDefs(),
+      g.fetchArenaThemeDefs(),
+      g.fetchArenaShapeDefs(),
+      g.fetchBowlProfileDefs(),
+      g.fetchTriggerTypeDefs(),
+      g.fetchStatEventDefs(),
+      g.fetchPartLayerDefs(),
+      g.fetchStatDefs(),
+    ]);
   },
 
   invalidate: (slice) => {
@@ -481,5 +657,10 @@ export const useGameDataStore = create<GameDataState>()(persist((set, get) => ({
     else if (slice === "statEventDefs") set(s => ({ statEventDefsLoaded: false, statEventDefs: [], _fetchedAt: clearTs(s) }));
     else if (slice === "partLayerDefs") set(s => ({ partLayerDefsLoaded: false, partLayerDefs: [], _fetchedAt: clearTs(s) }));
     else if (slice === "statDefs") set(s => ({ statDefsLoaded: false, statDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "arenas") set(s => ({ arenasLoaded: false, arenas: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "beyblades") set(s => ({ beybladeStatsLoaded: false, beyblades: [], beybladeStats: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "gimmickDefs") set(s => ({ gimmickDefsLoaded: false, gimmickDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "mechanicDefs") set(s => ({ mechanicDefsLoaded: false, mechanicDefs: [], _fetchedAt: clearTs(s) }));
+    else if (slice === "roundModifiers") set(s => ({ roundModifiersLoaded: false, roundModifiers: [], _fetchedAt: clearTs(s) }));
   },
 }), { name: "bey-catalog-v1" }));

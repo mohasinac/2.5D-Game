@@ -34,6 +34,22 @@ export const FALLBACK_BEYS: FallbackBey[] = [
     color: "#7a0a2b",
     isFallback: true,
   },
+  {
+    id: "rock_leone_lb145sb",
+    name: "Rock Leone",
+    subtitle: "LB145SB · Defense · Right",
+    type: "defense",
+    color: "#d4a017",
+    isFallback: true,
+  },
+  {
+    id: "earth_eagle_145wd",
+    name: "Earth Eagle",
+    subtitle: "145WD · Stamina · Right",
+    type: "stamina",
+    color: "#2e7d32",
+    isFallback: true,
+  },
 ];
 
 export const FALLBACK_ARENAS: FallbackArena[] = [
