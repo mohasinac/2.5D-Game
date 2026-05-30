@@ -1143,7 +1143,8 @@ Source: `2 case study.md`
 **Material**: ABS  
 **Spin Coupling**: fixed mandatory (free-spin causes phase-slip within 1 revolution)  
 **Mechanism**: Dumbbell (Sub Attack Ring) mass distribution: I_SAR = m×r² = 1.94×10⁻⁶ kg·m². Free-spin mode causes phase-slip within 1 revolution → non-functional. SAR must be fixed (locked) for competitive use. Adds I at SAR radius when fixed.  
-**Engine Note**: fixationMandatory; freeSpinPhaseslip < 1 revolution; I_SAR = 1.94e-6 kg·m².
+**SAR–AR Core Compatibility**: Free-spin behavior of Screw Zeus SAR is geometry-dependent — compatibility is NOT universal across all AR Cores. With Zeus Core (native): collar gap fits Screw Zeus dumbbell geometry exactly → full free-spin rotation possible (though still non-functional due to phase-slip). With War Lion AR Core (Case 1032): collar geometry and AR slope contact surfaces create interference → SAR achieves partial movement only (neither locked nor freely spinning). The AR slopes and SAR dumbbell slopes are contact points that physically define the rotation range — which AR Core a SAR is mounted on determines whether full, partial, or no free-spin is geometrically possible. See also Case 233 (Screw Zeus SAR as standalone part), Case 1033 (Sub AR War Lion).  
+**Engine Note**: fixationMandatory; freeSpinPhaseslip < 1 revolution; I_SAR = 1.94e-6 kg·m²; compatibilityGeometryDependent — fullFreeSpin only with native AR Core; partialMovement with War Lion AR Core (collar gap + slope interface defines range).
 
 ---
 
@@ -1651,7 +1652,8 @@ Source: `2 case study.md`
 **Geometry**: ~1.3 g; near-circular ring; r_winglet ≈ 2.4 cm  
 **Material**: ABS  
 **Mechanism**: Near-circular SAR ring with minimal winglets. r_winglet≈24 mm leaves 2 mm gap vs Wide Defense (r_WD≈26 mm) → wedge entry failure mode when opponent AR attacks at WD height. Near-circular provides minimal smash but also minimal recoil.  
-**Engine Note**: nearCircular; r_winglet = 2.4 cm; wedgeEntryFailure at WD_r = 2.6 cm.
+**SAR–AR Core Compatibility Note**: War Lion AR Core (parent AR for this Sub AR) interacts with Screw Zeus SAR (Case 114, Case 233) with only partial movement — the AR slope surfaces and collar geometry of War Lion Core create interference with Screw Zeus dumbbell slopes, restricting rotation. Contrast: Screw Zeus SAR on its native Zeus Core allows full rotational range (though still non-competitive due to phase-slip). This illustrates the general principle: SAR free-spin compatibility is determined by the physical interface between (1) the collar gap on the AR Core and (2) the slope profiles on the SAR dumbbell body. War Lion AR Core's collar and slope geometry cannot accommodate Screw Zeus geometry as freely as Zeus Core can.  
+**Engine Note**: nearCircular; r_winglet = 2.4 cm; wedgeEntryFailure at WD_r = 2.6 cm; SARcompat_geometryDependent — Screw Zeus SAR gets partialMovement only (collar gap + slope interference).
 
 ---
 
@@ -3018,7 +3020,8 @@ Source: `4 case study.md`
 **Material**: ABS  
 **Contact Points**: speed-dependent: higher RPM → better smash angle alignment; fixed position = optimal  
 **Mechanism**: Speed-dependent geometry: contact angle changes with RPM → at high RPM, screw face presents optimal smash angle. Fixed in position by Core AR (Great Dragon or Dragon Saucer): removes speed-dependency → optimal angle permanent → highest-ceiling smash SAR. Inverted slopes in LS: create asymmetric self-destabilization when struck from behind. RS primary.  
-**Engine Note**: mass_g = 4.4; speedDependent_fixed=optimal; highestCeilingSmashSAR; LS_invertedSlopes_selfDestabilise.
+**SAR–AR Core Compatibility**: Screw Zeus SAR free-spin behavior is geometry-dependent — not all AR Cores permit the same rotation range. Native Zeus Core: collar geometry matches Screw Zeus dumbbell slopes → full rotation range (still non-functional due to phase-slip per Case 114). War Lion AR Core (Case 1032): AR slope contact surfaces and collar space create interference → partial movement only. The collar gap between AR Core and SAR body, plus the slope profile at the SAR-to-Core interface, are the physical contact points that define compatibility. Dragon Saucer AR Core (Case 212) and Great Dragon AR Core (Case 259): fix Screw Zeus in position → eliminates free-spin entirely → optimal smash. SAR choice and AR Core pairing are inseparable for performance analysis.  
+**Engine Note**: mass_g = 4.4; speedDependent_fixed=optimal; highestCeilingSmashSAR; LS_invertedSlopes_selfDestabilise; sarCompatibility_geometryDependent — partialMovement with War Lion Core; fullFixed with Dragon Saucer / Great Dragon Core.
 
 ---
 
@@ -3955,10 +3958,10 @@ Source: `5 case study.md`
 ### [Case 969 — DF145 (Down Force 145): 1.5 g — Four Wings Cannot Generate Meaningful Downforce at Beyblade Spin Rates; Outclassed](./5%20case%20study.md#case-969)
 
 **System**: MFB (Metal Fight Beyblade) — Track  
-**Geometry**: 1.5 g; 14.5 mm height; four upward wings  
+**Geometry**: 1.5 g; height_cm: 1.45; cylinder r_body ≈ 0.7 cm; 4 fins protruding upward from the TOP of the cylinder (z_base: 1.45 cm, z_top: ~1.75 cm); fins have a downward pitch angle (tiltAngle_deg: −12) — blades slant so their tips point downward, creating "downforce" airflow when spinning; fin span r_inner: 0.5 cm → r_outer: 1.0 cm; arcWidth: ~20° each; foldSymmetry: 4  
 **Material**: ABS  
-**Mechanism**: Wing aerodynamics: Downforce = ½ × ρ × v² × A × C_L. At beyblade RPM: v_wing ≈ 1–3 m/s → downforce ≈ 10⁻³ N (negligible vs gravity and contact forces). Four wings cannot generate meaningful downforce at these speeds. Track outclassed in stamina (less mass than AD145) and irrelevant in defense or attack. No competitive role.  
-**Engine Note**: height=1.45cm; mass=1.5g; downforce_negligible; outclassed_all_roles.
+**Mechanism**: Downforce = ½ × ρ × v² × A × C_L. At beyblade RPM v_wing ≈ 1–3 m/s → downforce ≈ 10⁻³ N (0.021% of gravitational normal force — negligible). Fins slant at −12° pitch (tips down) to push air downward when bey spins, but aerodynamic forces are orders of magnitude below gravity at these speeds. Track outclassed in stamina (I ≈ 1.2×10⁻⁷ kg·m², vs AD145 at 4.73×10⁻⁷) and irrelevant in defense or attack. No competitive role.  
+**Engine Note**: height=1.45cm; mass=1.5g; cylinder: fixed; WingDef: {count:4, spacingDeg:90, shape:"rectangle", r_inner_cm:0.5, r_outer_cm:1.0, z_base_cm:1.45, z_top_cm:1.75, arcWidth_deg:20, tiltAngle_deg:−12, movementType:"fixed"}; NO mechanic derived — downforce_negligible at game RPMs; I=1.2e-7 kg·m²; foldSymmetry:4.
 
 ---
 
@@ -5829,4 +5832,1715 @@ Source: `8 case study.md`
 ---
 
 
+
+
+
+## CS9 — Cases 416–523, 867–891 + Overflow 1001–1024 {#cs9}
+Source: `9 case study.md`
+
+---
+
+### CS9 Overflow — Cases 1001–1024 {#cs9-overflow}
+
+---
+
+### [Case 1001 — Winning Valkyrie Energy Layer (Burst Standard)](./9%20case%20study.md#case-1001)
+
+**System**: Burst Standard — Energy Layer
+**Geometry**: m=15.2 g; C3 symmetry; r_i=0.4 cm; r_o=1.7 cm; 3 smash blades phi=22 deg; 2 burst tabs L=5.0 mm b=3.0 mm h=0.55 mm; r_tab=0.75 cm; tau_burst=10.8 mN*m; I_L=2.318e-6 kg*m2
+**Material**: PC (E=2.4 GPa)
+**Spin Coupling**: 2-tab cantilever k_tab=2400 N/m; delta_max=0.30 mm
+**Contact Points**: r_o=1.7 cm; phi=22 deg; smash fraction=0.927; recoil fraction=0.375; f_contact=286 Hz at 600 rad/s
+**Mechanism**: Inaugural Burst layer; WV.12.V assembly m=34.1 g I_total=4.018e-6 kg*m2 L0=2.41e-3 kg*m2/s; Velocity tip dw/dt=-7.08 rad/s2; 2-tab burst easiest of all documented layers
+**Engine Note**: tau_burst=10.8 mN*m; k_tab=2400 N/m; I_L=2.318e-6; L0=2.41e-3 kg*m2/s; f_contact=286 Hz
+
+---
+
+### [Case 1002 — Xtreme Performance Tip (Burst)](./9%20case%20study.md#case-1002)
+
+**System**: Burst Standard — Performance Tip
+**Geometry**: m=~6.0 g; rubber flat outer ring r_ring=0.4 cm; central void r_void=0.2 cm; contact annulus area A=37.7 mm2
+**Material**: Rubber (mu_k=0.85)
+**Contact Points**: annular rubber contact; r_eff=centroid of annulus ~0.32 cm
+**Mechanism**: Premier attack-type tip; high floor friction torque drives aggressive movement pattern; center void prevents central contact clogging; spin-decay asymmetry vs hard tips documented
+**Engine Note**: type=XT_Burst; mu_k=0.85; r_ring=0.4 cm; r_void=0.2 cm; attack specialist
+
+---
+
+### [Case 1003 — Xeno Xcalibur Energy Layer (Burst Dual Layer)](./9%20case%20study.md#case-1003)
+
+**System**: Burst Dual Layer System — Energy Layer
+**Geometry**: m=~15.5 g est; C1 symmetry; r_o=2.2 cm (sword tip); single primary contact point; tall-tooth burst threshold
+**Material**: ABS outer (E=2.3 GPa) over PC inner (E=2.4 GPa)
+**Spin Coupling**: tall-tooth design raises burst resistance vs standard 2-tab WV
+**Contact Points**: r_o=2.2 cm; C1 sword geometry; phi defined by sword face angle
+**Mechanism**: First Xcalibur iteration; C1 imbalance creates flail momentum; first-mold handle fracture from centrifugal imbalance documented; XC.M.I assembly context
+**Engine Note**: type=XenoXC; C1_sword; tall_tooth_burst; first_mold_fracture_risk
+
+---
+
+### [Case 1004 — Magnum Forge Disc (Burst Dual Layer)](./9%20case%20study.md#case-1004)
+
+**System**: Burst Dual Layer System — Forge Disc
+**Geometry**: m=19.2 g; r_i_metal=0.3 mm r_o_metal=1.0 cm (metal zone); r_i_plastic=1.0 cm r_o_plastic=1.6 cm (ABS zone); I_metal=half*0.0145*(0.003^2+0.010^2); I_plastic=half*0.0047*(0.010^2+0.016^2)
+**Material**: zinc alloy center (m_metal~14.5 g) + ABS plastic perimeter (m_plastic~4.7 g)
+**Spin Coupling**: two-click disc-layer alignment for sword orientation
+**Mechanism**: hybrid two-zone inertia; three-corner weight distribution; XC.M.I assembly; CWD metal center lowers r_eff vs OWD alternatives
+**Engine Note**: type=Magnum; m=19.2 g; two_zone_inertia; CWD_metal_core
+
+---
+
+### [Case 1005 — Impact Performance Tip (Burst)](./9%20case%20study.md#case-1005)
+
+**System**: Burst Standard — Performance Tip
+**Geometry**: m=~6.0 g est; three-point rubber star tip r_outer=0.45 cm; rubber arc 40 deg each sector; ABS infill 80 deg per sector
+**Material**: rubber star tips mu_k=0.85; ABS infill mu_k=0.17
+**Contact Points**: C3 rubber-ABS mixed contact; r_outer=0.45 cm; friction instability CV documented
+**Mechanism**: XC.M.I assembly tip; three-point contact creates spin-decay variability; mixed rubber-ABS geometry produces non-constant friction torque
+**Engine Note**: type=Impact; C3_mixed_rubber_ABS; friction_CV_documented
+
+---
+
+### [Case 1006 — Sieg Xcalibur Energy Layer (Burst God Layer)](./9%20case%20study.md#case-1006)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=15.9 g; C1 dominant; r_o=2.4 cm (sword tip); zinc sword insert m_sw~5.0 g; diamond outline secondary recoil contacts
+**Material**: ABS/PC composite + zinc alloy sword insert
+**Spin Coupling**: two-zone inertia from zinc insert; inertia-amplified burst resistance
+**Contact Points**: r_o=2.4 cm primary; C1 sword; hilt-gap fatigue denting documented
+**Mechanism**: God Layer era Xcalibur; metal sword insert amplifies smash force; hilt gap causes fatigue denting on opponent layers; Sieg.1.Iron assembly m=43.8 g I=4.79e-3 kg*m2/s L0
+**Engine Note**: type=SiegXC; m=15.9 g; m_sword=5.0 g; C1_metal_sword; hilt_gap_denting
+
+---
+
+### [Case 1007 — Forge Disc 1 (Burst God Layer)](./9%20case%20study.md#case-1007)
+
+**System**: Burst God Layer System — Core Disc (asymmetric)
+**Geometry**: m=21.2 g; C1 elliptical asymmetric; r_i=0.4 cm r_o=1.7 cm annular model; e_1=2.77 mm static eccentricity
+**Material**: zinc alloy
+**Spin Coupling**: C1 asymmetry produces deliberate imbalance; flail-momentum attack amplification
+**Mechanism**: one heavy side for flail momentum; eccentricity budget e_1=2.77 mm; dual-mode disc orientation possible; higher burst resistance for XC assembly via angular momentum amplification
+**Engine Note**: type=Disc1_God; m=21.2 g; C1_asymmetric; e=2.77 mm; flail_momentum
+
+---
+
+### [Case 1008 — Iron Performance Tip (Burst God Layer)](./9%20case%20study.md#case-1008)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=6.7 g; flat metal tip r_contact=0.35 cm; r_eff=2*r/3=0.233 cm
+**Material**: steel flat tip (mu_k_metal_on_ABS=0.12 [CONFIRMED CS3])
+**Contact Points**: r_contact=0.35 cm metal flat; lowest friction of metal-flat tips
+**Mechanism**: attack-stamina hybrid; tall-tooth layer interaction — weak spring lock; lowest hard-tip spin decay; Sieg.1.Iron assembly context
+**Engine Note**: type=Iron; m=6.7 g; mu_k=0.12; r_eff=0.233 cm; weak_spring_lock_tall_tooth
+
+---
+
+### [Case 1009 — Buster Xcalibur Energy Layer (Cho-Z)](./9%20case%20study.md#case-1009)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=19.6 g; C1 symmetry; m_sword=7.0 g (35.7% of total); bistable sword arm r_o_retracted; r_o_deployed=2.4 cm est
+**Material**: PC + zinc alloy sword insert
+**Gimmick**: Cho-Z Awakening System — bistable leaf-spring sword extension; omega_crit~140.9 rad/s for deployment; Burst Stoppers engage at deployment
+**Spin Coupling**: spring-loaded bistable; above omega_crit burst tabs blocked mechanically
+**Contact Points**: maximum C1 smash eccentricity; deployed sword tip r_o max in lineup
+**Mechanism**: highest Xcalibur smash force when deployed; Buster.1'.D.Sw assembly m=53.9 g; bistable deployment confirmed irreversible in battle
+**Engine Note**: type=BusterXC; m=19.6 g; omega_crit=140.9 rad/s; Cho-Z_Awakening; C1_max_eccentricity
+
+---
+
+### [Case 1010 — Core Disc 1' (Cho-Z Dash)](./9%20case%20study.md#case-1010)
+
+**System**: Burst Cho-Z Dash — Core Disc
+**Geometry**: m=22.5 g; bilateral-fill vs Disc 1 (21.2 g); r_i=0.4 cm r_o=1.7 cm annular; reduced eccentricity vs Disc 1 (e_1=2.77 mm)
+**Material**: zinc alloy
+**Mechanism**: 1.3 g heavier than Disc 1; bilateral fill reduces static imbalance; combined assembly imbalance minimisation with Buster XC; Dash marker added
+**Engine Note**: type=Disc1Prime; m=22.5 g; bilateral_fill; lower_eccentricity_vs_Disc1
+
+---
+
+### [Case 1011 — Dagger Frame (Cho-Z)](./9%20case%20study.md#case-1011)
+
+**System**: Burst Cho-Z — Disc Frame
+**Geometry**: m=2.6 g; C4 symmetry; 4 blade protrusions 15 deg arc each; protrusion height 1.5 mm above disc; r_i=1.9 cm r_o=2.1 cm; 16.7% perimeter coverage
+**Material**: ABS
+**Mechanism**: seats on Core Disc 1' outer edge; LAD geometry contribution; marginal inertia contribution to assembly
+**Engine Note**: type=DaggerFrame; m=2.6 g; C4; 16.7%_perimeter_coverage; LAD_geometry
+
+---
+
+### [Case 1012 — Sword Performance Tip (Cho-Z)](./9%20case%20study.md#case-1012)
+
+**System**: Burst Cho-Z — Performance Tip
+**Geometry**: m=9.2 g; wide flat hard ABS; r_contact=0.55 cm; r_eff=(2/3)*r_contact=0.367 cm
+**Material**: hard ABS (mu_k=0.17)
+**Contact Points**: r_contact=0.55 cm — widest standard hard-plastic flat in Burst era
+**Mechanism**: lowest hard-tip spin decay; scrape tilt threshold documented; full Buster assembly stability budget in Buster.1'.D.Sw combination
+**Engine Note**: type=Sword; m=9.2 g; r_contact=0.55 cm; mu_k=0.17; lowest_hard_decay
+
+---
+
+### [Case 1013 — DB Core Xcalibur (Burst Ultimate)](./9%20case%20study.md#case-1013)
+
+**System**: Burst Ultimate (BU) — DB Core
+**Geometry**: m=10.6 g; r_core=0.8 cm; 3 BU Lock protrusions; spring-loaded Bound Attack; height-dependent CoM shift (High/Low Mode)
+**Material**: ABS + PC spring tabs
+**Gimmick**: BU Lock (3-protrusion Hertzian burst resistance amplifier); spring Bound Attack rebound
+**Spin Coupling**: BU Lock tau_BU=56.25 mN*m (with Xanthus disc)
+**Mechanism**: spring rebound + BU Lock + High/Low Mode; heaviest DB Core in XC lineage (10.6 g); Xiphoid.XC.Xanthus.Sw'-1 assembly m=78.8 g
+**Engine Note**: type=DBCore_XC; m=10.6 g; tau_BU=56.25 mN*m; BU_Lock; spring_bound
+
+---
+
+### [Case 1014 — Xiphoid BU Blade (Burst Ultimate)](./9%20case%20study.md#case-1014)
+
+**System**: Burst Ultimate — BU Blade
+**Geometry**: m=13.0 g; C3 symmetry; r_i=1.0 cm r_o=2.2 cm; phi=20 deg; smash fraction=0.940; recoil fraction=0.342
+**Material**: PC + metal weight elements
+**Contact Points**: C3 smash wings; r_o=2.2 cm; One Hit Mode alignment eccentricity; High Mode blade contact height advantage
+**Mechanism**: primary attack surface of BU XC assembly; outermost rotating mass ring; phi=20 deg optimised for ring-out attack
+**Engine Note**: type=Xiphoid; m=13.0 g; C3; r_o=2.2 cm; phi=20 deg; smash=0.940
+
+---
+
+### [Case 1015 — Armor 1 (Burst Ultimate)](./9%20case%20study.md#case-1015)
+
+**System**: Burst Ultimate — Armor
+**Geometry**: m=13.1 g; r_i=1.0 cm r_o=2.4 cm; 7 protrusions; symmetric ring
+**Material**: ABS
+**Gimmick**: BU Lock engagement — amplifies burst threshold when engaged with DB Core protrusions
+**Mechanism**: largest single-inertia component in BU assembly; High/Low Mode stack control; BU Lock engagement as burst-threshold amplifier; tau_BU=56.25 mN*m [CONFIRMED CS9]
+**Engine Note**: type=Armor1; m=13.1 g; r_o=2.4 cm; 7_protrusions; BU_Lock_amplifier
+
+---
+
+### [Case 1016 — Xanthus Forge Disc (Burst Ultimate)](./9%20case%20study.md#case-1016)
+
+**System**: Burst Ultimate — Forge Disc
+**Geometry**: m=32.5 g; r_i=0.4 cm r_o=2.4 cm wide-rim; I_Xanthus=half*0.0325*(0.004^2+0.024^2)
+**Material**: zinc alloy wide-rim construction
+**Mechanism**: heaviest disc in XC lineage (Magnum 19.2 g -> Disc 1 21.2 g -> Disc 1' 22.5 g -> Xanthus 32.5 g); peripheral inertia dominance; 41.2% of 78.8 g assembly mass; activates BU Lock
+**Engine Note**: type=Xanthus; m=32.5 g; heaviest_XC_lineage_disc; OWD_dominant; BU_Lock_activator
+
+---
+
+### [Case 1017 — Sword' Dash Performance Tip (Burst Ultimate)](./9%20case%20study.md#case-1017)
+
+**System**: Burst Ultimate — Performance Tip (Dash)
+**Geometry**: m=9.6 g; wide flat hard; r_contact=0.55 cm; Dash spring ratchet
+**Material**: hard ABS + Dash spring mechanism
+**Spin Coupling**: Dash ratchet prevents counter-rotation; tau_Dash=21.6 mN*m supplementary burst threshold
+**Mechanism**: Sword' completes Xiphoid.XC.Xanthus.Sw'-1 assembly m=78.8 g I=8.36e-3 kg*m2/s L0; full BU assembly spin decay documented; Xcalibur lineage L0 comparison: 2.41e-3->4.79e-3->5.75e-3->8.36e-3 kg*m2/s
+**Engine Note**: type=Sword_Prime; m=9.6 g; tau_Dash=21.6 mN*m; Dash_ratchet; L0_lineage_peak=8.36e-3
+
+---
+
+### [Case 1018 — Victory Valkyrie Energy Layer (God Layer System)](./9%20case%20study.md#case-1018)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=8.9 g; C3 symmetry; dual-mode wings phi_attack=20 deg / upper-attack mode; r_o<1.7 cm (lighter than WV)
+**Material**: ABS/PC
+**Contact Points**: C3 smash; dual-mode attack/upper-attack orientation; Upper Attack vertical force component documented
+**Mechanism**: VV.Boost.Variable assembly; lighter than WV 15.2 g -> less burst resistance; upper-attack vertical lift supplements knock-out force
+**Engine Note**: type=VV; m=8.9 g; C3_dual_mode; upper_attack_lift; phi=20 deg
+
+---
+
+### [Case 1019 — Boost Forge Disc (God Layer System)](./9%20case%20study.md#case-1019)
+
+**System**: Burst God Layer System — Forge Disc
+**Geometry**: m=20.0 g; r_body=1.2 cm inner; r_wing=1.7 cm wing tips; three extending wings; I_inner=half*0.015*(0.004^2+0.012^2); I_wing=half*0.005*(0.012^2+0.017^2)
+**Material**: zinc alloy
+**Mechanism**: three wing extensions provide secondary elevation contact; disc inertia dominates VV assembly; wings create C3 engagement frequency matching Victory Valkyrie
+**Engine Note**: type=Boost; m=20.0 g; three_extending_wings; secondary_elevation_contact; disc_dominant
+
+---
+
+### [Case 1020 — Variable Performance Tip (God Layer System)](./9%20case%20study.md#case-1020)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=6.2 g; three-stage rubber spike wear; Stage 1 rubber spike narrow; Stage 2 intermediate; Stage 3 worn flat r~0.35 cm
+**Material**: rubber tips (mu_k=0.85 fresh) evolving to lower mu_k worn
+**Contact Points**: non-monotonic spin decay progression; decay rate changes with wear stage
+**Mechanism**: three-stage rubber-to-plastic evolution; aggressiveness escalates with wear; VV assembly stamina budget documented; one of few components with physics changing permanently through use
+**Engine Note**: type=Variable; m=6.2 g; 3_stage_wear; non_monotonic_decay; aggressive_when_worn
+
+---
+
+### [Case 1021 — God Valkyrie Energy Layer (God Layer System)](./9%20case%20study.md#case-1021)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=10.16 g; C3 smash blades; central hub spring mechanism; delta_layer~1.5 mm; k_spring~600 N/m est
+**Material**: ABS + PC spring tabs
+**Gimmick**: Central-hub spring Bound Attack; spring-tab paradox — spring compresses burst tabs to 0 resistance during contact
+**Spin Coupling**: spring-tab paradox: hub compression zeroes burst resistance during collision; paradox confirmed
+**Mechanism**: God layer bound attack; hub spring collapses burst tabs during contact -> higher burst risk; God Layer inertia budget documented
+**Engine Note**: type=GodV; m=10.16 g; spring_hub_bound; spring_tab_paradox; burst_risk_elevated
+
+---
+
+### [Case 1022 — Strike God Valkyrie Energy Layer + Strike God Chip (God Layer System)](./9%20case%20study.md#case-1022)
+
+**System**: Burst God Layer System — Energy Layer + Chip
+**Geometry**: m_layer=11.6 g; m_chip=1.7 g; combined; harder PC smash blades wider phi; Chip Lock 3-tab mechanism
+**Material**: ABS/PC layer + ABS chip
+**Spin Coupling**: Chip Lock adds burst resistance tabs via chip socket
+**Contact Points**: wider contact face angle vs God Valkyrie; optimised for ring-out attack
+**Mechanism**: forfeits spring Bound Attack for harder blades; Chip Lock burst resistance addition; combined layer inertia; spring-to-lock trade-off analysis
+**Engine Note**: type=StrikeGodV; m_layer=11.6 g; m_chip=1.7 g; chip_lock; ring_out_optimised
+
+---
+
+### [Case 1023 — Forge Disc 6 (God Layer System)](./9%20case%20study.md#case-1023)
+
+**System**: Burst God Layer System — Forge Disc (Core)
+**Geometry**: m=21.2 g; C6 hexagonal symmetry; r_i=0.4 cm r_o=1.7 cm; 6 equal lobes; near-zero eccentricity; e~0
+**Material**: zinc alloy
+**Mechanism**: same mass as Disc 1 (21.2 g) but C6 vs C1; zero imbalance; six-fold contact frequency at 600 rad/s: f=6*600/(2*pi)=572 Hz; Valkyrie God Layer assemblies context
+**Engine Note**: type=Disc6_God; m=21.2 g; C6; e~0; f_contact=572 Hz; zero_imbalance
+
+---
+
+### [Case 1024 — Vortex Frame (God Layer System)](./9%20case%20study.md#case-1024)
+
+**System**: Burst God Layer System — Disc Frame
+**Geometry**: m=2.51 g; C8 spiral cuts; r_i=1.4 cm r_o=1.6 cm; I_Vortex=half*0.00251*(0.014^2+0.016^2)=8.80e-7 kg*m2
+**Material**: ABS
+**Mechanism**: 8 spiral-cut openings; aerodynamic slot torque contribution; seats on Disc 6 outer edge; irreducible inertia-per-mass floor for rim-concentrated frames; scalloped aerodynamic contact profile
+**Engine Note**: type=VortexFrame; m=2.51 g; C8_spiral; I=8.80e-7 kg*m2; aero_slot_torque
+
+---
+
+### CS9 Regular — Cases 416–523 {#cs9-regular}
+
+---
+
+### [Case 416 — Reboot Performance Tip (God Layer System)](./9%20case%20study.md#case-416)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=7.65 g; m_rubber~0.5 g; centrifugal spring rubber deployment; omega_crit_reboot defined by spring constant k
+**Material**: ABS body + rubber tip segment; k~350 N/m est
+**Gimmick**: centrifugal spring — inverts conventional behaviour: rubber deployed at high spin (aggressive), retracted at low spin (stamina)
+**Mechanism**: two-phase spin decay profile: Phase 1 high-spin rubber (high friction, aggressive movement); Phase 2 low-spin hard tip (low friction, stable centre); spin decay non-monotonic across phases
+**Engine Note**: type=Reboot; m=7.65 g; centrifugal_spring; inverted_rubber_deploy; 2_phase_decay
+
+---
+
+### [Case 417 — Ultimate Reboot Performance Tip (God Layer System)](./9%20case%20study.md#case-417)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=8.1 g; k_ultimate~450 N/m (+~29% vs Reboot); m_rubber~0.55 g; earlier rubber deployment threshold
+**Material**: ABS body + rubber tip; stiffer centrifugal spring
+**Gimmick**: upgraded Reboot with stiffer spring -> rubber deploys at higher omega_crit -> longer aggressive phase
+**Mechanism**: comparative analysis with Reboot (Case 416): earlier rubber deploy, harder to revert to stamina mode; Strike God Valkyrie assembly context
+**Engine Note**: type=UltReboot; m=8.1 g; k=450 N/m; earlier_deploy; aggressive_phase_extended
+
+---
+
+### [Case 418 — Cho-Z Winning Valkyrie Energy Layer (Cho-Z Layer System)](./9%20case%20study.md#case-418)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=19.9 g; C3 smash blades; zinc ring r_i_zn=1.4 cm r_o_zn=1.8 cm (est); m_ABS~14.2 g; m_zn~5.7 g
+**Material**: ABS/PC body + zinc alloy weight ring (rho_Zn=7130 kg/m3)
+**Spin Coupling**: two-zone inertia; zinc ring enhances burst angular momentum; burst resistance higher than WV (Case 1001) via added inertia
+**Contact Points**: C3 smash; phi similar to WV; r_o same lineage
+**Mechanism**: Cho-Z upgrade of Winning Valkyrie; zinc ring increases I vs original; ChZWV.12Core.Volcanic assembly context; assembly m documented
+**Engine Note**: type=ChZWV; m=19.9 g; zinc_ring; C3; two_zone_inertia; burst_AM_enhanced
+
+---
+
+### [Case 419 — Forge Disc 12-Core (Cho-Z Layer System)](./9%20case%20study.md#case-419)
+
+**System**: Burst Cho-Z Layer System — Core Disc
+**Geometry**: m=16.1 g; C12 twelve-spoke symmetric; r_o=1.9 cm (Core only, no outer frame ring vs r_o=2.2 cm standard); LAD penalty from smaller radius
+**Material**: zinc alloy / ABS
+**Mechanism**: 12-spoke C12 design; Core-only (no frame) caps outer radius; high ratchet engagement frequency f=12*omega/(2pi); LAD penalty vs outer-frame discs; ChZWV.12Core.Volcanic assembly
+**Engine Note**: type=Disc12Core; m=16.1 g; C12; r_o=1.9 cm; high_f_ratchet; LAD_penalty
+
+---
+
+### [Case 420 — Volcanic Performance Tip (Cho-Z Layer System)](./9%20case%20study.md#case-420)
+
+**System**: Burst Cho-Z Layer System — Performance Tip
+**Geometry**: m=6.3 g; rubber flat disk r_base=0.4 cm; r_eff=2*r/3=0.267 cm; mu_k=0.85
+**Material**: rubber (mu_k=0.85)
+**Contact Points**: r_base=0.4 cm wide rubber flat; maximum friction torque in Cho-Z era standard tips
+**Mechanism**: wide flat rubber base for aggressive destabilising attack; short-duration attack physics (spin decays fast under rubber contact); ChZWV.12Core.Volcanic assembly
+**Engine Note**: type=Volcanic; m=6.3 g; r_base=0.4 cm; mu_k=0.85; r_eff=0.267 cm; short_duration_attack
+
+---
+
+### [Case 421 — Cho-Z Valkyrie Energy Layer (Cho-Z Layer System)](./9%20case%20study.md#case-421)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=20.9 g; C3 smash blades; zinc wings m_zn=5.7 g at r_i_zn=1.4 cm r_o_zn=2.0 cm; higher r_eff vs ChZWV (zinc further out)
+**Material**: ABS/PC + zinc alloy blade wings
+**Spin Coupling**: higher inertia efficiency vs ChZWV (zinc placed further outward); peripheral zinc wing placement
+**Contact Points**: C3; phi similar lineage; r_o same
+**Mechanism**: zinc further outward increases I_zn vs ChZWV; increased inertia efficiency; C3 attack geometry comparison; ChZV.Zenith.Evolution assembly context
+**Engine Note**: type=ChZV; m=20.9 g; zinc_wings_peripheral; I_higher_than_ChZWV; C3
+
+---
+
+### [Case 422 — Forge Disc Zenith (Cho-Z Layer System)](./9%20case%20study.md#case-422)
+
+**System**: Burst Cho-Z Layer System — Forge Disc
+**Geometry**: m=24.1 g; r_o=2.3 cm; wider outer rim vs Disc 1 (r_o=2.2 cm); I_Zenith=half*0.0241*(r_i^2+0.023^2)
+**Material**: zinc alloy
+**Mechanism**: heaviest single-piece Cho-Z Forge Disc; 2.9 g heavier than Disc 1; extra mass at outer rim; maximum Cho-Z stamina-assembly angular momentum reserve; ChZV.Zenith.Evolution assembly context
+**Engine Note**: type=Zenith; m=24.1 g; r_o=2.3 cm; max_Cho-Z_disc_inertia; stamina_reserve
+
+---
+
+### [Case 423 — Evolution Performance Tip (Cho-Z Layer System)](./9%20case%20study.md#case-423)
+
+**System**: Burst Cho-Z Layer System — Performance Tip
+**Geometry**: m=6.4 g; two-stage rubber spike wear; Stage 1 r_s1=0.2 cm r_eff1=0.133 cm; Stage 2 worn r_s2=0.35 cm r_eff2=0.233 cm
+**Material**: rubber spikes (mu_k~0.85 fresh; lower worn)
+**Gimmick**: two-stage rubber spike wear — progressively more aggressive with use
+**Contact Points**: wear-progressive radius increase; friction torque escalates with wear
+**Mechanism**: non-Dash spring; worn stage more aggressive (opposite of most tips); ChZV.Zenith.Evolution assembly context; progressive aggressiveness documented
+**Engine Note**: type=Evolution; m=6.4 g; 2_stage_wear; r_s1=0.2_r_s2=0.35 cm; progressive_aggressive
+
+---
+
+### [Case 424 — Level Chip (Cho-Z Layer System)](./9%20case%20study.md#case-424)
+
+**System**: Burst Cho-Z Layer System — Level Chip (accessory)
+**Geometry**: m=0.7 g; r_LC=1.4 cm radial offset; snaps under Cho-Z Energy Layer on opposite side from zinc ring
+**Material**: ABS
+**Mechanism**: eccentric counter-mass neutralises zinc ring imbalance; imbalance force suppression; banking pattern stabilisation; ChZV.Zenith.Evolution assembly context
+**Engine Note**: type=LevelChip; m=0.7 g; r_LC=1.4 cm; counter_eccentric; imbalance_suppression
+
+---
+
+### [Case 425 — Gatinko Chip Valkyrie (Gatinko Layer System)](./9%20case%20study.md#case-425)
+
+**System**: Burst Gatinko Layer System — Gatinko Chip
+**Geometry**: m=3.0 g; r_chip~0.7 cm; ABS hub; burst tabs on chip; miniature burst-control hub
+**Material**: ABS
+**Spin Coupling**: three-part modular architecture: Chip + Layer Base + Layer Weight; disc-tab engagement threshold controlled by chip
+**Mechanism**: Chip provides character-specific burst resistance; replaces single-piece Cho-Z layer with modular system; Slash.Blitz.Power assembly context
+**Engine Note**: type=GChip_V; m=3.0 g; modular_3part; burst_control_hub
+
+---
+
+### [Case 426 — Layer Base Slash (Gatinko Layer System)](./9%20case%20study.md#case-426)
+
+**System**: Burst Gatinko Layer System — Layer Base
+**Geometry**: m=9.1 g; C3 three blades; phi=25 deg slashing contact; r_i=0.8 cm r_o=2.1 cm; hollow hub (inertia penalty vs solid)
+**Material**: ABS/PC
+**Contact Points**: C3 slashing; phi=25 deg; smash fraction=cos(25 deg)=0.906; recoil fraction=sin(25 deg)=0.423
+**Mechanism**: primary attack geometry of Gatinko system; hollow hub penalises inertia vs solid; attack smash-recoil decomposition; Slash.Blitz.Power assembly context
+**Engine Note**: type=LayerBase_Slash; m=9.1 g; C3; phi=25 deg; hollow_hub_penalty
+
+---
+
+### [Case 427 — Layer Weight Retsu (Gatinko Layer System)](./9%20case%20study.md#case-427)
+
+**System**: Burst Gatinko Layer System — Layer Weight
+**Geometry**: m=8.7 g; aluminium ring r_i=1.7 cm r_o=2.2 cm; h~0.53 cm; V=pi*(r_o^2-r_i^2)*h
+**Material**: aluminium (rho_Al~2700 kg/m3)
+**Mechanism**: snap-on peripheral inertia ring; high radial efficiency (all mass at large radius); modular mass architecture; Slash.Blitz.Power assembly context; OWD maximisation at layer level
+**Engine Note**: type=LayerWeight_Retsu; m=8.7 g; Al; r_i=1.7 r_o=2.2 cm; OWD_ring
+
+---
+
+### [Case 428 — Forge Disc Blitz (Gatinko Layer System)](./9%20case%20study.md#case-428)
+
+**System**: Burst Gatinko Layer System — Forge Disc
+**Geometry**: m=28.6 g; r_o=2.3 cm; wider outer rim; I_Blitz=half*0.0286*(r_i^2+0.023^2)
+**Material**: zinc alloy + ABS
+**Mechanism**: heaviest Gatinko-era Forge Disc (exceeds Zenith 24.1 g by 4.5 g = +18.7%; exceeds Disc 1 by 7.4 g = +34.9%); disc-dominant assembly inertia; Slash.Blitz.Power assembly context
+**Engine Note**: type=Blitz; m=28.6 g; r_o=2.3 cm; heaviest_Gatinko_disc; disc_dominant
+
+---
+
+### [Case 429 — Power Performance Tip (Gatinko Layer System)](./9%20case%20study.md#case-429)
+
+**System**: Burst Gatinko Layer System — Performance Tip
+**Geometry**: m=6.4 g; rubber base r_base=0.3 cm; r_eff=2*r/3=0.2 cm; intermediate between Volcanic (r=0.4) and sharp (r~0.05)
+**Material**: rubber (mu_k=0.85)
+**Contact Points**: r_base=0.3 cm moderate-width rubber
+**Mechanism**: moderate-width rubber for attack-stamina balance; non-Dash spring; Slash.Blitz.Power assembly context; between Volcanic aggressiveness and stamina tips
+**Engine Note**: type=Power; m=6.4 g; r_base=0.3 cm; mu_k=0.85; attack_stamina_balance
+
+---
+
+### [Case 430 — DB Core Valkyrie (Dynamite Battle Layer System)](./9%20case%20study.md#case-430)
+
+**System**: Burst DB Layer System — DB Core
+**Geometry**: m=7.7 g; r_core=0.8 cm; spring-rebound mechanism; BU Lock integration; High/Low Mode CoM asymmetry
+**Material**: ABS + spring
+**Gimmick**: spring-rebound Bound Attack; BU Lock compatible; High/Low Mode
+**Mechanism**: lightest documented DB Core (7.7 g vs XC 10.6 g); same spring mechanism as XC Core; Savior.Shot-7 assembly context
+**Engine Note**: type=DBCore_V; m=7.7 g; spring_rebound; BU_Lock; High_Low_mode
+
+---
+
+### [Case 431 — Blade Savior (Dynamite Battle Layer System)](./9%20case%20study.md#case-431)
+
+**System**: Burst DB Layer System — Blade
+**Geometry**: m=11.2 g; C3 wing contact points with rubber tip coating; r_i=0.8 cm; Hertzian rubber contact patch a_rubber documented
+**Material**: ABS + rubber wing tips
+**Contact Points**: C3 rubber-tipped; Hertzian contact mechanics; a_rubber=(3WR/4E*)^(1/3)
+**Mechanism**: wear-progressive burst threshold — rubber tips absorb then harden; lighter than Blade Ultimate (11.2 g same mass); Savior.Shot-7 assembly context
+**Engine Note**: type=Blade_Savior; m=11.2 g; C3_rubber_tips; Hertzian_contact; wear_progressive
+
+---
+
+### [Case 432 — Armor 7 (Dynamite Battle Layer System)](./9%20case%20study.md#case-432)
+
+**System**: Burst DB Layer System — Armor
+**Geometry**: m=13.2 g; C3 with 9 total wings (3 groups of 3); r_i=1.0 cm r_o=2.4 cm
+**Material**: ABS
+**Gimmick**: BU Lock engagement compatible
+**Mechanism**: 9 wings in C3 groups (vs Armor 1's 7 protrusions); High/Low Mode height control; BU Lock engagement; Savior.Shot-7 assembly context; m similar to Armor 1 (13.1 g)
+**Engine Note**: type=Armor7; m=13.2 g; C3_9wing; BU_Lock; High_Low_control
+
+---
+
+### [Case 433 — Performance Tip Shot (Dynamite Battle Layer System)](./9%20case%20study.md#case-433)
+
+**System**: Burst DB Layer System — Performance Tip (disc-integrated)
+**Geometry**: m=10.4 g (disc+driver unit); r_outer_disc~2.2 cm r_inner~0.8 cm; disc and driver fused single component
+**Material**: ABS + metal
+**Mechanism**: disc-integrated attack type — driver and Forge Disc fused; eliminates separate Forge Disc slot; Savior Valkyrie Shot-7 starter context
+**Engine Note**: type=Shot; m=10.4 g; disc_integrated; attack_type; single_component
+
+---
+
+### [Case 434 — Superking Chip Valkyrie (Sparking Layer System)](./9%20case%20study.md#case-434)
+
+**System**: Burst Sparking (Superking) Layer System — SK Chip
+**Geometry**: m=2.6 g; r_chip~0.7 cm; ABS; PC cantilever burst tabs; I_Chip=half*0.0026*0.007^2~6.4e-8 kg*m2
+**Material**: ABS + PC burst tabs
+**Spin Coupling**: Chip carries burst resistance tabs; chip-only burst control in 3-part SK architecture
+**Mechanism**: negligible inertia contribution (6.4e-8 kg*m2); burst tab kinematics documented; tab stiffness hierarchy across chip generations; Brave.Ev'.2A assembly context
+**Engine Note**: type=SKChip_V; m=2.6 g; PC_tabs; I~6.4e-8; negligible_inertia
+
+---
+
+### [Case 435 — Ring Brave (Sparking Layer System)](./9%20case%20study.md#case-435)
+
+**System**: Burst Sparking Layer System — Ring
+**Geometry**: m=12.3 g; r_i=0.8 cm r_o=2.2 cm; C3 smash geometry; no metal inserts (ABS only)
+**Material**: ABS
+**Contact Points**: C3 smash; r_o=2.2 cm; primary blade-contact surface for outer perimeter
+**Mechanism**: attack-geometry component atop Chassis 2A; provides outer contact blades that Chassis body cannot; ring-layer momentum transfer; Brave.Ev'.2A assembly context
+**Engine Note**: type=Ring_Brave; m=12.3 g; C3_ABS; r_o=2.2 cm; outer_contact_surface
+
+---
+
+### [Case 436 — Chassis 2A (Sparking Layer System)](./9%20case%20study.md#case-436)
+
+**System**: Burst Sparking Layer System — Chassis (Double)
+**Geometry**: m=44.5 g; r_i=0.7 cm r_o=2.3 cm; integrated disc+layer; I_2A=80.1% of system inertia
+**Material**: ABS + zinc reinforcement (integrated)
+**Mechanism**: eliminates separate Forge Disc; monolithic 44.5 g integrates disc and upper layer; 80.1% of total system inertia in one component; Brave.Ev'.2A assembly stamina reserve; Attack-chassis radial geometry
+**Engine Note**: type=Chassis2A; m=44.5 g; integrated_disc_layer; I=80.1%_system; monolithic
+
+---
+
+### [Case 437 — Performance Tip Evolution' (Sparking/Dash)](./9%20case%20study.md#case-437)
+
+**System**: Burst Sparking — Performance Tip (Dash)
+**Geometry**: m=6.7 g; three-stage rubber wear decay; Dash spring adds ~40% burst resistance vs non-Dash Evolution
+**Material**: rubber + Dash spring
+**Gimmick**: Dash spring burst resistance augmentation (+40% vs Case 423)
+**Contact Points**: same rubber wear stages as Evolution (Case 423)
+**Mechanism**: Dash enhancement of Evolution tip; fresh-to-worn decay rate scaling documented; Brave.Ev'.2A assembly context
+**Engine Note**: type=Ev_Prime; m=6.7 g; Dash_spring; +40%_burst_vs_Ev; 3_stage_wear
+
+---
+
+### [Case 438 — DB Core Valkyrie 2 (Dynamite Battle / Burst Ultimate System)](./9%20case%20study.md#case-438)
+
+**System**: Burst DB/BU — DB Core
+**Geometry**: m=7.5 g; spring-rebound; above-average burst resistance among DB Cores; dual-spin compatible; r_core=0.8 cm
+**Material**: ABS + spring
+**Gimmick**: above-average burst resistance (stronger spring tab engagement vs DB Core Valkyrie 7.7 g)
+**Mechanism**: minor revision of DB Core Valkyrie (Case 430); 0.2 g lighter; above-average burst resistance; High/Low Mode CoM shift; dual-spin core; Ultimate.Legacy.Variable'-9 assembly context
+**Engine Note**: type=DBCore_V2; m=7.5 g; above_avg_burst; dual_spin; spring_rebound
+
+---
+
+### [Case 439 — BU Blade Ultimate (Burst Ultimate System)](./9%20case%20study.md#case-439)
+
+**System**: Burst Ultimate — BU Blade
+**Geometry**: m=11.2 g; C3 smash; rubber tips; R_equiv=0.3 cm; E_rubber=2 MPa; a_rubber=2.038 mm Hertzian contact patch
+**Material**: ABS + rubber tips (dual-zone)
+**Contact Points**: C3 rubber-tipped Hertzian contact; a_rubber=(3WR/4E*)^(1/3)=2.038 mm; wear-progressive
+**Mechanism**: wear-progressive burst impulse transmission; fresh rubber absorbs; worn ABS transmits; two-zone rubber-ABS inertia; Ultimate.Legacy.Variable'-9 assembly context
+**Engine Note**: type=BUBlade_Ult; m=11.2 g; C3_rubber; a_rubber=2.038 mm; wear_progressive_burst
+
+---
+
+### [Case 440 — Armor 9 (Dynamite Battle / Burst Ultimate System)](./9%20case%20study.md#case-440)
+
+**System**: Burst DB/BU — Armor
+**Geometry**: m=13.9 g; C3 nine-wing (asymmetric points); r_i=1.0 cm r_o=2.4 cm; I_A9=half*0.0139*(0.010^2+0.024^2)
+**Material**: ABS
+**Mechanism**: nine-wing C3 asymmetric ring; High/Low Mode impulse interception; armour-disc inertia share comparison; Ultimate.Legacy.Variable'-9 assembly context
+**Engine Note**: type=Armor9; m=13.9 g; C3_9wing_asymmetric; r_o=2.4 cm; impulse_intercept
+
+---
+
+### [Case 441 — Forge Disc Legacy (Burst Ultimate System)](./9%20case%20study.md#case-441)
+
+**System**: Burst Ultimate — Forge Disc
+**Geometry**: m=30.5 g; r_o=2.4 cm est; 6 downward blades; circular + blade profile; mu_LAD penalised by blades
+**Material**: zinc alloy + blade geometry
+**Mechanism**: high-OWD inertia dominance; six-blade anti-LAD mechanism (blades increase effective floor friction); Ultimate.Legacy.Variable'-9 assembly context; mu_eff elevated during final wobble
+**Engine Note**: type=Legacy; m=30.5 g; 6_blade_anti-LAD; OWD_dominant; mu_LAD_penalty
+
+---
+
+### [Case 442 — Performance Tip Variable' (Burst Ultimate System)](./9%20case%20study.md#case-442)
+
+**System**: Burst Ultimate — Performance Tip
+**Geometry**: m=6.4 g; three-stage rubber spike wear; non-Dash spring; aggressiveness escalates with wear
+**Material**: rubber + ABS (non-Dash)
+**Contact Points**: three-stage rubber decay; opposite direction to stability-improving wear patterns
+**Mechanism**: wear-progressive aggressiveness escalation; non-Dash burst resistance; Ultimate.Legacy.Variable'-9 assembly context
+**Engine Note**: type=Variable_Prime; m=6.4 g; 3_stage_wear; non_Dash; aggressive_escalation
+
+---
+
+### [Case 443 — Energy Layer Z Achilles (Cho-Z Layer System)](./9%20case%20study.md#case-443)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=18 g; C4 four blades; zinc ring r_i_zn=1.3 cm r_o_zn=1.8 cm m_zinc=3.5 g; I_ABS=half*0.0145*(0.004^2+0.022^2); I_zinc=half*0.0035*(0.013^2+0.018^2)
+**Material**: ABS + zinc ring in blade wings
+**Spin Coupling**: two-zone inertia; Level Chip incompatible (no counter-mass slot)
+**Contact Points**: C4; phi defined by blade face; zinc radial efficiency documented
+**Mechanism**: C4 four-blade vs C3 Valkyrie; Level Chip incompatible; Z.Achilles.11.Xtend assembly context; zinc placed in wings for inertia efficiency
+**Engine Note**: type=ZAchilles; m=18 g; C4; zinc_wings; Level_Chip_incompatible; two_zone
+
+---
+
+### [Case 444 — Forge Disc 11 (Cho-Z Layer System)](./9%20case%20study.md#case-444)
+
+**System**: Burst Cho-Z Layer System — Core Disc
+**Geometry**: m=18.5 g; C2 elliptical; one-sided rectangular indent (structural asymmetry); r_i=0.4 cm r_o=2.2 cm est
+**Material**: ABS (lightest Core Disc at time of release before Disc 12)
+**Mechanism**: lightest Core Disc at release; C2 elliptical; one-sided indent creates unique asymmetric profile; Z.Achilles.11.Xtend assembly context; eccentricity from indent documented
+**Engine Note**: type=Disc11_ChZ; m=18.5 g; C2_asymmetric; one_sided_indent; lightest_at_release
+
+---
+
+### [Case 445 — Performance Tip Xtend (Cho-Z / God Layer System)](./9%20case%20study.md#case-445)
+
+**System**: Burst Cho-Z/God Layer — Performance Tip (dual-mode manual)
+**Geometry**: m=7.6 g; Mode 1 sharp r_tip=0.03 cm; Mode 2 flat base r_base=0.7 cm; manual height selector switches modes
+**Material**: ABS
+**Contact Points**: Mode 1: r_tip=0.03 cm sharp stamina; Mode 2: r_base=0.7 cm flat aggressive; opposite extremes
+**Mechanism**: dual-mode manual height-change; mode aggressiveness ratio documented; Z.Achilles.11.Xtend assembly context; user switches any time outside battle
+**Engine Note**: type=Xtend; m=7.6 g; dual_mode_manual; r_tip=0.03_r_base=0.7 cm; height_selector
+
+---
+
+### [Case 446 — Energy Layer Cho-Z Achilles (Cho-Z Layer System)](./9%20case%20study.md#case-446)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=21.5 g; C4 four blades (2 standard + 2 zinc sword blades); bistable deployment omega_crit~120 rad/s
+**Material**: ABS + zinc sword blades + leaf spring tabs
+**Gimmick**: bistable Burst-Stopper wing deployment — leaf-spring tabs snap outward above omega_crit blocking burst tabs
+**Spin Coupling**: two-zone inertia; above omega_crit burst tabs physically blocked -> near-infinite burst resistance
+**Contact Points**: C4; phi defined by sword geometry
+**Mechanism**: Cho-Z Awakening System variant; omega_crit~120 rad/s (lower than Buster XC 140.9 rad/s); ChZAchilles.00.Dimension assembly m documented
+**Engine Note**: type=ChZAchilles; m=21.5 g; C4; omega_crit=120 rad/s; bistable_burst_stopper; Cho-Z_Awakening
+
+---
+
+### [Case 447 — Forge Disc 00 (Cho-Z Layer System)](./9%20case%20study.md#case-447)
+
+**System**: Burst Cho-Z Layer System — Core Disc
+**Geometry**: m=25.2 g; symmetrical elliptical; r_i=0.4 cm r_o=2.2 cm; accommodates separate Frame component; heaviest Core Disc in Core Disc lineup (00 > Zenith 24.1 g > Disc 1 21.2 g)
+**Material**: zinc alloy
+**Mechanism**: heaviest documented Core Disc; Frame-facilitating architecture; stamina OWD dominance; ChZAchilles.00.Dimension assembly context
+**Engine Note**: type=Disc00; m=25.2 g; heaviest_core_disc; Frame_compatible; OWD_dominant
+
+---
+
+### [Case 448 — Performance Tip Dimension (Cho-Z / God Layer System)](./9%20case%20study.md#case-448)
+
+**System**: Burst Cho-Z/God Layer — Performance Tip (6-config manual)
+**Geometry**: m=7.2 g; 3 heights (Low/Mid/High) x 2 rubber states (exposed/retracted) = 6 configurations; r_tip various by mode
+**Material**: ABS + rubber spike tip (retractable)
+**Contact Points**: 6-configuration height-tip matrix; rubber-exposed sharp vs retracted sharp plastic; height-dependent LAD geometry
+**Mechanism**: six-configuration matrix analysis; ChZAchilles.00.Dimension assembly context; most complex manual tip in lineup
+**Engine Note**: type=Dimension; m=7.2 g; 6_config_matrix; 3height_x_2rubber; LAD_height_dependent
+
+---
+
+### [Case 449 — Superking Chip Achilles (Superking / Sparking System)](./9%20case%20study.md#case-449)
+
+**System**: Burst Sparking (Superking) Layer System — SK Chip
+**Geometry**: m=3.1 g; r_chip=0.7 cm; ABS hub; I_Chip=half*0.0031*0.007^2~7.6e-8 kg*m2
+**Material**: ABS
+**Mechanism**: right-spin SK Chip for Infinite Achilles 1B assembly m_total=66.0 g I_total=1.388e-5 kg*m2; negligible inertia contribution vs Chassis 1B
+**Engine Note**: type=SKChip_A; m=3.1 g; right_spin; I~7.6e-8; Inf_Achilles_context
+
+---
+
+### [Case 450 — Ring Infinite (Superking / Sparking System)](./9%20case%20study.md#case-450)
+
+**System**: Burst Sparking Layer System — Ring
+**Geometry**: m=12.5 g; r_i=0.8 cm r_o=2.2 cm; Balance Type; compatible with Infinite Sword (Attack) and Infinite Shield (Defense) add-ons
+**Material**: ABS
+**Contact Points**: base ring; Attack Mode: +Infinite Sword at r_o_sword=2.4 cm; Defense Mode: +Infinite Shield inner
+**Mechanism**: dual-accessory compatible; Balance Type base; ring-assembly interaction; Infinite Achilles 1B context
+**Engine Note**: type=Ring_Infinite; m=12.5 g; dual_accessory; Attack_Defense_modes
+
+---
+
+### [Case 451 — Infinite Sword (Superking / Sparking System — Attack Mode Accessory)](./9%20case%20study.md#case-451)
+
+**System**: Burst Sparking — Attack Mode Accessory
+**Geometry**: m=5.3 g; r_inner=2.0 cm r_outer=2.4 cm; annular wedge clips to Ring Infinite; Ring+Sword total m=17.8 g r_o=2.4 cm
+**Material**: ABS
+**Mechanism**: clips to Ring Infinite outer perimeter; extends r_o from 2.2 to 2.4 cm; raises attack contact radius; DeltaI_Sword=half*0.0053*(0.020^2+0.024^2)
+**Engine Note**: type=InfSword; m=5.3 g; r_o_extension=2.4 cm; attack_accessory; clip-on
+
+---
+
+### [Case 452 — Chassis 1B (Superking / Sparking System)](./9%20case%20study.md#case-452)
+
+**System**: Burst Sparking Layer System — Chassis (Double)
+**Geometry**: m=43.0 g; r_i=0.7 cm r_o=2.3 cm; ABS + zinc reinforcement; 65.2% of assembly mass (66.0 g Balance Mode); I_1B=half*0.043*(0.007^2+0.023^2)
+**Material**: ABS + zinc reinforcement
+**Mechanism**: 1-Balance Double Chassis; monolithic disc-integrated; 65.2% of assembly mass; dominates Infinite Achilles assembly inertia; eliminates separate Forge Disc
+**Engine Note**: type=Chassis1B; m=43.0 g; 1-Balance; integrated_disc; 65.2%_mass_fraction
+
+---
+
+### [Case 453 — Dimension' (Superking / Sparking System)](./9%20case%20study.md#case-453)
+
+**System**: Burst Sparking — Performance Tip (Dash)
+**Geometry**: m=7.4 g; identical geometry to Dimension (Case 448); Dash spring added; 3-height adjustable; r_tip_A=0.2 cm rubber / r_tip_B=0.05 cm retracted
+**Material**: ABS + rubber + Dash spring
+**Gimmick**: Dash spring burst resistance enhancement (+~40%) over non-Dash Dimension
+**Mechanism**: Dash variant of Dimension; all 6 configurations available; burst resistance ~40% higher; Infinite Achilles context
+**Engine Note**: type=Dimension_Prime; m=7.4 g; Dash_spring; 6_config; burst_enhanced
+
+---
+
+### [Case 454 — DB Core Achilles (BU System)](./9%20case%20study.md#case-454)
+
+**System**: Burst Ultimate — DB Core
+**Geometry**: m=8.1 g; ABS + rubber contact points; r_core=0.8 cm; right-spin; Rubber Lock gimmick; slope angle
+**Material**: ABS + rubber contacts
+**Gimmick**: Rubber Lock — slope-based burst resistance mechanism using rubber contact points
+**Mechanism**: Zest Achilles Illegal Quattro'-4 assembly; Attack Mode m=74.6 g Speed Mode m=70.6 g; I_atk=1.800e-5 I_spd=1.608e-5 kg*m2; Rubber Lock slope resists burst
+**Engine Note**: type=DBCore_A; m=8.1 g; Rubber_Lock; right_spin; Zest_assembly_context
+
+---
+
+### [Case 455 — BU Blade Zest (BU System)](./9%20case%20study.md#case-455)
+
+**System**: Burst Ultimate — BU Blade (dual-mode)
+**Geometry**: m_Speed=6.0 g / m_Attack=10.0 g (with Zest Sword 4.0 g); Speed Mode r_o=2.1 cm theta=12 deg; Attack Mode r_o=2.4 cm theta_attack higher
+**Material**: ABS
+**Gimmick**: dual-mode: Speed Mode (bare ring low-angle) vs Attack Mode (Zest Sword attachment extends r_o)
+**Contact Points**: Speed Mode: 4 low-angle blades phi=12 deg; Attack Mode: extended phi_attack > 12 deg
+**Mechanism**: Zest Sword adds 4.0 g and extends radius; Zest Achilles Illegal Quattro'-4 context
+**Engine Note**: type=BUBlade_Zest; m_Speed=6.0 m_Attack=10.0 g; dual_mode; Zest_Sword_attachment
+
+---
+
+### [Case 456 — Armor 4 (BU System)](./9%20case%20study.md#case-456)
+
+**System**: Burst Ultimate — Armor
+**Geometry**: m=13.8 g; r_i=1.0 cm r_o=2.4 cm; hollow center construction; 6 blunt square-face protrusions; I_A4=half*0.0138*(0.010^2+0.024^2)
+**Material**: ABS (hollow center)
+**Mechanism**: 6 square-face protrusions; Zest Achilles Illegal Quattro'-4 assembly; hollow center reduces inertia vs solid ring; standard DB/BU Armor slot usage
+**Engine Note**: type=Armor4; m=13.8 g; 6_square_protrusions; hollow_center; r_o=2.4 cm
+
+---
+
+### [Case 457 — Forge Disc Illegal (BU System)](./9%20case%20study.md#case-457)
+
+**System**: Burst Ultimate — Forge Disc
+**Geometry**: m=31.9 g; r_i=0.4 cm r_o=2.3 cm; C4 circular smooth perimeter; I_Ill=half*0.0319*(0.004^2+0.023^2)~8.52e-6 kg*m2; mu_LAD~0.05 (smooth perimeter)
+**Material**: zinc alloy
+**Mechanism**: maximum OWD in BU Forge Disc lineup; smooth perimeter minimises LAD friction; C4 gaps reduce central mass; Zest Achilles Illegal Quattro'-4 context; extreme stamina and LAD performance
+**Engine Note**: type=Illegal; m=31.9 g; r_o=2.3 cm; max_OWD_BU; smooth_LAD; mu_LAD=0.05
+
+---
+
+### [Case 458 — Quattro' (BU System)](./9%20case%20study.md#case-458)
+
+**System**: Burst Ultimate — Performance Tip (4-mode Dash)
+**Geometry**: m=10.8 g; 4 modes: Attack r=0.5 cm rubber flat; Defense free-rotating metal ball r~0.05 cm; Stamina metal sharp r=0.03 cm; Balance rubber/sharp combined
+**Material**: ABS + metal inserts + Dash spring
+**Contact Points**: 4-mode tip matrix; Attack mu_k=0.85; Defense mu_metal_ball~0.01; Stamina mu_metal~0.05; Balance intermediate
+**Mechanism**: most versatile tip matrix in BU lineup; Dash spring; Zest Achilles context; Quattro = 4 modes
+**Engine Note**: type=Quattro_Prime; m=10.8 g; 4_mode_Dash; Attack_Defense_Stamina_Balance
+
+---
+
+### [Case 459 — Energy Layer Guardian Kerbeus (God Layer System)](./9%20case%20study.md#case-459)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=10.3 g; ABS; right-spin; Defense Type; r_i=0.6 cm r_o=2.1 cm; elastic chain gimmick
+**Material**: ABS + rubber chain
+**Gimmick**: Bound Defense elastic chain — outward rubber chain absorbs/redirects collision impulse elastically; k_chain=E_rubber*A/L
+**Contact Points**: Defense Type; outer chain perimeter contact
+**Mechanism**: GK.H.R assembly context; Bound Defense chain physics; elastic energy storage and return vs inelastic rubber
+**Engine Note**: type=GuardianK; m=10.3 g; Bound_Defense_chain; elastic_collision_absorption
+
+---
+
+### [Case 460 — Forge Disc Heavy (God Layer System)](./9%20case%20study.md#case-460)
+
+**System**: Burst God Layer System — Forge Disc
+**Geometry**: m=21.6 g [FACT]; r_i=0.4 cm r_o=2.2 cm; C4 symmetric; I_H=half*0.0216*(0.004^2+0.022^2)
+**Material**: zinc alloy
+**Mechanism**: heaviest standard Forge Disc in God Layer/Cho-Z era; dominant inertia in GK.H.R assembly; CWD profile; heavier than Disc 1 (21.2 g) by 0.4 g
+**Engine Note**: type=Heavy; m=21.6 g [FACT]; r_o=2.2 cm; C4; heaviest_GodLayer_disc
+
+---
+
+### [Case 461 — Performance Tip Revolve (God Layer System)](./9%20case%20study.md#case-461)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=5.9 g; sharp center tip r_tip=0.03 cm + free-spinning outer ring r_ring=0.7 cm
+**Material**: ABS + metal bearing (free-spinning ring)
+**Contact Points**: ultra-low spin decay sharp tip mu_tip=0.12 est; LAD via free-spinning outer ring; 3 distinct mechanisms documented
+**Mechanism**: premier stamina and LAD tip of God Layer era; sharp metal tip ultra-low friction; free-spinning ring for LAD contact; GK.H.R assembly context
+**Engine Note**: type=Revolve; m=5.9 g; sharp_tip + free_spin_ring; LAD_premier; ultra_low_decay
+
+---
+
+### [Case 462 — DB Core Kerbeus (DB/BU System)](./9%20case%20study.md#case-462)
+
+**System**: Burst DB/BU — DB Core
+**Geometry**: m=8.1 g; ABS; right-spin; Rubber Lock slope theta~slope angle; slope-based mechanism
+**Material**: ABS + rubber contacts
+**Gimmick**: Rubber Lock — slope mechanism achieves highest burst resistance of right-spin DB Cores; geometric slope vs PC snap-through tabs
+**Mechanism**: tau_burst via slope N*sin(theta) force not spring constant; highest right-spin DB Core burst resistance; Chain Kerbeus Fortress Yard'-6 assembly context
+**Engine Note**: type=DBCore_K; m=8.1 g; Rubber_Lock_slope; highest_right_spin_burst_resistance
+
+---
+
+### [Case 463 — BU Blade Chain (DB/BU System)](./9%20case%20study.md#case-463)
+
+**System**: Burst DB/BU — BU Blade
+**Geometry**: m=14.8 g; r_i=0.8 cm; r_o_extended=2.4 cm r_o_retracted=2.1 cm; 6 retractable rubber chains + 2 fixed plastic chains; k_chain=E_rubber*A/L per chain
+**Material**: ABS + rubber chains + plastic chains
+**Gimmick**: passive bistable chain deployment — rubber chains retract above omega_crit; deploy at low spin
+**Contact Points**: retractable rubber chains for passive defense
+**Mechanism**: passive-gimmick BU Blade; chain spring analysis; Chain Kerbeus Fortress Yard'-6 assembly context
+**Engine Note**: type=BUBlade_Chain; m=14.8 g; 6_rubber_chains+2_plastic; passive_deploy; k_chain_documented
+
+---
+
+### [Case 464 — Armor 6 (DB/BU System)](./9%20case%20study.md#case-464)
+
+**System**: Burst DB/BU — Armor
+**Geometry**: m=13.4 g; r_i=1.0 cm r_o=2.4 cm; C6 symmetry; 6 square-face protrusions evenly spaced
+**Material**: ABS
+**Mechanism**: C6 symmetric stamina-oriented; shared component with Case 478 (left-spin context); Chain Kerbeus Fortress Yard'-6 assembly; I_A6=half*0.0134*(0.010^2+0.024^2)
+**Engine Note**: type=Armor6; m=13.4 g; C6; 6_square_protrusions; stamina_oriented
+
+---
+
+### [Case 465 — Forge Disc Fortress (DB/BU System)](./9%20case%20study.md#case-465)
+
+**System**: Burst DB/BU — Forge Disc
+**Geometry**: m=31.1 g; r_i=0.4 cm r_o=2.3 cm; hexagonal + 6 downward-sloping blades (2 enlarged); C2 near-symmetric
+**Material**: zinc alloy + ABS
+**Mechanism**: highest-mass non-circular Forge Disc; 6-blade sloping profile; C2 asymmetry from 2 enlarged blades; directional attack potential; Chain Kerbeus assembly context
+**Engine Note**: type=Fortress; m=31.1 g; C2_hex; 6_blade_slope; directional_attack
+
+---
+
+### [Case 466 — Yard' (DB/BU System)](./9%20case%20study.md#case-466)
+
+**System**: Burst DB/BU — Performance Tip (Dash)
+**Geometry**: m=7.4 g; free-rotating metal ball r_ball=0.05 cm + wide ABS ring r_ring=0.7 cm; Dash spring alpha=0.40 burst resistance
+**Material**: ABS + metal ball + Dash spring
+**Contact Points**: metal ball r_ball=0.05 cm near-point contact; mu_ball~0.01; wide ring for stadium interaction
+**Mechanism**: Dash variant of Yard (+0.2 g vs Case 488); Dash spring burst resistance alpha=0.40; semi-aggressive movement from rolling ball; Chain Kerbeus Fortress Yard'-6 assembly context
+**Engine Note**: type=Yard_Prime; m=7.4 g; metal_ball; Dash_alpha=0.40; semi_aggressive
+
+---
+
+### [Case 467 — SK Chip Deathscyther (Superking / Sparking Layer System)](./9%20case%20study.md#case-467)
+
+**System**: Burst Sparking (Superking) Layer System — SK Chip
+**Geometry**: m=3.1 g; r_outer~0.9 cm r_inner~0.4 cm; ABS only; no metal insert; lightest SK Chip tier
+**Material**: ABS
+**Mechanism**: right-spin SK Chip for Hollow Deathscyther; no metal insert -> lightest tier; standard hard lock tabs; Hollow Deathscyther 4A 12Axe HA' context
+**Engine Note**: type=SKChip_DS; m=3.1 g; ABS_only; no_metal; lightest_tier
+
+---
+
+### [Case 468 — Ring Hollow (Superking / Sparking Layer System)](./9%20case%20study.md#case-468)
+
+**System**: Burst Sparking Layer System — Ring
+**Geometry**: m=14.6 g; r_outer~2.6 cm r_inner~1.1 cm; asymmetric: left half hollowed (~4 g eff) right half full with thumb-claw protrusion
+**Material**: ABS
+**Contact Points**: asymmetric mass: right half primary contact; thumb-claw protrusion for attack
+**Mechanism**: pronounced asymmetric mass distribution; left hollowed for C1 imbalance; Hollow Deathscyther 4A assembly context; flail momentum from C1 asymmetry
+**Engine Note**: type=Ring_Hollow; m=14.6 g; asymmetric_C1; left_hollow_right_full; flail_momentum
+
+---
+
+### [Case 469 — Chassis 4A (Superking / Sparking Layer System)](./9%20case%20study.md#case-469)
+
+**System**: Burst Sparking Layer System — Chassis (Single)
+**Geometry**: m=16.7 g; r_outer~2.6 cm r_inner~0.9 cm; ABS; dual-spin via internal directional ratchet
+**Material**: ABS
+**Gimmick**: dual-spin Single Chassis via internal directional ratchet (accepts CW or CCW from SK Chip)
+**Mechanism**: Single Chassis (no integrated disc function); lightest Chassis category; external Forge Disc required; Hollow Deathscyther context
+**Engine Note**: type=Chassis4A; m=16.7 g; dual_spin_ratchet; Single_Chassis; external_disc_required
+
+---
+
+### [Case 470 — Forge Disc 12 (Superking / Sparking Layer System)](./9%20case%20study.md#case-470)
+
+**System**: Burst Sparking Layer System — Forge Disc (Core)
+**Geometry**: m=16.1 g; r_outer~2.75 cm r_inner~0.8 cm; zinc alloy; C2 elliptical; r_max~3.0 cm at protrusions
+**Material**: zinc alloy
+**Mechanism**: lightest numbered Core Disc at 16.1 g; C2 elliptical with two protrusions; lowest heavy-disc inertia -> poor stamina contribution; Hollow Deathscyther context
+**Engine Note**: type=Disc12_SK; m=16.1 g; C2_elliptical; lightest_numbered_Core_Disc
+
+---
+
+### [Case 471 — Disc Frame Axe (Superking / Sparking Layer System)](./9%20case%20study.md#case-471)
+
+**System**: Burst Sparking Layer System — Disc Frame
+**Geometry**: m=3.5 g; r_outer~3.0 cm; inner mount r~2.2 cm; C3 three broad flat blades; heaviest standard Disc Frame
+**Material**: ABS
+**Mechanism**: heaviest standard Disc Frame (>Outer 3.0 g >Armed 3.2 g >Meteor 2.9 g); wide triangular profile; C3 symmetry; Hollow Deathscyther context; LAD enhancement via broad blades
+**Engine Note**: type=Frame_Axe; m=3.5 g; C3_broad_blades; heaviest_std_frame; LAD_enhanced
+
+---
+
+### [Case 472 — Performance Tip High Accel' (Superking / Sparking Layer System)](./9%20case%20study.md#case-472)
+
+**System**: Burst Sparking — Performance Tip (Dash)
+**Geometry**: m=7.2 g; r_contact~0.15 cm flat plastic; High body geometry (taller casing); Dash spring
+**Material**: ABS + Dash spring
+**Mechanism**: Dash variant of High Accel; taller casing raises CoM; aggressive flat tip movement; Hollow Deathscyther context; High body adds gyroscopic wobble-susceptibility
+**Engine Note**: type=HighAccel_Prime; m=7.2 g; flat_plastic; High_body; Dash_spring
+
+---
+
+### [Case 473 — Energy Layer Dark Deathscyther (God Layer System)](./9%20case%20study.md#case-473)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=7.0 g; r_outer~2.1 cm r_inner~0.6 cm; 4 blades: 2 Upper Attack (15 deg) + 2 burst-point blades; ABS only
+**Material**: ABS
+**Contact Points**: 2-plane contact: upper 15 deg for vertical lift; burst-point blades for tab engagement
+**Mechanism**: upper attack + burst-target geometry; Dark Deathscyther 3Force Jaggy context (Case 473-475); two blade types serve different combat functions
+**Engine Note**: type=DarkDS; m=7.0 g; 4_blades_2_upper+2_burst; dual_function_geometry
+
+---
+
+### [Case 474 — Forge Disc Force (God Layer System)](./9%20case%20study.md#case-474)
+
+**System**: Burst God Layer System — Forge Disc
+**Geometry**: m=19.2 g [FACT]; r_outer~2.6 cm r_inner~0.8 cm; C4 diamond shape; r_max~2.9 cm protrusions; r_min~1.7 cm recessed
+**Material**: zinc alloy
+**Mechanism**: C4 diamond/plus shape; four trapezoidal protrusions; alternating protrusions/recesses; Dark Deathscyther Force Jaggy context; I_Force=half*0.0192*(0.008^2+0.026^2)
+**Engine Note**: type=Force; m=19.2 g [FACT]; C4_diamond; r_max=2.9 cm; protrusion_recess_alternating
+
+---
+
+### [Case 475 — Performance Tip Jaggy (God Layer System)](./9%20case%20study.md#case-475)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=5.7 g; r_contact~1.8 cm flat star perimeter; 8 triangular teeth; shaft r~0.4 cm; I_Jaggy=9.674e-7 kg*m2 [CONFIRMED CS9 Case 881]
+**Material**: ABS
+**Contact Points**: 8-pointed flat star; jagged irregular contact disrupts smooth stadium rolling; unpredictable movement
+**Mechanism**: 8-tooth star profile creates irregular floor contact; disrupts stadium surface at Jaggy tip contact points; Dark Deathscyther Force Jaggy context
+**Engine Note**: type=Jaggy; m=5.7 g; 8_tooth_star; r_contact=1.8 cm; I=9.674e-7; irregular_movement
+
+---
+
+### [Case 476 — DB Core Bahamut (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-476)
+
+**System**: Burst DB/BU — DB Core (Left-Spin)
+**Geometry**: m=7.8 g; r_outer~1.4 cm r_inner~0.5 cm; left-spin; slope angle theta~22 deg; 3 BU Lock grooves; highest left-spin burst resistance
+**Material**: ABS + rubber contact points
+**Gimmick**: Rubber Lock slope mechanism + BU Lock grooves; highest burst resistance left-spin DB Core
+**Mechanism**: left-spin Bahamut; slope angle 22 deg; Rubber Lock higher than DB Core Kerbeus (22 deg vs different geometry); Roar Bahamut Karma Metal Drift-6 context
+**Engine Note**: type=DBCore_Bah; m=7.8 g; left_spin; slope_theta=22 deg; highest_left_burst; BU_Lock
+
+---
+
+### [Case 477 — BU Blade Roar (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-477)
+
+**System**: Burst DB/BU — BU Blade
+**Geometry**: m=12.1 g; r_outer_retracted~2.3 cm r_outer_deployed~2.7 cm r_inner~1.0 cm; 4 ABS protrusions bistable deployed below omega_crit
+**Material**: ABS + spring mechanism
+**Gimmick**: bistable deployment — protrusions held retracted by spring above omega_crit; deploy radially at low spin (passive defense/stamina enhancement)
+**Mechanism**: passive deploy at low spin; spring pre-tensioned holds retracted at high spin; passive defense enhancement; Roar Bahamut Karma Metal Drift-6 context
+**Engine Note**: type=BUBlade_Roar; m=12.1 g; bistable_passive_deploy; r_deploy=2.7 cm; low_spin_activate
+
+---
+
+### [Case 478 — Armor 6 (Dynamite Battle / Burst Ultimate Layer System, Left-Spin Context)](./9%20case%20study.md#case-478)
+
+**System**: Burst DB/BU — Armor (Left-Spin Context)
+**Geometry**: m=13.4 g; r_outer~2.6 cm r_inner~1.1 cm; 6 sides + rubber bumper inserts; same component as Case 464 but in left-spin config
+**Material**: ABS + rubber bumpers
+**Mechanism**: same physical component as Case 464; left-spin alters interaction geometry (contact faces hit from opposite direction); rubber bumpers absorb same-spin hits differently; Roar Bahamut context
+**Engine Note**: type=Armor6_LeftSpin; m=13.4 g; same_as_464; left_spin_alters_contact; rubber_bumpers
+
+---
+
+### [Case 479 — Forge Disc Karma (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-479)
+
+**System**: Burst DB/BU — Forge Disc
+**Geometry**: m=29.2 g; r_outer~2.7 cm r_inner~0.8 cm; 10 upward-angled blades (5 pairs); phi~20 deg from vertical; I_Karma=half*0.0292*(0.014^2+0.033^2)~1.155e-5 kg*m2 [Case 508]
+**Material**: zinc alloy
+**Mechanism**: 10 blades in 5 pairs (tall outer + short inner guide); blade angle phi~20 deg creates Upper Force aerodynamic effect in left-spin; Roar Bahamut Karma Metal Drift-6 context
+**Engine Note**: type=Karma; m=29.2 g; 10_blade_5pair; phi=20 deg; Upper_Force_aero_left_spin
+
+---
+
+### [Case 480 — Performance Tip Metal Drift (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-480)
+
+**System**: Burst DB/BU — Performance Tip
+**Geometry**: m=12.1 g; r_shaft~0.5 cm; bearing r~0.25 cm; conical tip r_tip~0.05 cm; octagonal lock ring r_ring=0.7 cm
+**Material**: ABS + hardened zinc collar (Metal Lock) + ball bearings
+**Gimmick**: Metal Lock system — zinc collar with shorter tabs for lower burst resistance; free-spinning sharp tip via bearing
+**Spin Coupling**: Metal Lock tau_metal_lock < standard tab burst threshold; metal bearing free-spin
+**Mechanism**: two mechanisms: Metal Lock burst system + metal bearing free-spin; combines burst control and LAD; Roar Bahamut context
+**Engine Note**: type=MetalDrift; m=12.1 g; Metal_Lock + metal_bearing; combined_burst_LAD
+
+---
+
+### [Case 481 — Gatinko Chip Diabolos (Gatinko Layer System)](./9%20case%20study.md#case-481)
+
+**System**: Burst Gatinko Layer System — Gatinko Chip
+**Geometry**: m=14.0 g; ABS + integrated metal Layer Weight; dual-spin; r_hub=0.5 cm r_weight=0.9 cm
+**Material**: ABS + integrated metal weight
+**Gimmick**: integrated Layer Weight in chip body (unique — other chips require separate Layer Weight piece)
+**Mechanism**: heaviest Gatinko Chip; metal weight integrated vs separate; dual-spin capable; Erase Diabolos Vanguard Bullet assembly context
+**Engine Note**: type=GChip_Diab; m=14.0 g; integrated_LW; dual_spin; heaviest_Gatinko_Chip
+
+---
+
+### [Case 482 — Layer Base Erase (Gatinko Layer System)](./9%20case%20study.md#case-482)
+
+**System**: Burst Gatinko Layer System — Layer Base
+**Geometry**: m=10.6 g; ABS; left-spin; 5 upward-sloping blades theta=25 deg (Upper Attack); r_i=0.7 cm r_o=2.1 cm; I_E=half*0.0106*(0.007^2+0.021^2)
+**Material**: ABS
+**Contact Points**: 5 upper-sloping blades; theta=25 deg Upper Attack geometry
+**Mechanism**: Balance Type designation; upper attack lift force component; hollow hub; Erase Diabolos Vanguard Bullet assembly context
+**Engine Note**: type=LayerBase_Erase; m=10.6 g; 5_upper_blades; theta=25 deg; left_spin; hollow_hub
+
+---
+
+### [Case 483 — Forge Disc Vanguard (Gatinko Layer System)](./9%20case%20study.md#case-483)
+
+**System**: Burst Gatinko Layer System — Forge Disc
+**Geometry**: m=26.5 g; r_i=0.4 cm r_o=2.2 cm; metal frame + ABS plastic rivets; 6 downward-sloping blades (2 enlarged)
+**Material**: metal frame + ABS rivets (hybrid)
+**Mechanism**: unique hybrid: low-lying shape for LAD; 6-blade sloping for Attack potential; dual-purpose disc; Erase Diabolos Vanguard Bullet context
+**Engine Note**: type=Vanguard; m=26.5 g; hybrid_LAD+attack; 6_blade_sloped; 2_enlarged
+
+---
+
+### [Case 484 — Performance Tip Bullet (Gatinko Layer System)](./9%20case%20study.md#case-484)
+
+**System**: Burst Gatinko Layer System — Performance Tip
+**Geometry**: m=15.4 g; detachable satellite m_sat~5.4 g at r_attachment=0.7 cm; main tip body m_main~10.0 g; ABS + rubber contact face
+**Material**: ABS + rubber contact
+**Gimmick**: detachable "bullet" satellite — adds mass eccentrically; detaches on high-force hit
+**Mechanism**: heaviest standard Performance Tip in Burst lineup; satellite mechanism; rubber contact face; Erase Diabolos Vanguard Bullet context; m dominated by detachable satellite
+**Engine Note**: type=Bullet; m=15.4 g; detachable_satellite=5.4 g; heaviest_Burst_tip; rubber_contact
+
+---
+
+### [Case 485 — Hell Salamander (Cho-Z Layer System)](./9%20case%20study.md#case-485)
+
+**System**: Burst Cho-Z Layer System — Energy Layer (Left-Spin)
+**Geometry**: m=21.27 g; ABS + 5 metal-lined blade inserts; left-spin; dual-mode Defense/Attack; r_o~2.4 cm est
+**Material**: ABS + metal-lined inserts
+**Gimmick**: dual-mode: Defense (10 blades spread) / Attack (5 consolidated double-blades)
+**Contact Points**: mode-dependent; Defense 10-blade spread; Attack 5 double-blades
+**Mechanism**: among heaviest Cho-Z layers; left-spin gear-mesh with right-spin opponents; Hell Salamander 0 Atomic assembly m=46.77 g I=9.882e-6 kg*m2; reference context for Case 882+
+**Engine Note**: type=HellSalam; m=21.27 g; left_spin; 5_metal_inserts; dual_mode_D_A
+
+---
+
+### [Case 486 — Energy Layer Emperor Forneus (Cho-Z Layer System)](./9%20case%20study.md#case-486)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=17.7 g; ABS + metal shark-detail inserts; right-spin; Defense Type; 12 CCW warped blades; r_i=0.6 cm r_o=2.1 cm
+**Material**: ABS + metal inserts
+**Mechanism**: CWD from metal inserts at inner shark-head geometry; Defense Type; 12 counter-clockwise warped blades; Emperor Forneus assembly context
+**Engine Note**: type=EmperorF; m=17.7 g; CWD_metal_inserts; 12_CCW_blades; Defense_Type
+
+---
+
+### [Case 487 — Forge Disc 0 (Cho-Z Layer System)](./9%20case%20study.md#case-487)
+
+**System**: Burst Cho-Z Layer System — Core Disc
+**Geometry**: m=24.0 g; r_i=0.4 cm r_o=2.2 cm; C2 elliptical; zinc inner ring + ABS outer protrusions; CWD profile
+**Material**: zinc alloy inner ring + ABS
+**Mechanism**: heaviest Cho-Z-era numbered Forge Disc (24.0 g); CWD despite high mass (zinc concentrated inboard); two wide smooth protrusions; Emperor Forneus context
+**Engine Note**: type=Disc0; m=24.0 g; C2_elliptical; CWD_zinc_inner; heaviest_ChZ_numbered_disc
+
+---
+
+### [Case 488 — Performance Tip Yard (Cho-Z Layer System)](./9%20case%20study.md#case-488)
+
+**System**: Burst Cho-Z Layer System — Performance Tip
+**Geometry**: m=7.2 g; metal ball r_ball=0.05 cm + wide ABS ring r_ring=0.7 cm; non-Dash; no burst-tab ring inserts
+**Material**: ABS + metal ball
+**Contact Points**: metal ball r_ball=0.05 cm near-point; mu_ball~0.01; ring base for stadium floor interaction
+**Mechanism**: non-Dash predecessor of Yard' (Case 466, 0.2 g lighter); no Dash alpha burst contribution; semi-aggressive from rolling ball; Emperor Forneus context
+**Engine Note**: type=Yard; m=7.2 g; metal_ball; non_Dash; r_ring=0.7 cm; semi_aggressive
+
+---
+
+### [Case 489 — DB Core Lucifer (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-489)
+
+**System**: Burst DB/BU — DB Core
+**Geometry**: m=7.4 g; r_outer~1.4 cm r_inner~0.5 cm; right-spin; 3 thick PC Locks + 3 BU Lock grooves; highest burst resistant among documented right-spin DB Cores via triple PC Lock
+**Material**: ABS + PC Locks
+**Gimmick**: three thick PC Locks provide maximum right-spin burst resistance via geometric overlap
+**Mechanism**: triple PC Lock + BU Lock grooves; highest documented right-spin DB Core burst resistance; Barricade Lucifer 2Armor Bearing Mobius-10 context
+**Engine Note**: type=DBCore_Luc; m=7.4 g; 3_PC_Locks+3_BU_Lock; highest_right_spin_burst
+
+---
+
+### [Case 490 — BU Blade Barricade (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-490)
+
+**System**: Burst DB/BU — BU Blade
+**Geometry**: m=14.8 g; r_outer_retracted~2.3 cm r_outer_deployed~2.7 cm r_inner~1.0 cm
+**Material**: ABS
+**Mechanism**: final BU Blade in Takara Tomy Burst toyline; bistable deployment gimmick (similar to Roar, Case 477); historical Easter egg "Thank You" moulded on underside; Barricade Lucifer context
+**Engine Note**: type=BUBlade_Barricade; m=14.8 g; bistable_deploy; r_deploy=2.7 cm; Easter_egg_ThankYou
+
+---
+
+### [Case 491 — Armor 10 (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-491)
+
+**System**: Burst DB/BU — Armor
+**Geometry**: m=13.4 g; r_outer~2.6 cm r_inner~1.0 cm; C10 ten-fold symmetry; 10 triangular protrusions at 36 deg intervals
+**Material**: ABS
+**Mechanism**: C10 ten-fold symmetry; most uniform mass distribution among all Armors; 36 deg spacing; Barricade Lucifer context (also cross-referenced Case 507 right-spin)
+**Engine Note**: type=Armor10; m=13.4 g; C10_10fold; 36deg_intervals; most_uniform_armor
+
+---
+
+### [Case 492 — Forge Disc Illegal (DB/BU Stamina Assembly Context)](./9%20case%20study.md#case-492)
+
+**System**: Burst DB/BU — Forge Disc (stamina assembly context)
+**Geometry**: m=31.9 g; I_Illegal~1.180e-5 kg*m2 (r_o=2.6 cm r_i=0.8 cm uniform two-ring approx); same component as Case 457 in different combo
+**Material**: zinc alloy
+**Mechanism**: cross-reference to Case 457; same physical parameters; stamina assembly pairing with Barricade Lucifer; all LAD physics identical to Case 457
+**Engine Note**: type=Illegal_StamContext; cross_ref=Case457; I=1.180e-5; smooth_LAD
+
+---
+
+### [Case 493 — Performance Tip Bearing Mobius (Dynamite Battle / Burst Ultimate Layer System)](./9%20case%20study.md#case-493)
+
+**System**: Burst DB/BU — Performance Tip
+**Geometry**: m=7.8 g; r_outer~1.2 cm; sharp metal tip r_tip~0.03 cm; height~1.5 cm (taller by 1.5 mm vs standard); ball bearings in tip mount
+**Material**: ABS casing + ball bearings + metal tip
+**Contact Points**: sharp metal tip r_tip~0.03 cm; near-zero friction via ball bearings; apex of free-spinning Burst tip lineage
+**Mechanism**: upgraded Mobius with ball bearings; peak free-spinning performance; Barricade Lucifer context; lowest documented spin decay in Burst lineup
+**Engine Note**: type=BearingMobius; m=7.8 g; ball_bearings; r_tip=0.03 cm; lowest_spin_decay; 1.5mm_taller
+
+---
+
+### [Case 494 — Superking Chip Lucifer 2 (Superking / Sparking Layer System)](./9%20case%20study.md#case-494)
+
+**System**: Burst Sparking Layer System — SK Chip (metal insert)
+**Geometry**: m~3.5 g est; small zinc/steel insert in chip body; r_chip~0.9 cm; one of five SK Chips with metal component
+**Material**: ABS + zinc/steel insert
+**Mechanism**: second Lucifer SK Chip; metal insert increases mass concentration at outer radius vs pure ABS; metal insert provides marginal inertia increase; Variant Lucifer Mobius 2D context
+**Engine Note**: type=SKChip_Luc2; m~3.5 g; metal_insert; 5_metal_SK_chips_in_lineup
+
+---
+
+### [Case 495 — Ring The End (Superking / Sparking Layer System)](./9%20case%20study.md#case-495)
+
+**System**: Burst Sparking Layer System — Ring (Defense Type)
+**Geometry**: m=25.5 g; r_outer~2.8 cm r_inner~1.0 cm; right-spin; Defense Type; two-layer bistable free-spin gimmick
+**Material**: ABS + inner bearing/pivot
+**Gimmick**: two-layer bistable free-spin: inner layer fixed to SK Chip; outer layer free-spinning on internal bearing/pivot
+**Contact Points**: outer free-spinning layer absorbs lateral impact; Defense Type
+**Mechanism**: heaviest Ring in lineup; Variant Lucifer Mobius 2D context; bistable free-spin provides elastic collision absorption
+**Engine Note**: type=Ring_TheEnd; m=25.5 g; two_layer_free_spin; heaviest_Ring; Defense_Type
+
+---
+
+### [Case 496 — Forge Disc Kou (Superking / Sparking Layer System)](./9%20case%20study.md#case-496)
+
+**System**: Burst Sparking Layer System — Forge Disc (Limit Break)
+**Geometry**: m=27.3 g; r_outer~2.5 cm r_inner~0.8 cm; one of three Limit Break Discs; mechanically interfaces with Limit Break Rings
+**Material**: zinc alloy
+**Mechanism**: Limit Break Disc; mechanically interfaces with Limit Break Rings (Burn, Volcano, The End); name Kou (Emperor in Japanese); Variant Lucifer Mobius 2D context
+**Engine Note**: type=Kou; m=27.3 g; Limit_Break_Disc; mechanical_Ring_interface; Emperor_named
+
+---
+
+### [Case 497 — Performance Tip Drift (Superking / Sparking Layer System)](./9%20case%20study.md#case-497)
+
+**System**: Burst Sparking — Performance Tip
+**Geometry**: m=10.0 g; r_outer~1.5 cm octagonal body; r_tip~0.04 cm conical sharp free-spinning; plain plastic bushing (not ball bearings)
+**Material**: ABS + POM bushing + conical tip
+**Contact Points**: free-spinning conical sharp tip via POM bushing; mu_POM~0.02 (self-lubricating crystalline); lower than Bearing Mobius (ball bearings) but cheaper
+**Mechanism**: high stamina via free-spinning tip; Variant Lucifer Mobius 2D context; POM bushing not ball bearings distinguishes from Bearing Mobius
+**Engine Note**: type=Drift; m=10.0 g; free_spin_POM; r_tip=0.04 cm; mu~0.02; no_ball_bearings
+
+---
+
+### [Case 498 — Gatinko Chip Dragon 2 (GT / Rise Layer System)](./9%20case%20study.md#case-498)
+
+**System**: Burst GT/Rise Layer System — Gatinko Chip
+**Geometry**: m=3.0 g; r_outer~0.9 cm r_inner~0.4 cm; right-spin; 3 hard locks; beta_ramp~25 deg vs standard 15 deg
+**Material**: ABS
+**Spin Coupling**: hard locks with steeper ramp angle beta=25 deg -> higher normal force component N*sin(beta) -> higher tau_burst vs standard chips
+**Mechanism**: GT era Gatinko Chip; hard lock design; ramp angle comparison: 25 deg vs 15 deg standard; Imperial Dragon Ignition' assembly context
+**Engine Note**: type=GChip_Dragon2; m=3.0 g; hard_locks; beta_ramp=25 deg; higher_tau_burst
+
+---
+
+### [Case 499 — Layer Imperial (GT / Rise Layer System)](./9%20case%20study.md#case-499)
+
+**System**: Burst GT/Rise Layer System — GT Layer
+**Geometry**: m=26.8 g; r_outer~2.9 cm r_inner~0.8 cm; right-spin; Attack Type; 3-stage progressive rubber awakening gimmick
+**Material**: ABS + rubber gimmick components
+**Gimmick**: three-stage progressive rubber awakening — most sophisticated layer-level combat evolution in GT series; three sequential activation thresholds
+**Contact Points**: progressive rubber deployment increases contact friction at each stage
+**Mechanism**: 3-stage awakening; heaviest GT Layer; Imperial Dragon Ignition' assembly context
+**Engine Note**: type=Imperial; m=26.8 g; 3_stage_rubber_awakening; most_sophisticated_GT_layer; Attack_Type
+
+---
+
+### [Case 500 — Disc-Integrated Driver Ignition' (GT / Rise Layer System)](./9%20case%20study.md#case-500)
+
+**System**: Burst GT/Rise Layer System — Disc-Integrated Driver (motorised)
+**Geometry**: m=39.1 g; disc r_outer~2.4 cm; motor housing r_inner~0.5 cm; driver height~1.4 cm; battery-powered DC motor
+**Material**: ABS + DC motor + battery
+**Gimmick**: battery-powered DC electric motor fused with Forge Disc and Attack-type tip — single component provides motor spin assist
+**Mechanism**: most mechanically complex component in case study series; motor + disc + tip integrated; Imperial Dragon Ignition' context; motor assist spin recovery during battle
+**Engine Note**: type=Ignition_Prime; m=39.1 g; DC_motor; disc_integrated; battery_powered; most_complex
+
+---
+
+### [Case 501 — Superking Chip Dragon (Superking / Sparking Layer System)](./9%20case%20study.md#case-501)
+
+**System**: Burst Sparking Layer System — SK Chip
+**Geometry**: m=3.1 g; r_outer~0.9 cm r_inner~0.4 cm; right-spin; no metal insert; average-weight
+**Material**: ABS
+**Mechanism**: same mass as SK Chip Deathscyther (Case 467); no metal insert; dragon motif; Tempest Dragon 1A Charge Metal assembly context
+**Engine Note**: type=SKChip_Dragon; m=3.1 g; ABS_only; no_metal; average_weight
+
+---
+
+### [Case 502 — Ring Tempest (Superking / Sparking Layer System)](./9%20case%20study.md#case-502)
+
+**System**: Burst Sparking Layer System — Ring
+**Geometry**: m=13.0 g; r_outer_bound~2.4 cm r_outer_awake~2.7 cm r_inner~1.1 cm; 4-blade Bound system (2 short front + 2 long rear spring-loaded)
+**Material**: ABS + spring-loaded blades
+**Gimmick**: Bound system: retracted Bound Mode + deployed Awakened Mode; spring-loaded blade deployment
+**Contact Points**: Bound Mode baseline; Awakened Mode extends r_o to 2.7 cm for attack advantage
+**Mechanism**: right-spin Attack Type; 4-blade Bound system; Tempest Dragon 1A Charge Metal context
+**Engine Note**: type=Ring_Tempest; m=13.0 g; 4_blade_Bound; r_awake=2.7 cm; Attack_Type
+
+---
+
+### [Case 503 — Chassis 1A (Superking / Sparking Layer System)](./9%20case%20study.md#case-503)
+
+**System**: Burst Sparking Layer System — Chassis (Double, Attack)
+**Geometry**: m=45.6 g; r_outer~2.7 cm r_inner~0.8 cm; right-spin; C4 four blades at 0/90/180/270 deg; heaviest standard chassis
+**Material**: ABS (integrated disc function)
+**Mechanism**: 1-Attack Double Chassis; heaviest standard chassis; disc function integrated; C4 rotational symmetry; Tempest Dragon 1A Charge Metal context
+**Engine Note**: type=Chassis1A; m=45.6 g; 1-Attack; C4; heaviest_standard_chassis; integrated_disc
+
+---
+
+### [Case 504 — Performance Tip Charge Metal (Superking / Sparking Layer System)](./9%20case%20study.md#case-504)
+
+**System**: Burst Sparking — Performance Tip
+**Geometry**: m=16.2 g; r_outer~1.6 cm; hollow flat metal tip r_tip~0.4 cm; shaft r~0.2 cm
+**Material**: ABS body + hollow metal tip
+**Contact Points**: hollow metal flat tip r_tip~0.4 cm; hollow reduces friction vs solid ABS flat; metal hardness reduces wear
+**Mechanism**: metal-reinforced flat tip over original Charge; hollow metal tip reduces friction by reducing contact area vs solid flat; Tempest Dragon 1A context
+**Engine Note**: type=ChargeMetal; m=16.2 g; hollow_metal_flat; r_tip=0.4 cm; reduced_friction_vs_solid
+
+---
+
+### [Case 505 — DB Core Dragon (Dynamite Battle / Burst Ultimate)](./9%20case%20study.md#case-505)
+
+**System**: Burst DB/BU — DB Core
+**Geometry**: m=7.8 g; r_i=1.0 cm r_o=2.2 cm (thin ring model); I~4.2e-7 kg*m2; DB Core central spring; spring constant and mode-switch function
+**Material**: ABS
+**Gimmick**: spring-rebound; mode-switch (Low/High Mode); BU Lock compatible
+**Mechanism**: thin ring geometry vs solid disc; Gatling Dragon Karma Charge Metal'-10 assembly context; spring and mode-switch function
+**Engine Note**: type=DBCore_Dragon; m=7.8 g; I=4.2e-7; spring_rebound; BU_Lock; High_Low_mode
+
+---
+
+### [Case 506 — BU Blade Gatling (Burst Ultimate)](./9%20case%20study.md#case-506)
+
+**System**: Burst Ultimate — BU Blade
+**Geometry**: m=16.2 g; ABS; 2 spring-loaded movable blades; SHM (deployed r_o=~2.4 cm) vs CHM (retracted)
+**Material**: ABS + spring-loaded blade mechanism
+**Gimmick**: dual mode: Slashing Hit Mode (SHM blades deployed radially) vs Consecutive Hit Mode (CHM alternating)
+**Contact Points**: SHM: deployed blades; CHM: retracted rapid-contact geometry
+**Mechanism**: dual-mode spring-loaded; Gatling Dragon Karma Charge Metal' assembly context; heavier BU Blade at 16.2 g
+**Engine Note**: type=BUBlade_Gatling; m=16.2 g; SHM_CHM; 2_spring_movable_blades
+
+---
+
+### [Case 507 — Armor 10 (Burst Ultimate) [Cross-Reference: Case 491]](./9%20case%20study.md#case-507)
+
+**System**: Burst Ultimate — Armor (Right-Spin Context)
+**Geometry**: m=13.4 g; r_o=2.4 cm r_i=1.2 cm; C10 ten-fold; identical physical geometry to Case 491 but right-spin context
+**Material**: ABS
+**Mechanism**: cross-reference to Case 491; identical geometry; right-spin Gatling Dragon context vs left-spin Barricade Lucifer; contact direction reversed
+**Engine Note**: cross_ref=Case491; m=13.4 g; C10; right_spin_context; Gatling_Dragon
+
+---
+
+### [Case 508 — Forge Disc Karma (Burst Ultimate) [Cross-Reference: Case 479, Right-Spin Context]](./9%20case%20study.md#case-508)
+
+**System**: Burst Ultimate — Forge Disc (Right-Spin Context)
+**Geometry**: m=29.2 g; r_o=3.3 cm r_i=1.4 cm; I_Karma=0.5*0.0292*(0.014^2+0.033^2)=1.155e-5 kg*m2 [Case 508 documented]; same physical component as Case 479
+**Material**: zinc alloy
+**Mechanism**: cross-reference to Case 479; right-spin context changes aerodynamic blade effect direction vs left-spin; physical parameters identical; Gatling Dragon context
+**Engine Note**: cross_ref=Case479; m=29.2 g; I=1.155e-5; right_spin_context; aero_direction_reversed
+
+---
+
+### [Case 509 — Performance Tip Charge Metal' (Burst Ultimate)](./9%20case%20study.md#case-509)
+
+**System**: Burst Ultimate — Performance Tip (Dash)
+**Geometry**: m=16.3 g; same geometry as Charge Metal (Case 504); Dash spring stiffness increased; ratchet engagement augmented
+**Material**: PC + zinc alloy hybrid + Dash spring
+**Spin Coupling**: Dash spring stiffness increase; ratchet engagement stronger vs Charge Metal base
+**Mechanism**: Dash variant of Charge Metal (+0.1 g); PC and zinc hybrid vs ABS base; augmented burst resistance; Gatling Dragon context
+**Engine Note**: type=ChargeMetal_Prime; m=16.3 g; Dash_spring; PC_zinc_hybrid; augmented_burst
+
+---
+
+### [Case 510 — SK Chip Ragnaruk (Superking / Sparking)](./9%20case%20study.md#case-510)
+
+**System**: Burst Sparking Layer System — SK Chip
+**Geometry**: m=3.0 g; ABS; right-spin; 3 standard hard lock tabs; same mass as SK Chip Dragon 2
+**Material**: ABS
+**Mechanism**: winged demon Ragnaruk motif; right-spin only; 3 standard hard lock tabs compatible with right-spin SK Rings; Glide Ragnaruk 1S Drift assembly context
+**Engine Note**: type=SKChip_Rag; m=3.0 g; 3_hard_lock; right_spin; ABS_only
+
+---
+
+### [Case 511 — Ring Glide (Superking / Sparking)](./9%20case%20study.md#case-511)
+
+**System**: Burst Sparking Layer System — Ring
+**Geometry**: m=8.3 g; ABS; C3 + pivoting wing substructure; 3 large colored wings + 3 small clear pivoting wings; 6-wing alternating arrangement
+**Material**: ABS
+**Contact Points**: 3 large fixed wings primary attack surface; 3 small pivoting wings passive energy absorption
+**Mechanism**: Stamina Type; pivoting wings reduce recoil; Glide Ragnaruk 1S Drift context
+**Engine Note**: type=Ring_Glide; m=8.3 g; 3_fixed+3_pivoting; Stamina_Type; recoil_reduction
+
+---
+
+### [Case 512 — Chassis 1S (Superking / Sparking)](./9%20case%20study.md#case-512)
+
+**System**: Burst Sparking Layer System — Chassis (Single, Stamina)
+**Geometry**: m=16.5 g; ABS; dual-spin capable; near-perfect circular perimeter; outer CoG for stamina; Single Chassis (no integrated disc)
+**Material**: ABS
+**Mechanism**: 1-Stamina Single Chassis; large-diameter near-circular; outer CoG optimised for stamina; dual-spin compatible; Glide Ragnaruk 1S Drift context; external Forge Disc required
+**Engine Note**: type=Chassis1S; m=16.5 g; 1-Stamina; Single; dual_spin; circular_outer_CoG
+
+---
+
+### [Case 513 — Forge Disc Wheel (Burst / Cho-Z / Sparking compatible)](./9%20case%20study.md#case-513)
+
+**System**: Burst multi-era — Forge Disc
+**Geometry**: m=30.6 g; r_o=3.5 cm r_i=1.4 cm; zinc alloy; circular profile + 4 rectangular gaps at 90 deg; I_Wheel=half*0.0306*(0.014^2+0.035^2)~2.25e-5 kg*m2 est
+**Material**: zinc alloy
+**Mechanism**: perfectly circular outer boundary; 4 gaps reduce central mass -> increase OWD; highest documented OWD in circular discs; cross-era compatible; Glide Ragnaruk context
+**Engine Note**: type=Wheel; m=30.6 g; r_o=3.5 cm; 4_gaps; I~2.25e-5; highest_OWD_circular
+
+---
+
+### [Case 514 — Performance Tip Revolve (Burst / Sparking)](./9%20case%20study.md#case-514)
+
+**System**: Burst multi-era — Performance Tip
+**Geometry**: m=5.9 g; r_tip=0.1 cm fixed sharp + free-spinning ring r_ring=1.4 cm; shaft r~0.2 cm
+**Material**: PC
+**Contact Points**: sharp tip r_tip=0.1 cm (rigidly attached, NOT free-spinning); free-spinning outer ring r_ring=1.4 cm for LAD; distinct from Bearing Mobius free-spin architecture
+**Mechanism**: Stamina and LAD; fixed sharp tip; free-spinning ring provides LAD; Glide Ragnaruk context; cross-era compatibility; same component as Case 461 in different context
+**Engine Note**: type=Revolve_SK; m=5.9 g; fixed_sharp_tip; free_spin_ring; LAD; cross_era
+
+---
+
+### [Case 515 — Energy Layer Crash Ragnaruk (Cho-Z Layer System)](./9%20case%20study.md#case-515)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=18.9 g; ABS + zinc reinforcement; near-circular stamina profile; 4 wings (2 large PC-over-metal + 2 small clear PC); r_o~2.3 cm est
+**Material**: ABS + zinc alloy reinforcement
+**Contact Points**: 4-wing layout; large wings primary stamina mass; small wings secondary
+**Mechanism**: near-circular stamina configuration; Crash Ragnaruk Wheel Revolve context; zinc reinforcement for stability; pivoting Stamina Wings similar concept to Ring Glide
+**Engine Note**: type=CrashRag; m=18.9 g; near_circular_stamina; zinc_reinforced; 4_wing
+
+---
+
+### [Case 516 — Forge Disc 11 (Burst / Cho-Z)](./9%20case%20study.md#case-516)
+
+**System**: Burst Cho-Z Layer System — Core Disc
+**Geometry**: m=18.5 g; ABS (not zinc); elliptical; 2 semi-ellipses each with 1 large protrusion creating "11" visual; one protrusion with rectangular indent asymmetry
+**Material**: ABS (unusual for Burst Forge Disc — no zinc casting despite naming)
+**Mechanism**: same physical component as Case 444; ABS construction despite "Forge Disc" naming; one-sided indent creates C2 asymmetry; Crash Ragnaruk context
+**Engine Note**: cross_ref=Case444; m=18.5 g; ABS_not_zinc; C2_asymmetric; indent_one_side
+
+---
+
+### [Case 517 — Disc Frame Reach (Burst / Cho-Z)](./9%20case%20study.md#case-517)
+
+**System**: Burst Cho-Z — Disc Frame
+**Geometry**: m=2.5 g; PC; 6 clockwise-angled blades (3 upper + 3 lower staggered); r_i=1.9 cm r_o=2.4 cm; mounted on Disc 11
+**Material**: PC (polycarbonate)
+**Mechanism**: 6 interleaved blades at two heights; clockwise-angled for aerodynamic interaction; Crash Ragnaruk context; PC material for increased toughness vs ABS frames
+**Engine Note**: type=Frame_Reach; m=2.5 g; PC; 6_blade_staggered; CW_angled; r_i=1.9_r_o=2.4 cm
+
+---
+
+### [Case 518 — Performance Tip Wedge (Burst / Cho-Z)](./9%20case%20study.md#case-518)
+
+**System**: Burst Cho-Z — Performance Tip
+**Geometry**: m=7.0 g; hollow zinc alloy conical; t_wall=0.8 mm; air cavity inside cone; wide low-angle cone geometry
+**Material**: zinc alloy (hollow cone)
+**Contact Points**: conical geometry; minimal contact radius from low cone angle; metal low friction mu~0.05-0.08
+**Mechanism**: hollow zinc cone for stamina; minimal contact from low-angle cone; metal reduces friction; Crash Ragnaruk context
+**Engine Note**: type=Wedge; m=7.0 g; hollow_zinc_cone; t_wall=0.8 mm; low_angle; mu~0.05-0.08
+
+---
+
+### [Case 519 — DB Core Ragnaruk (Dynamite Battle / Burst Ultimate)](./9%20case%20study.md#case-519)
+
+**System**: Burst DB/BU — DB Core
+**Geometry**: m=6.7 g; ABS; 7-lock fine-tooth ratchet geometry; lightest documented DB Core; demon motif (Norse Ragnarok)
+**Material**: ABS
+**Spin Coupling**: 7 fine locks distribute burst torque; lower per-tooth engagement depth vs 4 medium-short teeth
+**Mechanism**: 7-lock fine-tooth vs others; Cyclone Ragnaruk Giga Never-6 assembly context; lightest DB Core at 6.7 g
+**Engine Note**: type=DBCore_Rag; m=6.7 g; 7_fine_lock; lightest_DB_Core; Norse_motif
+
+---
+
+### [Case 520 — Blade Cyclone (Dynamite Battle / Burst Ultimate)](./9%20case%20study.md#case-520)
+
+**System**: Burst DB/BU — BU Blade
+**Geometry**: m=8.3 g; ABS; 2-blade round stamina profile; movable pivoting Stamina Wings; r_o~2.2 cm
+**Material**: ABS
+**Contact Points**: 2-blade symmetric; movable wings pivot to reduce recoil on contact
+**Mechanism**: round two-blade stamina profile; Stamina Wings same concept as Ring Glide; Cyclone Ragnaruk Giga Never-6 context; lighter DB/BU blade at 8.3 g
+**Engine Note**: type=BUBlade_Cyclone; m=8.3 g; 2_blade_round; pivoting_Stamina_Wings; lighter_blade
+
+---
+
+### [Case 521 — Armor 6 (Dynamite Battle / Burst Ultimate) [Cross-Reference: Case 478]](./9%20case%20study.md#case-521)
+
+**System**: Burst DB/BU — Armor (another context)
+**Geometry**: m=13.4 g; r_o=2.4 cm r_i=1.2 cm; 6 square-face protrusions; same physical component as Case 478
+**Material**: ABS
+**Mechanism**: cross-reference to Case 478; Cyclone Ragnaruk context; right-spin DB context vs left-spin in Case 478; physical parameters identical
+**Engine Note**: cross_ref=Case478; m=13.4 g; C6; Cyclone_Ragnaruk_context
+
+---
+
+### [Case 522 — Forge Disc Giga (Dynamite Battle / Burst Ultimate)](./9%20case%20study.md#case-522)
+
+**System**: Burst DB/BU — Forge Disc
+**Geometry**: m=32.8 g; r_o=3.5 cm (circumscribed) r_apo=3.23 cm (inscribed); zinc alloy; octagonal profile (MFB Gravity homage); 8 equal flat sides
+**Material**: zinc alloy
+**Mechanism**: homage to MFB-era Gravity disc; octagonal 8-sided symmetric; r_o=3.5 cm; Cyclone Ragnaruk Giga Never-6 context; I_Giga=half*0.0328*(r_i^2+0.035^2) high OWD
+**Engine Note**: type=Giga; m=32.8 g; r_o=3.5 cm; octagonal; Gravity_homage; high_OWD
+
+---
+
+### [Case 523 — Performance Tip Never (Dynamite Battle / Burst Ultimate)](./9%20case%20study.md#case-523)
+
+**System**: Burst DB/BU — Performance Tip
+**Geometry**: m=7.6 g; PC + POM; free-spinning conical sharp tip on central axle with POM bushing; POM outer ring
+**Material**: PC body + POM bushing (self-lubricating) + conical tip
+**Contact Points**: free-spinning conical tip via POM bushing; mu_POM~0.02; POM outer ring r_ring=? for LAD
+**Mechanism**: POM-on-steel axle ultra-low friction bushing; free-spinning; Cyclone Ragnaruk Giga Never-6 context; stamina specialist
+**Engine Note**: type=Never; m=7.6 g; POM_bushing; free_spin_conical; mu~0.02; stamina_specialist
+
+---
+
+### CS9 Late Block — Cases 867–891 {#cs9-late}
+
+---
+
+### [Case 867 — Energy Layer: Dead Phoenix (Cho-Z, 21.8 g)](./9%20case%20study.md#case-867)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=21.8 g; C4 four-fold symmetric; Dead Armor (DA) outer annulus + Dead Core (DC) inner; I_DC+I_DA=6.028e-6 kg*m2 total [Case 870]; dual-armor architecture
+**Material**: ABS (DA outer) + ABS (DC inner)
+**Gimmick**: Dead Armor sacrifice system — DA detaches on burst event -> DC perimeter becomes smooth -> near-immune to subsequent burst
+**Spin Coupling**: DA carries burst tabs; after sacrifice: smooth DC = no further burst engagement
+**Mechanism**: dual-armor burst-sacrifice; confirmed best Defence combo use (smooth post-sacrifice perimeter); Dead Phoenix 10 Friction assembly context
+**Engine Note**: type=DeadPhoenix; m=21.8 g; C4; dual_armor_sacrifice; smooth_post_burst; I_total=6.028e-6
+
+---
+
+### [Case 868 — Forge Disc: 10 (Cho-Z, 23.8 g)](./9%20case%20study.md#case-868)
+
+**System**: Burst Cho-Z — Core Disc
+**Geometry**: m=23.8 g; C10 ten-fold symmetric; r_o=2.4 cm r_i=1.3 cm; I_10=0.5*0.0238*(0.024^2+0.013^2)=8.861e-6 kg*m2 [ESTIMATED geometry; CONFIRMED mass]; r_eff=19.3 mm est
+**Material**: zinc alloy
+**Mechanism**: ten-fold symmetric; high inertia Cho-Z disc; Dead Phoenix 10 Friction assembly context
+**Engine Note**: type=Disc10_ChZ; m=23.8 g; C10; I=8.861e-6; r_eff=1.93 cm
+
+---
+
+### [Case 869 — Performance Tip: Friction (Cho-Z, 7.0 g)](./9%20case%20study.md#case-869)
+
+**System**: Burst Cho-Z — Performance Tip
+**Geometry**: m=7.0 g; POM flat contact r_contact=0.45 cm; mu_POM=0.10 (self-lubricating crystalline)
+**Material**: POM (polyoxymethylene) — self-lubricating
+**Contact Points**: r_contact=0.45 cm flat; mu_POM=0.10 (between rubber 0.85 and metal 0.05-0.12); firm grip for KO resistance while maintaining low decay
+**Mechanism**: POM flat tip stamina specialist; lower friction than ABS (0.17) and far lower than rubber (0.85); Dead Phoenix 10 Friction assembly context
+**Engine Note**: type=Friction; m=7.0 g; POM; mu=0.10; r_contact=0.45 cm; stamina_KO_resist
+
+---
+
+### [Case 870 — Assembly: Dead Phoenix 10 Friction (Cho-Z, 52.6 g)](./9%20case%20study.md#case-870)
+
+**System**: Burst Cho-Z — Full Assembly
+**Geometry**: m=52.6 g; I_total=1.503e-5 kg*m2 [CALCULATED]; fractions: I_layer=40.1%, I_disc=58.9%, I_tip=0.84%; L0=I*omega_launch
+**Material**: composite assembly
+**Mechanism**: Cho-Z stamina assembly; inertia dominated by disc (58.9%); Dead Armor sacrifice strategy; full spin decay budget documented
+**Engine Note**: assembly; m=52.6 g; I=1.503e-5; disc_dominant_58.9%; Dead_Armor_sacrifice
+
+---
+
+### [Case 871 — Energy Layer: Revive Phoenix (Cho-Z, 23.3 g)](./9%20case%20study.md#case-871)
+
+**System**: Burst Cho-Z Layer System — Energy Layer
+**Geometry**: m=23.3 g; dual-armor: Revive Armor (RA) + Revive Core (RC); parry window ~0.45-0.75 N for free-spin; above 0.75 N RA locks and absorbs
+**Material**: ABS dual-armor
+**Gimmick**: Revive Armor parry mechanism — free-spins in impact force parry window; locks above threshold; absorbs and redirects rather than sacrificing
+**Spin Coupling**: parry window: free-spin absorption in range; lock above range prevents burst
+**Mechanism**: best Right-Spin Defense Layer of Cho-Z generation [CONFIRMED]; parry vs sacrifice distinction from Dead Phoenix (Case 867); heavier than Dead Phoenix by 1.5 g
+**Engine Note**: type=RevivePhoenix; m=23.3 g; parry_mechanism; RA_free_spin_window; best_ChZ_RSD
+
+---
+
+### [Case 872 — DB Core: Phoenix (DB System, 7.6 g)](./9%20case%20study.md#case-872)
+
+**System**: Burst DB Layer System — DB Core
+**Geometry**: m=7.6 g; r_o=1.0 cm r_i=0.4 cm annular model; I_core=0.5*0.0076*(0.010^2+0.004^2)=4.408e-7 kg*m2; 4 locking teeth
+**Material**: ABS
+**Spin Coupling**: 4 locking teeth engage Blade; burst resistance from tooth engagement geometry
+**Mechanism**: innermost ratchet hub of DB Layer System; modelled as annular cylinder; Prominence Phoenix assembly context
+**Engine Note**: type=DBCore_Ph; m=7.6 g; 4_locking_teeth; I=4.408e-7; annular_hub
+
+---
+
+### [Case 873 — Blade: Prominence (DB System, ~24.0 g)](./9%20case%20study.md#case-873)
+
+**System**: Burst DB Layer System — Blade
+**Geometry**: m_total~24.0 g (Shield 9.5 g [CONFIRMED] + Blade body ~14.5 g [ESTIMATED]); r_o=2.3 cm r_i=1.1 cm; I_blade=half*0.0145*(0.023^2+0.011^2) + shield contribution; total I~9.397e-6 kg*m2
+**Material**: ABS + detachable Prominence Shield
+**Gimmick**: detachable Prominence Shield (PS, 9.5 g) — functions as additional armor that can detach
+**Contact Points**: outer blade body + shield perimeter
+**Mechanism**: Prominence Phoenix Tapered-10 Metal Universe assembly context; detachable shield adds outer protection; total blade with shield I~9.397e-6 kg*m2
+**Engine Note**: type=Blade_Prominence; m_total=24.0 g (Shield=9.5+body=14.5); I~9.397e-6; detachable_shield
+
+---
+
+### [Case 874 — Armor-10 (DB System, 13.4 g)](./9%20case%20study.md#case-874)
+
+**System**: Burst DB Layer System — Armor
+**Geometry**: m=13.4 g; r_o=2.2 cm r_i=1.5 cm; I_A10=0.5*0.0134*(0.022^2+0.015^2)=4.750e-6 kg*m2; r_eff=18.83 mm; n=10 rotational features
+**Material**: ABS
+**Mechanism**: DB System Armor; n=10 protrusions; Prominence Phoenix assembly context; narrow annular width (r_o-r_i=0.7 cm) concentrated at medium radius
+**Engine Note**: type=Armor10_DB; m=13.4 g; C10; r_i=1.5_r_o=2.2 cm; I=4.750e-6
+
+---
+
+### [Case 875 — Forge Disc: Tapered (DB System, 29.3 g)](./9%20case%20study.md#case-875)
+
+**System**: Burst DB Layer System — Forge Disc
+**Geometry**: m=29.3 g; r_o=2.7 cm r_i=1.1 cm; I_Tap=0.5*0.0293*(0.027^2+0.011^2)=1.245e-5 kg*m2; r_eff=19.7 mm; tapered profile
+**Material**: zinc alloy (tapered construction)
+**Mechanism**: highest-inertia standard disc at point of documentation; elevated mass + larger r_o vs Cho-Z discs; Prominence Phoenix assembly context; tapered cross-section
+**Engine Note**: type=Tapered; m=29.3 g; r_o=2.7 cm; I=1.245e-5; highest_inertia_at_time
+
+---
+
+### [Case 876 — Performance Tip: Metal Universe (DB System, 11.1 g)](./9%20case%20study.md#case-876)
+
+**System**: Burst DB Layer System — Performance Tip
+**Geometry**: m=11.1 g; wide hemispherical ball + metal steel ball bearing insert; r_contact~0.2 cm (near-point from spherical geometry); mu_MU~0.012 [CONFIRMED metal bearing; ESTIMATED mu and r_contact]
+**Material**: ABS housing + steel ball bearing insert
+**Contact Points**: near-point contact r~0.2 cm; mu_MU~0.012 ultra-low; hemispherical ball geometry
+**Mechanism**: DB stamina premier tip; metal ball bearing ultra-low friction; hemispherical ball near-point contact; Prominence Phoenix assembly context
+**Engine Note**: type=MetalUniverse; m=11.1 g; steel_ball_bearing; mu=0.012; near_point_contact; DB_stamina_premier
+
+---
+
+### [Case 877 — Assembly: Prominence Phoenix 10 Tapered Metal Universe (DB System, 85.4 g)](./9%20case%20study.md#case-877)
+
+**System**: Burst DB — Full Assembly
+**Geometry**: m=85.4 g; I_total=I_core(4.408e-7)+I_blade(9.397e-6)+I_armor(4.750e-6)+I_tapered(1.245e-5)+I_tip(5.13e-7)=2.766e-5 kg*m2 [CALCULATED]; disc dominant
+**Material**: composite DB assembly
+**Mechanism**: highest total assembly mass documented in Burst era at time; total I=2.766e-5 kg*m2; massive angular momentum reserve; DB stamina archetype
+**Engine Note**: assembly; m=85.4 g; I=2.766e-5; heaviest_Burst_assembly; Tapered_disc_dominant
+
+---
+
+### [Case 878 — Energy Layer: Twin Nemesis (God Layer System, 13.1 g)](./9%20case%20study.md#case-878)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=13.1 g; C2 two-fold elliptical; two large opposing blades; I_x != I_y (confirmed gyroscopic imbalance wobble); I_TN=3.461e-6 kg*m2 [from Case 881]
+**Material**: ABS
+**Contact Points**: two large opposing blades; C2 asymmetric contact frequency
+**Mechanism**: only common layer with I_x != I_y -> gyroscopic wobble confirmed; Twin Nemesis 3Hit Jaggy assembly context
+**Engine Note**: type=TwinNemesis; m=13.1 g; C2; I_x_neq_I_y; gyroscopic_wobble; I=3.461e-6
+
+---
+
+### [Case 879 — Forge Disc: 3 (God Layer System, 21.6 g)](./9%20case%20study.md#case-879)
+
+**System**: Burst God Layer System — Core Disc
+**Geometry**: m=21.6 g; two-zone: inner ring 45% (9.72 g, r_o=0.8 cm r_i=0.4 cm) + outer slim ring 55% (11.88 g, r=1.7 cm); I_3=3.822e-6 kg*m2 [CALCULATED]
+**Material**: zinc alloy
+**Mechanism**: two-zone CWD mass distribution; inboard concentration relative to even-numbered discs; I_3=3.822e-6 kg*m2; Twin Nemesis 3Hit Jaggy assembly context
+**Engine Note**: type=Disc3_God; m=21.6 g; two_zone_CWD_inboard; I=3.822e-6; lower_OWD_vs_even_discs
+
+---
+
+### [Case 880 — Disc Frame: Hit (God Layer System, 2.0 g)](./9%20case%20study.md#case-880)
+
+**System**: Burst God Layer System — Disc Frame
+**Geometry**: m=2.0 g; thin ring body 1.5 g at r=1.8 cm + asymmetric protrusion 0.5 g at r=1.9 cm; I_Hit=4.860e-7+1.805e-7=6.665e-7 kg*m2; combined I_3Hit=4.489e-6 kg*m2
+**Material**: ABS
+**Mechanism**: asymmetric single protrusion on thin ring; combined with Disc 3: I_3Hit=4.489e-6; m_3Hit=23.6 g; Twin Nemesis 3Hit Jaggy assembly context
+**Engine Note**: type=Frame_Hit; m=2.0 g; asymmetric_protrusion; I=6.665e-7; I_3Hit_combined=4.489e-6
+
+---
+
+### [Case 881 — Assembly: Twin Nemesis 3Hit Jaggy (God Layer System, 42.4 g)](./9%20case%20study.md#case-881)
+
+**System**: Burst God Layer — Full Assembly
+**Geometry**: m=42.4 g; I_total=I_TN(3.461e-6)+I_3Hit(4.489e-6)+I_Jaggy(9.674e-7)=8.918e-6 kg*m2 [CALCULATED]; fractions: TN=38.8%, Disc3=42.5%, Hit=~7.5%, Jaggy=10.8%
+**Material**: composite God Layer assembly
+**Mechanism**: lightweight God Layer attack assembly; gyroscopic wobble from TN C2 asymmetry; disc+frame combined inertia dominant; I_total=8.918e-6 kg*m2
+**Engine Note**: assembly; m=42.4 g; I=8.918e-6; TN_gyro_wobble; disc_dominant_42.5%
+
+---
+
+### [Case 882 — Energy Layer: Hell Salamander (Cho-Z, Left-Spin, 21.27 g)](./9%20case%20study.md#case-882)
+
+**System**: Burst Cho-Z Layer System — Energy Layer (Left-Spin)
+**Geometry**: m=21.27 g; left-spin; 10 blades mode-changeable; Defense Mode (10 spread) vs Attack Mode (5 double-blades); I_HS=6.774e-6 kg*m2 [from Case 885]
+**Material**: ABS
+**Gimmick**: mode-change between Defense (10 spread blades) and Attack (5 consolidated double-blades)
+**Contact Points**: mode-dependent blade arrangement
+**Mechanism**: left-spin creates gear-mesh interaction with right-spin opponents; Hell Salamander 12 Operate assembly context; same layer as Case 485 different assembly
+**Engine Note**: cross_ref=Case485; m=21.27 g; left_spin; 10_blade_mode_change; I=6.774e-6; gear_mesh
+
+---
+
+### [Case 883 — Forge Disc: 12 (Cho-Z, 16.1 g)](./9%20case%20study.md#case-883)
+
+**System**: Burst Cho-Z — Core Disc
+**Geometry**: m=16.1 g; even-numbered (2 Frame slots); r_o=2.1 cm r_i=1.2 cm; I_12=0.5*0.0161*(0.021^2+0.012^2); lightest Cho-Z Core Disc [CONFIRMED]
+**Material**: zinc alloy
+**Mechanism**: same disc as Case 419 (12-Core) but in Hell Salamander context; lightest confirmed Cho-Z Core Disc; Frame-compatible; Hell Salamander 12 Operate context
+**Engine Note**: cross_ref=Case419; m=16.1 g; lightest_ChZ_disc; C_even_Frame_compatible; I=4.711e-6 [from Case 885]
+
+---
+
+### [Case 884 — Performance Tip: Operate (Cho-Z, 7.1 g)](./9%20case%20study.md#case-884)
+
+**System**: Burst Cho-Z — Performance Tip (dual-mode, underperforming)
+**Geometry**: m=7.1 g; sliding mechanism offsets/centers wide plastic ball contact; Attack Mode (ball off-center) vs Defense Mode (ball centered)
+**Material**: ABS + plastic ball + sliding mechanism
+**Gimmick**: sliding offset mechanism for Attack/Defense modes; both modes confirmed underperforming
+**Contact Points**: off-center ball in Attack Mode creates eccentric contact; centered ball in Defense
+**Mechanism**: dual-mode tip whose gimmick actively impedes competitive viability [CONFIRMED]; both modes inferior to specialist alternatives; Hell Salamander 12 Operate context; I_tip~8.875e-8 kg*m2
+**Engine Note**: type=Operate; m=7.1 g; sliding_offset; dual_mode_underperforming; I=8.875e-8
+
+---
+
+### [Case 885 — Assembly: Hell Salamander 12 Operate (Cho-Z, Left-Spin, 44.47 g)](./9%20case%20study.md#case-885)
+
+**System**: Burst Cho-Z — Full Assembly (Left-Spin)
+**Geometry**: m=44.47 g; I_total=I_HS(6.774e-6)+I_12(4.711e-6)+I_tip(8.875e-8)=1.157e-5 kg*m2 [CALCULATED]; fractions: HS=58.6%, Disc12=40.7%, Operate=0.77%
+**Material**: composite Cho-Z left-spin assembly
+**Mechanism**: left-spin Cho-Z assembly; layer dominates at 58.6%; Hell Salamander gear-mesh with right-spin opponents; Operate underperforms in both modes
+**Engine Note**: assembly; m=44.47 g; I=1.157e-5; layer_dominant_58.6%; left_spin; gear_mesh_right_opponents
+
+---
+
+### [Case 886 — Armor Detachment: Dimensional Collapse and Geometric Phase Transition (Cross-System Analysis)](./9%20case%20study.md#case-886)
+
+**System**: Cross-System Analysis — Armor/Shield Detachment Physics
+**Geometry**: analysis covers simultaneous change across 3 spatial dimensions: diameter, height, perimeter shape on detachment
+**Material**: varies by system
+**Mechanism**: losing detachable armor = phase transition in mechanical identity; simultaneous diameter reduction + height reduction + perimeter smoothing; post-detachment object is geometrically distinct; physical consequences documented for Dead Phoenix (Case 867), Prominence Shield (Case 873), and all detachable components
+**Engine Note**: type=cross_system_analysis; armor_detachment_phase_transition; 3D_simultaneous_collapse
+
+---
+
+### [Case 887 — Energy Layer: Killer Deathscyther (God Layer, Right-Spin, Attack, 9.2 g)](./9%20case%20study.md#case-887)
+
+**System**: Burst God Layer System — Energy Layer
+**Geometry**: m=9.2 g; 6 blades: 2 colored ABS (Upper Attack 15 deg) + 4 clear ABS (flat Burst Attack) + 1 centrifugal sliding blade ("Double Strike" gimmick); all gimmick elements fail by confirmation
+**Material**: ABS
+**Gimmick**: "Double Strike" centrifugal sliding blade — confirmed fails in competitive use
+**Contact Points**: 2 upper attack blades (lift); 4 burst-point blades (tab engagement); sliding gimmick blade (non-functional)
+**Mechanism**: triple-type blade architecture; Killer Deathscyther 2Vortex Hunter assembly context; I_KD=2.141e-6 kg*m2 [from Case 891]; gimmick failure confirmed
+**Engine Note**: type=KillerDS; m=9.2 g; 6_blades; Double_Strike_gimmick_fails; I=2.141e-6
+
+---
+
+### [Case 888 — Forge Disc: 2 (God Layer, 21.21 g)](./9%20case%20study.md#case-888)
+
+**System**: Burst God Layer System — Core Disc
+**Geometry**: m=21.21 g; standard weight; uniform annular distribution; even-numbered (2 Frame slots); single protrusion per side ("2" molding); I_2 [part of I_2V=7.322e-6 in Case 891]
+**Material**: zinc alloy
+**Mechanism**: "Jack-of-All-Trades" designation [CONFIRMED]; adequate in any combination type; minimal protrusion design avoids aggressive recoil; Killer Deathscyther 2Vortex Hunter context
+**Engine Note**: type=Disc2_God; m=21.21 g; jack_of_all_trades; minimal_protrusion; Frame_compatible
+
+---
+
+### [Case 889 — Disc Frame: Vortex (God Layer, 2.51 g)](./9%20case%20study.md#case-889)
+
+**System**: Burst God Layer System — Disc Frame
+**Geometry**: m=2.51 g; wide triangular profile; wave-like surface; 3 sides; heaviest God Layer Frame [CONFIRMED]; I_Vortex part of I_2V=7.322e-6 kg*m2 (Disc 2 + Vortex combined)
+**Material**: ABS
+**Mechanism**: 25% heavier than Hit Frame (2.0 g) and Cross Frame (~2.0 g); notable inertia vs peers; protrusion height insufficient for competitive attack; Killer Deathscyther 2Vortex Hunter context
+**Engine Note**: type=Frame_Vortex; m=2.51 g; heaviest_God_Frame; I_2V=7.322e-6; wide_triangular
+
+---
+
+### [Case 890 — Performance Tip: Hunter (God Layer, 5.9 g)](./9%20case%20study.md#case-890)
+
+**System**: Burst God Layer System — Performance Tip
+**Geometry**: m=5.9 g; annular rubber contact ring; r_outer~0.5 cm r_inner~0.2 cm void; r_contact~0.35 cm (ring centroid); I_Hunter=7.375e-8 kg*m2 [from Case 891]
+**Material**: rubber (annular contact ring)
+**Contact Points**: rubber annular ring; central depression eliminates center contact; mu_k=0.85 rubber; r_contact~0.35 cm
+**Mechanism**: rubber flat with center void (similar concept to Xtreme Case 1002); God Layer attack context; Killer Deathscyther 2Vortex Hunter assembly
+**Engine Note**: type=Hunter; m=5.9 g; rubber_annular; void_center; r_contact=0.35 cm; I=7.375e-8
+
+---
+
+### [Case 891 — Assembly: Killer Deathscyther 2Vortex Hunter (God Layer, Right-Spin, 38.82 g)](./9%20case%20study.md#case-891)
+
+**System**: Burst God Layer — Full Assembly
+**Geometry**: m=38.82 g; I_total=I_KD(2.141e-6)+I_2V(7.322e-6)+I_Hunter(7.375e-8)=9.537e-6 kg*m2 [CALCULATED]; fractions: KD=22.5%, Disc2=67.3% est, Vortex=~9.5%, Hunter=0.77%
+**Material**: composite God Layer assembly
+**Mechanism**: disc+frame dominant at ~76.8%; lightweight attack assembly; layer provides attack geometry while disc dominates inertia; gimmick blade non-functional in competitive context
+**Engine Note**: assembly; m=38.82 g; I=9.537e-6; disc_dominant_67.3%; KD_gimmick_fails
+
+---
 

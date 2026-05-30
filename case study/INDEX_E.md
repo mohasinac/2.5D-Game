@@ -3252,3 +3252,1211 @@ const blackSeaBowl: ArenaConfig = {
    z=1.2  Boat decks (flat, moving)
    z=8.0  Wall (near side: full height; far side: cos(28Â°) foreshortened)
    ```
+
+---
+
+## AE-48 — Unified MechanicRegistry: Arena ? Beyblade Shared Mechanics
+
+> **Core principle**: There is ONE MechanicRegistry. Arena elements and beyblade gimmicks are both *callers* of the same handler functions. The distinction is only who triggers the mechanic and when — not what the mechanic does. A spin zone and a magnacore gimmick both invoke `orbitBoost`. A turret poison shot and a beyblade poison-tip gimmick both invoke `statusEffect`. A flipper and a beyblade spring-launch both invoke `tangentialVelocityKick`. This section documents the complete cross-system mapping.
+
+### Architecture
+
+```
+  ARENA ELEMENT                        BEYBLADE GIMMICK
+  -----------------------------------------------------------------
+  AE trigger fires (contact/tick/enter) ¦  gimmick trigger fires (? threshold/contact/QTE)
+             ¦                          ¦
+             ?                          ?
+  ArenaFeatureProcessor                GimmickRegistry.get(gimmickId)
+             ¦                          ¦
+             +--------------------------+
+                         ¦
+                         ?
+              MechanicRegistry.get(mechanicId)
+                         ¦
+                         ?
+              handler(ctx: BattleContext, params: MechanicParams): MechanicResult
+                         ¦
+                         ?
+              Apply: velocity impulse / spin delta / statusEffect / movementOverride
+                     / spawnElement / flipPhysics / boomEffect / ...
+```
+
+No special-casing by source. The mechanic handler does not know if it was called by an arena element or a beyblade gimmick. The same `spinBoost` mechanic applies whether it was triggered by a spin zone floor tile or a Fafnir free-spin layer. The same `statusEffect` mechanic fires whether it came from a turret poison shot or a beyblade venom-tip gimmick.
+
+---
+
+### Complete Mechanic ID ? Source Mapping Table
+
+| Mechanic ID | AE Elements That Use It | Beyblade Gimmick Types That Use It | Turret Attack Categories |
+|-------------|------------------------|-----------------------------------|--------------------------|
+| `linearImpulse` | AE-3 Bump (`popStrength_N`), AE-5 Rail exit, AE-7 Gravity Well elimination kick, AE-45 Slingshot | Smash AR contact, `stampede_rush` special move, `power-thrust` combo | Cat 1 (all projectile hits), Cat 3 AoE burst |
+| `angularImpulse` | AE-44 Flipper (tangential kick), AE-45 Slingshot (`kickBonus_N`), AE-46 Kickback | Spring-launch Core gimmick, `pivot-strike` combo | — |
+| `spinBoost` | AE-6 Spin Zone (`spinBoost_rads2`), AE-47 Bonus Lane reward, AE-8 Motor Disc arena | `motor_spin_boost` (Ignition' driver), `spin_equalization` (Fafnir), `staminaRecovery` | Cat 7 turret self-buff (`agility`, `meditate`) |
+| `spinDelta` | All damage-dealing AEs (wall collision, obstacles), AE-7 elimination | `upper_attack`, `smash_attack`, `burst_attack` all produce spinDelta | Cat 1–3 projectile/beam/AoE hits |
+| `orbitBoost` | AE-6 Spin Zone (`applyTo: "linear"`), AE-2 Floor Zone slope | `magnacore_attract`, `eternal_defence_free_spin` (ring spin builds orbit), recoil-redirect special moves | Cat 1 `tracking_missile` homing orbit |
+| `railLock` | AE-5 Rail / Speed Line / X-Line (entire mechanic) | BX X-Dash rail engagement (`xd_gear_cam`), Grip Bit rail-bite | — |
+| `gravityPull` | AE-7 Gravity Well (inward radial force per tick), AE-8 Whirlpool (tangential + inward) | `magnacore_repel` (inverted: outward), `magnacore_attract` (inward) | Cat 3 `gravity_cannon` |
+| `statusEffect` | AE-23 Turret Cat 4 (all 13 status types), AE-8 Lava (`burned`), AE-8 Ice (`frozen`/`slowed`) | Venom-tip gimmick (`poisoned`), Electric-discharge gimmick (`stunned`), Magnetic gimmick (`magneted`) | Cat 4 all attack types |
+| `movementOverride` | AE-23 Turret Cat 9 (`speed_surge`, `ghost_walk`, `gravity_flip`, etc.) | `dual_spin_launch` (forced spin direction), mode-switch behavioral change, `spring_launch` direction override | Cat 9 all override types |
+| `burstSuppress` | AE-23 Turret Cat 7 (`barrier`, `harden` — reduces burst probability) | `choz_awakening` bistable burst-stop, Dash spring lock (`alpha` param), `burst_resist_mode` | — |
+| `contactDeflect` | AE-43 Angled Trampoline (hard redirect), AE-45 Slingshot wall rebound | C145 individual wing deflect, ED145 free-spin deflect, `mode_switch_tip` angle deflect | — |
+| `freeSpin` | AE-8 Moving Platform velocity decoupling (platform moves, bey inherits partially) | ED145 bearing ring (`eternal_defence_free_spin`), Bearing driver free-tip | — |
+| `modeSwitch` | AE-12 Switch (toggles arena elements between states) | Zeta' 3-mode tip (`modeSwitch`), Dual-spin layer (`dual_spin_launch`) | Cat 7 turret `ultra_form` (state change) |
+| `weightShift` | AE-14 Arena Tilt (shifts effective CoM of arena) | Wall Frame CoM lower, DB High/Low mode switch CoM shift | — |
+| `verticalImpulse` | AE-3 Bump (pop upward), AE-44 Flipper (`v_z` component), AE-43 Trampoline launch | `upper_attack` (`F_upper = F_N × sin(a)`), `jolt_impact_launch` (v_z on force threshold) | Cat 2 `flamethrower` (upward component), Cat 3 AoE tilt change |
+| `tiltChange` | AE-3 Bump (`beyTiltAngle` increment), AE-43 Trampoline forced tilt, AE-14 Arena Tilt | UW145 spike upper-attack (`beyTiltAngle` on opponent), `spiral_upper_ar` | Cat 1 `drill_shot` (corkscrews into tilt) |
+| `environmentField` | AE-23 Turret Cat 6 Weather (`sunny_day`, `rain_dance`, etc.), AE-8 Liquid surface | `blizzalog` special move (arena-wide cold field), `horusood_field` (vortex field) | Cat 6 all weather types |
+| `floorHazardPlacement` | AE-23 Turret Cat 5 (places AE-4 mines, AE-2 sticky web, etc.) | — | Cat 5 all hazard-placement types |
+| `spawnOnDestroy` | AE-41 Debris/Spawn-on-Destroy | — (beyblades don't destroy themselves, but burst leaves fragments) | — |
+| `breakFloorTile` | AE-42 Breakable Floor Tile (health-state machine) | Heavy-mass beyblade landing on fragile floor (mass threshold check) | Cat 3 `earthquake` (cracks tiles) |
+| `restitutionBoost` | AE-45 Slingshot (`restitution > 1.0`) | `recoil_redirect_orbit` (Wonder Valtryek Volcanic — ?_recoil), rubber-tip wall bounce | Cat 1 `boomerang` (wall-amplified return) |
+| `chainReaction` | AE-12 Switch chain-to (`chainTo`), AE-41 `onDestroy.fireSwitchId` | Combo chain detection (`quick-dash-l` ? `quick-dash-r` rapid sequence) | — |
+| `velocityInheritance` | AE-13 Moving Platform/Boat | — | — |
+| `beyAsWeapon` | AE-23 Turret Cat 8 (`spread_bey`, `railbey`, `bomb_bey`, etc.) | `kamikaze_rush` special move concept, `spin_equalization_opposite_spin` | Cat 8 all bey-weapon types |
+| `turretAim` | AE-23 Turret fire patterns (nearest/furthest/sweep etc.) | AI input pattern: `hell_difficulty` ring-out targeting | — |
+| `bonusLaneReward` | AE-47 Bonus Lane `onComplete` | Power restoration after combo chain completion | — |
+| `pinballKick` | AE-44 Flipper, AE-45 Slingshot, AE-46 Kickback (combined: flipper kick + sling amplify + kickback save) | — (but a beyblade special move could use `angularImpulse` + `restitutionBoost` to mimic) | — |
+| `upperLaunch` | AE-3 Bump (angled version), AE-43 Trampoline with `tiltBoost_deg` | UW145 fixed-wing upper, Spiral Upper AR omnidirectional, C145 wing-deflect | — |
+
+---
+
+### New Mechanics Needed (Arena-Derived, Not Yet in Registry)
+
+These mechanics are defined by arena elements but do not yet exist in `mechanic_defs`. They must be seeded before arena element admin CRUDs go live. Each can also be applied to beyblade gimmicks from day one.
+
+| Mechanic ID | Source AE | Description | Beyblade gimmick use case |
+|-------------|-----------|-------------|--------------------------|
+| `tangentialVelocityKick` | AE-44 Flipper | Rotational kick that converts flipper ? to bey tangential velocity: `v = ? × r_contact` | A beyblade with a spring-loaded wing that deploys on contact and kicks opponent tangentially |
+| `restitutionBoost` | AE-45 Slingshot | Wall/surface restitution > 1.0 — adds energy on contact. `v_exit = v_in × e` where `e > 1.0` | A rubber-backed AR that amplifies rebound velocity (Bound AR, Rubber Upper) |
+| `radialKickback` | AE-46 Kickback | Detects high-speed radial approach, redirects with `kickStrength_N` at configured angle | A beyblade AR with a wide rubber wedge that deflects attackers tangentially |
+| `bonusLaneSequence` | AE-47 Bonus Lane | Sequential target hit detection; fires `onComplete` reward on full sequence | A beyblade combo that rewards completing a move sequence with a spin/power bonus |
+| `spawnArenaElement` | AE-41 Spawn-on-Destroy | Creates new `ArenaElementConfig` instances in `ArenaState.dynamicElements` at runtime | A beyblade special move that deploys a temporary gravity well or spin zone at its position |
+| `floorTileBreak` | AE-42 Breakable Floor | Applies damage to `breakableFloor.currentHp`; transitions floor state on threshold | A high-mass beyblade special move that cracks floor tiles on landing (`jolt_impact_launch`) |
+| `weatherField` | AE-23 Cat 6 | Sets `ArenaState.weather: { type, expiresAt }` — applies global modifiers for duration | `blizzalog` special move (already uses this concept — wire to this mechanic ID) |
+| `beyWeaponMode` | AE-23 Cat 8 | Sets `BeyStatusEffect: { type: "bey_weapon_mode", params }` on targeted bey | A special move that transforms the bey into a projectile (Burst Squall dive-bomb) |
+| `movementOverrideBey` | AE-23 Cat 9 | Sets `BeyMovementOverride` struct on `Beyblade` schema, read per tick by physics loop | `ghost_walk` special move (phases through obstacles), `gravity_flip` (inverted gravity for duration) |
+| `arenaTiltShift` | AE-14 Arena Tilt | Modifies `ArenaState.tiltAngle` and `tiltDirection` dynamically mid-match | A special move that dramatically tilts the arena for 3 seconds (Dranzer Spiral Tornado) |
+| `flipperDeployable` | AE-44 Flipper | Rotates Matter.js static body from `restAngle_deg` to `firedAngle_deg` at `fireSpeedDegPerMs` | A beyblade AR with a deployable flipper blade (spring-mechanism that rotates on contact) |
+
+---
+
+### Special Move ? Arena Mechanic Equivalents
+
+Many documented special moves already invoke arena-class effects. This table confirms the mapping — these special moves SHOULD reference the shared mechanic IDs from the unified registry:
+
+| Special Move | Case | Arena Mechanic Equivalent | Mechanic ID to Use |
+|-------------|------|--------------------------|-------------------|
+| Blizzalog (Tala / Wolborg 2) | Case 751 | Arena-wide weather field: cold ? `spinDecayMult ×1.80`, input delay +100ms | `weatherField` (type: "blizzard") |
+| Horusood Field (Hoji / Hyper Horusood) | Case 1599 | Vortex field: radial force within r; opponents orbit inward | `gravityPull` + `orbitBoost` (combined) |
+| Wonder Flash Launch (Valt / Valtryek) | Case 2091 | Recoil-redirect orbit: received impulse ? forward orbital boost | `restitutionBoost` + `orbitBoost` (chained) |
+| Brutal Squall dive-bomb (Brutal Luinor Jolt) | Case 753 | Impact-reactive aerial launch: `F_impact > threshold ? v_z = k × F_impact` | `verticalImpulse` + `beyWeaponMode` |
+| Eclipse Whip (Case 1250) | Case 1250 | Dual arc sweep AoE: `aoeType: "arc"`, `arcCount: 2`, `arcSeparation: 180°` | `linearImpulse` (aoe arc variant) |
+| Any BeySpirit vortex field (Wolborg, Horusood) | Various | Creates persistent AE-6 Spin Zone at bey position for move duration | `spawnArenaElement` ? type: spinZone |
+| Dranzer Spiral Tornado concept | Future | Tilts arena for 5s: `arenaTiltShift` to 45°, `autoTilt: true` for duration | `arenaTiltShift` |
+| Fafnir spin-equalization | Cases ~240-260 | Absorbs opponent spin: `freeSpin` ring stores angular impulse | `freeSpin` + `spinBoost` (to self) |
+| Spring-launch cores (EG, First Clutch) | CS4 cases | Spring releases stored energy as angular impulse at clutch trigger | `angularImpulse` (spring param) |
+
+---
+
+### Status Effect Registry (Shared: Turret Cat 4 + Beyblade Gimmicks)
+
+Both turret attack type Category 4 and beyblade gimmick definitions reference the same `StatusEffectRegistry`. The effect is applied as `BeyStatusEffect` on the `Beyblade` schema and read per tick.
+
+```typescript
+interface StatusEffectRegistry {
+  [effectId: string]: StatusEffectDef;
+}
+
+interface StatusEffectDef {
+  id:               string;
+  label:            string;
+  // Per-tick physics modifications while effect is active:
+  spinDecayMult?:   number;      // >1 = faster decay (burned, frozen); <1 = slower (magneted)
+  movementMult?:    number;      // velocity scale per tick (slowed: 0.6; enlarged: 1.4)
+  inputDelayMs?:    number;      // player input latency added (stunned: 300ms)
+  dmgReceivedMult?: number;      // incoming damage multiplier (shrunk: ×1.5 received)
+  dmgDealtMult?:    number;      // outgoing damage multiplier (enlarged: ×1.2 dealt)
+  // Special behaviors:
+  reverseInput?:    boolean;     // confused: flip left/right input
+  noFloorFriction?: boolean;     // ghost: passes through AE elements (no floor contact)
+  noCollision?:     boolean;     // invisible + ghost: no collision body
+  magnetTarget?:    "arena_center" | "nearest_opponent" | "nearest_wall"; // magneted
+  // Duration:
+  durationMs:       number;
+  // Curing:
+  curedBy?:         "collision" | "spin_threshold" | "timer_only";
+}
+```
+
+**Complete status effect table (same IDs used by turret Cat 4 AND beyblade gimmicks):**
+
+| Status ID | AE source | Beyblade gimmick source | Per-tick effect |
+|-----------|-----------|------------------------|-----------------|
+| `stunned` | Electric turret | Electric-discharge gimmick (lightning-type layer) | `inputDelayMs: 300` |
+| `confused` | Psychic turret / illusion | Mirror-AR gimmick (reflects visual) | `reverseInput: true` |
+| `burned` | Fire turret, Lava AE-8 | Fire-type beyblade layer (ignition contact) | `spinDecayMult: 1.4` |
+| `frozen` | Ice turret, Ice AE-8 | Ice-type beyblade (cryo-tip) | `spinDecayMult: 1.6`, `movementMult: 0.5` |
+| `poisoned` | Poison turret | Venom-tip gimmick | `spinDecayMult: 1.15` per tick (stacking) |
+| `leeched` | Leech turret | Absorb-AR gimmick (Fafnir-style leech variant) | `spinDelta: -2/tick to attacker; +2/tick to caster` |
+| `shrunk` | Shrink-ray turret | — | `dmgReceivedMult: 1.5`, contact radius ×0.7 |
+| `enlarged` | Growth-ray turret | — | `dmgDealtMult: 1.2`, contact radius ×1.3 |
+| `slowed` | Mud/water turret, Ice zone | Magnetic brake gimmick | `movementMult: 0.6` |
+| `magneted` | Magnetic turret | `magnacore_attract` / `magnacore_repel` | `magnetTarget: "arena_center"` |
+| `invisible` | Stealth turret | — | `noFloorFriction: false` (still physical; visual only) |
+| `ghost` | Phase turret | `ghost_walk` movement override | `noCollision: true`, `noFloorFriction: true` |
+| `bey_weapon_mode` | Turret Cat 8 | Burst Squall / dive-bomb special moves | Bey becomes projectile: velocity redirected by `BeyMovementOverride` |
+
+---
+
+### BeyMovementOverride — Complete Registry (Shared: AE-23 Cat 9 + Special Moves)
+
+`BeyMovementOverride` is a struct on the `Beyblade` schema. Any mechanic can set it; the physics loop reads it per tick and applies the override before player input.
+
+```typescript
+interface BeyMovementOverride {
+  type:          string;         // override type ID — matches TurretAttackType Cat 9 names
+  durationMs:    number;
+  startedAt:     number;         // server timestamp
+  params:        Record<string, number | boolean | string>;
+}
+```
+
+| Override ID | Set by (Arena) | Set by (Special Move / Gimmick) | Physics per tick |
+|-------------|---------------|--------------------------------|-----------------|
+| `speed_surge` | Cat 9 turret | `stampede_rush` special move (burst phase) | `body.velocity *= surgeMult` (e.g. ×3.0 for 800ms) |
+| `gravity_flip` | Cat 9 turret | Future special move (Lucifer/Lucius gravity) | Invert `effectiveGravity_cms2` sign for duration |
+| `bounce_storm` | Cat 9 turret | — | On each wall contact: random velocity reflection; `restitution = 1.5` for duration |
+| `freeze_step` | Cat 9 turret | `gyro_anchor` special move equivalent | `body.velocity = (0,0)` per tick; spin preserved |
+| `ghost_walk` | Cat 9 turret | — | `noCollision: true`; passes through obstacles/other beys; floor contact maintained |
+| `boomerang_path` | Cat 9 turret | `boomerang` turret attack Cat 1 (when applied to bey) | Arc velocity calculation: curve toward origin each tick |
+| `teleport_dash` | Cat 9 turret | Portal exit velocity (AE-9 portal teleport) | Instant position jump to `params.targetX_cm, targetY_cm`; one-tick only |
+| `distortion` | Cat 9 turret | — | Position offset per tick by `sin(t × freq) × amplitude` (wobble path) |
+| `broken_reality` | Cat 9 turret | — | Random force each tick from PRNG seeded on status start; deterministic across clients |
+| `orbital_lock` | AE-6 Spin Zone (strong) | `spin_recovery` special move (circular orbit path) | `body` moves on circular orbit at `params.orbitRadius_cm, params.orbitSpeed_cms` |
+| `rail_ride` | AE-5 Rail (`railLock` mechanic) | BX X-Dash rail engagement | Position constrained to rail path; only tangential force from `railSpeedBoost` |
+
+---
+
+### ArenaElementConfig ? GimmickDef Bridge
+
+Any arena element can be wrapped as a **GimmickDef** with `source: "arena"`. This allows:
+1. A beyblade's `gimmickIds[]` to reference arena-class effects that deploy at its position
+2. Admin to build beyblade gimmicks that temporarily place spin zones, gravity wells, or floor mines
+3. Special moves that modify the arena state (weather, tilt, spawn elements)
+
+```typescript
+// Example: A beyblade with a "Deploy Spin Zone" gimmick
+// This is a standard GimmickDef — just wraps spawnArenaElement mechanic
+{
+  id: "deploy_spin_zone",
+  label: "Deploy Spin Zone",
+  source: "arena",            // indicates this gimmick creates an arena element
+  triggerType: "special_move", // only fires when special move is activated
+  behaviorRefs: ["spawnArenaElement"],
+  mechanics: [{
+    mechanicId: "spawnArenaElement",
+    params: {
+      elementType: "spinZone",
+      lifetime_ms: 5000,
+      placement: "at_bey_position",
+      spinZoneConfig: {
+        radius_cm: 8,
+        applyTo: "both",
+        spinBoost_rads2: 30,
+        orbitForce_N: 0.5,
+        z_base_cm: 0, z_top_cm: 0,
+        heightProfile: "flat",
+      },
+    },
+  }],
+}
+
+// Example: A beyblade special move that shifts arena tilt
+{
+  id: "dranzer_spiral_tornado",
+  label: "Spiral Tornado",
+  source: "arena",
+  triggerType: "special_move",
+  behaviorRefs: ["arenaTiltShift"],
+  mechanics: [{
+    mechanicId: "arenaTiltShift",
+    params: {
+      targetTiltAngle: 45,
+      autoTilt: true,
+      tiltSpeed: 30,          // degrees/second rotation
+      durationMs: 5000,
+      revertOnEnd: true,      // returns to original tiltAngle after duration
+    },
+  }],
+}
+
+// Example: A beyblade floor-mine special move (Cho-Z stealth approach)
+{
+  id: "stealth_mine_deploy",
+  label: "Deploy Floor Mine",
+  source: "arena",
+  triggerType: "special_move",
+  behaviorRefs: ["spawnArenaElement"],
+  mechanics: [{
+    mechanicId: "spawnArenaElement",
+    params: {
+      elementType: "obstacle",    // reuses AE-4 mine variant
+      lifetime_ms: 8000,
+      placement: "at_bey_position",
+      obstacleConfig: {
+        shape: "circle", dimensions_cm: { radius: 1.5 },
+        z_top_cm: 0.3, heightProfile: "dome",
+        health: 1,
+        onDestroy: {
+          placement: "explode",
+          explodeCount: 4, explodeRadius_cm: 5,
+          elements: [{ type: "bump", config: { popStrength_N: 6, lateralRecoil_N: 4 } }],
+        },
+      },
+    },
+  }],
+}
+```
+
+---
+
+### MechanicDef Seed Entries (new, arena-derived)
+
+These 11 new entries must be added to `mechanic_defs` Firestore collection alongside the existing 31. They complete the registry by covering all arena element behavior classes:
+
+```typescript
+const newMechanicDefs = [
+  { id: "tangentialVelocityKick",  label: "Tangential Velocity Kick",   handler: "tangentialVelocityKick",  params: ["omega_rads","r_contact_cm","holdMs","returnSpeedDegPerMs"] },
+  { id: "restitutionBoost",        label: "Restitution Boost",          handler: "restitutionBoost",        params: ["restitution","kickBonus_N","spinTransfer"] },
+  { id: "radialKickback",          label: "Radial Kickback",            handler: "radialKickback",           params: ["kickStrength_N","kickAngle","chargesPerMatch","cooldownMs"] },
+  { id: "bonusLaneSequence",       label: "Bonus Lane Sequence",        handler: "bonusLaneSequence",        params: ["targets","onComplete","resetMode"] },
+  { id: "spawnArenaElement",       label: "Spawn Arena Element",        handler: "spawnArenaElement",        params: ["elementType","placement","lifetime_ms","config"] },
+  { id: "floorTileBreak",          label: "Floor Tile Break",           handler: "floorTileBreak",           params: ["damagePerTick","regenPerTick","thresholds","states"] },
+  { id: "weatherField",            label: "Weather Field",              handler: "weatherField",             params: ["weatherType","durationMs","globalModifiers"] },
+  { id: "beyWeaponMode",           label: "Bey-as-Weapon Mode",         handler: "beyWeaponMode",            params: ["weaponType","speed_cms","maxRange_cm","onHit"] },
+  { id: "movementOverrideBey",     label: "Movement Override",          handler: "movementOverrideBey",      params: ["overrideType","durationMs","overrideParams"] },
+  { id: "arenaTiltShift",          label: "Arena Tilt Shift",           handler: "arenaTiltShift",           params: ["targetTiltAngle","autoTilt","tiltSpeed","durationMs","revertOnEnd"] },
+  { id: "flipperDeployable",       label: "Flipper Deployable",         handler: "flipperDeployable",        params: ["pivotRadius_cm","firedAngle_deg","fireSpeedDegPerMs","length_cm"] },
+];
+```
+
+**Total mechanic_defs after this addition: 42 entries** (31 existing + 11 arena-derived)
+
+---
+
+### GimmickDef Additions (arena-sourced, admin-seeded)
+
+These gimmick definitions expose the new arena-derived mechanics to the admin beyblade builder. They appear in the "Gimmick" dropdown alongside the existing 27 gimmick_defs:
+
+| Gimmick ID | Mechanic IDs used | Beyblade part use case |
+|-----------|-------------------|----------------------|
+| `deploy_spin_zone` | `spawnArenaElement` | Special move: temporarily creates spin zone at bey position |
+| `deploy_gravity_well` | `spawnArenaElement` | Special move: temporarily creates gravity well at center |
+| `deploy_floor_mine` | `spawnArenaElement` | Special move: places explosive mine at bey position |
+| `arena_tilt_shift` | `arenaTiltShift` | Special move: tilts arena for match-changing effect |
+| `weather_field_blizzard` | `weatherField` | Special move: creates cold field (`blizzalog` archetype) |
+| `weather_field_rain` | `weatherField` | Special move: creates water field (boosts Water-type, hinders Fire) |
+| `movement_ghost_walk` | `movementOverrideBey`, `statusEffect(ghost)` | Special move / gimmick: phase through obstacles |
+| `movement_speed_surge` | `movementOverrideBey` (speed_surge) | Special move burst: ×3 velocity for 800ms |
+| `movement_orbital_lock` | `movementOverrideBey` (orbital_lock) | `spin_recovery` archetype orbital path |
+| `recoil_redirect` | `restitutionBoost`, `orbitBoost` | Rubber-backed AR: received hit ? forward orbital boost (`Wonder Valtryek` archetype) |
+| `flipper_blade_deploy` | `flipperDeployable`, `angularImpulse` | AR with spring flipper blade; rotates on contact |
+| `status_poison_tip` | `statusEffect(poisoned)` | Venom-type tip: applies poisoned to opponent on contact |
+| `status_electric_shock` | `statusEffect(stunned)` | Lightning-type layer contact: stun on hit |
+| `status_cryo_freeze` | `statusEffect(frozen)` | Ice-type layer: frozen + slowed on sustained contact |
+| `bonus_combo_reward` | `bonusLaneSequence` | Combo chain: rewards spin/power on full sequence hit |
+
+**Total gimmick_defs after this addition: 42 entries** (27 existing + 15 arena-derived)
+
+---
+
+### Seed Script Addition
+
+Add to `scripts/seed-mechanics.js` and `scripts/seed-gimmicks.js`:
+
+```javascript
+// In seed-mechanics.js — append to existing 31 entries:
+const arenaSourcedMechanics = [
+  "tangentialVelocityKick", "restitutionBoost", "radialKickback",
+  "bonusLaneSequence", "spawnArenaElement", "floorTileBreak",
+  "weatherField", "beyWeaponMode", "movementOverrideBey",
+  "arenaTiltShift", "flipperDeployable"
+];
+
+// In seed-gimmicks.js — append to existing 27 entries:
+const arenaSourcedGimmicks = [
+  "deploy_spin_zone", "deploy_gravity_well", "deploy_floor_mine",
+  "arena_tilt_shift", "weather_field_blizzard", "weather_field_rain",
+  "movement_ghost_walk", "movement_speed_surge", "movement_orbital_lock",
+  "recoil_redirect", "flipper_blade_deploy", "status_poison_tip",
+  "status_electric_shock", "status_cryo_freeze", "bonus_combo_reward"
+];
+```
+
+Run `npm run seed:mechanics && npm run seed:gimmicks` after any code change that adds new handlers to `MechanicRegistry`.
+
+---
+
+### Summary: What AE-48 Means for Implementation
+
+1. **One registry, two callers**: `ArenaFeatureProcessor` and `GimmickRegistry` both call `MechanicRegistry.get(id).handler(ctx, params)`. No duplication, no special-casing.
+
+2. **Every AE element maps to =1 mechanic ID**: Admin cannot configure an arena element that has no registered handler. The element type ? mechanic ID mapping is enforced at save time.
+
+3. **Beyblade special moves can create arena elements**: `spawnArenaElement` mechanic lets special moves temporarily deploy spin zones, gravity wells, mines, and more — turning beyblades into dynamic arena modifiers.
+
+4. **Turret attacks and beyblade attacks share status effect IDs**: `statusEffect("poisoned")` means the same thing whether it came from a turret shot or a venom-tip contact. The same `StatusEffectDef` entry governs both.
+
+5. **Movement overrides are unified**: A turret `speed_surge` and a `stampede_rush` special move both set `BeyMovementOverride.type = "speed_surge"` with the same params. The physics loop has ONE branch for reading `BeyMovementOverride` — it does not care who set it.
+
+6. **New mechanic_defs count: 42** · **New gimmick_defs count: 42**. These are seeded via the existing seed scripts — no new seed files required.
+
+
+---
+
+## AE-49 — Speed Circuit / Rail Network (X-Line, XD Gear, Speed Path Assembly)
+
+> A **Speed Circuit** is a connected network of AE-5 Rails plus entry/exit elements (trampolines, ramps, flippers, kickbacks) that form a continuous or lap-style speed path. This is the arena realisation of the Beyblade X **Xtreme Dash** mechanic — beyblades with XD gear lock onto rails and gain enormous speed boosts. The same `railLock` mechanic is the shared bridge between the arena element and the beyblade gear gimmick.
+
+### Physics
+
+**Entry**: A bey reaches an AE-5 rail ridge at `z_top_cm ˜ 0.3`. Tip contacts the ridge. `railLock` mechanic fires:
+- Tip type check: rubber tips (µ = 0.5) and XD-gear bits engage with highest efficiency (`?_rail ˜ 0.80–0.90`). Flat plastic tips: `?_rail ˜ 0.40`. Sharp/needle tips: `?_rail ˜ 0.20` (too narrow to grip ridge width).
+- BX XD gear engagement bonus: if bey has `xd_gear: true` in its bit config, `?_rail = ?_xd` (see below). The curved XD gear teeth mesh with the rail ridge, converting lateral rolling into a centripetal lock with `+10–40%` speed boost per segment.
+
+**On rail**: Bey position constrained to rail path. Per tick:
+```
+v_tangential += railSpeedBoost_cms2 × dt
+v_lateral     = 0  (rail constraint)
+F_centripetal = m × v² / R_path   (for curved rails)
+```
+Tip friction contributes: `T_friction = µ_tip × m × g × r_tip`. On a rubber tip (µ=0.70) this is high — but the `railSpeedBoost` more than compensates. Net spin decay is REDUCED on rail (less wobble; more stable upright spin).
+
+**Exit**: Bey leaves rail when `F_lateral > detachForce_N` (from collision, player steer input, or rail end). At rail end, the built-up `v_tangential` is released as a directional velocity burst in the rail's exit tangent direction.
+
+**XD Gear specific (`xd_gear: true` on bit config)**:
+```
+?_xd = 0.85 (curved tooth mesh efficiency)
+speedBoostFactor = 1.0 + (?_xd × railSpeedBoost_cms2 × segmentLength_cm) / (v_entry × 100)
+// At v_entry=200 cm/s on a 30cm segment with railSpeedBoost_cms2=200:
+// speedBoostFactor = 1.0 + (0.85 × 200 × 30) / (200 × 100) = 1.0 + 0.255 = 1.255 (+25.5%)
+v_exit = v_entry × speedBoostFactor  // = 250.9 cm/s from 200 cm/s entry
+```
+
+The cam-lift mechanism (see Case 413 — Xtreme Dash Bit): XD gear engagement includes a 20–50ms vertical lift (`elevation_ms`). During lift: `bey.z_cm` rises to `z_top_cm + 0.2`, tip friction = 0 (airborne). When the bey lands back at the rail it has converted the rotational energy stored in the gear cam into forward velocity — a brief "hop then surge" that is the characteristic XD motion profile.
+
+### Config Schema
+
+```typescript
+interface SpeedCircuit {
+  id:        string;
+  segments:  RailSegment[];     // ordered array — index 0 = circuit start; wraps if closed
+  entryLinks: SpeedCircuitLink[]; // trampolines, flippers, ramps that feed INTO this circuit
+  exitLinks:  SpeedCircuitLink[]; // kickbacks, slingshots, portals that catch circuit-exit beys
+  closed:     boolean;           // true = lap circuit (segment[last] connects back to segment[0])
+  lapReward?: LaneReward;        // fired when a bey completes a full lap (reuses AE-47 LaneReward)
+}
+
+interface RailSegment {
+  railId:            string;       // references an AE-5 RailConfig id
+  sequenceIndex:     number;       // position in the circuit
+  entryDirection:    number;       // approach angle (deg) from previous segment or entry link
+  exitDirection:     number;       // departure angle (deg) to next segment or exit link
+  xdGearBonus:       boolean;      // true = XD cam-lift elevation during this segment
+  elevationMs?:      number;       // XD cam-lift duration (ms); only if xdGearBonus
+  segmentLength_cm:  number;       // length of this segment's rail path
+}
+
+interface SpeedCircuitLink {
+  type:     "trampoline" | "flipper" | "ramp" | "kickback" | "slingshot" | "portal";
+  elementId: string;              // references the AE element config id
+  linkRole:  "entry" | "exit";
+  // For entry links: the element's exit velocity feeds into the circuit at segment[0]
+  // For exit links: circuit-exit velocity is captured and redirected by the element
+  faceAngle_deg: number;          // the entry/exit direction of this link in world coords
+}
+```
+
+### Speed Circuit Arena Examples
+
+**BX X-Dash Stadium (Beyblade X standard)**:
+```
+ +------------------------------+
+ ¦                              ¦
+ ¦   +----------------------+   ¦
+ ¦   ¦  Outer X-Line ring   ¦   ¦  ? AE-5 rail, z=0.3cm, w=0.8cm
+ ¦   ¦  r=18cm, closed loop ¦   ¦     railSpeedBoost_cms2=200
+ ¦   +----------------------+   ¦     closed=true, lapReward: spinBoost ×1.1
+ ¦        ? entry ramp          ¦  ? AE-43 Trampoline (faceAngle? tangent of ring)
+ ¦       ? kickback wall save   ¦  ? AE-46 Kickback (catches ring-exit beys)
+ ¦   CENTER  (arena floor)       ¦
+ ¦                              ¦
+ +------------------------------+
+```
+
+**Lab-style segment circuit (research track)**:
+```
+ Flipper ? Straight Rail A ? Curved Rail B ? Slingshot exit
+   AE-44     AE-5 (20cm)       AE-5 (arc)      AE-45
+    +----------------------------------------------+
+    = one SpeedCircuit with 2 segments, 1 entryLink (flipper), 1 exitLink (slingshot)
+    XD bey enters via flipper tangential kick ? rides A ? rounds curve B ? slingshot amplifies exit
+    ? v_exit ˜ v_flip × ?_xd × 1.3 (slingshot restitution)
+```
+
+### Beyblade Gimmick: XD Gear Engagement
+
+```typescript
+// In bit_parts (BX Bit config) — XD gear flag:
+interface BitPartConfig extends PartConfig {
+  xdGear:          boolean;          // has curved XD gear teeth
+  xdGearTeeth:     number;           // tooth count (determines mesh spacing)
+  xdCamLiftMs:     number;           // elevation duration (0 if no cam-lift)
+  xdEtaEfficiency: number;           // gear mesh efficiency (0.0–1.0; curved=0.85)
+  xdStat:          number;           // printed stat (10–80 based on gear size/design)
+}
+
+// MechanicRegistry: "railLock" handler — unified for both AE-5 and XD gear
+// Key param added for XD:
+interface RailLockParams extends MechanicParams {
+  xdGearEngagement?: boolean;        // true = apply XD speedBoostFactor formula
+  xdEtaEfficiency?:  number;         // from bit config
+  xdCamLiftMs?:      number;         // triggers verticalImpulse sub-mechanic during lift
+  segmentLength_cm:  number;         // for speedBoostFactor calculation
+}
+```
+
+The `railLock` mechanic has ONE handler. The `xdGearEngagement` param triggers the XD-specific speed formula and the `verticalImpulse` sub-call (cam-lift). Without the param, it runs the standard rail lock. No separate handler needed.
+
+### Trampoline ? Rail Chain
+
+When a trampoline's `hardRedirect: true` and the bey's exit velocity vector is aligned with a rail entry within ±15° (configurable: `railAlignmentTolerance_deg`), the `railLock` mechanic fires automatically at the trampoline exit:
+
+```
+Trampoline fires ? tangentialVelocityKick (v_exit, faceAngle)
+                  ? v_exit aligns with rail entryDirection?
+                  YES ? railLock fires immediately (bey starts on rail at t+1 tick)
+                  NO  ? bey flies free until it contacts a rail ridge normally
+```
+
+This is configured via `SpeedCircuitLink.type: "trampoline"` — the circuit knows to watch for trampoline exits and auto-engage rail lock on alignment.
+
+### Ridge vs Rail Distinction
+
+| Feature | AE-5 Rail (X-Line) | Pier / Plank (AE-5 variant) | Arena Bowl Wall Ridge |
+|---------|-------------------|----------------------------|----------------------|
+| `railSpeedBoost_cms2` | 100–400 (high) | 0 (no boost) | 0 |
+| `z_top_cm` | 0.2–0.4 | 0.5–0.8 | 0 (wall surface) |
+| `width_cm` | 0.5–1.2 | 2.5–4.0 | n/a |
+| XD engagement | Yes | No (too wide for gear mesh) | No |
+| `detachForce_N` | 2–5 | 1 (easy to leave) | n/a |
+| `heightProfile` | `"ridge"` | `"ridge"` (wider) | `"flat"` |
+
+The key difference: an X-Line is narrow enough for XD gear mesh (`width_cm = 1.2`). A pier or plank is wider and provides a surface to ride, not a gear-mesh rail. The admin sets `width_cm` — the engine determines XD-eligibility from `width_cm = xdMaxRailWidth_cm` (default 1.2cm, configurable in `settings/game`).
+
+### 2.5D Rendering (Speed Circuit)
+
+- **Rail segments**: same as AE-5 `"ridge"` — thin stripe with specular highlight, `zToScreenOffset(0.3cm)`.
+- **Active XD circuit**: when a bey is on the circuit, the rail glows in the bey's `slotColor` along the full circuit ahead of the bey — "trail glow" effect that shows the planned path.
+- **Cam-lift elevation**: bey `z_cm = 0.3 + 0.2 = 0.5cm` during `xdCamLiftMs`. `zToScreenOffset(0.5)` applied — bey pops up slightly above rail in screen space. Duration: 20–50ms (1–3 frames at 60fps).
+- **Lap completion**: flash the entire circuit in `slotColor` for 200ms, spawn particle burst at bey position.
+- **Speed trail**: while on circuit at high speed, draw motion-blur trail (fading line of past positions in `arenaTiltInner`).
+
+### Engine Requirements
+
+1. **`SpeedCircuit` registered in `ArenaRegistry`** — circuits are part of the arena config, not separate elements. `ArenaConfig.speedCircuits?: SpeedCircuit[]`.
+2. **Bey-on-circuit state**: `Beyblade.currentCircuitId?: string` and `currentSegmentIndex: number` — synced on `ArenaState`. Set when `railLock` fires on an XD circuit segment; cleared on exit.
+3. **Entry link detection**: `ArenaFeatureProcessor` checks trampoline/flipper exit velocity alignment each tick for beys near circuit entry points.
+4. **XD cam-lift sub-mechanic**: `railLock` handler with `xdCamLiftMs > 0` fires `verticalImpulse` sub-call at engagement time, then drops bey back to `z=0.3cm` after `xdCamLiftMs`.
+5. **Lap detection**: when `currentSegmentIndex` wraps from `last` to `0` in a `closed=true` circuit, fire `lapReward`.
+6. **No per-tick Firestore read**: Circuit configs loaded from `ArenaRegistry` at match start — zero Firestore reads during engagement.
+
+---
+
+
+---
+
+## AE-50 — Beyblade Tilt, Arena Slope, and Gyroscopic Physics: Complete Mechanic Registry
+
+> **`beyTiltAngle` is the central shared state variable** for all tilt effects. Every mechanic that changes a bey's orientation — bump, slope, wall ride, upper attack, arena tilt, trampoline, gravity flip — writes to `beyTiltAngle`. Every mechanic that stabilises orientation — gyroscopic correction, C3 symmetry, bearing tip, high spin — writes opposing corrections. This section documents the full system.
+
+---
+
+### beyTiltAngle — Definition and Physics
+
+```typescript
+// On Beyblade schema (Colyseus-synced):
+beyTiltAngle:     number;   // current tilt from vertical, degrees. 0=perfectly upright; 90=lying flat
+tiltDirection:    number;   // azimuth of tilt lean (0–360°); which way the bey is leaning
+spin:             number;   // current spin rate, rad/s
+I_total:          number;   // total moment of inertia, kg·m²
+CoM_z:            number;   // centre of mass height above floor, cm
+```
+
+**Tilt stability ratio** (gyroscopic precession resistance):
+```
+G_stability = (I_total × spin) / (mass_kg × g_cms2 × CoM_z_cm)
+// G > 1.0  ? strongly gyroscopically stable; hard to tilt
+// G 0.4–1.0 ? moderately stable; tilt changes possible under force
+// G < 0.4  ? unstable; nutation wobble begins (matches CLAUDE.md threshold of 40% maxSpin)
+```
+
+**Tilt decay (gyroscopic self-correction)** — per tick when no tilt-changing force is applied:
+```
+d(beyTiltAngle)/dt = -(beyTiltAngle × G_stability × tiltDecayRate)
+// At high spin: fast recovery back toward 0°
+// At low spin: slow recovery; tilt persists; nutation can build
+tiltDecayRate = 0.08  (configurable in settings/game)
+```
+
+**Nutation wobble onset** — `G_stability < 0.4` (spin below 40% of maxSpin):
+```
+wobble_force = PRNG(matchId_seed) × wobbleAmplitude × (1 - stability) × mass_kg × g
+// Applied as random lateral force each tick — seeded PRNG (deterministic)
+// C3+ symmetry: ?_I = 0 ? nutationForcing = 0 (suppressed entirely)
+// C2 symmetry: ?_I > 0 ? nutationForcing active; wobble builds as spin decays
+```
+
+---
+
+### Complete Tilt-Change Mechanic Sources
+
+Every source that modifies `beyTiltAngle`:
+
+| Source | Mechanic ID | ? beyTiltAngle | Condition |
+|--------|-------------|----------------|-----------|
+| **Bump contact** | `tiltChange` | `+popTilt_deg` (typically +8–15°) | Bey centre within bump radius |
+| **Slope (floor zone, slow speed)** | `slopeGravity` + `tiltChange` | Gradual: `+slopeAngle × (1 - v/v_escape) × dt × 0.02` | Bey speed < escape velocity on slope |
+| **Slope (floor zone, fast speed)** | `slopeGravity` only | `0` tilt change (fast enough, no lean) | Bey speed = `v_escape` |
+| **Arena tilt (global)** | `arenaTilt` | `+tiltAngle × sin(approachAngle) × 0.01 × dt` | Slow beys lean into arena tilt axis |
+| **Upper attack contact** | `upperLaunch` | `+slopeAngle_deg × 0.5` to target | Target bey takes `F_upper` upward |
+| **Wall contact (steep wall = 60°)** | `wallRide` | `+wallAngle × lean_factor` | Bey climbing steep bowl wall |
+| **Trampoline (angled)** | `tiltChange` | Set to `faceAngle_tilt_deg` (absolute) | `hardRedirect: true` |
+| **Gravity flip (override)** | `movementOverrideBey` | `+180°` (inverted; bey upside-down) | `BeyMovementOverride.type = "gravity_flip"` |
+| **Whirlpool centrifugal** | `orbitBoost` + `tiltChange` | `+O × r × 0.003 × dt` (leaning outward) | Bey inside whirlpool radius |
+| **High-speed corner (rail curve)** | `railLock` centripetal | `+v²/R × mass × lean_factor × dt` | Bey on curved rail segment |
+| **QTE upper launch** | `upperLaunch` (QTE variant) | `+15–25°` (stronger than ambient) | QTE success on upper-attack hit |
+| **Flipper tangential kick** | `tangentialVelocityKick` | `+tiltKick_deg` (configurable) | Contact with flipper at peak angle |
+
+---
+
+### Tilt-Stabilisation Mechanic Sources
+
+Every source that REDUCES `beyTiltAngle`:
+
+| Source | Mechanic ID | ? beyTiltAngle | Condition |
+|--------|-------------|----------------|-----------|
+| **Gyroscopic correction (natural)** | `tiltDecay` | `-(tiltAngle × G_stability × tiltDecayRate)` | Always on per tick |
+| **C3+ fold symmetry** | `nutationSuppression` | `nutationForcing = 0` (wobble prevented) | Part has `foldSymmetry = 3` |
+| **Bearing tip (free-spin)** | `freeSpin` | Reduces tilt-from-collision (angular impulse not transmitted to body) | Tip has `freeTip: true` |
+| **Flat tip** | passive | Low contact radius ? low torque from floor friction ? less tilt accumulation | Flat tip: `r_tip_cm = 0.2` |
+| **Gyro Anchor special move** | `freeze_step` override | Sets `beyTiltAngle ? 0` and locks it for `durationMs` | Player activates Gyro Anchor |
+| **Spin recovery (orbital)** | `orbital_lock` override | While orbiting at radius, centrifugal effect reduces lean | `movementOverrideBey(orbital_lock)` |
+| **Heavy disc (high I_total)** | passive | Higher `G_stability` for same spin ? slower tilt accumulation | High-mass disc: large `I_kgm2` |
+| **Low CoM_z** | passive | Lower `CoM_z_cm` ? higher `G_stability` ? better tilt resistance | Wall Frame, low-profile disc |
+
+---
+
+### Slope Gravity — Full Physics
+
+**Floor zone slope** (`AE-2` with `slopeAngle_deg > 0`):
+
+```
+g_lat_cms2 = g_cms2 × sin(slopeAngle_rad)
+// g_cms2 = 981 cm/s²
+// slopeAngle = 25°  ?  g_lat = 981 × sin(25°) = 414.5 cm/s² = 4.145 m/s²  (Black Sea Bowl bank)
+// slopeAngle = 15°  ?  g_lat = 254 cm/s²
+// slopeAngle = 35°  ?  g_lat = 563 cm/s²
+
+// Applied per tick as force in slopeDirection:
+F_slope = mass_kg × g_lat_cms2 × 0.01   (convert cm/s² ? m/s²)
+applyForce(bey, F_slope, slopeDirection_angle)
+```
+
+**Escape velocity** (minimum speed to maintain position on slope):
+```
+v_escape_cms = sqrt(g_lat_cms2 × arenaRadius_cm)  [circular orbit approximation]
+// Black Sea Bowl bank (r=70–80cm, g_lat=414 cm/s²):
+// v_escape = sqrt(414 × 75) = sqrt(31050) = 176 cm/s
+// (Earlier worked example used 91 cm/s — that was the minimum to not slide backward;
+//  176 cm/s is the orbital escape for a circular path at mid-bank r=75cm.)
+// Correction: v_escape_cm_per_s at r=75cm = sqrt(g_lat × r) = sqrt(414.5 × 75) ˜ 176 cm/s
+```
+
+**Beyblade tilt on slope** (slow bey leaning into slope):
+```
+if bey.speed < v_escape × 0.5:
+    tiltIncrementPerTick = slopeAngle_deg × (1 - bey.speed / (v_escape × 0.5)) × 0.02
+    bey.beyTiltAngle += tiltIncrementPerTick
+    bey.tiltDirection  = slopeDirection_angle   // leans downhill
+```
+
+**Beyblade gimmick cross-reference — slope mechanic**:
+- `wallRide` gimmick: bey intentionally rides steep slopes (bowl wall at 70–90°). High-attack beys use this to gain approach height. Mechanic: `slopeGravity` reversed (centrifugal from orbital motion exceeds gravity component ? net force pushes bey INTO wall).
+- `Orbital_lock` movement override: bey circles at radius where `F_centrifugal = F_slope` ? stable orbit in any slope zone.
+- DB High/Low mode: shifts `CoM_z` — Low mode (CoM lower) = better slope resistance. High mode (CoM higher) = worse slope resistance but better aerial contact.
+
+---
+
+### Arena Tilt — Complete Mechanic Documentation
+
+**`computeTiltForce`** (`server/shared/physics/ArenaUtils.ts`):
+```typescript
+function computeTiltForce(bey: Beyblade, arena: ArenaState): Force2D {
+  const tiltRad     = arena.tiltAngle * Math.PI / 180;
+  const dirRad      = arena.tiltDirection * Math.PI / 180;
+  const magnitude   = Math.sin(tiltRad) * 0.04 * bey.mass_kg;
+  // At 0°: sin(0)=0 ? no force. At 90°: sin(90)=1 ? max. At 180°: sin(180)=0 ? no force
+  // BUT at 180° gravity reverses ? normal force inverts ? handled separately (Zero-G)
+  return {
+    x: magnitude * Math.cos(dirRad),
+    y: magnitude * Math.sin(dirRad),
+  };
+}
+
+function advanceArenaTilt(arena: ArenaState, dt: number): void {
+  if (!arena.autoTilt) return;
+  arena.tiltDirection = (arena.tiltDirection + arena.tiltSpeed * dt / 1000) % 360;
+}
+```
+
+**Tilt angle physics breakdown by angle:**
+
+| tiltAngle | Description | Physics effect |
+|-----------|-------------|---------------|
+| 0° | Flat (normal) | No lateral force. `F_tilt = 0`. |
+| 30° | Tilted (shallow) | `F_tilt = sin(30°) × 0.04 × m = 0.02m`. Mild drift toward downhill side. |
+| 60° | Steep | `F_tilt = sin(60°) × 0.04m = 0.0346m`. Strong pull; slow beys accumulate tilt. |
+| 90° | Wall-ride | `F_tilt = 0.04m` (maximum). Beys orbit or slide along wall. `beyTiltAngle` approaches 90° for stationary beys. |
+| 120° | Past-vertical | `F_tilt = sin(120°) × 0.04m = 0.0346m` — same as 60° but force direction is now partly "up" (reduced normal force on floor). |
+| 150° | Near-inverted | `F_tilt = sin(150°) × 0.04m = 0.02m` inward. Beys press harder against floor (increased normal force on a physical tilted table). |
+| 180° | Zero-G / Inverted | `F_tilt = 0` (sin(180°)=0) BUT gravity direction reversed. Normal force inverts. **See Zero-G section below.** |
+| 270° | Wall-ride (opposite) | Same as 90° but downhill side is flipped. |
+
+**Arena tilt as beyblade gimmick** — `arenaTiltShift` mechanic (AE-48):
+- A special move that pushes `ArenaState.tiltAngle` toward a target value for `durationMs`
+- Examples: Dranzer Spiral Tornado pushes tiltAngle to 60° + autoTilt=true for 5s ? spinning tilted bowl
+- Driger Steel-Saber could lock tiltDirection toward a specific wall, forcing all beys to drift there
+
+---
+
+### Zero-G / Inverted Gravity (tiltAngle = 180°)
+
+**Physics**: At exactly 180°, the arena is inverted. Gravity now points "up" relative to the arena plane. Floor and ceiling swap. Normal force (N = m×g×cos(tiltAngle)) reverses direction.
+
+```typescript
+// In physics tick — Zero-G detection:
+const isZeroG = Math.abs(arena.tiltAngle - 180) < 5;  // within 5° of inversion
+const isInverted = arena.tiltAngle > 90 && arena.tiltAngle < 270;
+
+if (isInverted) {
+  // Gravity component pushes bey away from floor (toward arena ceiling)
+  // Normal force: N = m × g × |cos(tiltAngle_rad)|
+  // At 180°: cos(180°) = -1 ? N = -m×g (pushes UP from floor)
+  // Practical effect: bey presses against the TOP of the arena bowl (ceiling)
+  // Floor friction still applies but at reduced N (inverted normal)
+  // Beyblades orbit the "ceiling" instead of the floor
+  const normalForce = bey.mass_kg * G_CMS2 * Math.abs(Math.cos(tiltAngle_rad));
+  spinDecayRate     = (tipMu * normalForce * tipRadius_cm) / I_total;
+  // At 180°: normalForce = m×g (same magnitude, just inverted) ? same spin decay rate
+}
+```
+
+**Zero-G arena behaviour**:
+- Ring-out condition inverts: beys that "fall UP" (hit ceiling with enough force) are ring-out
+- `eliminationRadius_cm` still applies but check is against ceiling contact, not floor exit
+- Floor zones have no effect (beys not touching floor)
+- Turrets on floor aim upward; turrets on ceiling aim downward (normal arena orientation is now inverted)
+- Bumps on ceiling pop beys downward (toward floor) — unusual defensive mechanic
+- Special moves that normally launch upward (`upperLaunch`) now push bey toward floor (still effective)
+
+**Zero-G as beyblade archetype**: Lucifer/Lucius bey types specifically designed for inverted-gravity arenas. Their `CoM_z` is optimised for ceiling contact (higher CoM = better ceiling contact = lower in inverted world). `gravity_flip` movement override (AE-48 Cat 9) mimics Zero-G for one bey without changing the whole arena.
+
+---
+
+### Wall Ride — Steep Bowl Wall Mechanic
+
+**Condition**: Bey reaches arena wall (r = `arenaRadius_cm`). Bowl wall angle `wallAngle_deg` from `bowl_profile_defs`:
+- `wallAngle < 45°`: Gentle slope. Bey slides back down. `beyTiltAngle` increases slightly then corrects as bey returns to floor.
+- `wallAngle 45–75°`: Moderate wall. Bey can briefly ride if orbital speed is high enough. Tilt increases toward `wallAngle`. Returns to floor within 1–2 seconds.
+- `wallAngle = 75°` (wall-ride): Bey can orbit the wall surface. `beyTiltAngle ˜ wallAngle`. Centrifugal force balances gravity component along the wall: `F_centrifugal = m × v² / r_wall`. Bey remains on wall as long as `F_centrifugal = m × g × sin(wallAngle)`.
+
+```typescript
+// wallRide mechanic — fires when bey contacts wall and wallAngle = wallRideThreshold_deg
+function wallRide(bey: Beyblade, wall: ArenaWall, v_orbital: number): void {
+  const wallRad  = wall.wallAngle_deg * Math.PI / 180;
+  const F_c      = bey.mass_kg * v_orbital * v_orbital / wall.radius_cm * 100;  // cm/s² ? m/s²
+  const F_g_wall = bey.mass_kg * G * Math.sin(wallRad);
+  
+  if (F_c >= F_g_wall) {
+    // Bey stays on wall
+    bey.beyTiltAngle = wall.wallAngle_deg;   // tilt matches wall angle
+    // Contact physics: µ_k = wall.wallMaterialMu; normal force = m × (F_c - F_g_wall) / g_normalised
+    // Spin decay from wall contact (different formula: perpendicular contact, not floor)
+    const wallSpinDecay = (wall.wallMu * F_c) / bey.I_total;
+    bey.spin -= wallSpinDecay * dt;
+  } else {
+    // Not enough speed; bey slides back down
+    bey.beyTiltAngle = Math.min(bey.beyTiltAngle, wall.wallAngle_deg * 0.7);
+    applyForce(bey, F_g_wall - F_c, "inward");
+  }
+}
+```
+
+**Wall-ride as beyblade gimmick source**: Attack-type beys with high `v_orbital` deliberately enter wall-ride to gain momentum then descend onto opponent. Mechanic used: `wallRide` + `linearImpulse` on descent. The descent velocity `v_descent = sqrt(2 × g × h_wall_cm)` — a bey dropping from the full wall height of 8cm gains `v_descent = sqrt(2 × 981 × 8) ˜ 125 cm/s` added to its orbital velocity.
+
+---
+
+### Nutation Forcing — C2 vs C3 Symmetry
+
+**?_I** (asymmetric inertia component) drives nutation:
+```
+For a part with foldSymmetry = 2 (C2):
+  ?_I = I_xx - I_yy  (difference in principal moments in the equatorial plane)
+  If ?_I > 0: nutationFreq = ?_I × ?_spin / I_total  (wobble rate proportional to spin)
+  nutationForce per tick = ?_I × ?_spin × random_direction (PRNG-seeded)
+
+For foldSymmetry = 3 (C3+):
+  I_xx = I_yy by symmetry ? ?_I = 0 ? nutationForcing = 0  (perfectly stable plane rotation)
+```
+
+| foldSymmetry | ?_I | Nutation | Example parts |
+|-------------|-----|---------|---------------|
+| 2 (C2) | > 0 | Active; PRNG wobble at low spin | Most 2-blade layers, 2-prong discs |
+| 3 (C3) | = 0 | Suppressed entirely | Unicorno II 4D CW, 3-wing tracks |
+| 4 (C4) | = 0 | Suppressed | 4-blade layers (Valkyrie, Pegasus) |
+| 6+ (C6+) | = 0 | Suppressed | 6-prong discs |
+| Irregular | Computed | Partial suppression | Custom fusion stacks |
+
+**Engine**: `GimmickRegistry` stores `foldSymmetry` per part. Assembly builder computes effective assembly fold symmetry as `gcd(all part fold symmetries)`. If `effectiveFoldSymmetry = 3` ? `nutationForcing = 0`. If any part is C2 ? wobble applies.
+
+**Beyblade builder implication**: Mixing a C3 CW with a C2 Fusion Wheel gives effective `gcd(3,2) = 1` ? irregular ? wobble applies. Matching C3 CW + C3 AR (rare) ? full nutation suppression at all spin values.
+
+---
+
+### Complete Mechanic ID table — Tilt/Slope/Gyro additions to AE-48
+
+Append these rows to the AE-48 mechanic mapping table:
+
+| Mechanic ID | AE elements | Beyblade gimmick types | Description |
+|-------------|-------------|----------------------|-------------|
+| `slopeGravity` | AE-2 Floor Zone with `slopeAngle_deg > 0`, AE-14 Arena Tilt | `wallRide` gimmick, orbital-approach attack type | `F = m × g × sin(slopeAngle)` lateral per tick in `slopeDirection` |
+| `tiltDecay` | AE-14 (auto-applied on all beys per tick) | C3+ symmetry parts (`nutationSuppression: true`), Bearing driver, Gyro Anchor | Gyroscopic self-correction toward `beyTiltAngle = 0` |
+| `nutationForcing` | AE-14 (fires when `G < 0.4`) | C2 parts (?_I > 0), low-stamina beys at end of match | PRNG wobble force when tilt angle accumulates at low spin |
+| `nutationSuppression` | — | C3+ fold symmetry parts (`foldSymmetry = 3`) | Sets `nutationForcing = 0` for this assembly |
+| `wallRide` | AE-1 Arena Wall with `wallAngle = 75°`, steep bowl profiles | Attack-type wall-orbit approach gimmick | Bey rides steep wall; `beyTiltAngle = wallAngle`; descent gives `v_descent` bonus |
+| `gyroscopicStability` | — (computed, not explicitly triggered) | Heavy disc + high spin combinations, `Gyro Anchor` special move | `G = I × ? / (m × g × CoM_z)` — governs tilt resistance of all beys |
+| `zeroGravity` | AE-14 at `tiltAngle = 180°`, `gravity_flip` movement override | Lucifer/Lucius archetype, `gravity_flip` movement override | Inverts normal force; beys press against ceiling; ring-out condition flips |
+| `arenaTilt` | AE-14 Arena Tilt System (global, per tick) | `arenaTiltShift` special move (AE-48) | `F_lateral = sin(tiltAngle) × 0.04 × m` in `tiltDirection` |
+| `centrifugalLean` | AE-5 Rail curved segment, whirlpool AE-7 | High-speed orbital attack (Valkyrie flash strike) | `beyTiltAngle += v² / R × lean_factor × dt` on curves |
+
+---
+
+### Tilt Summary: What the Engine Must Maintain Per Tick
+
+```typescript
+// Per-tick tilt system — runs AFTER physics, BEFORE broadcast:
+
+function applyTiltSystem(bey: Beyblade, arena: ArenaState, dt: number): void {
+  // 1. Gyroscopic stability ratio
+  const G = (bey.I_total * bey.spin) / (bey.mass_kg * G_CMS2 * bey.CoM_z);
+
+  // 2. Tilt decay (self-correction toward upright)
+  if (bey.beyTiltAngle > 0.1) {
+    bey.beyTiltAngle -= bey.beyTiltAngle * G * TILT_DECAY_RATE * dt;
+  }
+
+  // 3. Arena tilt contribution (slow lean for stationary/slow beys)
+  if (bey.speed_cms < 50) {
+    const F_tilt = computeTiltForce(bey, arena);
+    bey.beyTiltAngle += Math.abs(F_tilt.magnitude) * (1 - bey.speed_cms / 50) * 0.005 * dt;
+  }
+
+  // 4. Slope tilt (if in sloped floor zone)
+  const zone = getZoneAtBeyPosition(bey, arena);
+  if (zone?.slopeAngle_deg > 0 && bey.speed_cms < getZoneEscapeVelocity(zone)) {
+    bey.beyTiltAngle += zone.slopeAngle_deg * (1 - bey.speed_cms / getZoneEscapeVelocity(zone)) * 0.02 * dt;
+    bey.tiltDirection = zone.slopeDirection;
+  }
+
+  // 5. Nutation forcing (if G < threshold and C2 part in assembly)
+  if (G < 0.4 && bey.assembly.effectiveFoldSymmetry < 3) {
+    const wobble = (PRNG() - 0.5) * WOBBLE_AMPLITUDE * (1 - G / 0.4);
+    applyForce(bey, wobble, PRNG() * 360);
+  }
+
+  // 6. Zero-G inversion (if arena near 180°)
+  if (Math.abs(arena.tiltAngle - 180) < 5) {
+    applyZeroGravity(bey, dt);
+  }
+
+  // 7. Clamp
+  bey.beyTiltAngle = Math.max(0, Math.min(90, bey.beyTiltAngle));
+}
+```
+
+All tilt sources write to `beyTiltAngle` (a single float) and obey the same clamp (0–90°). The renderer reads `beyTiltAngle` once per frame and adjusts the bey sprite foreshortening accordingly — a tilted bey appears as a narrower ellipse in 2.5D.
+
+---
+
+### 2.5D Rendering: Tilt Angle ? Sprite Foreshortening
+
+```typescript
+// Tilted bey sprite rendering (inside arenaTiltInner):
+// beyTiltAngle = 0°  ? full circle (radius = bey.radius_cm × PX_PER_CM)
+// beyTiltAngle = 45° ? ellipse (scaleY = cos(45°) = 0.707 of normal)
+// beyTiltAngle = 90° ? flat line (scaleY = cos(90°) = 0)
+
+function renderBeyWithTilt(bey: Beyblade, container: PIXI.Container): void {
+  const tiltRad = bey.beyTiltAngle * Math.PI / 180;
+  container.scale.y = Math.cos(tiltRad);       // foreshortens bey vertically when tilted
+  container.scale.x = 1.0;                     // x-axis unchanged by tilt
+  // Tilt direction: rotates the foreshortening axis
+  container.rotation = bey.tiltDirection * Math.PI / 180;
+  // After setting scale: re-apply rotation to orient the flattening correctly
+  // (a bey leaning north-south flattens in the north-south screen axis, not east-west)
+}
+```
+
+**Nutation wobble visual** — when `G < 0.4`: add small random rotation offset each frame drawn from PRNG with same seed as physics: `container.rotation += wobbleVisualAmplitude × (PRNG() - 0.5)`. Visual wobble matches physics wobble — no separate animation.
+
+**Zero-G visual** — bey appears upside-down when `beyTiltAngle ˜ 180°` (full inversion): sprite flips Y (`container.scale.y = -1`). The inverted bey's z-stack renders from ceiling level: `zToScreenOffset(arenaHeight_cm - bey.z_cm)`.
+
+---
+
+
+## AE-51 --- Admin/Player Interaction Model, Live Simulation, and Material Substitution Propagation
+
+> **Purpose**: Describes how admins author and test part/gimmick configs; how players interact with gimmicks during battle; and how swapping a material (mu_k / e / rho) propagates through every derived physics value. This is the authoritative reference for Phase 2 admin UI simulation panels and the MaterialRegistry auto-propagation pipeline.
+
+---
+
+### 1. Admin Interaction Model
+
+The admin workflow has three stages: **author -> simulate -> publish**. No code change is required to add a new part, gimmick, or mechanic combination --- everything flows through Firestore documents and is resolved at match start by the registry loader.
+
+#### 1a. Authoring Flow
+
+Every part type CRUD page follows the same save pipeline:
+
+`
+/admin/parts/<type>/new
+  Fill PartConfig: name, mass_g, generation, system, partType
+  Fill geometry: r_outer_cm, r_inner_cm, height_cm, foldSymmetry
+  Add WingDef(s) via Wing Designer panel (count, shape, z range, movementType, material, attackType)
+  Select gimmickIds[] -> links to gimmick_defs collection
+
+  [Save] -> Firestore writes:
+    PartConfig doc                     (parts/{partType}/{id})
+    derived ContactPoint[] embedded    (from deriveContactPoints(wingDef) per WingDef)
+    derived MechanicInstance[] embedded (from deriveWingMechanic(wingDef) per WingDef)
+    computed I_kgm2                    (from mass_g + radii via parallel-axis theorem)
+    computed spinDecay_params          (from tip mu_k + I_total at save time -- preview only)
+`
+
+**Gimmick authoring** (/admin/gimmick-defs/new):
+
+Admin fills: id, label, triggerEvent (on_collision / on_spin_threshold / on_deploy / per_tick / on_launch), mechanics[] (ordered MechanicInstance[] -- each is { mechanicId, params }), compatiblePartTypes[], optional visualEffect (particlePresetId / animationPresetId).
+
+The admin does NOT write mechanic handlers --- those are hardcoded in MechanicRegistry.ts. The admin only assembles gimmicks as ordered sequences of mechanic references with params.
+
+**Special move authoring** (/admin/special-moves/new):
+
+Admin fills: id, name, requiredPartType, optional requiredGimmickId, phases[] (ordered PhaseConfig[] -- each is duration_ms + mechanics[] in the same MechanicInstance format), qteDef (QTEConfig: timing window, input key, bonus on success), compatGate (JS expression evaluated against bey.layer config at runtime), beySpirit boolean (if true, BeySpirit override bypasses all physical limits).
+
+Special moves are authored the same way gimmicks are (sequences of mechanic instances), but they also have phases, QTEs, and compat gates. The BeySpirit flag marks that mechanic params may exceed real physical limits (anime override).
+
+---
+
+#### 1b. Live Simulation Panel
+
+Every part, gimmick, and special move editor has a **Simulate** button that opens a full-screen overlay:
+
+`
++--------------------------------------------------------------------------+
+|  SIMULATION PREVIEW                                          [X] Close   |
+|--------------------------------------------------------------------------|
+|  LEFT: 2.5D PixiJS canvas (tiltAngle=60, same renderer as production)   |
+|  CENTER: Config Panel (live-editable mu_k, e, mass_g, r_outer_cm, etc.) |
+|  RIGHT: Physics Timeline (mechanic fire events per tick)                 |
+|--------------------------------------------------------------------------|
+|  [Run] [Pause] [Reset]   [Arena: Classic Bowl]   Speed: 1x              |
+|  OPPONENT: [None | Static Dummy | AI Medium | AI Hard]                   |
++--------------------------------------------------------------------------+
+`
+
+The simulation runs a headless physics tick loop (same tick(dt) as production) at configurable speed (1x / 5x / 50x). The part under edit is placed on a configurable default beyblade assembly. No Colyseus room --- runs entirely client-side in a Web Worker using shared physics utils. State is rendered through the same PixiRenderer.ts tilt chain as production. Uses the same MechanicRegistry, GimmickRegistry, and MaterialRegistry from preloaded configCache.
+
+**Config Panel** (live-editable while simulation runs): Any field change immediately re-derives the affected physics values without saving to Firestore. A diff panel shows "was X -> now Y" for each derived value that changed.
+
+**Physics Timeline** (right panel): Scrolling list of mechanic fire events per simulated tick. Color-coded: green = fired, yellow = condition checked but not met, red = params error.
+
+**Export**: Admin can download the current PartConfig + GimmickDef as JSON and re-import into the real form. This is the "test before seed" workflow.
+
+---
+
+#### 1c. What-If Panel (Material Substitution Preview)
+
+Inside the Simulate panel, a Material Substitution sub-panel lets admin swap any MaterialId on any WingDef and see the propagated changes instantly (without saving):
+
+`
+Material Substitution
+-------------------------------------------------------------------
+Contact Material: [ABS]  ->  [Zinc Alloy]
+
+Derived change preview:
+  spinDecayRate:        8.32 rad/s2  ->  8.32 rad/s2   (no change -- tip controls decay)
+  damageMultiplier:     1.0x  ->  1.5x   (metal dmgMult from MaterialRegistry)
+  contactRestitution:   0.67  ->  0.80   (e from MaterialRegistry)
+  collision impulse J:  1.84 Ns  ->  2.21 Ns  (+20.1%)
+  contactDeflect eff:   38%  ->  29%    (lower deflect due to higher e)
+  burstResist:          unchanged       (spring alpha, not contact material)
+  upperLaunch F_upper:  4.3 N  ->  5.2 N  (scales with J via e)
+
+[Apply to simulation]   [Cancel]
+`
+
+"Apply to simulation" runs physics forward with the new material so the admin can watch the difference in the canvas. Nothing is saved to Firestore until admin explicitly saves the part.
+
+---
+
+### 2. Player Interaction Chain
+
+The complete path from a key press to a physics effect, for every input type.
+
+#### 2a. Normal Movement Input
+
+`
+keydown event (window.addEventListener -- global, no canvas click required)
+  -> useGameInput.ts: OR bitmask bit into uint16
+  -> Colyseus client.send("input", uint16mask) every frame or on change
+  -> Server: BattleRoom.onMessage("input", (client, mask))
+  -> decodeBitmask(mask) -> { moveLeft, moveRight, moveUp, moveDown, attack, defense, dodge, jump, chargeHeld, specialTap }
+  -> InputHandler.applyInput(bey, decoded, dt)
+  -> Matter.js Body.applyForce(bey.body, direction * inputForce) -- additive only, never sets velocity directly
+  -> physics tick resolves -> state broadcast at 60 Hz
+  -> Colyseus state sync -> PixiRenderer reads new bey.x, bey.y, bey.spin, bey.beyTiltAngle
+  -> PixiRenderer.renderBey(bey) -> canvas update
+`
+
+#### 2b. Combo Input Chain
+
+`
+[Player: three-key sequence within windowMs]
+  -> useGameInput.ts records key history as ring buffer: [{ key, timestamp }]
+  -> Every input: comboSystem.detectCombo(inputHistory, bey.comboIds)
+    checks: sequence match, windowMs, power >= costThreshold, per-combo cooldown
+    if matched: return comboId
+  -> client.send("combo", { comboId, timestamp })
+  -> BattleRoom.onMessage("combo"):
+    re-validates: bey.comboIds includes comboId, power >= cost, cooldown cleared
+    comboConfig = ComboRegistry.get(comboId)  [synchronous -- preloaded registry]
+    MoveExecutor.executeMoveWithConfig(comboConfig.moveConfig, ctx)
+    MechanicRegistry.get(mechanicId).handler(ctx, params)
+    physics writes: addForce, spinDelta, statusEffect, etc.
+  -> deduct power, set cooldown
+`
+
+#### 2c. Gimmick Trigger Chain (physics-driven, no player input required)
+
+`
+[Physics tick -- server-side]
+  GimmickProcessor.processGimmicks(bey, ctx, dt):
+    for each gimmickId in bey.activeGimmickIds:
+      gimmickDef = GimmickRegistry.get(gimmickId)  [synchronous -- preloaded registry]
+      evaluate triggerEvent:
+        "per_tick"          -> always fire
+        "on_collision"      -> fire only if ctx.collisionOccurredThisTick
+        "on_spin_threshold" -> fire only if bey.spin >= gimmickDef.spinThreshold_rads
+        "on_deploy"         -> fire only when bistable flag transitions false->true
+        "on_launch"         -> fire once at match start
+      if condition met:
+        for each mechanic in gimmickDef.mechanics[]:
+          handler = MechanicRegistry.get(mechanic.mechanicId)
+          materialMods = resolveMaterialModifiers(mechanic.params.materialId)
+          elemMult = resolveElementMultiplier(bey.elements, ctx.opponentElements)
+          result = handler.onActivate(ctx, { ...mechanic.params, ...materialMods }, elemMult)
+          applyResult(bey, result)
+`
+
+#### 2d. Special Move Chain
+
+`
+[Player: specialTap input while power >= specialMove.powerCost]
+  client.send("special-move-attempt", {})
+  BattleRoom: validates bey.power, cooldown, compatGate
+    compatGate eval: e.g. "layer.bladeCount === 2 && layer.bladeRadius_cm >= 3.5"
+    if beySpirit: bypass compatGate check
+  SpecialMoveProcessor.beginMove(bey, specialMoveDef, ctx):
+    bey.activeSpecialMove = { defId, phase: 0, phaseStartedAt: now }
+  Per tick during move:
+    phase = specialMoveDef.phases[bey.activeSpecialMove.phase]
+    if elapsed >= phase.duration_ms: advance to next phase or end
+    for each mechanic in phase.mechanics[]:
+      same chain as gimmick: MechanicRegistry handler -> applyResult
+  QTE: if player sends "qte-tap" within qteDef timing window: apply bonus params
+  Move end: clear bey.activeSpecialMove, set cooldown, deduct power
+`
+
+#### 2e. Arena Element -> Beyblade Effect Chain
+
+`
+[Per tick -- ArenaFeatureProcessor.applyArenaFeaturesPerTick(state, dt)]
+  for each arena element in state.arenaElements:
+    checkBeyInZone(bey, element)  [radial distance or polygon inside check, in cm]
+    if inside AND element.active (switch check):
+      feature = ArenaFeatureRegistry.get(element.featureId)  [synchronous -- preloaded registry]
+      for each mechanic in feature.mechanics[]:
+        MechanicRegistry.get(mechanicId).handler(ctx, params)
+        same handler format as beyblade gimmicks
+        identical physics write path
+`
+
+This is why AE-48 established the unified registry --- arena features and bey gimmicks use the exact same mechanic IDs, handler signatures, and produce identical physics results. The only difference is the caller.
+
+---
+
+### 3. Material Substitution Propagation
+
+#### 3a. MaterialRegistry Entry Schema
+
+`	ypescript
+interface MaterialDef {
+  id:        string;   // "abs", "zinc_alloy", "rubber", "hard_abs", "iron_powder_abs"
+  label:     string;
+  mu_k:      number;   // kinetic friction coefficient
+  mu_s:      number;   // static friction coefficient
+  e:         number;   // coefficient of restitution (COR) 0-1
+  rho_gcm3:  number;   // density in g/cm3
+  dmgMult:   number;   // contact damage multiplier (1.0 = ABS baseline; zinc = 1.5; rubber = 0.6)
+  wearRate?: number;   // mu_k degradation rate per contact (0 = no wear)
+  wearPresetId?: string; // links to wear_preset_defs for mu_k decay curve
+}
+`
+
+Reference values:
+
+| Material | mu_k | e | dmgMult | Notes |
+|---|---|---|---|---|
+| ABS | 0.17 | 0.67 | 1.0 | Baseline |
+| Hard ABS | 0.17 | 0.67 | 1.0 | Same coefficients -- harder grade |
+| Iron-powder ABS | 0.17 | 0.67 | 1.1 | Denser; I_kgm2 slightly higher for same geometry |
+| Zinc alloy | 0.12 | 0.80 | 1.5 | More elastic + metal damage bonus |
+| Rubber (attack) | 0.50-0.70 | 0.25 | 0.6 | High grip, low rebound, less damage |
+| Steel bearing | 0.02 | 0.90 | 0.3 | Near-frictionless pivot; minimal damage |
+
+#### 3b. Propagation Map
+
+| Derived Value | Formula | MaterialDef field | Which part |
+|---|---|---|---|
+| spinDecayRate | (mu_k x mass_g x g x r_tip) / I_total | mu_k | **Tip only** |
+| collisionImpulse J | m_eff x Dv x (1 + e) | e | Striking part |
+| damageDealt | J x contactPoint.dmgMult | dmgMult | Striking part |
+| deflectDmgReduction | 1 - (e x pivotEfficiency) | e | Struck surface |
+| railSpeedBoost effective | railBoost_cms2 x mu_k | mu_k | **Tip only** |
+| restitutionBoost param | direct e reference | e | Arena wall material |
+| freeSpin decoupling | ~1/(1 + e) | e | Free-spin ring material |
+| upperLaunch F_upper | F_N x sin(a); F_N from J | e (via J) | Striking part |
+| wearDegradation | mu_k(t) = mu_k_0 x (1 - wearRate x contacts) | wearRate | Any worn surface |
+| burstResist | Spring alpha (WingDef bistable) | NOT material | Geometry/spring only |
+| nutationForcing DI | I_xx - I_yy from geometry | NOT material | Geometry only |
+| elementDmgMult | Element interaction matrix | NOT material | Element type only |
+
+#### 3c. Auto-Propagation on Material Change
+
+`	ypescript
+function onMaterialChanged(partConfig: PartConfig, newMaterialId: string, wingDefId?: string): DerivedPartConfig {
+  const newMat = MaterialRegistry.get(newMaterialId);
+
+  // 1. Update ContactPoint dmgMult for affected wing's contact points
+  const updatedCPs = partConfig.contactPoints.map(cp => {
+    if (!wingDefId || cp.wingDefId === wingDefId) {
+      return { ...cp, dmgMult: newMat.dmgMult, material: newMaterialId };
+    }
+    return cp;
+  });
+
+  // 2. Re-derive mechanic params that reference material
+  const updatedMechanics = partConfig.mechanics.map(m => {
+    if (m.mechanicId === "contactDeflect" && (!wingDefId || m.wingDefId === wingDefId)) {
+      const newReduction = 1 - (newMat.e * 0.6);  // 0.6 = pivot efficiency constant
+      return { ...m, params: { ...m.params, deflectDmgReduction: newReduction } };
+    }
+    if (m.mechanicId === "restitutionBoost" && (!wingDefId || m.wingDefId === wingDefId)) {
+      return { ...m, params: { ...m.params, restitution: newMat.e } };
+    }
+    if (m.mechanicId === "freeSpin" && (!wingDefId || m.wingDefId === wingDefId)) {
+      const newDecoupling = Math.min(0.95, 1 - newMat.e * 0.3);  // softer = better decoupling
+      return { ...m, params: { ...m.params, spinDecouplingFactor: newDecoupling } };
+    }
+    return m;
+  });
+
+  // 3. If tip part -- store mu_k as tipMaterialFactor for assembly resolveStack
+  let spinDecayParams = partConfig.spinDecayParams;
+  if (partConfig.partType === "tip") {
+    spinDecayParams = { ...spinDecayParams, tipMaterialFactor: newMat.mu_k };
+  }
+
+  return { ...partConfig, contactPoints: updatedCPs, mechanics: updatedMechanics, spinDecayParams };
+}
+`
+
+**What does NOT propagate at single-part level** (requires full assembly re-resolve at match start via resolveStack()):
+- spinDecayRate absolute value -- needs I_total from assembly
+- I_kgm2 from density swap -- if rho_gcm3 changes mass_g, deriveInertia() re-runs, then assembly re-sums
+
+**Key rule**: At the part level, only dmgMult, e, and mu_k propagate immediately. I-based values require the full assembly context and are always re-derived fresh by resolveStack() at match start. This is why the admin simulation panel always resolves the full assembly when running physics -- it never uses partial part-level derivations.
+
+#### 3d. Which Gimmick Params Change When Material Changes
+
+| Gimmick | Mechanic | Param affected |
+|---|---|---|
+| compound_beak_slope | smashImpact | dmgMult = MaterialRegistry.get(materialId).dmgMult |
+| upper_omnidirectional | upperLaunch | Indirect via J; F_upper = J x sin(a); no direct param to update |
+| eternal_defence_free_spin | freeSpin | spinDecouplingFactor scales with 1/(1+e) |
+| individual_wing_deflect | contactDeflect | deflectDmgReduction = 1 - (e x pivotEfficiency) |
+| motor_spin_boost | staminaRecovery | None -- motor params are mechanical, not material-dependent |
+| choz_awakening | burstSuppress | None -- burst stopper is spring/geometry |
+| c3_inertia_isotropy | naturalMotion | None -- foldSymmetry and DI are geometry-only |
+
+---
+
+### 4. Simulation Scenarios
+
+The simulation panel covers 7 test scenarios (selectable from a dropdown):
+
+| Scenario | Tests | Key metric |
+|---|---|---|
+| Solo Spin Decay | Bey spins down from w0=600 rad/s; no opponents | t_stable in seconds |
+| vs Static Dummy | Bey contacts stationary dummy at r=8cm repeatedly | J_per_hit, dmgMult_effective |
+| Gimmick Fire Rate | Counts mechanic fires per second at w=400 rad/s | mechanics_per_sec per handler |
+| Tilt Recovery | Bey starts at beyTiltAngle=45; measures recovery to < 5 deg | tilt_recovery_ticks |
+| Rail Ride Speed | Bey enters 30cm straight rail; measures exit vs entry speed | speedBoostFactor |
+| Material Swap A/B | Side-by-side run of two material configs for same scenario | Overlay comparison chart |
+| Arena Element Stress | Bey enters spin zone, gravity well, turret zone in sequence | statusEffects[] triggered + duration |
+
+Each scenario runs in headless mode (Web Worker) at 50x speed. Results shown as line charts (spin decay) or bar charts (gimmick fire rate, damage).
+
+---
+
+### 5. Key Rules Summary
+
+1. **Material affects contact physics; gimmick logic is geometry-driven.** Swapping ABS->metal changes how hard a hit lands (e, dmgMult) but does not change whether upper-launch fires (that depends on slopeAngle_deg and contact arc in WingDef geometry).
+
+2. **Tip material is the only material that affects spin decay rate.** No other part's material affects spinDecayRate. The tip's mu_k is the sole floor-friction input to dw/dt = -(mu_k x m x g x r_tip) / I_total.
+
+3. **Gimmick params are written at save time** based on the material at that moment. If admin changes a part's material after a gimmick is bound, re-save the part to trigger re-derivation. The Simulate panel's Material Substitution preview always reflects the live change without saving.
+
+4. **railLock speed boost scales with tip mu_k.** Changing a layer or disc material does not affect rail boost.
+
+5. **freeSpin decoupling scales inversely with e (COR).** Rubber (e=0.25) on the free-spin ring absorbs angular impulse better than ABS (e=0.67). Admin tunes this via the ring's material on the WingDef.
+
+6. **burstSuppress spring alpha is NOT material-dependent** -- it is a WingDef geometry param (bistable lock spring force). Material of layer blades does not change burst resistance.
+
+7. **BeySpirit special moves override material-derived damage caps** -- the BeySpirit multiplier applies on top of all material and geometry calculations, uncapped.
+
+8. **Arena mechanic handlers and beyblade gimmick handlers are the same functions.** An admin who creates a new mechanic_def for an arena element can immediately reference it in a bey gimmick -- no code duplication, no special-casing by caller.
+
+---

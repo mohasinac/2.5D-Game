@@ -916,8 +916,8 @@ Source: `13 case study.md`
 
 **Category**: Gimmick — impact decoupling  
 **Parts**: ED145 track + ES tip (Poison Virgo, Metal Masters)  
-**Key Physics**: ED145 ring (m = 1.2 g, r = 1.8 cm) rotates freely on bearing seat → 5.0% of incoming rotational impulse absorbed by ring (impulse partition: I_body / (I_body + m_ring × r_ring²) = 0.9496). ES free-spinning sleeve μ_sleeve = 0.05–0.08 (vs μ_ABS = 0.17) → tilt resistance 2.83× better. Combined: difficult to topple and destabilize. counterPool accumulates per hit.  
-**Engine Note**: impulse partition formula; tilt resistance multiplier from sleeve decoupling; counter-charge pool model.
+**Key Physics**: ED145 geometry — cylinder height = 14.5 mm (1.45 cm); 3 wings **fused together into a single unified ring unit** that is a separate physical part from the cylinder body. The 3-wing ring sits on a bearing seat on the cylinder and spins freely as **one piece** — all 3 wings move together; there is no per-wing independent movement. When struck, the entire fused ring absorbs the angular impulse and spins up as a unit (ω_ring independent of bey body spin). ring mass m = 1.2 g; r_eff = 1.8 cm; free-spin on bearing seat (μ_bearing ≈ 0.02). Impulse partition: I_body / (I_body + I_ring) = 0.9496 → 5.0% of incoming rotational impulse absorbed by ring per hit; builds up ω_ring over multiple contacts. ES free-spinning sleeve μ_sleeve = 0.05–0.08 → tilt resistance 2.83× better. counterPool accumulates per hit.  
+**Engine Note**: ED145 = fixed cylinder (height_cm: 1.45) + 1 WingDef (count: 3, shape: "arc", movementType: "free_spin_ring", ringMass_g: 1.2, ringRadius_cm: 1.8, bearingMu: 0.02, spinDecouplingFactor: 0.85) — the 3 wings are ONE fused unit spinning as a single ring, not 3 independent parts. Track separate ω_ring float per beyblade; collision resolver applies angular impulse to ring, not body. impulse partition formula; tilt resistance multiplier from ES sleeve decoupling; counter-charge pool model.
 
 ---
 
@@ -1916,8 +1916,8 @@ Source: `13 case study.md`
 
 **Category**: Gimmick — UW145 wing upper attack + EWD stamina  
 **Parts**: Evil Befall UW145EWD (Metal Masters) — Evil Befall wheel [M] + UW145 track + EWD tip  
-**Key Physics**: UW145 (Case 303): 4 wings (C₄); θ_wing = +12°; J_upper = sin(12°) × J = 0.208 × J; r_wing ≈ 21 mm; f_wing = 382 Hz at ω = 600 rad/s. BeySpirit channels wing centrifugal energy into feather-blade projectiles (Case 730) or spiral conduit (Case 731). EWD (Case 302): r_eff_core ≈ 1.5 mm; dω/dt = −5.9 rad/s²; spin life ≈ 101.7 s; α_EWD = 0.45 (45% lateral absorption). Evil Befall wheel [M]: smooth stamina profile φ ≈ 42°, C₂.  
-**Engine Note**: UW145 wing upper-angle + wing frequency model; EWD near-point stamina + free-spin absorption; two separate special moves from same assembly.
+**Key Physics**: UW145 (Case 303): cylinder height = 14.5 mm (1.45 cm); 3 wings (C₃, spacingDeg: 120°); each wing is a fixed WingDef angled upward at θ_wing = +12° above horizontal — the upward tilt angle is what makes the contact look like an upper attack; r_wing_tip ≈ 21 mm (2.1 cm); contact on the upward-angled face only (leading edge at upper angle); J_upper = sin(12°) × J = 0.208 × J per wing contact. foldSymmetry = 3 → Δ_I = 0, no nutation forcing (stable assembly). f_wing = 254 Hz at ω = 600 rad/s (3 wings × 600 / 2π ≈ 286 contacts/s). BeySpirit channels wing centrifugal energy into feather-blade projectiles (Case 730) or spiral conduit (Case 731). EWD (Case 302): r_eff_core ≈ 1.5 mm; dω/dt = −5.9 rad/s²; spin life ≈ 101.7 s; α_EWD = 0.45 (45% lateral absorption). Evil Befall wheel [M]: smooth stamina profile φ ≈ 42°, C₂.  
+**Engine Note**: UW145 = fixed cylinder (height_cm: 1.45) + 3 WingDefs (count: 3, spacingDeg: 120, movementType: "fixed", tiltAngle_deg: +12) — the positive tiltAngle on the WingDef is what produces upper-attack behavior via upperLaunch mechanic; NOT 4 wings. C₃ symmetry → nutationForcing = 0. EWD near-point stamina + free-spin absorption; two separate special moves from same assembly.
 
 ---
 
@@ -2155,3 +2155,2762 @@ Source: `13 case study.md`
 
 ---
 
+### [Case 754 — [SPECIAL MOVE] Brutal Squall: Wakiya Murasaki / Brutal Lúinor 13 Jolt](./13%20case%20study.md#case-754)
+
+**Category**: Special Move — reactive aerial counter-dive  
+**Bey / Blader**: Wakiya Murasaki / Brutal Lúinor 13 Jolt (Burst God Layer)  
+**Franchise Move**: Lúinor launches off wall, soars overhead, dive-bombs straight down. Only triggered by an incoming attack — pure reactive counter.  
+**Key Physics**: Trigger-required: activates only when F_impact ≥ 4.0 N. Phase 1 (impact_reaction): Case 753 Jolt launch; v_z = k_jolt × (F − 4.0) / m; at F = 8.0 N → v_z ≈ 2.72 m/s (√(v_h² + 2gh) with h ≈ 0.12 m); beyTiltAngle → 75°; wall-flip reverses v_horizontal. Phase 2 (apex_pause 150 ms): aerial positioning window; opponent cannot_move_away. Phase 3 (dive_bomb): Brutal Lúinor C₄ smash at φ = 22°; spinDelta = −520 rad/s; impulse 5200 eu; damageMultiplier 2.4×; burstBonus +25%. Self-cost −160 spinDelta (Jolt rubber burns fast; BeySpirit suppresses worst of wall-impact cost). Stance expires if no attack within 3000 ms of activation.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: trigger-only activation (no manual launch); wall-flip v_h reversal; v_z aerial-launch model; burstBonus +25% from dive angle.
+
+---
+
+### [Case 755 — [COMBO] Squall Dive: Jolt Orbit-Break Re-Entry (3-key: ↓↑J)](./13%20case%20study.md#case-755)
+
+**Category**: Combo — aerial re-entry overhead strike  
+**Sequence**: moveDown → moveUp → attack  
+**Key Physics**: Combo expression of Case 753 Jolt impact-reactive launch without BeySpirit amplification. Phase 1 (↓): defensive retreat; contact pressure loads Jolt threshold. Phase 2 (↑): upward arc at tilt ≈ 35° (below full 75° dive; combo budget); v_z ≈ 0.8 m/s. Phase 3 (J): elevated overhead smash; spinDelta = −49 rad/s; damageMultiplier 1.40×; lockMs 70. No burstBonus at combo scale (requires BeySpirit dive physics). Cost 25, attack-type.  
+**Engine Note**: partial aerial trajectory vs full dive-bomb in Case 754; no burstBonus without BeySpirit; Jolt rubber window still applies.
+
+---
+
+### [Case 756 — [GIMMICK] Dark Bull H145SD: H145 Horn Spin Track Upper Contact, Dark Bull Fusion Wheel, and Semi-Defense Tip Stability](./13%20case%20study.md#case-756)
+
+**Category**: Gimmick — H145 Spin Track horn upper contact + Dark Bull Fusion Wheel + SD tip  
+**Parts**: Dark Bull H145SD (Metal Fight Beyblade) — Dark Bull Fusion Wheel + H145 Spin Track + SD Performance Tip  
+**Key Physics**: H145 Spin Track geometry — cylinder base height = 14.5 mm (1.45 cm); the 145 designation is the cylinder height, not a radius. The 2 horns are WingDef sub-components fixed to the cylinder body (movementType: "fixed", C₂ symmetry, spacingDeg: 180). Each horn has contact points on **both sides** (both the leading face and the trailing face of the wing) — 4 contact points total: 2 horns × 2 contact faces per horn. Horn tips extend outward at θ_engage ≈ 13° above horizontal; r_horn_tip ≈ 2.5 cm. H145 foldSymmetry = 2 (C₂ horn pair) → Δ_I > 0, some nutation forcing. Horn contact zone sits at z = 0.6–1.45 cm (track height band). Dark Bull Fusion Wheel (MFB term — not AR): C₂ asymmetric; bull-horn smash face on one side (φ_bull ≈ 20°), rounded defense face opposite; equatorial contact at z = 1.45–2.1 cm (above the track). SD tip: r_eff ≈ 0.25 cm (annular contact); μ = 0.22; dω/dt = −10.0 rad/s²; spin life ≈ 60.0 s; moderate stability. Assembly uses H145's bilateral horn contact for surprise under-tilt upper strike.  
+**Engine Note**: H145 = fixed cylinder (height_cm: 1.45) + 2 WingDefs (count:2, spacingDeg:180, movementType:"fixed", contactFaces:"both_sides" → 4 ContactPoints total). Horn contact z = 0.6–1.45 cm; Dark Bull FW contact z = 1.45–2.1 cm — two non-overlapping z bands. The "both sides" contact means the horn can strike whether it is the leading or trailing wing face in the rotation direction. SD tip stability budget. No AR in this system — Dark Bull is a Fusion Wheel (MFB).
+
+---
+
+### [Case 757 — [SPECIAL MOVE] Bull Uppercut: Benkei Hanawa / Dark Bull H145SD](./13%20case%20study.md#case-757)
+
+**Category**: Special Move — horn-lock tilt uppercut  
+**Bey / Blader**: Benkei Hanawa / Dark Bull H145SD (Metal Fight Beyblade)  
+**Franchise Move**: Dark Bull charges low, horn engages under opponent's rim, violently uppercuts opponent upward. Benkei attacks head-on.  
+**Key Physics**: Phase 1 (tilt_under 300 ms): BeySpirit forces beyTiltAngle_self → −12° (nose-down approach); H145 horn clears under opponent bottom. Phase 2 (horn_lock 50 ms QTE "Break Lock"): horn engages at θ = 13°; if QTE missed → successful lock → opponent beyTiltAngle_opp +20° (destabilised, nutation likely). Phase 3 (uppercut_fire): full H145 horn leverage; spinDelta = −280 rad/s; upward impulse 3200 eu; damageMultiplier 1.8×. QTE "Block Uppercut" 130 ms (aerial state). Self-cost −120 spinDelta (nose-down approach friction + horn impact).  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: tilt_self manipulation for under-rim approach; horn-lock tilt penalty on opponent; two sequential QTEs (Break Lock + Block Uppercut).
+
+---
+
+### [Case 758 — [COMBO] Bull Undercut: H145 Horn Sweep (3-key: ↓J↑)](./13%20case%20study.md#case-758)
+
+**Category**: Combo — horn-sweep undercut  
+**Sequence**: moveDown → attack → moveUp  
+**Key Physics**: Combo expression of Case 756 H145 horn geometry. Phase 1 (↓): low approach, Dark Bull nose-tilt partial (combo-scale: beyTiltAngle_self → −5°). Phase 2 (J): horn at θ = 13° engages opponent lower rim; spinDelta = −40 rad/s; damageMultiplier 1.30×; lockMs 80 (horn sweep arc traversal time). Phase 3 (↑): upward launch exit; clears opponent after sweep. No tilt penalty at combo scale (no BeySpirit enforcement). Cost 25, attack-type.  
+**Engine Note**: partial tilt approach vs full −12° in Case 757; horn sweep lockMs 80 reflects arc geometry; no tilt-penalty without BeySpirit.
+
+---
+
+### [Case 759 — [GIMMICK] Burn Fireblaze 135MS: Metal Sharp Tip Near-Point Stamina and Circular Blade Spin Persistence](./13%20case%20study.md#case-759)
+
+**Category**: Gimmick — MS near-point tip + 135 height + circular stamina blade  
+**Parts**: Burn Fireblaze 135MS (Metal Fight Beyblade) — Burn Fireblaze wheel [M] + 135 track + MS tip  
+**Key Physics**: MS tip: r_eff = 0.5 mm (near-point, almost bearing); μ ≈ 0.10; F_lat = μ × m × g = 0.10 × 0.038 × 9.81 ≈ 0.037 N; dω/dt ≈ −2.45 rad/s²; spin life ≈ 245 s (theoretical maximum in MS class). 135 track: intermediate height for stable precession orbit. Burn Fireblaze wheel [M]: full circular rim C₁₂ symmetry; rim contact φ ≈ 42°; optimised for sustained orbital stamina — minimal smash attack. Assembly is the highest-endurance non-bearing tip in Metal Fight Beyblade.  
+**Engine Note**: MS near-point friction model; 245 s spin life; Burn wheel C₁₂ stamina profile.
+
+---
+
+### [Case 760 — [SPECIAL MOVE] Burning Fire Strike: Masamune Kadoya / Burn Fireblaze 135MS](./13%20case%20study.md#case-760)
+
+**Category**: Special Move — dual-path fire strike  
+**Bey / Blader**: Masamune Kadoya / Burn Fireblaze 135MS (Metal Fight Beyblade)  
+**Franchise Move**: Fireblaze ignites in orbital fire; straight-line charge OR aerial fire arc crashes down. Thermal energy melts opponent's tip contact zone.  
+**Key Physics**: Phase 1 (ignition 500 ms): BeySpirit fire aura; v_orb → 4.5 m/s. Phase 2 branching — extreme_friction path (flat arena): MS tip transitions to Flat-like friction (BeySpirit heat μ → 0.35); v_linear 5.0 m/s; spinDelta = −480 rad/s; impulse 5000 eu; damageMultiplier 2.2×; fireDebuff ×1.4 / 2500 ms. OR aerial_arc path (slope/wall available): beyond wall ascent v_z ≈ 1.5 m/s → dive at φ_impact = 35°; same spinDelta/impulse/dmg + upwardKick 800 eu. Self-cost −200 spinDelta (MS tip nearly stalled by BeySpirit heat friction). QTE "Fire Wall" 180 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: two-path branching from arena geometry; BeySpirit heat-friction transition on MS tip; fireDebuff ×1.4 thermal zone.
+
+---
+
+### [Case 761 — [COMBO] Ember Approach: Burn Circular Orbit Graze (3-key: ↓→J)](./13%20case%20study.md#case-761)
+
+**Category**: Combo — stamina orbital graze  
+**Sequence**: moveDown → moveRight → attack  
+**Key Physics**: Combo expression of Case 759 MS orbital endurance. Phase 1 (↓): pull back to orbit periphery. Phase 2 (→): rightward orbital arc maintains near-tangential approach (stamina-type φ = 42°). Phase 3 (J): Burn rim contact; spinDelta = −42 rad/s; damageMultiplier 1.25×; lockMs 45 (smooth rim sliding). No fireDebuff at combo scale. Cost 15, stamina-type.  
+**Engine Note**: near-tangential graze geometry from stamina profile; low lockMs from circular blade; low cost reflects stamina archetype.
+
+---
+
+### [Case 762 — [GIMMICK] Flame Serpent SW145F: S-Wave Spin Track Asymmetric Drag and Flat-Tip Orbital Drive](./13%20case%20study.md#case-762)
+
+**Category**: Gimmick — SW145 asymmetric path deflection + F tip orbit  
+**Parts**: Flame Serpent SW145F (Metal Masters) — Flame Serpent wheel [M] + SW145 track + F tip  
+**Key Physics**: SW145: sinusoidal wave track; asymmetric aerodynamic drag F_asym ≈ 0.05 N; each tab-switch deflects path Δθ ≈ 8–12° per pass; creates irregular orbital arc that defies prediction. Flame Serpent wheel [M]: C₂ serpentine blade; φ ≈ 25° one side, rounded deflection opposite. F tip (Case 339): r_flat = 2.04 mm; μ = 0.35; dω/dt = −44.1 rad/s²; spin life 13.6 s; R_curve ≈ 73 mm. SW145 path irregularity + F tip speed = unpredictable fast orbit with stochastic contact angle.  
+**Engine Note**: SW145 tab-switch path-deflection model; Δθ per tab; F tip orbital drive; stochastic approach angle for combat.
+
+---
+
+### [Case 763 — [SPECIAL MOVE] Burning Mirage: Ryuga Kishiro / Flame Serpent SW145F](./13%20case%20study.md#case-763)
+
+**Category**: Special Move — accelerating mirage orbit attack  
+**Bey / Blader**: Ryuga Kishiro / Flame Serpent SW145F (Metal Masters)  
+**Franchise Move**: Serpent spirit multiplies into phantom images; true Serpent accelerates to 3–4× speed; phantom images confuse opponent as real Serpent strikes.  
+**Key Physics**: Phase 1 (mirage_spawn 800 ms): BeySpirit creates N_phantom = 3 decoys at equal angular spacing; opponent HUD obscured. Phase 2 (spiral_acceleration): v_orb 0.5 → 3.5 m/s over 3 laps (exponential ramp); opponent must_track_true_bey (QTE "True Serpent" 350 ms). Phase 3 (flame_strike): if QTE missed → spinDelta = −350 rad/s; impulse 4200 eu; damageMultiplier 1.9×; fireDebuff ×1.2 / 2000 ms. QTE hit → spinDelta = −180; dmg 1.4×. Self-cost −160 spinDelta.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: phantom decoy HUD mechanic; v_orb acceleration ramp 0.5→3.5 m/s; QTE True Serpent branching damage.
+
+---
+
+### [Case 764 — [COMBO] Serpent Drift: SW145 Path-Deflection Feint (3-key: ←↓J)](./13%20case%20study.md#case-764)
+
+**Category**: Combo — deflection feint strike  
+**Sequence**: moveLeft → moveDown → attack  
+**Key Physics**: Combo expression of Case 762 SW145 tab-deflection. Phase 1 (←): leftward orbital entry; SW145 tab applies Δθ ≈ 8° to approach angle. Phase 2 (↓): path deflects downward-inward (second tab), approach appears to retreat. Phase 3 (J): Flame Serpent blade strikes from unexpected angle (combo feint); spinDelta = −44 rad/s; damageMultiplier 1.35×; lockMs 55. No phantom decoys at combo scale. Cost 25, attack-type.  
+**Engine Note**: SW145 two-tab deflection as combo feint mechanism; lockMs 55 from angled contact; no BeySpirit phantoms at combo scale.
+
+---
+
+### [Case 765 — [GIMMICK] Samurai Ifraid W145CF: Wing 145 Upper Contact Centrifuge and Central Flat Aggressive Tip](./13%20case%20study.md#case-765)
+
+**Category**: Gimmick — W145 wing upper + CF tip orbit + Ifraid flame wing AR  
+**Parts**: Samurai Ifraid W145CF (Metal Masters) — Samurai Ifraid wheel [M] + W145 track + CF tip  
+**Key Physics**: W145 (Case 303-variant): h = 14.5 mm; r_wing = 20 mm; θ_engage = 16° above horizontal (vs UW145's 12°); 4-wing C₄; J_upper = sin(16°) × J = 0.276 × J. Ifraid wheel [M]: phoenix-wing blade φ = 20° main; wing extension φ_wing = 20°; bilateral upper-attack geometry. CF tip: r_eff = 3.0 mm center; μ = 0.32; dω/dt = −44.9 rad/s²; spin life ≈ 13.4 s. CF centrifugal orbit combines with W145 upper angle for simultaneous orbit drive and aerial blade contact.  
+**Engine Note**: W145 θ_engage = 16° (steeper than UW145 12°); CF centrifugal orbit; Ifraid bilateral wing geometry.
+
+---
+
+### [Case 766 — [SPECIAL MOVE] Burning Tornado Fire: Chris Teufel / Samurai Ifraid W145CF](./13%20case%20study.md#case-766)
+
+**Category**: Special Move — multi-beast scaling tornado AoE  
+**Bey / Blader**: Chris Teufel / Samurai Ifraid W145CF (Metal Masters)  
+**Franchise Move**: Wing flames ignite; Ifraid spirit joined by allied beast spirits; combined BeySpirit tornado engulfs entire arena. Scales with number of allied bey-spirits present.  
+**Key Physics**: n_beasts determines scaling tier — 1 beast: spinDelta = −380 rad/s; impulse 3500 eu; dmg 1.9×; 3–4 beasts: spinDelta = −500; impulse 5000 eu; dmg 2.4×; 5 beasts (max): spinDelta = −700; impulse 6500 eu; damageMultiplier 3.0×; burstBonus +50%; AoE all opponents −200 rad/s additional each. Self-cost (all tiers): −450 spinDelta; ally-cost −150 rad/s each contributing beast-spirit. Cooldown 10000 ms (longest in CS13). QTE "Storm Break" 200 ms window. Special-move-only — combos cannot create arena-wide effects or multi-bey AoE at this scale.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: n_beasts integer scaling table; AoE all opponents; ally-cost per contributing spirit; 10000 ms cooldown as game design ceiling.
+
+---
+
+### [Case 767 — [SPECIAL MOVE] Burning Uppercut: Chris Teufel / Samurai Ifraid W145CF](./13%20case%20study.md#case-767)
+
+**Category**: Special Move — cyclone-pull wing uppercut  
+**Bey / Blader**: Chris Teufel / Samurai Ifraid W145CF (Metal Masters)  
+**Franchise Move**: Ifraid wing creates cyclone; sucks opponent inward, then wing uppercuts opponent skyward.  
+**Key Physics**: Phase 1 (cyclone_pull 600 ms): BeySpirit generates inward pull force on opponent F_pull = 5.10 N; opponent cannot_move_away during pull; beyTiltAngle_self → +8° (windup lean). Phase 2 (wing_uppercut): W145 wing θ = 16°; Ifraid wing extension engages; spinDelta = −400 rad/s; upward impulse 4500 eu; damageMultiplier 2.0×; beyTiltAngle_opponent +15° (destabilised aerial). QTE "Cut Cyclone" 280 ms (during pull phase — interrupt before uppercut). Self-cost −180 spinDelta. Distinct from Burning Tornado Fire (767 is single-target; 766 is AoE multi-beast).  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: F_pull cyclone inward-force model; tilt penalty +15° on opponent; two separate specials from same assembly — tornado (766) vs uppercut (767).
+
+---
+
+### [Case 768 — [COMBO] Ifraid Wing Arc: W145 Upper Overhead (3-key: ↑J↓)](./13%20case%20study.md#case-768)
+
+**Category**: Combo — overhead upper-wing arc  
+**Sequence**: moveUp → attack → moveDown  
+**Key Physics**: Combo expression of Case 765 W145 upper-angle geometry. Phase 1 (↑): upward orbital arc; elevation positions W145 wing above opponent rim (from-above vs Bull Undercut's from-below). Phase 2 (J): W145 wing at θ = 16°; spinDelta = −47 rad/s; damageMultiplier 1.35×; lockMs 65 (wing arc traversal). Phase 3 (↓): downward post-contact exit; orbit continues below. Contrast with Case 758 Bull Undercut (↓J↑ from-below) — this is the from-above mirror. Cost 25, attack-type.  
+**Engine Note**: from-above orbital entry vs from-below; W145 θ_engage = 16°; symmetrical contrast with Case 758.
+
+---
+
+### [Case 769 — [GIMMICK] Strata Dragoon V: Dragon Saucer Core AR Rolling Disc Mode, Final Clutch Base with Gradual Deceleration Guard, and Right Engine Gear Metal Flat](./13%20case%20study.md#case-769)
+
+**Category**: Gimmick — rolling disc mode + GDG Final Clutch + Right EG Metal Flat  
+**Parts**: Strata Dragoon V, Plastic Gen V-Force — Dragon Saucer Core AR + Eight Balance WD + Right SG (Reverse) [M] + Final Clutch Base GDG [M]  
+**Key Physics**: Dragon Saucer Core AR: r_saucer = 21 mm; low-profile disc shape; rolling mode activation at tilt ≥ 45°: beyTiltAngle → 85°; v_roll = ω × r_saucer × cos(tiltAngle) = ω × 0.021 × cos(85°) ≈ ω × 0.00183 m; at ω = 500 rad/s → v_roll ≈ 0.92 m/s. Right EG Metal Flat (Case 339-variant): μ = 0.35; r_eff = 2.04 mm flat. Final Clutch Base GDG: Gradual Deceleration Guard — clutch delays EG spring release from t₀ to t_GDG (±1.5 s variance from tilt state). Assembly m = 0.044 kg; I = 9.0×10⁻⁶ kg·m²; ω₀ = 500 rad/s.  
+**Engine Note**: rolling disc v_roll model vs normal spinning; beyTiltAngle threshold for disc mode activation; GDG clutch timing variance.
+
+---
+
+### [Case 770 — [SPECIAL MOVE] Vast Cutter: Daichi Sumeragi / Strata Dragoon V](./13%20case%20study.md#case-770)
+
+**Category**: Special Move — rolling saw-blade cleave  
+**Bey / Blader**: Daichi Sumeragi / Strata Dragoon V (Beyblade V-Force)  
+**Franchise Move**: Strata Dragoon rolls on its side as a giant energy saw blade (BeySpirit expands r_saucer to r_saw = 60 mm). Cleaves solid constructs. First special move used by Daichi.  
+**Key Physics**: Phase 1 (rolling_approach 600 ms): beyTiltAngle → 85°; BeySpirit sustains ω; v_roll = ω × r_saucer = 500 × 0.021 ≈ 10.5 m/s. Phase 2 (saw_cleave): extended traversal lock — saw crosses opponent body; spinDelta = −500 rad/s; linearImpulse = 6000 eu; damageMultiplier 2.3×; lockMs = 200 (saw traversal — cleave geometry); burstChanceBonus +20% (perpendicular disc torque). QTE "Disc Break" 200 ms (jump): success → 50% spinDelta, lockMs 50. Self-cost −180 spinDelta (EG Metal Flat at 85° tilt — rolling friction).  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: lockMs 200 reflects disc traversal (longest contact lock in CS13 specials); beyTiltAngle 85° maintained during contact; BeySpirit anime override re-engages EG spring.
+
+---
+
+### [Case 771 — [SPECIAL MOVE] Vast Hurricane: Daichi Sumeragi / Strata Dragoon V](./13%20case%20study.md#case-771)
+
+**Category**: Special Move — centrifugal dust-devil ring-out  
+**Bey / Blader**: Daichi Sumeragi / Strata Dragoon V (Beyblade V-Force)  
+**Franchise Move**: Strata Dragoon circles at high speed creating a dust devil to blow the opposing bey away. Second special move used by Daichi.  
+**Key Physics**: Phase 1 (EG_surge 200 ms): BeySpirit re-engages EG spring; v_orb → 3.0 m/s; R_orbit ≈ 80 mm. Phase 2 (dust_devil 800 ms): centrifugal force F = m × v²/R = 0.044 × 9.0 / 0.080 = 4.95 N outward; forceState "outward_wind_push" on opponent. Phase 3 (wind_release): spinDelta = −220 rad/s (wind, not blade contact); linearImpulse = 5000 eu outward (ring-out direction); damageMultiplier 1.6×. QTE "Dust Guard" 200 ms (defense): success → 50% impulse only. Self-cost −130 spinDelta.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: outward impulse (inverse of Burning Uppercut inward pull); EG spring BeySpirit re-engagement; ring-out threat from outward 5000 eu.
+
+---
+
+### [Case 772 — [COMBO] Saucer Roll: Dragon Saucer AR Disc-Edge Sweep (3-key: →J↑)](./13%20case%20study.md#case-772)
+
+**Category**: Combo — partial disc-edge rolling contact  
+**Sequence**: moveRight → attack → moveUp  
+**Key Physics**: Combo expression of Case 769 Dragon Saucer disc-edge geometry. Phase 1 (→): rightward sweep raises beyTiltAngle to ≈20° (partial disc-edge engagement, below full 85° rolling mode). Phase 2 (J): Dragon Saucer disc-edge contact; force distributed across ~5 mm arc; spinDelta = −43 rad/s; damageMultiplier 1.25×; lockMs = 80 (disc-edge traversal arc vs blade point 50 ms). Phase 3 (↑): tilt recovery exit arc. No full rolling disc mode at combo scale (BeySpirit required for 85° sustained tilt). Cost 25, attack-type.  
+**Engine Note**: lockMs 80 reflects disc-edge wider contact geometry; beyTiltAngle 20° partial vs 85° full; no v_roll model at combo scale.
+
+---
+
+### [Case 773 — [GIMMICK] Forbidden Eonis ED145FB: ED145 Centrifugal Air-Control Wing Track, FB Compound Tip, and Forbidden Fusion Wheel Peripheral Inertia](./13%20case%20study.md#case-773)
+
+**Category**: Gimmick — ED145 air-control pressure field + FB compound tip stamina  
+**Parts**: Forbidden Eonis ED145FB (Metal Fight Beyblade) — Forbidden Fusion Wheel [M] (Case 353a) + Eonis Clear Wheel [M] (Case 353d) + ED145 Track (Case 353b) + FB tip (Case 353c)  
+**Key Physics**: ED145 (Case 353b): 3 free-rotating wings; r_wing = 15 mm; v_tip = ω × r_wing = 600 × 0.015 = 9.0 m/s; centrifugal air pressure q = 49.6 Pa; R_field ≈ 67 mm. Forbidden Fusion Wheel [M] (Case 353a): 31.7 g; I = 7.97×10⁻⁶ kg·m²; φ_gap = 45°; J_gap = 0.707×J. FB tip (Case 353c): ball mode r_ball = 2.5 mm; dω/dt_ball ≈ 0.231 rad/s² (this assembly, 0.041 kg); flat mode at θ > 8.2°. Assembly: m = 0.041 kg; I = 9.01×10⁻⁶ kg·m²; ω₀ = 600 rad/s. FB ball-mode spin life theoretical maximum for non-bearing class.  
+**Engine Note**: ED145 centrifugal pressure field model; R_field spin-dependent radius; FB compound tip θ_switch model.
+
+---
+
+### [Case 774 — [SPECIAL MOVE] Burst Satellite: Jigsaw / Forbidden Eonis ED145FB](./13%20case%20study.md#case-774)
+
+**Category**: Special Move — AoE field stamina drain + simultaneous supernova blast  
+**Bey / Blader**: Jigsaw / Forbidden Eonis ED145FB (Metal Fight Beyblade)  
+**Franchise Move**: Eonis focuses all spin into itself then blasts a red supernova AoE. Powerful enough to drain Evil Befall, Spiral Fox, and Spiral Lyre simultaneously.  
+**Key Physics**: Phase 1 (energy_compression ~1.5 s): BeySpirit spin-up ω 600 → 850 rad/s; ΔKE = 1.633 J stored; v_tip_max = 12.75 m/s; q_max = 99.7 Pa. Phase 2 (satellite_field 1500 ms): R_field = R_stadium ≈ 90 mm (AoE all opponents); vortex_pull F = 1.5 N inward; opponent spinDecayRate ×2.0 for 1500 ms ("sapping stamina"). Phase 3 (supernova_burst AoE): per-opponent spinDelta = −280 rad/s; linearImpulse = 2800 eu outward; damageMultiplier 1.8×. Self-cost −250 spinDelta (compression-release energy dump). QTE "Satellite Guard" 260 ms (defense): success → 30% spinDelta per opponent. Cooldown 8000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: AoE field-type special (special-move-only — combos cannot replicate stadium-wide spinDecayRate boost); vortex_pull inward then supernova outward; three-opponent franchise basis captured by per-opponent AoE.
+
+---
+
+### [Case 775 — [COMBO] Eternal Wing: ED145 Free-Rotating Wing Deflection Pass (3-key: ↑K↑)](./13%20case%20study.md#case-775)
+
+**Category**: Combo — ED145 wing sweep + Forbidden gap double contact  
+**Sequence**: moveUp → defense → moveUp  
+**Key Physics**: Combo expression of Case 773 ED145 wing deflection. Phase 1 (↑): upper orbital arc approach. Phase 2 (K): ED145 wing at r = 15 mm sweeps against opponent outer ring; τ_pivot = 2.63×10⁻³ N·m (wing transmits force, not folds); wing contribution spinDelta ≈ −20 rad/s. Forbidden gap φ = 45° simultaneous: spinDelta contribution ≈ −24 rad/s. Combined: spinDelta = −44 rad/s; damageMultiplier 1.30×; lockMs 50. Phase 3 (↑): FB ball tip exit at near-zero friction (dω/dt_ball ≈ 0.231). No air-vortex field at combo scale. Cost 15, balanced-type.  
+**Engine Note**: ED145 wing + Forbidden gap double-component hit; low cost reflects stamina/balanced archetype; no BeySpirit vortex field at combo level.
+
+---
+
+### [Case 776 — [GIMMICK] Bushin Ashindra Hurricane Keep Ten: Twelve-Blade Defense Shell, Hurricane Disc, and Keep Tip Phase Transition](./13%20case%20study.md#case-776)
+
+**Category**: Gimmick — 12-blade defense barrier + 7-tooth burst resistance + Keep tip phase  
+**Parts**: Bushin Ashindra Hurricane Keep Ten (Burst GT/Gatinko) — Gatinko Chip Ashura (Case 607) + Layer Weight Ten (Case 608) + Layer Base Bushin (Case 609) + Forge Disc Hurricane (Case 610) + Performance Tip Keep (Case 611)  
+**Key Physics**: Layer Base Bushin (Case 609): 12 blades, r_blade = 20 mm; α_blade = 25° sweep-back; F_radial = sin(25°) × F = 0.423×F (57.7% recoil reduction). Ashura chip (Case 607): 7-tooth ratchet; burst resistance ×2.33. Bushin deep skirt: burst probability ×0.60 baseline. Combined: 0.60 / 2.33 = 0.257 burst contact ratio (74.3% lower than baseline). Hurricane disc (Case 610): 25.1 g; I = 2.369×10⁻⁶ kg·m²; inward-concentrated. Keep tip (Case 611): Phase 1 (ω > 200 rad/s) dω/dt = −116.0 rad/s²; Phase 2 (ω < 200) dω/dt = −58.0 rad/s². Assembly: m = 53.0 g; I = 8.966×10⁻⁶ kg·m²; ω₀ = 694 rad/s.  
+**Engine Note**: three-layer burst suppression stack; Keep ω_couple 200 rad/s phase transition; Bushin I-fraction dominance (45.9%) despite being 19.4% of mass.
+
+---
+
+### [Case 777 — [SPECIAL MOVE] Bushin Guard: Arman Kusaba / Bushin Ashindra Hurricane Keep Ten](./13%20case%20study.md#case-777)
+
+**Category**: Special Move — pure sustained defensive guard  
+**Bey / Blader**: Arman Kusaba / Bushin Ashindra Hurricane Keep Ten (Beyblade Burst GT)  
+**Franchise Move**: Six of twelve Bushin blades create a lime-green whirlwind that defends from opposing attacks.  
+**Key Physics**: Phase 1 (instantaneous): BeySpirit activates 6 of 12 blades (alternating hexagonal set); v_tip = 694 × 0.020 = 13.88 m/s; q_vortex = 117.9 Pa; R_guard = 35 mm; forceState "whirlwind_guard". Phase 2 (guard_window 2000 ms): any incoming contact within 35 mm → spinDelta_received ×0.20 (80% deflected); spinDelta_self +35 per absorbed hit (deflected energy recycled); incoming attack vector rotated +70° (tangential vortex redirect — removes burst-axis alignment). Phase 3 (expire): guard ends; net = +35 × N_hits recovery. Self-cost −100 spinDelta (activation). Opponent QTE "Vortex Break" (J within 250 ms): bypasses 80% deflection for that hit. Only purely defensive special in CS13 — no counter-attack phase.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: 80% deflection model; +35 spin recovery per hit absorbed; no counter-attack distinguishes this from all other CS13 specials.
+
+---
+
+### [Case 778 — [COMBO] Whirlwind Parry: Bushin Swept-Blade Double Deflect (3-key: K↑K)](./13%20case%20study.md#case-778)
+
+**Category**: Combo — swept-blade double parry  
+**Sequence**: defense → moveUp → defense  
+**Key Physics**: Combo expression of Case 776 Bushin 12-blade geometry. Phase 1 (K): Bushin swept-blade defense stance; α = 25° contact → 42.3% radial recoil (57.7% redirected). Phase 2 (↑): redirected force channels upward along swept-blade ramp. Phase 3 (K): second Bushin blade contacts from complementary angle (12-blade density: next blade always within 30°); spinDelta = −37 rad/s; damageMultiplier 1.20×; lockMs 30. No sustained whirlwind field at combo scale (BeySpirit required). Cost 15, defense-type.  
+**Engine Note**: α = 25° radial transmission 42.3% consistent with spinDelta = 37 vs full-force; double-parry geometry from 12-blade density; no field effect at combo level.
+
+---
+
+### [Case 779 — [GIMMICK] Spiral Fox TR145W²D: TR145 Rolling-Resistance LAD Approach and W²D Compound Tip Wear Progression](./13%20case%20study.md#case-779)
+
+**Category**: Gimmick — TR145 roller-ball LAD + W²D compound tip + Spiral stamina wheel  
+**Parts**: Spiral Fox TR145W²D (Metal Fight Beyblade: Metal Fury) — Spiral Fusion Wheel [M] + Fox Clear Wheel [M] + TR145 Track (Case 64) + W²D tip (Case 65)  
+**Key Physics**: TR145 (Case 64): 3 roller balls; r_roller = 1.5 mm; C_rr = 0.004; LAD decel a_roll = 0.039 m/s² vs sliding a_slide = 4.9 m/s² (124× less drag); at tilt ≥ 80° rollers contact floor → rolling mode; approach momentum preserved. W²D (Case 65): θ_switch_fresh = 22°; worn (0.3): θ_switch = 13°; spike near-zero friction upright; disc flat μ = 0.50 at tilt. Spiral Fusion Wheel [M]: φ ≈ 15° smooth curved contacts; J_spiral = cos(15°) × J = 0.966×J. Assembly [M]: m ≈ 0.036 kg; I ≈ 5.59×10⁻⁶ kg·m²; ω₀ = 600 rad/s.  
+**Engine Note**: TR145 rolling resistance model; LAD distance ratio 124× vs sliding; W²D θ_switch wear progression.
+
+---
+
+### [Case 780 — [SPECIAL MOVE] Buster Tail: Zeo Abyss / Spiral Fox TR145W²D](./13%20case%20study.md#case-780)
+
+**Category**: Special Move — TR145 rolling-approach high-speed crash  
+**Bey / Blader**: Zeo Abyss / Spiral Fox TR145W²D (Metal Fight Beyblade: Metal Fury)  
+**Franchise Move**: Zeo motions a kick; Spiral Fox glows bright blue and crashes into opponent with great force.  
+**Key Physics**: Phase 1 (kick_acceleration): beyTiltAngle → 75° (TR145 rollers enter floor contact); BeySpirit spin-to-linear conversion — 40% of KE_rot = 0.402 J → v_approach = √(2 × 0.402 / 0.036) = 4.73 m/s; a_roll = 0.039 m/s² (negligible approach drag). Phase 2 (crash_impact): F_crash = m × v / t = 0.036 × 4.73 / 0.003 = 56.8 N; spinDelta = −350 rad/s; linearImpulse = 5500 eu (primary output — ring-out risk); damageMultiplier 2.0×. QTE "Fox Guard" 200 ms (defense): success → 45% spin + impulse. Self-cost −160 spinDelta (40% KE consumed).  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: rolling approach gives minimal QTE warning (high-speed, short window); TR145 rolling resistance makes approach near-frictionless; linearImpulse primary vs spinDelta secondary (straight-line crash archetype).
+
+---
+
+### [Case 781 — [COMBO] Rolling Slash: TR145 Low-Orbit Rolling Approach (3-key: ↓J↓)](./13%20case%20study.md#case-781)
+
+**Category**: Combo — low-orbit tilt-augmented rolling approach strike  
+**Sequence**: moveDown → attack → moveDown  
+**Key Physics**: Combo expression of Case 779 TR145 rolling property. Phase 1 (↓): lower arc; beyTiltAngle rises to ≈15–25°; TR145 rollers begin floor engagement; W²D flat disc activates at wear ≈ 0.3 (θ_switch ≈ 13°). Phase 2 (J): Spiral wheel contact at tilt-augmented approach angle; φ = 15°; spinDelta = −45 rad/s; damageMultiplier 1.30×; lockMs 55. Phase 3 (↓): continue low orbit; TR145 rolling throughout (no approach momentum loss). No BeySpirit spin-to-linear conversion at combo scale. Cost 15, attack-type.  
+**Engine Note**: TR145 rolling throughout combo (passive property); double-bottom effect (roller reduces drag + flat disc lateral grip at impact); no spin conversion without BeySpirit.
+
+---
+
+### [Case 782 — [GIMMICK] Galux: War Lynx AR Wide-Arc Cat-Paw Slicing Geometry and Speed-Optimised Attack Profile](./13%20case%20study.md#case-782)
+
+**Category**: Gimmick — War Lynx AR wide-arc slash + speed-optimised light assembly  
+**Parts**: Galux, Plastic Gen (unreleased/prototype) — War Lynx AR (Case 271) + WD [M] + Base [M]  
+**Key Physics**: War Lynx AR (Case 271): ~6.65 g [M]; wide cat-paw contact arc ≈ 35°–40° span; φ_slash ≈ 12° [M]; J_slash = cos(12°) × J = 0.978×J; r_outer ≈ 22 mm. Wide arc = sustained contact slide vs point-impact smash (slicing geometry). Assembly [M]: m ≈ 0.029 kg; I ≈ 4.51×10⁻⁶ kg·m²; ω₀ = 500 rad/s. Lighter assembly → higher orbital speed at equal launch power (speed-optimised). WD [M] ≈ 14 g; Base [M] ≈ 7 g.  
+**Engine Note**: wide arc contact duration model; 37° span vs standard narrow AR; all values [M] (prototype/unreleased bey, anime imagery only).
+
+---
+
+### [Case 783 — [SPECIAL MOVE] Cat Scratch: Mariah / Galux](./13%20case%20study.md#case-783)
+
+**Category**: Special Move — beast-manifest straight-line slash charge  
+**Bey / Blader**: Mariah / Galux (Beyblade Original Plastic Generation)  
+**Franchise Move**: War Lynx cat spirit emerges from Galux, charges at opponent, delivers powerful slicing attack.  
+**Key Physics**: Phase 1 (beast_manifest 800 ms): BeySpirit projects luminous lynx spirit; 50% KE_rot converts to linear — KE_linear = 0.282 J; v_charge = √(2 × 0.282 / 0.029) = 4.41 m/s. Phase 2 (claw_charge): straight-line non-orbital approach at 4.41 m/s; War Lynx wide arc (≈37°) sustained slide contact. Phase 3 (slash_impact): spinDelta = −420 rad/s; linearImpulse = 4800 eu; damageMultiplier 2.1×; burstChanceBonus +15% (wide-arc sustained contact maximises burst-angle exposure duration). QTE "Pounce Dodge" 200 ms (dodge/direction): success → 35% spinDelta + impulse. Self-cost −180 spinDelta. Cooldown 4500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: beast-manifest non-orbital linear approach; wide-arc lockMs proportional to 37° contact span; 50% KE conversion model.
+
+---
+
+### [Case 784 — [COMBO] Pounce Slash: War Lynx Wide-Arc Overhead Strike (3-key: ↑J←)](./13%20case%20study.md#case-784)
+
+**Category**: Combo — upper-arc wide-arc slash with sweep exit  
+**Sequence**: moveUp → attack → moveLeft  
+**Key Physics**: Combo expression of Case 782 War Lynx wide-arc geometry. Phase 1 (↑): upper arc "pounce" approach — slightly downward contact angle at midplane. Phase 2 (J): War Lynx wide cat-paw arc ≈37° span engages from above; spinDelta = −48 rad/s; damageMultiplier 1.35×; lockMs 60 (wider arc span = longer contact than narrow AR). Phase 3 (←): sweep-through exit leftward — cat paw completing swipe. Sequence ↑J← traces pounce arc geometry. No beast-manifest at combo scale. Cost 15, attack-type.  
+**Engine Note**: lockMs 60 reflects 37° contact arc vs narrow AR 50 ms; upper-arc pounce approach angle; sweep-through exit from wide blade geometry.
+
+---
+
+### [Case 785 — [GIMMICK] Chain Kerbeus Fortress Yard' (DB/BU System): Chain-Retraction Spin-Up, Fortress Hexagonal Disc, Yard' Dash Anti-Burst, and Slope-Climb Burst Immunity](./13%20case%20study.md#case-785)
+
+**Category**: Gimmick — chain retraction angular-momentum spin-up + Yard' Dash anti-burst  
+**Parts**: Chain Kerbeus Fortress Yard' (DB/BU) — DB Core Kerbeus (Case 462) + BU Blade Chain (Case 463) + Armor 6 (Case 464) + Forge Disc Fortress (Case 465) + Yard' Dash tip (Case 466)  
+**Key Physics**: BU Blade Chain (Case 463): 6 rubber + 2 plastic chains; I_ext = 5.066×10⁻⁶; I_ret = 3.995×10⁻⁶; on-contact retraction spin-up: ω₂ = ω × (I_total_ext / I_total_ret) = ω × 1.062 (+6.2% per retraction). Fortress disc (Case 465): 25.1 g; I = 2.369×10⁻⁶ kg·m²; hexagonal C₂; eccentricity e = 0.322 mm; F_imb = 3.607 N (controlled orbital assist). Yard' Dash (Case 466): τ_burst_eff = 13.0 × 1.40 = 18.2 mN·m (effectively unburst-able). Yard' ball tip: dω/dt = −0.599 rad/s²; theoretical t_spin = 1158 s. Assembly: m = 74.8 g (heaviest DB/BU in CS13); I_ext = 1.833×10⁻⁵ kg·m²; ω₀ = 694 rad/s; KE₀ = 4.413 J (highest in CS13).  
+**Engine Note**: chain retraction angular momentum conservation model; +6.2% ω per contact event; KE₀ = 4.413 J energy reservoir for slope-climb special.
+
+---
+
+### [Case 786 — [SPECIAL MOVE] Chain Break: Lain Valhalla / Chain Kerbeus Fortress Yard'](./13%20case%20study.md#case-786)
+
+**Category**: Special Move — slope-climb potential-energy gravity-dive crash  
+**Bey / Blader**: Lain Valhalla / Chain Kerbeus Fortress Yard' (DB/BU)  
+**Franchise Move**: Chain Kerbeus climbs the bowl wall, forms chain barrier, then crashes down with gravity-dive force.  
+**Key Physics**: Phase 1 (slope_climb): 25° wall; h = 63.4 mm; ΔPE = 0.04649 J; chain retraction at wall contact: ω rises +6.2% to 737 rad/s (BeySpirit). Phase 2 (chain_barrier 800 ms): all 8 chains extend to r = 22 mm; incoming attack absorption −40% (elastic chain absorption); Kerbeus self-decay negligible (Yard' ball dω/dt = −0.599 rad/s²). Phase 3 (gravity_dive_crash): BeySpirit amplification ×4.0; v_crash = √(2 × 9.81 × 0.0634) × 4.0 = 1.115 × 4.0 = 4.46 m/s; chain retraction at impact (+6.2% ω surge); spinDelta = −390 rad/s; linearImpulse = 5500 eu; damageMultiplier 1.9×; burstBonus +20% (chain tabs engage burst mechanism). QTE "Chain Barrier" 350 ms (J during phase 2): success → full chain radius at impact; miss → −25% spinDelta. Self-cost −180 spinDelta.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: slope-climb PE model; BeySpirit ×4.0 velocity amplifier; second +6.2% spin-up at impact contact; chain elastic absorption in phase 2.
+
+---
+
+### [Case 787 — [COMBO] Chain Strike: BU Blade Chain Retraction-Momentum Lateral Strike (3-key: →↑J)](./13%20case%20study.md#case-787)
+
+**Category**: Combo — chain retraction spin-steal contact  
+**Sequence**: moveRight → moveUp → attack  
+**Key Physics**: Combo expression of Case 785 BU Blade Chain retraction. Phase 1 (→): right-flank approach. Phase 2 (↑): swing upward to opponent's burst-tab elevation. Phase 3 (J): contact at retraction moment — chain retraction spin-steal; spinDelta = −42 rad/s; damageMultiplier 1.28×; lockMs 45. BU Blade Chain part required. Cost 15, universal.  
+**Engine Note**: chain retraction spin-steal at combo scale (no BeySpirit slope-climb); ceiling: 1.28× ≤ 1.5×; 45 ms ≤ 300 ms; −42 ≤ 50 all pass.
+
+---
+
+### [Case 788 — [GIMMICK] Burning Cerberus Ten Wide Cross Attack Customize Bearing Base: Triple Attacker Three-Head Geometry, Cross Attack SP Recoil, and CBB Upper-Attack Resistance](./13%20case%20study.md#case-788)
+
+**Category**: Gimmick — Triple Attacker 3-head geometry + CBB zombie platform + Cross Attack SP tether  
+**Parts**: Burning Cerberus, Plastic Gen — Triple Attacker AR (Case 153) + Ten Wide WD (Case 154) + Neo Right SG DB (Cases 155–156) + Cross Attack SP (Case 157) + Customize Bearing Base (Case 158)  
+**Key Physics**: Triple Attacker AR (Case 153): 3 heads at 120° spacing — Head A θ = 23°/38° dual-face; Head B θ = 28° force-smash (C_smash = 0.883); Head C α = 28° spike (stress-concentrated). Dual-head engagement (arc < 120°): chain bonus J_chain = 1.12×J_single. Cross Attack SP (Case 157): α = 80°; J_recoil = 0.985×J (near-total radial recoil); anime chain-anchor protrusions for Chain Flame BeySpirit. CBB (Case 158): J_vertical = 0.30×J (−22% vs flat base); zombie-spin double-bearing τ_coupling ≈ 2.4×10⁻⁶ N·m (near-zero spin steal). Assembly [M]: m ≈ 31.6 g; I ≈ 1.061×10⁻⁵ kg·m²; ω₀ = 500 rad/s; KE₀ ≈ 1.326 J.  
+**Engine Note**: dual-head chain bonus ×1.12; CBB upper-attack absorption −22%; Cross Attack SP as BeySpirit chain-anchor point.
+
+---
+
+### [Case 789 — [SPECIAL MOVE] Chain Flame: Leon Zagart / Burning Cerberus (Beyblade V-Force)](./13%20case%20study.md#case-789)
+
+**Category**: Special Move — proximity tether DoT + bit-beast theft at 6.66 s  
+**Bey / Blader**: Leon Zagart (Zeo Zagart) / Burning Cerberus (Beyblade V-Force)  
+**Franchise Move**: Burning Cerberus attaches spectral flame-chains to opponent, dealing continuous damage. If proximity sustained 6.66 seconds: bit-beast stolen for 15 seconds.  
+**Key Physics**: Trigger: both beys within 10 units. Phase 1 (chain_tether): BeySpirit projects flame-chains from Cross Attack SP protrusions; forceState "chain_tether". Phase 2 (proximity_burn, tick-based): opponent spinDecayRate ×1.5; opponent spinDelta = −0.8/tick at 60 Hz (= −48 rad/s per second). Chain break if opponent exits 10 units → all effects stop, theft does NOT trigger. Self-cost: spinDecayRate ×1.1 per second. QTE "Flame Hold" (hold J): reduces self ×1.1 to ×1.05. Phase 3 (bit_beast_theft at t = 6.66 s continuous): opponent "bit_beast_stolen" debuff 15000 ms (no SP earned; next special blocked 15 s); self spinDelta = −80. Full 6.66 s drain: opponent cumulative −320 rad/s. Total self-cost −120. Cooldown 7000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: proximity timer resets on range break (chain-break anti-kite mechanic); bit-beast theft is special-move-only; sustained DoT model — not single-hit spinDelta.
+
+---
+
+### [Case 790 — [SPECIAL MOVE] Chain Storm: Leon Zagart / Burning Cerberus (Beyblade V-Force)](./13%20case%20study.md#case-790)
+
+**Category**: Special Move — expanding chain-whip AoE sweep  
+**Bey / Blader**: Leon Zagart (Zeo Zagart) / Burning Cerberus (Beyblade V-Force)  
+**Franchise Move**: Burning Cerberus spins up until all 8 chains extend fully outward, then releases the full rotational momentum in a sweeping AoE burst. Chains rake any beyblade in the stadium.  
+**Key Physics**: Phase 1 (spin_up 800ms): chain retraction reverse — BeySpirit drives ω up; all 8 chains extend to r = 22 mm. Phase 2 (chain_sweep): simultaneous AoE burst to all opponents within 120px. Per-target: spinDelta = −75 rad/s; linearImpulse = 1100 eu outward radial; dmgMult 1.65×; burstBonus +12% (chain tab burst geometry). Self-cost −200 spinDelta (full chain-extension drain). QTE "Chain Sweep" 250 ms (tap J before sweep fires): success → all spinDeltas + 20%; miss → standard. Cooldown 6500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: AoE radial burst — all opponents; chain extension reverses the retraction spin-up model; special-move-only AoE sweep.
+
+---
+
+### [Case 791 — [SPECIAL MOVE] Chain Thunder: Leon Zagart / Burning Cerberus (Beyblade V-Force)](./13%20case%20study.md#case-791)
+
+**Category**: Special Move — lightning chain single-target stun  
+**Bey / Blader**: Leon Zagart (Zeo Zagart) / Burning Cerberus (Beyblade V-Force)  
+**Franchise Move**: One Cerberus chain becomes a lightning conductor; Cerberus orbits the opponent once and lashes out with a single electrified chain strike. Stuns the target — opponent controls lock for 500 ms.  
+**Key Physics**: Phase 1 (orbit 500 ms): Cerberus circles opponent at r = 80 px (BeySpirit sustains orbit close range). Phase 2 (lightning_lash): single chain at θ_chain = 90° extends to r = 22 mm; spinDelta = −120 rad/s; linearImpulse = 2000 eu; dmgMult 1.85×; burstBonus +15%. Stun debuff: opponentInputLocked = true for 500 ms (unique debuff — first control-lock in CS13). Self-cost −130 spinDelta. QTE "Thunder Chain" 200 ms (J): success → stun duration 700 ms + burstBonus +20%. Cooldown 7500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: opponent input-lock 500–700 ms is special-move-only; single-chain BeySpirit amplification model; orbit phase before strike delivery.
+
+---
+
+### [Case 792 — [COMBO] Three-Head Slash: Burning Cerberus Triple AR Contact (3-key: J↑J)](./13%20case%20study.md#case-792)
+
+**Category**: Combo — triple-head chain smash sequence  
+**Sequence**: attack → moveUp → attack  
+**Key Physics**: Combo expression of Triple Attacker AR 3-head geometry (Case 788). Phase 1 (J): Head A dual-face contact; spinDelta = −28 rad/s; dmgMult 1.22×; lockMs 25. Phase 2 (↑): orbital re-approach arc; elevation angle. Phase 3 (J): Head B force-smash C_smash = 0.883; spinDelta = −40 rad/s; dmgMult 1.38×; lockMs 35. Each hit individually within ceiling. Combined spinDelta −68 from two independent sources (28 and 40, each ≤50 individually); combined lockMs 60 ≤ 300. Cost 25, universal.  
+**Engine Note**: two-source spinDelta (28 + 40) each ≤ 50 individually; combined lock 60 ms; dual-head chain bonus ×1.12 applies to second hit.
+
+---
+
+### [Case 793 — [GIMMICK] Grand Capricorn 145D — Grand AR Multi-Contact Geometry and D-Tip Orbit](./13%20case%20study.md#case-793)
+
+**Category**: Gimmick — aggressive multi-contact AR + Defense tip orbit  
+**Parts**: Grand Capricorn 145D [M] — Grand AR + 145 track + Defense tip  
+**Key Physics**: Grand AR [M]: large, multi-contact aggressive wheel; 4 primary contacts at r_AR ≈ 22 mm [M]; θ_smash ≈ 20° [M]; C_smash ≈ 0.82 [M]. 145 track: height 14.5 mm. D (Defense) tip: r_tip ≈ 7 mm [M]; μ_D ≈ 0.06 [M] — wide rubber ring, low friction, stable orbit. Assembly [M]: m ≈ 42.0 g; I ≈ 1.20×10⁻⁵ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 2.160 J. dω/dt ≈ −1.85 rad/s² [M] (Defense tip stamina platform). BeySpirit amplification factor ×2.2 [M] (Tsubasa-era mid-tier blader).  
+**Engine Note**: high-mass AR combined with low-friction D tip gives offense/stamina hybrid; C_smash 0.82 is among highest in gimmick assemblies.
+
+---
+
+### [Case 794 — [SPECIAL MOVE] Claw of the Storm: Tsubasa Otori early / Grand Capricorn 145D](./13%20case%20study.md#case-794)
+
+**Category**: Special Move — claw-rend burst attack  
+**Bey / Blader**: Tsubasa Otori (early MFB) / Grand Capricorn 145D  
+**Franchise Move**: Grand Capricorn rises up and rakes across the opponent with claw-shaped BeySpirit energy.  
+**Key Physics**: Phase 1 (rise 400 ms): beyTiltAngle → 35°. Phase 2 (claw_rend): 3 sequential raking contacts from multi-contact AR; spinDelta = −180 rad/s total (−60 per claw, 3 claws); linearImpulse = 2800 eu; dmgMult 1.80×; burstBonus +14%; lockMs = 120 ms (raking traversal). Self-cost −100 spinDelta. QTE "Storm Claw" 220 ms (J): miss → only 2 of 3 claws land. Cooldown 5500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: 3-claw multi-hit model; each claw −60 ≤ 50 checked individually (three sources); total combined delivers −180; lockMs 120 ms total traversal.
+
+---
+
+### [Case 795 — [COMBO] Horn Charge: Grand AR Rising Smash (3-key: ↑↑J)](./13%20case%20study.md#case-795)
+
+**Category**: Combo — double-advance horn smash  
+**Sequence**: moveUp → moveUp → attack  
+**Key Physics**: Combo expression of Grand AR contact geometry. Double advance closes orbital gap rapidly; AR contact at full approach momentum. spinDelta = −46 rad/s; dmgMult 1.38×; lockMs 50. Cost 0 (free), universal. C_smash 0.82 utilized at standard orbital impact; no BeySpirit overhead.  
+**Engine Note**: free combo using high-C_smash AR; 46 ≤ 50; 1.38× ≤ 1.5×; 50 ms ≤ 300 ms — all ceiling checks pass.
+
+---
+
+### [Case 796 — [GIMMICK] Venom/Erase Devolos Vanguard Bullet — Dual-Layer Clone and V2 Bullet Tip](./13%20case%20study.md#case-796)
+
+**Category**: Gimmick — dual-spin-direction clone mechanic + Bullet rubber driver  
+**Parts**: Venom/Erase Devolos Vanguard Bullet (DB/Burst BU era) — DB Core Devolos + BU Blade Venom (Burst-direction) or Erase (Attack-direction) + Vanguard disc + Bullet driver  
+**Key Physics**: Dual-layer system: Venom blade = counter-clockwise (burst-direction), Erase blade = clockwise (standard attack). In anime, both layers can be active simultaneously — the Clone Attack BeySpirit creates a second phantom Devolos with the opposite spin direction, enabling simultaneous two-direction contact. Bullet driver [M]: μ_rubber ≈ 0.80; r_tip ≈ 4 mm; high-aggression orbit. dω/dt_Bullet ≈ −180 rad/s² [M] (short match duration intended). Assembly [M]: m ≈ 33.0 g; I ≈ 9.5×10⁻⁶ kg·m²; ω₀ = 650 rad/s; KE₀ ≈ 2.006 J.  
+**Engine Note**: dual-spin clone is special-move-only; Bullet driver fastest-orbit rubber tip in Devolos assembly; BeySpirit required to actuate the anti-spin layer.
+
+---
+
+### [Case 797 — [SPECIAL MOVE] Clone Attack: Aiger Akabane / Venom/Erase Devolos Vanguard Bullet](./13%20case%20study.md#case-797)
+
+**Category**: Special Move — dual-spin phantom clone simultaneous strike  
+**Bey / Blader**: Aiger Akabane / Venom/Erase Devolos Vanguard Bullet (DB/Burst BU era)  
+**Franchise Move**: Devolos' dual-layer BeySpirit creates a phantom clone that spins opposite to the real Devolos; both hit simultaneously from opposite angles. Impossible to burst-guard both at once — burst-tab guard is direction-specific.  
+**Key Physics**: Phase 1 (clone_materialize 600 ms): BeySpirit splits; phantom clone appears at diametrically opposite arena position. Phase 2 (simultaneous_strike): real Devolos and clone both contact opponent in same tick. Real bey: spinDelta = −90 rad/s; linearImpulse = 1600 eu; dmgMult 1.70×; burstBonus +12%. Phantom clone: spinDelta = −60 rad/s; linearImpulse = 1000 eu; dmgMult 1.55×; burstBonus +25% (opposite-spin burst bypass). Total per event: −150 combined spinDelta; burst at least one direction. QTE "Mirror Strike" 200 ms (J): success → both hits at full; miss → clone at 60%. Self-cost −120. Cooldown 6500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: two-source spinDelta (90 + 60, each ≤ 50 fails individually — BeySpirit override justifies; special-move-only dual source); opposite-direction burst bypass is special-move-only.
+
+---
+
+### [Case 798 — [SPECIAL MOVE] Bullet Split: Aiger Akabane / Venom/Erase Devolos Vanguard Bullet](./13%20case%20study.md#case-798)
+
+**Category**: Special Move — high-speed Bullet driver ring-out charge  
+**Bey / Blader**: Aiger Akabane / Venom/Erase Devolos Vanguard Bullet  
+**Franchise Move**: Devolos accelerates to maximum Bullet-driver speed and fires directly through the opponent toward the ring edge, carrying both beys toward ring-out.  
+**Key Physics**: Phase 1 (bullet_charge 500 ms): Bullet rubber driver; BeySpirit ×2.5; v_charge = 1.5 × 2.5 = 3.75 m/s [M]. Phase 2 (split_through): linear penetration; spinDelta = −50 rad/s; linearImpulse = 1400 eu; knockbackImpulse = 12000 eu (ring-out priority); dmgMult 1.55×; burstBonus +8%. Self-cost −150 spinDelta (rubber tip drain at BeySpirit speed). QTE "Bullet Split" 200 ms (J): success → knockbackImpulse 14000 eu; miss → 12000 eu. Cooldown 5500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: knockbackImpulse 12000–14000 eu is highest ring-out threat in CS13; rubber driver spin drain is the limiting mechanic.
+
+---
+
+### [Case 799 — [COMBO] Chain Dispel: Burning Cerberus Chain Spin-Reset (3-key: KK↑)](./13%20case%20study.md#case-799)
+
+**Category**: Combo — chain retraction defensive spin-reset  
+**Sequence**: defense → defense → moveUp  
+**Key Physics**: Burning Cerberus retracts all 8 chains via double-K guard brace, then uses the angular momentum conservation spin-up (+6.2% ω per retraction, Case 788) to escape while simultaneously dispersing an applied debuff. Double-K retracts chains twice: first KK triggers chain retraction ×2 → ω boost +(2 × 6.2%) = +12.4%; moveUp exits the zone. Primary effect: cleanse one active debuff (chain retraction dispersal — anime: chains physically throw off energy fields). No direct damage output. Cost 0 (free), universal. selfSpinGain +15 (from double retraction momentum).  
+**Engine Note**: combo debuff-cleanse mechanic; no damage output; spin-up only; free utility combo.
+
+---
+
+### [Case 800 — [GIMMICK] Hazard Kerbeus 7 Atomic — 7 Forge Disc Dual-Spin and Atomic Rubber Bearing Orbit](./13%20case%20study.md#case-800)
+
+**Category**: Gimmick — dual-spin layer + Atomic bearing-rubber tip hybrid orbit  
+**Parts**: Hazard Kerbeus 7 Atomic [M] — Hazard Kerbeus DB Core + 7 Forge Disc + Atomic driver  
+**Key Physics**: Hazard Kerbeus layer [M]: aggressive 3-head Kerbeus geometry; dual-spin compatible (mode-switch for CW or CCW). 7 Forge Disc [M]: 7-wing disc; m ≈ 10.5 g [M]; I ≈ 1.2×10⁻⁶ kg·m² [M]. Atomic driver [M]: bearing inner race (low friction r_bearing ≈ 2 mm, μ ≈ 0.015 [M]) + rubber outer ring (r_rubber ≈ 6 mm, μ_rubber ≈ 0.80 [M]); outer ring only engages on high orbital force. At low force: bearing mode → near-ES spin endurance; at high force: rubber mode → aggressive orbit. dω/dt_bearing ≈ −0.85 rad/s² [M] (bearing only). Assembly [M]: m ≈ 34.0 g; I ≈ 9.8×10⁻⁶ kg·m²; ω₀ = 650 rad/s; KE₀ ≈ 2.072 J.  
+**Engine Note**: Atomic dual-mode tip; bearing mode stamina vs rubber mode orbit; mode auto-switches by applied lateral force.
+
+---
+
+### [Case 801 — [SPECIAL MOVE] Chain Counter: Hikaru Hizashi / Hazard Kerbeus 7 Atomic](./13%20case%20study.md#case-801)
+
+**Category**: Special Move — counter-spin absorption burst  
+**Bey / Blader**: Hikaru Hizashi / Hazard Kerbeus 7 Atomic  
+**Franchise Move**: Kerbeus switches spin direction mid-flight and intercepts an incoming attack, absorbing the opponent's own momentum and firing it back.  
+**Key Physics**: Trigger condition: opponent special move or combo attack in active window (1200 ms). Phase 1 (counter_stance 1200 ms): bearing mode locks Kerbeus stable; BeySpirit spin-direction flip queued. On trigger: Phase 2 (absorption_flip): dual-spin mode switches; opponent impulse absorbed: spinGain = clamp(0.35 × opponentImpulse_eu / 100, 20, 80) [M]; reflected burst: spinDelta_opponent = −(80 + 0.40 × absorbed_spinGain × 2); linearImpulse_reflected = 1.8 × opponent_linearImpulse (capped 3500 eu); dmgMult 1.75×. Self-cost −45 (absorbed energy offsets most drain). Timeout (no trigger): selfCost −160. QTE "Counter Flip" 150 ms. Cooldown 6000 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: reactive trigger (requires opponent attack); spinGain absorption formula; reflected linearImpulse × 1.8 factor (counter-amplification).
+
+---
+
+### [Case 802 — [COMBO] Atomic Rebound: 7 Disc Bearing-Mode Spin Steal (3-key: K↑K)](./13%20case%20study.md#case-802)
+
+**Category**: Combo — bearing-mode spin steal approach  
+**Sequence**: defense → moveUp → defense  
+**Key Physics**: Kerbeus enters bearing mode (K brace — Atomic outer rubber disengaged), advances silently (↑ — low orbit friction in bearing mode), double-braces at close range (K). Second K applies Atomic bearing coupling at near-zero closing speed: spinSteal = +22 rad/s (WD-style coupling). spinDelta_opponent = −22 rad/s. Minimal damage: dmgMult 1.05×; lockMs 30. Cost 0 (free), stamina type.  
+**Engine Note**: Atomic bearing coupling model same as WD spin-theft (Case 834 WD); free stamina combo; ceiling: 1.05× ≤ 1.5×; 22 ≤ 50; 30 ms ≤ 300 ms.
+
+---
+
+### [Case 803 — [SPECIAL MOVE] Dual Phantom: Aiger Akabane / Venom/Erase Devolos (DB alt assembly)](./13%20case%20study.md#case-803)
+
+**Category**: Special Move — triple-phantom orbital illusion  
+**Bey / Blader**: Aiger Akabane / Venom Erase Devolos (BeySpirit resonance form)  
+**Franchise Move**: Devolos generates three phantom copies at orbital resonance positions; the real Devolos is hidden among them. The opponent cannot identify the real bey.  
+**Key Physics**: 4-fold symmetry equivalent at 3 phantoms: CFF f_apparent = ω × 3 / (2π) = 650 × 3 / 6.28 = 310.5 Hz >> 60 Hz [M]. All 3 phantoms + real strike from 3 directions simultaneously. Per-phantom hit (3 total): spinDelta = −45 rad/s; linearImpulse = 600 eu; dmgMult 1.40×. One randomly designated real hit: burstBonus +22% (BeySpirit concentration). Phantom confusion debuff 1000 ms: opponentBurstGuardWindow × 0.50. Self-cost −80. QTE "Phantom Lock" 200 ms (J × 3 taps, same as Crazy Monkey): 3/3 → all full; partial → glancing on missed phantoms. Cooldown 5500 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: 3-source spinDelta (45 each, ≤ 50 individually per source — BeySpirit allows); phantom confusion debuff same model as Case 838.
+
+---
+
+### [Case 804 — [SPECIAL MOVE] Clone Cannon: Aiger Akabane / Venom/Erase Devolos](./13%20case%20study.md#case-804)
+
+**Category**: Special Move — clone-barrage multi-hit burst  
+**Bey / Blader**: Aiger Akabane / Venom/Erase Devolos  
+**Franchise Move**: Five rapid clone projections each strike the opponent in sequence — a clone barrage.  
+**Key Physics**: 5 rapid clone hits, 80 ms between each. Per hit: spinDelta = −35 rad/s; linearImpulse = 500 eu; dmgMult 1.35×; burstBonus +5%. QTE "Cannon" — 5× tap J (80 ms window each). Hit all 5 QTE: bonus 6th hit: spinDelta −60, linearImpulse 900 eu, dmgMult 1.65×. Cumulative 5/5 QTE + bonus: spinDelta −235; linearImpulse 3400 eu. Self-cost −90. Cooldown 6000 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: 5-hit rapid barrage — each hit ≤ 50 spinDelta and ≤ 50 rad/s individually; 6th bonus hit only on 5/5 QTE.
+
+---
+
+### [Case 805 — [COMBO] Clone Impact: Devolos Clone-Step Lateral Strike (3-key: →↑J)](./13%20case%20study.md#case-805)
+
+**Category**: Combo — clone-step feint into lateral contact  
+**Sequence**: moveRight → moveUp → attack  
+**Key Physics**: Devolos flickers a brief phantom image right (→ — creates visual ambiguity), approaches center-forward (↑), delivers Venom/Erase blade contact (J). The phantom flicker is visual-only (not a real second hit) but suppresses opponent K-guard for 80 ms during the advance window. On J hit: spinDelta = −44 rad/s; dmgMult 1.32×; lockMs 50. Cost 15, universal.  
+**Engine Note**: phantom flicker suppresses guard-input for 80 ms (visual tell suppression — partial, not invulnerability); 44 ≤ 50; 1.32× ≤ 1.5×; 50 ms ≤ 300 ms.
+
+---
+
+### [Case 806 — [GIMMICK] Strata Dragoon S — Rushing Boar AR and Neo SG Flat Base](./13%20case%20study.md#case-806)
+
+**Category**: Gimmick — Rushing Boar AR aggressive smash + Neo SG Flat drift  
+**Parts**: Strata Dragoon S, Plastic Gen — Rushing Boar AR + Ten Heavy WD + Neo Right SG + Flat Base  
+**Key Physics**: Rushing Boar AR [M]: boar-tusk shaped smash contacts; 2 primary forward-facing tusks at r ≈ 20 mm [M]; C_smash ≈ 0.85 [M] (forward tusk efficiency — highest AR C_smash in CS13 gimmick assemblies). WD: Ten Heavy ≈ 14.0 g [M]. Flat Base: μ = 0.30 [M]; r_tip = 3 mm [M]. Assembly [M]: m ≈ 29.5 g; I ≈ 5.8×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.044 J. dω/dt_flat ≈ −73.3 rad/s² [M].  
+**Engine Note**: C_smash 0.85 tusk geometry; flat-base orbit drift; short match window (Flat tip decay rate).
+
+---
+
+### [Case 807 — [SPECIAL MOVE] Co-Ring Cutter: Daichi Sumeragi / Strata Dragoon S (V-Force early)](./13%20case%20study.md#case-807)
+
+**Category**: Special Move — dual-bey linked AR cutter  
+**Bey / Blader**: Daichi Sumeragi / Strata Dragoon S (Beyblade V-Force, early arc)  
+**Franchise Move**: Strata Dragoon S locks its AR against an ally's AR to create a spinning cutter ring; the combined assembly fires as a single high-speed disc. Requires a second friendly bey in the same match.  
+**Key Physics**: If ally bey present and within 30 px: Phase 1 (AR_lock 400 ms): Dragoon S AR + Ally AR merge via BeySpirit coupling; combined effective radius r_cutter = r_AR + r_ally [M] ≈ 42 mm; I_cutter = I_AR + I_ally; ω maintained by BeySpirit. Phase 2 (cutter_disc): spinDelta = −250 rad/s; linearImpulse = 4000 eu; dmgMult 2.10×; burstBonus +20%. If no ally: reduced single-bey mode (spinDelta −120, impulse 2000 eu, dmgMult 1.65×). Self-cost −150; ally-cost −80. QTE "Cutter Lock" 250 ms (hold J). Cooldown 7000 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: ally-dependent power scaling; requires 2-player cooperative context; no ally → reduced mode automatically.
+
+---
+
+### [Case 808 — [COMBO] Ring Slash: Rushing Boar AR Tusk Drive (3-key: JJ↑)](./13%20case%20study.md#case-808)
+
+**Category**: Combo — double tusk forward drive  
+**Sequence**: attack → attack → moveUp  
+**Key Physics**: Two rapid Rushing Boar tusk contacts (JJ) then forward push (↑ — sustaining tusk drive direction). Hit 1: spinDelta = −42 rad/s; dmgMult 1.30×; lockMs 30. Hit 2 (reduced efficiency after first): spinDelta = −28 rad/s; dmgMult 1.20×; lockMs 20. Forward push ↑: additionalLockMs = 35. Each hit ≤ 50 individually; combined lock 85 ms ≤ 300. Cost 25, universal (C_smash 0.85 tusk justifies cost tier).  
+**Engine Note**: two-source spinDelta (42 + 28, each ≤ 50); combined lock 85 ms; cost-25 double-hit tier (matches Rock Smash Case 860 pattern).
+
+---
+
+### [Case 809 — [GIMMICK] Cosmic Pegasus F:D — Final Drive Tip and BeySpirit Speed Transcendence](./13%20case%20study.md#case-809)
+
+**Category**: Gimmick — F:D Final Drive mode-change + Super Cosmic Nova BeySpirit platform  
+**Parts**: Cosmic Pegasus F:D [M] — Cosmic Pegasus MFB wheel + 100 track + F:D Final Drive tip  
+**Key Physics**: Cosmic Pegasus wheel [M]: m ≈ 30.0 g; I ≈ 8.5×10⁻⁶ kg·m². F:D Final Drive [M]: two positions — Defense mode (sharp center, μ ≈ 0.03) → Attack mode (flat outer ring, μ ≈ 0.40) activated by centrifugal force at ω ≥ ω_switch ≈ 300 rad/s [M]. At high spin: defense mode (spin preservation); at low spin: attack mode (aggressive orbit). Assembly [M]: m ≈ 34.5 g; I ≈ 9.0×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.620 J. BeySpirit amplification for Gingka Hagane (Super Cosmic form) A_world = 10.0× [M] (unique case — extraordinary tier).  
+**Engine Note**: F:D centrifugal mode switch at ω threshold; A_world = 10.0× applies only to Super Cosmic Nova; all other Pegasus specials use standard blader tier.
+
+---
+
+### [Case 810 — [SPECIAL MOVE] Super Cosmic Nova: Gingka Hagane / Cosmic Pegasus F:D](./13%20case%20study.md#case-810)
+
+**Category**: Special Move — world-BeySpirit ultimate single-target devastation  
+**Bey / Blader**: Gingka Hagane / Cosmic Pegasus F:D (Metal Fury, final arc)  
+**Franchise Move**: Cosmic Pegasus condenses all the BeySpirit energy of the world into a single orbital approach — riders' spirits globally converge on Gingka. The most powerful single-target special in CS13. A_world = 10.0×.  
+**Key Physics**: Phase 1 (world_spirit_gather 1222 ms): beyTiltAngle → 0° (perfectly upright, maximum gyroscopic stability). Phase 2 (nova_strike): v_approach_phys ≈ 2.5 m/s → v_approach_anime = 2.5 × 10.0 = 25.0 m/s [M]; p = 0.0345 × 25.0 = 0.8625 N·s; linearImpulse = 0.8625 / 7.6×10⁻⁵ ≈ 11349 eu (capped at engine ceiling 6000 eu — world BeySpirit burst; cap applied). spinDelta = −600 rad/s (ceiling). dmgMult = 2.5× (ceiling). knockbackImpulse = 15000 eu. burstBonus +35%. Self-cost −300 spinDelta. QTE "Nova" 200 ms (J): miss → 70% all values. Invulnerability during gather 1222 ms. Cooldown 10000 ms (longest in CS13). powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: A_world = 10.0× unique to Super Cosmic Nova; engine caps applied (6000 eu, 600 rad/s, 2.5×); 10000 ms cooldown as game ceiling; single-use special in narrative terms.
+
+---
+
+### [Case 811 — [COMBO] Final Drive Surge: F:D Mode-Shift Attack (3-key: →↑J)](./13%20case%20study.md#case-811)
+
+**Category**: Combo — F:D mode-shift charge strike  
+**Sequence**: moveRight → moveUp → attack  
+**Key Physics**: Combo expression of Case 809 F:D centrifugal mode-switch. If ω ≥ 300 rad/s at combo trigger: defense mode → combo begins in defensive posture; approach (→↑) at low friction; J contact fires as F:D switches to attack mode during impact. spinDelta = −44 rad/s; dmgMult 1.35×; lockMs 50. If ω < 300 rad/s: attack mode already active; standard flat-tip orbit; spinDelta = −35 rad/s; dmgMult 1.25×; lockMs 40. Cost 15, balanced.  
+**Engine Note**: F:D mode state at combo trigger determines stat tier; centrifugal threshold mechanic expressed at combo scale.
+
+---
+
+### [Case 812 — [GIMMICK] Storm Spriggan Double Gyro — Dual Counter-Spin Core and Auto-Balance](./13%20case%20study.md#case-812)
+
+**Category**: Gimmick — dual counter-spin gyroscopic stabilization + auto-balance  
+**Parts**: Storm Spriggan Double Gyro (Burst BU system) — Spriggan Requiem layer + forge disc + driver  
+**Key Physics**: Storm Spriggan dual-spin core: inner and outer rotor spin in opposite directions. Counter-rotation cancels net angular momentum: L_net = I_inner × ω_inner − I_outer × ω_outer ≈ 0 when balanced [M]. Effect: near-zero precession — Spriggan remains perfectly upright indefinitely (self-correcting tilt). At impact: inner/outer momentum asymmetry generates Counter Break torque. Assembly [M]: m ≈ 36.0 g; I_total ≈ 1.05×10⁻⁵ kg·m²; ω₀_outer = 650 rad/s; KE₀ ≈ 2.216 J.  
+**Engine Note**: L_net ≈ 0 zero-precession; Counter Break exploits asymmetric momentum at impact; auto-balance mechanic = beyTiltAngle self-corrects each tick.
+
+---
+
+### [Case 813 — [SPECIAL MOVE] Counter Break: Free de la Hoya / Storm Spriggan Double Gyro](./13%20case%20study.md#case-813)
+
+**Category**: Special Move — counter-rotation burst reversal  
+**Bey / Blader**: Free de la Hoya / Storm Spriggan Double Gyro (Burst BU)  
+**Franchise Move**: When struck, Storm Spriggan's counter-spin core amplifies the incoming impact and fires it back in the opposite direction.  
+**Key Physics**: Trigger: opponent attack ≥ 400 eu during 1500 ms window. On trigger: absorbed spinGain = 0.40 × opponent_spinDelta_delivered [M]; Counter Break: spinDelta_opponent = −(100 + absorbed_spinGain); linearImpulse_reflected = 2.0 × opponent_linearImpulse (capped 3500 eu); dmgMult 1.85×; burstBonus +20%. Timeout (no attack): selfCost −180 (sustained dual-spin drain). QTE "Counter" 150 ms J. Self-cost (on trigger): −30. Cooldown 5500 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: reactive trigger mechanic; reflected impulse ×2.0; absorbed spinGain adds to counter spinDelta.
+
+---
+
+### [Case 814 — [COMBO] Quick Counter: Spriggan Dual-Spin Lateral Deflect (3-key: KJ↑)](./13%20case%20study.md#case-814)
+
+**Category**: Combo — guard-then-counter directional strike  
+**Sequence**: defense → attack → moveUp  
+**Key Physics**: K brace: counter-rotation absorbs incoming impulse (−20% incoming damage partial reduction); J fires immediately during rebound; ↑ exits away. spinDelta = −38 rad/s; dmgMult 1.28×; lockMs 45; spinGain +12 (counter-rotation energy recovery). Cost 15, universal.  
+**Engine Note**: K guard partial DR −20%; spinGain +12 from dual-spin absorption; 38 ≤ 50; 1.28× ≤ 1.5×; 45 ms ≤ 300 ms.
+
+---
+
+### [Case 815 — [LAUNCH] Crux Boost: Storm Spriggan Double Gyro Launch QTE](./13%20case%20study.md#case-815)
+
+**Category**: Launch-phase special — dual-spin counter-charge launch  
+**Bey / Blader**: Free de la Hoya / Storm Spriggan Double Gyro  
+**Franchise Move**: Storm Spriggan is launched with inner and outer rotors pre-synchronized to opposing max spin; the dual-spin gyroscopic stabilization kicks in immediately at launch.  
+**Key Physics**: LaunchPhase only — no powerCost, no cooldown. Launch QTE "Crux": hold J during launch charge to sync dual-spin; release on "Synced" indicator. Full sync (QTE hit): launchPower = 150% + dual-spin stabilization → initial beyTiltAngle = 0° (perfect upright); ω₀ bonus +8% (counter-spin resonance adds energy at launch). Partial sync (QTE miss): launchPower 100%; normal tilt variance. No in-match power cost — this is launch-phase only.  
+**Compatible beys**: Storm Spriggan Double Gyro only.  
+**Engine Note**: [LAUNCH] type — LaunchPhase only; no powerCost/cooldown; modifies launchPower and initial beyTiltAngle only.
+
+---
+
+### [Case 816 — [GIMMICK] Rock Zurafa R145WB — R145 Rubber Rim and WB Water Bottle Tip](./13%20case%20study.md#case-816)
+
+**Category**: Gimmick — R145 rubber rim lateral protection + WB wandering orbit  
+**Parts**: Rock Zurafa R145WB [M] — Rock fusion wheel + R145 track + WB tip  
+**Key Physics**: Rock wheel [M]: circular, dense; m ≈ 30.0 g [M]; I ≈ 8.4×10⁻⁶ kg·m² [M]; C_deflect ≈ 0.42 [M] (smooth rounded deflect type). R145 (Rubber Ring 145) [M]: height 14.5 mm; rubber-rim outer ring at r_ring ≈ 10 mm; k_R145 ≈ 0.60 [M] (40% lateral impulse absorbed by rubber rim — similar to ED145 mechanism). WB (Water Bottle) [M]: hollow spherical bottom; μ_WB ≈ 0.15 [M]; erratic orbit pattern from spherical contact geometry. Assembly [M]: m ≈ 36.0 g; I ≈ 9.5×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.710 J.  
+**Engine Note**: R145 rubber rim 40% impulse absorption; WB erratic orbit; stamina-capable despite erratic movement.
+
+---
+
+### [Case 817 — [SPECIAL MOVE] Crushing Blast: Reiji Mizuchi / Rock Zurafa R145WB](./13%20case%20study.md#case-817)
+
+**Category**: Special Move — gravity slam mass-impact  
+**Bey / Blader**: Reiji Mizuchi / Rock Zurafa R145WB  
+**Franchise Move**: Rock Zurafa uses its massive neck (giraffe BitBeast) to drive down onto the opponent from above.  
+**Key Physics**: Phase 1 (neck_rise 600 ms): beyTiltAngle → 40°; WB wobble amplifies. Phase 2 (gravity_slam): BeySpirit ×2.0 [M]; v_slam = 5.0 m/s [M]; p = 0.036 × 5.0 = 0.180 N·s; linearImpulse ≈ 2370 eu ≈ 2200 eu [M]; spinDelta = −130 rad/s; dmgMult 1.70×; burstBonus +12%. R145 ring absorbs 40% recoil → self-cost −70 (reduced by rubber rim). QTE "Crush" 200 ms (J). Cooldown 5500 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: R145 ring self-recoil absorption model; gravity-slam BeySpirit ×2.0 mid-tier; same vertical impulse approach as Colossus Hammer but non-ground-knock.
+
+---
+
+### [Case 818 — [COMBO] Rock Slam: R145 Rubber Rim Brace Strike (3-key: K↑J)](./13%20case%20study.md#case-818)
+
+**Category**: Combo — rim-brace approach then smash  
+**Sequence**: defense → moveUp → attack  
+**Key Physics**: K brace: R145 rubber rim absorbs incoming (−40% impulse); ↑ advances behind the brace; J delivers Rock wheel deflect smash. spinDelta = −36 rad/s; dmgMult 1.28×; lockMs 45; spinGain +8 (R145 rubber rebound recovery). Cost 15, defense.  
+**Engine Note**: R145 rim −40% DR on K brace; +8 spin recovery from rubber rebound; 36 ≤ 50; 1.28× ≤ 1.5×.
+
+---
+
+### [Case 819 — [GIMMICK] Rock Crow 125FS — Crow AR Wind Barrier and FS Flat Sharp Orbit](./13%20case%20study.md#case-819)
+
+**Category**: Gimmick — Crow AR aerodynamic wind barrier + FS orbital attack  
+**Parts**: Rock Crow 125FS [M] — Rock wheel (custom Crow AR for plastic-gen) or Rock MFB wheel + 125 track + FS tip  
+**Key Physics**: Crow AR [M]: 4-wing crow-feather shaped contacts at r ≈ 20 mm [M]; C_smash ≈ 0.72 [M]. At ω ≥ 400 rad/s: aerodynamic wind barrier effect — incoming attacks within 15px radius deflected with k_wind ≈ 0.30 [M] (30% force reduction from wind pressure). 125 track [M]: moderate height 12.5 mm. FS tip [M]: μ_FS ≈ 0.25 [M]; r_eff ≈ 2.5 mm [M]. Assembly [M]: m ≈ 34.0 g; I ≈ 9.0×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.620 J.  
+**Engine Note**: aerodynamic wind barrier active at ω threshold; k_wind = 0.30 passive deflection; FS moderate orbit.
+
+---
+
+### [Case 820 — [SPECIAL MOVE] Crow Crusher [JOINT]: both players' Crow-type specials within 200 ms server window](./13%20case%20study.md#case-820)
+
+**Category**: Special Move — joint cooperative smash (first joint special in CS13)  
+**Bey / Blader**: Tsubasa Otori / Rock Crow 125FS + Kenta Yumiya / Flame Sagittario (co-bladers)  
+**Franchise Move**: Both bladers simultaneously fire their Crow special — Crow Crusher activates only when both specialTap inputs arrive within the 200 ms server window. Combined crow-spirit energy multiplies the impact. First joint special in CS13.  
+**Key Physics**: Server joint detection: both player specialTap ∈ [t, t+200ms]. Phase 1 (crow_convergence 800 ms): both beys approach target from opposite vectors; BeySpirit crow spirits merge. Phase 2 (crusher_impact): combined hit. Player 1: spinDelta = −200 rad/s; linearImpulse = 3500 eu; dmgMult 2.00×. Player 2: same values applied simultaneously. burstBonus +30% per source (two simultaneous burst vectors — highest burstBonus in any CS13 case). Self-cost each: −120. If joint window missed (only one fires): each fires solo at 60% values. Cooldown 7000 ms per player. powerCost 100 each.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: joint special requires both specialTap within 200 ms server window; first joint mechanic in CS13; +30% burstBonus per source is special-move-only.
+
+---
+
+### [Case 821 — [COMBO] Crow Dive: Rock Crow Wing Dive Strike (3-key: ↑↑J)](./13%20case%20study.md#case-821)
+
+**Category**: Combo — double-advance wing dive  
+**Sequence**: moveUp → moveUp → attack  
+**Key Physics**: Double advance into orbital approach; Crow AR wing contact at apex. Wind barrier active during approach (−30% incoming damage for 200 ms approach phase). J delivers wing smash. spinDelta = −40 rad/s; dmgMult 1.30×; lockMs 45. Cost 15, universal.  
+**Engine Note**: wind barrier partial DR −30% during approach phase only (200 ms); 40 ≤ 50; 1.30× ≤ 1.5×.
+
+---
+
+### [Case 822 — [GIMMICK] Flash Leopard 2 — AR Stinger Geometry and Cross Fire BeySpirit Charge](./13%20case%20study.md#case-822)
+
+**Category**: Gimmick — aggressive stinger AR + stacked-fire special platform  
+**Parts**: Flash Leopard 2 [M] — Flash Leopard 2 AR + heavy WD + Neo Right SG + Flat Base  
+**Key Physics**: Flash Leopard 2 AR [M]: leopard-claw and fang multi-contact attack ring; 3 stinger contacts at r ≈ 20 mm [M]; C_smash ≈ 0.80 [M]; additional spike contact (C_spike ≈ 0.92 [M] — narrow point concentration). Assembly [M]: m ≈ 28.0 g; I ≈ 5.5×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 0.990 J. BeySpirit amplification ×2.2 [M] (Robert Jurgens, European champion-tier blader).  
+**Engine Note**: spike contact C = 0.92 is highest single-contact C value in plastic-gen assemblies; stacked-fire two-special assembly (Cross Fire + Blaze Cross).
+
+---
+
+### [Case 823 — [SPECIAL MOVE] Cross Fire: Robert Jurgens / Flash Leopard 2](./13%20case%20study.md#case-823)
+
+**Category**: Special Move — X-pattern crossing strike  
+**Bey / Blader**: Robert Jurgens / Flash Leopard 2 (original anime, European Championship arc)  
+**Franchise Move**: Two Leopard energy projections cross through the opponent from two perpendicular directions simultaneously.  
+**Key Physics**: Phase 1 (cross_charge 500 ms): BeySpirit splits into two streams; cross pattern forms. Phase 2 (cross_strike): two perpendicular hits. Horizontal: spinDelta = −80 rad/s; linearImpulse = 1200 eu; dmgMult 1.65×. Vertical (simultaneous): spinDelta = −60 rad/s; linearImpulse = 900 eu; dmgMult 1.55×. Combined: spinDelta −140; burst from both vectors +14% each = effectively harder to guard. Self-cost −130. QTE "Cross" — two simultaneous ← and J (50 ms window — precision). Cooldown 6000 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: two perpendicular simultaneous hits; each spinDelta source checked individually (80 and 60, each ≤ 50 fails — BeySpirit override for special-move); combined burst.
+
+---
+
+### [Case 824 — [COMBO] Blaze Cross: Flash Leopard 2 Spike Lateral (3-key: →J←)](./13%20case%20study.md#case-824)
+
+**Category**: Combo — lateral cross-step spike  
+**Sequence**: moveRight → attack → moveLeft  
+**Key Physics**: Combo expression of Case 822 spike contact C = 0.92. Right-to-left sweeping contact — spike catches at lateral approach. spinDelta = −46 rad/s; dmgMult 1.38×; lockMs 40. Cost 0 (free), universal (spike geometry enables free-tier efficiency).  
+**Engine Note**: spike C = 0.92 delivers free-combo efficiency; 46 ≤ 50; 1.38× ≤ 1.5×; free tier justified by AR spike geometry.
+
+---
+
+### [Case 825 — [GIMMICK] Hell Crown 130FB — Hell Crown AR Burst-Pressure Design and FB Flat Ball Tip](./13%20case%20study.md#case-825)
+
+**Category**: Gimmick — Hell Crown AR burst-pressure contacts + FB Flat Ball orbit  
+**Parts**: Hell Crown 130FB [M] — Hell Crown AR + 130 track + FB Flat Ball tip  
+**Key Physics**: Hell Crown AR [M]: dark crown-themed AR with 6 pressure contacts designed to simultaneously engage multiple burst tabs; unusual geometry maximizes burst probability at expense of spinDelta efficiency. C_burst_pressure ≈ 0.40 [M] (low smash but high burst-tab engagement probability). 130 track [M]: height 13.0 mm, mid-range. FB (Flat Ball) [M]: spherical flat; μ_FB ≈ 0.30 [M]; r_eff ≈ 4 mm [M]; intermediate between Flat and semi-flat orbit behavior. Assembly [M]: m ≈ 29.5 g; I ≈ 6.5×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.170 J.  
+**Engine Note**: AR optimized for burstBonus at expense of spinDelta; 6-contact geometry; FB mid-tier orbit.
+
+---
+
+### [Case 826 — [SPECIAL MOVE] Crimson Flash: Kira Hayama / Hell Crown 130FB](./13%20case%20study.md#case-826)
+
+**Category**: Special Move — defense-pierce single burst-pressure spike  
+**Bey / Blader**: Kira Hayama / Hell Crown 130FB  
+**Franchise Move**: Hell Crown fires a single burst-piercing crimson energy spike that completely bypasses the opponent's defensive posture — defense-pierce mechanic: damageReduction = 0 on QTE hit.  
+**Key Physics**: Phase 1 (crown_charge 600 ms): BeySpirit condenses all 6 AR contacts into one focused spike. Phase 2 (crimson_pierce): spinDelta = −150 rad/s; linearImpulse = 2500 eu; dmgMult 2.00×; burstBonus +35%. Defense-pierce on QTE hit: damageReduction = 0 (first defense-pierce mechanic in CS13 — opponent's defense stat irrelevant). QTE "Crimson" 150 ms (J): miss → no defense-pierce, burstBonus +15% standard. Self-cost −110. Cooldown 6000 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: defense-pierce (damageReduction = 0) on QTE hit is special-move-only; first CS13 example; miss → standard hit without pierce.
+
+---
+
+### [Case 827 — [COMBO] Scarlet Charge: Hell Crown Multi-Tab Press (3-key: JKJ)](./13%20case%20study.md#case-827)
+
+**Category**: Combo — burst-tab press with guard suppression  
+**Sequence**: attack → defense → attack  
+**Key Physics**: Hell Crown 6-contact geometry at combo scale. J hits, K braces (−20% incoming DR during K phase), J re-hits. Hit 1 (J): spinDelta = −30 rad/s; dmgMult 1.20×; lockMs 25; burstBonus +8% (burst-tab pressure geometry). Hit 2 (J after K): spinDelta = −28 rad/s; dmgMult 1.20×; lockMs 25; burstBonus +10%. Total: −58 spinDelta combined (each ≤ 50 individually); combined lock 50 ms; cost 25, attack.  
+**Engine Note**: two-source (30 + 28, each ≤ 50); burstBonus above standard combo but justified by AR geometry; defense brace between hits.
+
+---
+
+### [Case 828 — [GIMMICK] Dead Phoenix 10 Friction — Dead Rubber Disc and Friction Driver Orbit](./13%20case%20study.md#case-828)
+
+**Category**: Gimmick — Dead rubber outer ring + Friction driver aggressive orbit  
+**Parts**: Dead Phoenix 10 Friction [M] — DB Core Phoenix + Dead Disc + Friction driver  
+**Key Physics**: Dead Disc [M]: rubber outer ring at r_ring ≈ 12 mm [M]; k_dead ≈ 0.65 [M] (35% impulse absorbed by rubber ring). Friction driver [M]: pyramid/cone shaped contact; r_tip ≈ 3 mm; μ_Friction ≈ 0.60 [M]; extremely aggressive lateral orbit at all spin levels. dω/dt_Friction ≈ −165 rad/s² [M] (very high decay — Friction driver is aggressive-orbit priority). Assembly [M]: m ≈ 32.0 g; I ≈ 8.5×10⁻⁶ kg·m²; ω₀ = 650 rad/s; KE₀ ≈ 1.796 J.  
+**Engine Note**: Dead Disc 35% rubber ring absorption; Friction driver highest spin-decay standard driver in Burst DB era.
+
+---
+
+### [Case 829 — [SPECIAL MOVE] Dead Stinger: Phi / Dead Phoenix 10 Friction](./13%20case%20study.md#case-829)
+
+**Category**: Special Move — rubber-disc sting burst injection  
+**Bey / Blader**: Phi / Dead Phoenix 10 Friction (Burst DB era)  
+**Franchise Move**: Dead Phoenix drives its rubber-tipped disc directly into the opponent's burst tab with precision — the rubber absorbs resistance, allowing the disc to inject force precisely at the burst unlock angle.  
+**Key Physics**: Phase 1 (disc_align 400 ms): Dead Disc angle set to opponent burst-tab axis. Phase 2 (stinger_inject): Dead Disc rubber ring concentrates at burst-tab point; spinDelta = −80 rad/s; linearImpulse = 1800 eu; burstBonus +40% (rubber precision injection bypasses burst defense geometry — highest single-hit burstBonus in CS13); dmgMult 1.70×. Self-cost −90. QTE "Sting" 200 ms (J). Cooldown 5500 ms. powerCost 100.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: +40% burstBonus from rubber disc precision model is highest single-hit burstBonus in CS13; not defense-pierce — it is burst-specific.
+
+---
+
+### [Case 830 — [COMBO] Phoenix Kick: Dead Disc Orbit Kick (3-key: ↑J↓)](./13%20case%20study.md#case-830)
+
+**Category**: Combo — Dead Disc arc kick  
+**Sequence**: moveUp → attack → moveDown  
+**Key Physics**: Upward approach arc (↑); J delivers Dead Disc rubber-ring contact at peak; downward carry-through (↓). Dead Disc rubber ring absorbs 35% recoil → self-cost recovery. spinDelta = −38 rad/s; dmgMult 1.28×; lockMs 45; burstBonus +12% (burst-tab efficiency); selfSpinGain +8 (Dead ring rebound). Cost 15, universal.  
+**Engine Note**: Dead ring rebound spinGain +8; burstBonus +12% from rubber injection geometry at combo scale; 38 ≤ 50.
+
+---
+
+### [Case 831 — [GIMMICK] Twin Noctemis 3Hit Jaggy — Colossus Mode Layer Lock and Burst-Stopper Tilt Geometry](./13%20case%20study.md#case-831)
+
+**Category**: Gimmick — Colossus mode mass-lock + 3Hit Jaggy contact geometry  
+**Parts**: Twin Noctemis 3Hit Jaggy [M] — Twin Noctemis DB Core (dual-body) + 3Hit Forge Disc + Jaggy driver  
+**Key Physics**: Twin Noctemis layer: two independent bodies — standard (I = 8.95×10⁻⁶ kg·m², KE₀ = 1.611 J, C_smash 0.69) vs Colossus Mode (bodies lock together, I = 9.87×10⁻⁶ kg·m², ω_factor × 0.799, KE = 1.135 J, C_smash 0.95). Mode trigger: ω ≥ 480 rad/s OR inbound impulse ≥ 1222 eu; BeySpirit can force-lock at any ω. Mode exit: ω < 350 rad/s. 3Hit Jaggy disc [M]: 3-Hit protrusions; Jaggy driver [M]: jagged edge contact; aggressive orbit erratic orbit. Assembly fully documented in Case 831 colossusModeTrigger() function.  
+**Engine Note**: colossusModeTrigger(ω, impulse, currentMode, specialOverride) as documented; I swap formula; BeySpirit specialOverride forces Colossus regardless of ω.
+
+---
+
+### [Case 832 — [SPECIAL MOVE] Colossus Hammer: Norman Tarver / Twin Noctemis 3Hit Jaggy](./13%20case%20study.md#case-832)
+
+**Category**: Special Move — aerial crush + ground-knock debuff  
+**Bey / Blader**: Norman Tarver / Twin Noctemis 3Hit Jaggy (Burst Surge)  
+**Franchise Move**: While in Colossus Mode, Noctemis executes a descending aerial crush that drives the opponent onto its side. First ground-knock debuff in CS13.  
+**Key Physics**: Phase 1 (force_colossus_lock): BeySpirit forces Colossus Mode regardless of ω (specialOverride = true). Phase 2 (aerial_crush): v_approach_anime = 3.5 × 2.5 = 8.75 m/s [M] (BeySpirit ×2.5); crush angle 60°; linearImpulse ≈ 3200 eu [M]. QTE "Colossus" hold J ≥ 400 ms: full power — spinDelta −200; linearImpulse 3200 eu; dmgMult 1.85×; burstBonus +18%; groundKnock true (beyTiltAngle_opponent → 70°; spinDecayRate ×2.0 for 2000 ms). Partial (tap < 200 ms): spinDelta −130; imp 2000; dmgMult 1.50×; burstBonus +8%; groundKnock false. Self-cost full −110, partial −80. powerCost 100; cooldown 5500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: groundKnock debuff — tiltAngle 70°→0° linear recovery over 2000 ms; spinDecayRate ×2.0→1.0 linear recovery; first ground-knock in CS13.
+
+---
+
+### [Case 833 — [COMBO] Colossus Press: Twin Noctemis Brief Colossus Downward Strike (3-key: ↓J↓)](./13%20case%20study.md#case-833)
+
+**Category**: Combo — brief Colossus-lock press with tilt debuff  
+**Sequence**: moveDown → attack → moveDown  
+**Key Physics**: Noctemis briefly engages Colossus lock at J impact moment. ↓ retraction extends contact. spinDelta = −44 rad/s; dmgMult 1.38×; lockMs 80 (extended); tiltDebuff +12° on opponent for 800 ms (partial ground-press, no spinDecayRate multiplier). Cost 25, defense.  
+**Engine Note**: brief Colossus lock at combo scale; tiltDebuff +12° partial (no spinDecay multiplier — insufficient force for full ground-knock); lockMs 80 ≤ 300.
+
+---
+
+### [Case 834 — [GIMMICK] Earth Eagle 145WD — Wing Deflection, Spin Theft, and Counter Stance Passive](./13%20case%20study.md#case-834)
+
+**Category**: Gimmick — Earth wheel passive deflection counter + WD spin theft  
+**Parts**: Earth Eagle 145WD [M] — Earth wheel + 145 track + WD tip  
+**Key Physics**: Earth wheel [M]: m ≈ 28.0 g; I ≈ 8.18×10⁻⁶ kg·m²; δ_earth ≈ 0.22 (22% incoming lateral impulse returned as counter-impulse to attacker) when spin ≥ 55% maxSpin AND inbound ≥ 500 eu [M]. WD tip [M]: μ ≈ 0.08; r_tip ≈ 6 mm; spin-theft θ = 0.07 per 200 ms contact at closing speed ≤ 1.5 m/s. Assembly [M]: m ≈ 35.0 g; I ≈ 9.33×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.679 J; dω/dt ≈ −17.7 rad/s² [M]. Counter Stance passive always-on; counter_impulse_eu = inbound × 0.22 on qualifying hits.  
+**Engine Note**: earthWheelDeflectionCounter() function documented; counter_impulse not a separate hit for burst purposes; WD wdSpinTheft() model same as Case 800.
+
+---
+
+### [Case 835 — [SPECIAL MOVE] Counter Smash: Tsubasa Otori / Earth Eagle 145WD](./13%20case%20study.md#case-835)
+
+**Category**: Special Move — dual-mode: proactive charge (Mode A) or reactive counter stance (Mode B)  
+**Bey / Blader**: Tsubasa Otori / Earth Eagle 145WD (MFB Metal Masters / Metal Fury)  
+**Franchise Move**: Eagle condenses purple BeySpirit energy field; Mode A = forward charge; Mode B = waits for opponent strike and reflects amplified.  
+**Key Physics**: Mode selection: tap J < 400 ms → Mode A; hold J ≥ 400 ms → Mode B. Mode A QTE hit: spinDelta −160; linearImpulse 2200 eu; dmgMult 1.75×; spinGain +30; self −85. Mode A miss: ×0.60 all values. Mode B (3000 ms window): opponent strike ≥ 600 eu triggers; absorbed spinGain = clamp(40 + (imp − 600)×0.04, 40, 80); reflected spinDelta −170 to −220; reflected impulse 2800–3600 eu ×1.25 QTE reflect → dmgMult 2.00× (+18% burst) / miss → 1.65× (+12%); self −35/−55. Timeout: spinDelta −100; imp 1500; dmgMult 1.50×; self −120. powerCost 100; cooldown 6000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: Mode B reactive counter; counterSmashModeB() function documented; timeout penalty is heaviest self-drain in CS13 combo specials.
+
+---
+
+### [Case 836 — [COMBO] Eagle Strike: Earth Wheel Deflect-and-Strike (3-key: K←J)](./13%20case%20study.md#case-836)
+
+**Category**: Combo — guard-deflect into wing arc counter  
+**Sequence**: defense → moveLeft → attack  
+**Key Physics**: K guard step: Earth wheel deflect angle −20% incoming damage (100 ms partial frame on non-attack phase). ← sweep: wide lateral arc. J: Earth wing contact. spinDelta = −40 rad/s; dmgMult 1.38×; lockMs 55; spinGain +22. Cost 15, balanced.  
+**Engine Note**: K guard partial −20% DR on non-damage phase; spinGain +22 from Earth deflection coupling; 40 ≤ 50; 1.38× ≤ 1.5×.
+
+---
+
+### [Case 837 — [GIMMICK] Kevin's Galman — 4-Fold AR Symmetry and Phantom Resonance Condition](./13%20case%20study.md#case-837)
+
+**Category**: Gimmick — 4-fold AR optical illusion phantom system  
+**Parts**: Kevin's Galman [M] — Galman AR + 8 Heavy WD + Semi-Flat blade base  
+**Key Physics**: Galman AR [M]: 4-fold C₄ symmetry; I_AR = 1.508×10⁻⁶ kg·m²; C_smash ≈ 0.72 [M]; f_CFF = ω × 4 / (2π) = 381.7 Hz >> 60 Hz → always-visible 4 phantoms at launch spin. Phantom orbital resonance (BeySpirit): T_orbit_res = 8π/ω; v_res = 17.98 m/s [M]; physical v_orbit ≈ 1.5 m/s → ampFactor × 12.0 [M]. Assembly [M]: m ≈ 25.5 g; I ≈ 3.922×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 0.706 J; dω/dt ≈ −95.6 rad/s² [M].  
+**Engine Note**: galmanPhantomCondition() function documented; 4-fold CFF threshold always exceeded at launch spin; resonance condition requires BeySpirit for v_orbit amplification.
+
+---
+
+### [Case 838 — [SPECIAL MOVE] Crazy Monkey Attack: Kevin / Galman (Beyblade original series)](./13%20case%20study.md#case-838)
+
+**Category**: Special Move — 4-phantom orbit multi-hit with guard-timing suppression  
+**Bey / Blader**: Kevin / Galman (original Beyblade anime, White Tigers, plastic gen)  
+**Franchise Move**: 4-fold AR + BeySpirit resonance creates 4 phantom copies; opponent cannot identify real Galman; strikes from all 4 directions.  
+**Key Physics**: Phase 1 (phantom_gen 400 ms): v_orbit_anime = 18.0 m/s [M]; T_orbit 0.0419 s; 4 positions 10.5 ms apart. PhantomConfusion debuff 1222 ms: opponentBurstGuardWindow × 0.50. Phase 2 (4× strikes): QTE "Monkey" — 4 × tap J, 150 ms each, hits 36 ms apart. Per hit (QTE hit): spinDelta −55; impulse 700 eu; dmgMult 1.40×; burstBonus +10%. Per hit (miss): spinDelta −30; impulse 400 eu; dmgMult 1.20×. One random phantom: +25% burstBonus. Cumulative all-4 hit: −220 spinDelta; 2800 eu. selfCost −70; powerCost 100; cooldown 5000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: phantomConfusionDebuff() and crazyMonkeyAttack() functions documented; 4-source spinDelta (55 each ≤ 50 — fails individually; BeySpirit override); burstGuardWindow × 0.50.
+
+---
+
+### [Case 839 — [COMBO] Monkey Rush: Galman AR Side-Weave Strike (3-key: ←J→)](./13%20case%20study.md#case-839)
+
+**Category**: Combo — side-weave wing contact  
+**Sequence**: moveLeft → attack → moveRight  
+**Key Physics**: Left-to-right sweep; Galman AR 4-fold geometry ensures wing contact at any spin phase (no dead spot). spinDelta = −32 rad/s; dmgMult 1.25×; lockMs 40. Cost 0 (free), universal.  
+**Engine Note**: 4-fold symmetry eliminates dead-spot in contact geometry; free combo; 32 ≤ 50; 1.25× ≤ 1.5×; 40 ms ≤ 300 ms.
+
+---
+
+### [Case 840 — [GIMMICK] Suoh Genji's Heat Salamander 12 Operate — Hybrid Attack/Defense Layer and Operate Driver Mode-Change System](./13%20case%20study.md#case-840)
+
+**Category**: Gimmick — hybrid blade/deflect AR + Operate mode-change driver  
+**Parts**: Heat Salamander 12 Operate [M] — Heat Salamander energy layer + 12 forge disc + Operate driver + chip  
+**Key Physics**: Heat Salamander layer [M]: 4 blade contacts (C_smash 0.68, θ 25°) + 4 deflector contacts (C_absorb 0.45, θ 65°); C_eff = 0.565 weighted [M]; I_layer = 4.932×10⁻⁶ kg·m². 12 disc [M]: I = 1.160×10⁻⁶ kg·m². Operate driver: Attack mode (r_tip 3 mm, μ 0.30, dω/dt −45.8 rad/s²) vs Defense mode (r_tip 6 mm, μ 0.08, dω/dt −24.4 rad/s²); endurance ratio 1.88× in Defense mode. Assembly [M]: m ≈ 35.0 g; I_total = 6.742×10⁻⁶ kg·m²; ω₀ = 650 rad/s; KE₀ ≈ 1.424 J. Mode set pre-launch; impact ≥ mode-lock threshold can shift modes.  
+**Engine Note**: operateDriverStats() function documented; Crimson Lotus Blaze requires Defense Mode at activation — only CS13 special with driver-mode pre-condition.
+
+---
+
+### [Case 841 — [SPECIAL MOVE] Crimson Lotus Blaze: Suoh Genji / Heat Salamander 12 Operate](./13%20case%20study.md#case-841)
+
+**Category**: Special Move — Defense-Mode-conditional dual-buff tornado (first dual-buff in CS13)  
+**Bey / Blader**: Suoh Genji / Heat Salamander 12 Operate (Burst X era)  
+**Franchise Move**: While in Defense Mode, BeySpirit spins Salamander to tornado speed generating a crimson aura that simultaneously boosts attack and defense — first dual-buff special in CS13.  
+**Key Physics**: Activation requirement: Operate driver in Defense Mode (only CS13 pre-condition special; if Attack Mode, input ignored, cooldown not consumed). Phase 1 (spin_up 600 ms): α_spinup = +350 rad/s² [M]; Δω = +210 rad/s; ω_tornado = 650 rad/s. Tornado aura v_tang = 52.0 m/s [M]. Phase 2 (dual_buff 2000 ms): (a) attackBuff +1.45× additive; (b) defenseBuff damageReduction +0.20 additive — simultaneous. Phase 3 QTE "Hellfire" (hold J; full ≥ 1000 ms, medium 500–999 ms, quick < 500 ms): Full: spinDelta −100; impulse 1350 eu; dmgMult 1.70×; burstBonus +15%. Medium: −65; 850 eu; 1.55×; +8%. Quick: −35; 500 eu; 1.35×; 0%. selfCost −55; powerCost 110; cooldown 6500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: tornadoAuraDualBuff() and crimsonLotusBlaze() functions documented; dual-buff (attack + defense simultaneously) is special-move-only; Defense Mode pre-condition is unique to this case.
+
+---
+
+### [Case 842 — [COMBO] Salamander Surge: Heat Salamander Charge-and-Brace (3-key: ↑JK)](./13%20case%20study.md#case-842)
+
+**Category**: Combo — attack-then-defend Operate-lock sequence  
+**Sequence**: moveUp → attack → defense  
+**Key Physics**: Salamander charges (↑), delivers blade contact (J), then K triggers Operate Lock post-strike. J hit: spinDelta = −38 rad/s; dmgMult 1.30×; lockMs 60. Operate Lock (J hit + K confirmed): incomingDamageReduction +12% for 500 ms (partial DR, not invulnerability). K miss → no Operate Lock. Cost 15, universal.  
+**Engine Note**: Operate Lock secondary effect conditional on both J and K confirming; +12% DR 500 ms is partial buff; salamanderSurgeCombo() function documented; 38 ≤ 50.
+
+---
+
+### [Case 843 — [GIMMICK] Chao Xin's Poison Virgo ED145ES — ED145 Eternal Defense Ring and ES Bearing Spin Isolation](./13%20case%20study.md#case-843)
+
+**Category**: Gimmick — ED145 free-rotating burst-absorption ring + ES bearing near-zero spin decay  
+**Parts**: Chao Xin's Poison Virgo ED145ES [M] — Poison fusion wheel + ED145 track + ES tip  
+**Key Physics**: Poison wheel [M]: asymmetric irregular profile; I = 8.220×10⁻⁶ kg·m²; C_deflect ≈ 0.40 [M]. ED145 [M]: freely rotating ring; k_ED = 0.55 (55% impulse to body, 45% to ring); I_ring independent = 1.500×10⁻⁷ kg·m². ES tip [M]: bearing-decoupled; μ_ES ≈ 0.005; r_tip = 0.5 mm; dω/dt = −0.106 rad/s² [M]; vs Sharp −4.24 rad/s²; endurance ratio 40× lower decay. Assembly [M]: m ≈ 38.0 g; I ≈ 8.795×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.583 J; theoretical t_spin to ω_min = 4717 s.  
+**Engine Note**: ed145RingAbsorption() and virgoAssemblyStats() documented; ES 40× endurance vs Sharp; oscillation undamped basis for Left Right Reverse Wheeling Forearm.
+
+---
+
+### [Case 844 — [SPECIAL MOVE] Left Right Reverse Wheeling Forearm: Chao Xin / Poison Virgo ED145ES](./13%20case%20study.md#case-844)
+
+**Category**: Special Move — undamped resonant oscillation AoE sweep (confirmed tag-battle multi-target)  
+**Bey / Blader**: Chao Xin / Poison Virgo ED145ES (MFB Metal Masters)  
+**Franchise Move**: ES undamped oscillation driven by BeySpirit resonance reaches 240 mm amplitude — sweeps entire arena width, hitting all opponents simultaneously (confirmed: Sophie + Wales tag battle).  
+**Key Physics**: Phase 1 (buildup 1800 ms): A₀ = 10 mm; β = 1.77 rad/s; A(t) = A₀ × e^(βt); at 1222 ms: A ≈ 82 mm (CFF images begin); at 1800 ms: A = 240 mm → v_sweep = 8.40 m/s → 3 after-image copies. AoE: all opponents in arena. Phase 2 QTE "Forearm" (← or →, 200 ms): correct direction: main spinDelta −65; impulse 700 eu; dmgMult 1.55×; burstBonus +10%; wrong/no input: −40; 500 eu; 1.35×. Plus 3 after-image chips each: −12 spinDelta, 180 eu, 1.15×. Cumulative correct: −101 spinDelta; 1240 eu. selfCost −85; powerCost 100; cooldown 5500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: wheelingOscillationBuild() and leftRightReverseWheelingForearm() documented; first confirmed 2-target AoE in CS13 (Sophie + Wales); AoE hits ALL opponents; ES undamped oscillation as physics basis.
+
+---
+
+### [Case 845 — [COMBO] Eternal Counter: ED145 Ring Brace + Virgo Counter (3-key: ↑KJ)](./13%20case%20study.md#case-845)
+
+**Category**: Combo — ED145 ring brace then counter-strike  
+**Sequence**: moveUp → defense → attack  
+**Key Physics**: Advance (↑); K brace presents ED145 ring to incoming attack (k_ED = 0.55 applied if opponent strikes during K window); spinSteal +18 on K contact; J counter: spinDelta = −35 rad/s; dmgMult 1.25×; lockMs 45. Cost 15, stamina.  
+**Engine Note**: eternalCounter() documented; ED145 ring k_ED 0.55 on K timing; spinSteal +18 independent of J hit; 35 ≤ 50; 1.25× ≤ 1.5×.
+
+---
+
+### [Case 846 — [GIMMICK] Bel Daizora's Destruction Belfyre Nexus Venture-2 — Destruction Blade Geometry and Venture-2 Rubber Wall-Orbit Driver](./13%20case%20study.md#case-846)
+
+**Category**: Gimmick — Destruction Blade slash/ram dual-contact + Venture-2 rubber wall-orbit  
+**Parts**: Destruction Belfyre Nexus Venture-2 [M] — Destruction Belfyre blade + Nexus core + Venture-2 driver + chip  
+**Key Physics**: Destruction Blade [M]: 3 contacts — slash face C_smash_slash = 0.82, θ = 20° (burst focus); ram face C_ram = 0.35, θ = 80° (ring-out focus); I_blade = 5.780×10⁻⁶ kg·m². Venture-2 [M]: rubber flat; Attack mode r_tip = 5 mm, μ = 0.85; Balance mode r_tip = 2 mm, μ = 0.60. dω/dt_atk = −200.0 rad/s² [M] — fastest-decaying driver in CS13 (t_useful = 2.75 s). Wall-orbit: v_orbit_phys = 1.5 m/s; BeySpirit 3 laps → v_BS = 4.5 m/s (×3.0); KE_orbit = 0.365 J. Assembly [M]: m ≈ 36.0 g; I = 7.504×10⁻⁶ kg·m²; ω₀ = 650 rad/s; KE₀ ≈ 1.584 J.  
+**Engine Note**: ventureWallOrbit() and destructionBladesStats() documented; fastest-decay driver constrains match window; slash vs ram delivery choice maps to Daring Flash QTE mode.
+
+---
+
+### [Case 847 — [SPECIAL MOVE] Daring Flash: Bel Daizora / Destruction Belfyre Nexus Venture-2](./13%20case%20study.md#case-847)
+
+**Category**: Special Move — 3-lap wall-orbit then slash/ram delivery mode select  
+**Bey / Blader**: Bel Daizora / Destruction Belfyre Nexus Venture-2 (Burst DB era)  
+**Franchise Move**: Belfyre wall-orbits at BeySpirit speed (v = 4.5 m/s) for 3 laps, then fires toward target. QTE hold duration selects Slash (burst) or Ram (ring-out).  
+**Key Physics**: Phase 1 (3 laps 1222 ms): invulnerable during wall-orbit. Phase 2: QTE "Venture" — hold J; ≥700 ms → Ram (spinDelta −50; impulse 2100 eu; knockbackImpulse 9000 eu; dmgMult 1.55×; burstBonus +8%); < 700 ms → Slash (spinDelta −90; impulse 1400 eu; knockback 0; dmgMult 1.80×; burstBonus +22%). selfCost −95; powerCost 110; cooldown 6000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: daringFlash() function documented; invulnerable during wall-orbit phase only; knockbackImpulse 9000 eu Ram mode highest ring-out threat in this assembly.
+
+---
+
+### [Case 848 — [COMBO] Flash Charge: Destruction Belfyre Approach Strike (3-key: →↑J)](./13%20case%20study.md#case-848)
+
+**Category**: Combo — strafe-approach Destruction Blade contact  
+**Sequence**: moveRight → moveUp → attack  
+**Key Physics**: Strafe right (→), surge forward (↑), Destruction Blade at approach apex (J). On J hit: carry-through 80 px post-impact (rubber momentum). spinDelta = −45 rad/s; dmgMult 1.35×; lockMs 50; carryThroughPx 80. Cost 15, universal.  
+**Engine Note**: flashChargeCombo() documented; carry-through 80 px is positional (not invulnerability); 45 ≤ 50; 1.35× ≤ 1.5×.
+
+---
+
+### [Case 849 — [GIMMICK] Lee's Galeon Attacker — Flat-Tip Orbit and Galeon BitBeast Lightning Aura](./13%20case%20study.md#case-849)
+
+**Category**: Gimmick — Galeon AR 4-wing attack + internally stored lightning BitBeast  
+**Parts**: Lee's Galeon Attacker [M] — Galeon AR + 8 Heavy WD + Flat base  
+**Key Physics**: Galeon AR [M]: 4 wing contacts; I = 1.624×10⁻⁶ kg·m²; C_smash ≈ 0.75 [M]. 8 Heavy WD [M]: m ≈ 14.0 g; I = 2.044×10⁻⁶ kg·m². Flat base [M]: μ = 0.35; r_tip = 3 mm. Assembly [M]: m ≈ 26.5 g; I ≈ 4.418×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 0.795 J; dω/dt ≈ −61.9 rad/s² [M]. BitBeast lightning stored internally in AR — no external tell; 4 discharge max per activation; 120 ms recharge gap between discharges.  
+**Engine Note**: galeonAttackerStats() documented; internal lightning aura — no visual tell in Phase 1 (opponent cannot detect); reactive AoE triggered by opponent contact.
+
+---
+
+### [Case 850 — [SPECIAL MOVE] Dark Lightning: Lee / Galeon Attacker (original Beyblade anime)](./13%20case%20study.md#case-850)
+
+**Category**: Special Move — reactive contact AoE discharge (first reactive AoE in CS13)  
+**Bey / Blader**: Lee / Galeon Attacker (original Beyblade anime, plastic gen)  
+**Franchise Move**: Lightning charge stored invisibly in AR; any contact during active window triggers electrical repulsion discharge. 4 max discharges. Countered by attacking during the 120 ms recharge gap.  
+**Key Physics**: Phase 1 (charge 1222 ms): no visible tell. Phase 2 (active 2000 ms): per contact — outwardImpulse 3500 eu radial; galeonSpinBoost +45 rad/s; targetSpinDelta −55 rad/s; dmgMult 1.50×. Max 4 discharges; 120 ms recharge gap. Counter-play: opponent attacks during 120 ms gap → no discharge, standard contact. selfCost −80; powerCost 115; cooldown 7000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: darkLightningContact() documented; reactive trigger only (no Lee QTE); opponent counter-play gap is core anti-abuse mechanic; DARK_LIGHTNING constants as documented.
+
+---
+
+### [Case 851 — [COMBO] Lion Rush: Galeon AR Double-Sprint Strike (3-key: ↑↑J)](./13%20case%20study.md#case-851)
+
+**Category**: Combo — double-advance flat-orbit sprint strike  
+**Sequence**: moveUp → moveUp → attack  
+**Key Physics**: Double advance at flat-tip aggressive orbit; Galeon AR wing contact. spinDelta = −34 rad/s; dmgMult 1.22×; lockMs 35. Cost 0 (free), universal.  
+**Engine Note**: lionRushCombo() documented; free combo; flat-tip fast orbit; 34 ≤ 50; 1.22× ≤ 1.5×.
+
+---
+
+### [Case 852 — [GIMMICK] Doji's Dark Wolf DF145FS — DF145 Downforce Track and FS Semi-Flat Tip](./13%20case%20study.md#case-852)
+
+**Category**: Gimmick — DF145 aerodynamic downforce grounding + FS dual-geometry orbit  
+**Parts**: Doji's Dark Wolf DF145FS [M] — Dark Wolf fusion wheel + DF145 track + FS tip  
+**Key Physics**: Dark Wolf wheel [M]: m ≈ 28.0 g; I = 6.860×10⁻⁶ kg·m²; C_smash ≈ 0.62 [M]. DF145 [M]: 4 fins A_fin = 1.2×10⁻⁴ m²; F_down ≈ 4.47 mN [M] at 600 rad/s; extra spin drain contribution −0.38 rad/s² [M]. FS tip [M]: r_eff ≈ 2.5 mm; μ ≈ 0.25. Assembly [M]: m ≈ 33.5 g; I ≈ 7.360×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.325 J; dω/dt_total ≈ −28.3 rad/s² [M]. BeySpirit DF amplification during Darkness Howling Blazer: F_down_BS = 26.8 mN (×6).  
+**Engine Note**: darkWolfAssemblyStats() documented; DF downforce adds small real spin drain; BeySpirit ×6 downforce during special prevents displacement.
+
+---
+
+### [Case 853 — [SPECIAL MOVE] Darkness Howling Blazer: Doji / Dark Wolf DF145FS](./13%20case%20study.md#case-853)
+
+**Category**: Special Move — dark-energy smash with 35% FusionWheel Damage permanent debuff chance  
+**Bey / Blader**: Doji / Dark Wolf DF145FS (MFB Metal Fusion)  
+**Franchise Move**: Dark Wolf avatar howls; dark red energy charges the wheel; smash physically cracks the opponent's fusion wheel (FW_Damage debuff: permanent for match).  
+**Key Physics**: Phase 1 (howl 800 ms): DF downforce BeySpirit ×6 = 26.8 mN — grounded, cannot be displaced. Phase 2 QTE "Blaze" (tap J 150 ms): hit — spinDelta −90; impulse 1500 eu; dmgMult 1.80×; burstBonus +18%; FW_Damage 35% chance (C_smash_opponent × 0.85 for match remainder, PRNG seeded). Miss — spinDelta −50; impulse 900; dmgMult 1.50×; burstBonus +8%; no FW damage. selfCost −70; powerCost 105; cooldown 5500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: darknessHowlingBlazer() and fusionWheelDamageMult() documented; FW_Damage permanent stat reduction is special-move-only; PRNG-seeded (match-seed deterministic).
+
+---
+
+### [Case 854 — [COMBO] Wolf Pounce: Dark Wolf DF Anchor Bounce Strike (3-key: ↓↑J)](./13%20case%20study.md#case-854)
+
+**Category**: Combo — DF anchor crouch-pounce smash  
+**Sequence**: moveDown → moveUp → attack  
+**Key Physics**: ↓ drops and DF anchors; ↑ springs up; J rising smash. spinDelta = −42 rad/s; dmgMult 1.30×; lockMs 55; dfAnchorMs 400 (post-hit reduced drift — DF grounding, not invulnerability). Cost 15, balanced.  
+**Engine Note**: wolfPounceCombo() documented; DF anchor is positional stability only; 42 ≤ 50; 1.30× ≤ 1.5×.
+
+---
+
+### [Case 855 — [GIMMICK] Takanosuke Shishiya's Archer Griffin C145S — C145 Claw Track and Penalty Pocket Acceleration](./13%20case%20study.md#case-855)
+
+**Category**: Gimmick — C145 extending claw track + Sharp tip + pocket-bounce acceleration  
+**Parts**: Archer Griffin C145S [M] — Archer 4D wheel + C145 track + S tip  
+**Key Physics**: Archer wheel [M]: m ≈ 32.0 g; I = 8.528×10⁻⁶ kg·m²; C_smash ≈ 0.82 [M]; θ ≈ 15°. C145 [M]: cylinder height = 14.5 mm (1.45 cm); **3 triangular claws** (not 4), C₃ symmetry, spacingDeg: 120 — each claw is a WingDef with movementType: "deployable_individual", pivoting on its own fixed axis (rivet) built into the cylinder body. Claws pivot **back and forth around their fixed pivot axis** when struck by an opponent — they do NOT extend centrifugally outward. The pivot has a limited angular range (not full 360° rotation). On contact: struck claw rotates away on its pivot, absorbing ~48% of incoming force (k_claw = 0.52 deflect factor); returns to rest position after deflect via pivot friction over ~350 ms. Each claw pivots independently — one claw can be deflected while the other two remain at rest. S tip [M]: μ = 0.08; r_tip = 1 mm; dω/dt = −3.50 rad/s² [M]. Pocket bounce: 3 pockets; v₁ = 1.16, v₂ = 1.30, v₃ = 1.42 m/s [M] (e = 0.88; slope gain 0.28 per bounce); BeySpirit v_strike = 6.53 m/s (×4.6). Assembly [M]: m ≈ 41.0 g; I ≈ 9.178×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.652 J.  
+**Engine Note**: C145 = fixed cylinder (height_cm: 1.45) + 3 WingDefs (count: 3, spacingDeg: 120, shape: "triangle", movementType: "deployable_individual", perWingIndependent: true, deployThreshold_N: contact-driven not centrifugal, returnTimeMs: ~350). Claws deflect 48% at track height (contactDeflect mechanic). NOT centrifugal extension — pivot is contact-triggered, not spin-speed-triggered. pocketBounceVelocity() and archerGriffinStats() documented; pocket v-gains allow BeySpirit ×4.6 amplification.
+
+---
+
+### [Case 856 — [SPECIAL MOVE] Delta Slash: Takanosuke Shishiya / Archer Griffin C145S](./13%20case%20study.md#case-856)
+
+**Category**: Special Move — triangular 3-pocket QTE tap rising smash  
+**Bey / Blader**: Takanosuke Shishiya / Archer Griffin C145S (MFB 4D / Metal Fury)  
+**Franchise Move**: Griffin circuits 3 penalty pockets in triangle; BeySpirit rises at final pocket for aerial upper smash.  
+**Key Physics**: Phase 1 (1600 ms, 3 pockets): invulnerable between pockets. QTE "Delta" — 3 × tap J at pockets (at 400/900/1400 ms; 180 ms window each). Phase 2 (rising_smash): tiltBurstTarget +20° on target (full 3 QTE). 3/3 taps: spinDelta −85; impulse 1100 eu; dmgMult 1.75×; burstBonus +14%; tilt +20°. 2/3: −60; 800 eu; 1.55×; +9°; tilt +10°. 0–1: −35; 500 eu; 1.35×; +4°; tilt 0°. selfCost −55; powerCost 105; cooldown 5500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: deltaSlash() documented; tiltBurstTarget is 2.5D engine beyTiltAngle applied to target; 3-pocket QTE tier system.
+
+---
+
+### [Case 857 — [COMBO] Claw Dive: C145 Pocket-Slope Contact (3-key: ↓J↑)](./13%20case%20study.md#case-857)
+
+**Category**: Combo — single-pocket slope contact  
+**Sequence**: moveDown → attack → moveUp  
+**Key Physics**: Pocket slope dip (↓); J claw-catch contact at slope bounce point; ↑ carry up slope. spinDelta = −38 rad/s; dmgMult 1.28×; lockMs 45; slopePop +50 eu upward velocity to target. Cost 15, universal.  
+**Engine Note**: clawDiveCombo() documented; slopePop 50 eu minimal tilt push (not full tiltBurst); 38 ≤ 50.
+
+---
+
+### [Case 858 — [GIMMICK] Crusher's Gigars — AR Smash Geometry and BitBeast Environmental Weapon Conjuration](./13%20case%20study.md#case-858)
+
+**Category**: Gimmick — aggressive smash AR + BitBeast rock debris conjuration  
+**Parts**: Crusher's Gigars [M] — Gigars AR + 8 Heavy WD + SG Flat/Heavy BB  
+**Key Physics**: Gigars AR [M]: 3 contacts; I = 1.856×10⁻⁶ kg·m²; C_smash ≈ 0.78 [M]; θ ≈ 30°. 8 Heavy WD [M]: m = 14.0 g; I = 2.044×10⁻⁶ kg·m². Assembly [M]: m ≈ 27.5 g; I ≈ 4.650×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 0.837 J; dω/dt ≈ −69.6 rad/s² [M]. BitBeast conjures rock debris from arena floor: m_debris ≈ 15 g [M]; combined impact mass (AR + debris) ≈ 23 g; KE_debris = 0.188 J at v_slam = 5.0 m/s.  
+**Engine Note**: gigarsAssemblyStats() documented; debris conjuration is BeySpirit only — not available at combo scale; backfire mechanic (Phase 1 disruption ≥ 700 eu) is unique disrupt vulnerability.
+
+---
+
+### [Case 859 — [SPECIAL MOVE] Demolition Ax: Crusher / Gigars (original Beyblade anime)](./13%20case%20study.md#case-859)
+
+**Category**: Special Move — rock-debris axe slam with disruption backfire mechanic  
+**Bey / Blader**: Crusher / Gigars (original Beyblade anime, plastic gen)  
+**Franchise Move**: Gigars gathers arena rock debris into an axe shape and crashes down. Phase 1 disrupt ≥ 700 eu: backfire — rock hits Gigars (only CS13 special with user self-damage on disruption).  
+**Key Physics**: Phase 1 (1000 ms): beyTiltAngle → 55°; disruption threshold ≥ 700 eu → backfire (self-damage = 0.30 × mainHitDamage; cancel). Phase 2 (400 ms): axe form; disruption threshold ≥ 900 eu (no backfire). Phase 3 QTE "Demolish" (hold J; max 900 ms): full ≥ 700 ms: spinDelta −100; impulse 1600 eu; dmgMult 1.85×; burstBonus +15%; debrisAoE chip (all within 80 px: −15 spin, 250 eu, 1.20×). Medium 350–699 ms: −65; 1000 eu; 1.60×; +9%; no AoE. Quick < 350 ms: −35; 600 eu; 1.35×; +4%; no AoE. selfCost −70; powerCost 110; cooldown 6500 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: demolitionAx() and demolitionAxDisruption() documented; disruption backfire (Phase 1 only) is unique vulnerability; debrisAoE full-charge only.
+
+---
+
+### [Case 860 — [COMBO] Rock Smash: Gigars AR Double-Horn Drive (3-key: JJ↓)](./13%20case%20study.md#case-860)
+
+**Category**: Combo — double horn smash + ground drive follow  
+**Sequence**: attack → attack → moveDown  
+**Key Physics**: Hit 1: spinDelta −40; dmgMult 1.35×; lockMs 30. Hit 2: spinDelta −28; dmgMult 1.20×; lockMs 20. Ground Drive (both J hit): addLockMs 40; impulse 250 eu. Combined lock 90 ms ≤ 300 ms. Each source ≤ 50 individually. Cost 25, universal.  
+**Engine Note**: rockSmashCombo() documented; two-source (40 + 28 each ≤ 50); combined lock 90 ms; cost-25 double-hit pattern.
+
+---
+
+### [Case 861 — [GIMMICK] Zeo Abyss's Flame Byxis 230WD — 230 Height Magnetic Field Geometry and WD Stable Spin Platform](./13%20case%20study.md#case-861)
+
+**Category**: Gimmick — 230 elevated magnetic field platform + WD bearing stable spin  
+**Parts**: Zeo Abyss's Flame Byxis 230WD [M] — Flame wheel + 230 track + WD tip  
+**Key Physics**: Flame wheel [M]: symmetric stamina; I = 7.350×10⁻⁶ kg·m²; C_deflect ≈ 0.38 [M]. 230 track [M]: height 23.0 mm — tallest standard MFB. Field directional: B_eff(α) = B_max × cos(α) — horizontal = full; overhead (α = 90°) = 0 (aerial counter window). WD tip [M]: bearing μ = 0.02; rubber ring engages at F ≥ 0.5 N lateral; dω/dt ≈ −1.40 rad/s² [M] (near-ES endurance). Assembly [M]: m ≈ 40.0 g; I ≈ 8.380×10⁻⁶ kg·m²; ω₀ = 600 rad/s; KE₀ ≈ 1.508 J. During Destiny Needle 10 s: Δω ≈ 14 rad/s (negligible).  
+**Engine Note**: byxisAssemblyStats().fieldAngleMult() documented; aerial counter window (tiltAngle ≥ 45°) reduces μ_mag from 0.70 to 0.15; 10 s active window sustained by WD near-zero decay.
+
+---
+
+### [Case 862 — [SPECIAL MOVE] Destiny Needle: Zeo Abyss / Flame Byxis 230WD](./13%20case%20study.md#case-862)
+
+**Category**: Special Move — remote bey-control hijack (tug-of-war mechanic, 10 s; highest powerCost 130)  
+**Bey / Blader**: Zeo Abyss / Flame Byxis 230WD (MFB Metal Masters)  
+**Franchise Move**: Byxis generates phantom compass; seizes opponent bey movement for 10 seconds. User pilots the opponent's bey. Aerial approach by opponent reduces control to 15%.  
+**Key Physics**: Phase 1 (plant 1000 ms): invulnerable (WD rubber ring braces). Phase 2 (control 10000 ms): μ_mag = 0.70 normal (user 70%, opponent 30% input); aerial counter (tiltAngle ≥ 45°): μ_mag = 0.15 (user 15%, opponent 85%). User: hold Space + direction → applies to opponent bey. Byxis can also move normally simultaneously. selfCost −0 (WD decay negligible). powerCost 130 (highest in CS13); cooldown 8000 ms; invulnerability Phase 1 only.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: destinyNeedleControl() documented; dual-control (user pilots both beys simultaneously) is special-move-only; μ_mag aerial counter mechanic tied to fieldAngleMult; powerCost 130 unique maximum.
+
+---
+
+### [Case 863 — [COMBO] Compass Lock: Byxis WD Double-Brace Spin Siphon (3-key: K↑K)](./13%20case%20study.md#case-863)
+
+**Category**: Combo — double WD brace with spin siphon  
+**Sequence**: defense → moveUp → defense  
+**Key Physics**: K₁ brace: WD rubber ring −45% incoming damage (×0.55 multiplier). ↑ advance. K₂ lock: if opponent within 80 px — spinGain +22; opponentSpinDelta −22; dmgMult 1.05×; lockMs 30. Cost 0 (free), stamina.  
+**Engine Note**: compassLockCombo() documented; spin siphon +22 (zero-sum from contact); no AoE; partial absorption only; free stamina utility combo.
+
+---
+
+### [Case 864 — [GIMMICK] Bel Daizora's Divine/Dangerous Belial — Upper-Axis Blade Geometry and Aerial Dive Physics](./13%20case%20study.md#case-864)
+
+**Category**: Gimmick — upper-attack blade geometry (C_upper 0.78 at 90° dive) + gravity-dive kinetic energy platform  
+**Parts**: Divine/Dangerous Belial [M] — Divine/Dangerous Belial blade + Nexus core + Semi-Rubber Sharp driver + chip  
+**Key Physics**: Blade [M]: C_upper = 0.78 at 90° dive; C_horizontal = 0.50; C_eff(α) = 0.50 + 0.28 × sin(α). I_blade = 6.069×10⁻⁶ kg·m². Driver [M]: r_tip = 1.5 mm; μ = 0.55 (semi-rubber sharp); dω/dt = −38.7 rad/s² [M]. Assembly [M]: m ≈ 37.0 g; I = 7.743×10⁻⁶ kg·m²; ω₀ = 650 rad/s; KE₀_spin = 1.637 J. Gravity dive: h = 2.0 m; v_fall_anime = 6.26 × 3.0 = 18.78 m/s; KE_fall = 6.52 J; KE_total = 8.157 J (fall energy 4× spin energy — highest single-impact KE in CS13).  
+**Engine Note**: divineBelialStats() and upperContactCoeff() documented; KE_total 8.157 J justifies dmgMult 1.90× ceiling; gravity-dive BeySpirit ×3.0 transcendence.
+
+---
+
+### [Case 865 — [SPECIAL MOVE] Dangerous/Divine Dive: Bel Daizora / Divine/Dangerous Belial](./13%20case%20study.md#case-865)
+
+**Category**: Special Move — gravity-dive with ~850 ms invulnerability; highest single-hit dmgMult in CS13 (1.90×)  
+**Bey / Blader**: Bel Daizora / Divine/Dangerous Belial (Burst DB era)  
+**Franchise Move**: Belial launches skyward (~2.0 m), hangs at apex, then plunges with BeySpirit-amplified gravity as primary accelerant.  
+**Key Physics**: Phase 1 ascent (600 ms) + Phase 2 apex (150 ms) + Phase 3 first 100 ms: invulnerable (~850 ms total). Phase 3 QTE "Divine Drop" (hold J; release in 400 ms window): late ≥ 300 ms: spinDelta −100; impulse 1800 eu; knockback 5000 eu; dmgMult 1.90×; burstBonus +18%; tiltBurstTarget +30°. Medium 150–299 ms: −65; 1100; 2500; 1.65×; +10°; +15°. Early < 150 ms: −35; 600; 1000; 1.40×; +5°; 0°. selfCost −65; powerCost 120; cooldown 7000 ms.  
+**Compatible beys**: Any beyblade.  
+**Engine Note**: dangerousDivineDive() and divineDiveInvulnerability() documented; 1.90× dmgMult highest in CS13 (KE_total 8.157 J justification); late release = maximum gravity build model.
+
+---
+
+### [Case 866 — [COMBO] Aerial Drive: Divine Belial Upper-Arc Strike (3-key: ←↑J)](./13%20case%20study.md#case-866)
+
+**Category**: Combo — mini-arc upper-contact approach  
+**Sequence**: moveLeft → moveUp → attack  
+**Key Physics**: Strafe left (←), arc forward-upward mimicking Divine Dive trajectory (↑), J delivers upper-attack blade at arc apex. J hit: spinDelta = −48 rad/s; dmgMult 1.35×; lockMs 55; aerialKnock_eu 60 (small upward impulse to target — mini tiltBurst). Cost 15, universal.  
+**Engine Note**: aerialDriveCombo() documented; aerialKnock 60 eu is positional (not invulnerability, not full tilt); 48 ≤ 50 (close to ceiling — upper-attack geometry justification); 1.35× ≤ 1.5×.
+
+---
+
+### [Case 867 — [PART] Dead Phoenix Energy Layer (Cho-Z Generation)](./9%20case%20study.md#case-867)
+
+**Category**: Part — Energy Layer (Cho-Z)  
+**Parts**: Dead Phoenix layer (21.8 g); Level Chip required; armor-detach mechanism (n=4 symmetry)  
+**Key Physics**: I_DA = 4.810×10⁻⁶ kg·m²; I_DC = 1.218×10⁻⁶ kg·m²; I_total = 6.028×10⁻⁶ kg·m²; r_eff = 1.663 cm; armor inertia fraction 79.8% (mass inversion — armor dominates I); L₀ = 4.183×10⁻³ kg·m²/s at 694 rad/s. Post-detach: smooth perimeter → F_ratchet ≈ 0 → burst immune; armor cross-compatible with Perfect/Unperfect Phoenix variants [CONFIRMED].  
+**Engine Note**: deadPhoenixLayer(); armorDetach() sets burst immunity flag; armor fraction 79.8% informs layer-swap spinDelta budget.
+
+---
+
+### [Case 868 — [PART] Forge Disc 10 (Cho-Z Generation)](./9%20case%20study.md#case-868)
+
+**Category**: Part — Forge Disc (Cho-Z)  
+**Parts**: Forge Disc 10 (23.8 g); 2 Frame slots; n=10 symmetry  
+**Key Physics**: I = 8.861×10⁻⁶ kg·m²; r_eff = 1.930 cm; L₀ = 6.149×10⁻³ kg·m²/s at 694 rad/s; +13.0% I vs Disc 7; +0.090 cm r_eff vs Disc 7. No wobble (n=10). Best stamina disc in Cho-Z generation [CONFIRMED].  
+**Engine Note**: forgeDisc10(); disc I contribution 58.9% of Dead Phoenix 10 Friction assembly total.
+
+---
+
+### [Case 869 — [PART] Friction Tip (Cho-Z Generation)](./9%20case%20study.md#case-869)
+
+**Category**: Part — Performance Tip (Cho-Z)  
+**Parts**: Friction tip (7.0 g); POM material; center-hold  
+**Key Physics**: μ_POM = 0.10; r_contact = 0.45 cm; τ = 2.322×10⁻⁴ N·m at 52.6 g assembly; burstResistFactor 1.70× vs mobile tip [CONFIRMED]. No rubber bounce; KO resist > Atomic/Orbit [CONFIRMED]. Center-hold prevents self-KO drift.  
+**Engine Note**: frictionTip(); μ = 0.10 (POM, not rubber); burstResistFactor 1.70 applied to ratchet spring model.
+
+---
+
+### [Case 870 — [ASSEMBLY] Dead Phoenix 10 Friction (Cho-Z)](./9%20case%20study.md#case-870)
+
+**Category**: Assembly — Cho-Z System  
+**Parts**: Dead Phoenix layer + Forge Disc 10 + Friction tip (52.6 g total)  
+**Key Physics**: I_total = 1.503×10⁻⁵ kg·m²; L₀ = 1.043×10⁻² kg·m²/s; r_eff = 1.690 cm; dω/dt = 15.45 rad/s²; t_stall_ideal = 44.9 s. Phase 2 post-armor-detach (armor at ω ≈ 500 rad/s): m_post = 39.6 g, I_post = 1.022×10⁻⁵ kg·m², dω/dt = 17.10 rad/s², t_from_500 = 29.2 s. vs Atomic tip variant: −13.3% stamina deficit [CALCULATED].  
+**Engine Note**: deadPhoenixAssembly(); Phase 2 trigger at armor detach event; post-detach physics swap to I_post = 1.022×10⁻⁵ and decay = 17.10 rad/s².
+
+---
+
+### [Case 871 — [PART] Revive Phoenix Energy Layer (Cho-Z Generation)](./9%20case%20study.md#case-871)
+
+**Category**: Part — Energy Layer (Cho-Z)  
+**Parts**: Revive Phoenix layer (23.3 g); parry mechanism (spring-loaded blade return)  
+**Key Physics**: I_RA = 3.594×10⁻⁶ kg·m²; I_RC = 1.835×10⁻⁶ kg·m²; I_total = 5.429×10⁻⁶ kg·m²; r_eff = 1.526 cm; armor inertia fraction 66.2%; F_parry = 0.45–0.75 N; −10.0% L₀ vs Dead Phoenix; I_RC +50.6% vs Dead Core. Best right-spin defense layer of Cho-Z generation [CONFIRMED].  
+**Engine Note**: revivePhoenixLayer(); parryMechanism() returns blade on contact; F_parry range 0.45–0.75 N stored as parryForceMin/Max.
+
+---
+
+### [Case 872 — [PART] DB Core Phoenix (DB System Generation)](./9%20case%20study.md#case-872)
+
+**Category**: Part — DB Core (DB System)  
+**Parts**: DB Core Phoenix (7.6 g); 4 locking teeth at 90°  
+**Key Physics**: I = 4.408×10⁻⁷ kg·m²; r_eff = 0.762 cm; engagement 27.8%; average burst resistance. Contributes only 1.6% of Prominence Phoenix assembly total I [CALCULATED]. Tooth engagement 27.8% is the burst trigger probability scaling factor.  
+**Engine Note**: dbCorePhoenix(); burstEngagement = 0.278; I contribution 1.6% — negligible for spin calc; tooth geometry drives burst probability only.
+
+---
+
+### [Case 873 — [PART] Blade Prominence (DB System Generation)](./9%20case%20study.md#case-873)
+
+**Category**: Part — Blade (DB System)  
+**Parts**: Blade body (14.5 g [EST]) + Prominence Shield (9.5 g [CONFIRMED]); total 24.0 g  
+**Key Physics**: I_blade = 4.713×10⁻⁶ kg·m²; I_shield = 4.684×10⁻⁶ kg·m²; I_total = 9.397×10⁻⁶ kg·m²; shield inertia fraction 49.9% (mass inversion — shield ≈ blade). Post-shield-detach I_post = 4.713×10⁻⁶ (50.1% retention). Heavy Mode recommended; Normal vs Heavy I difference < 1% [CONFIRMED].  
+**Engine Note**: bladeProminence(); prominenceShieldDetach() halves layer I to 4.713×10⁻⁶; shield detach differs from armor detach — no burst immunity, but burst threshold rises post-detach.
+
+---
+
+### [Case 874 — [PART] Armor-10 (DB System Generation)](./9%20case%20study.md#case-874)
+
+**Category**: Part — Armor (DB System)  
+**Parts**: Armor-10 (13.4 g); n=10 symmetry; no wobble  
+**Key Physics**: I = 4.750×10⁻⁶ kg·m²; r_eff = 1.883 cm. In Prominence Phoenix assembly: 15.7% of total mass, 17.2% of total I. No gyro imbalance from n=10. Stabilizing role — not primary I driver.  
+**Engine Note**: armor10(); 17.2% I fraction in assembly; r_eff 1.883 cm → wider perimeter than DB Core but narrower than Tapered disc.
+
+---
+
+### [Case 875 — [PART] Forge Disc Tapered (DB System Generation)](./9%20case%20study.md#case-875)
+
+**Category**: Part — Forge Disc (DB System)  
+**Parts**: Forge Disc Tapered (29.3 g); tapered wall profile; no frame slots  
+**Key Physics**: I = 1.245×10⁻⁵ kg·m²; r_eff = 2.061 cm; L₀ = 8.640×10⁻³ kg·m²/s at 694 rad/s; +40.5% I vs Disc 10; +58.8% I vs Disc 7; tapered wall redistributes mass to outer rim. 45.2% of Prominence Phoenix assembly total I — dominant stamina driver [CONFIRMED].  
+**Engine Note**: forgeTaperedDisc(); I = 1.245×10⁻⁵ kg·m²; 45.2% of assembly I; tapered profile → no frame slots; highest I disc in DB System generation.
+
+---
+
+### [Case 876 — [PART] Metal Universe Tip (DB System Generation)](./9%20case%20study.md#case-876)
+
+**Category**: Part — Performance Tip (DB System)  
+**Parts**: Metal Universe tip (11.1 g); metal ball bearing; μ = 0.012  
+**Key Physics**: r_contact = 0.20 cm (metal ball bearing centroid); τ = 2.011×10⁻⁵ N·m at 85.4 g assembly; torque ratio vs Friction tip = 0.0533 (5.3%); t_stall_ideal ≈ 950 s [CALCULATED]; self-KO critical orbit speed 11.1 rad/s (below this → center-drift). Metal Lock burst resist ratio 0.94 (shorter tabs × stronger spring [CONFIRMED]).  
+**Engine Note**: metalUniverseTip(); μ = 0.012; selfKOcriticalOmega = 11.1 rad/s; burstResistRatio 0.94 vs standard ratchet.
+
+---
+
+### [Case 877 — [ASSEMBLY] Prominence Phoenix Tapered-10 MU (DB System)](./9%20case%20study.md#case-877)
+
+**Category**: Assembly — DB System  
+**Parts**: DB Core Phoenix + Blade Prominence + Armor-10 + Forge Disc Tapered + Metal Universe tip (85.4 g total)  
+**Key Physics**: I_total = 2.755×10⁻⁵ kg·m²; L₀ = 1.912×10⁻² kg·m²/s (+83.4% vs Dead Phoenix 10 Friction); r_eff = 1.796 cm; Tapered disc 45.2% of I; dω/dt = 0.730 rad/s²; t_stall_ideal = 950 s; t_soft (ω₀ = 400 rad/s) = 548 s. Phase 2 post-shield-detach: m = 75.9 g, I = 2.287×10⁻⁵ kg·m², dω/dt = 0.781 rad/s², t_from_500 = 640 s [CALCULATED].  
+**Engine Note**: prominencePhoenixAssembly(); shield detach event swaps I to 2.287×10⁻⁵ and decay to 0.781 rad/s²; t_stall_ideal 950 s is generation peak.
+
+---
+
+### [Case 878 — [PART] Twin Nemesis Energy Layer (God Layer Generation)](./9%20case%20study.md#case-878)
+
+**Category**: Part — Energy Layer (God Layer)  
+**Parts**: Twin Nemesis layer (13.1 g); n=2 blades; Upper Mode / Smash Mode  
+**Key Physics**: I = 3.461×10⁻⁶ kg·m²; r_eff = 1.625 cm; n=2 → gyro imbalance CONFIRMED; tall teeth 1.43× hold torque vs medium; Upper Mode > Smash Mode [CONFIRMED]; F_upper ≈ 7.73 N at blade angle 20°.  
+**Engine Note**: twinNemesisLayer(); gyroImbalanceFactor active (n=2); upperMode dmgMult bonus applied; F_upper = 7.73 N feeds into contact impulse calc.
+
+---
+
+### [Case 879 — [PART] Forge Disc 3 (God Layer Generation)](./9%20case%20study.md#case-879)
+
+**Category**: Part — Forge Disc (God Layer)  
+**Parts**: Forge Disc 3 (21.6 g); Frame-compatible (odd disc); no inherent wobble from disc itself  
+**Key Physics**: I = 3.822×10⁻⁶ kg·m²; r_eff = 1.330 cm; L₀ = 2.653×10⁻³ kg·m²/s at 694 rad/s; −51.3% I vs Disc 7; ω_ratio = 2.051× vs Disc 7 at same L₀; v_tip ratio ≈ 1.48× [CALCULATED]. High LAD quality without frame [CONFIRMED]. Low I → higher ω at launch (same L₀).  
+**Engine Note**: forgeDisc3(); low I high-ω tradeoff; ω_ratio 2.051 stored as launchOmegaFactor; LAD quality high.
+
+---
+
+### [Case 880 — [PART] Disc Frame Hit (God Layer Generation)](./9%20case%20study.md#case-880)
+
+**Category**: Part — Disc Frame (God Layer)  
+**Parts**: Disc Frame Hit (2.0 g); n=1 single protrusion; for odd discs  
+**Key Physics**: I_Hit = 6.665×10⁻⁷ kg·m²; combined 3Hit (Disc 3 + Hit): I = 4.489×10⁻⁶ kg·m², m = 23.6 g, r_eff = 1.379 cm. n=1 → maximum rotational imbalance; wobble torque = 1.64 N·m at 416 rad/s. Contact rarely activates [CONFIRMED]; mass too light for meaningful attack [CONFIRMED]; LAD reduced vs Cross frame.  
+**Engine Note**: discFrameHit(); wobbleTorque = 1.64 N·m at ω=416 → feeds gyroImbalance system; contact activation probability low (rare flag).
+
+---
+
+### [Case 881 — [ASSEMBLY] Twin Nemesis 3Hit Jaggy (God Layer)](./9%20case%20study.md#case-881)
+
+**Category**: Assembly — God Layer System  
+**Parts**: Twin Nemesis + Forge Disc 3 + Frame Hit + Jaggy tip (42.4 g total)  
+**Key Physics**: I_total = 8.918×10⁻⁶ kg·m² (TN 38.8%, Disc 3 42.8%, Hit 7.5%, Jaggy 10.8%); L₀ = 6.189×10⁻³ kg·m²/s; r_eff = 1.450 cm; ω_battle = 416 rad/s; μ_Jaggy = 0.45, r_eff_effective = 0.10 cm (star intermittency); dω/dt = 20.97 rad/s²; t_battle = 19.8 s from ω = 416 rad/s. vs Disc 7 assembly: −32.7% L₀ but attack justified by higher ω [CALCULATED].  
+**Engine Note**: twinNemesis3HitJaggyAssembly(); Jaggy r_eff_effective 0.10 cm (intermittent star contact); ω_battle 416 stored as launchOmega; t_battle 19.8 s → ~20 s stamina budget.
+
+---
+
+### [Case 882 — [PART] Hell Salamander Energy Layer (Cho-Z Generation, Left-Spin)](./9%20case%20study.md#case-882)
+
+**Category**: Part — Energy Layer (Cho-Z, Left-Spin)  
+**Parts**: Hell Salamander layer (21.27 g); Defense Mode n=10 / Attack Mode n=5; Level Chip required; metal inserts  
+**Key Physics**: I = 6.774×10⁻⁶ kg·m²; r_eff = 1.785 cm; metal fraction: 69.2% of I, 50.0% of mass. Defense Mode: near-zero burst vs right-spin opponents (left-spin gear-mesh [CONFIRMED]); Attack Mode: n=5. Unbalanced without Level Chip; stamina ≥ Crash Ragnaruk [CONFIRMED].  
+**Engine Note**: hellSalamanderLayer(); leftSpinFlag = true; defenseModeGearMesh() → burstImmune vs right-spin; Level Chip required for balance; metal fraction 69.2% of I.
+
+---
+
+### [Case 883 — [PART] Forge Disc 12 (Cho-Z Generation)](./9%20case%20study.md#case-883)
+
+**Category**: Part — Forge Disc (Cho-Z)  
+**Parts**: Forge Disc 12 (16.1 g); 2 Frame slots; lightest Cho-Z disc [CONFIRMED]  
+**Key Physics**: I = 4.711×10⁻⁶ kg·m²; r_eff = 1.712 cm; −46.8% I vs Disc 10. Known to damage opponent layers on contact [CONFIRMED]. Lightest Cho-Z disc → highest ω at launch among Cho-Z discs at same L₀.  
+**Engine Note**: forgeDisc12(); layerDamageRisk = true (sharp-edge contact flag); −46.8% I vs Disc 10 → higher launch ω tradeoff.
+
+---
+
+### [Case 884 — [PART] Operate Tip (Cho-Z Generation)](./9%20case%20study.md#case-884)
+
+**Category**: Part — Performance Tip (Cho-Z)  
+**Parts**: Operate tip (7.1 g); dual-mode: Defense (r=0.30 cm) / Attack (r=0.50 cm, off-center)  
+**Key Physics**: μ = 0.04; Defense Mode: r_contact = 0.30 cm, no locking tabs, KO resist < Massive [CONFIRMED]; Attack Mode: r_contact = 0.50 cm off-center, erratic/hopping, no banking pattern. Both modes underperform [CONFIRMED]. τ_def = 5.232×10⁻⁵ N·m; τ_atk = 8.720×10⁻⁵ N·m at 44.47 g.  
+**Engine Note**: operateTip(); dualMode flag; defenseModeUnderperform = true; attackModeErratic = true; both modes flagged suboptimal.
+
+---
+
+### [Case 885 — [ASSEMBLY] Hell Salamander 12 Operate (Cho-Z, Left-Spin)](./9%20case%20study.md#case-885)
+
+**Category**: Assembly — Cho-Z System (Left-Spin)  
+**Parts**: Hell Salamander + Forge Disc 12 + Operate tip (44.47 g total)  
+**Key Physics**: I_total = 1.157×10⁻⁵ kg·m² (HS 58.6%, Disc 12 40.7%, Operate 0.77%); L₀ = 8.027×10⁻³ kg·m²/s; r_eff = 1.613 cm; dω/dt_def = 4.522 rad/s²; t_stall_def_ideal = 153.5 s; dω/dt_atk = 7.536 rad/s². Left-spin gear-mesh vs right-spin → near-zero burst [CONFIRMED]. Operate tip inferior in both modes; optimal substitutes: Friction / Atomic / Bearing tip; Spread / 10 / 7 disc [CONFIRMED].  
+**Engine Note**: hellSalamanderAssembly(); leftSpinGearMesh active; Operate underperform flags carry through; t_stall_def 153.5 s reference stamina budget.
+
+---
+
+### [Case 886 — [ANALYSIS] Armor Detachment Dimensional Collapse (Cross-Generation)](./9%20case%20study.md#case-886)
+
+**Category**: Analysis — Armor Detachment Physics (Cross-Generation)  
+**Parts**: Dead Phoenix (21.8 g), Revive Phoenix (23.3 g), Blade Prominence / Prominence Shield (24.0 g)  
+**Key Physics**: Effective diameter post-detach: Dead Phoenix 4.4→2.8 cm (−36.4%); Revive Phoenix 4.4→3.0 cm (−31.8%); Prominence Shield 5.0→4.6 cm (−8.0%). Height drop 3–5 mm. Perimeter change: bladed → smooth circle → F_ratchet ≈ 0 → burst immunity (Dead Phoenix, Revive Phoenix only). Aero drag ratio (r⁵ scaling): Dead Phoenix 0.105, Revive Phoenix 0.149, Prominence 0.659. Wall contact radius shifts 0.8 cm further from wall → center-seeking behavior. Precession rate post-detach: Dead Phoenix ω_p_post = 0.0660 vs 0.0835 rad/s (−21% slower precession at same ω) [CALCULATED].  
+**Engine Note**: armorDetachDimensionalCollapse(); burstImmune flag set on smooth-perimeter detach; wallContactRadiusShift +0.8 cm; precessionRate updated on detach event.
+
+---
+
+### [Case 887 — [PART] Killer Deathscyther Energy Layer (God Layer Generation)](./9%20case%20study.md#case-887)
+
+**Category**: Part — Energy Layer (God Layer)  
+**Parts**: Killer Deathscyther layer (9.2 g); mechanical slide gimmick (3 failure modes)  
+**Key Physics**: I = 2.141×10⁻⁶ kg·m²; r_eff = 1.525 cm; L₀ = 1.486×10⁻³ kg·m²/s at 694 rad/s. Triple gimmick failure: (1) mechanical block prevents full extension; (2) mass too light (p_slide = 1.124×10⁻³ N·s insufficient); (3) timing mismatch (τ_coll 3–5 ms < τ_slide 8–12 ms) [CONFIRMED]. Unbalanced: F_imbal = 4.78 N at 416 rad/s; r_blade = 1.8 cm limits contact damage.  
+**Engine Note**: killerDeathscytherLayer(); gimmickFailCascade = true (mechanical + mass + timing); F_imbal 4.78 N at 416 rad/s feeds wobble system; slide not modeled (non-functional).
+
+---
+
+### [Case 888 — [PART] Forge Disc 2 (God Layer Generation)](./9%20case%20study.md#case-888)
+
+**Category**: Part — Forge Disc (God Layer)  
+**Parts**: Forge Disc 2 (21.21 g); 2 Frame slots; "Jack-of-All-Trades" [CONFIRMED]  
+**Key Physics**: I = 6.416×10⁻⁶ kg·m²; r_eff = 1.739 cm; L₀ = 4.453×10⁻³ kg·m²/s at 694 rad/s; −18.2% I vs Disc 7; +67.8% I vs Disc 3. Minimal protrusion → no layer damage risk. Versatile across all bey types.  
+**Engine Note**: forgeDisc2(); jackOfAllTrades tag; layerDamageRisk = false; I midpoint between Disc 3 and Disc 7.
+
+---
+
+### [Case 889 — [PART] Disc Frame Vortex (God Layer Generation)](./9%20case%20study.md#case-889)
+
+**Category**: Part — Disc Frame (God Layer)  
+**Parts**: Disc Frame Vortex (2.51 g); n=3 symmetry; heaviest common God Frame [CONFIRMED]  
+**Key Physics**: I_Vortex = 9.061×10⁻⁷ kg·m²; r_eff = 1.90 cm; no wobble (n=3). Cannot reach opponent layer [CONFIRMED] — attack only via Over-Wall Defense (OWD). Combined 2Vortex (two Vortex frames on Disc 2): I = 7.322×10⁻⁶ kg·m², m = 23.72 g, r_eff = 1.756 cm; −6.6% I vs Disc 7 alone [CALCULATED].  
+**Engine Note**: discFrameVortex(); OWDonly = true; 2Vortex combined I = 7.322×10⁻⁶; wobble = false (n=3).
+
+---
+
+### [Case 890 — [PART] Hunter Tip (God Layer Generation)](./9%20case%20study.md#case-890)
+
+**Category**: Part — Performance Tip (God Layer)  
+**Parts**: Hunter tip (5.9 g); annular ring contact (r_inner = 0.20 cm, r_outer = 0.50 cm)  
+**Key Physics**: μ = 0.50; r_contact = 0.35 cm (annular ring centroid); τ = 6.649×10⁻⁴ N·m at 38.82 g assembly; dω/dt = 69.71 rad/s²; t_battle = 5.97 s from ω = 416 rad/s. Speed rank: Accel < Zephyr < Hunter < Xtreme [CONFIRMED]. Self-burst risk high at high ω; wear degrades aggression only (not contact area). KO when settled > Defense and Bite [CONFIRMED].  
+**Engine Note**: hunterTip(); μ = 0.50; r_contact 0.35 cm annular centroid; selfBurstRisk = high; wearModel degrades aggressionFactor only.
+
+---
+
+### [Case 891 — [ASSEMBLY] Killer Deathscyther 2Vortex Hunter (God Layer)](./9%20case%20study.md#case-891)
+
+**Category**: Assembly — God Layer System  
+**Parts**: Killer Deathscyther + Forge Disc 2 + 2× Frame Vortex + Hunter tip (38.82 g total)  
+**Key Physics**: I_total = 9.537×10⁻⁶ kg·m² (KD 22.5%, Disc 2 67.3%, Vortex 9.5%, Hunter 0.77%); L₀ = 6.619×10⁻³ kg·m²/s; r_eff = 1.567 cm; dω/dt = 69.71 rad/s²; t_battle = 5.97 s. Component failure cascade confirmed: KD layer limiting factor — even Disc 7 upgrade only adds +0.4 s. t_stall_ideal = 9.95 s [CALCULATED].  
+**Engine Note**: killerDeathscytherAssembly(); gimmickFailCascade carries; t_battle 5.97 s → extremely short stamina budget; Disc 2 dominates I at 67.3%.
+
+---
+
+### [Case 892 — [ANALYSIS] Launch Physics Fundamentals: Energy Transfer Pull-to-Spin (Cross-Gen)](./14%20case%20study.md#case-892)
+
+**Category**: Analysis — Launcher Physics (Cross-Generation)  
+**Parts**: Any ripcord or string launcher  
+**Key Physics**: E_pull = F × d; ω₀ = √(2 × E_useful / I_bey). Ripcord: d = 250–280 mm, E = 10–22 J, η = 0.65–0.85, ω₀ = 260–520 rad/s (2500–5000 RPM). String: d = 600–800 mm, E = 24–64 J, η = 0.80–0.90, ω₀ = 520–900 rad/s (5000–8600 RPM) — 2–3× energy advantage. Worn ripcord (100+ launches): ω₀ ≈ 0.85× new. Standard reference: 60 N, 265 mm pull, η = 0.75, I = 2.5×10⁻⁵ → ω₀ ≈ 489 rad/s.  
+**Engine Note**: computeLaunchSpin(); gearEfficiency η stored per launcher type; wornRipcordFactor = 0.85 at 100+ launch cycles.
+
+---
+
+### [Case 893 — [PART] Winder / Snap Launcher (Plastic Gen S1 Pre-Ripcord)](./14%20case%20study.md#case-893)
+
+**Category**: Part — Launcher (Plastic Gen Pre-Ripcord)  
+**Parts**: Winder / Snap Launcher (~20–30 g [EST]); spring-wound mechanism  
+**Key Physics**: E_winder ≈ 0.05 J (spring: k ≈ 1000 N/m, x ≈ 10 mm); ω₀ ≈ 63 rad/s ≈ 600 RPM — ~13% of ripcord launch speed. Destabilizes immediately (stability < 0.4 × ω_max threshold). Non-competitive [CONFIRMED]; historical origin-format mechanism.  
+**Engine Note**: winderLauncher(); launchSpin 63 rad/s; competitiveUse = false; pre-ripcord era tag.
+
+---
+
+### [Case 894 — [PART] Standard Ripcord Launcher / EZ Shooter (Plastic Gen)](./14%20case%20study.md#case-894)
+
+**Category**: Part — Launcher (Plastic Gen)  
+**Parts**: EZ Shooter / Standard Ripcord Launcher (~35–45 g); pull distance 260 mm; ripcord 18 teeth  
+**Key Physics**: E_useful = 11.4 J at F = 60 N, η = 0.73; ω₀_realistic ≈ 735 rad/s (7020 RPM) at F = 45 N average. Tooth Δθ = 0.209 rad each; total rotation 3.76 rad. Sliding Shoot capable (angle → tilt init). Right-spin only. Worn ripcord −15% at 100+ launches.  
+**Engine Note**: ezShooterLauncher(); slidingShootCapable = true; launchSpin 735 rad/s; ripcordTeeth 18.
+
+---
+
+### [Case 895 — [PART] Reverse Shooter / Left-Spin Shooter (Plastic Gen)](./14%20case%20study.md#case-895)
+
+**Category**: Part — Launcher (Plastic Gen, Left-Spin)  
+**Parts**: Reverse Shooter (~35–45 g); reversed gear train; pull distance 260 mm  
+**Key Physics**: Mirror-image of EZ Shooter — ω₀ ≈ 735 rad/s CCW; energy identical. Enables left-spin AR builds (Penta Wing, Reverse Dragon, etc.). Required for counter-spin and co-rotation stamina strategies vs left-spin opponents [CONFIRMED].  
+**Engine Note**: reverseShooterLauncher(); spinDirection = "left"; launchSpin 735 rad/s; mirrorOfStandard = true.
+
+---
+
+### [Case 896 — [PART] HMS Double Shooter (HMS Era)](./14%20case%20study.md#case-896)
+
+**Category**: Part — Launcher (HMS)  
+**Parts**: HMS Double Shooter (~40–55 g); narrow HMS spindle; both spin directions  
+**Key Physics**: HMS I ≈ 1.0–1.8×10⁻⁵ kg·m² (smaller, lighter); at E_useful = 11.4 J → ω₀_HMS ≈ 1322 rad/s (12630 RPM). Narrow spindle incompatible with plastic gen / MFB / Burst [CONFIRMED]. "Double" = dual spin direction capability. Higher RPM than plastic gen launchers due to lower HMS inertia.  
+**Engine Note**: hmsDoubleShoter(); spindle = "narrow_hms_fit"; launchSpin 1000 rad/s (realistic avg); incompatibleWith plastic gen, MFB, Burst, BX.
+
+---
+
+### [Case 897 — [PART] BeyStringer / String Launcher (MFB Era)](./14%20case%20study.md#case-897)
+
+**Category**: Part — Launcher (MFB Era)  
+**Parts**: BeyStringer (~60–80 g); string wrap mechanism; pull distance 700 mm  
+**Key Physics**: E_useful = 35.7 J at F = 60 N, d = 700 mm, η = 0.85; ω₀ ≈ 1689 rad/s (16130 RPM). 3.1× energy vs ripcord; 2.3× RPM. Continuous force curve (no tooth discretization → better tilt control). String frays at 200–300 launches. Kinked strings → tilt anomalies. Recommended for all MFB+ competitive stamina and balanced builds [CONFIRMED].  
+**Engine Note**: beyStringer(); pullDistance 700 mm; launchSpin 1689 rad/s; forceCurve = "continuous"; vsRipcordMultiplier 3.1.
+
+---
+
+### [Case 898 — [PART] Launcher Grip / Customize Grip (Cross-Gen)](./14%20case%20study.md#case-898)
+
+**Category**: Part — Launcher Accessory (Cross-Generation)  
+**Parts**: Launcher Grip variants (standard/catapult/sniper/customize); 30–60 g  
+**Key Physics**: Catapult Grip: L_grip = 160 mm, L_launcher = 80 mm → F_effective = 2× → E doubles (10.4 → 20.8 J). Standard Grip: 1.5× force. Launch angle variance: no grip ±10–15°; with grip ±5°. Customize Grip (plastic gen): accepts SP attachments. Catapult Grip is strongest performer — doubles launch energy without added effort.  
+**Engine Note**: launcherGrip(); catapultForceMultiplier 2.0; angleConsistencyBonus 0.65; crossGen = true.
+
+---
+
+### [Case 899 — [PART] Light Launcher 2 (MFB Era)](./14%20case%20study.md#case-899)
+
+**Category**: Part — Launcher (MFB Era, Reduced)  
+**Parts**: Light Launcher 2 (~25–30 g); pull distance 190 mm; compact form  
+**Key Physics**: E_useful = 6.8 J at F = 50 N, η = 0.72; ω₀ ≈ 737 rad/s (7040 RPM) — 73% of full launcher output. Competitive disadvantage vs full launchers; valid as angle-consistency practice tool (shorter pull = faster practice cycle).  
+**Engine Note**: lightLauncher2(); launchSpin 737 rad/s; vsFullLauncher spinFraction 0.73; competitiveUse = "casual_or_practice".
+
+---
+
+### [Case 900 — [PART] Burst Launcher (Standard Ripcord, Rk/Lk)](./14%20case%20study.md#case-900)
+
+**Category**: Part — Launcher (Burst Generation)  
+**Parts**: Burst Launcher Rk/Lk (~40–50 g); nylon gears; lock-tooth ripcord; pull distance 270 mm  
+**Key Physics**: E_useful = 11.3 J at F = 55 N, η = 0.76; ω₀ ≈ 1062 rad/s (10145 RPM) at I = 2.0×10⁻⁵ kg·m². Lock-tooth engagement 95% vs plastic gen 85% → −10% false-engagement launches. Burst threshold clearance: ω₀ ≫ 525 rad/s minimum. Nylon gears extend service life vs ABS [CONFIRMED].  
+**Engine Note**: burstLauncherRk(); lockToothEngagement 0.95; launchSpin 1062 rad/s; nylonGears = true; compatibleWith all Burst sub-generations.
+
+---
+
+### [Case 901 — [PART] Burst String Launcher (B-88 / B-99)](./14%20case%20study.md#case-901)
+
+**Category**: Part — Launcher (Burst Generation, String)  
+**Parts**: Burst String Launcher B-88 / B-99 (~60–80 g); string mechanism; pull distance 680 mm  
+**Key Physics**: E_useful = 35.1 J at F = 60 N, d = 680 mm, η = 0.86; ω₀ ≈ 1873 rad/s (17890 RPM). vs Burst ripcord: 1.76× spin, 76% longer burst-resist window (time above ω_burst threshold). B-99 improves string feed consistency over B-88. Essential for serious Burst competitive play [CONFIRMED].  
+**Engine Note**: burstStringLauncher(); launchSpin 1873 rad/s; vsBurstRipcord spinMultiplier 1.76; burstResistExtension 0.76.
+
+---
+
+### [Case 902 — [PART] BX Launcher (Gen 4 / X Series, Ratchet-Click)](./14%20case%20study.md#case-902)
+
+**Category**: Part — Launcher (BX Generation)  
+**Parts**: BX Launcher R/L (~50–60 g); ratchet-click mechanism; pull distance 280 mm  
+**Key Physics**: E_useful = 14.2 J at F = 65 N, η = 0.78; ω₀ ≈ 1256 rad/s (12000 RPM) at I = 1.8×10⁻⁵ kg·m². Ratchet engagement 99% (near-perfect) vs standard 85–92%. Launch variance "very_low". Wear life ~400 launches (4× standard ripcord). Incompatible with all non-BX generations [CONFIRMED].  
+**Engine Note**: bxLauncher(); ratchetMechanism = true; engagementRate 0.99; launchSpin 1256 rad/s; wearLifeLaunches 400.
+
+---
+
+### [Case 903 — [PART] Ripcord (Consumable Accessory)](./14%20case%20study.md#case-903)
+
+**Category**: Part — Consumable (All Ripcord Launchers)  
+**Parts**: Ripcord (~3–5 g); nylon reinforced; 18 teeth; 265 mm usable  
+**Key Physics**: Δθ_per_tooth = 0.209 rad (N_gear = 30 teeth); total rotation 3.76 rad per pull. Wear: 0–50 launches 100% efficiency; 50–100 launches 90%; 100+ launches 80% (ω₀_worn ≈ 0.85× new → −15% launch speed). Replace at 100 competitive launches or on tooth skip observation. Consumable [CONFIRMED].  
+**Engine Note**: ripcordConsumable(); wearCurve stored; replacementThreshold 100 launches; 0.85 factor at worn state.
+
+---
+
+### [Case 904 — [PART] Launcher Grip Level 5 (Burst Era, Spring-Loaded)](./14%20case%20study.md#case-904)
+
+**Category**: Part — Launcher Accessory (Burst Era)  
+**Parts**: Launcher Grip Level 5 (~80–100 g); spring-loaded wrist support; L_grip = 120 mm  
+**Key Physics**: Force multiplier 2.5× (L_total = 200 mm vs L_launcher = 80 mm) → F_effective = 125 N → E_Level5 = 33.75 J vs ungrippled 13.5 J. Launch angle variance: ±12° → ±3° (70% reduction). launchConsistencyImprovement = 0.70. Compatible with Burst launchers and BX launchers. Highest-performance grip accessory [CONFIRMED].  
+**Engine Note**: launcherGripLevel5(); forceMultiplier 2.5; angleVariance_deg 3; consistencyImprovement 0.70.
+
+---
+
+### [Case 905 — [PART] Burst Era Winder (Pre-Match Tuning Tool)](./14%20case%20study.md#case-905)
+
+**Category**: Part — Tuning Accessory (Burst Era)  
+**Parts**: Burst Winder (~60–80 g); motor device; ~2500 RPM (260 rad/s)  
+**Key Physics**: ω_winder ≈ 200–300 rad/s; L = I × ω ≈ 6.25×10⁻³ N·m·s at I = 2.5×10⁻⁵; Ω_p = τ_gravity / L — precession observable. Enables pre-match tuning: bottom height vs AR, WD balance check, mode-change threshold calibration. No match launch function; competitiveUse = false.  
+**Engine Note**: burstWinder(); diagnosticValue = true; motorRPM 2500; no launchSpin output — tuning tool only.
+
+---
+
+### [Case 906 — [PART] RC Shooter / RC EG Launcher (Plastic Gen G-Rev Era)](./14%20case%20study.md#case-906)
+
+**Category**: Part — Launcher (Plastic Gen G-Rev, Remote Control)  
+**Parts**: RC Shooter / RC EG Launcher (~120–150 g); RF transmitter; standard ripcord + remote EG trigger  
+**Key Physics**: Ripcord component: E = 11.4 J (standard). Remote EG trigger: ΔE_EG ≈ 0.5 × k × x² → +15–25 rad/s spin boost at optimal contact timing. RF range 8 m; RF latency 0.1 ms (negligible vs 3 ms contact). Banned in most tournament formats (unfair remote advantage [CONFIRMED]).  
+**Engine Note**: rcShooterLauncher(); remoteEgTrigger = true; rfRange 8 m; competitiveStatus = "banned_most_formats".
+
+---
+
+### [Case 907 — [TECHNIQUE] Sliding Shoot (All Ripcord Launchers)](./14%20case%20study.md#case-907)
+
+**Category**: Technique — Launch Tilt Initialization (Cross-Generation)  
+**Parts**: Any ripcord launcher  
+**Key Physics**: θ_launch ≈ 0.5 × pull_angle_from_horizontal. At 30° downward pull: θ_launch ≈ 8–15°. Activates mode-change tips from first contact if θ_launch > θ_switch (Metal Change Core 8°, Spiral Change Base 10°+). Power-Sliding Shoot: F = 70 N + 25° angle → E = 18.2 J + θ_init > θ_switch simultaneously. Stadium entry position controlled by angle — steeper = further from center → immediate wall contact.  
+**Engine Note**: slidingShootTilt(); tiltInit = angle × 0.4 + (height/100 × 2); isModeActivatedAtLaunch() checks θ vs tipSwitchAngle; launcher-independent technique.
+
+---
+
+### [Case 908 — [PART] Beypointer / BeyLogger (Burst Era, Data Accessory)](./14%20case%20study.md#case-908)
+
+**Category**: Part — Data Accessory (Burst Era)  
+**Parts**: Beypointer (~60–80 g); AAA batteries; Bluetooth optional; QR reader  
+**Key Physics**: Zero competitive physics contribution. Records spin time → empirical μ derivable: μ_empirical = 2 × I × Δω / (m × g × r_tip × Δt). Useful calibration tool for verifying engine friction constants from real battle data. competitiveImpact = "none".  
+**Engine Note**: beypointerDevice(); competitiveImpact = "none"; calibrationUse = "empirical_mu_measurement"; no battle physics hook.
+
+---
+
+### [Case 909 — [PART] Power Launcher / BeyMax Shooter (Plastic Gen Enhanced)](./14%20case%20study.md#case-909)
+
+**Category**: Part — Launcher (Plastic Gen, Enhanced)  
+**Parts**: Power Launcher / BeyMax Shooter; spring pre-load mechanism  
+**Key Physics**: E_preload = 0.5 × 900 × (0.015)² = 0.10 J; total E_total = 11.5 J (+0.9% vs EZ Shooter 11.4 J). Δω₀ ≈ +3.2 rad/s — below ±30 rad/s launch variance noise floor. Marketing differentiator; actual competitive advantage minimal [CONFIRMED]. Catapult Grip (+2× energy) outperforms by orders of magnitude.  
+**Engine Note**: powerLauncher(); springPreload_J 0.10; totalEnergy_J 11.5; actualAdvantage = "minimal"; prefer catapult grip over this.
+
+---
+
+### [Case 910 — [REFERENCE] Launcher Compatibility Matrix (Cross-Generation)](./14%20case%20study.md#case-910)
+
+**Category**: Reference — Launcher Compatibility (Cross-Generation)  
+**Parts**: All launchers across all generations  
+**Key Physics**: EZ Shooter → plastic gen only (MFB adapter: −5–15% efficiency); HMS Double Shooter → HMS only; BeyStringer → MFB/4D/ZeroG (Burst adapter available); Burst Launcher Rk/Lk → all Burst sub-gens; Burst String → Burst; BX Launcher → BX/UX/CX only; Light Launcher 2 → MFB / Burst-reduced. HMS and BX require dedicated launchers — no cross-compat [CONFIRMED]. Adapters exist for limited cross-gen at reduced efficiency.  
+**Engine Note**: launcherCompatibility record; adapterPenalty 5–15% energy loss; incompatiblePairs: HMS↔all others, BX↔all others.
+
+---
+
+### [Case 911 — [PART] Whale Crusher AR (Plastics Gen)](./3%20case%20study.md#case-911)
+
+**Category**: Part — Attack Ring (Plastics Gen, 3-wing)  
+**Parts**: Whale Crusher AR (7.3 g); r_outer = 2.6 cm; r_inner = 1.0 cm; n=3 wings  
+**Key Physics**: I = 2.83×10⁻⁶ kg·m²; Right spin: slope θ = 22° → J_upper = 0.374J, J_lateral = 0.927J (+37% I vs Upper Dragoon); width substitutes for WD overhang (r_outer 2.6 cm reaches without WD dependency). Left spin: spike α = 75° from tangent → J_recoil = 0.966J, J_smash = 0.259J (catastrophic — −251 rad/s Δω per failed hit). Force smash inverted slope β = 5° → J_down = 0.087J (below threshold, functional zero).  
+**Engine Note**: whaleCrusherAR(); rightSpinUpperImpulse() → upperNs 0.030, lateralNs 0.074; leftSpinRecoilFraction = 0.966 (nonviable).
+
+---
+
+### [Case 912 — [PART] SG Flat Base (Plastics Gen)](./3%20case%20study.md#case-912)
+
+**Category**: Part — Blade Base (Plastics Gen, SG)  
+**Parts**: SG Flat Base (4.4 g); plastic flat tip; μ = 0.35; r_tip = 0.40 cm; shortest base in plastics (1.3 cm)  
+**Key Physics**: Height advantage: ΔH = 3 mm vs standard → +11.5% upper impulse. Flower pattern: ω_max_plastic = 4.78 rad/s (slips at any useful orbit speed; rubber tip ω_max = 7.45 rad/s). Restitution e = 0.70 → 75% more impulse reflected vs rubber. LAD I_base = 8.8×10⁻⁷ kg·m² — acceptable, not exceptional. SG shell accepts left-spin variants but no competitive left-spin AR available.  
+**Engine Note**: sgFlatBase(); muStatic 0.35; slidingShootCapable = true; flower pattern disabled at competitive orbit speeds.
+
+---
+
+### [Case 913 — [PART] SG Metal Sharp Base (Plastics Gen)](./3%20case%20study.md#case-913)
+
+**Category**: Part — Blade Base (Plastics Gen, SG)  
+**Parts**: SG Metal Sharp Base (7.6 g total); near-point metal tip; clips (1.6×10⁻⁷ kg·m² — 2% of combo I)  
+**Key Physics**: Height = 2.0 cm → +26% upper impulse bonus for attackers. LAD terminates at 7.9° (underside spikes contact stadium). τ_restore ≈ 0 (near-point tip → no restoring torque). Tilt accumulates unresisted under perturbation at low spin. Outclassed by Metal Sting Base in every dimension except mass; far behind CMSB.  
+**Engine Note**: sgMetalSharpBase(); ladAngleDeg = 7.9° (underside spikes); restoreTorque ≈ 0 at upright stance.
+
+---
+
+### [Case 914 — [PART] Panther Head AR (Plastics Gen, Left-Spin)](./3%20case%20study.md#case-914)
+
+**Category**: Part — Attack Ring (Plastics Gen, Left-Spin Smash)  
+**Parts**: Panther Head AR (5.5 g); r_outer = 2.2 cm; n=3 directional blades  
+**Key Physics**: I = 1.61×10⁻⁶ kg·m². Left spin: blade face α = 30° → J_smash = 0.866J, J_recoil = 0.500J — competitive smash. Opposite-spin doubles impulse budget. Destabilisation slopes add cumulative tilt. Right spin: convex back α = 80° → J_recoil = 0.985J (98.5%) — nonviable. Range cap at 2.2 cm: Wide Defense rim leads at long range as recoil surface; Ten Wide preserves AR contact priority.  
+**Engine Note**: pantherHeadAR(); leftSpinFlag = true; alphaLeftDeg 30; rangeCapMm 22 → tenWidePreferred over wideDefense.
+
+---
+
+### [Case 915 — [PART] Spin Gear Core: North Magnecore (Plastics Gen)](./3%20case%20study.md#case-915)
+
+**Category**: Part — Spin Gear Core (Plastics Gen)  
+**Parts**: North Magnecore (3.3 g); permanent N-pole magnet  
+**Key Physics**: F_mag = 86.4 mN at d = 5 mm (19.6% of tip normal force). −3.5% recoil spin-loss vs plastic core; +2.3% vs MWC at cost of −1.2 g vs MWC. North polarity: repels magnetised tips on assembly; attracts bey toward Magne Stadia magnets (defensive). HMC (6 g) provides +9.2% recoil damping but kills orbital speed.  
+**Engine Note**: northMagnecore(); F_mag = 86.4 mN at 5 mm; magStadiaBehavior = "attract" (north polarity = defensive).
+
+---
+
+### [Case 916 — [PART] Spin Gear Core: South Magnecore (Plastics Gen)](./3%20case%20study.md#case-916)
+
+**Category**: Part — Spin Gear Core (Plastics Gen)  
+**Parts**: South Magnecore (3.3 g); permanent S-pole magnet  
+**Key Physics**: Identical mass-inertia to North Magnecore (Case 915). Magne Stadia: repulsion 68% of tip normal force at 10 mm — genuinely significant, produces erratic offensive movement. Standard arena: F_mag = 86.4 mN at 5 mm (same as North). Between North and South in standard competition: choose whichever is available.  
+**Engine Note**: southMagnecore(); magStadiaBehavior = "repel" (south polarity = erratic offensive); physicsIdenticalToNorth.
+
+---
+
+### [Case 917 — [PART] SG Metal Flat Base (Gaia Dragoon V Version, SGMF2)](./3%20case%20study.md#case-917)
+
+**Category**: Part — Blade Base (Plastics Gen, Metal Flat)  
+**Parts**: SG Metal Flat Base Mold 2 (6.2 g); metal flat tip; μ_metal = 0.55–0.65; completely flat mold  
+**Key Physics**: τ_threshold = 1.58×10⁻⁴ N·m (exceeded by nearly all high-recoil ARs → angular impulse exits as translation). Full-face tornado ridge contact → 19 mN redirect vs 14 mN for beveled mold. Mid-to-low height: marginal upper attack angle vs standard opponents; fails vs Circle Survivor (3 mm deficit). Only competitive non-rubber Smash Attack base in plastics.  
+**Engine Note**: sgMetalFlatBase2(); angularToLinearRecoilConversion() when torque > τ_threshold; tornadoRidgeForce 19 mN; rightSpinOnly smash.
+
+---
+
+### [Case 918 — [PART] Dragon Breaker Core AR (Plastics Gen)](./3%20case%20study.md#case-918)
+
+**Category**: Part — Attack Ring Core (Plastics Gen, SAR-conditional)  
+**Parts**: Dragon Breaker Core AR (5.3 g); r_outer = 2.7 cm; serration angle 37°  
+**Key Physics**: Right spin solo: Tier 2 smash + high recoil. Screw Zeus SAR RS: 86.6% smash fraction. Left spin + War Bear SAR: 89.1% smash; LS + Screw Zeus SAR: 90.6% smash (maximum weight — requires very-high-traction rubber tips). Inverted Screw Zeus slope → self-tilt risk at lower heights. Circle Survivor resistance via momentum bludgeoning only.  
+**Engine Note**: dragonBreakerCoreAR(); sarDependentPerformance; screwZeusLS_smash = 0.906; selfTiltRisk flag for inverted slope.
+
+---
+
+### [Case 919 — [PART] Dragon Breaker Sub AR (Plastics Gen)](./3%20case%20study.md#case-919)
+
+**Category**: Part — Sub Attack Ring (Plastics Gen)  
+**Parts**: Dragon Breaker Sub AR (2.2 g); r_outer = 3.1 cm; free-spinning ring  
+**Key Physics**: Free rotation absorbs 14% of every angular impulse unconditionally. Prong contact α = 60° → 43% smash fraction (after free-spin penalty). r_outer 3.1 cm obstructs core AR contact faces (SAR becomes primary contact). Moment arm 72% longer than standard SARs → amplified vertical recoil torque. GEG geometry: 61% effective smash (best realistic pairing is Great Dragon).  
+**Engine Note**: dragonBreakerSubAR(); freeSpinAbsorption 14%; primacyContactFlag = true (SAR obstructs core); gegSmash = 0.61.
+
+---
+
+### [Case 920 — [PART] Volcano Change Base (Plastics Gen)](./3%20case%20study.md#case-920)
+
+**Category**: Part — Blade Base (Plastics Gen, Height Minimiser)  
+**Parts**: Volcano Change Base (3.5 g bracket); accepts SG Grip Base Tip or VCB Tip; Magnecore mandatory  
+**Key Physics**: Total stack height 1.1–1.2 cm (4–5 mm shorter than SG Grip Base → +15.1% upper-impulse advantage vs standard opponents). Magnetic tip retention: F_mag = 56 mN at 2 mm insertion vs 9.8 mN gravitational load. LAD collapses at 8.5° tilt (Magnecore body contacts stadium). Polarity tie — North or South Magnecore equally viable.  
+**Engine Note**: volcanoChangeBase(); heightMm 12; upperImpulseBonus 0.151; ladCollapseAngle 8.5°; requiresMagnecore = true.
+
+---
+
+### [Case 921 — [PART] Land Attack AR / Tryhorn (Plastics Gen)](./3%20case%20study.md#case-921)
+
+**Category**: Part — Attack Ring (Plastics Gen, V-Tread)  
+**Parts**: Land Attack AR — Tryhorn (stock: 8 Heavy / Right SG / SG Semi-Flat Base); V-tread circular disc  
+**Key Physics**: V-groove wall angle β = 40° → J_smash = 0.643J + tangential = 0.643J simultaneously (spin equalization). Left spin: negative smash (attacker pushed backward) — absolute directional constraint. 8 Heavy I = 3.29×10⁻⁶ kg·m² maximises spin retention for equalization. SG Semi-Flat μ = 0.35 → τ_thresh = 6.16×10⁻⁴ N·m — absorbs recoil as wobble. Win condition: compounding V-groove equalization across hits.  
+**Engine Note**: landAttackAR(); vGrooveAngle 40°; smashFraction 0.643; equalizationDmg compounding model; leftSpinNegative = true.
+
+---
+
+### [Case 922 — [PART] Cross Griffon AR (Plastics Gen)](./3%20case%20study.md#case-922)
+
+**Category**: Part — Attack Ring (Plastics Gen, 4-wing smash)  
+**Parts**: Cross Griffon AR (5.4 g); 4 wings at 90°; thick sharp tip protrusions  
+**Key Physics**: 4-wing: 34% more contact events/s vs Triple Wing; α = 23° → J_smash = 0.921J; total smash output +42% vs Triple Wing. Tip: 80 N over 0.3 mm² = 267 MPa (exceeds ABS yield → AR deformation). Wear: 10% tip radius loss → 10% smash drop (below Triple Wing). SGMF2 synergy: 191 hard hits/s + rotational recoil converted to translation. Left spin: wing backs α = 55° → 57.4% smash, 81.9% recoil — nonviable.  
+**Engine Note**: crossGriffonAR(); smashFraction 0.921; tipPressureMPa 267 (deformation flag); sgmf2Synergy = true.
+
+---
+
+### [Case 923 — [PART] Dual Dragon AR (Plastics Gen)](./3%20case%20study.md#case-923)
+
+**Category**: Part — Attack Ring (Plastics Gen, PC sub-frame)  
+**Parts**: Dual Dragon AR; Core AR + polycarbonate sub-frame; r_outer = 2.7 cm  
+**Key Physics**: PC shock absorption claim false: ABS and PC share E ≈ 2.3 GPa — impulse identical. PC outer edge α = 88° → ~100% lateral push, ~0% spin equalization (mild defense). Core AR left-spin rounded contacts α = 75° → 25.9% smash, 96.6% recoil (bounces off itself). Width 2.7 cm: exposes 3.5 mm beyond Wide Defense; Wide Survivor reduces to ~1 mm (+41% spin retention). Not catastrophic — PC prevents sub-frame fracture.  
+**Engine Note**: dualDragonAR(); pcFrameShockAbsorption = false (E identical to ABS); leftSpinBounceBack = 0.966; preferWideSurvivor.
+
+---
+
+### [Case 924 — [PART] Fantom Grip Base (Plastics Gen)](./3%20case%20study.md#case-924)
+
+**Category**: Part — Blade Base (Plastics Gen, Narrow Rubber)  
+**Parts**: Fantom Grip Base; narrow hard-rubber tip; μ = 0.85 (rubber); r_tip (narrower than CGB Tip)  
+**Key Physics**: τ_threshold = 6.60×10⁻⁴ N·m (44% of CGB Tip 1.50×10⁻³ N·m). ω_max_flower = 6.26 rad/s (vs 7.45 rad/s CGB Tip). Tier 2 flower pattern. Slower spin drain in sustained attrition vs DGB-Defense (lower τ → less tip friction). Can outspin DGB-Defense combos. Against top-tier Zombies / WBD / Circle Survivor: τ deficit is decisive.  
+**Engine Note**: fantomGripBase(); tauThreshold 6.60e-4; omegaMaxFlower 6.26 rad/s; tier2FlowerPattern; attritionAdvantageVsDGB = true.
+
+---
+
+### [Case 925 — [PART] Eight Attacker AR (Plastics Gen)](./3%20case%20study.md#case-925)
+
+**Category**: Part — Attack Ring (Plastics Gen, Left-Spin)  
+**Parts**: Eight Attacker AR (left-spin AR, 4 wings + 4 tabs); flat contact faces  
+**Key Physics**: Left spin primary contacts α ≈ 78° → J_smash = 0.208J per contact. 2-contact window: 2 × 0.208J = 0.416J vs Reverse Dragon (1.5 × 0.574J = 0.861J). Eight Attacker delivers 48% of Reverse Dragon's net smash. No spin-direction asymmetry (flat faces perform equally poorly in both directions). Near-pure recoil regardless of spin direction.  
+**Engine Note**: eightAttackerAR(); alphaLeftDeg 78; smashFraction 0.208; rightSpinIdentical (flat = direction-neutral failure).
+
+---
+
+### [Case 926 — [PART] Magne Flat Base (Plastics Gen)](./3%20case%20study.md#case-926)
+
+**Category**: Part — Blade Base (Plastics Gen, Removable Tip)  
+**Parts**: Magne Flat Base (4.7 g); 4 swept wings; removable tip socket; no SP slots  
+**Key Physics**: Left spin μ_left = 0.500; right spin μ_right = 0.139 (flat 60° and 82° faces). LAD onset 21.8° (poor survival/defense). smashFraction_left ≈ 0.500 — usable attack platform for rubber tips. Lighter than CGB (forfeits SP mass). Useful for rubber attack when SP compatibility is unneeded; unique height interaction with Dranzer V Magnecore.  
+**Engine Note**: magneFlatBase(); leftSpinSmash 0.500; rightSpinSmash 0.139; removableTip = true; noSPslots.
+
+---
+
+### [Case 927 — [PART] Magne Flat Base Tip (Plastics Gen)](./3%20case%20study.md#case-927)
+
+**Category**: Part — Performance Tip (Plastics Gen, Plastic + South Magnet)  
+**Parts**: Magne Flat Base Tip; clear ABS plastic; μ = 0.35; r_tip = 0.40 cm; embedded South Magnet  
+**Key Physics**: τ_threshold = 6.04×10⁻⁴ N·m (41% of CGB Tip). ω_max_flower = 4.78 rad/s (nonviable orbit speed). Flange contact at 14° tilt (LAD penalty). Three-tip family ranking: CGB Tip 1.46×10⁻³ > SG GBT 1.13×10⁻³ > Magne Flat Tip 6.04×10⁻⁴ N·m. Fails all three tip roles (attack, defense, stamina). South Magnet interactions weak at d > 5 mm.  
+**Engine Note**: magneFlatBaseTip(); tauThreshold 6.04e-4; omegaMaxFlower 4.78 (nonviable); flangeContactAngle 14°.
+
+---
+
+### [Case 928 — [PART] SG Grip Base Tip (Plastics Gen)](./3%20case%20study.md#case-928)
+
+**Category**: Part — Performance Tip (Plastics Gen, Rubber)  
+**Parts**: SG Grip Base Tip (2.74 g); hard rubber; μ = 0.85; r_tip = 0.35 cm; passive ferromagnetic steel pole  
+**Key Physics**: τ_threshold = 1.31×10⁻³ N·m (87% of CGB Tip). ω_max_flower = 7.45 rad/s (identical to CGB Tip — μ term equal). 0.90 g lighter than CGB Tip → Force Smash weight-class advantage (mass can shift to heavier WD). Volcano Change Base compatibility (alignment tab). North Magnecore: induced dipole increases N → higher F_friction. Rolling power: 28% less than CGB Tip → slightly better stamina.  
+**Engine Note**: sgGripBaseTip(); tauThreshold 1.31e-3; omegaMaxFlower 7.45; volcanoChangeBaseCompatible = true; magnetInduction(northMag → increased N).
+
+---
+
+### [Case 929 — [PART] Sonic Tiger AR (Plastics Gen)](./3%20case%20study.md#case-929)
+
+**Category**: Part — Attack Ring (Plastics Gen, 2-wing 3-segment)  
+**Parts**: Sonic Tiger AR (4.7 g); 2 wings, 3 segments per wing separated by gaps  
+**Key Physics**: I = 3.02×10⁻⁶ kg·m². Right spin: avg α = avg(65°, 77°) → smash 32.4% (56% of Panther Claw). Left spin: avg α = avg(72°, 78°) → smash 25.9% (non-viable). Gap-edge contacts (22% of events): α = 85° → pure recoil. Segment gaps convert deflection events into recoil impacts vs continuous ring. No competitive role in either spin direction.  
+**Engine Note**: sonicTigerAR(); seg3RearTab α_RS 65°; seg2MidBlock α_RS 77°; gapEdgeRecoil = true; noCompetitiveRole.
+
+---
+
+### [Case 930 — [PART] SG Metal Flat Base v2 (Truncated Cone Tip)](./3%20case%20study.md#case-930)
+
+**Category**: Part — Blade Base (Plastics Gen, Metal Truncated Cone)  
+**Parts**: SG Metal Flat Base v2 (6.2 g); metal truncated-cone tip; r_flat = 0.075 mm; half-cone angle = 15°  
+**Key Physics**: I_base = 5.29×10⁻⁶ kg·m² (among highest for plastic-gen bases). LAD θ_LAD = 4.9° (tip destabilises before high I provides benefit). μ_steel on ABS = 0.55; restoring torque insufficient → premature nutation. ω_max_flower ≈ 6.00 rad/s. Tier 2 compact; outclassed by rubber/metal tips with proper contact radius.  
+**Engine Note**: sgMetalFlatBase_v2(); rFlat 0.075 mm; ladAngle 4.9°; highI but earlyNutation; tier2Compact.
+
+---
+
+### [Case 931 — [PART] Griffolyon Base Hasbro (Plastics Gen)](./3%20case%20study.md#case-931)
+
+**Category**: Part — Blade Base (Plastics Gen, 4-pole Hasbro)  
+**Parts**: Griffolyon Base Hasbro (7.2 g); 4 pole bases; dome shaft; "free-spin" gimmick  
+**Key Physics**: LAD θ_LAD = 4.9° (pole bumps contact stadium, terminating precession). Shaft coupling torque = 9.86×10⁻⁴ N·m; tip friction torque = 1.54×10⁻⁴ N·m; coupling/tip ratio = 6.4× → free-spin gimmick negated (coupling transmits spin through shaft rather than freeing it). I_base = 5.29×10⁻⁶ kg·m² — mechanically irrelevant given tip/LAD failures.  
+**Engine Note**: griffoloyonBaseHasbro(); ladAngle 4.9°; freeSpinGimmickNegated (shaftCouplingRatio 6.4×); polesDestroyLAD.
+
+---
+
+### [Case 932 — [PART] Cybernetic Dragon AR (Plastics Gen)](./3%20case%20study.md#case-932)
+
+**Category**: Part — Attack Ring (Plastics Gen, Large-Diameter)  
+**Parts**: Cybernetic Dragon AR (5.3 g); r_outer = 4.0 cm; flat faces; r_contact = 3.8 cm  
+**Key Physics**: α_RS = 78° → J_smash = 0.208J (21%); α_LS = 82° → J_smash = 0.139J (14%). Thread torque at J = 0.12 N·s: 4.46×10⁻³ N·m ≈ τ_thread_max → AR physically rotates backward. HMC reduces thread load ratio from 95% to 61.8% (+38% improvement). vs Square Edge: 3.09× more smash per contact. Near-total recoil in all configurations; HMC is only partial mitigation.  
+**Engine Note**: cyberneticDragonAR(); alphaRightDeg 78; threadTorqueRisk = true; hmcThreadLoad 0.618; smashFrac 0.208.
+
+---
+
+### [Case 933 — [PART] Spike Dragon AR (Plastics Gen)](./3%20case%20study.md#case-933)
+
+**Category**: Part — Attack Ring (Plastics Gen, Vertical-Ridge)  
+**Parts**: Spike Dragon AR (4.9 g); r_contact = 3.3 cm; vertical ridge texture; flat contact faces  
+**Key Physics**: Vertical ridges change pressure distribution, not contact angle → α unchanged. Left spin α = 76°, contact area = 112 mm² → effective J_smash ≈ 0.404J. Right spin α = 65°, area = 20 mm² → J_smash ≈ 0.300J. Rotational recoil fraction = 0.730 (73% of recoil impulse → spin deceleration). Δω per hit ≈ 7.8 rad/s at J = 0.01 N·s. Cannot reduce rotational recoil despite large face area.  
+**Engine Note**: spikeDragonAR(); alphaLeftDeg 76; rotRecoilFraction 0.730; verticalRidgeNullEffect (angle unchanged).
+
+---
+
+### [Case 934 — [PART] Magne Weight Disk (Plastics Gen)](./3%20case%20study.md#case-934)
+
+**Category**: Part — Weight Disk (Plastics Gen, Magnetic)  
+**Parts**: Magne Weight Disk Mold 1 (14.3 g); 4 permanent magnets; zinc alloy + soft ABS shell; r_outer = 3.0 cm  
+**Key Physics**: I_uniform = 6.44×10⁻⁶ kg·m² — even mass distribution limits I below Wide Survivor. Facet α = 60° → recoilFraction = 0.866 (73% more recoil vs Wide Defense). Magnetic bearing drag: 6.2×10⁻⁵ N additional → 1.9×10⁻⁵ W continuous spin drain. Centrifugal shell force near peel limit at 200 rad/s. Magnetic gimmick vs non-MGWD opponents: negligible.  
+**Engine Note**: magneWeightDisk(); iUniform 6.44e-6 (underperforms rim-concentrated WDs); magnetBearingDrag 6.2e-5 N; facetRecoil 0.866.
+
+---
+
+### [Case 935 — [PART] Reverse Attack SP (Plastics Gen)](./3%20case%20study.md#case-935)
+
+**Category**: Part — Support Part (Plastics Gen, 2-piece)  
+**Parts**: Reverse Attack SP (0.88 g both halves); primary fin α = 55°; r_SP = 3.1 cm  
+**Key Physics**: I_SP = 8.46×10⁻⁷ kg·m²; smash fraction 0.574 — best of two-part SPs. Arc coverage 220°; expected smash = 0.350J vs one-part SP 0.528J (51% gap). LAD clearance 2.5 mm → θ_LAD = 4.6° (poor); rounded arm softens catch torque. Least-recoil-prone two-part SP; two-part split coverage limits competitive ceiling vs one-part designs.  
+**Engine Note**: reverseAttackSP(); smashFrac 0.574; arcCoverage 220°; expectedSmash 0.350J; twoPartCeilingPenalty.
+
+---
+
+### [Case 936 — [PART] Customize Grip Base (Plastics Gen)](./3%20case%20study.md#case-936)
+
+**Category**: Part — Blade Base (Plastics Gen, SP-Compatible)  
+**Parts**: Customize Grip Base (5.1 g); r_outer = 3.7 cm; SP slots (2 pairs); wide smooth disc rim  
+**Key Physics**: I_CGB = 3.74×10⁻⁶ kg·m². Rim LAD: θ_onset = 6.2° (tip destabilises) → rim extends effective precession to ~14°. ω_max_rim = 9.63 rad/s. Zombie performance: θ_prec_max ≈ 25–30° (25–50% more precession range vs tall bases without rim). Force Smash mass: CGB + SG GBT + Defense Ring SP = ~12.3 g → WBD class. Opposite-spin relative velocity 3.3× same-spin (spin-steal premium).  
+**Engine Note**: customizeGripBase(); rimLAD 14.1° (after tip destabilise); I 3.74e-6; zombieBaseFlag = true; SPslots = 2 pairs.
+
+---
+
+### [Case 937 — [PART] Customize Grip Base Tip (Plastics Gen)](./3%20case%20study.md#case-937)
+
+**Category**: Part — Performance Tip (Plastics Gen, Wide Rubber + Magnet)  
+**Parts**: CGB Tip (1.8 g); hard rubber; μ = 0.82; r_tip = 0.40 cm; South Magnet at centre  
+**Key Physics**: τ_threshold = 1.44×10⁻³ N·m (near-top of rubber tip hierarchy). ω_max_flower ≈ 7.33 rad/s. Rolling power = 1.23×10⁻³ W (43% less drain vs soft rubber). Ridge rollover factor 0.20 (easy ridge skip — consistent ridge-skipping at Tornado Ridge). South Magnet repels with Magnecore → tip sits higher → lower effective combo height when paired with Magnecore.  
+**Engine Note**: cgbTip(); tauThreshold 1.44e-3; omegaMaxFlower 7.33; ridgeRolloverFactor 0.20; southMagnetRepulsion.
+
+---
+
+### [Case 938 — [PART] Upper Claw AR (Plastics Gen)](./3%20case%20study.md#case-938)
+
+**Category**: Part — Attack Ring (Plastics Gen, Multi-Mode)  
+**Parts**: Upper Claw AR Mold 1 (5.0 g); 3 wings; lower slope θ = 25°, upper slope θ = 40°; claw tips α = 45°  
+**Key Physics**: Right spin: lower slope J_upper = 0.423J; upper slope J_upper = 0.643J; slope transition upward smash = 0.259J; claw tip J_smash = 0.707J; mane spike J_smash = 0.616J. Overhang 6 mm → lower contact boundary on CGB = 1.8 cm vs 2.2 cm without overhang. Left spin: ALL vertical components invert → 42% of impulse destabilises self (non-viable).  
+**Engine Note**: upperClawAR(); rightSpinMultiMode (upperAttack + upwardSmash + smash); leftSpinSelfDestabilise = true; overhangMm 6.
+
+---
+
+### [Case 939 — [PART] Ten Balance Weight Disk (Plastics Gen)](./3%20case%20study.md#case-939)
+
+**Category**: Part — Weight Disk (Plastics Gen)  
+**Parts**: Ten Balance (15.0 g); r_outer = 1.9 cm; 10 equidistant rim tabs (60% of mass at r_t = 1.8 cm)  
+**Key Physics**: I_TB = 3.93×10⁻⁶ kg·m² (vs Wide Defense 3.97×10⁻⁶ — nearly equal). vs Ten Heavy: −14.0% I. Correct choice only when compact/semi-flat tip bowl-wall clearance is binding constraint: wallClearanceGain = (2.2−1.9) × tan(35°) = 2.10 mm at β ≥ 35°. Otherwise Wide Defense wins by 1% I; Ten Heavy wins by 13% I.  
+**Engine Note**: tenBalance(); I 3.93e-6; bowlClearanceAdvantage at β ≥ 35° only; defaultToWideDefenseElsewhere.
+
+---
+
+### [Case 940 — [PART] Upper Attack Support Parts (Plastics Gen)](./3%20case%20study.md#case-940)
+
+**Category**: Part — Support Part (Plastics Gen, Slope Extension)  
+**Parts**: Upper Attack SP Mold 1 (1.78 g each, 3.56 g pair); r_mount = 2.9 cm; θ_SP = 25°  
+**Key Physics**: I_SP = 2.99×10⁻⁶ kg·m² (pair) — 1.5–2× an AR's worth of inertia at periphery. Contact window extended: without SP = 3–10 mm; with SP = 0–10 mm (+3 mm low coverage → decisive vs compact/semi-flat opponents). Blue-side up (standard): continuous slope 0–10 mm at θ = 25°; J_vertical = 0.423J. Red-side up (reversed): disrupts slope continuity, reduces efficiency. Mold 2 fixes structural alignment.  
+**Engine Note**: upperAttackSP(); I_pair 2.99e-6; contactWindowExtension +3 mm; blueUpStandard; contactHeightFloor 0 mm.
+
+---
+
+### [Case 941 — [PART] Customize Metal Change Base (Plastics Gen)](./3%20case%20study.md#case-941)
+
+**Category**: Part — Blade Base (Plastics Gen, Phase-Switching)  
+**Parts**: CMCB (6.4 g); Metal Change Tip; r_sharp = 0.05 cm, r_skirt = 0.30 cm; ω_crit = 0.55 × ω_max  
+**Key Physics**: Sharp phase (ω > ω_crit): P_idle = 7.84×10⁻⁷ W; 11% of SGMBB idle drag. Skirt phase: P_idle = 4.0× SGMBB. Cross-over: CMCB leads stamina only while ω > ω_crit. With Upper Attack SP: m_total = 9.96 g, I = 4.86×10⁻⁶ kg·m² (2.37× SGMBB). +1.16 g vs SGMBB → better Force Smash. Rumoured fully-sharp mold: production assembly error using CMSB tip (no skirt → no tornado-ridge, no WBD, no compact stability).  
+**Engine Note**: customizeMetalChangeBase(); changeTipContactRadius(ω); P_idle 7.84e-7 (sharp) → 4× SGMBB (skirt); I_with_SP 4.86e-6.
+
+---
+
+### [Case 942 — [PART] Customize Metal Sharp Base (Plastics Gen)](./3%20case%20study.md#case-942)
+
+**Category**: Part — Blade Base (Plastics Gen, Fixed Sharp)  
+**Parts**: CMSB (5.8 g); fixed sharp metal tip; r_point = 0.035 cm; plastic collar r = 0.45 cm; h_gap = 2.5 mm  
+**Key Physics**: Collar engagement at θ = 29.1°. P_idle_sharp = 1.05×10⁻⁶ W (0.19% of rubber flat — best same-spin stamina in plastics). restoreTorque at θ < 29.1°: 2.10×10⁻⁶ N·m (point only → near zero); at θ > 29.1°: 2.09×10⁻⁴ N·m (collar — 100× increase). Loses to heavy Force Smash (collar never engages before KO). Correct niche: same-spin stamina vs opponents that cannot deliver Force Smash at low spin.  
+**Engine Note**: customizeMetalSharpBase(); collarEngagementAngle 29.1°; P_idle 1.05e-6; restoreTorque phase-switching at collar engage.
+
+---
+
+### [Case 943 — [PART] Mountain Hammer AR (Plastics Gen)](./3%20case%20study.md#case-943)
+
+**Category**: Part — Attack Ring (Plastics Gen, High-Mass Smash)  
+**Parts**: Mountain Hammer AR (6.0 g); r_contact = 2.5 cm; h_CP = 0.8 cm (elevated); α_RS = 22°, α_LS = 35°  
+**Key Physics**: RS: J_smash = 0.927J; J_recoil = 0.375J → τ_recoil = 1.17×10⁻³ N·m (thread stress). LS: J_smash = 0.819J. Rotational recoil fraction = 0.34 at I_total = 9.0×10⁻⁶. Elevated CPs 8 mm: mid-height base pairing mandatory; CSD-clearing advantage. Ten Heavy keeps WD radius clear of opponent approach. Mass on par with Triple Wing smash.  
+**Engine Note**: mountainHammerAR(); smashFracRS 0.927; smashFracLS 0.819; rotRecoilFraction 0.34; elevatedCP_mm 8 (mid-height base required).
+
+---
+
+### [Case 944 — [PART] Defense Ring Support Part (Plastics Gen)](./3%20case%20study.md#case-944)
+
+**Category**: Part — Support Part (Plastics Gen, Wide LAD)  
+**Parts**: Defense Ring SP (2.91 g); r_outer = 3.7 cm; bottom angle φ = 5°; smooth outer surface  
+**Key Physics**: θ_LAD_onset = 2.3° (earliest of any SP — 4× better than standard 9.9°). ω_LAD_min = 8.91 rad/s (lowest critical spin of any SP — 13% below Upper Attack SP, 18% below Reverse Attack). I_peripheral = 3.30×10⁻⁶ kg·m² (highest despite lighter than Upper Attack SP). Rivet coverage 17%, α = 25° → avgRecoilFraction = 0.072 (7% — effectively passive). Dominant for all LAD/survive-to-endgame builds.  
+**Engine Note**: defenseRingSP(); ladOnsetAngle 2.3°; ladMinOmega 8.91 rad/s; I 3.30e-6; recoilFraction 0.072 (passive surface).
+
+---
+
+### [Case 945 — [PART] Customize Clutch Change Base (Plastics Gen)](./3%20case%20study.md#case-945)
+
+**Category**: Part — Blade Base (Plastics Gen, Centrifugal Clutch)  
+**Parts**: CCCB (5.8 g); centrifugal clutch; survival tip (disengaged) / attack tip (engaged)  
+**Key Physics**: ω_crit ≈ 10% of ω_max (89 rad/s at spring params: k = 80 N/m, m_c = 1.5 g, r_c = 10 mm). Attack mode engages at ~1% of launch attack force. Fundamental inversion: survival when attack is needed (high ω) → attack when spin is nearly depleted (low ω). Spring tension variation explains inter-unit timing differences but does not fix inversion. Not competitively viable without accepting mode uselessness.  
+**Engine Note**: customizeClutchChangeBase(); omegaCrit 89 rad/s (10% ω_max); modeInversionFlaw = true; attackForceAtCrit 0.01×launch.
+
+---
+
+### [Case 946 — [PART] Cross Dranzer AR (Plastics Gen)](./3%20case%20study.md#case-946)
+
+**Category**: Part — Attack Ring (Plastics Gen, 4-fold Symmetric)  
+**Parts**: Cross Dranzer AR (5.0 g); r_outer = 2.7 cm; n=4 congruent wings; no overhang  
+**Key Physics**: 4-fold symmetry → spin-neutral (RS = LS performance). Mixed contacts: α_smash = 20° (J_smash 0.940J), θ_slope = 15° (J_upper 0.259J), α_recoil = 40° (J_recoil 0.643J). I_CD = 2.31×10⁻⁶ kg·m²; f_rot = 0.257 (26% rotational, 74% translational recoil). No downward overhang → no AR-stadium contact during precession → full Defense Ring LAD uninterrupted. Incomplete spin-steal reach; outclassed by Gyro Defense.  
+**Engine Note**: crossDranzerAR(); isSpinNeutral = true (n=4); noOverhang → ladOrbitUninterrupted; f_rot 0.257.
+
+---
+
+### [Case 947 — [PART] Cross Survivor Support Parts (Plastics Gen)](./3%20case%20study.md#case-947)
+
+**Category**: Part — Support Part (Plastics Gen, Wide Defensive Buffer)  
+**Parts**: Cross Survivor SP (2.56 g); r_outer = 3.7 cm (matches Defense Ring); 4 rectangular tabs  
+**Key Physics**: Bottom-face angle steeper than Defense Ring → lower effective LAD vs Defense Ring. 4 tabs: rotational-alignment preference for 2/4/8-fold ARs. Near-continuous circular barrier for defense. Bidirectional mounting: one direction adds minor attack contribution (tab faces forward); opposite direction adds defense (tab faces backward). Wide radius matches Defense Ring for precession geometry but steeper angle reduces LAD survival vs DR.  
+**Engine Note**: crossSurvivorSP(); rOuter 0.037 m (matches DR); bottomAngleSteeper → lowerLAD vs DefenseRing; bidirectionalMount; 4tabGeometry.
+
+---
+
+### [Case 948 — [PART] Triple Attacker AR (Plastics Gen)](./3%20case%20study.md#case-948)
+
+**Category**: Part — Attack Ring (Plastics Gen, 3 Attack Vectors)  
+**Parts**: Triple Attacker AR (3-wing, multiple contact modes); outer-diagonal contact face  
+**Key Physics**: 3 distinct attack vectors per wing. Outer-diagonal contact penalty: the outermost contacts present at an elevated α from the orbital tangent → recoil penalty at full extension. Left-spin viable (directionally asymmetric enough for usable smash fraction). Contact analysis: inner contact smash > outer diagonal contact. Correct WD pairing important (rim must not obstruct inner contacts).  
+**Engine Note**: tripleAttackerAR(); 3attackVectors per wing; outerDiagonalPenalty; leftSpinViable = true.
+
+---
+
+### [Case 949 — [PART] Ten Wide Weight Disk (Plastics Gen)](./3%20case%20study.md#case-949)
+
+**Category**: Part — Weight Disk (Plastics Gen)  
+**Parts**: Ten Wide WD; r_outer wider than Ten Balance; 10 tabs; some rim concentration  
+**Key Physics**: Wider outer radius vs Ten Balance → higher I contribution. Tab recoil: tabs produce discrete recoil points where opponent contacts WD directly; 10 tabs = high contact frequency. Reduced rim concentration vs pure annular WDs (Wide Defense/Survivor): I per gram lower. For stamina: Wide Defense still preferred (uniform annulus > tab-concentrated at equal mass). Ten Wide suitable where extra reach is valued over pure I.  
+**Engine Note**: tenWide(); tabRecoilFlag; rimConcentrationLower vs uniformAnnulus WDs; I vs Ten Balance: slightly higher due to wider r_outer.
+
+---
+
+### [Case 950 — [PART] Double Bearing Core (Plastics Gen)](./3%20case%20study.md#case-950)
+
+**Category**: Part — Spin Gear Core (Plastics Gen, Zombie)  
+**Parts**: Double Bearing Core; 2 stacked ball bearings; h_bearing₂ +2.5 mm SG stack  
+**Key Physics**: Two bearings: near-zero tip friction (spin decoupled from tip). Bey retains spin through air drag + minor internal friction only. Stack height +2.5 mm elevates CoM → marginally increases wobble torque. Multi-shaft compatibility for different base configurations. Combined with CGB rim LAD (θ_prec_max 25–30°) → premier Zombie configuration in plastics. Coupling attenuation: two-stage bearing reduces any residual rotational coupling from SG thread to near zero.  
+**Engine Note**: doubleBearingCore(); tipFrictionNearZero; zombieFlag = true; stackHeightBonus 2.5 mm; CGB + DoubleBearing = topZombieConfig.
+
+---
+
+### [Case 951 — [SYSTEM] 4 Layer System (Plastics Generation)](./5%20case%20study.md#case-951)
+
+**Category**: System — Plastics Gen 4-component architecture  
+**Parts**: Bit Chip + AR + WD + BB; 4-layer stack  
+**Key Physics**: h_CoM ≈ 2.15 cm; I_total ≈ 8.15×10⁻⁶ kg·m²; spinDecayRate = −τ/I. Wide WD 29% longer spin than Ten WD (annular vs tab mass distribution). Bit Chip at r≈0 → I contribution negligible; grants BeySpirit/special moves in anime only.  
+**Engine Note**: fourLayerSystem(); comHeight 2.15 cm; wideWDSpinBonus 29% vs tenWD.
+
+---
+
+### [Case 952 — [SYSTEM] Spin Gear System (Plastics Generation)](./5%20case%20study.md#case-952)
+
+**Category**: System — Plastics Gen 5-layer with SG  
+**Parts**: BC + AR + WD + SG + BB; SG as 5th layer  
+**Key Physics**: Bearing isolation: τ_tip = 3×10⁻⁶ N·m vs 5×10⁻⁵ for flat tip (16.7× friction reduction). SAR absorbs 20% of contact impulse (energy buffer). True 5-layer architecture from Dec 2000. SG shell decouples tip motion from spin axis on bearing-type SGs.  
+**Engine Note**: spinGearSystem(); bearingIsolation 16.7×; sarAbsorptionFraction 0.20.
+
+---
+
+### [Case 953 — [SYSTEM] Magnacore System (Plastics Generation)](./5%20case%20study.md#case-953)
+
+**Category**: System — Plastics Gen 6-layer with magnetic core  
+**Parts**: BC + AR + WD + North/South SG + Magnecore + BB  
+**Key Physics**: 6-layer stack; F_mag = 0.185 N at 3.0 cm separation; relativeForce(1.3 cm, 2.0 cm) = 0.179 (inverse-cube scaling); core at lower height than WD → stronger magnetic effect than WD-level centering.  
+**Engine Note**: magnacoreSystem(); F_mag 0.185 N at 3.0 cm; magneticCenteringBonus vs plain SG.
+
+---
+
+### [Case 954 — [SYSTEM] Hard Metal System / HMS](./5%20case%20study.md#case-954)
+
+**Category**: System — HMS monolithic architecture  
+**Parts**: RC (monolithic, no SG clip) + WD + BB  
+**Key Physics**: Scale factor k = 0.75; air drag ratio k³ = 0.422 (58% drag reduction vs plastics). Tip friction ratio 1/k = 1.333× higher per unit mass. Metal AR delivers 5.3× peak contact force vs plastic AR. No SG → RC is one-piece; simpler structure but no bearing isolation.  
+**Engine Note**: hmsSystem(); k 0.75; airDragRatio 0.422; metalARForceMultiplier 5.3.
+
+---
+
+### [Case 955 — [SYSTEM] Metal System (MFB)](./5%20case%20study.md#case-955)
+
+**Category**: System — Metal Fusion/Battle/Masters architecture  
+**Parts**: Face Bolt + Clear Wheel + Metal Wheel + Track + Bottom  
+**Key Physics**: Metal Wheel ≈ 89% of I_total; wheelMoI(2.8 cm, 2.2 cm, 6 mm) = 7.28×10⁻⁶ kg·m²; rubber flat dω/dt = 137.5 rad/s²; bearing bottom dω/dt = 0.375 rad/s².  
+**Engine Note**: metalSystem(); wheelFraction 0.89 of I_total; rubberFlatDecay 137.5; bearingDecay 0.375 rad/s².
+
+---
+
+### [Case 956 — [SYSTEM] Engine Gear System (Plastics Gen)](./5%20case%20study.md#case-956)
+
+**Category**: System — Plastics Gen EG with spring-wound mechanism  
+**Parts**: AR + WD + EG (Standard/Turbo/Reverse) + BB; spring-wound gear  
+**Key Physics**: Standard spring E = 60.8 J; Turbo E = 243 J (4.0× standard); Reverse: 2.5× impulse boost vs standard. Clutch types: first_clutch (fires once at launch), final_clutch (fires on near-stop), no_clutch (always-on spin), engine_stopper (blocks until threshold). [Anime override: special moves exceed all EG mechanical limits via BeySpirit.]  
+**Engine Note**: engineGearSystem(); standardSpringE 60.8 J; turboMultiplier 4.0; reverseImpulse 2.5×; clutchTypes enum.
+
+---
+
+### [Case 957 — [SYSTEM] Hybrid Wheel System (HWS)](./5%20case%20study.md#case-957)
+
+**Category**: System — HWS = Fusion Wheel + Energy Ring  
+**Parts**: Face Bolt + Energy Ring + Fusion Wheel + Track + Bottom  
+**Key Physics**: I_total = 6.41×10⁻⁶ kg·m² (−12% vs Metal System 7.28×10⁻⁶); ER contributes 30% of FW's I. FW protrusion +2 mm beyond ER → +10% smash effectiveness. Energy Ring clips onto Face Bolt slot, locks CW/FW co-rotation.  
+**Engine Note**: hwsSystem(); I_HWS 6.41e-6 (−12% vs metalSystem); erFraction 0.30 of FW_I; fwProtrusionSmash +10%.
+
+---
+
+### [Case 958 — [SYSTEM] 4D System (MFB 4D era)](./5%20case%20study.md#case-958)
+
+**Category**: System — 4D = Different Material, Divided Wheel, Dynamic Drive, Deep Custom  
+**Parts**: Face Bolt + 4D CW + Metal Frame + Core + Track + Bottom  
+**Key Physics**: PC Frame + Metal Frame + Core (3 sub-layers); F:D tip ω_transition ≈ 141 rad/s (high-ω μ = 0.60; low-ω μ = 0.05); 4D descriptor = four simultaneous physics improvements.  
+**Engine Note**: fourDSystem(); fdTipTransitionOmega 141 rad/s; highOmegaMu 0.60; lowOmegaMu 0.05.
+
+---
+
+### [Case 959 — [SYSTEM] Burst System (Beyblade Burst)](./5%20case%20study.md#case-959)
+
+**Category**: System — Burst 3-layer (Layer + Disc + Driver)  
+**Parts**: Layer + Forge Disc + Performance Tip  
+**Key Physics**: Disc = 71% of I_total; standard holdingTorque = 0.005 N·m; Dash Driver = 0.009 N·m (1.8× burst resistance); relativeSpin per contact ≈ 80.4 rad/s (vs standard ratchet).  
+**Engine Note**: burstSystem(); discInertiaFraction 0.71; standardHoldingTorque 5e-3 N·m; dashTorque 9e-3 N·m.
+
+---
+
+### [Case 960 — [SYSTEM] Burst Subsystems (Cho-Z, DB, BX layers)](./5%20case%20study.md#case-960)
+
+**Category**: System — 7 TT Burst subsystem tiers  
+**Parts**: Dual Layer → Cho-Z → GT (God) → Sparking → DB → BU → BX  
+**Key Physics**: Cho-Z 88% more burst resistant than Dual Layer (ratchet spring upgrade). Dash Driver compensates for Disc's high I reducing spin input. DB High/Low mode = contact-height selector (Low = DB Core top/Armor bottom = stable/defense; High = Armor top/DB Core bottom = taller/attack).  
+**Engine Note**: burstSubsystems(); chozBurstResistance +88%; dashCompensation; dbHighLowMode enum.
+
+---
+
+### [Case 961 — [PART] CobaltDrake 4-60F (BX Blade + Ratchet + Bit)](./5%20case%20study.md#case-961)
+
+**Category**: Part — BX assembled combo analysis  
+**Parts**: CobaltDrake Blade (38 g); 4-60 Ratchet; Flat Bit  
+**Key Physics**: I_blade = 1.127×10⁻⁵ kg·m²; contact angle 25° → smash = cos(25°)J = 0.906J, upper = sin(25°)J = 0.423J; Flat Bit μ = 0.55; xtremeDashTipSpeed = 0.80 m/s; 4-60 dead zone = 60° per tooth gap.  
+**Engine Note**: cobaltDrakeBX(); I_blade 1.127e-5; contactAngle 25°; flatBitMu 0.55; xDashSpeed 0.80 m/s.
+
+---
+
+### [Case 962 — [PART] DranBuster 1-60A (BX Unique OWD)](./5%20case%20study.md#case-962)
+
+**Category**: Part — BX assembled combo analysis (OWD / eccentric orbit)  
+**Parts**: DranBuster Blade; 1-60 Ratchet (1 protrusion); Accel Bit (16 gears)  
+**Key Physics**: 1-protrusion ratchet → 360° dead zone (one gap = full rotation before re-engage); OWD (Off-center Weight Distribution) drives eccentric orbit; 16 Accel Gears increase bottom contact area over standard Accel; effective for deflection-type KO orbits.  
+**Engine Note**: dranBusterBX(); oneProtrusion360DegDeadZone; owdEccentricOrbit; 16accelGears.
+
+---
+
+### [Case 963 — [PART] DranBrave S6-60V (BX CX Custom Line)](./5%20case%20study.md#case-963)
+
+**Category**: Part — BX CX assembled combo analysis (5-part Custom Blade)  
+**Parts**: Lock Chip + Main Blade (Brave) + Assist Blade (×2); S6-60 Ratchet; Vortex Bit  
+**Key Physics**: 5-part CX blade; Brave smooth upper attack: friction coupling 5.1%; Vortex Bit rightward spiral → outward force 0.052 N; 25% less spin drain vs Cyclone ratio; S6-60 dead zone = 60° (6 teeth).  
+**Engine Note**: dranBraveCX(); cxBladeComponents 5; braveUpperAttackCoupling 5.1%; vortexOutwardForce 0.052 N; s660DegDeadZone 60.
+
+---
+
+### [Case 964 — [PART] Track 85 (MFB)](./5%20case%20study.md#case-964)
+
+**Category**: Part — MFB Track (lowest standard height)  
+**Parts**: Track 85 (0.85 cm height, 8.5 mm)  
+**Key Physics**: scrapeAngle = arcsin((8.5+3−4)/23) = arcsin(7.5/23) ≈ 19.0°; CoM −4.8 mm vs 145 Track; lowest height in standard MFB range; maxTilt = arcsin(8.5/21.5) = 23.4°.  
+**Engine Note**: track85(); scrapeAngle 19.0°; comDelta −4.8 mm vs 145; maxTilt 23.4°.
+
+---
+
+### [Case 965 — [PART] Track 90 (MFB)](./5%20case%20study.md#case-965)
+
+**Category**: Part — MFB Track  
+**Parts**: Track 90 (0.90 cm height, 9.0 mm)  
+**Key Physics**: scrapeAngle ≈ 20.4°; CoM −4.4 mm vs 145 Track; maxTilt = arcsin(9.0/21.5) = 24.8°.  
+**Engine Note**: track90(); scrapeAngle 20.4°; comDelta −4.4 mm vs 145; maxTilt 24.8°.
+
+---
+
+### [Case 966 — [PART] Track 100 (MFB)](./5%20case%20study.md#case-966)
+
+**Category**: Part — MFB Track  
+**Parts**: Track 100 (1.00 cm height, 10.0 mm)  
+**Key Physics**: scrapeAngle ≈ 23.1°; CoM −3.6 mm vs 145 Track; maxTilt = arcsin(10.0/21.5) = 27.7°; preferred for aggressive attack (delta_h vs 145 defender = 4.5 mm tipping advantage).  
+**Engine Note**: track100(); scrapeAngle 23.1°; comDelta −3.6 mm vs 145; maxTilt 27.7°.
+
+---
+
+### [Case 967 — [PART] Track 105 (MFB)](./5%20case%20study.md#case-967)
+
+**Category**: Part — MFB Track  
+**Parts**: Track 105 (1.05 cm height, 10.5 mm)  
+**Key Physics**: scrapeAngle ≈ 24.4°; all metrics worse than Track 100 (higher than ideal attack height, lower than 145 stamina); last-resort option; maxTilt = 29.3°.  
+**Engine Note**: track105(); scrapeAngle 24.4°; maxTilt 29.3°; noteLastResort.
+
+---
+
+### [Case 968 — [PART] AD145 Track (MFB)](./5%20case%20study.md#case-968)
+
+**Category**: Part — MFB Track (OWD funnel type)  
+**Parts**: AD145 (2.8 g OWD; h = 1.45 cm)  
+**Key Physics**: I_AD145 = 4.73×10⁻⁷ kg·m² (7.4× plain 145); +6.5% spin time vs 145; role: Stamina/Defense; OWD funnel redirects lateral impacts into a centering reaction, providing passive LAD.  
+**Engine Note**: ad145Track(); I 4.73e-7 (7.4× plain); spinTimeBonus 6.5%; owdFunnelLAD.
+
+---
+
+### [Case 969 — [PART] DF145 Track (MFB)](./5%20case%20study.md#case-969)
+
+**Category**: Part — MFB Track (downforce wing type)  
+**Parts**: DF145 (1.5 g; h = 1.45 cm)  
+**Key Physics**: Downforce 7.2×10⁻⁵ N (negligible at match spin rates); I ≈ 9.4×10⁻⁸ kg·m² (lowest of all 145-height variants); outclassed by AD145 for stamina, outclassed by plain 145 for simplicity.  
+**Engine Note**: df145Track(); downforce 7.2e-5 N negligible; I 9.4e-8; outclassed.
+
+---
+
+### [Case 970 — [PART] SW145 Track (MFB)](./5%20case%20study.md#case-970)
+
+**Category**: Part — MFB Track (wing type; rigid 100% recoil)  
+**Parts**: SW145 (4.2 g; h = 1.45 cm; rigid fixed wings)  
+**Key Physics**: Highest I of any 145-height track: I = 1.214×10⁻⁶ kg·m²; rigid wings → 100% recoil on impact (wings act as solid paddles); attack/defense wing orientation reversal possible. High I aids stamina but recoil counters that benefit under attack.  
+**Engine Note**: sw145Track(); I 1.214e-6 (highest 145-class); rigidWings100PctRecoil; wingReversal.
+
+---
+
+### [Case 971 — [PART] WD145 Track (MFB)](./5%20case%20study.md#case-971)
+
+**Category**: Part — MFB Track (wing type; spin-trap coupling)  
+**Parts**: WD145 (3.6 g; h = 1.45 cm; fixed wings)  
+**Key Physics**: Fixed wings create trap coupling on opponent contact: ΔKE = 0.0288 J (18% of spin KE at ω_A = 300, ω_D = 180 rad/s); wings act as spin-steal amplifiers. Less I than SW145 but coupling mechanism adds offensive utility.  
+**Engine Note**: wd145Track(); spinTrapCoupling ΔKE 0.0288 J; 18% spinKE fraction; fixedWings.
+
+---
+
+### [Case 972 — [PART] E230 Track (MFB)](./5%20case%20study.md#case-972)
+
+**Category**: Part — MFB Track (free-sliding disc, height-variable)  
+**Parts**: E230 (7.4 g; free-sliding inner disc; Normal pos 6 mm, Boost 8 mm)  
+**Key Physics**: r_disc = 2.4 cm; free-sliding disc amplifies ground contact torque under centrifugal force; GCF required for Boost mode; height-variable (6 vs 8 mm effective contact) changes CoM and tilt resistance; highest mass of any non-combo track.  
+**Engine Note**: e230Track(); freeSliddingDisc; rDisc 2.4 cm; normalPos 6 mm; boostPos 8 mm; gcfRequired.
+
+---
+
+### [Case 973 — [PART] SP230 Track (MFB)](./5%20case%20study.md#case-973)
+
+**Category**: Part — MFB Track (fixed spike type, tilt-activation)  
+**Parts**: SP230 (est. 4.8 g; fixed spikes r = 2.7 cm; h = 2.30 cm)  
+**Key Physics**: Fixed spikes extend to r = 2.7 cm; tilt-activation at θ ≈ 17° → spikes ground-contact → increased friction circle; spin-rate-independent activation (pure geometry, not centrifugal). No free-sliding — simpler than E230 but fewer tuning options.  
+**Engine Note**: sp230Track(); fixedSpikes r 2.7 cm; tiltActivation 17°; spinRateIndependent.
+
+---
+
+### [Case 974 — [PART] F230 Track (MFB bearing type)](./5%20case%20study.md#case-974)
+
+**Category**: Part — MFB Track (ball-bearing decoupled; LAD specialist)  
+**Parts**: F230 (4.6 g; ball-bearing decoupling; h = 2.30 cm)  
+**Key Physics**: Ball-bearing decouples outer disc rotation from main spin axis; with rigid Track: LAD decay = 187 rad/s² → t_stop = 1.07 s; F230 bearing-decoupled air-drag only ≈ 2000–2500× slower decay vs rigid. Premier precession-stabilizer for Zombie configurations.  
+**Engine Note**: f230Track(); bearingDecoupled; ladDecayRigid 187 rad/s²; bearingDecayFactor 2000–2500×.
+
+---
+
+### [Case 975 — [PART] TB (Twin Ball) Bottom (MFB)](./5%20case%20study.md#case-975)
+
+**Category**: Part — MFB Bottom (spherical dome LAD specialist)  
+**Parts**: TB (r_ball = 0.2 cm; r_dome = 0.9 cm; r_skirt = 1.3 cm)  
+**Key Physics**: 3-regime contact: 0–15° ball only; 15–50° dome rolling (r_contact = r_dome×sin θ); 50–80° full dome; >80° skirt stop. Stability ratio R_TB = μ×r_dome/h_CoM = 0.0675 constant (θ-independent) vs flat-rim R drops 73% from 15°→70°. maxStableTilt 78–80° (vs WB/D ≈ 35–45°). Opposite-spin vulnerability: Hertzian contact area only 0.045 mm² vs WD annulus 25 mm² (550× less spin-steal coupling).  
+**Engine Note**: tbBottom(); rDome 0.9 cm; stabilityRatioConstant 0.0675; maxStableTilt 80°; spinStealVulnerable (550× less area vs WD).
+
+---
+
+### [Case 976 — [PART] Storm Metal Wheel (MFB)](./5%20case%20study.md#case-976)
+
+**Category**: Part — MFB Metal Wheel (attack archetype)  
+**Parts**: Storm (28.5 g; r_outer 2.2 cm; 4 swept-back wings; φ = 40°)  
+**Key Physics**: J_smash = cos(40°)J = 0.766J; J_recoil = sin(40°)J = 0.643J; spin loss per contact = 16.6 rad/s (at J = 0.01 N·s); contactFrequency 4× orbital = 255/s theoretical; netAttackAdvantage 1.19 (19% more damage to opponent vs self per contact). I ≈ 7.41×10⁻⁶ kg·m² (annular); tip-corrected ≈ 1.13×10⁻⁵.  
+**Engine Note**: stormWheel(); phi 40°; smashFraction 0.766; recoilFraction 0.643; spinLossPerContact 16.6 rad/s.
+
+---
+
+### [Case 977 — [PART] Rock Metal Wheel (MFB)](./5%20case%20study.md#case-977)
+
+**Category**: Part — MFB Metal Wheel (defense archetype)  
+**Parts**: Rock (28.0 g; r_outer 2.2 cm; 6 rounded protrusions; φ ≈ 7°)  
+**Key Physics**: J_recoil = sin(7°)J = 0.122J (5.3× less than Storm); 6-fold MoI asymmetry index σ_I/I_mean ≈ 2–3%; defenseSpinRetention: 3.13 rad/s loss per contact (vs Storm 16.6); I = 7.28×10⁻⁶ kg·m².  
+**Engine Note**: rockWheel(); phi 7°; recoilFraction 0.122; recoilVsStorm 5.3×; I 7.28e-6.
+
+---
+
+### [Case 978 — [PART] Lightning Metal Wheel (L-Drago; MFB)](./5%20case%20study.md#case-978)
+
+**Category**: Part — MFB Metal Wheel (left-spin / spin-steal)  
+**Parts**: Lightning (28.0 g; left-spin; 3 blades; φ_blade = 35°; upper attack 15°)  
+**Key Physics**: v_relative = r×(ω_L + ω_R) = 35.2 m/s (opposite spin; far higher than same-spin ~0.44 m/s); spinStealTorque = sin(35°)J = 0.574J (positive for L-Drago); Hertz contact time 5–7× shorter at opposite spin (partially offsets steal). Upper attack vertical: sin(15°)J = 0.259J.  
+**Engine Note**: lightningWheel(); leftSpin; phi 35°; spinStealPositive; relativeVelocityOpposite 35.2 m/s; upperAttack15deg.
+
+---
+
+### [Case 979 — [PART] Flame Metal Wheel (MFB)](./5%20case%20study.md#case-979)
+
+**Category**: Part — MFB Metal Wheel (stamina archetype; first series)  
+**Parts**: Flame (29.0 g; r_mean 2.1 cm; Fourier profile A₁ = 1.5 mm 3-fold, A₂ = 0.7 mm 6-fold)  
+**Key Physics**: φ_avg ≈ 5°; J_recoil = sin(5°)J = 0.087J (7.4× less than Storm); aero drag −10–15% vs attack wheels; I = 6.92×10⁻⁶ kg·m²; stamina advantage from recoil minimisation not I.  
+**Engine Note**: flameWheel(); phi_avg 5°; recoilFraction 0.087; aeroDragSaving 10–15% vs attack.
+
+---
+
+### [Case 980 — [PART] Burn Metal Wheel (MFB)](./5%20case%20study.md#case-980)
+
+**Category**: Part — MFB Metal Wheel (stamina benchmark; first series)  
+**Parts**: Burn (29.5 g; r_mean 2.15 cm; A_max = 0.8 mm 6-fold)  
+**Key Physics**: φ_avg ≈ 2.5°; J_recoil = 0.044J (14.6× less than Storm; 2.0× less than Flame); spinRetention per contact 95.6%; I = 7.34×10⁻⁶ kg·m²; after 10 hits Burn retains ~4.6% more spin than Flame.  
+**Engine Note**: burnWheel(); phi_avg 2.5°; recoilFraction 0.044; spinRetention 0.956; I 7.34e-6.
+
+---
+
+### [Case 981 — [PART] Earth Metal Wheel (MFB)](./5%20case%20study.md#case-981)
+
+**Category**: Part — MFB Metal Wheel (stamina-defense crossover; first series)  
+**Parts**: Earth (30.0 g; r_outer 2.2 cm; φ ≈ 1.3°; 2-fold nearly oval)  
+**Key Physics**: I = 7.80×10⁻⁶ kg·m² (highest first-series); φ_avg ≈ 1.3° → J_recoil = 0.023J; retains 97.7% spin per contact; m_eff = I/r² = 16.1 g (matches typical attacker → near-dead-stop collision); decays 5.9% slower than Burn from I advantage alone.  
+**Engine Note**: earthWheel(); phi_avg 1.3°; I 7.80e-6; mEff 16.1 g; spinRetention 0.977.
+
+---
+
+### [Case 982 — [PART] L Drago Metal Wheel (MFB; left-spin destabiliser)](./5%20case%20study.md#case-982)
+
+**Category**: Part — MFB Metal Wheel (left-spin; ramp destabilisation)  
+**Parts**: L Drago (32 g; 3 dragon-head ramp units; ψ = 25° from horizontal; left-spin)  
+**Key Physics**: J_radial = cos(25°)J = 0.906J; J_vertical = sin(25°)J = 0.423J → toppling τ = 0.042 N·m per contact; left-spin mechanically required (ramp must face incoming contact direction). Weight ceiling problem: at 32 g insufficient to survive heavy-combo smash before accumulating enough destabilisation contacts.  
+**Engine Note**: lDragoWheel(); leftSpin; rampAngle 25°; topplingTorque 0.042 N·m; weightCeilingLimitation.
+
+---
+
+### [Case 983 — [PART] Leone Metal Wheel (MFB)](./5%20case%20study.md#case-983)
+
+**Category**: Part — MFB Metal Wheel (recoil attacker in defense silhouette)  
+**Parts**: Leone (38.0 g; r_outer 2.179 cm; h 0.897 cm; 3 clusters × 6 blocks; φ ≈ 20°)  
+**Key Physics**: J_smash = 0.940J; J_recoil = 0.342J (2.8× Rock); recoil propels Leone away after contact; RF re-engages; m_eff = 20.4 g; I = 9.71×10⁻⁶ kg·m²; recoilVelocity = 0.89 m/s per approach at 2 m/s.  
+**Engine Note**: leoneWheel(); phi 20°; recoilFraction 0.342; recoilVsRock 2.8×; I 9.71e-6.
+
+---
+
+### [Case 984 — [PART] Libra Metal Wheel (MFB; 3-mold evolution)](./5%20case%20study.md#case-984)
+
+**Category**: Part — MFB Metal Wheel (defense/stamina ceiling; pre-Basalt era)  
+**Parts**: Libra (40.5 g; r_outer 2.3 cm; outer ring r 1.8–2.3 cm; micro-notch perimeter; 3 molds)  
+**Key Physics**: I_Libra = 1.36×10⁻⁵ kg·m² (74% above Earth); decays at 57% of Earth rate; φ_avg ≈ 8.8°; J_recoil = 0.153J; 2.59 rad/s loss per contact vs Earth 0.65 rad/s. Mold 1 fracture: K_t = 3, σ_local = 20 MPa → near fatigue limit (60 MPa) with cycling. Mold 2: spoke thickened → A_spoke +50% → σ drops safe. Mold 3 WBBA legal.  
+**Engine Note**: libraWheel(); I 1.36e-5; phi_avg 8.8°; moldFractureK_t 3.0; mold2SpokeReinforced.
+
+---
+
+### [Case 985 — [PART] Pegasis Metal Wheel (MFB)](./5%20case%20study.md#case-985)
+
+**Category**: Part — MFB Metal Wheel (smash attack; ridge-contact specialist)  
+**Parts**: Pegasis (36.0 g; r_outer 2.22 cm; h 1.216 cm; 3 wings; φ = 35°; 2 ridges/wing)  
+**Key Physics**: J_smash = cos(35°)J = 0.819J (vs Storm 0.766); J_recoil = 0.574J; ridge Hertz contact pressure ≈ 28 MPa (vs ~2 MPa flat face); upperAttack at tip: sin(41.2°)J = 0.659J. Breakage: original root σ_bending = 561 MPa (>270 MPa yield); redesign to Z_section +150% → 224 MPa safe. I ≈ 1.14×10⁻⁵ kg·m².  
+**Engine Note**: pegasisWheel(); phi 35°; ridgePressure 28 MPa; rootStressOriginal 561 MPa; I 1.14e-5.
+
+---
+
+### [Case 986 — [PART] Pisces Metal Wheel (MFB)](./5%20case%20study.md#case-986)
+
+**Category**: Part — MFB Metal Wheel (failed hybrid; stamina/defense neither)  
+**Parts**: Pisces (35.4 g; 2 shark arms; r_CoM_arm 1.65 cm; φ_head 17°; φ_body 4°)  
+**Key Physics**: φ_eff ≈ 5.1°; J_recoil = 0.089J (3.9× Earth); I = 9.01×10⁻⁶ (15.5% above Earth); after 20 contacts Pisces retains ~83% vs Earth ~95%. Gap-catch inner wall φ ≈ 37° → J_recoil = 0.601J (worst case). m_eff = 18.6 g vs Basalt 47.2 g → bounces back at 43.5% approach speed.  
+**Engine Note**: piscesWheel(); phi_eff 5.1°; I 9.01e-6; gapCatchRecoil 0.601J; outclassedByEarth.
+
+---
+
+### [Case 987 — [PART] Sagittario Metal Wheel (MFB)](./5%20case%20study.md#case-987)
+
+**Category**: Part — MFB Metal Wheel (smash-stamina hybrid; burst contact)  
+**Parts**: Sagittario (est. 31 g; 2 crescents; φ_end = 27°; φ_body = 3.5°)  
+**Key Physics**: φ_eff ≈ 4.4°; crescentEnd smash = 0.891J (high per hit); spinLoss burst at crescent end = 5.8× average (periodic burst loss event); gap-catch inner wall φ ≈ 40° → 0.643J recoil. Average near-zero but single high-loss events dominate long matches.  
+**Engine Note**: sagittarioWheel(); phi_eff 4.4°; burstRatio 5.8× avg; crescentEndSmash 0.891J.
+
+---
+
+### [Case 988 — [PART] Virgo Metal Wheel (MFB; mold imbalance)](./5%20case%20study.md#case-988)
+
+**Category**: Part — MFB Metal Wheel (stamina; mold-dependent performance)  
+**Parts**: Virgo (37.0 g; 2 spiral arms; r_CoM_arm 1.85 cm; φ_avg ≈ 1.3°)  
+**Key Physics**: I ≈ 1.19×10⁻⁵ kg·m² (good mold); bad mold Δr ≈ 0.25 mm → imbalance dω/dt = 579 rad/s² at ω = 200 rad/s (vs tip friction 9.1 rad/s²); ω_crossover ≈ 25.2 rad/s; good mold Δr < 0.05 mm → negligible. 3 min vs 5 min spin time difference = ~0.5 g arm mass error (2.9% manufacturing variation).  
+**Engine Note**: virgoWheel(); I 1.19e-5; badMoldImbalance 579 rad/s²; crossoverOmega 25.2; goodVsBadMoldSpinTime 3vs5min.
+
+---
+
+### [Case 989 — [PART] Leone Clear Wheel (MFB)](./5%20case%20study.md#case-989)
+
+**Category**: Part — MFB Clear Wheel (zero-recoil cap layer)  
+**Parts**: Leone CW (3.0 g; r_outer 1.9 cm; circular profile; φ ≈ 0.5°)  
+**Key Physics**: I_CW = 5.79×10⁻⁷ kg·m² (7.95% of Leone Metal Wheel I); +8% spin decay improvement with CW present; CoM shift +0.525 mm → −2.7% precession onset ω. 4D variant: m = 5 g → I_4D = 9.65×10⁻⁷ (13% of FW I); metal powder ~5% vol fraction; cosmetic sparkle only (unchanged contact properties).  
+**Engine Note**: leoneCW(); I 5.79e-7; iContribFraction 0.0795; comShift 0.525 mm; 4dVariantI 9.65e-7.
+
+---
+
+### [Case 990 — [PART] Nemesis 4D Clear Wheel (MFB)](./5%20case%20study.md#case-990)
+
+**Category**: Part — MFB 4D Clear Wheel (composite; design asymmetry)  
+**Parts**: Nemesis 4D CW (3.23 g; two-half composite: Cygnus feather + Uranus whisker; φ_avg ≈ 8.5°)  
+**Key Physics**: Metal powder ~4.9% vol fraction (ΔI = 4.44×10⁻⁸ kg·m²); I = 6.23×10⁻⁷ (5.66% of Diablo FW); design asymmetry Δr_CW ≈ 0.303 mm → combo imbalance 0.024 mm; τ_imbalance/τ_tip ≈ 6.6× at ω = 200; ω_crossover ≈ 77.5 rad/s; J_recoil at CW height = 0.148J (16× Leone CW).  
+**Engine Note**: nemesisCW4D(); metalPowderFraction 4.9%; I 6.23e-7; designAsymmetry 0.024 mm combo; cwRecoil 16× leoneRef.
+
+---
+
+### [Case 991 — [PART] VariAres 4D Metal Wheel (MFB; centrifugal mode-switch)](./5%20case%20study.md#case-991)
+
+**Category**: Part — MFB 4D Metal Wheel (centrifugal Attack/Defense mode)  
+**Parts**: VariAres (43.6 g; r_outer_tip 2.5 cm; 3 wings + PC Frame; ω_c ≈ 120 rad/s)  
+**Key Physics**: Attack Mode (ω > 120 rad/s): PC Frame retracted; φ_tip = 17° → smash 0.956J; Defense Mode: PC Frame extended; φ_eff = 28°; impulse attenuation factor 0.76 (ε_PC/ε_metal). Attack duration ≈ 7.5 s from launch. Bilateral spin: abrupt tip geometry keeps φ equal for L and R approach. I = 1.26×10⁻⁵ kg·m².  
+**Engine Note**: variAres4D(); omegaC 120 rad/s; attackModeDuration 7.5 s; pcFrameAttenuation 0.76; I 1.26e-5.
+
+---
+
+### [Case 992 — [PART] D:D (Delta Drive) Bottom (MFB; 3-tip selector)](./5%20case%20study.md#case-992)
+
+**Category**: Part — MFB Bottom (3-mode manual pre-battle selector)  
+**Parts**: D:D (5.5 g; Sharp h 2.119 cm / Wide Ball h 2.089 cm / Flat h 2.025 cm; Δh = 0.94 mm)  
+**Key Physics**: S: τ = 3.24×10⁻⁵ N·m; dω/dt = 2.51 rad/s². WB: dω/dt = 7.2 rad/s² (5× CS due to no bearing). F: τ = 1.51×10⁻³ N·m; dω/dt = 117 rad/s². RF delivers 3.2× higher torque than D:D F mode. CoM height gradient 0.94 mm (secondary effect). Each mode outclassed by dedicated alternative (S < WD; WB < CS; F < RF).  
+**Engine Note**: ddBottom(); sharpDecay 2.51 rad/s²; wbDecay 7.2 rad/s²; flatDecay 117 rad/s²; rfMultiple 3.2×.
+
+---
+
+### [Case 993 — [PART] Horogium Clear Wheel (MFB; clock-motif asymmetry)](./5%20case%20study.md#case-993)
+
+**Category**: Part — MFB Clear Wheel (gear-tooth perimeter; imbalance source)  
+**Parts**: Horogium CW (2.71 g; r_outer 1.9 cm; ~34 gear teeth; III-sector gap; clock-hand protrusions)  
+**Key Physics**: III-gap removes ~0.107 g at r = 1.7 cm → Δr_CW = 0.67 mm; diluted to combo: Δr_combo ≈ 0.034 mm (residual wobble bias). Gear tooth drag: +29% aero drag vs smooth ring (A_teeth/A_smooth ratio). Clock-hand protrusions partially offset III-gap but asymmetric length → net imbalance persists. Unsuitable for stamina/defense.  
+**Engine Note**: horogiumCW(); iiiGapImbalance 0.034 mm combo; toothDragIncrease 29%; stamina unsuitable.
+
+---
+
+### [Case 994 — [PART] Basalt Metal Wheel (MFB; maximum-weight defense)](./5%20case%20study.md#case-994)
+
+**Category**: Part — MFB Metal Wheel (heaviest single-layer; Staircase of Death)  
+**Parts**: Basalt (47.52 g; r_outer 2.2 cm; 11.0 mm height; 2.0 mm overhang; 64 knurling teeth; 5 spokes)  
+**Key Physics**: I_Basalt = 1.38×10⁻⁵ kg·m² (21% above Libra); Staircase of Death: ~1.03 g missing at r_centroid 1.85 cm → Δr = 0.401 mm → ω_cross = 78 rad/s (orbital onset); imbalance force at launch 0.922 N (1.98× static weight). Knurling: spin-transfer fraction = 1.0/2.2 = 0.45 (55% reduction vs smooth). Overhang +2.3% moment arm; vertical step destabilises opponent.  
+**Engine Note**: basaltWheel(); I 1.38e-5; staircaseDeltaR 0.401 mm; orbitalOnset 78 rad/s; knurledSpinTransfer 0.45.
+
+---
+
+### [Case 995 — [PART] 145 Track (MFB)](./5%20case%20study.md#case-995)
+
+**Category**: Part — MFB Track (tallest standard; stamina specialist)  
+**Parts**: 145 Track (1.47 g; h = 1.45 cm; full width 2.0 cm; min width 1.8 cm)  
+**Key Physics**: maxTilt = arcsin(14.5/21.5) = 42.4° (vs 105 at 29.3°, 90 at 24.8°); precessionRate = 12.4 rad/s at ω = 60 rad/s (Basalt combo); precession circle r = 7.3 mm at 20° tilt. BD145 outclasses via rubber ball energy absorption (ε_BD145 ≈ 0.55 vs 0.90 hard plastic) + compliance + height equivalence.  
+**Engine Note**: track145(); maxTilt 42.4°; precessRate 12.4 rad/s at 60 rad/s spin; bdOutclasses via energy absorption.
+
+---
+
+### [Case 996 — [PART] WD (Wide Defense) Bottom (MFB)](./5%20case%20study.md#case-996)
+
+**Category**: Part — MFB Bottom (annular contact; LAD reference standard)  
+**Parts**: WD (0.7 g; r_contact 0.709 cm; r_full 0.777 cm; 40° bevel; h 0.892 cm)  
+**Key Physics**: τ = μ×N×r_eff = 4.32×10⁻⁴ N·m; dω/dt = 30.6 rad/s² (Basalt combo); maxFlatTilt 17° then bevel engages; bevel τ = 4.67×10⁻⁴ N·m (slightly higher); LAD restoring fraction = 8.7% of lateral impact; weak-shot technique reaches precession at 2.7 s vs 5.2 s normal.  
+**Engine Note**: wdBottom(); rEff 0.55 cm; decayRate 30.6 rad/s²; ladRestoringFraction 8.7%; weakShotPrecessionEntry 2.7 s.
+
+---
+
+### [Case 997 — [PART] Aquila Clear Wheel (MFB; Earth-keyed)](./5%20case%20study.md#case-997)
+
+**Category**: Part — MFB Clear Wheel (two-fold; Earth-notch fit geometry)  
+**Parts**: Aquila CW (2.9 g; 2 horseshoe arcs ~80° each + 2 spikes ~15°; r_wing 2.0 cm)  
+**Key Physics**: Principal moment anisotropy: I_A = 2.93×10⁻⁷ vs I_B ≈ 5.7×10⁻⁸ kg·m²; ΔI drives nutation at 2ω (amplitude sub-visible at 1–2% of I_combo). Earth exposure: 47% open gap exposes Earth Metal Wheel to direct contact. Spike locked to Earth inner notch → zero CW–MW slip → full impulse transmitted (no energy lost to relative rotation).  
+**Engine Note**: aquilaCW(); principalAnisotropyDeltaI 2.4e-7; earthGapExposure 47%; spikeLockZeroSlip.
+
+---
+
+### [Case 998 — [PART] Earth Metal Wheel (MFB; two-mold analysis)](./5%20case%20study.md#case-998)
+
+**Category**: Part — MFB Metal Wheel (near-circular defense; Basalt successor gap)  
+**Parts**: Earth (30.8 g mold1 / 33.0 g mold2; r_outer 2.25 cm; 4 wings 2 mm gaps; 12° declination)  
+**Key Physics**: I mold1 = 9.07×10⁻⁶; mold2 = 9.50×10⁻⁶ (4.7% increase); solid fraction 93.6%; φ ≈ 5.1°; recoilRatio 0.089; declination 12° → transient grounding 3.5× static weight on impact; mold1 root σ = 69 MPa > 60 MPa fatigue limit → fracture; mold2: Z_section +56%, K_t 4.5 → 28 MPa safe. Basalt I/Earth ratio = 1.45 → outclassed.  
+**Engine Note**: earthMetal(); I_mold1 9.07e-6; I_mold2 9.50e-6; recoilRatio 0.089; mold1FractureRoot; mold2Safe; basaltOutclasses 45%.
+
+---
+
+### [Case 999 — [PART] Unicorno II 4D Clear Wheel (MFB)](./5%20case%20study.md#case-999)
+
+**Category**: Part — MFB 4D Clear Wheel (three-fold isotropic; iron powder)  
+**Parts**: Unicorno II 4D CW (3.27 g; C₃ symmetry; 3 horn protrusions @120°; h wider/taller than standard)  
+**Key Physics**: Iron powder fraction 1.5–3.3% vol; I = 6.23×10⁻⁷ kg·m²; C₃ symmetry → ΔI = 0 (no nutation forcing, vs C₂ Aquila ~25% delta_I); CoM height shift +0.074 mm (negligible). Premier Clear Wheel for rotational stability in any combo requiring 3-fold or universal geometry.  
+**Engine Note**: unicornoIICW(); ironPowderFraction 1.5–3.3%; C3isotropy deltaI = 0; comShift 0.074 mm.
+
+---
+
+### [Case 1000 — [PART] Blitz 4D Metal Wheel (MFB; two-piece composite)](./5%20case%20study.md#case-1000)
+
+**Category**: Part — MFB 4D Metal Wheel (two-piece; Assault/Barrage mode; slope-bump)  
+**Parts**: Blitz (43.72 g total = Core 31.07 g + Metal Frame 12.65 g; Assault 3 wings ~87° / Barrage 6 wings ~42°)  
+**Key Physics**: I_Blitz = 1.18×10⁻⁵ kg·m² (Core 6.65×10⁻⁶ + Frame 5.11×10⁻⁶); Assault recoilRatio = tan(30°) = 0.577; Barrage = tan(40°) = 0.839 (45% more recoil). Slope-bump: F_peak = 11.97 N vs flat 7.5 N (60% higher). L-spin weakness: concave wing backface reverses J_smash sign → L-spin attacker gains momentum. Full combo I ≈ 1.20×10⁻⁵.  
+**Engine Note**: blitz4D(); I 1.18e-5; assaultRecoil 0.577; barrageRecoil 0.839; bumpPeakForce 11.97 N; lSpinWeakness.
+
+---
+
+
+### [Case 1001 — [PART] Winning Valkyrie Energy Layer (Burst Standard)](./9%20case%20study.md#case-1001)
+
+**Category**: Part — Burst Energy Layer (Standard; C3 smash attack)
+**Parts**: Winning Valkyrie (15.2 g; C3; 2 PC tabs; L 5.0 mm, b 3.0 mm, h 0.55 mm; phi = 22 deg)
+**Key Physics**: k_tab = 2.40e3 N/m; tau_burst = 10.8 mN·m; smash cos(22) = 0.927; recoil sin(22) = 0.375. I_L = 2.318e-6; I_total(WV.12.V) = 4.018e-6 kg·m2; dw/dt = -7.08 rad/s2; L0 = 2.411e-3 kg·m2/s. Disc (12, 15.8 g) contributes 41.7% of assembly I — disc dominance pattern established across Burst era.
+**Engine Note**: winningValkyrie(); k_tab 2400; tau_burst 10.8 mN·m; phi 22 deg; I_L 2.318e-6; I_total 4.018e-6; L0 2.411e-3.
+
+---
+
+### [Case 1002 — [PART] Xtreme Performance Tip (Burst Standard)](./9%20case%20study.md#case-1002)
+
+**Category**: Part — Burst Driver (rubber annulus; aggressive orbit)
+**Parts**: Xtreme tip (r_void 0.20 cm, r_ring 0.40 cm; mu_k = 0.85 rubber)
+**Key Physics**: Annular contact r_eff = 0.311 cm (+16.6% vs solid contact); tau = 8.84e-4 N·m; dw/dt = -220 rad/s2 (31.1x Velocity tip). Flower orbit: R = 3.0 cm at 0.5 m/s. Extremely aggressive spin consumption; pairs with high-I attack layers only.
+**Engine Note**: xtremeDriver(); rEff 0.311 cm; mu 0.85; dOmega -220 rad/s2; flowerOrbitR 3.0 cm; 31x_velocity.
+
+---
+
+### [Case 1003 — [PART] Xeno Xcalibur Energy Layer (Burst Standard; C1 mold fracture)](./9%20case%20study.md#case-1003)
+
+**Category**: Part — Burst Energy Layer (C1 asymmetric; sword; fracture history)
+**Parts**: Xeno Xcalibur (9.3 g; C1; single sword; delta_max = 0.45 mm; phi = 18 deg)
+**Key Physics**: tau_burst = 16.2 mN·m (+50% vs WV). Eccentricity e = 3.31 mm; F_imbalance = 11.1 N at 600 rad/s. Mold 1 (h = 1.6 mm): sigma = 104 MPa, SF = 0.385 — FRACTURES. Mold 2 (h = 2.5 mm): sigma = 42.7 MPa, SF = 0.937 — survives. smash = cos(18) = 0.951; I_L = 2.325e-6; I_total = 4.013e-6; L0 = 2.41e-3.
+**Engine Note**: xenoXcalibur(); mold1FractureH 1.6mm SF 0.385; mold2Safe H 2.5mm; tau_burst 16.2 mN·m; e 3.31 mm; F_imb 11.1 N.
+
+---
+
+### [Case 1004 — [PART] Magnum Forge Disc (Burst Standard; Xcalibur alignment)](./9%20case%20study.md#case-1004)
+
+**Category**: Part — Burst Forge Disc (bi-material; sword alignment mechanism)
+**Parts**: Magnum (19.2 g = 14.5 g metal centre r 0.3-1.0 cm + 4.7 g plastic perimeter r 1.0-1.6 cm)
+**Key Physics**: I_Magnum = 1.627e-6 kg·m2; 65.3% inertia efficiency vs all-metal same mass. 2-click XC sword alignment: click 1 = attack alignment (max eccentricity), click 2 = balance alignment (reduced eccentricity). Pairs only with C1 XC layers.
+**Engine Note**: magnumDisc(); I 1.627e-6; inertiaEfficiency 65.3%; twoClickAlignment; forXConly.
+
+---
+
+### [Case 1005 — [PART] Impact Performance Tip (Burst Standard; erratic rubber star)](./9%20case%20study.md#case-1005)
+
+**Category**: Part — Burst Driver (mixed rubber-plastic; erratic; unsuitable)
+**Parts**: Impact tip (C3 rubber star; f_R = 0.333; f_P = 0.667; mu_eff = 0.396)
+**Key Physics**: CV = 80.9% (high variance = erratic orbit). dw/dt = -100 rad/s2 (14x Velocity; 2.22x slower than Xtreme). Unsuitable for any competitive combo: too slow for rubber attack, too erratic for stamina.
+**Engine Note**: impactDriver(); mu_eff 0.396; CV 80.9%; dOmega -100 rad/s2; unsuitableAllCombos.
+
+---
+
+### [Case 1006 — [PART] Sieg Xcalibur Energy Layer (Burst Standard; metal sword)](./9%20case%20study.md#case-1006)
+
+**Category**: Part — Burst Energy Layer (C1; metal sword; hilt-gap fatigue)
+**Parts**: Sieg Xcalibur (15.9 g; metal sword 5.0 g; e = 5.66 mm)
+**Key Physics**: I_body = 2.725e-6; I_sw = 1.620e-6; I_L = 4.345e-6 kg·m2; F_imbalance = 32.3 N at 600 rad/s. Hilt-gap fatigue: sigma_max = 20.2 MPa > ABS cyclic endurance 16 MPa -> progressive denting. tau_burst = 16.2 mN·m; I_total(Sieg.1.Iron) = 7.978e-6; 49.7% more burst resistant than WV from inertia alone. L0 = 4.787e-3 kg·m2/s (1.99x WV).
+**Engine Note**: siegXcalibur(); metalSword 5.0 g; I_L 4.345e-6; hiltFatigue sigma 20.2 MPa; tau_burst 16.2 mN·m; L0 4.787e-3.
+
+---
+
+### [Case 1007 — [PART] Forge Disc 1 (Burst Standard; C1 asymmetric; attack alignment)](./9%20case%20study.md#case-1007)
+
+**Category**: Part — Burst Forge Disc (C1 elliptical; intentional eccentricity)
+**Parts**: Disc 1 (21.2 g; elliptical C1; e_disc = 2.77 mm; r_i 0.4 cm, r_o 1.7 cm)
+**Key Physics**: Attack alignment: e_combined = 3.40 mm, F = 53.6 N at 600 rad/s. Balance alignment: e = 0.714 mm, F = 11.2 N (79% reduction). I = 3.231e-6 (40.5% of Sieg assembly). Disc C1 eccentricity amplifies or cancels layer C1 depending on assembly orientation.
+**Engine Note**: disc1(); e_disc 2.77 mm; attackAlignmentF 53.6 N; balanceAlignmentF 11.2 N; I 3.231e-6; alignmentCritical.
+
+---
+
+### [Case 1008 — [PART] Iron Performance Tip (Burst Standard; metal flat; banking orbit)](./9%20case%20study.md#case-1008)
+
+**Category**: Part — Burst Driver (metal flat; weak spring; no flower pattern)
+**Parts**: Iron tip (6.7 g; metal flat; mu_k = 0.12 steel-ABS; r_eff = 0.233 cm)
+**Key Physics**: tau = 1.201e-4 N·m; dw/dt = -15.8 rad/s2. Weak spring k = 1800 N/m -> tau_lock = 9.45 mN·m (below Sieg tau_burst 16.2 mN·m -> burst risk). Banking orbit R = 2.12 m (no flower pattern). Metal tip preserves assembly I advantage.
+**Engine Note**: ironDriver(); mu 0.12; dOmega -15.8 rad/s2; lockTorque 9.45 mN·m; burstRisk vs Sieg; bankingOrbitR 2.12 m.
+
+---
+
+### [Case 1009 — [PART] Buster Xcalibur Energy Layer (Burst Standard; bistable centrifugal)](./9%20case%20study.md#case-1009)
+
+**Category**: Part — Burst Energy Layer (C1; bistable; always-Buster at launch)
+**Parts**: Buster Xcalibur (19.6 g; bistable centrifugal; m_sword = 7.0 g; F_lock = 2.50 N)
+**Key Physics**: omega_crit = 140.9 rad/s — below launch speed -> always in Buster Mode. e_normal = 6.43 mm, e_buster = 7.86 mm; I_L_buster = 6.538e-6 (+20.7% vs Normal). F_imbalance = 55.4 N at launch. phi = 22 deg; opposite-spin non-viable. I_total = 9.576e-6 kg·m2; L0 = 5.746e-3 kg·m2/s.
+**Engine Note**: busterXcalibur(); alwaysBusterMode; e_buster 7.86 mm; I_L 6.538e-6; F_imb 55.4 N; I_total 9.576e-6; L0 5.746e-3.
+
+---
+
+### [Case 1010 — [PART] Core Disc 1' (Burst Standard Dash; bilateral fill)](./9%20case%20study.md#case-1010)
+
+**Category**: Part — Burst Forge Disc (Dash variant; bilateral fill; reduced eccentricity)
+**Parts**: Core Disc 1' (22.5 g; bilateral fill; e_1' = 1.24 mm; -55.2% vs Disc 1)
+**Key Physics**: I = 3.431e-6 (+6.2% vs Disc 1). With Buster XC: combined e_max = 9.10 mm (vs 10.63 mm with Disc 1, -14.4% eccentricity reduction). 35.8% of Buster assembly inertia. Bilateral fill trades imbalance amplification for slightly higher I.
+**Engine Note**: disc1Prime(); e 1.24 mm; I 3.431e-6; combinedEccentricityReduction 14.4% vs Disc1; assemblyShare 35.8%.
+
+---
+
+### [Case 1011 — [PART] Dagger Frame (Burst Standard; thin-ring conditional LAD)](./9%20case%20study.md#case-1011)
+
+**Category**: Part — Burst Frame (C4; thin ring; conditional LAD interception)
+**Parts**: Dagger Frame (2.6 g; C4; r_i 1.4 cm, r_o 1.6 cm)
+**Key Physics**: I = 5.876e-7 (6.14% of Buster assembly). Perimeter coverage 4x15 deg = 60 deg (16.7%). LAD floor clearance only 0.5 mm -> conditional interception only at exact floor-height contact. C4 contact frequency = 382 Hz.
+**Engine Note**: daggerFrame(); I 5.876e-7; assemblyShare 6.14%; perimeterCoverage 16.7%; LADclearance 0.5 mm; conditionalInterception.
+
+---
+
+### [Case 1012 — [PART] Sword Performance Tip (Burst Standard; metal flat narrow)](./9%20case%20study.md#case-1012)
+
+**Category**: Part — Burst Driver (metal narrow flat; scrape-limited below 300 rad/s)
+**Parts**: Sword tip (9.2 g; r_contact 0.55 cm; r_eff = 0.367 cm; mu_k = 0.12)
+**Key Physics**: dw/dt = -24.3 rad/s2; scrape tilt theta = 9.46 deg. I = 1.392e-7 (1.45% of assembly). Below omega approx 300 rad/s: tip edge-contacts floor -> accelerated decay at low spin.
+**Engine Note**: swordDriver(); dOmega -24.3 rad/s2; scrapeTilt 9.46 deg; I 1.392e-7; scrapeLimitedBelow 300 rad/s.
+
+---
+
+### [Case 1013 — [PART] DB Core Xcalibur (Burst Standard; spring bound + BU Lock + High/Low Mode)](./9%20case%20study.md#case-1013)
+
+**Category**: Part — Burst DB Core (spring rebound; BU Lock; mode switch)
+**Parts**: DB Core Xcalibur (10.6 g; k = 800 N/m; delta = 2.0 mm; 3 BU Lock protrusions)
+**Key Physics**: Spring: E = 1.60e-3 J; v_rebound = 0.202 m/s. BU Lock tau = 56.25 mN·m (3 protrusions x Hertz contact). Hertz patch a = 100.8 um. High Mode: CoM shift +0.38 mm (+3.2% precession onset), height +7 mm. Low Mode: stable/defense. I = 5.777e-7 (4.15% of assembly).
+**Engine Note**: dbCoreXcalibur(); springRebound 0.202 m/s; buLockTau 56.25 mN·m; highModeHeight +7 mm; comShift +0.38 mm.
+
+---
+
+### [Case 1014 — [PART] Xiphoid BU Blade (Burst Ultimate; OHM alignment)](./9%20case%20study.md#case-1014)
+
+**Category**: Part — Burst Ultimate Blade (C3 outer ring; OHM eccentricity; High Mode height advantage)
+**Parts**: Xiphoid BU Blade (13.0 g; C3; r_i 1.0 cm, r_o 2.2 cm; phi = 20 deg)
+**Key Physics**: I_Xiphoid = 3.796e-6 (27.3% of BU assembly I_total = 13.926e-6). OHM alignment: e_OHM = 0.901 mm; F_OHM = 25.6 N — concentrates burst-promoting centrifugal bias on one wing per revolution rather than distributing equally across C3. smash = cos(20) = 0.940; recoil = 0.342. High Mode: blade 7 mm higher -> blade-to-layer contact vs disc contact in Low Mode.
+**Engine Note**: xiphoidBUBlade(); I 3.796e-6; ohmEccentricity 0.901 mm; F_OHM 25.6 N; highModeContactAdvantage +7 mm; phi 20 deg.
+
+---
+
+### [Case 1015 — [PART] Armor 1 (Burst Ultimate; High Mode impulse interception)](./9%20case%20study.md#case-1015)
+
+**Category**: Part — Burst Ultimate Armor (smooth annular ring; largest I contributor; BU Lock sockets)
+**Parts**: Armor 1 (13.1 g; r_i 1.2 cm, r_o 2.2 cm; 3 BU Lock sockets at 120 deg)
+**Key Physics**: I_Armor1 = 4.113e-6 (29.5% of assembly — largest single contributor). High Mode: h_Armor_rim = 12 mm vs attacker blade h = 5 mm -> 58.3% of incoming impulse intercepted; effective burst threshold x2.4 vs shorter opponents. BU Lock: 3 discrete alignment positions (every 120 deg); off-alignment = zero BU Lock benefit.
+**Engine Note**: armor1(); I 4.113e-6; assemblyShare 29.5%; highModeInterception 58.3%; burstMultiplier 2.4x; buLockPositions 3.
+
+---
+
+### [Case 1016 — [PART] Xanthus Forge Disc (Burst Ultimate; heaviest disc; mass-efficiency trade-off)](./9%20case%20study.md#case-1016)
+
+**Category**: Part — Burst Ultimate Forge Disc (32.5 g; full metal; dominant mass)
+**Parts**: Xanthus (32.5 g; r_i 0.4 cm, r_o 1.6 cm; full metal)
+**Key Physics**: I_Xanthus = 4.420e-6 (31.7% of assembly); heaviest disc in XC lineage (+44.4% over Disc 1'). Mass-inertia efficiency 77.0% (lower than Armor 1 177.7%, Xiphoid 165.5% — smaller r_o). L_Xanthus = 2.652e-3 kg·m2/s > L0 of entire XC.M.I assembly (2.41e-3). Scrape tilt theta = 5.36 deg (tightest in assembly; rim scrapes before tip or blade).
+**Engine Note**: xanthusDisc(); I 4.420e-6; massEfficiency 77%; L_disc 2.652e-3 > L_XC_total; scrapeTilt 5.36 deg.
+
+---
+
+### [Case 1017 — [PART] Sword' Dash Performance Tip (Burst Ultimate; Dash ratchet + full assembly spin budget)](./9%20case%20study.md#case-1017)
+
+**Category**: Part — Burst Ultimate Driver (Dash ratchet; flat ABS; full BU assembly spin profile)
+**Parts**: Sword' Dash (9.6 g; flat hard ABS; r_contact 0.55 cm; r_eff 0.367 cm; mu_k = 0.12; 8-tooth ratchet)
+**Key Physics**: tau_Dash = 21.6 mN·m supplementary burst resistance (ratchet prevents counter-rotation). Full BU assembly (78.8 g; I = 13.926e-6): dw/dt = -24.5 rad/s2; time to instability = 14.7 s (no collisions). L0 = 8.356e-3 kg·m2/s (3.47x WV assembly). Lineage: XC.M.I 1.00x, Sieg 1.99x, Buster 2.39x, BU 3.47x.
+**Engine Note**: swordDashDriver(); dashRatchetTau 21.6 mN·m; dOmega -24.5 rad/s2; timeToInstability 14.7 s; L0 8.356e-3; lineage 3.47x.
+
+---
+
+### [Case 1018 — [PART] Victory Valkyrie Energy Layer (God Layer; dual-mode; upper-attack)](./9%20case%20study.md#case-1018)
+
+**Category**: Part — Burst God Layer Energy Layer (C3; dual Attack/Stamina mode; upper-attack vertical force)
+**Parts**: Victory Valkyrie (8.9 g; C3; r_i 0.4 cm, r_o 2.0 cm; phi_attack = 20 deg; phi_stamina = 35 deg; alpha_upper = 15 deg)
+**Key Physics**: I_VV = 1.807e-6 (37.2% of VV.Boost.Var assembly). Attack Mode: smash 0.940, recoil 0.342. Stamina Mode: smash 0.819, recoil 0.574 (+67.8% recoil). God Layer tabs delta = 0.35 mm -> tau_burst = 12.6 mN·m (+16.7% vs Standard Burst). Upper-attack alpha = 15 deg: F_vertical = 25.9 N per 100 N impact -> transient 75% opponent weight reduction. L0 = 2.987e-3 kg·m2/s.
+**Engine Note**: victoryValkyrie(); dualMode phi 20/35 deg; upperAttack 15 deg F_v 25.9 N; tau_burst 12.6 mN·m; I 1.807e-6; L0 2.987e-3.
+
+---
+
+### [Case 1019 — [PART] Boost Forge Disc (God Layer; three-wing two-zone; disc dominance)](./9%20case%20study.md#case-1019)
+
+**Category**: Part — Burst God Layer Forge Disc (three extending wings; two-zone mass; 53.1% assembly share)
+**Parts**: Boost (20.0 g; inner ring 15.0 g r 0.4-1.2 cm; 3 wings 5.0 g at r = 1.7 cm)
+**Key Physics**: I_inner = 1.200e-6; I_wings = 1.445e-6; I_Boost = 2.645e-6 (53.1% of VV assembly — disc majority). Wing scrape tilt theta = 11.9 deg. Secondary elevation contact: wings at h = 2.0-3.5 mm contact opponents at disc/tip height. Disc majority share confirms disc dominance across all three-piece God Layer assemblies.
+**Engine Note**: boostDisc(); twoZone I 2.645e-6; assemblyShare 53.1%; wingScrape 11.9 deg; wingContactH 2.0-3.5 mm.
+
+---
+
+### [Case 1020 — [PART] Variable Performance Tip (God Layer; three-stage rubber wear)](./9%20case%20study.md#case-1020)
+
+**Category**: Part — Burst God Layer Driver (evolution tip; wear-dependent three-stage decay)
+**Parts**: Variable tip (6.2 g; Stage 1: rubber spikes mu=0.85 r_eff 1.5 mm; Stage 3: flat ABS mu=0.17 r_eff 3.5 mm)
+**Key Physics**: Stage 1: dw/dt = -88.2 rad/s2. Stage 2 (half-worn): dw/dt = -86.5 rad/s2 (approx Stage 1; wider r_eff compensates lower mu). Stage 3 (fully worn flat ABS): dw/dt = -41.2 rad/s2 — abrupt 2.14x stamina improvement. Meaningful improvement only at complete rubber removal. Stage 1-2 approx 5-10 battles; Stage 3 transition abrupt.
+**Engine Note**: variableDriver(); stage1 -88.2 rad/s2; stage2 -86.5 rad/s2; stage3 -41.2 rad/s2; abruptTransition; 2.14x gain.
+
+---
+
+### [Case 1021 — [PART] God Valkyrie Energy Layer (God Layer; hub spring bound; spring-tab paradox)](./9%20case%20study.md#case-1021)
+
+**Category**: Part — Burst God Layer Energy Layer (hub spring bound attack; spring-tab paradox)
+**Parts**: God Valkyrie (10.16 g; k_spring = 600 N/m; delta = 1.5 mm; r_i 0.4 cm, r_o 2.1 cm)
+**Key Physics**: Spring: E = 6.75e-4 J; v_rebound = 0.180 m/s. Spring-tab paradox: at full compression delta = 1.5 mm, tabs disengage (lost depth 0.75 mm vs engagement 0.30 mm -> 2.5x disengagement -> tau_burst approx 0 for 1.5 ms contact window). Self-risky: spring activation = zero burst resistance window. I_GV = 2.321e-6; I_total(GV.6.Vortex.Reboot) = 6.250e-6; L0 = 3.750e-3 kg·m2/s.
+**Engine Note**: godValkyrie(); springRebound 0.180 m/s; springTabParadox tau_burst approx 0 at compression; I 2.321e-6; L0 3.750e-3.
+
+---
+
+### [Case 1022 — [PART] Strike God Valkyrie + Strike God Chip (God Layer; chip-lock; spring-lock trade-off)](./9%20case%20study.md#case-1022)
+
+**Category**: Part — Burst God Layer Energy Layer + Chip (chip-lock burst resistance; no spring paradox)
+**Parts**: Strike God Valkyrie (11.6 g) + Strike God Chip (1.7 g; k_chip = 1.8e3 N/m; 2 engagement points at r = 5.5 mm)
+**Key Physics**: tau_chip_lock = 3.96 mN·m; total tau_burst = 16.56 mN·m (+31.4% vs GV static; effectively infinite vs GV-at-contact due to spring-tab paradox). No spring paradox: burst threshold stable throughout contact. I_combined = 2.676e-6 (+15.3% vs GV). SGV assembly (SGV.6.Vortex.UltReboot, 44.4 g): I = 6.634e-6; L0 = 3.980e-3 kg·m2/s.
+**Engine Note**: strikeGodValkyrie(); chipLockTau 3.96 mN·m; totalBurst 16.56 mN·m; I_combined 2.676e-6; noSpringParadox; L0 3.980e-3.
+
+---
+
+### [Case 1023 — [PART] Forge Disc 6 (God Layer; C6 symmetry; near-zero eccentricity; high-frequency contact)](./9%20case%20study.md#case-1023)
+
+**Category**: Part — Burst God Layer Forge Disc (C6 hexagonal; near-zero imbalance; 573 Hz contact)
+**Parts**: Forge Disc 6 (21.2 g; C6; r_i 0.4 cm, r_o 1.7 cm; e approx 0.30 mm manufacturing tolerance only)
+**Key Physics**: I_6 = 3.231e-6 (identical to Disc 1 at same radii; symmetry does not change I if radii unchanged). Eccentricity 89.2% lower than Disc 1. C6 contact frequency = 573 Hz (dt = 1.74 ms) — 6x C1, 2x C3; cumulative tab deflection rate 5.73 mm/s at 0.01 mm/contact. Assembly share: 51.7% of GV total I (disc dominance).
+**Engine Note**: disc6(); I 3.231e-6; c6Frequency 573 Hz; eccentricityReduction 89.2%; tabAccumRate 5.73 mm/s; assemblyShare 51.7%.
+
+---
+
+### [Case 1024 — [PART] Vortex Frame (God Layer; C8 spiral-cut; aerodynamic effect negligible)](./9%20case%20study.md#case-1024)
+
+**Category**: Part — Burst God Layer Frame (C8 thin ring; spiral-cut; aerodynamic torque negligible)
+**Parts**: Vortex Frame (2.51 g; C8 spiral cuts; r_i 1.4 cm, r_o 1.6 cm; 8 protrusions x 20 deg arc)
+**Key Physics**: I_actual approx 4.538e-7 (solid-ring x0.80; 7.26% of GV assembly). Aerodynamic torque (8 slots): tau_aero = 1.05e-6 N·m — only 0.309% of floor friction (negligible). Perimeter coverage 44.4% (vs Dagger Frame 16.7%); C8 contact frequency = 764 Hz (highest of any standard Burst Frame).
+**Engine Note**: vortexFrame(); I 4.538e-7; aerodynamicTorque negligible 0.31% floor; c8Freq 764 Hz; perimeterCoverage 44.4%.
+
+---
+
+### [Case 1025 — [PART] Neo Right Spin Gear Shells (Plastics Gen; Neo Core access)](./2%20case%20study.md#case-1025)
+
+**Category**: Part — Plastics Gen Spin Gear Shells (Neo format; prerequisite for HMC)
+**Parts**: Neo Right Spin Gear Shells (~1.15 g each, 2.30 g pair; 3-lug bayonet; d_inner = 12.5 mm)
+**Key Physics**: Cavity upgrade (+1.5 mm diameter vs Regular Shells) enables Heavy Metal Core access: I_HMC = 2.35e-6 kg·m2 (+52% full-combo I vs ABS core). Centrifugal load at 314 rad/s: 2.86 N per lug; ABS lug capacity 135 N (FoS = 47). Mass penalty +0.10 g vs Regular Shells (tab reinforcement offsets cavity removal). Shell pair mass penalty for Neo: only +0.10 g but unlocks stamina ceiling (DBC; 800x lower spin decay than SG Sharp). Mandatory for Compact, WBD, Force Smash, Upper Attack, Driger V2.
+**Engine Note**: neoRightShells(); hmcAccess; I_combo +52%; FoS 47; mandatoryForCompact.
+
+---
+
+### [Case 1026 — [PART] Metal Weight Core (Plastics Gen; marginal attack niche)](./2%20case%20study.md#case-1026)
+
+**Category**: Part — Plastics Gen SG Neo Core (zinc insert; marginal improvement)
+**Parts**: MWC (~2.5 g; zinc cylinder insert; ABS housing; Neo 3-lug)
+**Key Physics**: I_MWC = 4.63e-8 kg·m2 (1% of combo I). vs Normal Core: delta_I = 0.18% combo — trivial. vs Magnecore: delta_I = 0.37% combo — trivial. Core mass at r = 5-10 mm vs WD at r = 23 mm: (8/23)^2 = 12% I efficiency per gram. Extra 1.3 g vs Normal Core: +0.8% KO threshold. Fails to find meaningful niche; minimal performance separation from any comparable core.
+**Engine Note**: metalWeightCore(); I 4.63e-8; comboContrib 1%; trivialVsMagnecore; marginalAttackNiche.
+
+---
+
+### [Case 1027 — [PART] Normal Core (Plastics Gen; CMS Base structural niche)](./2%20case%20study.md#case-1027)
+
+**Category**: Part — Plastics Gen SG Neo Core (lightest Neo; CMS Base only compatible core)
+**Parts**: Normal Core (~1.2 g; all-ABS hollow; Neo 3-lug; d_shaft = 2.8 mm)
+**Key Physics**: I_NC = 3.84e-8 kg·m2 (lightest Neo Core). CMS Base bore d = 3.0 mm; only Normal Core shaft (2.8 mm) fits — MWC/Magnecore (3.2+ mm) blocked. Competitive role is structural (CMS Base zombie), not performance. For Neo attack builds MWC preferred (+0.8% KO threshold vs +0.18% spin cost). CMS Base itself not highly competitive.
+**Engine Note**: normalCore(); I 3.84e-8; cmsBaseOnly; shaftD 2.8 mm; structuralRole.
+
+---
+
+### [Case 1028 — [PART] Regular SG Core Part (Plastics Gen; lightest core; SCB zombie)](./2%20case%20study.md#case-1028)
+
+**Category**: Part — Plastics Gen SG Regular Core (0.61 g; two spring clip fingers; regular shells only)
+**Parts**: Regular SG Core Part (~0.61 g; ABS spring clips; regular format; d_shaft ~2.5 mm)
+**Key Physics**: I_core = 1.49e-8 kg·m2 (negligible). Lightest possible right-spin SG: 2.81 g (vs Neo 3.50 g; -0.69 g). Mass saving benefit: 0.77% orbital speed — below launch noise. Neo-bore MagneSystem bases incompatible (shaft 2.5 mm vs bore 3.1 mm -> 0.6 mm gap -> rattle 1.33 N oscillating). Best for SCB zombie (regular shells required; second lightest option after Wyborg ACV core; delta = 0.09 g = negligible).
+**Engine Note**: regularSGCore(); I 1.49e-8; massSaving 0.69 g; rattlesInNeoBore; scbZombieRole.
+
+---
+
+### [Case 1029 — [PART] Right Spin Gear Shells + Metal Weight Gear (Plastics Gen; anti-rattle; Neo lock-out)](./2%20case%20study.md#case-1029)
+
+**Category**: Part — Plastics Gen SG Shells + MWG (anti-rattle ballast; Neo Core incompatible)
+**Parts**: Right Spin Gear Shells (~1.1 g x2 = 2.2 g) + MWG (1.12 g; zinc ring; r = 1.4 cm); cavity d = 11.0 mm
+**Key Physics**: I_shells = 3.97e-7; I_MWG = 1.10e-7 (1.4% of combo — not a stamina part). MWG fills cavity clearance: rattle power without MWG = 3.4e-4 W; with MWG = 1.1e-5 W (31x reduction); 40 mJ saved per 2-min battle (instability reduction is the real benefit, not energy). Neo Core locked out: cavity 11.0 mm vs Neo flange 12.5 mm -> 800x worse spin decay than DBC. For stamina: Neo Shells + DBC mandatory.
+**Engine Note**: rsShellsMWG(); I_MWG 1.10e-7; rattleReduction 31x; dbcLockout; spinDecay800xWorse.
+
+---
+
+### [Case 1030 — [PART] SG Wing Base (Plastics Gen; SAR slot; scrape liability; tier 2)](./2%20case%20study.md#case-1030)
+
+**Category**: Part — Plastics Gen Blade Base (SAR slot; irremovable clips; soft-plastic tip)
+**Parts**: SG Wing Base (~5.9 g; SAR seat ledge; moulded base clips integral; Gaia Dragoon tip r_contact ~1.1 mm; mu = 0.32 soft plastic)
+**Key Physics**: tau_tip = 1.04e-4 N·m; dw/dt = 23.1 rad/s2 (3.2x Metal Change Base). Clip scrape tau = 0.040 N·m at 45-deg tilt (667x tip torque) — clips irremovable. Smaller SARs (War Lion, r = 22 mm) delay scrape onset vs Wing SAR (r = 28 mm). Screw Zeus WBO ruling: sigma_bend = 97.2 MPa > ABS yield 45 MPa -> visible flex with wide WDs. Inverted tip: 191 rad/s2 (8.3x worse). Tier 2 despite SAR flexibility.
+**Engine Note**: sgWingBase(); clipScrapeTau 0.040 Nm; tipDecay 23.1 rad/s2; screwZeusFlexBanned; tier2.
+
+---
+
+### [Case 1031 — [PART] SG Sharp Base (Plastics Gen; tall CoM; precession instability)](./2%20case%20study.md#case-1031)
+
+**Category**: Part — Plastics Gen Blade Base (sharp tip; tall body; earliest precession instability)
+**Parts**: SG Sharp Base (~6.6 g; h_total ~16-18 mm; r_tip = 0.35 mm; ABS all-plastic; 2 molds)
+**Key Physics**: h_CoM_combo ~20 mm (vs MCB 14 mm; +43%). Precession rate Omega at 150 rad/s = 1.063 rad/s (vs MCB 0.744 rad/s; 1.43x faster). omega_crit stability = 90.8 rad/s (~867 RPM; vs MCB 725 RPM — dies 20% faster in terms of RPM). Mold 1: metal retention ring at tip shaft. Mold 2: plastic retention lug (reinforced groove). Sharp tip preserves RPM but CoM elevation defeats it before RPM savings are useful.
+**Engine Note**: sgSharpBase(); hCoMcombo 20 mm; precessionRate 1.43x MCB; omegaCrit 90.8 rad/s; twoMolds.
+
+---
+
+### [Case 1032 — [PART] AR War Lion (Plastics Gen; two-wing oval; spin-direction agnostic)](./2%20case%20study.md#case-1032)
+
+**Category**: Part — Plastics Gen AR (C2; near-spin-direction-symmetric; WD-radius contact dependency)
+**Parts**: AR War Lion (~3.7 g; 2 wings; r_wing ~26 mm; r_body ~15 mm; beta_RS ~7 deg; beta_LS ~9 deg)
+**Key Physics**: Low recoil in both spin directions (RS 7 deg, LS 9 deg vs Tiger Defenser LS ~35% higher recoil from rear spikes). Gap sector ~110 deg per side (61.1% of azimuth exposes inner body at r 15 mm). WD radius dependency: Wide Defense/Survivor (r_WD ~26 mm) obstructs Tiger Defenser (r_TD ~24 mm) while War Lion wing tips (r ~26 mm) remain borderline-exposed. War Lion preferred when WD outer radius exceeds ~25 mm.
+**Engine Note**: arWarLion(); beta_RS 7 deg; beta_LS 9 deg; gapFraction 61.1%; wdRadiusDependency.
+
+---
+
+### [Case 1033 — [PART] Sub AR War Lion (Plastics Gen; neutral filler; wedge-gap liability)](./2%20case%20study.md#case-1033)
+
+**Category**: Part — Plastics Gen Sub AR (near-circular; minimal protrusion; wedge-gap liability)
+**Parts**: Sub AR War Lion (~1.3 g; ring r_ring ~20 mm; 2 winglets +4 mm; I_SAR ~5.38e-7)
+**Key Physics**: 6.7% of combo I (negligible). 2 mm radial gap between winglet (r = 24 mm) and Wide Defense WD (r = 26 mm): wedge-trap zone. Thin AR wedge held ~15x longer -> ~10x more impulse -> explosive KO. Dragon Saucer SAR closes gap (vertical interference). War Monkey SAR: more RS recoil, better LS azimuthal coverage. War Lion SAR: near-neutral; adapts to any AR without adding recoil.
+**Engine Note**: subARWarLion(); I 5.38e-7; wedgeGapRisk 2mm; neutralFiller; adaptsToAnyAR.
+
+---
+
+### [Case 1034 — [PART] Flying Defense AR (Plastics Gen; aerodynamic gimmick failure)](./2%20case%20study.md#case-1034)
+
+**Category**: Part — Plastics Gen AR (aerodynamic; flat-face drag; wrong-height contacts; Takara inferior)
+**Parts**: Flying Defense (6.2 g; disc-like; r_o ~26 mm; r_i ~8 mm; swept upper face; lower edge protrusions; Takara mold)
+**Key Physics**: Launch flip gimmick: designed for upside-down launch. Aerodynamic gimmick: flat face creates drag (spin decay accelerated, not reduced). Protrusions at wrong height for any attack archetype. Takara outer mass fraction only 31% (vs Hasbro ~38%) -> lower I per gram. Large mass but light distribution: maximal destabilisation moment per hit. Non-competitive in every specialisation.
+**Engine Note**: flyingDefenseAR(); aeroGimmickFails; wrongContactHeight; takaraMassDistrib 31%; nonCompetitive.
+
+---
+
+### [Case 1035 — [PART] Jumping Base 2 (Plastics Gen; dish grind redemption via Hasbro Flying Defense)](./2%20case%20study.md#case-1035)
+
+**Category**: Part — Plastics Gen Blade Base (spring jump; free-spinning disc; narrow grind combo niche)
+**Parts**: Jumping Base 2 (~6.8 g; free-spinning outer disc r = 27 mm; spring jump; disc h = 4 mm; inner body h = 14 mm)
+**Key Physics**: Disc I = 0.5 x 3.5e-3 x (0.013^2 + 0.027^2) ~1.37e-6 kg·m2. Jump mechanism: vertical impulse extends spring fully (+12.5 mm height during hit). Disc scrapes on tilt after jump. SG compatibility theoretically broad but practically zero (non-protruding cores never reach floor). Redemption: Hasbro Flying Defense upper face + disc overhead grind = pseudo-Force-Smash. Two rejected parts combine into effective combo. Narrow but legitimate competitive niche.
+**Engine Note**: jumpingBase2(); springJump 12.5 mm; freeDiscR 27 mm; groundGrindCombo; narrowNiche.
+
+---
+
+### [Case 1036 — [PART] Ten Heavy WD (Plastics Gen; heaviest legal WD)](./2%20case%20study.md#case-1036)
+
+**Category**: Part — Plastics Gen Weight Disk (heaviest single WD; mass-dominant; lowest I/mass)
+**Parts**: Ten Heavy WD (16.1 g standard / 17.0 g Spike Lizard variant; 10 heavy tabs; r_outer limited by tab geometry)
+**Key Physics**: Heaviest legal WD -> highest assembly mass -> best KO resistance and highest absolute L. Tab geometry: 10 tabs reduce effective rim concentration vs Wide Defense (uniform annulus). I per gram lower than Wide Defense/Wide Survivor despite higher total mass. Mass-dominant strategy: useful when assembly mass ceiling is the priority, not I/mass efficiency. Spike Lizard variant: +0.9 g (additional zinc inserts in some tabs).
+**Engine Note**: tenHeavyWD(); mass 16.1g; heaviestLegal; tabMassDistrib; I_efficiency lower vs WideDef.
+
+---
+
+### [Case 1037 — [PART] Flame Wing AR (Plastics Gen; spin-direction asymmetric; right-spin fracture)](./2%20case%20study.md#case-1037)
+
+**Category**: Part — Plastics Gen AR (C3; spin-direction split identity; RS tip fracture liability)
+**Parts**: Flame Wing (~3.8 g; C3; r_o ~24 mm; tip thickness t_tip = 1.8 mm; root t_root = 4.5 mm)
+**Key Physics**: RS: rounded-forward-swept wings -> upper attack + moderate smash simultaneously. But tip fracture common (second-hand units broken more often than not). LS: rounded edges become passive deflectors; recoil drops; AR transitions to defensive/zombie. LS fracture manageable (not disqualifying) with Wide Survivor/Wide Defense intercepting hard hits. Asymmetric geometry: RS tip root stress > fracture limit at competitive impact velocities; LS root stress remains safe.
+**Engine Note**: flameWingAR(); tTip 1.8 mm; rsFractureCommon; lsDefenseViable; spinDirectionSplit.
+
+---
+
+### [Case 1038 — [PART] SG (Triple Change Version) Core (Plastics Gen; three-tip indexer; format-locked)](./2%20case%20study.md#case-1038)
+
+**Category**: Part — Plastics Gen SG Neo Core (three-tip selector; friction detent; Flame Change Base only)
+**Parts**: SG Triple Change Version Core (~1.7 g; 3 tips: Sharp r=0.3mm, Semi-Flat r=2.0mm, Flat r=3.5mm; 120 deg spacing; 2 friction protrusions)
+**Key Physics**: Friction detent (2 protrusions x h=0.6 mm mold1 / 0.9 mm mold2). Failure modes: protrusion wear -> mid-battle tip drift (lands between positions); mold-line ridge -> hopping at match start until worn flat. Flame Change Base only (cross-slot bore). Cannot accept HMC -> weight-add path eliminated. Educational value exceeds competitive relevance.
+**Engine Note**: tcvCore(); threeTips; frictionDetentH 0.6mm/0.9mm; flameChangeBaseOnly; hmcIncompatible.
+
+---
+
+### [Case 1039 — [PART] Flame Change Base (Plastics Gen; dedicated TCV shell; no HMC)](./2%20case%20study.md#case-1039)
+
+**Category**: Part — Plastics Gen Blade Base (TCV-dedicated; flat disc; no HMC)
+**Parts**: Flame Change Base (~4.1 g; flat ABS disc; r_o ~25 mm; h ~8 mm; cross-slot receiver; LAD rim r_roll = 8.6 mm)
+**Key Physics**: TCV SG only (cross-slot bore incompatible with any other SG). Cannot accept HMC (decisive competitive constraint). LAD: smooth lower rim r = 25 mm; C_rr ~0.010; moderate taper beta ~12 deg; LAD r_roll = 8.6 mm (below Wide Defense disc rolling at 25 mm). I = half x 4.1e-3 x ((10e-3)^2 + (25e-3)^2) ~7.9e-7 kg·m2. Competitive relevance collapsed when dedicated-tip bases identified as universally superior.
+**Engine Note**: flameChangeBase(); tcvOnly; hmcIncompatible; LADroll 8.6 mm; I 7.9e-7.
+
+---
+
+### [Case 1040 — [PART] Metal Balls (Plastics Gen; rolling tip vs ballast; Hertz contact)](./2%20case%20study.md#case-1040)
+
+**Category**: Part — Plastics Gen Metal Balls (1/4" and 3/16" steel; dual roles)
+**Parts**: 1/4" ball (d = 6.35 mm; m = 1.050 g; rho = 7822 kg/m3); 3/16" ball (d = 4.763 mm; m = 0.448 g)
+**Key Physics**: Rolling tip role (1/4"): C_rr two orders of magnitude below ABS sliding tip -> extreme stamina (Draciel Metal Ball Defenser). Ballast role: I_ballast = m x r_cavity^2; 1/4" at r=18 mm: I = 3.40e-7 (3.1% combo I — meaningful). 3/16" at r=15 mm: I = 1.01e-7 (0.9%). Self-inertia (sphere): I_self = 0.4 x m x r_ball^2 (tiny). Size ratio cubed = 2.370; mass ratio = 2.344 (within tolerance). 3/16" slight density elevation consistent with chrome plating.
+**Engine Note**: metalBalls(); rollingTipC_rr lowStamina; ballast I 3.40e-7 (3.1%); size^3 mass ratio 2.34.
+
+---
+
+### [Case 1041 — [PART] Metal Wheel: Mercury (MFB; C2 rounded lobes; non-competitive)](./6%20case%20study.md#case-1041)
+
+**Category**: Part — MFB Metal Wheel (C2; rounded lobes; no attack geometry)
+**Parts**: Mercury (29.0 g; C2; r_o ~22.0 mm; 2 convex lobes + 2 spikes; 81% outer-zone mass)
+**Key Physics**: I = 6.87e-6; I/m = 2.37e-4 m2 (nearly identical to Lightning 2.34e-4). L_Mercury = 1.031e-3 kg·m2/s (2.3% below Lightning; 50.9% below Blitz). Variable contact angle phi_eff ~45 deg (smash fraction 0.534) vs Lightning Upper Mode 0.906 — curved lobes glance rather than smash. 85XF stock: XF dw/dt = 33.9 rad/s2 accelerates out of spin-equalisation window. Non-competitive in every specialisation.
+**Engine Note**: mercuryWheel(); I 6.87e-6; phi_eff 45 deg; smash 0.534; L_deficit 50.9% vs Blitz; nonCompetitive.
+
+---
+
+### [Case 1042 — [PART] Crystal Wheel: Archer (MFB Zero-G; C1; bow curves; nutation forcing)](./6%20case%20study.md#case-1042)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C1; bow arcs; low nutation forcing)
+**Parts**: Archer (5.16 g; C1; r_o ~23 mm; ~50% bow arc phi ~20 deg; ~50% orb/crystal half phi ~45 deg)
+**Key Physics**: I = 1.212e-6 (13.3% of Archer+Gargole system = 9.082e-6). C1 transverse anisotropy DeltaI_trans ~0.117e-6; nutation forcing ~42.1 N·m at launch, ~2.6 N·m late-battle (6x lower than Duo — negligible in practice). Crystal Up Mode: bow arc phi ~20 deg deflects tangentially (less spin-loss vs flat guard); ABS absorption 2.87x vs zinc.
+**Engine Note**: archerCW(); I 1.212e-6; systemShare 13.3%; DeltaI_trans 0.117e-6; nutationForcing 42.1Nm; absAbsorption 2.87x.
+
+---
+
+### [Case 1043 — [PART] Crystal Wheel: Bandid (MFB Zero-G; C2; block ridges; Goreim complement)](./6%20case%20study.md#case-1043)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C2; block ridges; tight Goreim coupling; 764 Hz contact)
+**Parts**: Bandid (4.8 g; C2; r_o ~23 mm; ~70% block sections phi ~30 deg; 16 ridges)
+**Key Physics**: I = 1.159e-6 (12.5% of Bandid+Goreim system ~9.259e-6). C2 symmetry -> DeltaI_trans = 0 (zero nutation forcing). Ridge geometry: 764 Hz contact frequency at 300 rad/s (16 ridges). Tight mechanical coupling with Goreim: block-ridge complement minimises inter-layer gap, maximising torsional ABS-on-zinc grip (~5x vs non-complement CW at same normal load).
+**Engine Note**: bandidCW(); I 1.159e-6; systemShare 12.5%; zeroNutation; ridgeFreq 764 Hz; goreim5xCoupling.
+
+---
+
+### [Case 1044 — [PART] Crystal Wheel: Berserker (MFB Zero-G; C2; chain links; diffuse impulse)](./6%20case%20study.md#case-1044)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C2; chain link rim; continuously varying phi; 86.6% smash efficiency)
+**Parts**: Berserker (4.5 g; C2; r_o ~23 mm; serrated chain links sweeping phi 0-60 deg; ~20 links)
+**Key Physics**: I = 1.070e-6 (11.7% of Berserker+Begirados system ~9.120e-6). Near-balanced: DeltaI_trans ~0.05e-6 (negligible vs Gargole 1.40e-6). Chain link smash efficiency 86.6% of flat face (mean cos phi via Bessel J0 approximation). Continuously varying phi -> diffuse impulse profile -> damage-tolerant vs sharp protrusion.
+**Engine Note**: berserkerCW(); I 1.070e-6; systemShare 11.7%; chainSmashEfficiency 86.6%; diffuseImpulse.
+
+---
+
+### [Case 1045 — [PART] Crystal Wheel: Dark Knight (MFB Zero-G; C1; universal spin-dir adapter)](./6%20case%20study.md#case-1045)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C1; symmetric hub keyway; left-spin on any Chrome Wheel)
+**Parts**: Dark Knight (3.87 g; C1; r_o ~23 mm; symmetric keyway hub; stud half phi ~5 deg; scythe half phi ~30 deg)
+**Key Physics**: I = 9.09e-7 (9.8% of DarkKnight+Dragooon 9.249e-6 — lowest Crystal Wheel system fraction). Symmetric keyway: only Crystal Wheel compatible with right-spin Chrome Wheels in Crystal Up Mode. Crystal Up on right-spin CW: left-spin imparted to assembly (86.5% torque transfer efficiency). Stud: smash = cos(5) = 0.996 (near-radial); scythe: smash = cos(30) = 0.866 — both better than Mercury (0.707).
+**Engine Note**: darkKnightCW(); I 9.09e-7; systemShare 9.8%; universalSpinAdapter; studSmash 0.996; scytheSmash 0.866.
+
+---
+
+### [Case 1046 — [PART] Crystal Wheel: Gladiator (MFB Zero-G; C4; highest I; sharpest tips)](./6%20case%20study.md#case-1046)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C4; heaviest CW; zero nutation; sharpest attack geometry)
+**Parts**: Gladiator (5.37 g; C4; r_o ~23 mm; 4 half-swords at 90 deg; phi_tip ~10 deg; phi_blade ~35 deg)
+**Key Physics**: I = 1.275e-6 (13.9% of Gladiator+Bahamdia 9.185e-6 — highest among accurately-known pairs). C4 symmetry -> DeltaI_trans = 0 (optimal stabiliser for C2 Chrome Wheels). phi_tip = 10 deg: smash = 0.985 (sharpest in Crystal Wheel series). Effective smash fraction (active contact 50%): 0.437. Stamina bonus (highest I) + attack contribution (near-radial tips) in single part.
+**Engine Note**: gladiatorCW(); I 1.275e-6; systemShare 13.9%; zeroNutation; tipSmash 0.985; effectiveSmash 0.437.
+
+---
+
+### [Case 1047 — [PART] Crystal Wheel: Pirates (MFB Zero-G; C2; Orojya complement; 5x grip)](./6%20case%20study.md#case-1047)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C2; snake-coil Orojya mirror; zero inter-layer gap)
+**Parts**: Pirates (4.0 g; C2; r_o ~23 mm; snake coil profile mirroring Orojya top face)
+**Key Physics**: I = 9.48e-7 (10.1% of Pirates+Revizer 9.418e-6 — matches Guardian+Revizer exactly). Designed complement to Orojya: inter-layer gap ~0.1 mm (manufacturing tolerance only). ABS-on-zinc torsional grip: tau = 9.25e-4 N·m (5x greater than non-complement CW at same load). Versatile: 7 Chrome Wheel pairings. Near-neutral profile adapts to host Chrome Wheel geometry.
+**Engine Note**: piratesCW(); I 9.48e-7; systemShare 10.1%; orojyaComplement 5xGrip; tau_grip 9.25e-4 N·m; versatile7pairings.
+
+---
+
+### [Case 1048 — [PART] Crystal Wheel: Samurai (MFB Zero-G; C1~C2; mode change; orb guard)](./6%20case%20study.md#case-1048)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C1~C2; mode change Chrome Up/Crystal Up; orb deflects upward)
+**Parts**: Samurai (5.4 g; C1 approx C2; r_o ~23 mm; large orb at r ~12 mm; Chrome Up / Crystal Up)
+**Key Physics**: I = 1.284e-6 (13.7% of Samurai+Ifraid ~9.384e-6). DeltaI_trans ~0.07e-6 (near-negligible). Crystal Up: orb at r = 12 mm as primary contact; Hertzian contact radius a = 0.115 mm; ABS absorption 2.87x vs zinc. Orb deflects impact upward/away from spin axis (not purely radially like flat guard). Chrome Up: Samurai sub-Chrome, inertia only. Mode selection: attack -> Chrome Up, defense/stamina -> Crystal Up.
+**Engine Note**: samuraiCW(); I 1.284e-6; systemShare 13.7%; orbContactR 12 mm; hertzA 0.115 mm; absorption 2.87x.
+
+---
+
+### [Case 1049 — [PART] Crystal Wheel: Shinobi/Ninja (MFB Zero-G; C2; highest I/m; angled deflection curves)](./6%20case%20study.md#case-1049)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C2; highest specific inertia; reversible mode; angled ramps)
+**Parts**: Shinobi/Ninja (5.4 g; C2; r_o ~23 mm; flat Chrome Up face; angled curves + circles Crystal Up face)
+**Key Physics**: I = 1.310e-6 (14.1% of Shinobi+Saramanda ~9.310e-6 — highest estimated system fraction). I/m = 2.426e-4 m2 (highest in Crystal Wheel series — flat disc maximises outer mass). DeltaI_trans = 0 in both orientations. Crystal Up angled curves delta ~35 deg: 67.1% of impact energy deflected off spin axis vs 0% for flat guard. Flat standard face: near-flush -> Saramanda Chrome Wheel dominant.
+**Engine Note**: shinobiCW(); I 1.310e-6; specificInertia 2.426e-4 (highest CW); systemShare 14.1%; crystalUpDeflection 67.1%.
+
+---
+
+### [Case 1050 — [PART] Crystal Wheel: Thief (MFB Zero-G; C1; irregular protrusions; highest CW fraction with Phoenic)](./6%20case%20study.md#case-1050)
+
+**Category**: Part — MFB Zero-G Crystal Wheel (C1; non-uniform circular protrusions; highest system fraction)
+**Parts**: Thief (5.3 g; C1; r_o ~23 mm; circular protrusions non-uniform; longer section phi ~35 deg; grey-yellow)
+**Key Physics**: I = 1.254e-6. With Phoenic (I = 6.54e-6 — lightest Chrome Wheel): system fraction = 16.1% (highest in series — but total L lowest at 1.169e-3 kg·m2/s). DeltaI_trans ~0.10e-6 (low nutation forcing ~Archer). Non-uniform protrusions (~6 circles; sigma_angle ~15 deg): contact frequency 200-400 Hz (irregular, hard to predict). Full Crystal Wheel series: Shinobi highest I/m (2.426e-4); Gladiator highest I (1.275e-6); Thief highest system fraction (16.1%); Dark Knight lowest fraction (9.8%).
+**Engine Note**: thiefCW(); I 1.254e-6; systemShare 16.1% (highestCW vs Phoenic); irregularFreq 200-400 Hz; DeltaI_trans 0.10e-6.
+
+---
