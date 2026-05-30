@@ -26,7 +26,7 @@ export default function ModeSelectPage() {
   const [selected, setSelected] = useState<RoomType | null>(null);
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(3);
   const [beybladeId, setBeybladeId] = useState("default");
-  const [arenaId, setArenaId] = useState("default");
+  const [arenaId, setArenaId] = useState("classic_stadium");
 
   function openSetup(type: RoomType) {
     setSelected(type);
@@ -35,7 +35,7 @@ export default function ModeSelectPage() {
   function handleQuickMatch() {
     const bey = ownedBeyblades[0]?.id ?? "default";
     reset();
-    setRoom({ roomType: "pvp", beybladeId: bey, arenaId: "default", bestOf: 1 });
+    setRoom({ roomType: "pvp", beybladeId: bey, arenaId: "classic_stadium", bestOf: 1 });
     setPhase("matchmaking");
     navigate("/game/matchmaking");
   }

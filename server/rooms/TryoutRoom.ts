@@ -131,7 +131,7 @@ export class TryoutRoom extends BaseRoom<GameState> {
       console.log(`✅ Loaded arena: ${arenaData.name}`);
     } else {
       console.log(`⚠️ Arena not found: ${options.arenaId}, using defaults`);
-      this.state.arena.id = options.arenaId || "default";
+      this.state.arena.id = options.arenaId || "classic_stadium";
       this.state.arena.name = "Standard Arena";
       this.state.arena.width = 50;
       this.state.arena.height = 50;

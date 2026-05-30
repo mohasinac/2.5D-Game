@@ -250,7 +250,7 @@ export function BattleLobbyPage() {
 
   const colyseusOptions = useMemo(() => ({
     beybladeId:  settings.beybladeId ?? 'default',
-    arenaId:     settings.arenaId    ?? 'default',
+    arenaId:     settings.arenaId    ?? 'classic_stadium',
     username:    settings.username   ?? 'Player',
     userId:      settings.userId,
     private:     isPrivate,
@@ -278,7 +278,7 @@ export function BattleLobbyPage() {
     setRoom({
       roomType: lobbyMode === 'royale' ? 'royale' : lobbyMode === 'tournament' ? 'tournament' : 'pvp',
       beybladeId: settings.beybladeId ?? 'default',
-      arenaId: settings.arenaId ?? 'default',
+      arenaId: settings.arenaId ?? 'classic_stadium',
     });
     connect();
   }, [triggerConnect]); // intentionally omit other deps — called once per trigger
@@ -307,7 +307,7 @@ export function BattleLobbyPage() {
         config: {
           roomType: lobbyMode === 'pvp' ? 'pvp' : lobbyMode === 'royale' ? 'royale' : 'tournament',
           beybladeId: settings.beybladeId ?? 'default',
-          arenaId:    settings.arenaId    ?? 'default',
+          arenaId:    settings.arenaId    ?? 'classic_stadium',
           is25D:      true,
           pvpRoomId:  room.roomId,
         },

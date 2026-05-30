@@ -33,6 +33,7 @@ import {
   applyMovementInput,
   applyActionInput,
   computeForceMagnitude,
+  isControlLocked,
 } from "../shared/rooms/InputHandler";
 import { computeNaturalForce } from "../shared/physics/NaturalMotion";
 import {
@@ -292,7 +293,7 @@ export class BattleRoom extends BaseRoom<GameState> {
     const seed = hashString(options.matchId || String(Date.now()));
     this.rand = createPRNG(seed);
 
-    const arenaId = options.arenaId || "default";
+    const arenaId = options.arenaId || "classic_stadium";
     this.arenaCache = await loadArena(arenaId);
     const arenaData = this.arenaCache;
 
@@ -610,6 +611,7 @@ export class BattleRoom extends BaseRoom<GameState> {
 
     beyblade.health = beyblade.maxStamina;
     beyblade.maxHealth = beyblade.maxStamina;
+    beyblade.power = 100; // start at full power; drained by hits
 
     const spawnIndex = (this.playerSessions.size - 1) % SPAWN_OFFSETS.length;
     const spawnOffset = SPAWN_OFFSETS[spawnIndex];
@@ -992,8 +994,6 @@ export class BattleRoom extends BaseRoom<GameState> {
       }
     }
 
-    applyMovementInput(beyblade, message, forceMagnitude, this.physics, !!this.arenaSystem);
-
     const events = applyActionInput(
       beyblade,
       message,
@@ -1217,7 +1217,7 @@ export class BattleRoom extends BaseRoom<GameState> {
         if (moveDef) {
           const phase = moveDef.phases[beyblade.specialPhaseIndex] ?? moveDef.phases[0];
           const partialDmg = (phase.effects.damageMultiplier ?? 1.0) * 0.4 * 10;
-          target.health = Math.max(0, target.health - partialDmg);
+          target.power = Math.max(0, target.power - partialDmg);
           beyblade.damageDealt += partialDmg;
           target.damageReceived += partialDmg;
           partialDamageApplied = true;
@@ -1314,19 +1314,19 @@ export class BattleRoom extends BaseRoom<GameState> {
     const b1 = this.state.beyblades.get(qte.player1Id);
     const b2 = this.state.beyblades.get(qte.player2Id);
 
-    // #9: Clamp QTE multipliers to [0, 1.5] (server enforces 150% cap)
-    const p1Mult = Math.min(1.5, Math.max(0, b1 ? b1.collisionQTEPower / 100 : 1.0));
-    const p2Mult = Math.min(1.5, Math.max(0, b2 ? b2.collisionQTEPower / 100 : 1.0));
+    // #9: Clamp QTE multipliers — minimum 0.3 so damage always lands even without mashing
+    const p1Mult = Math.min(1.5, Math.max(0.3, b1 ? b1.collisionQTEPower / 100 : 1.0));
+    const p2Mult = Math.min(1.5, Math.max(0.3, b2 ? b2.collisionQTEPower / 100 : 1.0));
 
-    // Apply held damage × QTE multiplier
+    // Apply held damage × QTE multiplier — drain power, not health
     if (b1 && b1.isActive) {
       const applyD = qte.pendingDamage1 * p2Mult; // b1 takes dmg scaled by b2's power
-      b1.health = Math.max(0, b1.health - applyD);
+      b1.power = Math.max(0, b1.power - applyD);
       b1.damageReceived += applyD;
     }
     if (b2 && b2.isActive) {
       const applyD = qte.pendingDamage2 * p1Mult;
-      b2.health = Math.max(0, b2.health - applyD);
+      b2.power = Math.max(0, b2.power - applyD);
       b2.damageReceived += applyD;
     }
 
@@ -1426,7 +1426,7 @@ export class BattleRoom extends BaseRoom<GameState> {
         const dy = target.y - bey.y;
         if (Math.sqrt(dx * dx + dy * dy) > aoeRadius) return;
         const dmg = 15 * dmgMult; // base AoE damage
-        target.health = Math.max(0, target.health - dmg);
+        target.power = Math.max(0, target.power - dmg);
         bey.damageDealt += dmg;
         target.damageReceived += dmg;
       });
@@ -1597,7 +1597,7 @@ export class BattleRoom extends BaseRoom<GameState> {
   private applyEffectsToTarget(attacker: Beyblade, target: Beyblade, effects: import("../constants/specialMoves").SpecialMovePhaseEffects) {
     if (effects.damageMultiplier) {
       const dmg = 15 * effects.damageMultiplier;
-      target.health = Math.max(0, target.health - dmg);
+      target.power = Math.max(0, target.power - dmg);
       attacker.damageDealt += dmg;
       target.damageReceived += dmg;
     }
@@ -1628,7 +1628,7 @@ export class BattleRoom extends BaseRoom<GameState> {
         }
         if (effects.damageMultiplier) {
           const dmg = 12 * effects.damageMultiplier;
-          nearby.health = Math.max(0, nearby.health - dmg);
+          nearby.power = Math.max(0, nearby.power - dmg);
           attacker.damageDealt += dmg;
           nearby.damageReceived += dmg;
         }
@@ -1702,11 +1702,11 @@ export class BattleRoom extends BaseRoom<GameState> {
     const dmg2to1 = 15 * mult2;
 
     if (!b1.isInvulnerable) {
-      b1.health = Math.max(0, b1.health - dmg2to1);
+      b1.power = Math.max(0, b1.power - dmg2to1);
       b1.damageReceived += dmg2to1;
     }
     if (!b2.isInvulnerable) {
-      b2.health = Math.max(0, b2.health - dmg1to2);
+      b2.power = Math.max(0, b2.power - dmg1to2);
       b2.damageReceived += dmg1to2;
     }
     b1.damageDealt += dmg1to2;
@@ -1796,13 +1796,13 @@ export class BattleRoom extends BaseRoom<GameState> {
     const defDmg = defPhase ? 15 * (defPhase.effects.damageMultiplier ?? 1.0) * defenderScale : 0;
 
     if (!defBey.isInvulnerable) {
-      defBey.health = Math.max(0, defBey.health - attDmg);
+      defBey.power = Math.max(0, defBey.power - attDmg);
       defBey.damageReceived += attDmg;
     }
     attBey.damageDealt += attDmg;
 
     if (!attBey.isInvulnerable) {
-      attBey.health = Math.max(0, attBey.health - defDmg);
+      attBey.power = Math.max(0, attBey.power - defDmg);
       attBey.damageReceived += defDmg;
     }
     defBey.damageDealt += defDmg;
@@ -2231,8 +2231,8 @@ export class BattleRoom extends BaseRoom<GameState> {
           const applyD1 = effDmg1 * aerialFactor;
           const applyD2 = effDmg2 * aerialFactor;
 
-          b1.health = Math.max(0, b1.health - applyD1);
-          b2.health = Math.max(0, b2.health - applyD2);
+          b1.power = Math.max(0, b1.power - applyD1);
+          b2.power = Math.max(0, b2.power - applyD2);
           b1.spin = Math.max(0, b1.spin - effSS2);
           b2.spin = Math.max(0, b2.spin - effSS1);
           if (applyD1 > 0) this.beyHitsThisTick.add(id1);
@@ -2241,8 +2241,6 @@ export class BattleRoom extends BaseRoom<GameState> {
           b2.damageDealt += applyD1;
           b1.damageReceived += applyD1;
           b2.damageReceived += applyD2;
-          b1.power = Math.min(100, b1.power + (applyD2 > 0 ? 0.5 : 0) + (applyD1 > 0 ? 0.3 : 0));
-          b2.power = Math.min(100, b2.power + (applyD1 > 0 ? 0.5 : 0) + (applyD2 > 0 ? 0.3 : 0));
           if (applyD1 > 15) b1.attackBuffTimer = 0;
           if (applyD2 > 15) b2.attackBuffTimer = 0;
 
@@ -2414,6 +2412,27 @@ export class BattleRoom extends BaseRoom<GameState> {
         this.physics.applyForce(beyblade.id, natForce.fx, natForce.fy);
       }
 
+      // Continuous player movement — re-applied every tick from stored last input so holding
+      // a key produces a steady force regardless of network heartbeat interval.
+      {
+        const contInp = this.lastPlayerInput.get(beyblade.id);
+        if (contInp && !isControlLocked(beyblade) && !beyblade.comboExecuting && beyblade.stunTimer <= 0) {
+          const fm = computeForceMagnitude(beyblade);
+          if (this.arenaSystem) {
+            const r = beyblade.rotation;
+            if (contInp.moveLeft)  this.physics.applyForce(beyblade.id,  Math.sin(r) * fm * 1.5, -Math.cos(r) * fm * 1.5);
+            if (contInp.moveRight) this.physics.applyForce(beyblade.id, -Math.sin(r) * fm * 1.5,  Math.cos(r) * fm * 1.5);
+            if (contInp.moveUp)    this.physics.applyForce(beyblade.id,  Math.cos(r) * fm * 1.5,  Math.sin(r) * fm * 1.5);
+            if (contInp.moveDown)  this.physics.applyForce(beyblade.id, -Math.cos(r) * fm,        -Math.sin(r) * fm);
+          } else {
+            if (contInp.moveLeft)  this.physics.applyForce(beyblade.id, -fm * 1.5, 0);
+            if (contInp.moveRight) this.physics.applyForce(beyblade.id,  fm * 1.5, 0);
+            if (contInp.moveUp)    this.physics.applyForce(beyblade.id, 0, -fm * 1.5);
+            if (contInp.moveDown)  this.physics.applyForce(beyblade.id, 0,  fm);
+          }
+        }
+      }
+
       // Arena tilt: apply lateral gravity force toward the downhill side
       if (this.state.arena.tiltAngle !== 0) {
         const { fx, fy } = computeTiltForce(this.state.arena.tiltAngle, this.state.arena.tiltDirection, beyblade.mass);
@@ -2504,6 +2523,14 @@ export class BattleRoom extends BaseRoom<GameState> {
         }
       }
       beyblade.stamina = Math.max(0, beyblade.stamina - Math.abs(physicsState.angularVelocity) * 0.01);
+
+      // Power-based elimination — power drained to 0 by hits → burst
+      if (beyblade.power <= 0 && beyblade.isActive && !beyblade.burstImmune && !beyblade.knockoutImmune) {
+        beyblade.isActive = false;
+        beyblade.isBurst = true;
+        beyblade.eliminationType = "burst";
+        this.broadcast("burst", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y });
+      }
 
       if (beyblade.spin <= 0 && beyblade.isActive && !beyblade.spinOutImmune && !beyblade.knockoutImmune) {
         // #21: on_proc accessory — survive one lethal spin-out (e.g. spin_sash), checked synchronously from cache
@@ -2900,7 +2927,7 @@ export class BattleRoom extends BaseRoom<GameState> {
             const dist = Math.hypot(other.x - bey.x, other.y - bey.y);
             if (dist <= landingRadiusPx) {
               const falloff = 1 - dist / landingRadiusPx;
-              other.health = Math.max(0, other.health - landingDamage * falloff);
+              other.power = Math.max(0, other.power - landingDamage * falloff);
             }
           });
         }
@@ -2929,7 +2956,7 @@ export class BattleRoom extends BaseRoom<GameState> {
             if (dist <= landingRadiusPx) {
               const falloff = 1 - dist / landingRadiusPx;
               const dmg = hjs.landingDamage * falloff;
-              other.health = Math.max(0, other.health - dmg);
+              other.power = Math.max(0, other.power - dmg);
               totalDamage += dmg;
             }
           });
@@ -3609,7 +3636,7 @@ export class BattleRoom extends BaseRoom<GameState> {
         if (!b.isActive) return;
         const dist = Math.hypot(b.x, b.y); // arena is centered at 0,0
         if (dist > effectiveRadius) {
-          b.health = Math.max(0, b.health - shrinkDamage);
+          b.power = Math.max(0, b.power - shrinkDamage);
         }
       });
     }

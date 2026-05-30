@@ -105,7 +105,7 @@ export function BattleGamePage() {
 
   const colyseusOptions = useMemo(() => ({
     beybladeId: settings.beybladeId ?? "default",
-    arenaId: settings.arenaId ?? "default",
+    arenaId: settings.arenaId ?? "classic_stadium",
     username: settings.username ?? "Player",
     userId,
     spectate,

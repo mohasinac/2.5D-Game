@@ -38,7 +38,7 @@ export function PlayerStrip({ beyblade }: PlayerStripProps) {
         >
           {beyblade.username || "YOU"}
         </span>
-        <BurstMeter health={beyblade.health} maxHealth={beyblade.maxHealth} />
+        <BurstMeter health={beyblade.power} maxHealth={100} />
         <span className="text-[9px] font-mono text-[rgba(255,255,255,0.45)] uppercase tracking-wider">
           {beyblade.type}
         </span>

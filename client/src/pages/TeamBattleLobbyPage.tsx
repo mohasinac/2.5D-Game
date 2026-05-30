@@ -26,7 +26,7 @@ export function TeamBattleLobbyPage() {
       const teamRoomName = settings.enable25D ? ROOM_NAMES.global.teamBattle25d : ROOM_NAMES.global.teamBattle;
       const room = await client.joinOrCreate(teamRoomName, {
         beybladeId: settings.beybladeId ?? "default",
-        arenaId: settings.arenaId ?? "default",
+        arenaId: settings.arenaId ?? "classic_stadium",
         userId: settings.userId,
         username: settings.username ?? "Player",
         team,

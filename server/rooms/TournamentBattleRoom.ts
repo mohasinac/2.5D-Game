@@ -120,7 +120,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
     const seed = hashString(options.matchId || String(Date.now()));
     this.rand = createPRNG(seed);
 
-    const arenaId = options.arenaId || "default";
+    const arenaId = options.arenaId || "classic_stadium";
     this.arenaCache = await loadArena(arenaId);
     const arenaData = this.arenaCache;
 
@@ -212,6 +212,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
     beyblade.health = beyblade.maxStamina;
     beyblade.maxHealth = beyblade.maxStamina;
+    beyblade.power = 100;
 
     const spawnIndex = this.playerSessions.size - 1;
     const spawnOffset = SPAWN_OFFSETS[spawnIndex % SPAWN_OFFSETS.length];
@@ -317,6 +318,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
     ai.health = ai.maxStamina;
     ai.maxHealth = ai.maxStamina;
+    ai.power = 100;
 
     const spawnIndex = this.playerSessions.size;
     const spawnOffset = SPAWN_OFFSETS[spawnIndex % SPAWN_OFFSETS.length];
@@ -577,8 +579,8 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
         if (!collision) continue;
 
         const dmg = this.physics.calculateCollisionDamage(collision, b1, b2);
-        b1.health = Math.max(0, b1.health - dmg.damage1);
-        b2.health = Math.max(0, b2.health - dmg.damage2);
+        b1.power = Math.max(0, b1.power - dmg.damage1);
+        b2.power = Math.max(0, b2.power - dmg.damage2);
         b1.spin = Math.max(0, b1.spin - dmg.spinSteal2);
         b2.spin = Math.max(0, b2.spin - dmg.spinSteal1);
         b1.damageDealt += dmg.damage2; b2.damageDealt += dmg.damage1;

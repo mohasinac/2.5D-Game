@@ -238,7 +238,7 @@ export class BaseLocalSimulation {
   // ─── Data loading ─────────────────────────────────────────────────────────
 
   protected async loadData() {
-    const { beybladeId = 'default', arenaId = 'default', aiCount = 1, aiDifficulty = 'medium' } = this.config;
+    const { beybladeId = 'default', arenaId = 'classic_stadium', aiCount = 1, aiDifficulty = 'medium' } = this.config;
     const cx = DEFAULT_ARENA_W / 2, cy = DEFAULT_ARENA_H / 2;
     const roomType = this.config.roomType;
 
@@ -264,7 +264,7 @@ export class BaseLocalSimulation {
           arenaData = picked.data() as Record<string, unknown>;
         }
       } catch { /* fall through to defaults */ }
-    } else if (arenaId !== 'default') {
+    } else if (arenaId) {
       try {
         const snap = await getDoc(doc(db, COLLECTIONS.ARENAS, arenaId));
         if (snap.exists()) arenaData = snap.data() as Record<string, unknown>;

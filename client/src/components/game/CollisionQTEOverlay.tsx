@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 interface CollisionQTEOverlayProps {
   active: boolean;
@@ -30,11 +30,21 @@ export function CollisionQTEOverlay({
   onMash,
 }: CollisionQTEOverlayProps) {
   const specialFiredRef = useRef(false);
+  const [flashOn, setFlashOn] = useState(false);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerMash = useCallback(() => {
+    navigator.vibrate?.(15);
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    setFlashOn(true);
+    flashTimerRef.current = setTimeout(() => setFlashOn(false), 100);
+    onMash?.();
+  }, [onMash]);
 
   useEffect(() => {
     if (!active) return;
     const handler = (e: KeyboardEvent) => {
-      onMash?.();
+      triggerMash();
       if (e.code === "Space" && canFireSpecial && !specialFiredRef.current) {
         e.preventDefault();
         specialFiredRef.current = true;
@@ -43,11 +53,15 @@ export function CollisionQTEOverlay({
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [active, canFireSpecial, onFireSpecial, onMash]);
+  }, [active, canFireSpecial, onFireSpecial, triggerMash]);
 
   useEffect(() => {
     if (active) specialFiredRef.current = false;
   }, [active]);
+
+  useEffect(() => () => {
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+  }, []);
 
   if (!active) return null;
 
@@ -57,23 +71,35 @@ export function CollisionQTEOverlay({
 
   return (
     <div
+      onClick={triggerMash}
+      onTouchStart={(e) => { e.preventDefault(); triggerMash(); }}
       style={{
-        width: 150,
-        background: "rgba(8,10,20,0.82)",
-        border: `1.5px solid ${barColor}88`,
-        borderRadius: 10,
-        padding: "7px 10px 8px",
-        boxShadow: `0 3px 16px rgba(0,0,0,0.5), 0 0 10px ${barColor}22`,
+        position: "fixed",
+        bottom: "28%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 75,
+        width: 180,
+        background: flashOn ? "rgba(255,200,0,0.18)" : "rgba(8,10,20,0.92)",
+        border: `1.5px solid ${flashOn ? barColor : barColor + "88"}`,
+        borderRadius: 12,
+        padding: "10px 12px 10px",
+        boxShadow: flashOn
+          ? `0 3px 16px rgba(0,0,0,0.6), 0 0 22px ${barColor}88`
+          : `0 3px 16px rgba(0,0,0,0.6), 0 0 14px ${barColor}33`,
         userSelect: "none",
-        pointerEvents: "none",
+        pointerEvents: "auto",
+        cursor: "pointer",
+        touchAction: "none",
         display: "flex",
         flexDirection: "column",
-        gap: 5,
+        gap: 7,
+        transition: "background 0.05s, box-shadow 0.05s, border-color 0.05s",
       }}
     >
       {/* Title */}
-      <div style={{ fontSize: 9, fontWeight: 800, color: barColor, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-        ⚡ CLASH — MASH!
+      <div style={{ fontSize: 10, fontWeight: 800, color: barColor, letterSpacing: "0.12em", textTransform: "uppercase", textAlign: "center" }}>
+        ⚡ CLASH — TAP HERE!
       </div>
 
       {/* Power bar */}
@@ -96,18 +122,20 @@ export function CollisionQTEOverlay({
       {canFireSpecial && (
         <div
           style={{
-            fontSize: 8, fontWeight: 800, color: "#ff8800",
-            textAlign: "center", letterSpacing: "0.1em",
-            padding: "3px 0",
-            border: "1px solid #ff880055",
-            borderRadius: 4,
+            fontSize: 10, fontWeight: 800, color: "#ff8800",
+            textAlign: "center", letterSpacing: "0.08em",
+            padding: "8px 0",
+            border: "1px solid #ff880088",
+            borderRadius: 6,
             animation: "cqte-blink 0.5s infinite alternate",
             pointerEvents: "auto",
             cursor: "pointer",
+            touchAction: "none",
           }}
-          onClick={onFireSpecial}
+          onClick={(e) => { e.stopPropagation(); navigator.vibrate?.(25); onFireSpecial(); }}
+          onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); navigator.vibrate?.(25); onFireSpecial(); }}
         >
-          🔥 [SPACE] SPECIAL
+          🔥 FIRE SPECIAL
         </div>
       )}
 

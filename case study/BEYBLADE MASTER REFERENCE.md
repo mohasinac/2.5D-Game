@@ -262,16 +262,16 @@ All values cross-verified CS1–CS10. `frictionMult` is relative to ABS baseline
 
 | Bit Type | Material | μ_k | r_tip (mm) | Tag |
 |----------|----------|-----|-----------|-----|
-| Ball (BX) | ABS | 0.17 | 2.0 | [ESTIMATED] |
+| Ball (BX) | PC (polycarbonate) | 0.10 | 0.092 (Hertzian contact patch radius; physical hemisphere R_ball=3mm) | [CONFIRMED CS8 Case 400] |
 | Flat (BX) | ABS | 0.10 | 3.0 | [CONFIRMED CS10 Case 564] |
-| Rush (BX) | ABS | 0.17 | 4.0 | [ESTIMATED] |
-| Needle (BX) | ABS | 0.10 | 0.3 | [ESTIMATED] |
+| Rush (BX) | ABS | 0.17 | 4.0 | [ESTIMATED; confirmed 10-tooth gear CS7 Case 358] |
+| Needle (BX) | PC (polycarbonate) | 0.30 | 0.00354 (Boussinesq r_eff; θ=75° cone half-angle) | [CONFIRMED CS8 Case 401] |
 | Metal Needle (BX) | Metal | 0.12 | 0.3 | [ESTIMATED] |
 | Free Ball (FB) | ABS‡ | 0.13 | 2.0 | [ESTIMATED] |
 
 ‡**Free Ball note:** Free Ball is ABS plastic. The "free" property does NOT come from a metal bearing. The bit shaft has **no teeth / notches** — it cannot grip the ratchet's engagement points. This allows the bit to rotate freely relative to the ratchet assembly (loose ABS-on-ABS shaft fit), preventing floor friction from coupling strongly to the main spin axis. Mechanically similar to B:D in effect but different in construction: no metal, no bearing races — just a smooth toothless shaft.
 
-**Needle vs Metal Needle:** Standard Needle is ABS plastic (sharp point, μ_k≈0.10). "Metal Needle" or "Needle Metal" is a separate variant with a metal tip insert (μ_k=0.12). Always check the part name — if it does not say "Metal", it is ABS.
+**Needle vs Metal Needle:** Standard Needle is PC (polycarbonate), cone half-angle θ=75°, μ≈0.30 (high-pressure sharp-cone contact regime), Boussinesq r_eff=0.00354mm → dω/dt≈0.039 rad/s² (near-zero tip friction) [CONFIRMED CS8 Case 401]. "Metal Needle" is a separate variant with a metal tip insert (μ_k=0.12). Always check the part name — if it does not say "Metal", it is PC.
 
 **Rush:** ABS plastic flat-aggressive bit. Not rubber. Aggressive movement pattern comes from wide flat contact area (r_tip≈4 mm), not from rubber grip.
 
@@ -656,10 +656,11 @@ deltaH = mountOffset × sin(slantAngle)
 
 ## 2.6 V Series — Magnacore / Neo SG System
 
-**System change:** Bit Chip is replaced by the Magnacore chip embedded in the SG housing. The Magnacore is a permanent magnet (force F = 0.40 N at 3 mm gap from magnetic stadium [ESTIMATED CS10 Case 554]). The Neo SG adds a metal weight insert and optionally a Magnacore chip.
+**System change:** Bit Chip is replaced by the Magnacore chip embedded in the SG housing. The Magnacore is a permanent magnet. The Magne Stadium floor has its magnets oriented South pole UPWARD; the magnetic force is vertical only — it raises or lowers the effective normal force and therefore floor friction. There is no lateral centering or centrifugal force. [CONFIRMED CS10 Case 554]
 
-**North Magnacore:** repels from North-pole magnetic floor → centrifugal behaviour (pushes outward)  
-**South Magnacore:** attracts to stadium magnets → centering behaviour (pulls inward, stabilizes against ring-out)
+**North Magnacore:** ATTRACTED to South-up stadium floor → increased N_normal (+68%) → faster spin decay → α = 38.7 rad/s² → spin life t ≈ 7.75 s (−40.4%) → aggressive/attack behaviour [CONFIRMED CS10 Case 554]  
+**South Magnacore:** REPELLED from South-up stadium floor → decreased N_normal (−68%) → slower spin decay → α = 7.37 rad/s² → spin life t ≈ 40.7 s (+3.13×) → stamina/zombie behaviour [CONFIRMED CS10 Case 554]  
+F_magne = 0.200 N at operating height h = 14 mm; 0.400 N at h = 3 mm (pull-test estimate)
 
 **WD upgrades:** Ten Wide (highest r_o = highest inertia for stamina), Ten Heavy (highest mass = defense/attack), Ten Balance (compromise), Revolver Attack (asymmetric mass for attack).
 
@@ -810,9 +811,9 @@ deltaH = mountOffset × sin(slantAngle)
 ## 2.10 G Series — Engine Gear System (EGS)
 
 **System change:** The SG is replaced by the Engine Gear (EG). The EG contains a wound steel spring (k = 1500 N/m, E = 48 mJ [CONFIRMED CS10]). When the trigger fires, the spring releases and delivers a ~Δω spin burst. The trigger condition depends on the Blade Base type:
-- **First Clutch Base BB:** clutch fires at FIRST strong collision event
-- **Final Clutch Base BB:** clutch fires at LAST collision (lowest spin, at the end of match)
-- **Normal Base BB:** clutch NEVER fires (spring is always wound but trigger is never depressed)
+- **First Clutch Base BB:** clutch fires ONCE at battle start (the physical release tab is depressed at launch) [CONFIRMED CS10 Case 556]
+- **Final Clutch Base BB:** clutch fires when spin falls to ω_trigger = 141 rad/s (1350 RPM); Δω = 53.4 rad/s; post-boost ω = 194 rad/s (+37.9%) [CONFIRMED CS10 Case 556]
+- **Normal Base BB:** gradual spring release throughout the battle — spring unwinds progressively; no discrete trigger event [CONFIRMED CS10 Case 556]
 
 The CEW (Customize Engine Weight) is a small insert at the center of the EG whose tip type determines the beyblade's floor contact behavior.
 
@@ -824,7 +825,7 @@ The CEW (Customize Engine Weight) is a small insert at the center of the EG whos
 - AR: Eight Spiker AR (ABS, eight radial spikes)
 - WD: Ten Wide WD (ABS)
 - EG: Left EG Metal Semi-Flat (ABS + metal housing, metal semi-flat CEW tip; μ_k = 0.12)
-- BB: First Clutch Base BB (ABS, spring fires on first collision)
+- BB: First Clutch Base BB (ABS, spring fires once at battle start)
 - Type: Attack / Left-spin
 
 **Driger G**
@@ -843,19 +844,19 @@ The CEW (Customize Engine Weight) is a small insert at the center of the EG whos
 - AR: Double Horn AR (ABS, dual-horn upper/smash)
 - WD: Ten Heavy WD (ABS)
 - EG: Right EG Circle Defenser (ABS, defense-profile CEW insert)
-- BB: Normal Base BB (ABS, EG spring never fires — always-wound pure stamina)
+- BB: Normal Base BB (ABS, gradual spring release — no discrete trigger event)
 
 **Dranzer G**
 - AR: Wing Survivor AR (ABS, stamina-oriented wing)
 - WD: Ten Balance WD (ABS)
 - EG: Right EG Metal Semi-Flat (ABS + metal)
-- BB: Final Clutch Base BB (ABS, spring fires at end-of-match low-spin moment)
+- BB: Final Clutch Base BB (ABS, spring fires at ω_trigger = 141 rad/s; Δω = 53.4 rad/s; post-boost ω = 194 rad/s)
 
 **Wolborg 4**
 - AR: Star Wolf AR (ABS, star-shaped contact geometry)
 - WD: Ten Wide WD (ABS)
 - EG: Right EG Circle Survivor (ABS, survival-profile CEW)
-- BB: Normal Base BB (ABS, EG never fires)
+- BB: Normal Base BB (ABS, gradual spring release — no discrete trigger event)
 
 **Draciel G**
 - AR: Shield Hammer AR (ABS, wide defense shield with hammer contacts)
@@ -1105,7 +1106,9 @@ The CEW (Customize Engine Weight) is a small insert at the center of the EG whos
 **Stack — 4D System (standard):** 4D Clear Wheel (optional) → 4D Metal Wheel (two-part: Inner + Outer) → Track → Bottom  
 **Stack — 4D System (fused A:B Bottom):** 4D Clear Wheel (optional) → 4D Metal Wheel → 4D Bottom [replaces BOTH Track AND Bottom as a single fused component; notation examples: F:D, F:S, D:D, B:D, X:D]  
 Note: 4D Clear Wheel is absent on L Drago Destroy F:S and L Drago Guardian S130MB.  
-**Stack — Zero-G:** Crystal Clear Wheel A (attack-side) + Crystal Clear Wheel B (defense-side) → Synchrome Frame → Track → Bottom (Synchrome uses two Crystal Wheels merged in a frame)
+**Stack — Zero-G (standard):** Crystal Wheel (outer ABS decorative shell) → Chrome Wheel (main mass piece) → Track → Bottom  
+**Stack — Zero-G (Synchrome):** Crystal Wheel (outer ABS) → Chrome Wheel A + Chrome Wheel B (stacked) → Track → Bottom  
+Note: Synchrome stacks TWO Chrome Wheels for mass and inertia gain. Crystal Wheels are the light outer ABS shell — combining two Crystal Wheels alone would be too light to achieve any meaningful inertia increase.
 
 - **CW (Clear Wheel):** ABS. Lightweight outer shell over MW. Aesthetic; minor I contribution.
 - **MW / FW (Metal Wheel / Fusion Wheel):** Metal (zinc alloy or steel). 22–35 g. Dominant I contributor (70%). Contact at track height + 3–13 mm.
@@ -1297,7 +1300,7 @@ The 4D system introduces a two-part 4D Metal Wheel (Inner + Outer can spin semi-
 
 **Fused 4D Bottom list:** F:D = Final Drive · F:S = Final Survive · D:D = Delta Drive · B:D = Bearing Drive · X:D = X Drive
 
-**F:D mode-switch threshold:** ω_crit = 94.3 rad/s [CONFIRMED CS10 Case 557]. At high spin (ω > 94.3 rad/s) the tip is in Flat (attack) mode; when spin falls below this threshold, centrifugal force collapses and the tip switches to Sharp (stamina) mode.
+**F:D mode-switch threshold:** ω_crit = 94.3 rad/s [CONFIRMED CS10 Case 557]. At high spin (ω > 94.3 rad/s): Phase 1 — SF cone (ABS, dω/dt = 28.6 rad/s², moderate attack movement). When spin falls below threshold, centrifugal arm retracts → Phase 2 — rubber HF annular contact (rubber, μ=0.50, instant spin drain of ~0.3 s from switch point). Inverse of F:S. [CONFIRMED CS6 Case 344]
 
 **Big Bang Pegasis F:D**
 - CW: Pegasis III CW (ABS)
@@ -1309,7 +1312,7 @@ The 4D system introduces a two-part 4D Metal Wheel (Inner + Outer can spin semi-
 - CW: Leone II CW (ABS)
 - MW: Fang 4D MW (metal, fang/claw attack)
 - Track: 130 (ABS)
-- Bottom: W²D — Wide Double Defense (ABS)
+- Bottom: W²D — Wave Wide Defense (ABS)
 - Type: Defense
 
 **Beat Lynx TH170WD**
@@ -1379,43 +1382,43 @@ The 4D system introduces a two-part 4D Metal Wheel (Inner + Outer can spin semi-
 
 ## 4.5 Zero-G / Synchrome System Beyblades
 
-**System change:** The Synchrome system uses two Crystal Clear Wheels (Crystal CW A + Crystal CW B) assembled in a Synchrome Frame. Either wheel can be placed on either side. The resulting Synchrome bey is named by combining both component names (e.g., "Gryph Girago" = Girago Crystal CW + Gryph Crystal CW).
+**System change:** Each Zero-G bey has a Crystal Wheel (outer light ABS shell, low inertia contribution) and a Chrome Wheel (the main mass piece, dominant I contributor). Synchrome stacks TWO Chrome Wheels together — one from each constituent bey — for a combined mass/inertia gain. Combining two Crystal Wheels alone would achieve nothing useful (too light). The resulting Synchrome bey is named by combining both Chrome Wheel names (e.g., "Gryph Girago" = Girago Chrome Wheel + Gryph Chrome Wheel).
 
-**Samurai Ifraid W145CF** — Ifraid Crystal CW (ABS) / W145 (ABS) / CF (ABS)
+**Samurai Ifraid W145CF** — Ifraid Chrome Wheel (ABS) / W145 (ABS) / CF (ABS)
 
-**Shinobi Saramanda SW145SD** — Saramanda Crystal CW (ABS) / SW145 (ABS) / SD (ABS)
+**Shinobi Saramanda SW145SD** — Saramanda Chrome Wheel (ABS) / SW145 (ABS) / SD (ABS)
 
-**Pirates Orojya 145D** — Orojya Crystal CW (ABS) / 145 (ABS) / D (ABS)
+**Pirates Orojya 145D** — Orojya Chrome Wheel (ABS) / 145 (ABS) / D (ABS)
 
-**Thief Phoenic E230GCF** — Phoenic Crystal CW (ABS) / E230 (ABS) / GCF (ABS)
+**Thief Phoenic E230GCF** — Phoenic Chrome Wheel (ABS) / E230 (ABS) / GCF (ABS)
 
-**Guardian Revizer 160SB** — Revizer Crystal CW (ABS) / 160 (ABS) / SB (ABS)
+**Guardian Revizer 160SB** — Revizer Chrome Wheel (ABS) / 160 (ABS) / SB (ABS)
 
-**Archer Gryph C145S** — Gryph Crystal CW (ABS) / C145 (ABS) / S (ABS)
+**Archer Gryph C145S** — Gryph Chrome Wheel (ABS) / C145 (ABS) / S (ABS)
 
-**Pirates Killerken A230JSB** — Killerken Crystal CW (ABS) / A230 (ABS) / JSB (ABS)
+**Pirates Killerken A230JSB** — Killerken Chrome Wheel (ABS) / A230 (ABS) / JSB (ABS)
 
-**Dark Knight Dragooon LW160BSF** — Dragooon Crystal CW (ABS) / LW160 (ABS) / BSF (ABS)
+**Dark Knight Dragooon LW160BSF** — Dragooon Chrome Wheel (ABS) / LW160 (ABS) / BSF (ABS)
 
-**Archer Gargole SA165WSF** — Gargole Crystal CW (ABS) / SA165 (ABS) / WSF (ABS)
+**Archer Gargole SA165WSF** — Gargole Chrome Wheel (ABS) / SA165 (ABS) / WSF (ABS)
 
-**Bandid Goreim DF145BS** — Goreim Crystal CW (ABS) / DF145 (ABS) / BS (ABS)
+**Bandid Goreim DF145BS** — Goreim Chrome Wheel (ABS) / DF145 (ABS) / BS (ABS)
 
-**Berserker Begirados SR200BWD** — Begirados Crystal CW (ABS) / SR200 (ABS) / BWD (ABS)
+**Berserker Begirados SR200BWD** — Begirados Chrome Wheel (ABS) / SR200 (ABS) / BWD (ABS)
 
-**Bandid Genbull F230TB** — Genbull Crystal CW (ABS) / F230 (ABS) / TB (ABS)
+**Bandid Genbull F230TB** — Genbull Chrome Wheel (ABS) / F230 (ABS) / TB (ABS)
 
-**Gryph Girago WA130HF** — Synchrome: Girago Crystal CW + Gryph Crystal CW / WA130 / HF (ABS)
+**Gryph Girago WA130HF** — Synchrome: Girago Chrome Wheel + Gryph Chrome Wheel / WA130 / HF (ABS)
 
-**Saramanda Balro DF145SWD** — Synchrome: Balro + Saramanda Crystal CWs / DF145 / SWD (ABS)
+**Saramanda Balro DF145SWD** — Synchrome: Balro + Saramanda Chrome Wheels / DF145 / SWD (ABS)
 
-**Killerken Balro A230WB** — Synchrome: Balro + Killerken / A230 / WB (ABS)
+**Killerken Balro A230WB** — Synchrome: Balro Chrome Wheel + Killerken Chrome Wheel / A230 / WB (ABS)
 
-**Orojya Wyvang 145EDS** — Synchrome: Wyvang + Orojya / 145 / EDS (ABS + bearing)
+**Orojya Wyvang 145EDS** — Synchrome: Wyvang Chrome Wheel + Orojya Chrome Wheel / 145 / EDS (ABS + bearing)
 
-**Samurai Pegasis W105R²F** — Pegasis Crystal CW (ABS) / W105 / R²F (rubber, μ=0.50)
+**Samurai Pegasis W105R²F** — Pegasis Chrome Wheel (ABS) / W105 / R²F (rubber, μ=0.50)
 
-**Gladiator Bahamdia SP230GF** — Bahamdia Crystal CW + Gladiator Crystal CW (ABS) / SP230 / GF (ABS) — notable for ultra-tall SP230 track
+**Gladiator Bahamdia SP230GF** — Bahamdia Chrome Wheel + Gladiator Chrome Wheel (ABS) / SP230 / GF (ABS) — notable for ultra-tall SP230 track
 
 ---
 
@@ -2008,12 +2011,12 @@ k = 1500 N/m   [CONFIRMED CS10 Case 555]
 E = 48 mJ      [CONFIRMED CS10 Case 556]
 ```
 
-**Trigger conditions by BB type:**
-- **First Clutch Base:** trigger fires on first significant collision impulse
-- **Final Clutch Base:** trigger fires when spin falls below a threshold (end of match)
-- **Normal Base:** trigger never fires (spring always wound)
+**Trigger conditions by BB type [CONFIRMED CS10 Case 556]:**
+- **First Clutch Base:** fires ONCE at battle start (release tab depressed at launch moment)
+- **Final Clutch Base:** fires when spin falls to ω_trigger = 141 rad/s (1350 RPM); Δω = 53.4 rad/s; post-boost ω = 194 rad/s (+37.9%)
+- **Normal Base:** gradual spring release throughout the battle — spring unwinds progressively; no discrete trigger event
 
-**Engine:** `energyReserve: { type: 'spring', k: 1500, E: 0.048 }`, `velocityBurst: { delta_omega: computed }`, `triggerCondition: 'impact' | 'spin_threshold'`
+**Engine:** `energyReserve: { type: 'spring', k: 1500, E: 0.048 }`, `velocityBurst: { delta_omega: 53.4 }`, `triggerCondition: 'launch_start' | 'spin_threshold_141_rad_s' | 'gradual'`
 
 ---
 
@@ -2040,17 +2043,29 @@ X:D threshold: F_impact > 0.127 N (cam-follower — stochastic, not spin-speed b
 
 ## 7.4 Magnacore Magnetic Attraction / Repulsion
 
-**Physical basis:** The Magnacore chip is a permanent magnet embedded in the SG housing. A magnetic stadium (Magnacore Stadium) has magnets embedded in the floor.
+**Physical basis:** The Magnacore chip is a permanent magnet embedded in the SG housing. The Magne Stadium has its floor magnets oriented with **South pole facing UPWARD**. The magnetic force is **vertical only** — it modifies the normal force (and therefore floor friction / spin decay). There is no lateral centering or centrifugal force. [CONFIRMED CS10 Case 554]
 
 ```
-F = 0.40 N at 3 mm gap   [ESTIMATED CS10 Case 554 — pull test]
+Magne Stadium floor: South pole facing UPWARD [CONFIRMED CS10 Case 554]
+F_magne at h = 14 mm (SG Core operating height) = 0.200 N  [CONFIRMED CS10 Case 554]
+F_magne at h = 3 mm  (pull-test estimate)        = 0.400 N  [CONFIRMED CS10 Case 554]
 Falloff: inverse square with distance
+Force direction: VERTICAL only — modifies N_normal; does NOT exert lateral force
 ```
 
-**South Magnacore:** attracted to stadium magnets → centering force (resists ring-out)  
-**North Magnacore:** repelled by stadium magnets → centrifugal force (pushes toward wall — note: for selected stadium polarity configurations)
+**North Magnacore:** **ATTRACTED** to South-up stadium floor  
+→ N_normal increases: N_eff = 0.494 N (+68% vs. baseline 0.294 N)  
+→ α = 38.7 rad/s² (high spin decay)  
+→ Spin life t ≈ 7.75 s (−40.4% vs. no magnet)  
+→ Effect: faster spin death; aggressive attack behaviour [CONFIRMED CS10 Case 554]
 
-**Engine:** `magnetForce: { F_at_3mm: 0.40 }`, `falloff: 'inverse_square'`, `interactionTarget: 'floor_magnet'`
+**South Magnacore:** **REPELLED** from South-up stadium floor  
+→ N_normal decreases: N_eff = 0.094 N (−68% vs. baseline 0.294 N)  
+→ α = 7.37 rad/s² (low spin decay)  
+→ Spin life t ≈ 40.7 s (+3.13× vs. no magnet)  
+→ Effect: extended spin life; stamina / zombie behaviour [CONFIRMED CS10 Case 554]
+
+**Engine:** `magnetForce: { F_at_14mm: 0.200, F_at_3mm: 0.400 }`, `falloff: 'inverse_square'`, `interactionTarget: 'floor_magnet'`, `forceAxis: 'vertical'`, `stadiumPolarity: 'south_up'`
 
 ---
 

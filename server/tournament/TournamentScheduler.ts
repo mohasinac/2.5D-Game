@@ -190,7 +190,7 @@ export class TournamentScheduler {
     const arenaPool = tournament.allowedArenaIds;
     const defaultArenaId = arenaPool?.length
       ? arenaPool[Math.floor(Math.random() * arenaPool.length)]
-      : "default";
+      : "classic_stadium";
 
     await writeBracketToFirestore(effectiveTournament, pool, defaultArenaId);
     await updateTournamentStatus(tournament.id, "in-progress");
@@ -324,7 +324,7 @@ export class TournamentScheduler {
     );
 
     // Determine arena
-    const arenaId = match.arenaId || "default";
+    const arenaId = match.arenaId || "classic_stadium";
 
     // Build room options
     const roomOptions: any = {

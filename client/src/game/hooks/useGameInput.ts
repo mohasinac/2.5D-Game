@@ -37,7 +37,7 @@ type SendInputFn = (input: FullGameInput) => void;
 const SPACE_TAP_MS    = 150;
 const GAMEPAD_DEAD    = 0.15;
 const MOUSE_DRAG_PX   = 12;
-const HEARTBEAT_MS    = 500;
+const HEARTBEAT_MS    = 50;
 
 function encodeBitmask(i: FullGameInput): number {
   let f = 0;

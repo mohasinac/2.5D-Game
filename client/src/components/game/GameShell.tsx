@@ -163,18 +163,45 @@ function BtnLabel({ top, bottom }: { top: string; bottom: string }) {
 function ABtn({ label, action, color, style }: {
   label: React.ReactNode; action: string; color: string; style: React.CSSProperties
 }) {
+  const [pressed, setPressed] = useState(false);
+  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const h = useTouchBtn(action);
+
+  const handlers = {
+    ...h,
+    onPointerDown: (e: React.PointerEvent) => {
+      h.onPointerDown(e);
+      if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+      setPressed(true);
+      pressTimerRef.current = setTimeout(() => setPressed(false), 140);
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      h.onPointerUp(e);
+      if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = setTimeout(() => setPressed(false), 60);
+    },
+    onPointerCancel: (e: React.PointerEvent) => {
+      h.onPointerCancel(e);
+      setPressed(false);
+    },
+  };
+
   return (
-    <div {...h} style={{
+    <div {...handlers} style={{
       position: 'absolute',
       borderRadius: '50%',
-      background: `radial-gradient(circle at 38% 35%, ${color}ee, ${color}99)`,
-      border: `2px solid ${color}cc`,
-      boxShadow: `0 4px 10px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -2px 0 rgba(0,0,0,0.25)`,
+      background: pressed
+        ? `radial-gradient(circle at 38% 35%, #fff4, ${color}ee, ${color}cc)`
+        : `radial-gradient(circle at 38% 35%, ${color}ee, ${color}99)`,
+      border: `2px solid ${pressed ? '#fff' : color + 'cc'}`,
+      boxShadow: pressed
+        ? `0 0 18px ${color}, 0 2px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.35)`
+        : `0 4px 10px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -2px 0 rgba(0,0,0,0.25)`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       color: '#fff', fontWeight: 900,
       cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-      transform: 'translate(-50%, -50%)',
+      transform: pressed ? 'translate(-50%, -50%) scale(0.88)' : 'translate(-50%, -50%)',
+      transition: 'transform 0.07s, box-shadow 0.07s, background 0.07s, border-color 0.07s',
       ...style,
     }}>{label}</div>
   );
@@ -184,10 +211,14 @@ function ActionCluster({ btnSize = 40, containerSize = 110 }: { btnSize?: number
   const fs = Math.round(btnSize * 0.22);
   return (
     <div style={{ position: 'relative', width: containerSize, height: containerSize, flexShrink: 0 }}>
-      <ABtn label={<BtnLabel top="DODGE"   bottom="A · J" />} action="dodge"   color="#b45309" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '12%' }} />
-      <ABtn label={<BtnLabel top="ATTACK"  bottom="D · L" />} action="attack"  color="#dc2626" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '85%', top: '50%' }} />
-      <ABtn label={<BtnLabel top="DEFENSE" bottom="S · K" />} action="defense" color="#2563eb" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '88%' }} />
-      <ABtn label={<BtnLabel top="JUMP"    bottom="W · I" />} action="jump"    color="#16a34a" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '15%', top: '50%' }} />
+      {/* Top = JUMP  (I key) */}
+      <ABtn label={<BtnLabel top="JUMP"    bottom="I" />} action="jump"    color="#16a34a" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '12%' }} />
+      {/* Right = ATTACK  (L key) */}
+      <ABtn label={<BtnLabel top="ATTACK"  bottom="L" />} action="attack"  color="#dc2626" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '85%', top: '50%' }} />
+      {/* Bottom = DEFENSE  (K key) */}
+      <ABtn label={<BtnLabel top="DEFENSE" bottom="K" />} action="defense" color="#2563eb" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '50%', top: '88%' }} />
+      {/* Left = DODGE  (J key) */}
+      <ABtn label={<BtnLabel top="DODGE"   bottom="J" />} action="dodge"   color="#b45309" style={{ width: btnSize, height: btnSize, fontSize: fs, left: '15%', top: '50%' }} />
     </div>
   );
 }
@@ -223,6 +254,29 @@ function OvalBtn({
     }}>
       <span>{label}</span>
       {subLabel && <span style={{ fontSize: 6, opacity: 0.65 }}>{subLabel}</span>}
+    </div>
+  );
+}
+
+// ─── Big action button (CHARGE / SPACE) — replaces L/R shoulder tabs ─────────
+// Full-width button below joystick or action cluster, tall enough to hit on mobile.
+function BigActionBtn({ label, subLabel, action, color }: {
+  label: string; subLabel?: string; action: string; color: string;
+}) {
+  const h = useTouchBtn(action);
+  return (
+    <div {...h} style={{
+      width: '100%', minWidth: 90, height: 38, borderRadius: 8,
+      background: `linear-gradient(180deg, ${color}cc 0%, ${color} 100%)`,
+      border: `1px solid ${color}88`,
+      boxShadow: `0 3px 8px rgba(0,0,0,0.5), 0 0 8px ${color}44, inset 0 1px 0 rgba(255,255,255,0.15)`,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      color: 'rgba(255,255,255,0.95)', fontSize: 11, fontWeight: 800,
+      letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1.2,
+      cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+    }}>
+      <span>{label}</span>
+      {subLabel && <span style={{ fontSize: 7.5, opacity: 0.7, marginTop: 1 }}>{subLabel}</span>}
     </div>
   );
 }
@@ -415,24 +469,18 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
       display: 'flex', flexDirection: 'column', overflow: 'visible',
     }}>
       {/* Main row — no shoulder row at top; L/R are inline with their controls */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'stretch', padding: '4px 14px 10px', gap: 10, minHeight: 0, height: 0 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'stretch', padding: '4px 14px 10px', gap: 10, minHeight: 0, height: 0, touchAction: 'none' }}>
 
-        {/* Left gutter — L shoulder above joystick, then center buttons below */}
+        {/* Left gutter — joystick + CHARGE below */}
         <div style={{
-          width: controlsHidden ? 0 : '20%', overflow: 'hidden',
+          width: controlsHidden ? 0 : '22%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 8, flexShrink: 0, minHeight: 0,
+          gap: 10, flexShrink: 0, minHeight: 0,
           transition: `width ${T}`,
         }}>
-          {/* L shoulder button — just above the joystick */}
-          <ShoulderBtn label="L" subLabel="CHARGE" action="chargeHeld" side="L" />
           <VirtualJoystick size={90} />
-          {/* Center action buttons: CHARGE | SPECIAL | PAUSE */}
-          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <OvalBtn label="CHARGE" subLabel="hold ⎵" action="chargeHeld" wide />
-            <OvalBtn label="SPECIAL" subLabel="tap ⎵" action="specialTap" wide />
-            <OvalBtn label="PAUSE"  onPress={onExit} wide />
-          </div>
+          <BigActionBtn label="CHARGE" subLabel="hold" action="chargeHeld" color="#1d4ed8" />
+          <OvalBtn label="⏸ PAUSE" onPress={onExit} wide />
         </div>
 
         {/* Center — screen (always visible, expands when controls hidden) */}
@@ -452,21 +500,16 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
           </div>
         </div>
 
-        {/* Right gutter — R shoulder above action cluster (R hidden in 2D mode) */}
+        {/* Right gutter — action cluster + SPACE below */}
         <div style={{
           width: controlsHidden ? 0 : '26%', overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', minHeight: 0,
-          paddingTop: 4, paddingBottom: 8, gap: 8, flexShrink: 0,
+          paddingTop: 4, paddingBottom: 8, gap: 10, flexShrink: 0,
           transition: `width ${T}`,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, alignSelf: 'flex-end', paddingRight: 6 }}>
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e, 0 0 12px rgba(34,197,94,0.5)' }} />
-            <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>POWER</span>
-          </div>
-          {/* R shoulder button — just above action cluster; hidden in 2D mode */}
-          <ShoulderBtn label="R" subLabel="SPECIAL" action="specialTap" side="R" hidden={!show25D} />
           <ActionCluster btnSize={42} containerSize={114} />
+          <BigActionBtn label="SPACE" subLabel="tap" action="specialTap" color="#7c3aed" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5, transform: 'rotate(-10deg)' }}>
             {[0,1,2,3,4].map(i => <div key={i} style={{ width: 36, height: 3, borderRadius: 2, background: 'rgba(0,0,0,0.28)' }} />)}
           </div>
@@ -540,6 +583,7 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
         gap: 0,
         minHeight: 0,
         position: 'relative',
+        touchAction: 'none',
         transition: 'max-height 0.28s ease, padding 0.28s ease',
       }}>
         {/* Nintendo emboss */}
@@ -551,35 +595,28 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
           }}>Nintendo</div>
         </div>
 
-        {/* Main controls row — L above joystick, R above action cluster */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', minHeight: 0 }}>
-          {/* Left: L shoulder button above joystick */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '45%', gap: 4 }}>
-            <SmallShoulderBtn label="L" subLabel="CHARGE" action="chargeHeld" side="L" />
+        {/* Main controls row — joystick left, action cluster right, generous gap */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', minHeight: 0, gap: 16, touchAction: 'none' }}>
+          {/* Left: joystick + CHARGE below */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 8 }}>
             <VirtualJoystick size={110} />
+            <BigActionBtn label="CHARGE" subLabel="hold" action="chargeHeld" color="#1d4ed8" />
           </div>
 
-          {/* Right: R shoulder button (hidden in 2D) above action cluster */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '45%', gap: 4 }}>
-            <SmallShoulderBtn label="R" subLabel="SPECIAL" action="specialTap" side="R" hidden={!show25D} />
+          {/* Center: pause */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 12 }}>
+            <OvalBtn label="⏸" onPress={onExit} />
+          </div>
+
+          {/* Right: action cluster + SPACE below */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 8 }}>
             <ActionCluster btnSize={48} containerSize={126} />
+            <BigActionBtn label="SPACE" subLabel="tap" action="specialTap" color="#7c3aed" />
           </div>
         </div>
 
-        {/* Bottom row: CHARGE | SPECIAL | PAUSE + Speaker */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 6, flexShrink: 0 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <OvalBtn label="CHARGE"  subLabel="hold ⎵" action="chargeHeld" wide />
-              <OvalBtn label="SPECIAL" subLabel="tap ⎵"  action="specialTap" wide />
-              <OvalBtn label="PAUSE"   onPress={onExit}  wide />
-            </div>
-            <div style={{ display: 'flex', gap: 6, paddingLeft: 2 }}>
-              <span style={{ fontSize: 7, color: 'rgba(0,0,0,0.28)', fontWeight: 700, letterSpacing: '0.08em', width: 52, textAlign: 'center' }}>CHARGE</span>
-              <span style={{ fontSize: 7, color: 'rgba(0,0,0,0.28)', fontWeight: 700, letterSpacing: '0.08em', width: 52, textAlign: 'center' }}>SPECIAL</span>
-              <span style={{ fontSize: 7, color: 'rgba(0,0,0,0.28)', fontWeight: 700, letterSpacing: '0.08em', width: 52, textAlign: 'center' }}>PAUSE</span>
-            </div>
-          </div>
+        {/* Bottom row: speaker only */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingTop: 4, flexShrink: 0 }}>
           <SpeakerDots cols={6} rows={4} />
         </div>
       </div>
@@ -610,6 +647,71 @@ function ToggleBtn({ hidden, onToggle }: { hidden: boolean; onToggle: () => void
       }}
     >
       {hidden ? '⊕' : '⊖'}
+    </div>
+  );
+}
+
+// ─── Desktop keyboard action flash indicator ──────────────────────────────────
+// Shows a brief floating label when an action key is pressed (desktop only).
+// Hidden on pointer-touch devices via CSS media query.
+const KEY_ACTION_MAP: Record<string, { label: string; color: string }> = {
+  KeyI: { label: "JUMP",    color: "#16a34a" },
+  KeyL: { label: "ATTACK",  color: "#dc2626" },
+  KeyK: { label: "DEFENSE", color: "#2563eb" },
+  KeyJ: { label: "DODGE",   color: "#b45309" },
+  Space: { label: "CHARGE", color: "#1d4ed8" },
+};
+
+function KeyPressFlash() {
+  const [flash, setFlash] = useState<{ label: string; color: string; key: number } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const keyRef = useRef(0);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const mapped = KEY_ACTION_MAP[e.code];
+      if (!mapped) return;
+      if (timerRef.current) clearTimeout(timerRef.current);
+      keyRef.current += 1;
+      setFlash({ ...mapped, key: keyRef.current });
+      timerRef.current = setTimeout(() => setFlash(null), 500);
+    };
+    window.addEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  if (!flash) return null;
+
+  return (
+    <div
+      key={flash.key}
+      style={{
+        position: "fixed",
+        bottom: "18%",
+        right: "clamp(12px, 3vw, 24px)",
+        zIndex: 90,
+        pointerEvents: "none",
+        padding: "5px 12px",
+        borderRadius: 8,
+        background: `${flash.color}22`,
+        border: `1.5px solid ${flash.color}88`,
+        color: flash.color,
+        fontSize: 11,
+        fontWeight: 900,
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        animation: "kpf-fadein 0.08s ease-out forwards, kpf-fadeout 0.35s 0.15s ease-in forwards",
+      }}
+    >
+      {flash.label}
+      <style>{`
+        @keyframes kpf-fadein  { from { opacity: 0; transform: scale(0.7) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes kpf-fadeout { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
+        @media (pointer: coarse) { .kpf-hide { display: none !important; } }
+      `}</style>
     </div>
   );
 }
@@ -653,6 +755,7 @@ export function GameShell({
         ? <PortraitShell {...shellProps}>{children}</PortraitShell>
         : <LandscapeShell {...shellProps}>{children}</LandscapeShell>
       }
+      <KeyPressFlash />
     </div>
   );
 }

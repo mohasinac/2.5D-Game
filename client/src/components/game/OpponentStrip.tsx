@@ -36,7 +36,7 @@ export function OpponentStrip({ beyblade, compact = false }: OpponentStripProps)
         >
           {beyblade.username || (beyblade.isAI ? "AI" : "???")}
         </span>
-        <BurstMeter health={beyblade.health} maxHealth={beyblade.maxHealth} flip compact={compact} />
+        <BurstMeter health={beyblade.power} maxHealth={100} flip compact={compact} />
       </div>
 
       {/* Spin arc (smaller) */}

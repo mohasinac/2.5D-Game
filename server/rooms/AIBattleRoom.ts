@@ -115,14 +115,14 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     const seed = hashString(options.matchId || String(Date.now()));
     this.rand = createPRNG(seed);
 
-    this.arenaCache = await loadArena(options.arenaId || "default");
+    this.arenaCache = await loadArena(options.arenaId || "classic_stadium");
     const arenaData = this.arenaCache;
 
     if (arenaData) {
       this.applyArenaToState(arenaData, options.arenaId);
       console.log(`✅ AIBattleRoom: loaded arena ${arenaData.name}`);
     } else {
-      this.applyDefaultArena(options.arenaId || "default");
+      this.applyDefaultArena(options.arenaId || "classic_stadium");
     }
 
     if (options.arenaSystemId) {
@@ -227,6 +227,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     if (data) this.applyBeybladeStats(bey, data); else this.applyDefaultStats(bey);
     bey.health = bey.maxStamina;
     bey.maxHealth = bey.maxStamina;
+    bey.power = 100;
     bey.x = spawn.x;
     bey.y = spawn.y;
     const bFlags = resolvePhysicsFlags((data as any)?.physicsFlags);
@@ -297,6 +298,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
     human.health = human.maxStamina;
     human.maxHealth = human.maxStamina;
+    human.power = 100;
     human.x = arenaHalfW - spawnRadius;
     human.y = arenaHalfH;
     this.humanSpawnPos = { x: human.x, y: human.y, angle: Math.PI };
@@ -678,8 +680,8 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
         const dmg = this.physics.calculateCollisionDamage(collision, b1, b2);
 
-        b1.health = Math.max(0, b1.health - dmg.damage1);
-        b2.health = Math.max(0, b2.health - dmg.damage2);
+        b1.power = Math.max(0, b1.power - dmg.damage1);
+        b2.power = Math.max(0, b2.power - dmg.damage2);
         b1.spin = Math.max(0, b1.spin - dmg.spinSteal2);
         b2.spin = Math.max(0, b2.spin - dmg.spinSteal1);
         b1.damageDealt += dmg.damage2;

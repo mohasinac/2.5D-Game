@@ -119,6 +119,8 @@ export default defineConfig({
         "**/hud-and-qte-tests.spec.ts",
         "**/tournament-pvai-gauntlet.spec.ts",
         "**/game-modes-comprehensive.spec.ts",
+        "**/real-player-scenarios.spec.ts",
+        "**/admin-tournament-full.spec.ts",
       ],
     },
   ],
