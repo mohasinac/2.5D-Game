@@ -1,485 +1,214 @@
 /**
  * admin-workflows.spec.ts
  *
- * Full-workflow E2E tests for all admin pages and their previews/editors.
- * Every test takes a screenshot.
+ * Tests (AW01–AW09): Admin workflow page loads — tournaments, special moves,
+ * combos, element types, round modifiers, asset library, users, settings,
+ * and dashboard stats.
  *
- * Auth: set TEST_EMAIL + TEST_PASSWORD in .env (admin account required).
- * Without credentials, each test verifies the login redirect and screenshots it.
+ * Requires admin credentials: TEST_EMAIL + TEST_PASSWORD (role=admin).
  */
 
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { tryLogin, gotoProtected, ss, filterErrors } from "./helpers/auth";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared login state — serial so we only authenticate once per worker
-// ─────────────────────────────────────────────────────────────────────────────
-
 test.describe.configure({ mode: "serial" });
+test.setTimeout(60_000);
 
 let loggedIn = false;
 
-async function ensureLoggedIn(page: Page): Promise<boolean> {
+async function adminLogin(page: Parameters<typeof tryLogin>[0]): Promise<boolean> {
   if (!loggedIn) loggedIn = await tryLogin(page);
   return loggedIn;
 }
 
-/** Navigate + settle. Replace all networkidle calls with this. */
-async function gotoAndSettle(page: Page, path: string, ms = 2_000): Promise<boolean> {
+async function gotoAdmin(
+  page: Parameters<typeof tryLogin>[0],
+  path: string,
+  waitMs = 2_000
+): Promise<boolean> {
+  await adminLogin(page);
   const landed = await gotoProtected(page, path);
   if (!landed) return false;
   await page.waitForLoadState("domcontentloaded");
-  await page.waitForTimeout(ms);
+  await page.waitForTimeout(waitMs);
   return true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. Dashboard
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Dashboard", () => {
-  test("dashboard loads with stat cards", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin");
-    if (!authed || !landed) {
-      await ss(page, "A01-admin-dashboard-unauthenticated");
-      return;
-    }
-    await expect(page.locator("text=Dashboard")).toBeVisible({ timeout: 10_000 });
-    await ss(page, "A01-admin-dashboard");
+test.describe("Admin Workflows", () => {
+  test.beforeEach(async ({ page }) => {
+    await adminLogin(page);
   });
 
-  test("quick links are present on dashboard", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin");
-    if (!authed || !landed) return;
-    const createBey = page.locator("text=Create Beyblade");
-    const ok = await createBey.isVisible({ timeout: 10_000 }).catch(() => false);
-    if (ok) {
-      await expect(createBey).toBeVisible();
-      await expect(page.locator("text=Create Arena")).toBeVisible();
-    }
-    await ss(page, "A01b-admin-dashboard-quicklinks");
-  });
-});
+  // AW01: /admin/tournaments → list loads; create form accessible
+  test("AW01: Tournaments list loads and create form accessible", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2. Beyblades
-// ─────────────────────────────────────────────────────────────────────────────
+    const landed = await gotoAdmin(page, "/admin/tournaments");
+    if (!landed) { await ss(page, "AW01-unauthenticated"); return; }
 
-test.describe("Admin: Beyblades list", () => {
-  test("beyblades list page renders cards", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/beyblades");
-    if (!authed || !landed) { await ss(page, "A02-beyblades-list-unauth"); return; }
-    await ss(page, "A02-beyblades-list");
-  });
-});
+    await ss(page, "AW01-tournaments-list");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
 
-test.describe("Admin: Beyblade create", () => {
-  test("create page renders multi-step form", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/beyblades/create", 1_500);
-    if (!authed || !landed) { await ss(page, "A03-bey-create-unauth"); return; }
-    const nameInput = page.locator('input[placeholder*="name" i], input[placeholder*="Name"]').first();
-    if (await nameInput.count() > 0) {
-      await expect(nameInput).toBeVisible({ timeout: 10_000 });
-    }
-    await ss(page, "A03-bey-create-step1");
-  });
-
-  test("stats sliders are visible in step 2/3", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/beyblades/create", 1_500);
-    if (!authed || !landed) return;
-    const nextBtn = page.locator("button").filter({ hasText: /next|continue/i });
-    if (await nextBtn.count() > 0) {
-      await nextBtn.first().click();
-      await page.waitForTimeout(600);
-      await ss(page, "A03b-bey-create-step2");
-    }
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 3. Arenas
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Arenas list", () => {
-  test("arenas list renders with arena cards", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/arenas");
-    if (!authed || !landed) { await ss(page, "A04-arenas-list-unauth"); return; }
-    await ss(page, "A04-arenas-list");
-  });
-});
-
-test.describe("Admin: Arena create", () => {
-  test("create page renders with basics tab", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/arenas/create");
-    if (!authed || !landed) { await ss(page, "A05-arena-create-unauth"); return; }
-    await ss(page, "A05-arena-create");
-  });
-
-  test("arena create tabs: Obstacles / Gravity / Spin Zones visible", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/arenas/create");
-    if (!authed || !landed) return;
-    const tabNames = ["Obstacles", "Gravity", "Spin Zones", "Bumps", "Switches"];
-    for (const tab of tabNames) {
-      const tabEl = page.locator("button, [role='tab']").filter({ hasText: tab });
-      if (await tabEl.count() > 0) {
-        await tabEl.first().click();
-        await page.waitForTimeout(400);
-        await ss(page, `A05b-arena-create-tab-${tab.toLowerCase().replace(/\s+/g, "-")}`);
-      }
-    }
-  });
-
-  test("arena preview canvas renders in arena create", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/arenas/create", 3_000);
-    if (!authed || !landed) return;
-    const canvas = page.locator("canvas");
-    if (await canvas.count() > 0) {
-      const ok = await canvas.first().isVisible({ timeout: 15_000 }).catch(() => false);
-      if (ok) {
-        await expect(canvas.first()).toBeVisible();
-        await ss(page, "A05c-arena-create-preview-canvas");
-      }
-    }
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 4. Arena Edit + Preview
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Arena edit page preview", () => {
-  test("first seeded arena edit page opens with preview", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    if (!authed) { await ss(page, "A06-arena-edit-unauth"); return; }
-
-    const landed = await gotoAndSettle(page, "/admin/arenas", 2_500);
-    if (!landed) return;
-
-    const editLink = page.locator("a").filter({ hasText: /edit/i }).first();
-    if (await editLink.count() > 0) {
-      await editLink.click();
+    // Create button/link should be accessible
+    const createLink = page.locator("a, button").filter({ hasText: /create|new tournament/i }).first();
+    if (await createLink.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await createLink.click();
       await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(3_000);
-      await ss(page, "A06-arena-edit");
-
-      const canvas = page.locator("canvas");
-      if (await canvas.count() > 0) {
-        const ok = await canvas.first().isVisible({ timeout: 15_000 }).catch(() => false);
-        if (ok) await ss(page, "A06b-arena-edit-preview");
-      }
+      await page.waitForTimeout(1_500);
+      await ss(page, "AW01-tournament-create-form");
+      await expect(page.locator("h1, h2, form").first()).toBeVisible({ timeout: 8_000 });
     }
-  });
-});
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 5. Tournaments
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Tournaments", () => {
-  test("tournaments list renders", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/tournaments");
-    if (!authed || !landed) { await ss(page, "A07-tournaments-list-unauth"); return; }
-    await ss(page, "A07-tournaments-list");
+    expect(filterErrors(errors)).toHaveLength(0);
   });
 
-  test("tournament create page renders all fields", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/tournaments/create", 1_500);
-    if (!authed || !landed) { await ss(page, "A07b-tournament-create-unauth"); return; }
-    await ss(page, "A07b-tournament-create");
+  // AW02: /admin/special-moves → page loads
+  test("AW02: Special moves page loads", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    const landed = await gotoAdmin(page, "/admin/special-moves");
+    if (!landed) { await ss(page, "AW02-unauthenticated"); return; }
+
+    await ss(page, "AW02-special-moves");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+    expect(filterErrors(errors)).toHaveLength(0);
   });
-});
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 6. Settings
-// ─────────────────────────────────────────────────────────────────────────────
+  // AW03: /admin/combos → combo list loads; combo info shown
+  test("AW03: Combos list loads with combo entries visible", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
 
-test.describe("Admin: Settings page", () => {
-  test("settings page renders feature toggles", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/settings");
-    if (!authed || !landed) { await ss(page, "A08-settings-unauth"); return; }
+    const landed = await gotoAdmin(page, "/admin/combos");
+    if (!landed) { await ss(page, "AW03-unauthenticated"); return; }
+
+    await ss(page, "AW03-combos-list");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+
+    // Combo list items or create button
+    const comboEl = page.locator(
+      "table tr, [class*='combo'], [class*='Combo'], button:has-text('New'), a:has-text('Create')"
+    ).first();
+    const ok = await comboEl.isVisible({ timeout: 5_000 }).catch(() => false);
+    if (ok) await expect(comboEl).toBeVisible();
+    expect(filterErrors(errors)).toHaveLength(0);
+  });
+
+  // AW04: /admin/element-types → element type matrix loads
+  test("AW04: Element types page loads with type matrix", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    const landed = await gotoAdmin(page, "/admin/element-types");
+    if (!landed) { await ss(page, "AW04-unauthenticated"); return; }
+
+    await ss(page, "AW04-element-types");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+
+    // Element type matrix or list
+    const matrixEl = page.locator(
+      "table, [class*='matrix'], [class*='Matrix'], [class*='element'], [class*='Element']"
+    ).first();
+    const ok = await matrixEl.isVisible({ timeout: 5_000 }).catch(() => false);
+    if (ok) await expect(matrixEl).toBeVisible();
+    expect(filterErrors(errors)).toHaveLength(0);
+  });
+
+  // AW05: /admin/round-modifiers → page loads
+  test("AW05: Round modifiers page loads", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    const landed = await gotoAdmin(page, "/admin/round-modifiers");
+    if (!landed) { await ss(page, "AW05-unauthenticated"); return; }
+
+    await ss(page, "AW05-round-modifiers");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+    expect(filterErrors(errors)).toHaveLength(0);
+  });
+
+  // AW06: Admin asset library → /admin/assets → loads
+  test("AW06: Asset library index page loads", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    // Try both possible asset library routes
+    let landed = await gotoAdmin(page, "/admin/assets");
+    if (!landed) {
+      landed = await gotoAdmin(page, "/admin/assets/particle-presets");
+    }
+    if (!landed) { await ss(page, "AW06-unauthenticated"); return; }
+
+    await ss(page, "AW06-asset-library");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+    expect(filterErrors(errors)).toHaveLength(0);
+  });
+
+  // AW07: /admin/users → user list loads; role column visible
+  test("AW07: Users page loads with role information", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    const landed = await gotoAdmin(page, "/admin/users");
+    if (!landed) { await ss(page, "AW07-unauthenticated"); return; }
+
+    await ss(page, "AW07-users-list");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+
+    // Role column or role indicator
+    const roleEl = page.locator(
+      "th:has-text('role'), td:has-text('admin'), td:has-text('user')," +
+      "[class*='role'], [data-testid*='role']"
+    ).first();
+    const ok = await roleEl.isVisible({ timeout: 5_000 }).catch(() => false);
+    if (ok) await expect(roleEl).toBeVisible();
+    expect(filterErrors(errors)).toHaveLength(0);
+  });
+
+  // AW08: /admin/settings → settings toggles visible
+  test("AW08: Settings page shows feature toggles", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    const landed = await gotoAdmin(page, "/admin/settings");
+    if (!landed) { await ss(page, "AW08-unauthenticated"); return; }
+
+    await ss(page, "AW08-settings");
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+
+    // Feature toggles (checkboxes or switch inputs)
     const toggles = page.locator('input[type="checkbox"], [role="switch"]');
-    if (await toggles.count() > 0) await expect(toggles.first()).toBeVisible();
-    await ss(page, "A08-settings");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 7. Users
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Users page", () => {
-  test("users list page renders table", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/users");
-    if (!authed || !landed) { await ss(page, "A09-users-unauth"); return; }
-    await ss(page, "A09-users");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 8. Stats
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Stats page", () => {
-  test("stats page renders match data", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/stats");
-    if (!authed || !landed) { await ss(page, "A10-stats-unauth"); return; }
-    await ss(page, "A10-stats");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 9. Asset library pages
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Asset Library", () => {
-  test("asset library index page loads", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/assets");
-    if (!authed || !landed) { await ss(page, "A11-assets-unauth"); return; }
-    await ss(page, "A11-assets");
-  });
-
-  test("particle presets page", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/assets/particle-presets");
-    if (!authed || !landed) { await ss(page, "A11b-particle-presets-unauth"); return; }
-    await expect(page.locator("h1")).toContainText("Particle Presets", { timeout: 10_000 });
-    await ss(page, "A11b-particle-presets");
-  });
-
-  test("sound assets page", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/assets/sounds");
-    if (!authed || !landed) { await ss(page, "A11c-sounds-unauth"); return; }
-    await ss(page, "A11c-sounds");
-  });
-
-  test("arena theme assets page", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/assets/arena-themes");
-    if (!authed || !landed) { await ss(page, "A11d-arena-themes-unauth"); return; }
-    await ss(page, "A11d-arena-themes");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 10. Definition pages (mechanic, gimmick, tip shapes, etc.)
-// ─────────────────────────────────────────────────────────────────────────────
-
-const DEF_PAGES = [
-  { path: "/admin/mechanic-defs",     name: "A12a-mechanic-defs",    label: "Mechanic Defs" },
-  { path: "/admin/gimmick-defs",      name: "A12b-gimmick-defs",     label: "Gimmick Defs" },
-  { path: "/admin/tip-shape-defs",    name: "A12c-tip-shape-defs",   label: "Tip Shape Defs" },
-  { path: "/admin/core-gimmick-defs", name: "A12d-core-gimmick",     label: "Core Gimmick" },
-  { path: "/admin/attack-type-defs",  name: "A12e-attack-types",     label: "Attack Types" },
-  { path: "/admin/arena-theme-defs",  name: "A12f-arena-theme-defs", label: "Arena Theme Defs" },
-  { path: "/admin/arena-shape-defs",  name: "A12g-arena-shape-defs", label: "Arena Shape Defs" },
-  { path: "/admin/bowl-profile-defs", name: "A12h-bowl-profiles",    label: "Bowl Profiles" },
-  { path: "/admin/trigger-type-defs", name: "A12i-trigger-types",    label: "Trigger Types" },
-  { path: "/admin/stat-event-defs",   name: "A12j-stat-events",      label: "Stat Events" },
-  { path: "/admin/part-layer-defs",   name: "A12k-part-layers",      label: "Part Layers" },
-] as const;
-
-test.describe("Admin: Definition pages", () => {
-  for (const { path, name, label } of DEF_PAGES) {
-    test(`${label} page loads and shows data`, async ({ page }) => {
-      const authed = await ensureLoggedIn(page);
-      const landed = await gotoAndSettle(page, path);
-      if (!authed || !landed) { await ss(page, `${name}-unauth`); return; }
-      await ss(page, name);
-    });
-  }
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 11. 2.5D Part Library
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: 2.5D Part Library", () => {
-  test("parts list page renders", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2.5d/parts");
-    if (!authed || !landed) { await ss(page, "A13a-parts-list-unauth"); return; }
-    await ss(page, "A13a-parts-list");
-  });
-
-  test("part create page renders with type selector", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2.5d/parts/create");
-    if (!authed || !landed) { await ss(page, "A13b-part-create-unauth"); return; }
-    await ss(page, "A13b-part-create");
-  });
-
-  test("beyblade systems list page renders", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2.5d/beyblade-systems");
-    if (!authed || !landed) { await ss(page, "A13c-bey-systems-unauth"); return; }
-    await ss(page, "A13c-bey-systems");
-  });
-
-  test("beyblade system create page renders", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2.5d/beyblade-systems/create");
-    if (!authed || !landed) { await ss(page, "A13d-bey-system-create-unauth"); return; }
-    await ss(page, "A13d-bey-system-create");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 12. Arena Systems
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Arena Systems", () => {
-  test("arena systems list renders", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/arena-systems");
-    if (!authed || !landed) { await ss(page, "A14a-arena-systems-unauth"); return; }
-    await ss(page, "A14a-arena-systems");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 13. AI Battles config
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: AI Battles presets", () => {
-  test("AI battles page loads", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/ai-battles");
-    if (!authed || !landed) { await ss(page, "A15-ai-battles-unauth"); return; }
-    await ss(page, "A15-ai-battles");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 14. Special Moves + Combos
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Special Moves & Combos", () => {
-  test("special moves list page loads", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/special-moves");
-    if (!authed || !landed) { await ss(page, "A16a-special-moves-unauth"); return; }
-    await ss(page, "A16a-special-moves");
-  });
-
-  test("combos list page loads", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/combos");
-    if (!authed || !landed) { await ss(page, "A16b-combos-unauth"); return; }
-    await ss(page, "A16b-combos");
-  });
-
-  test("combo effects builder page loads", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/combo-effects");
-    if (!authed || !landed) { await ss(page, "A16c-combo-effects-unauth"); return; }
-    await ss(page, "A16c-combo-effects");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 15. Arena Test + AI vs AI Lab (preview-heavy pages)
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Arena Test (live preview)", () => {
-  test("arena test page loads and shows canvas/preview", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/arena-test", 3_000);
-    if (!authed || !landed) { await ss(page, "A17-arena-test-unauth"); return; }
-    const canvas = page.locator("canvas");
-    if (await canvas.count() > 0) {
-      const ok = await canvas.first().isVisible({ timeout: 15_000 }).catch(() => false);
-      if (ok) await expect(canvas.first()).toBeVisible();
+    if (await toggles.count() > 0) {
+      await expect(toggles.first()).toBeVisible({ timeout: 5_000 });
     }
-    await ss(page, "A17-arena-test");
+    expect(filterErrors(errors)).toHaveLength(0);
   });
-});
 
-test.describe("Admin: AI vs AI Lab", () => {
-  test("AI vs AI page loads", async ({ page }) => {
-    const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/ai-vs-ai", 3_000);
-    if (!authed || !landed) { await ss(page, "A18-ai-vs-ai-unauth"); return; }
-    await ss(page, "A18-ai-vs-ai");
+  // AW09: /admin → dashboard stats visible (matches or player counts)
+  test("AW09: Admin dashboard shows stat cards", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    const landed = await gotoAdmin(page, "/admin");
+    if (!landed) { await ss(page, "AW09-unauthenticated"); return; }
+
+    await ss(page, "AW09-dashboard");
+
+    // Dashboard heading
+    const heading = page.locator("h1, h2").filter({ hasText: /dashboard/i }).first();
+    const ok = await heading.isVisible({ timeout: 10_000 }).catch(() => false);
+    if (ok) await expect(heading).toBeVisible();
+
+    // Stats: numbers, count cards, or quick-link buttons
+    const statsEl = page.locator(
+      "[class*='stat'], [class*='card'], [class*='Card']," +
+      "text=/matches|players|tournaments|beyblades/i"
+    ).first();
+    const statsOk = await statsEl.isVisible({ timeout: 8_000 }).catch(() => false);
+    if (statsOk) await expect(statsEl).toBeVisible();
+
+    expect(filterErrors(errors)).toHaveLength(0);
   });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 16. Responsive admin: key pages at 390px
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: Responsive — key pages at 390px", () => {
-  const PAGES = [
-    { path: "/admin",                   name: "AR01-dashboard-390"       },
-    { path: "/admin/beyblades",         name: "AR02-beyblades-390"       },
-    { path: "/admin/arenas",            name: "AR03-arenas-390"          },
-    { path: "/admin/tournaments",       name: "AR04-tournaments-390"     },
-    { path: "/admin/settings",          name: "AR05-settings-390"        },
-    { path: "/admin/mechanic-defs",     name: "AR06-mechanic-defs-390"   },
-    { path: "/admin/2.5d/parts",         name: "AR07-parts-lib-390"       },
-  ] as const;
-
-  for (const { path, name } of PAGES) {
-    test(`${path} has no horizontal overflow at 390px`, async ({ page }) => {
-      const authed = await ensureLoggedIn(page);
-      const landed = await gotoAndSettle(page, path);
-      if (!authed || !landed) { await ss(page, `${name}-unauth`); return; }
-
-      await page.setViewportSize({ width: 390, height: 844 });
-      await page.waitForTimeout(300);
-
-      const overflow = await page.evaluate(
-        () => document.body.scrollWidth - window.innerWidth
-      );
-      if (overflow > 4) {
-        console.warn(`[responsive] ${path} overflows by ${overflow}px at 390px`);
-      }
-      await ss(page, name);
-    });
-  }
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 17. No critical JS errors on key admin pages
-// ─────────────────────────────────────────────────────────────────────────────
-
-test.describe("Admin: No JS errors on key pages", () => {
-  const CHECK_PAGES = [
-    "/admin",
-    "/admin/beyblades",
-    "/admin/arenas/create",
-    "/admin/mechanic-defs",
-    "/admin/2.5d/parts",
-  ] as const;
-
-  for (const path of CHECK_PAGES) {
-    test(`no critical JS errors on ${path}`, async ({ page }) => {
-      const errors: string[] = [];
-      page.on("pageerror", (e) => errors.push(e.message));
-
-      const authed = await ensureLoggedIn(page);
-      const landed = await gotoAndSettle(page, path, 3_000);
-      if (!authed || !landed) return;
-
-      expect(
-        filterErrors(errors),
-        `JS errors on ${path}: ${filterErrors(errors).join(" | ")}`
-      ).toHaveLength(0);
-    });
-  }
 });

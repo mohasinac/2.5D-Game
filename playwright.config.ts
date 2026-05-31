@@ -17,6 +17,7 @@ export default defineConfig({
   workers: 1,                    // Sequential to avoid room overflow
   reporter: [
     ["html", { outputFolder: "playwright-report", open: "never" }],
+    ["json", { outputFile: "tests/reports/playwright-results.json" }],
     ["list"],
   ],
 
@@ -28,7 +29,7 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3001",
     trace: "retain-on-failure",
     video: "retain-on-failure",
-    screenshot: "only-on-failure",
+    screenshot: "on",
     actionTimeout: 15_000,       // 15 s for clicks / fills
     navigationTimeout: 45_000,   // 45 s for page navigations
   },

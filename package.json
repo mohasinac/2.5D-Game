@@ -101,7 +101,9 @@
     "test:e2e:ui": "playwright test --project=chromium-dev --ui",
     "test:e2e:prod": "playwright test --project=chromium-prod",
     "test:e2e:gameplay": "playwright test --project=chromium-prod-gameplay",
-    "test:e2e:all-prod": "playwright test --project=chromium-prod --project=chromium-prod-gameplay"
+    "test:e2e:all-prod": "playwright test --project=chromium-prod --project=chromium-prod-gameplay",
+    "test:puppeteer": "ts-node --project tsconfig.json tests/puppeteer/runner.ts",
+    "test:report": "ts-node --project tsconfig.json tests/reports/generate-report.ts"
   },
   "author": "JustForView.in",
   "license": "MIT",
