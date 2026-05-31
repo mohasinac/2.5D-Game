@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 // ── Units ─────────────────────────────────────────────────────────────────────
 const CM = 1;
@@ -50,7 +51,10 @@ const SHAPES = [
   // ── Oval / Ellipsoidal ─────────────────────────────────────
   { id: "ellipsoid",          label: "Ellipsoid (3-D oval)" },
   // ── Image-traced ───────────────────────────────────────────
-  { id: "silhouette",         label: "Silhouette (traced from image)" },
+  { id: "silhouette",         label: "Silhouette (top view → flat extrusion)" },
+  { id: "lathe_custom",       label: "Lathe (side view → revolution solid)" },
+  // ── Joined ─────────────────────────────────────────────────
+  { id: "merged",             label: "Joined (merged geometry)" },
 ] as const;
 type ShapeId = typeof SHAPES[number]["id"];
 
@@ -215,6 +219,12 @@ const SHAPE_PARAMS: Record<ShapeId, ParamDef[]> = {
     { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80, step: 0.5, unit: "mm", default: 40 },
     { key: "thickness",   label: "Thickness",      min: 0.5, max: 20, step: 0.5, unit: "mm", default: 3  },
   ],
+  lathe_custom: [
+    { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80,  step: 0.5, unit: "mm", default: 40 },
+    { key: "height_mm",   label: "Height",         min: 1, max: 60,  step: 0.5, unit: "mm", default: 20 },
+    { key: "segments",    label: "Revolve segs",   min: 8, max: 128, step: 4,   unit: "",   default: 64 },
+  ],
+  merged: [], // no adjustable params — geometry is baked from the original parts
 };
 
 function defaultShapeParams(id: ShapeId): Record<string, number> {
@@ -417,19 +427,145 @@ function buildGeometry(id: ShapeId, p: Record<string, number>): THREE.BufferGeom
       geo.scale(u(p.radiusX), u(p.radiusZ), u(p.radiusY));
       return geo;
     }
-    // Silhouette geometry is built by buildSilhouetteGeometry; this fallback should rarely be hit
+    // These shapes are built in the render loop from stored data
     case "silhouette":
+    case "lathe_custom":
+    case "merged":
       return new THREE.CylinderGeometry(u(20), u(20), u(3), 64);
   }
 }
 
+// ── Merged geometry helper ────────────────────────────────────────────────────
+
+// Builds a single BufferGeometry from an array of PartNode snapshots,
+// applying each part's world position + rotation so the result is centred at (0,0,0).
+function buildMergedGeometry(parts: PartNode[]): THREE.BufferGeometry {
+  if (!parts.length) return new THREE.BoxGeometry(u(5), u(5), u(5));
+  // Centroid in user-space
+  const cx = parts.reduce((s, p) => s + p.posX, 0) / parts.length;
+  const cy = parts.reduce((s, p) => s + p.posY, 0) / parts.length;
+  const cz = parts.reduce((s, p) => s + p.posZ, 0) / parts.length;
+
+  const geos: THREE.BufferGeometry[] = [];
+  for (const p of parts) {
+    const geo = p.shape === "silhouette"
+      ? buildSilhouetteGeometry(p.silhouettePoints, p.silhouetteHoles, p.shapeParams)
+      : p.shape === "lathe_custom" && p.lathedProfile.length > 0
+        ? buildLatheGeometry(p.lathedProfile, p.lathedWidthPx, p.lathedHeightPx, p.shapeParams)
+        : buildGeometry(p.shape, p.shapeParams);
+    if (!geo.getAttribute('normal')) geo.computeVertexNormals();
+    // User coords → Three.js: (posX→X, posZ→Y, posY→Z)
+    const mat = new THREE.Matrix4();
+    mat.compose(
+      new THREE.Vector3(u(p.posX - cx), u(p.posZ - cz), u(p.posY - cy)),
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        THREE.MathUtils.degToRad(p.rotX),
+        THREE.MathUtils.degToRad(p.rotY),
+        THREE.MathUtils.degToRad(p.rotZ),
+      )),
+      new THREE.Vector3(1, 1, 1),
+    );
+    geo.applyMatrix4(mat);
+    geos.push(geo);
+  }
+  return mergeGeometries(geos, false) ?? geos[0];
+}
+
+// ── Lathe (side-view) helpers ─────────────────────────────────────────────────
+
+// Extract a lathe profile from a side-view image.
+// Assumes left edge = spin axis, right edge = outer radius.
+// Returns [r_px, h_px] pairs (top-to-bottom order).
+function extractLatheProfile(img: HTMLImageElement): { profile: [number,number][]; widthPx: number; heightPx: number } {
+  const W = img.naturalWidth, H = img.naturalHeight;
+  if (!W || !H) return { profile: [], widthPx: 0, heightPx: 0 };
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(img, 0, 0);
+  const { data } = ctx.getImageData(0, 0, W, H);
+  const alpha = (x: number, y: number) => {
+    if (x < 0 || x >= W || y < 0 || y >= H) return 0;
+    return data[(y * W + x) * 4 + 3];
+  };
+  const profile: [number,number][] = [];
+  let maxR = 0;
+  for (let y = 0; y < H; y++) {
+    let rPx = 0;
+    for (let x = W - 1; x >= 0; x--) { if (alpha(x, y) > 32) { rPx = x; break; } }
+    if (rPx > 0) { profile.push([rPx, y]); if (rPx > maxR) maxR = rPx; }
+  }
+  return { profile, widthPx: maxR, heightPx: H };
+}
+
+function buildLatheGeometry(
+  profile: [number,number][],
+  widthPx: number,
+  heightPx: number,
+  params: Record<string, number>,
+): THREE.BufferGeometry {
+  const diamMm   = params.diameter_mm ?? 40;
+  const heightMm = params.height_mm   ?? 20;
+  const segments = Math.round(params.segments ?? 64);
+  if (!profile.length || widthPx === 0) {
+    return new THREE.CylinderGeometry(u(diamMm / 2), u(diamMm / 2), u(heightMm), segments);
+  }
+  const rScale = (diamMm / 2) / widthPx;
+  const topY   = profile[0][1];
+  const botY   = profile[profile.length - 1][1];
+  const hPxRange = (botY - topY) || heightPx;
+  const hScale = heightMm / hPxRange;
+  const points: THREE.Vector2[] = profile.map(([rPx, yPx]) =>
+    new THREE.Vector2(u(Math.max(0, rPx * rScale)), u((botY - yPx) * hScale)),
+  );
+  const geo = new THREE.LatheGeometry(points, segments);
+  geo.translate(0, -u(heightMm) / 2, 0);
+  return geo;
+}
+
 // ── Silhouette helpers ────────────────────────────────────────────────────────
 
-type SilhouetteData = { outline: [number,number][]; holes: [number,number][][] };
+type SilhouetteData = { outline: [number,number][]; holes: [number,number][][]; cx: number; cy: number; imgW: number; imgH: number; };
+
+// Returns the most common opaque color from the image using 4-bit per channel quantization.
+// Includes darks, lights, and grays — no filtering.
+function extractDominantColor(img: HTMLImageElement): string {
+  if (!img.naturalWidth || !img.naturalHeight) return "#888888";
+  const canvas = document.createElement("canvas");
+  const S = 128;
+  canvas.width = canvas.height = S;
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(img, 0, 0, S, S);
+  const { data } = ctx.getImageData(0, 0, S, S);
+
+  // 16×16×16 buckets (4 bits per channel)
+  const buckets = new Int32Array(4096);
+  const sumR    = new Int32Array(4096);
+  const sumG    = new Int32Array(4096);
+  const sumB    = new Int32Array(4096);
+
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] < 128) continue;
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    const key = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+    buckets[key]++;
+    sumR[key] += r; sumG[key] += g; sumB[key] += b;
+  }
+
+  let best = -1, bestCount = 0;
+  for (let k = 0; k < 4096; k++) {
+    if (buckets[k] > bestCount) { bestCount = buckets[k]; best = k; }
+  }
+  if (best < 0 || bestCount === 0) return "#888888";
+
+  const n = buckets[best];
+  const toHex = (v: number) => Math.round(v / n).toString(16).padStart(2, "0");
+  return `#${toHex(sumR[best])}${toHex(sumG[best])}${toHex(sumB[best])}`;
+}
 
 function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): SilhouetteData {
   const W = img.naturalWidth, H = img.naturalHeight;
-  if (!W || !H) return { outline: [], holes: [] };
+  if (!W || !H) return { outline: [], holes: [], cx: 0, cy: 0, imgW: 0, imgH: 0 };
   const canvas = document.createElement("canvas");
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d")!;
@@ -461,7 +597,7 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
   for (let y = 0; y < H; y++)
     for (let x = 0; x < W; x++)
       if (isOpaque(x, y)) { sx += x; sy += y; cnt++; }
-  if (cnt === 0) return { outline: [], holes: [] };
+  if (cnt === 0) return { outline: [], holes: [], cx: 0, cy: 0, imgW: W, imgH: H };
   const cx0 = sx / cnt, cy0 = sy / cnt;
 
   // ── Outer contour — scan INWARD from image edge along each ray ───────────
@@ -479,6 +615,29 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
       if (sampleAlpha(px, py) > 32) { foundR = r; break; }
     }
     if (foundR > 0) outline.push([dx * foundR, dy * foundR]);
+  }
+
+  // ── Clamp spike outliers in outline ──────────────────────────────────────────
+  // For each point, if its radius exceeds 1.25× the median of the surrounding
+  // 11 points, snap it back to that median. Two passes catches double-spikes.
+  for (let pass = 0; pass < 2; pass++) {
+    const n = outline.length;
+    for (let i = 0; i < n; i++) {
+      const [ox, oy] = outline[i];
+      const r = Math.sqrt(ox * ox + oy * oy);
+      const win: number[] = [];
+      for (let d = -5; d <= 5; d++) {
+        if (d === 0) continue;
+        const [nx, ny] = outline[(i + d + n) % n];
+        win.push(Math.sqrt(nx * nx + ny * ny));
+      }
+      win.sort((a, b) => a - b);
+      const med = win[5]; // median of 10 neighbors
+      if (r > med * 1.25) {
+        const angle = Math.atan2(oy, ox);
+        outline[i] = [Math.cos(angle) * med, Math.sin(angle) * med];
+      }
+    }
   }
 
   // ── Flood-fill "outside" transparent pixels from every border pixel ───────
@@ -566,7 +725,7 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
     }
   }
 
-  return { outline, holes };
+  return { outline, holes, cx: cx0, cy: cy0, imgW: W, imgH: H };
 }
 
 // Build the THREE.Shape (outline + holes) in XY — shared by the extrusion and the top-face decal.
@@ -701,6 +860,17 @@ interface PartNode {
   silhouettePoints:   [number, number][]; // outer outline — pixel-offsets from centre of mass
   silhouetteHoles:    [number, number][][]; // inner holes in same coordinate space
   silhouetteImageUrl: string; // original data-URL painted on the top face
+  silhouetteCx:       number; // centre-of-mass X in original image pixels
+  silhouetteCy:       number; // centre-of-mass Y in original image pixels
+  silhouetteImgW:     number; // original image width (px)
+  silhouetteImgH:     number; // original image height (px)
+  // Lathe (side-view) fields
+  lathedProfile:      [number, number][]; // [r_px, h_px] side-view profile
+  lathedWidthPx:      number;
+  lathedHeightPx:     number;
+  lathedImageUrl:     string;
+  // Merged (joined) fields
+  mergedParts:        PartNode[]; // snapshots of the original parts baked into this mesh
 }
 
 type SavedGroup = { id: string; name: string; parts: PartNode[] };
@@ -734,6 +904,15 @@ function sanitizePart(raw: Record<string, unknown>): PartNode {
     silhouettePoints:   Array.isArray(raw.silhouettePoints) ? raw.silhouettePoints as [number,number][] : [],
     silhouetteHoles:    Array.isArray(raw.silhouetteHoles)  ? raw.silhouetteHoles  as [number,number][][] : [],
     silhouetteImageUrl: typeof raw.silhouetteImageUrl === "string" ? raw.silhouetteImageUrl : "",
+    silhouetteCx:   typeof raw.silhouetteCx   === "number" ? raw.silhouetteCx   : 0,
+    silhouetteCy:   typeof raw.silhouetteCy   === "number" ? raw.silhouetteCy   : 0,
+    silhouetteImgW: typeof raw.silhouetteImgW === "number" ? raw.silhouetteImgW : 0,
+    silhouetteImgH: typeof raw.silhouetteImgH === "number" ? raw.silhouetteImgH : 0,
+    lathedProfile:   Array.isArray(raw.lathedProfile)   ? raw.lathedProfile   as [number,number][] : [],
+    lathedWidthPx:   typeof raw.lathedWidthPx  === "number" ? raw.lathedWidthPx  : 0,
+    lathedHeightPx:  typeof raw.lathedHeightPx === "number" ? raw.lathedHeightPx : 0,
+    lathedImageUrl:  typeof raw.lathedImageUrl === "string" ? raw.lathedImageUrl : "",
+    mergedParts:     Array.isArray(raw.mergedParts) ? (raw.mergedParts as Record<string,unknown>[]).map(sanitizePart) : [],
   };
 }
 
@@ -746,9 +925,11 @@ function makeAxisPart(): PartNode {
     rotX: 0, rotY: 0, rotZ: 0,
     rotationMode: "inherit", ownRotSpeed: 2, ownRotAxis: "z",
     freeSpin: false, parentId: null, colorIndex: 0,
-    color: "#007fff", visible: true,
+    color: "transparent", visible: true,
     materialId: "abs_hard",
     weight: 0, partRole: "Spin Axis", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
+    silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
+    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", mergedParts: [],
   };
 }
 
@@ -764,6 +945,8 @@ function makePartNode(id: string, label: string, parentId: string | null, colorI
     parentId, colorIndex, color: hex, visible: true,
     materialId: DEFAULT_MAT,
     weight: 0, partRole: "Other", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
+    silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
+    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", mergedParts: [],
   };
 }
 
@@ -855,7 +1038,7 @@ function Tab({ label, active, onClick }: { label: string; active: boolean; onCli
 
 // ── Tower item (recursive) ────────────────────────────────────────────────────
 function TowerItem({
-  part, parts, depth, selectedId, groupSel, onSelect, onToggleGroup, onAddChild, onDelete, onToggleVisible,
+  part, parts, depth, selectedId, groupSel, onSelect, onToggleGroup, onAddChild, onDelete, onToggleVisible, onReparent, dragOverId, onDragOver, onDragLeave,
 }: {
   part: PartNode; parts: PartNode[]; depth: number;
   selectedId: string | null; groupSel: Set<string>;
@@ -864,23 +1047,39 @@ function TowerItem({
   onAddChild: (parentId: string) => void;
   onDelete: (id: string) => void;
   onToggleVisible: (id: string) => void;
+  onReparent: (dragId: string, newParentId: string | null) => void;
+  dragOverId: string | null;
+  onDragOver: (id: string | null) => void;
+  onDragLeave: () => void;
 }) {
   const children = parts.filter(p => p.parentId === part.id);
   const isSelected = part.id === selectedId;
   const isChecked = groupSel.has(part.id);
   const isVisible = part.visible !== false;
-  const dotColor = part.color ?? "#" + PART_COLORS[part.colorIndex ?? 0].toString(16).padStart(6, "0");
+  const dotColor = part.color === "transparent" ? "#ffffff44"
+    : part.color ?? "#" + PART_COLORS[part.colorIndex ?? 0].toString(16).padStart(6, "0");
+  const isDragTarget = dragOverId === part.id;
 
   return (
     <div>
       <div
+        draggable
+        onDragStart={e => { e.dataTransfer.setData("partId", part.id); e.stopPropagation(); }}
+        onDragOver={e => { e.preventDefault(); e.stopPropagation(); onDragOver(part.id); }}
+        onDragLeave={e => { e.stopPropagation(); onDragLeave(); }}
+        onDrop={e => {
+          e.preventDefault(); e.stopPropagation();
+          const dragId = e.dataTransfer.getData("partId");
+          if (dragId && dragId !== part.id) onReparent(dragId, part.id);
+          onDragOver(null);
+        }}
         onClick={() => onSelect(part.id)}
         style={{
           display: "flex", alignItems: "center", gap: 4,
           padding: "4px 6px", paddingLeft: 6 + depth * 14,
-          cursor: "pointer", borderRadius: 4,
-          background: isSelected ? "rgba(30,60,120,0.5)" : "transparent",
-          border: isSelected ? "1px solid #2244aa" : "1px solid transparent",
+          cursor: "grab", borderRadius: 4,
+          background: isDragTarget ? "rgba(20,60,20,0.7)" : isSelected ? "rgba(30,60,120,0.5)" : "transparent",
+          border: isDragTarget ? "1px solid #44cc77" : isSelected ? "1px solid #2244aa" : "1px solid transparent",
           marginBottom: 2,
         }}
       >
@@ -914,7 +1113,8 @@ function TowerItem({
         <TowerItem key={child.id} part={child} parts={parts} depth={depth + 1}
           selectedId={selectedId} groupSel={groupSel}
           onSelect={onSelect} onToggleGroup={onToggleGroup}
-          onAddChild={onAddChild} onDelete={onDelete} onToggleVisible={onToggleVisible} />
+          onAddChild={onAddChild} onDelete={onDelete} onToggleVisible={onToggleVisible}
+          onReparent={onReparent} dragOverId={dragOverId} onDragOver={onDragOver} onDragLeave={onDragLeave} />
       ))}
     </div>
   );
@@ -926,6 +1126,7 @@ export function BeybladeRendererPage() {
   const canvasRef       = useRef<HTMLCanvasElement>(null);
   const sceneRef        = useRef<THREE.Scene | null>(null);
   const axisRootRef     = useRef<THREE.Group | null>(null);
+  const tiltGroupRef    = useRef<THREE.Group | null>(null);
   const freeSpinRootRef = useRef<THREE.Group | null>(null);
   const threeObjs       = useRef<Map<string, { group: THREE.Group; mesh: THREE.Mesh }>>(new Map());
   const texCache        = useRef<Map<string, THREE.Texture>>(new Map());
@@ -958,6 +1159,8 @@ export function BeybladeRendererPage() {
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [spinning,   setSpinning]   = useState(false);
+  const [beyTilt,    setBeyTilt]    = useState(0);  // degrees — how much the spin axis leans
+  const beyTiltRef = useRef(0);
   const [nextColor,  setNextColor]  = useState(() => {
     try { return (JSON.parse(localStorage.getItem(LS_KEY) ?? "[]") as PartNode[]).length; } catch { return 0; }
   });
@@ -965,6 +1168,8 @@ export function BeybladeRendererPage() {
   const [physicsEnabled, setPhysicsEnabled] = useState(false);
   const [spinRPM,  setSpinRPM]  = useState(300);
   const [spinDir,  setSpinDir]  = useState<"cw" | "ccw">("cw");
+
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const GRP_KEY = "beyblade_mock_groups";
   const [groupSel,    setGroupSel]    = useState<Set<string>>(new Set());
@@ -976,6 +1181,7 @@ export function BeybladeRendererPage() {
   // keep refs in sync with state for use inside tick loop
   useEffect(() => { partsRef.current = parts; },    [parts]);
   useEffect(() => { spinningRef.current = spinning; }, [spinning]);
+  useEffect(() => { beyTiltRef.current = beyTilt; }, [beyTilt]);
   useEffect(() => { physicsEnabledRef.current = physicsEnabled; }, [physicsEnabled]);
 
   // ── Rapier: load WASM once ────────────────────────────────────────────────
@@ -1087,6 +1293,21 @@ export function BeybladeRendererPage() {
     setParts(prev => prev.map(p => p.id === id ? { ...p, ...changes } : p));
   }, []);
 
+  // Re-parent a part by drag-and-drop. Guards against circular references.
+  const reparentPart = useCallback((dragId: string, newParentId: string | null) => {
+    setParts(prev => {
+      // Collect all descendant IDs of dragId to prevent circular parenting
+      const descendants = new Set<string>();
+      const collect = (id: string) => {
+        prev.filter(p => p.parentId === id).forEach(p => { descendants.add(p.id); collect(p.id); });
+      };
+      collect(dragId);
+      if (newParentId && descendants.has(newParentId)) return prev; // would create a cycle
+      if (newParentId === dragId) return prev;
+      return prev.map(p => p.id === dragId ? { ...p, parentId: newParentId } : p);
+    });
+  }, []);
+
   const toggleGroupSel = useCallback((id: string) => {
     setGroupSel(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
   }, []);
@@ -1099,6 +1320,29 @@ export function BeybladeRendererPage() {
     setGroupSel(new Set());
     setGroupName("");
   }, [groupName, groupSel]);
+
+  const joinSelectedParts = useCallback(() => {
+    if (groupSel.size < 2) return;
+    const selected = partsRef.current.filter(p => groupSel.has(p.id));
+    const cx = selected.reduce((s, p) => s + p.posX, 0) / selected.length;
+    const cy = selected.reduce((s, p) => s + p.posY, 0) / selected.length;
+    const cz = selected.reduce((s, p) => s + p.posZ, 0) / selected.length;
+    const firstColor = selected[0].color;
+    const joinedPart: PartNode = {
+      ...makePartNode(`part_${Date.now()}`, "Joined", null, 0),
+      shape: "merged",
+      shapeParams: {},
+      posX: cx, posY: cy, posZ: cz,
+      color: firstColor,
+      mergedParts: selected,
+    };
+    setParts(prev => {
+      const selectedIds = new Set(selected.map(p => p.id));
+      return [...prev.filter(p => !selectedIds.has(p.id)), joinedPart];
+    });
+    setGroupSel(new Set());
+    setSelectedId(joinedPart.id);
+  }, [groupSel]);
 
   const [loadScale, setLoadScale] = useState(1.0);
   const [loadOffX,  setLoadOffX]  = useState(0);
@@ -1190,12 +1434,19 @@ export function BeybladeRendererPage() {
       snapshot.forEach(part => {
         const geo = part.shape === "silhouette"
           ? buildSilhouetteGeometry(part.silhouettePoints, part.silhouetteHoles, part.shapeParams)
-          : buildGeometry(part.shape, part.shapeParams);
+          : part.shape === "lathe_custom" && part.lathedProfile.length > 0
+            ? buildLatheGeometry(part.lathedProfile, part.lathedWidthPx, part.lathedHeightPx, part.shapeParams)
+            : part.shape === "merged" && part.mergedParts.length > 0
+              ? buildMergedGeometry(part.mergedParts)
+              : buildGeometry(part.shape, part.shapeParams);
         const mp = MATERIALS[part.materialId ?? DEFAULT_MAT];
+        const isTransparent = part.color === "transparent";
         const mat = new THREE.MeshStandardMaterial({
-          color: part.color ?? mp.color,
+          color: isTransparent ? 0xffffff : (part.color ?? mp.color),
           metalness: mp.metalness,
           roughness: mp.roughness,
+          transparent: isTransparent,
+          opacity: isTransparent ? 0 : 1,
         });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.castShadow = true;
@@ -1209,17 +1460,31 @@ export function BeybladeRendererPage() {
             part.silhouettePoints, part.silhouetteHoles, part.shapeParams,
           );
           if (silShape) {
-            // ShapeGeometry lies in XY plane. rotateX(π/2) makes it lie in XZ (facing +Y),
-            // matching the orientation of the extruded geometry's top face exactly.
+            // Apply the EXACT same transforms as buildSilhouetteGeometry so the decal
+            // lands flush on the extrusion's base face (the one with +Y normal after rotation).
             const faceGeo = new THREE.ShapeGeometry(silShape);
-            faceGeo.rotateX(Math.PI / 2);
+            // Map UV from Three.js shape-space back to image-pixel space so the texture
+            // aligns pixel-perfectly with the traced silhouette regardless of canvas padding.
+            { const maxR_raw = part.silhouettePoints.reduce((m,[x,y])=>Math.max(m,Math.sqrt(x*x+y*y)),0);
+              const pxScale = maxR_raw > 0 ? u(part.shapeParams.diameter_mm??40)/2/maxR_raw : 1;
+              const iW = part.silhouetteImgW||1, iH = part.silhouetteImgH||1;
+              const icx = part.silhouetteCx, icy = part.silhouetteCy;
+              const ua = faceGeo.getAttribute('uv') as THREE.BufferAttribute;
+              const arr = ua.array as Float32Array;
+              for (let i=0;i<arr.length;i+=2){
+                arr[i]   = (icx + arr[i]   / pxScale) / iW;
+                arr[i+1] = 1 - (icy - arr[i+1] / pxScale) / iH;
+              }
+              ua.needsUpdate=true; }
+            faceGeo.rotateX(Math.PI / 2);                  // same as extrusion
+            faceGeo.translate(0, -u(tMm) / 2, 0);          // same as extrusion
+            faceGeo.translate(0, 0.0002, 0);                // tiny Z-fight epsilon
             const faceMat = new THREE.MeshBasicMaterial({
               transparent: true, alphaTest: 0.05, side: THREE.DoubleSide,
               depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
             });
             const faceMesh = new THREE.Mesh(faceGeo, faceMat);
-            // ExtrudeGeometry top face sits at y = u(tMm)/2 (after geo.translate(0, -u(tMm)/2, 0))
-            faceMesh.position.y = u(tMm) / 2 + 0.0002;
+            // position stays (0,0,0) — offset is baked into the geometry
             group.add(faceMesh);
 
             const applyTex = (url: string, m: THREE.MeshBasicMaterial) => {
@@ -1236,6 +1501,59 @@ export function BeybladeRendererPage() {
               img.src = url;
             };
             applyTex(part.silhouetteImageUrl, faceMat);
+          }
+        }
+
+        // Carry over image decals from silhouette sub-parts inside a merged geometry
+        if (part.shape === "merged" && part.mergedParts.length > 0) {
+          const mcx = part.mergedParts.reduce((s, p) => s + p.posX, 0) / part.mergedParts.length;
+          const mcy = part.mergedParts.reduce((s, p) => s + p.posY, 0) / part.mergedParts.length;
+          const mcz = part.mergedParts.reduce((s, p) => s + p.posZ, 0) / part.mergedParts.length;
+          for (const mp of part.mergedParts) {
+            if (mp.shape !== "silhouette" || !mp.silhouetteImageUrl) continue;
+            const tMm = mp.shapeParams.thickness ?? 3;
+            const silShape = buildSilhouetteShape(mp.silhouettePoints, mp.silhouetteHoles, mp.shapeParams);
+            if (!silShape) continue;
+            const faceGeo = new THREE.ShapeGeometry(silShape);
+            { const maxR_raw = mp.silhouettePoints.reduce((m,[x,y])=>Math.max(m,Math.sqrt(x*x+y*y)),0);
+              const pxScale = maxR_raw > 0 ? u(mp.shapeParams.diameter_mm??40)/2/maxR_raw : 1;
+              const iW = mp.silhouetteImgW||1, iH = mp.silhouetteImgH||1;
+              const icx = mp.silhouetteCx, icy = mp.silhouetteCy;
+              const ua = faceGeo.getAttribute('uv') as THREE.BufferAttribute;
+              const arr = ua.array as Float32Array;
+              for (let i=0;i<arr.length;i+=2){
+                arr[i]   = (icx + arr[i]   / pxScale) / iW;
+                arr[i+1] = 1 - (icy - arr[i+1] / pxScale) / iH;
+              }
+              ua.needsUpdate=true; }
+            faceGeo.rotateX(Math.PI / 2);
+            faceGeo.translate(0, -u(tMm) / 2, 0);
+            faceGeo.translate(0, 0.0002, 0);
+            const faceMat = new THREE.MeshBasicMaterial({
+              transparent: true, alphaTest: 0.05, side: THREE.DoubleSide,
+              depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+            });
+            const faceMesh = new THREE.Mesh(faceGeo, faceMat);
+            faceMesh.position.set(u(mp.posX - mcx), u(mp.posZ - mcz), u(mp.posY - mcy));
+            faceMesh.rotation.set(
+              THREE.MathUtils.degToRad(mp.rotX),
+              THREE.MathUtils.degToRad(mp.rotY),
+              THREE.MathUtils.degToRad(mp.rotZ),
+            );
+            group.add(faceMesh);
+            const cached = texCache.current.get(mp.silhouetteImageUrl);
+            if (cached) { faceMat.map = cached; faceMat.needsUpdate = true; }
+            else {
+              const img = new Image();
+              img.onload = () => {
+                const tex = new THREE.Texture(img);
+                tex.colorSpace = THREE.SRGBColorSpace;
+                tex.needsUpdate = true;
+                texCache.current.set(mp.silhouetteImageUrl, tex);
+                faceMat.map = tex; faceMat.needsUpdate = true;
+              };
+              img.src = mp.silhouetteImageUrl;
+            }
           }
         }
 
@@ -1283,6 +1601,7 @@ export function BeybladeRendererPage() {
   useEffect(() => {
     threeObjs.current.forEach(({ mesh }, id) => {
       const mat = mesh.material as THREE.MeshStandardMaterial;
+      if (mat.transparent && mat.opacity === 0) return; // skip invisible parts
       mat.emissive.setHex(id === selectedId ? 0x3366ff : 0x000000);
       mat.emissiveIntensity = id === selectedId ? 0.4 : 0;
     });
@@ -1357,19 +1676,41 @@ export function BeybladeRendererPage() {
       scene.add(line(new THREE.Vector3(-.08,.002,y*CM), new THREE.Vector3(.08,.002,y*CM), 0x44bb88));
     }
     const orig = makeLabel("0","#888"); orig.position.set(-(half+.7),.01,half+.6); scene.add(orig);
-    // Z height tick marks (red, along Three.js Y)
+    // Z height ruler — drawn on the left edge of the grid so it never intersects
+    // rotating parts. depthTest: true so it doesn't paint over geometry.
+    const rulerLine = (a: THREE.Vector3, b: THREE.Vector3, color: number) =>
+      new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]),
+        new THREE.LineBasicMaterial({ color, depthTest: true }));
+    // Vertical spine of the ruler
+    scene.add(rulerLine(new THREE.Vector3(-half, 0, 0), new THREE.Vector3(-half, 8*CM, 0), 0x663333));
     for (let mm = 5; mm <= 80; mm += 5) {
-      const thY = mm*MM, isCm = mm%10===0;
-      scene.add(line(new THREE.Vector3(-.12,thY,0),new THREE.Vector3(.12,thY,0), isCm?0xff5555:0x883333));
-      if (isCm) { const l = makeLabel(`Z${mm/10}`,"#ff8888"); l.position.set(-.75,thY,0); scene.add(l); }
+      const thY = mm * MM, isCm = mm % 10 === 0;
+      // Tick mark at the left grid edge (X = −half to −half+tickLen)
+      const tickLen = isCm ? 0.18 : 0.10;
+      scene.add(rulerLine(
+        new THREE.Vector3(-half, thY, 0),
+        new THREE.Vector3(-half + tickLen, thY, 0),
+        isCm ? 0xff5555 : 0x883333,
+      ));
+      if (isCm) {
+        const l = makeLabel(`Z${mm / 10}`, "#ff8888", 64);
+        l.position.set(-half - 0.4, thY, 0);
+        scene.add(l);
+      }
     }
+
+    // tiltGroup holds the whole bey assembly and can lean like a real spinning top.
+    // axisRoot (inside tiltGroup) spins around Y; tiltGroup controls the lean angle.
+    const tiltGroup = new THREE.Group();
+    scene.add(tiltGroup);
+    tiltGroupRef.current = tiltGroup;
 
     // Spin axis root (all parts are children of this)
     const axisRoot = new THREE.Group();
-    scene.add(axisRoot);
+    tiltGroup.add(axisRoot);
     axisRootRef.current = axisRoot;
 
-    // Free-spin root — sibling of axisRoot, never rotates
+    // Free-spin root — sibling of tiltGroup, never rotates, never tilts
     const freeSpinRoot = new THREE.Group();
     scene.add(freeSpinRoot);
     freeSpinRootRef.current = freeSpinRoot;
@@ -1393,8 +1734,12 @@ export function BeybladeRendererPage() {
     window.addEventListener("resize", onResize);
 
     let rafId: number;
-    const tick = () => {
+    let lastTickMs = performance.now();
+    const SPIN_RAD_PER_SEC = 0.9; // ~8.6 RPM visual spin speed
+    const tick = (nowMs: number) => {
       rafId = requestAnimationFrame(tick);
+      const dt = Math.min((nowMs - lastTickMs) / 1000, 0.1); // seconds, capped to avoid jump after tab-switch
+      lastTickMs = nowMs;
 
       if (physicsEnabledRef.current && worldRef.current) {
         // Step Rapier physics world
@@ -1414,20 +1759,20 @@ export function BeybladeRendererPage() {
           }
         });
       } else if (spinningRef.current) {
-        // Fallback visual spin (no physics)
-        axisRoot.rotation.y += 0.015;
+        // Fallback visual spin — delta-time so speed is identical on all refresh rates
+        axisRoot.rotation.y += SPIN_RAD_PER_SEC * dt;
       }
-      // own-rotation parts — map user axis to Three.js axis
+      // own-rotation parts — skip free-spin parts (they are decoupled from all driven rotation)
       partsRef.current.forEach(part => {
-        if (part.rotationMode === "own") {
+        if (part.rotationMode === "own" && !part.freeSpin) {
           const obj = threeObjs.current.get(part.id);
-          if (obj) obj.group.rotation[mapRotAxis(part.ownRotAxis)] += THREE.MathUtils.degToRad(part.ownRotSpeed) / 60;
+          if (obj) obj.group.rotation[mapRotAxis(part.ownRotAxis)] += THREE.MathUtils.degToRad(part.ownRotSpeed) * dt;
         }
       });
       controls.update();
       renderer.render(scene, camera);
     };
-    tick();
+    tick(performance.now());
 
     return () => {
       cancelAnimationFrame(rafId);
@@ -1542,9 +1887,23 @@ export function BeybladeRendererPage() {
           </div>
         </div>
 
-        {/* Axis root label */}
-        <div style={{ padding:"6px 10px", borderBottom:border, color:"#ff5555", fontSize:10, opacity:0.6 }}>
-          ◉ Spin Axis (root)
+        {/* Axis root label — also a drop target (re-parent to root) */}
+        <div
+          onDragOver={e => { e.preventDefault(); setDragOverId("__root__"); }}
+          onDragLeave={() => setDragOverId(null)}
+          onDrop={e => {
+            e.preventDefault();
+            const dragId = e.dataTransfer.getData("partId");
+            if (dragId) reparentPart(dragId, null);
+            setDragOverId(null);
+          }}
+          style={{
+            padding:"6px 10px", borderBottom:border, fontSize:10, opacity: dragOverId === "__root__" ? 1 : 0.6,
+            color: dragOverId === "__root__" ? "#44cc77" : "#ff5555",
+            background: dragOverId === "__root__" ? "rgba(20,60,20,0.5)" : "transparent",
+            transition:"background 0.1s",
+          }}>
+          ◉ Spin Axis (root){dragOverId === "__root__" && <span style={{ marginLeft:6, fontSize:9 }}>drop to make root</span>}
         </div>
 
         {/* Tree */}
@@ -1558,7 +1917,9 @@ export function BeybladeRendererPage() {
             <TowerItem key={part.id} part={part} parts={parts} depth={0}
               selectedId={selectedId} groupSel={groupSel}
               onSelect={setSelectedId} onToggleGroup={toggleGroupSel}
-              onAddChild={addPart} onDelete={deletePart} onToggleVisible={toggleVisible} />
+              onAddChild={addPart} onDelete={deletePart} onToggleVisible={toggleVisible}
+              onReparent={reparentPart} dragOverId={dragOverId}
+              onDragOver={setDragOverId} onDragLeave={() => setDragOverId(null)} />
           ))}
         </div>
 
@@ -1585,6 +1946,13 @@ export function BeybladeRendererPage() {
                   border:"1px solid #2244aa", color: groupName.trim() ? "#55aaff" : "#334455",
                   borderRadius:4, padding:"3px 8px", fontFamily:"monospace", fontSize:11, cursor:"pointer",
                 }}>Save</button>
+              <button onClick={joinSelectedParts} disabled={groupSel.size < 2}
+                title="Merge selected parts into a single joined mesh"
+                style={{
+                  background: groupSel.size >= 2 ? "#0d2a1a" : "#0a0a18",
+                  border:"1px solid #1a6633", color: groupSel.size >= 2 ? "#44cc77" : "#334455",
+                  borderRadius:4, padding:"3px 8px", fontFamily:"monospace", fontSize:11, cursor:"pointer",
+                }}>⛓ Join</button>
               <button onClick={() => setGroupSel(new Set())}
                 style={{
                   background:"#1a0a0a", border:"1px solid #442222", color:"#cc4444",
@@ -1728,6 +2096,76 @@ export function BeybladeRendererPage() {
                       })} />
                   ))}
 
+                  {/* ── Lathe side-view upload ── */}
+                  {selectedPart.shape === "lathe_custom" && (
+                    <>
+                      <SectionTitle>Side View Image</SectionTitle>
+                      {selectedPart.lathedProfile.length > 0 ? (
+                        <div style={{ marginBottom:8 }}>
+                          <div style={{ display:"flex", gap:6, marginBottom:6 }}>
+                            <label style={{ flex:1, cursor:"pointer" }}>
+                              <div style={{ background:"#0d1e36", border:"1px solid #2a4a7a", color:"#5588cc", borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, textAlign:"center" }}>
+                                ↑ Re-upload side view
+                              </div>
+                              <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
+                                onChange={e => {
+                                  const file = e.target.files?.[0]; if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = ev => {
+                                    const url = ev.target?.result as string; if (!url) return;
+                                    const img = new Image();
+                                    img.onload = () => {
+                                      const { profile, widthPx, heightPx } = extractLatheProfile(img);
+                                      if (profile.length > 2) updatePart(selectedPart.id, {
+                                        lathedProfile: profile, lathedWidthPx: widthPx, lathedHeightPx: heightPx,
+                                        lathedImageUrl: url, color: extractDominantColor(img),
+                                      });
+                                    };
+                                    img.src = url;
+                                  };
+                                  reader.readAsDataURL(file); e.target.value = "";
+                                }} />
+                            </label>
+                            <button onClick={() => updatePart(selectedPart.id, { shape: "cylinder", shapeParams: defaultShapeParams("cylinder"), lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "" })}
+                              style={{ flex:1, background:"#1a1a0d", border:"1px solid #4a4a22", color:"#aaaa55", borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer" }}>
+                              ↩ Reset shape
+                            </button>
+                          </div>
+                          <div style={{ color:"#334455", fontSize:9 }}>{selectedPart.lathedProfile.length} profile pts</div>
+                        </div>
+                      ) : (
+                        <div style={{ marginBottom:8 }}>
+                          <label style={{ display:"block", cursor:"pointer", marginBottom:6 }}>
+                            <div style={{ background:"#0d1e36", border:"1px dashed #2a4a7a", color:"#4488bb", borderRadius:5, padding:"10px 0", fontFamily:"monospace", fontSize:11, textAlign:"center" }}>
+                              ↑ Upload side view image
+                            </div>
+                            <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
+                              onChange={e => {
+                                const file = e.target.files?.[0]; if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = ev => {
+                                  const url = ev.target?.result as string; if (!url) return;
+                                  const img = new Image();
+                                  img.onload = () => {
+                                    const { profile, widthPx, heightPx } = extractLatheProfile(img);
+                                    if (profile.length > 2) updatePart(selectedPart.id, {
+                                      lathedProfile: profile, lathedWidthPx: widthPx, lathedHeightPx: heightPx,
+                                      lathedImageUrl: url, color: extractDominantColor(img),
+                                    });
+                                  };
+                                  img.src = url;
+                                };
+                                reader.readAsDataURL(file); e.target.value = "";
+                              }} />
+                          </label>
+                          <div style={{ color:"#334455", fontSize:9, lineHeight:1.6 }}>
+                            Side-view PNG with transparent background. Left edge = spin axis.
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
                   {/* ── Silhouette trace upload ── */}
                   <SectionTitle>Trace from Image</SectionTitle>
                   {selectedPart.shape === "silhouette" ? (
@@ -1750,11 +2188,14 @@ export function BeybladeRendererPage() {
                                 if (!url) return;
                                 const img = new Image();
                                 img.onload = () => {
-                                  const { outline, holes } = extractSilhouettePoints(img);
+                                  const { outline, holes, cx, cy, imgW, imgH } = extractSilhouettePoints(img);
                                   if (outline.length > 2) updatePart(selectedPart.id, {
                                     silhouettePoints: outline,
                                     silhouetteHoles: holes,
                                     silhouetteImageUrl: url,
+                                    silhouetteCx: cx, silhouetteCy: cy,
+                                    silhouetteImgW: imgW, silhouetteImgH: imgH,
+                                    color: extractDominantColor(img),
                                   });
                                 };
                                 img.src = url;
@@ -1806,14 +2247,17 @@ export function BeybladeRendererPage() {
                               if (!url) return;
                               const img = new Image();
                               img.onload = () => {
-                                const { outline, holes } = extractSilhouettePoints(img);
+                                const { outline, holes, cx, cy, imgW, imgH } = extractSilhouettePoints(img);
                                 if (outline.length > 2) {
                                   updatePart(selectedPart.id, {
                                     shape: "silhouette",
                                     silhouettePoints: outline,
                                     silhouetteHoles: holes,
                                     silhouetteImageUrl: url,
+                                    silhouetteCx: cx, silhouetteCy: cy,
+                                    silhouetteImgW: imgW, silhouetteImgH: imgH,
                                     shapeParams: defaultShapeParams("silhouette"),
+                                    color: extractDominantColor(img),
                                   });
                                 }
                               };
@@ -1871,6 +2315,18 @@ export function BeybladeRendererPage() {
                         />
                       );
                     })}
+                    {/* Transparent swatch */}
+                    <div
+                      onClick={() => updatePart(selectedPart.id, { color: "transparent" })}
+                      title="Transparent (invisible)"
+                      style={{
+                        width:20, height:20, borderRadius:3, cursor:"pointer",
+                        background: "linear-gradient(135deg, #888 25%, transparent 25%, transparent 75%, #888 75%), linear-gradient(135deg, #888 25%, #ccc 25%, #ccc 75%, #888 75%)",
+                        backgroundSize: "8px 8px", backgroundPosition: "0 0, 4px 4px",
+                        border: selectedPart.color === "transparent" ? "2px solid #fff" : "1px solid #ffffff22",
+                        boxShadow: selectedPart.color === "transparent" ? "0 0 6px #fff" : "none",
+                      }}
+                    />
                   </div>
 
                   <SectionTitle>Visible in Scene</SectionTitle>
