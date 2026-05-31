@@ -60,13 +60,14 @@ export function LoginPage() {
 
   return (
     <div style={{
-      height: '100vh',
+      minHeight: '100dvh',
       background: 'radial-gradient(ellipse at 50% 0%, #1a0a2e 0%, #0a0a14 55%, #060810 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: 20,
-      overflow: 'hidden',
+      overflowX: 'hidden',
+      overflowY: 'auto',
       boxSizing: 'border-box',
       fontFamily: 'inherit',
     }}>
@@ -76,11 +77,11 @@ export function LoginPage() {
         <div style={{ position: 'absolute', bottom: '-10%', right: '5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)', filter: 'blur(40px)' }} />
       </div>
 
-      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 400 }}>
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 'min(400px, 92vw)' }}>
         {/* Logo / Hero */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontSize: 56, lineHeight: 1, marginBottom: 8, filter: 'drop-shadow(0 0 24px rgba(139,92,246,0.6))' }}>🌀</div>
-          <h1 style={{ fontSize: 28, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.02em', textShadow: '0 0 40px rgba(139,92,246,0.4)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(12px, 3vh, 32px)' }}>
+          <div style={{ fontSize: 'clamp(32px, 6vh, 56px)', lineHeight: 1, marginBottom: 8, filter: 'drop-shadow(0 0 24px rgba(139,92,246,0.6))' }}>🌀</div>
+          <h1 style={{ fontSize: 'clamp(18px, 3.5vh, 28px)', fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.02em', textShadow: '0 0 40px rgba(139,92,246,0.4)' }}>
             BEYBLADE GAME
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginTop: 6 }}>
@@ -95,7 +96,7 @@ export function LoginPage() {
           disabled={googleLoading || loading}
           style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: 10, padding: '12px 20px', marginBottom: 20,
+            gap: 10, padding: 'clamp(8px, 1.5vh, 12px) 20px', marginBottom: 'clamp(10px, 2vh, 20px)',
             background: 'rgba(255,255,255,0.07)',
             border: '1px solid rgba(255,255,255,0.14)',
             borderRadius: 12, cursor: 'pointer',
@@ -114,7 +115,7 @@ export function LoginPage() {
         </button>
 
         {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 'clamp(10px, 2vh, 20px)' }}>
           <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>or sign in with email</span>
           <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
@@ -127,10 +128,10 @@ export function LoginPage() {
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: 16,
-            padding: '24px 28px',
+            padding: 'clamp(14px, 2.5vh, 24px) 28px',
             display: 'flex',
             flexDirection: 'column',
-            gap: 16,
+            gap: 'clamp(10px, 1.5vh, 16px)',
           }}
         >
           <div>
@@ -191,12 +192,12 @@ export function LoginPage() {
               transition: 'background 0.15s',
             }}
           >
-            {loading ? "Signing in…" : "LET IT RIP →"}
+            {loading ? "Signing in…" : "Sign In"}
           </button>
         </form>
 
         {/* Footer links */}
-        <div style={{ textAlign: 'center', marginTop: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ textAlign: 'center', marginTop: 'clamp(10px, 2vh, 20px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <Link to="/register" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none' }}>
             No account?{' '}
             <span style={{ color: '#a78bfa', fontWeight: 600 }}>Create one</span>

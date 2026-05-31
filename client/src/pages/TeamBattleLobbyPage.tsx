@@ -2,14 +2,12 @@
 // Players pick their team (red/blue) and wait for enough participants before the match starts.
 
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { modeFromPath, ROOM_NAMES } from "@/shared/utils/gameMode";
+import { useNavigate } from "react-router-dom";
+import { ROOM_NAMES } from "@/shared/utils/gameMode";
 import { useGame } from "@/contexts/GameContext";
 
 export function TeamBattleLobbyPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const mode = modeFromPath(location.pathname);
   const { settings } = useGame();
   const [team, setTeam] = useState<"red" | "blue">("blue");
   const [roomId, setRoomId] = useState<string | null>(null);
@@ -23,7 +21,7 @@ export function TeamBattleLobbyPage() {
     const serverUrl = import.meta.env.VITE_GAME_SERVER_URL ?? "ws://localhost:2567";
     const client = new Client(serverUrl);
     try {
-      const teamRoomName = settings.enable25D ? ROOM_NAMES.global.teamBattle25d : ROOM_NAMES.global.teamBattle;
+      const teamRoomName = ROOM_NAMES.global.teamBattle25d;
       const room = await client.joinOrCreate(teamRoomName, {
         beybladeId: settings.beybladeId ?? "storm_pegasus_105rf",
         arenaId: settings.arenaId ?? "default_black_arena",
@@ -36,11 +34,11 @@ export function TeamBattleLobbyPage() {
         setPlayers(prev => [...prev.filter(p => p.username !== data.username), data]);
       });
       room.onMessage("game-start", () => {
-        navigate(`/game/${mode}/team-battle/${room.roomId}`);
+        navigate(`/game/team-battle/${room.roomId}`);
       });
       room.state.onChange(() => {
         if (room.state.status === "in-progress") {
-          navigate(`/game/${mode}/team-battle/${room.roomId}`);
+          navigate(`/game/team-battle/${room.roomId}`);
         }
       });
     } catch (err) {
@@ -53,7 +51,7 @@ export function TeamBattleLobbyPage() {
 
   return (
     <div className="min-h-screen bg-bg0 flex items-center justify-center p-6">
-      <div className="w-full max-w-[560px] flex flex-col gap-5">
+      <div className="w-full max-w-[min(560px,92vw)] flex flex-col gap-5">
         <div>
           <h1 className="text-[24px] font-bold text-theme-text">Team Battle</h1>
           <p className="text-theme-faint text-[13px]">2v2 — pick your team, then join the room</p>

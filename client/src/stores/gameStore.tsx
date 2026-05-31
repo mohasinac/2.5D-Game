@@ -14,7 +14,6 @@ export interface GameSettings {
   username?: string;
   userId?: string;
   activeRoomId: string | null;
-  enable25D: boolean;
 }
 
 // ─── AES-GCM encrypted localStorage ─────────────────────────────────────────
@@ -114,7 +113,6 @@ export const defaultSettings: GameSettings = {
   // Stable random ID generated once per device; persisted across reloads.
   userId: `user_${Math.random().toString(36).slice(2, 9)}`,
   activeRoomId: null,
-  enable25D: true,
 };
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -171,6 +169,9 @@ export const useGameStore = create<GameStore>()(
         set((s) => ({
           settings: {
             ...defaultSettings,
+            beybladeId: null,
+            arenaId: null,
+            gameMode: null,
             userId: s.settings.userId,
             username: s.settings.username,
             activeRoomId: null,
@@ -189,15 +190,7 @@ export const useGameStore = create<GameStore>()(
         import.meta.env.MODE === "test" ? noopStorage : encryptedStorage,
       ),
       // Only persist settings — _hydrated and actions are runtime-only.
-      // enable25D is excluded from persistence; it's always read fresh from
-      // Firestore on BattleModeCardsPage mount so stale localStorage values
-      // cannot silently disable 2.5D rendering.
-      partialize: (state) => ({
-        settings: {
-          ...state.settings,
-          enable25D: undefined, // never persist; always default true
-        },
-      }),
+      partialize: (state) => ({ settings: state.settings }),
       onRehydrateStorage: () => (_state, error) => {
         if (!error && !useGameStore.getState()._hydrated) {
           useGameStore.setState({ _hydrated: true });

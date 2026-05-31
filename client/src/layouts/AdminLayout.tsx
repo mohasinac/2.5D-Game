@@ -181,14 +181,14 @@ const presetDefItems = [
 ];
 
 const partLibraryItems = [
-  { to: "/admin/2d/parts/bit-beasts",   label: "Bit Beasts",   Icon: Layers },
-  { to: "/admin/2d/parts/attack-rings", label: "Attack Rings", Icon: Circle },
-  { to: "/admin/2d/parts/weight-disks", label: "Weight Disks", Icon: Disc },
-  { to: "/admin/2d/parts/sub-parts",    label: "Sub-Parts",    Icon: Wrench },
-  { to: "/admin/2d/parts/tips",         label: "Tips",         Icon: Box },
-  { to: "/admin/2d/parts/cores",        label: "Cores",        Icon: Cpu },
-  { to: "/admin/2d/parts/casings",      label: "Casings",      Icon: Shield },
-  { to: "/admin/2d/parts/spin-tracks",  label: "Spin Tracks",  Icon: Disc },
+  { to: "/admin/2.5d/parts/bit-beasts",   label: "Bit Beasts",   Icon: Layers },
+  { to: "/admin/2.5d/parts/attack-rings", label: "Attack Rings", Icon: Circle },
+  { to: "/admin/2.5d/parts/weight-disks", label: "Weight Disks", Icon: Disc },
+  { to: "/admin/2.5d/parts/sub-parts",    label: "Sub-Parts",    Icon: Wrench },
+  { to: "/admin/2.5d/parts/tips",         label: "Tips",         Icon: Box },
+  { to: "/admin/2.5d/parts/cores",        label: "Cores",        Icon: Cpu },
+  { to: "/admin/2.5d/parts/casings",      label: "Casings",      Icon: Shield },
+  { to: "/admin/2.5d/parts/spin-tracks",  label: "Spin Tracks",  Icon: Disc },
 ];
 
 const rpgWorldItems = [
@@ -441,7 +441,7 @@ export function AdminLayout() {
             </div>
           )}
 
-          <NavItem to="/admin/2d/parts" label="Part Search" Icon={Search} collapsed={collapsed} />
+          <NavItem to="/admin/2.5d/parts" label="Part Search" Icon={Search} collapsed={collapsed} />
 
           {/* Part Libraries — collapsible sub-section */}
           {!collapsed && (
@@ -463,8 +463,8 @@ export function AdminLayout() {
             </>
           )}
 
-          <NavItem to="/admin/2d/beyblade-systems" label="Beyblade Systems" Icon={Layers} collapsed={collapsed} />
-          <NavItem to="/admin/2d/compatibility-tags" label="Compat. Tags" Icon={Tag} collapsed={collapsed} />
+          <NavItem to="/admin/2.5d/beyblade-systems" label="Beyblade Systems" Icon={Layers} collapsed={collapsed} />
+          <NavItem to="/admin/2.5d/compatibility-tags" label="Compat. Tags" Icon={Tag} collapsed={collapsed} />
         </nav>
 
         {/* Footer */}

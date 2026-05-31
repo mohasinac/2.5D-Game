@@ -140,6 +140,12 @@ import ArenaFloorGroupEditorPage from "./pages/admin/ArenaFloorGroupEditorPage";
 
 // ── RPG pages (lazy-loaded) ──
 import { lazy, Suspense } from "react";
+
+// Stack Builder (lazy-loaded)
+const StackBuilderPage = lazy(() => import("./pages/StackBuilderPage"));
+const AdminStacksPage = lazy(() => import("./pages/admin/AdminStacksPage"));
+const AdminStackTemplatesPage = lazy(() => import("./pages/admin/AdminStackTemplatesPage"));
+
 const RPGRouteSelectPage = lazy(() => import("./rpg/pages/RPGRouteSelectPage"));
 const RPGGamePage = lazy(() => import("./rpg/pages/RPGGamePage"));
 const RPGWorldMapPage = lazy(() => import("./rpg/pages/RPGWorldMapPage"));
@@ -209,7 +215,7 @@ export const router = createBrowserRouter([
       { path: "demo", element: <RendererDemoPage /> },
 
       // ── New unified game flow ──
-      { path: "game", element: <ProtectedRoute><GameHubPage /></ProtectedRoute> },
+      { path: "game", element: <ProtectedRoute><GameModeSelectPage /></ProtectedRoute> },
       { path: "game/hub", element: <ProtectedRoute><GameHubPage /></ProtectedRoute> },
       { path: "game/matchmaking", element: <ProtectedRoute><MatchmakingPage /></ProtectedRoute> },
       { path: "game/battle", element: <ProtectedRoute><BattleModeCardsPage /></ProtectedRoute> },
@@ -218,28 +224,6 @@ export const router = createBrowserRouter([
       { path: "settings", element: <ProtectedRoute><Navigate to="/game/settings" replace /></ProtectedRoute> },
 
       // ── PvP & tournament Colyseus rooms (server-authoritative) ──
-      { path: "game/2d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
-      { path: "game/2d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
-      { path: "game/2d/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
-      { path: "game/2d/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
-      { path: "game/2d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
-      { path: "game/2.5d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
-      { path: "game/2.5d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
-      { path: "game/2.5d/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
-      { path: "game/2.5d/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
-      { path: "game/2.5d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
-
-      // ── Legacy redirects ──
-      { path: "game/2d/tryout", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2d/tryout/setup", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2d/tryout/play", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2d/ai-battle", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2d/ai-battle/play", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2.5d/tryout", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2.5d/tryout/setup", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2.5d/tryout/play", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2.5d/ai-battle", element: <Navigate to="/game/battle" replace /> },
-      { path: "game/2.5d/ai-battle/play", element: <Navigate to="/game/battle" replace /> },
       { path: "game/tryout", element: <Navigate to="/game/battle" replace /> },
       { path: "game/tryout/setup", element: <Navigate to="/game/battle" replace /> },
       { path: "game/tryout/play", element: <Navigate to="/game/battle" replace /> },
@@ -264,11 +248,12 @@ export const router = createBrowserRouter([
       { path: "game/history", element: <ProtectedRoute><MatchHistoryPage /></ProtectedRoute> },
       { path: "game/spectate", element: <ProtectedRoute><SpectatorLobbyPage /></ProtectedRoute> },
 
-      // ── Team Battle (Phase K) ──
-      { path: "game/2d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
-      { path: "game/2d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
-      { path: "game/2.5d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
-      { path: "game/2.5d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
+      // ── Team Battle ──
+      { path: "game/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
+      { path: "game/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
+
+      // ── Stack Builder (all authenticated users) ──
+      { path: "builder", element: <ProtectedRoute><SuspenseWrap><StackBuilderPage /></SuspenseWrap></ProtectedRoute> },
 
       // ── RPG Story Mode ──
       { path: "rpg", element: <ProtectedRoute><SuspenseWrap><RPGRouteSelectPage /></SuspenseWrap></ProtectedRoute> },
@@ -449,15 +434,10 @@ export const router = createBrowserRouter([
       { path: "rpg/definitions/:collection", element: <SuspenseWrap><RPGDefListPage /></SuspenseWrap> },
       { path: "rpg/scenario-generator", element: <SuspenseWrap><RPGScenarioGeneratorPage /></SuspenseWrap> },
 
-      // ── Legacy /admin/2d/ routes (kept for back-compat; these manage 2.5D content) ──
-      { path: "2d/parts", element: <PartSearchPage /> },
-      { path: "2d/parts/:partType", element: <PartListPage /> },
-      { path: "2d/parts/:partType/create", element: <PartCreatePage /> },
-      { path: "2d/parts/:partType/edit/:id", element: <PartEditPage /> },
-      { path: "2d/beyblade-systems", element: <BeybladeSystemListPage /> },
-      { path: "2d/beyblade-systems/create", element: <BeybladeSystemCreatePage /> },
-      { path: "2d/beyblade-systems/edit/:id", element: <BeybladeSystemEditPage /> },
-      { path: "2d/compatibility-tags", element: <CompatibilityTagsPage /> },
+      // ── Stack Management ──
+      { path: "stacks", element: <SuspenseWrap><AdminStacksPage /></SuspenseWrap> },
+      { path: "stack-templates", element: <SuspenseWrap><AdminStackTemplatesPage /></SuspenseWrap> },
+
     ],
   },
 ]);

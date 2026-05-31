@@ -308,7 +308,6 @@ export function BattleLobbyPage() {
           roomType: lobbyMode === 'pvp' ? 'pvp' : lobbyMode === 'royale' ? 'royale' : 'tournament',
           beybladeId: settings.beybladeId ?? 'storm_pegasus_105rf',
           arenaId:    settings.arenaId    ?? 'default_black_arena',
-          is25D:      true,
           pvpRoomId:  room.roomId,
         },
       }});
@@ -364,14 +363,14 @@ export function BattleLobbyPage() {
   if (phase === 'choose') {
     return (
       <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-[520px]">
+        <div className="w-full max-w-[min(520px,92vw)]">
           <button
             onClick={() => navigate('/game/battle', { replace: true })}
             className="text-white/40 text-[13px] mb-6 flex items-center gap-1 hover:text-white/60 transition-colors"
           >
             ← Back to Battle Mode
           </button>
-          <h1 className="text-[28px] font-black text-white tracking-tight mb-2">
+          <h1 className="font-black text-white tracking-tight mb-2" style={{ fontSize: 'clamp(18px, 3vmin, 28px)' }}>
             {MODE_LABELS[lobbyMode]}
           </h1>
           <p className="text-white/50 text-[14px] mb-8">
@@ -400,7 +399,12 @@ export function BattleLobbyPage() {
                 label="Find Match"
                 primary
                 disabled={modeDisabled}
-                onClick={() => setPhase('random-prefs')}
+                onClick={() => {
+                  setIsPrivate(false);
+                  setConnectRoomId(undefined);
+                  setPhase('random-connect');
+                  setTriggerConnect(true);
+                }}
               />
             </PhaseCard>
 
@@ -448,7 +452,7 @@ export function BattleLobbyPage() {
 
     return (
       <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-[420px]">
+        <div className="w-full max-w-[min(420px,92vw)]">
           <button
             onClick={() => setPhase('choose')}
             className="text-white/40 text-[13px] mb-6 flex items-center gap-1 hover:text-white/60 transition-colors"
@@ -569,7 +573,7 @@ export function BattleLobbyPage() {
       : 'Creating your room…';
     return (
       <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-[360px]">
+        <div className="w-full max-w-[min(360px,92vw)]">
           <PhaseCard>
             <ConnectingSpinner label={label} />
             {connectionState === 'error' && (
@@ -593,7 +597,7 @@ export function BattleLobbyPage() {
   if (phase === 'friends-join') {
     return (
       <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-[360px]">
+        <div className="w-full max-w-[min(360px,92vw)]">
           <PhaseCard>
             <h2 className="text-white font-bold text-[18px] mb-1">Join a Room</h2>
             <p className="text-white/45 text-[13px] mb-5">Enter the room code shared by your friend.</p>
@@ -637,7 +641,7 @@ export function BattleLobbyPage() {
 
   return (
     <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center p-4 pt-6">
-      <div className="w-full max-w-[540px] flex flex-col h-full overflow-y-auto">
+      <div className="w-full max-w-[min(540px,92vw)] flex flex-col h-full overflow-y-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">

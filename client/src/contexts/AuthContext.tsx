@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { preloadConfig } from "@/lib/configCache";
 
 interface AuthContextValue {
   currentUser: User | null;
@@ -27,6 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setCurrentUser(user);
 
       if (user) {
+        // Kick off config preload fire-and-forget (idempotent — safe to call multiple times)
+        preloadConfig().catch((err) => console.warn("[configCache] preload error:", err));
+
         try {
           // Read role from Firestore users/{uid} — create doc if first sign-in
           const userRef = doc(db, "users", user.uid);

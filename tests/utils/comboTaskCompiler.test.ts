@@ -3,8 +3,8 @@
  * Verifies compileComboTask + compileComboEffectDef produce correct BehaviorRef[].
  */
 import { describe, it, expect } from "vitest";
-import { compileComboTask, compileComboEffectDef } from "../../src/utils/comboTaskCompiler";
-import type { ComboTask } from "../../client/src/types/comboTask";
+import { compileComboTask, compileComboEffectDef } from "../../server/utils/comboTaskCompiler";
+import type { ComboTask } from "../../shared/types/comboTask";
 
 describe("compileComboTask", () => {
   it("returns empty array for task without action", () => {

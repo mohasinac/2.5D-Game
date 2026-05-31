@@ -71,7 +71,7 @@ export function TournamentListPage() {
 
   const S = {
     page: { height: '100vh', background: 'radial-gradient(ellipse at 50% 0%, #0d0a1e 0%, #080810 60%, #060810 100%)', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box' } as React.CSSProperties,
-    inner: { maxWidth: 860, margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, padding: '20px 20px 0' } as React.CSSProperties,
+    inner: { maxWidth: 'min(860px, 92vw)', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, padding: '20px 20px 0' } as React.CSSProperties,
     back: { color: 'rgba(255,255,255,0.35)', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 } as React.CSSProperties,
     title: { fontSize: 32, fontWeight: 900, color: '#fff', margin: '8px 0 4px', letterSpacing: '-0.02em' } as React.CSSProperties,
     sub: { color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: 0 } as React.CSSProperties,

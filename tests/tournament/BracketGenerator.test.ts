@@ -21,14 +21,14 @@ vi.mock("firebase-admin", () => {
   };
 });
 
-vi.mock("../../src/utils/tournamentFirebase", () => ({}));
-vi.mock("../../src/utils/firebase", () => ({ db: {} }));
+vi.mock("../../server/utils/tournamentFirebase", () => ({}));
+vi.mock("../../server/utils/firebase", () => ({ db: {} }));
 
 import {
   generateBracketMatchups,
   advanceWinnerToNextRound,
   type BracketMatchup,
-} from "../../src/tournament/BracketGenerator";
+} from "../../server/tournament/BracketGenerator";
 
 const BASE_TIME = new Date("2026-06-01T10:00:00Z");
 

@@ -4,7 +4,7 @@ import {
   detectCombo,
   pruneHistory,
   createComboTracker,
-} from "../../src/utils/comboSystem";
+} from "../../server/utils/comboSystem";
 
 const ANY_BEY = "balanced";
 
@@ -16,6 +16,33 @@ describe("comboSystem (3-key schema, cost-tiered)", () => {
   });
 
   describe("detectCombo — sequence + window", () => {
+    it("detects quick-dash-l (moveLeft × 2 + attack) when attached", () => {
+      const now = 1000;
+      detectCombo(tracker, ["moveLeft"], now, { attachedComboIds: ["quick-dash-l"] });
+      detectCombo(tracker, ["moveLeft"], now + 100, { attachedComboIds: ["quick-dash-l"] });
+      const result = detectCombo(tracker, ["attack"], now + 200, {
+        attachedComboIds: ["quick-dash-l"],
+        beybladeType: "attack",
+      });
+      expect(result).not.toBeNull();
+      expect(result?.comboId).toBe("quick-dash-l");
+      expect(result?.costPaid).toBe(0);
+    });
+
+    it("does not detect combo on partial sequence (2 of 3 keys only)", () => {
+      const now = 1000;
+      detectCombo(tracker, ["attack"], now, { attachedComboIds: ["power-thrust"], power: 50 });
+      detectCombo(tracker, ["attack"], now + 100, { attachedComboIds: ["power-thrust"], power: 50 });
+      // Only 2 keys, not 3 — should not fire power-thrust
+      expect(tracker.history).toHaveLength(2);
+      // Re-verify detect hasn't fired yet
+      const result = detectCombo(tracker, [], now + 150, {
+        attachedComboIds: ["power-thrust"],
+        power: 50,
+      });
+      expect(result).toBeNull();
+    });
+
     it("detects quick-dash-r (moveRight × 2 + attack) when attached", () => {
       const now = 1000;
       expect(detectCombo(tracker, ["moveRight"], now, { attachedComboIds: ["quick-dash-r"] })).toBeNull();

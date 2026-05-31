@@ -2,8 +2,8 @@
 // Covers loop, pit, water-body, obstacle collision checks and utility force methods.
 
 import { describe, test, expect, beforeEach } from "vitest";
-import { PhysicsEngine } from "../src/physics/PhysicsEngine";
-import type { LoopConfig, PitConfig, WaterBodyConfig, ObstacleConfig } from "../src/types/shared";
+import { PhysicsEngine } from "../server/physics/PhysicsEngine";
+import type { LoopConfig, PitConfig, WaterBodyConfig, ObstacleConfig } from "../server/types/shared";
 
 const ARENA_W = 67; // em  →  67*16 = 1072 px  ≈ 1080p
 const ARENA_H = 67;

@@ -43,7 +43,7 @@ vi.mock("firebase-admin", () => {
   };
 });
 
-vi.mock("../../src/utils/firebase", () => ({
+vi.mock("../../server/utils/firebase", () => ({
   loadBeybladesBatch: vi.fn().mockImplementation(async (ids: string[]) => {
     const ALL: Record<string, any> = {
       bey1: { id: "bey1", type: "attack" },
@@ -59,7 +59,7 @@ vi.mock("../../src/utils/firebase", () => ({
   db: {},
 }));
 
-import { autoPickBeyblade } from "../../src/tournament/AutoPickBeyblade";
+import { autoPickBeyblade } from "../../server/tournament/AutoPickBeyblade";
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 

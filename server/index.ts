@@ -20,6 +20,7 @@ import { StoryBattleRoom } from "./rooms/StoryBattleRoom";
 import { ROOM_NAMES } from "./shared/utils/gameMode";
 import { TournamentScheduler } from "./tournament/TournamentScheduler";
 import { warmServerCache } from "./utils/serverDataCache";
+import { preloadFirestoreContent, startConfigVersionWatcher } from "./lib/registryLoader";
 
 const port = Number(process.env.PORT || 2567);
 const app = express();
@@ -104,17 +105,33 @@ app.get("/rooms/by-code/:code", async (req, res) => {
   }
 });
 
-// Start server
-gameServer.listen(port);
-console.log(`🎮 Beyblade Game Server listening on port ${port}`);
-console.log(`📊 Monitor panel: http://localhost:${port}/colyseus`);
-console.log(`🏥 Health check: http://localhost:${port}/health`);
+// Start server — preload all registries before accepting connections
+async function startServer() {
+  // Preload TypeScript registries (synchronous) + Firestore admin content (async)
+  // before gameServer.listen() so rooms never hit Firestore during onCreate/ticks.
+  try {
+    await preloadFirestoreContent();
+  } catch (err) {
+    console.warn("[startup] preloadFirestoreContent failed (continuing anyway):", err);
+  }
 
-// Pre-load arenas, beyblades, combo effects, and special moves into memory so
-// room creates never block on cold Firestore reads. Runs in the background
-// so the server starts immediately even if Firestore is slow.
-warmServerCache().catch(err => console.warn("[startup] warmServerCache failed:", err));
+  // Start config version watcher — refreshes Firestore registries every 5 min on bump
+  startConfigVersionWatcher();
 
-// Start tournament scheduler (polls Firestore every 30s for upcoming bracket matches)
-const scheduler = new TournamentScheduler();
-scheduler.start();
+  await gameServer.listen(port);
+  console.log(`🎮 Beyblade Game Server listening on port ${port}`);
+  console.log(`📊 Monitor panel: http://localhost:${port}/colyseus`);
+  console.log(`🏥 Health check: http://localhost:${port}/health`);
+
+  // Also warm the legacy per-document cache (beyblades, arenas, combos, moves)
+  warmServerCache().catch(err => console.warn("[startup] warmServerCache failed:", err));
+
+  // Start tournament scheduler (polls Firestore every 30s for upcoming bracket matches)
+  const scheduler = new TournamentScheduler();
+  scheduler.start();
+}
+
+startServer().catch(err => {
+  console.error("[startup] Fatal error:", err);
+  process.exit(1);
+});

@@ -1,6 +1,48 @@
 import "@testing-library/jest-dom";
 import { vi, beforeEach } from "vitest";
 
+// ─── configCache (no-op preload so tests can control getDoc mocks) ────────────
+
+const _mockConfigStoreState = {
+  configStatus: "ready" as const,
+  firestoreData: {} as Record<string, Record<string, unknown>>,
+  _setData: vi.fn(),
+  _setStatus: vi.fn(),
+};
+const _mockUseConfigStore = Object.assign(
+  vi.fn(() => _mockConfigStoreState),
+  { getState: vi.fn(() => _mockConfigStoreState) }
+);
+
+vi.mock("@/lib/configCache", () => ({
+  preloadConfig: vi.fn().mockResolvedValue(undefined),
+  refreshConfig: vi.fn().mockResolvedValue(undefined),
+  configCache: {
+    getArena: vi.fn().mockReturnValue(undefined),
+    getBeyblade: vi.fn().mockReturnValue(undefined),
+    getSpecialMove: vi.fn().mockReturnValue(undefined),
+    getPart: vi.fn().mockReturnValue(undefined),
+    getAllArenas: vi.fn().mockReturnValue([]),
+    getAllBeyblades: vi.fn().mockReturnValue([]),
+    getMaterial: vi.fn().mockReturnValue(undefined),
+    getAttackType: vi.fn().mockReturnValue(undefined),
+    getGimmick: vi.fn().mockReturnValue(undefined),
+    getTipShape: vi.fn().mockReturnValue(undefined),
+    allMaterials: vi.fn().mockReturnValue([]),
+    allAttackTypes: vi.fn().mockReturnValue([]),
+    allTipShapes: vi.fn().mockReturnValue([]),
+  },
+  useConfigStore: _mockUseConfigStore,
+  MaterialRegistry: {},
+  AttackTypeRegistry: {},
+  GimmickRegistry: {},
+  TipShapeRegistry: {},
+  GenerationRegistry: {},
+  resolveMaterial: vi.fn().mockReturnValue({ mu_k: 0.17, e: 0.67, dmgMult: 1.0 }),
+  resolveCOR: vi.fn().mockReturnValue(0.67),
+  resolveAttackType: vi.fn().mockReturnValue({ mu: 0.85, label: "smash" }),
+}));
+
 // ─── Firebase ─────────────────────────────────────────────────────────────────
 
 vi.mock("@/lib/firebase", () => ({

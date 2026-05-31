@@ -52,9 +52,12 @@ export function SpinArcBar({ spin, maxSpin, size = 88, strokeWidth = 7 }: SpinAr
   // Pulse glow when critical
   const isCritical = fraction < 0.2;
 
+  // Container uses em so it scales with the vmin-proportional root font-size.
+  // The SVG uses viewBox so internal geometry stays correct at any display size.
+  const emSize = `${(size / 14).toFixed(3)}em`;
   return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="absolute inset-0">
+    <div className="relative flex items-center justify-center" style={{ width: emSize, height: emSize }}>
+      <svg viewBox={`0 0 ${size} ${size}`} style={{ width: '100%', height: '100%' }} className="absolute inset-0">
         {/* Background track */}
         <path
           d={bgPath}

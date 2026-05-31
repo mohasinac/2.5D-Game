@@ -50,7 +50,6 @@ vi.mock("@/contexts/GameContext", () => ({
       username: "Player",
       userId: "u1",
     },
-    is25D: true,
   }),
   GameProvider: ({ children }: any) => children,
 }));

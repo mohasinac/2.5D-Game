@@ -71,7 +71,7 @@ export function RegisterPage() {
         <ThemeToggle compact />
       </div>
 
-      <div className="w-full max-w-[420px]">
+      <div className="w-full max-w-[min(420px,92vw)]">
         <div className="text-center mb-8">
           <div className="text-5xl mb-2">🌀</div>
           <h1 className="text-[22px] font-bold text-theme-text m-0">Create Account</h1>

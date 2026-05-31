@@ -222,6 +222,8 @@ export interface ServerBeyblade {
   configLastSwitchAt?: Map<string, number> | Record<string, number>;
   // Per-beyblade rendering color (hex, e.g. "#00d4ff"). Synced from BeybladeStats.
   color?: string;
+  // Player slot color (hex, e.g. "#3B82F6"). Assigned by server on join; drives HUD + arena ring.
+  slotColor?: string;
   // Firestore beyblade_stats document ID — stable across matches.
   beybladeId?: string;
   // Launch phase fields (synced from server during status="launching")

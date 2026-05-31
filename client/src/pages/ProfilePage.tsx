@@ -88,7 +88,7 @@ export default function ProfilePage() {
 
   return (
     <div style={pageStyle}>
-      <div style={{ maxWidth: 560, margin: '0 auto' }}>
+      <div style={{ maxWidth: 'min(560px, 92vw)', margin: '0 auto' }}>
         {/* Back */}
         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer', marginBottom: 20, padding: 0 }}>← Back</button>
 

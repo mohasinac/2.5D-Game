@@ -147,4 +147,7 @@ export const COLLECTIONS = {
   PLAYER_PROGRESS: "player_progress",
   // Replay system
   MATCH_REPLAYS: "match_replays",
+  // Stack Builder (Phase 2m)
+  BEYBLADE_STACKS: "beyblade_stacks",
+  STACK_TEMPLATES: "stack_templates",
 } as const;

@@ -290,13 +290,8 @@ describe("router — legacy redirects to /game/battle", () => {
     expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
   });
 
-  it("/game/2d/tryout redirects to /game/battle", async () => {
-    renderAt("/game/2d/tryout");
-    expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
-  });
-
-  it("/game/2.5d/ai-battle redirects to /game/battle", async () => {
-    renderAt("/game/2.5d/ai-battle");
+  it("/game/tryout redirects to /game/battle", async () => {
+    renderAt("/game/tryout");
     expect(await screen.findByText("BATTLE-CARDS")).toBeInTheDocument();
   });
 });

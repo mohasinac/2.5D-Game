@@ -3,8 +3,7 @@
 
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 
-import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
-import { modeFromPath } from "@/shared/utils/gameMode";
+import { Link, useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
@@ -16,6 +15,7 @@ import { ComboHUD } from "@/components/game/ComboHUD";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { LoadingProgress } from "@/components/LoadingProgress";
+import { useConfigStore } from "@/lib/configCache";
 import type { ServerBeyblade, ServerGameState } from "@/types/game";
 import { TYPE_COLORS } from "@/types/game";
 
@@ -39,11 +39,10 @@ export function TeamBattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const { settings } = useGame();
+  const { configStatus } = useConfigStore();
 
-  const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
   const userId = settings.userId ?? "guest";
 
@@ -84,7 +83,7 @@ export function TeamBattleGamePage() {
     cameraZoomIn,
     cameraZoomOut,
     cameraZoomReset,
-  } = usePixiRenderer(containerRef, mode);
+  } = usePixiRenderer(containerRef);
 
   // Render loop — use refs for rapidly-updating state to avoid recreating rAF every tick
   const gameStateRef = useRef(gameState);
@@ -93,6 +92,9 @@ export function TeamBattleGamePage() {
   gameStateRef.current = gameState;
   beybladesRef.current = beyblades;
   visualEventQueueRef.current = visualEventQueue;
+
+  // Global input focus — keyboard events register without requiring canvas click
+  useEffect(() => { document.body.focus(); }, []);
 
   useEffect(() => {
     let raf: number;
@@ -152,10 +154,10 @@ export function TeamBattleGamePage() {
     room.onMessage("game-end", (data: any) => {
       const winner = data?.winner?.userId ?? data?.winner ?? "";
       SoundManager.play(winner === userId ? "victory" : "defeat");
-      navigate(`/game/${mode}/team-battle/lobby`);
+      navigate(`/game/team-battle/lobby`);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room, navigate, mode]);
+  }, [room, navigate]);
 
   useGameInput(sendInput, !spectate && connectionState === "connected");
 
@@ -198,7 +200,8 @@ export function TeamBattleGamePage() {
   ) {
     gameEverActiveRef.current = true;
   }
-  const showLoading = loadingStep !== "warmup-ready" && !gameEverActiveRef.current && (
+  const effectiveLoadingStep = configStatus !== "ready" ? "config-preload" : (loadingStep ?? "connecting-ws");
+  const showLoading = (configStatus !== "ready" || loadingStep !== "warmup-ready") && !gameEverActiveRef.current && (
     !gameState || (
       gameState.status !== "in-progress" &&
       gameState.status !== "warmup" &&
@@ -214,7 +217,7 @@ export function TeamBattleGamePage() {
 
       {showLoading && (
         <LoadingProgress
-          currentStep={loadingStep}
+          currentStep={effectiveLoadingStep as import("@/components/LoadingProgress").LoadingStep}
           stepProgress={connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />

@@ -1216,3 +1216,57 @@ export type PartTypeKey =
   | "spin_track"
   | "gear";
 
+// ─── Stack Builder types ──────────────────────────────────────────────────────
+
+/** One slot in an ordered BeybladeStack. Index 0 = bottom (floor contact). */
+export interface StackSlot {
+  slotIndex: number;
+  partId: string;
+  partCollection: PartTypeKey | string;
+  label?: string;
+  /** Override z_base_cm; if absent, auto-computed sequentially from prev slot z_top. */
+  z_override_cm?: number;
+}
+
+/** Fusion mode for combining two stacks into one. */
+export type FusionMode =
+  | "interleave"
+  | "b_on_a"
+  | "a_on_b"
+  | "merge_by_i"
+  | "custom";
+
+/** A user-assembled or admin-seeded ordered beyblade stack. */
+export interface BeybladeStack {
+  id: string;
+  name: string;
+  ownerId: string;
+  slots: StackSlot[];
+  isPublic: boolean;
+  tags: string[];
+  /** Optional fusion provenance. */
+  fusionSourceIds?: [string, string];
+  createdAt?: unknown;
+  updatedAt?: unknown;
+}
+
+/** A generation template: named starting config with slot hint labels. */
+export interface StackTemplate {
+  id: string;
+  name: string;
+  description: string;
+  slots: { slotIndex: number; partTypeHint: PartTypeKey | string; label: string }[];
+}
+
+/** Computed physics summary derived from a resolved stack. */
+export interface ResolvedStackSummary {
+  stackId: string;
+  totalMass_g: number;
+  I_total_kgm2: number;
+  CoM_z_cm: number;
+  spinDecayRate: number;
+  OWD: number;
+  hasTip: boolean;
+  warnings: string[];
+}
+

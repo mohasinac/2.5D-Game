@@ -1,4 +1,4 @@
-// [GAME-CLIENT] Beyblade stat types — mirrors root types/beybladeStats.ts for the Vite client.
+// Beyblade stat types and calculation functions.
 
 import type { BeybladeComboSlot } from "./comboTask";
 import type { SpecialMoveConfig } from "./specialMove";
@@ -82,4 +82,52 @@ export interface BeybladeStats {
   burstResistance?: number;
   createdAt?: any;
   updatedAt?: any;
+}
+
+export function validateTypeDistribution(dist: TypeDistribution): boolean {
+  const { attack, defense, stamina, total } = dist;
+  if (attack < 0 || defense < 0 || stamina < 0) return false;
+  if (attack > 150 || defense > 150 || stamina > 150) return false;
+  if (attack + defense + stamina !== 360) return false;
+  if (total !== 360) return false;
+  return true;
+}
+
+export function calculateStats(dist: TypeDistribution) {
+  const { attack, defense, stamina } = dist;
+  const damageMultiplier = 1.0 + attack * 0.01;
+  const speedPerSecond = 10 + attack * 0.1;
+  const damageTaken = 1.0 - defense / 300;
+  const maxStamina = Math.ceil(1000 + stamina * (2000 / 150));
+  const attackPower = attack + 100;
+  const defensePower = defense + 100;
+  const staminaPower = stamina + 100;
+  return {
+    damageMultiplier,
+    speedPerSecond,
+    rotationSpeed: speedPerSecond,
+    damagePerHit: damageMultiplier * 100,
+    damageTaken,
+    knockbackDistance: 10 - defense / 60,
+    invulnerabilityChance: 10 + defense / 15,
+    damageReduction: 1 / damageTaken,
+    maxStamina,
+    spinStealPercent: 10 + stamina * (40 / 150),
+    spinDecayRate: Math.max(0.5, 10 - stamina / 60),
+    attackPower,
+    defensePower,
+    staminaPower,
+    speedMultiplier: attackPower,
+    knockbackResistance: defensePower,
+    spinStealPower: staminaPower,
+  };
+}
+
+export function calculateTypeBonuses(type: BeybladeType): { attackMultiplier: number; defenseMultiplier: number; maxStamina: number } {
+  switch (type) {
+    case "attack":  return { attackMultiplier: 1.2, defenseMultiplier: 1.0, maxStamina: 2500 };
+    case "defense": return { attackMultiplier: 1.0, defenseMultiplier: 0.8, maxStamina: 2500 };
+    case "stamina": return { attackMultiplier: 1.0, defenseMultiplier: 1.0, maxStamina: 3000 };
+    default:        return { attackMultiplier: 1.0, defenseMultiplier: 1.0, maxStamina: 2500 };
+  }
 }

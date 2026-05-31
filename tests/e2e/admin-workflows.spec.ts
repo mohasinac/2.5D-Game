@@ -312,28 +312,28 @@ test.describe("Admin: Definition pages", () => {
 test.describe("Admin: 2.5D Part Library", () => {
   test("parts list page renders", async ({ page }) => {
     const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2d/parts");
+    const landed = await gotoAndSettle(page, "/admin/2.5d/parts");
     if (!authed || !landed) { await ss(page, "A13a-parts-list-unauth"); return; }
     await ss(page, "A13a-parts-list");
   });
 
   test("part create page renders with type selector", async ({ page }) => {
     const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2d/parts/create");
+    const landed = await gotoAndSettle(page, "/admin/2.5d/parts/create");
     if (!authed || !landed) { await ss(page, "A13b-part-create-unauth"); return; }
     await ss(page, "A13b-part-create");
   });
 
   test("beyblade systems list page renders", async ({ page }) => {
     const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2d/beyblade-systems");
+    const landed = await gotoAndSettle(page, "/admin/2.5d/beyblade-systems");
     if (!authed || !landed) { await ss(page, "A13c-bey-systems-unauth"); return; }
     await ss(page, "A13c-bey-systems");
   });
 
   test("beyblade system create page renders", async ({ page }) => {
     const authed = await ensureLoggedIn(page);
-    const landed = await gotoAndSettle(page, "/admin/2d/beyblade-systems/create");
+    const landed = await gotoAndSettle(page, "/admin/2.5d/beyblade-systems/create");
     if (!authed || !landed) { await ss(page, "A13d-bey-system-create-unauth"); return; }
     await ss(page, "A13d-bey-system-create");
   });
@@ -431,7 +431,7 @@ test.describe("Admin: Responsive — key pages at 390px", () => {
     { path: "/admin/tournaments",       name: "AR04-tournaments-390"     },
     { path: "/admin/settings",          name: "AR05-settings-390"        },
     { path: "/admin/mechanic-defs",     name: "AR06-mechanic-defs-390"   },
-    { path: "/admin/2d/parts",          name: "AR07-parts-lib-390"       },
+    { path: "/admin/2.5d/parts",         name: "AR07-parts-lib-390"       },
   ] as const;
 
   for (const { path, name } of PAGES) {
@@ -464,7 +464,7 @@ test.describe("Admin: No JS errors on key pages", () => {
     "/admin/beyblades",
     "/admin/arenas/create",
     "/admin/mechanic-defs",
-    "/admin/2d/parts",
+    "/admin/2.5d/parts",
   ] as const;
 
   for (const path of CHECK_PAGES) {

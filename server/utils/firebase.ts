@@ -64,7 +64,14 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+// IDs that always use hardcoded fallback constants — never read from Firestore.
+const HARDCODED_BEYBLADE_IDS = new Set(["storm_pegasus_105rf", "dark_wolf_df145fs"]);
+const HARDCODED_ARENA_IDS    = new Set(["default_black_arena"]);
+
 export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | null> {
+  // Always use hardcoded fallback for these IDs — Firestore doc is irrelevant.
+  if (HARDCODED_BEYBLADE_IDS.has(beybladeId)) return null;
+
   // Check in-process cache first
   try {
     const cached = await serverDataCache().getCachedBeyblade(beybladeId);
@@ -98,6 +105,9 @@ export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | 
  * Load arena data from Firestore
  */
 export async function loadArena(arenaId: string): Promise<ArenaConfig | null> {
+  // Always use hardcoded fallback for these IDs — Firestore doc is irrelevant.
+  if (HARDCODED_ARENA_IDS.has(arenaId)) return null;
+
   // Check in-process cache first
   try {
     const cached = await serverDataCache().getCachedArena(arenaId);

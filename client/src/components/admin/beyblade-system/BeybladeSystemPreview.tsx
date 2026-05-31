@@ -172,7 +172,6 @@ export function BeybladeSystemPreview({ resolved }: Props) {
                 Live preview — drives the in-game PixiJS renderer with this system
               </div>
               <PreviewAdapter
-                mode="2.5d"
                 gameState={livePreview.state}
                 beyblades={livePreview.beys}
                 width={480}

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db, COLLECTIONS } from '../lib/firebase';
 import { useGame } from '../contexts/GameContext';
-import { useGameStore, DEFAULT_ARENA_ID, DEFAULT_BEYBLADE_ID } from '../stores/gameStore';
+import { DEFAULT_ARENA_ID, DEFAULT_BEYBLADE_ID } from '../stores/gameStore';
+import { FALLBACK_BEYS, FALLBACK_ARENAS } from '../constants/fallbackEntities';
 import { CardCarousel, type CarouselCard } from '../components/ui/CardCarousel';
 import type { GameRoomConfig, RoomType } from '../types/gameRoom';
 import toast from 'react-hot-toast';
@@ -31,7 +32,6 @@ const SEP: React.CSSProperties = {
 export function BattleModeCardsPage() {
   const navigate = useNavigate();
   const { settings } = useGame();
-  const setGameConfig = useGameStore(s => s.setGameConfig);
 
   const [beyblades, setBeyblades] = useState<SimpleOption[]>([]);
   const [arenas, setArenas] = useState<SimpleOption[]>([]);
@@ -50,20 +50,6 @@ export function BattleModeCardsPage() {
   const isRandomDefaultMode = (rt: RoomType | null) =>
     rt === 'tournament-ai' || rt === 'royale-ai' || rt === 'royale';
 
-  // Sync enable25D from Firestore admin settings on mount
-  useEffect(() => {
-    getDoc(doc(db, 'settings', 'game')).then(snap => {
-      if (snap.exists()) {
-        const d = snap.data();
-        // Only disable 2.5D if admin explicitly set enable25D = false
-        const firestoreValue = d.enable25D;
-        if (typeof firestoreValue === 'boolean') {
-          setGameConfig({ enable25D: firestoreValue });
-        }
-      }
-    }).catch(() => {});
-  }, [setGameConfig]);
-
   useEffect(() => {
     const go = settings?.beybladeId ?? '';
     const ga = settings?.arenaId ?? '';
@@ -72,35 +58,56 @@ export function BattleModeCardsPage() {
   }, [settings]);
 
   useEffect(() => {
+    // Fallback options — always present regardless of Firestore state.
+    const fallbackBeyOptions: SimpleOption[] = FALLBACK_BEYS.map(b => ({
+      id: b.id, name: b.name, isDefault: b.id === DEFAULT_BEYBLADE_ID,
+    }));
+    const fallbackArenaOptions: SimpleOption[] = FALLBACK_ARENAS.map(a => ({
+      id: a.id, name: a.name,
+    }));
+
+    // Show fallbacks immediately — page is usable without Firebase.
+    setBeyblades(fallbackBeyOptions);
+    setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...fallbackArenaOptions]);
+    setLoading(false);
+
+    // Fetch Firestore in background; merge results when ready.
     Promise.all([
       getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS)),
       getDocs(collection(db, COLLECTIONS.ARENAS)),
     ]).then(([beySnap, arenaSnap]) => {
-      const beys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id, isDefault: !!(d.data().isDefault) }));
-      const arns = arenaSnap.docs.map(d => ({ id: d.id, name: (d.data().name as string) || d.id }));
-      setBeyblades(beys.length ? beys : [{ id: DEFAULT_BEYBLADE_ID, name: 'Storm Pegasus', isDefault: true }]);
-      // Prepend the random option — always available
-      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...(arns.length ? arns : [{ id: DEFAULT_ARENA_ID, name: 'Default Black Arena' }])]);
+      const firestoreBeys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id, isDefault: !!(d.data().isDefault) }));
+      const firestoreArns = arenaSnap.docs.map(d => ({ id: d.id, name: (d.data().name as string) || d.id }));
 
-      // Bey: prefer saved preference → isDefault flag → known default ID → first in list
+      // Always keep fallbacks at top; skip any Firestore doc whose id matches a fallback.
+      const firestoreBeyIds  = new Set(firestoreBeys.map(b => b.id));
+      const firestoreArnIds  = new Set(firestoreArns.map(a => a.id));
+      const uniqueFallbackBeys = fallbackBeyOptions.filter(b => !firestoreBeyIds.has(b.id));
+      const uniqueFallbackArns = fallbackArenaOptions.filter(a => !firestoreArnIds.has(a.id));
+
+      const allBeys = [...uniqueFallbackBeys, ...firestoreBeys];
+      const allArns = [...uniqueFallbackArns, ...firestoreArns];
+
+      setBeyblades(allBeys);
+      setArenas([{ id: 'random', name: '🎲 Random Arena' }, ...allArns]);
+
+      // Bey: prefer saved preference → isDefault flag → storm_pegasus → first in list
       if (!settings?.beybladeId) {
-        const defaultBey = beys.find(b => b.isDefault) ?? beys.find(b => b.id === DEFAULT_BEYBLADE_ID) ?? beys[0];
+        const defaultBey = allBeys.find(b => b.isDefault) ?? allBeys.find(b => b.id === DEFAULT_BEYBLADE_ID) ?? allBeys[0];
         if (defaultBey) setSelectedBey(defaultBey.id);
       } else {
         setSelectedBey(settings.beybladeId);
       }
 
-      // Arena: prefer saved preference → default_black_arena (if present in list) → first real arena
+      // Arena: prefer saved preference → default_black_arena → first
       if (!settings?.arenaId) {
-        const hasClassic = arns.some(a => a.id === DEFAULT_ARENA_ID);
-        setSelectedArena(hasClassic ? DEFAULT_ARENA_ID : (arns[0]?.id ?? DEFAULT_ARENA_ID));
+        setSelectedArena(DEFAULT_ARENA_ID);
       } else {
         setSelectedArena(settings.arenaId);
       }
     }).catch(() => {
-      setBeyblades([{ id: DEFAULT_BEYBLADE_ID, name: 'Storm Pegasus', isDefault: true }]);
-      setArenas([{ id: 'random', name: '🎲 Random Arena' }, { id: DEFAULT_ARENA_ID, name: 'Default Black Arena' }]);
-    }).finally(() => setLoading(false));
+      // Firebase failed — fallbacks already set above, nothing more to do.
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -123,7 +130,6 @@ export function BattleModeCardsPage() {
       roomType: rt,
       beybladeId: selectedBey,
       arenaId: selectedArena,
-      is25D: settings?.enable25D ?? true,
       aiDifficulty: (rt === 'pvai' || rt === 'tournament-ai' || rt === 'royale-ai') ? difficulty : undefined,
       aiCount: rt === 'tournament-ai' ? aiCountTournament
         : rt === 'royale-ai' ? aiCountRoyale
@@ -239,7 +245,7 @@ export function BattleModeCardsPage() {
       justifyContent: 'center',
       position: 'relative',
       overflow: 'hidden',
-      paddingTop: '52px',
+      paddingTop: 'clamp(32px, 5vmin, 52px)',
       paddingBottom: '8px',
       boxSizing: 'border-box',
     }}>
@@ -285,7 +291,7 @@ export function BattleModeCardsPage() {
           <div style={{
             background: '#0f172a', border: '1px solid rgba(255,255,255,0.12)',
             borderRadius: '20px 20px 0 0', padding: '28px 24px 40px',
-            width: '100%', maxWidth: '480px',
+            width: '100%', maxWidth: 'min(480px, 92vw)',
             animation: 'slideUp 200ms ease',
             maxHeight: '90vh', overflowY: 'auto',
           }}>

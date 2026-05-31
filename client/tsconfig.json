@@ -19,9 +19,10 @@
     "baseUrl": ".",
     "ignoreDeprecations": "5.0",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@server/*": ["../server/*"]
     }
   },
-  "include": ["src", "../shared"],
+  "include": ["src", "../shared", "../server/physics/registries"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

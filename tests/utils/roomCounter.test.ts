@@ -12,7 +12,7 @@ describe("roomCounter — tryReserveRoom / releaseRoom", () => {
   beforeEach(async () => {
     // Re-import to reset module state between test suites
     vi.resetModules();
-    const mod = await import("../../src/utils/roomCounter");
+    const mod = await import("../../server/utils/roomCounter");
     tryReserveRoom = mod.tryReserveRoom;
     releaseRoom = mod.releaseRoom;
     getActiveRoomCount = mod.getActiveRoomCount;

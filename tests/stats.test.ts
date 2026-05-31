@@ -7,7 +7,7 @@ import {
   validateTypeDistribution,
   calculateTypeBonuses,
   type TypeDistribution,
-} from "../types/beybladeStats";
+} from "../shared/types/beybladeStats";
 
 // ─── validateTypeDistribution ────────────────────────────────────────────────
 

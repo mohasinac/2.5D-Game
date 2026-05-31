@@ -7,6 +7,8 @@ import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
+import { PlayerStrip } from "@/components/game/PlayerStrip";
+import { OpponentStrip } from "@/components/game/OpponentStrip";
 import type { ServerGameState } from "@/types/game";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
@@ -28,6 +30,7 @@ import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
 import { Minimap } from "@/components/game/Minimap";
 import { SoundManager } from "@/game/audio/SoundManager";
 import { LoadingProgress } from "@/components/LoadingProgress";
+import { useConfigStore } from "@/lib/configCache";
 import { QTEOverlay } from "@/components/game/QTEOverlay";
 import { CollisionQTEOverlay } from "@/components/game/CollisionQTEOverlay";
 import { SplitScreenCinematic } from "@/components/game/SplitScreenCinematic";
@@ -65,6 +68,7 @@ export function BattleGamePage() {
   const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const { settings, isHydrated, setActiveRoom } = useGame();
+  const { configStatus } = useConfigStore();
 
   const { byId: comboMap } = useCombos();
   const { resolve: resolveSpecialMove } = useSpecialMoves();
@@ -129,6 +133,9 @@ export function BattleGamePage() {
 
   isSpectatingRef.current = isSpectating;
 
+  // Global input focus — keyboard events register without requiring canvas click
+  useEffect(() => { document.body.focus(); }, []);
+
   // Sync collision QTE state from hook
   useEffect(() => {
     if (collisionQTEData && !isSpectating) {
@@ -183,7 +190,7 @@ export function BattleGamePage() {
     cameraZoomOut,
     cameraZoomReset,
     getViewportCm,
-  } = usePixiRenderer(containerRef, mode);
+  } = usePixiRenderer(containerRef);
 
   // Sample camera viewport for the minimap. Cheap to read; refresh @ ~4Hz.
   const [viewportCm, setViewportCm] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -313,7 +320,8 @@ export function BattleGamePage() {
   ) {
     gameEverActiveRef.current = true;
   }
-  const showLoading = loadingStep !== "warmup-ready" && !gameEverActiveRef.current && (
+  const effectiveLoadingStep = configStatus !== "ready" ? "config-preload" : (loadingStep ?? "connecting-ws");
+  const showLoading = (configStatus !== "ready" || loadingStep !== "warmup-ready") && !gameEverActiveRef.current && (
     !gameState || (
       gameState.status !== "in-progress" &&
       gameState.status !== "warmup" &&
@@ -329,7 +337,7 @@ export function BattleGamePage() {
 
       {showLoading && (
         <LoadingProgress
-          currentStep={loadingStep}
+          currentStep={effectiveLoadingStep as import("@/components/LoadingProgress").LoadingStep}
           stepProgress={connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />
@@ -496,94 +504,30 @@ export function BattleGamePage() {
         </div>
       )}
 
-      {/* Non-spectator opponent health bars */}
-      {!isSpectating && playerList.length > 1 && (
-        <div className="absolute flex flex-col gap-1.5 pointer-events-none z-10 max-h-[60vh] overflow-y-auto top-[60px] right-[clamp(8px,2vw,16px)]">
+      {/* Opponent strips (top-right, non-spectating) */}
+      {!isSpectating && gameState?.status === "in-progress" && playerList.filter((p) => p.userId !== userId).length > 0 && (
+        <div className="absolute top-[52px] right-[clamp(8px,2vw,16px)] flex flex-col gap-1.5 pointer-events-none z-10">
           {playerList
             .filter((p) => p.userId !== userId)
-            .map((opp) => {
-              const oppHpPct = (opp.health / Math.max(1, opp.maxHealth)) * 100;
-              const oppHpBarClass = opp.health / Math.max(1, opp.maxHealth) > 0.5 ? "bg-theme-green" : opp.health / Math.max(1, opp.maxHealth) > 0.25 ? "bg-theme-yellow" : "bg-theme-red";
-              return (
-                <div
-                  key={opp.id}
-                  className={cn(
-                    "rounded-lg border bg-[rgba(15,23,42,0.85)] p-[8px_12px] min-w-[clamp(120px,20vw,200px)]",
-                    opp.isActive ? "opacity-100 border-border-c" : "opacity-50 border-bg3"
-                  )}
-                >
-                  <div className="flex justify-between text-[11px] mb-1">
-                    <span className="overflow-hidden text-ellipsis whitespace-nowrap text-theme-muted max-w-[clamp(60px,12vw,100px)]">{opp.username}</span>
-                    <span className="text-[10px] hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{opp.type}</span>
-                  </div>
-                  {(opp as any).elementTypes?.length > 0 && (
-                    <div className="flex gap-[3px] mb-1">
-                      {((opp as any).elementTypes as ElementType[]).map((et: ElementType) => (
-                        <span key={et} title={et} className="text-[11px] rounded hud-type-border hud-type-text hud-type-bg border px-1 py-0" style={{ "--tc": ELEMENT_COLORS[et] } as React.CSSProperties}>
-                          {ELEMENT_ICONS[et]}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="w-full h-2 rounded-full overflow-hidden bg-bg3">
-                    <div
-                      className={`h-full rounded-full transition-[width] duration-150 w-pct ${oppHpBarClass}`}
-                      style={{ "--pct": `${oppHpPct}%` } as React.CSSProperties}
-                    />
-                  </div>
-                  {!opp.isActive && <p className="text-center text-[10px] mt-1 font-bold text-theme-red">ELIMINATED</p>}
-                </div>
-              );
-            })}
+            .map((opp) => (
+              <OpponentStrip key={opp.id} beyblade={opp} compact={playerList.length > 3} />
+            ))}
         </div>
       )}
 
-      {/* My stats bottom */}
-      {myBeyblade && !isSpectating && (() => {
-        const myHpPct = (myBeyblade.health / Math.max(1, myBeyblade.maxHealth)) * 100;
-        const myHpBarClass = myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.5 ? "bg-theme-green" : myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.25 ? "bg-theme-yellow" : "bg-theme-red";
-        const mySpinPct = (myBeyblade.spin / Math.max(1, myBeyblade.maxSpin)) * 100;
-        return (
-          <div className="absolute bottom-0 left-0 right-0 pointer-events-none z-10 p-[clamp(8px,2vw,16px)]">
-            <div className="mx-auto rounded-xl border bg-[rgba(15,23,42,0.85)] border-border-c p-[clamp(8px,2vw,12px)] [max-width:min(320px,90vw)]">
-              <div className="flex justify-between mb-1 text-theme-muted text-[clamp(10px,1.5vw,12px)]">
-                <span className="font-mono">{myBeyblade.username} (you)</span>
-                <div className="flex items-center gap-1">
-                  {((myBeyblade as any).elementTypes as ElementType[] | undefined)?.map((et: ElementType) => (
-                    <span key={et} title={et} className="text-[12px] hud-type-text" style={{ "--tc": ELEMENT_COLORS[et] } as React.CSSProperties}>{ELEMENT_ICONS[et]}</span>
-                  ))}
-                  <span className="capitalize hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{myBeyblade.type}</span>
-                </div>
-              </div>
-              <div className="mb-1.5">
-                <div className="flex justify-between mb-1 text-[clamp(9px,1.5vw,11px)]">
-                  <span className="text-theme-red">HP</span>
-                  <span className="font-mono text-theme-text">{Math.round(myHpPct)}</span>
-                </div>
-                <div className="w-full h-2 rounded-full overflow-hidden bg-bg3">
-                  <div
-                    className={`h-full rounded-full transition-[width] duration-150 w-pct ${myHpBarClass}`}
-                    style={{ "--pct": `${myHpPct}%` } as React.CSSProperties}
-                  />
-                </div>
-              </div>
-              <div className="mb-1.5">
-                <div className="flex justify-between mb-1 text-[clamp(9px,1.5vw,11px)]">
-                  <span className="text-theme-blue">Spin</span>
-                  <span className="font-mono text-theme-text">{Math.round(mySpinPct)}%</span>
-                </div>
-                <div className="w-full h-2 rounded-full overflow-hidden bg-bg3">
-                  <div
-                    className="h-full rounded-full transition-[width] duration-150 bg-theme-blue w-pct"
-                    style={{ "--pct": `${mySpinPct}%` } as React.CSSProperties}
-                  />
-                </div>
-              </div>
-              <div className={cn("text-center font-mono text-[clamp(9px,1.5vw,11px)]", stabilityColor)}>{stabilityLabel}</div>
-            </div>
+      {/* Player strip (bottom-left, non-spectating) */}
+      {myBeyblade && !isSpectating && gameState?.status === "in-progress" && (
+        <div className="absolute bottom-0 left-0 p-[clamp(8px,2vw,16px)] pointer-events-none z-10">
+          <PlayerStrip beyblade={myBeyblade} />
+          <div data-testid="player-stats-panel" className="flex gap-3 mt-1 font-mono text-[clamp(10px,1.5vw,12px)] bg-black/60 rounded px-2 py-1">
+            <span className="text-theme-muted">HP</span>
+            <span className="text-theme-text">{Math.round(myBeyblade.health)}</span>
+            <span className="text-theme-muted">Spin</span>
+            <span className="text-theme-text">{Math.round((myBeyblade.spin / Math.max(1, myBeyblade.maxSpin)) * 100)}%</span>
+            <span className={stabilityColor}>{stabilityLabel}</span>
           </div>
-        );
-      })()}
+        </div>
+      )}
 
       {/* SpecialMoveHUD */}
       {myBeyblade && !isSpectating && (() => {

@@ -95,7 +95,7 @@ export function GameModeLandingPage() {
     <div
       ref={containerRef}
       style={{
-        height: '100dvh',
+        minHeight: '100dvh',
         background: '#050814',
         display: 'flex',
         flexDirection: 'column',
@@ -103,7 +103,8 @@ export function GameModeLandingPage() {
         justifyContent: 'center',
         padding: 'clamp(12px, 2vh, 24px)',
         position: 'relative',
-        overflow: 'hidden',
+        overflowX: 'hidden',
+        overflowY: 'auto',
         boxSizing: 'border-box',
       }}
     >
@@ -131,7 +132,7 @@ export function GameModeLandingPage() {
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 'clamp(16px, 3vh, 48px)', position: 'relative', zIndex: 1, flexShrink: 0 }}>
-        <div style={{ fontSize: '56px', marginBottom: '8px', filter: 'drop-shadow(0 0 20px rgba(99,102,241,0.6))' }}>
+        <div style={{ fontSize: 'clamp(32px, 6vh, 56px)', marginBottom: '8px', filter: 'drop-shadow(0 0 20px rgba(99,102,241,0.6))' }}>
           🌀
         </div>
         <h1 style={{
@@ -199,7 +200,7 @@ export function GameModeLandingPage() {
                   pointerEvents: 'none',
                 }} />
               )}
-              <div style={{ fontSize: '40px', marginBottom: '14px' }}>{panel.icon}</div>
+              <div style={{ fontSize: 'clamp(28px, 4vh, 40px)', marginBottom: 'clamp(8px, 1.5vh, 14px)' }}>{panel.icon}</div>
               <div style={{
                 fontSize: '20px', fontWeight: 900, color: '#fff',
                 letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '4px',
@@ -231,7 +232,7 @@ export function GameModeLandingPage() {
 
       {/* Footer links */}
       <div style={{
-        display: 'flex', gap: '16px', marginTop: '40px', position: 'relative', zIndex: 1,
+        display: 'flex', gap: '16px', marginTop: 'clamp(16px, 3vh, 40px)', position: 'relative', zIndex: 1,
       }}>
         <button
           onClick={() => navigate('/leaderboard')}

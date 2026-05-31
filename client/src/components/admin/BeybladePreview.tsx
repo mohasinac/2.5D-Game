@@ -117,7 +117,6 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
           onClick={handleClick}
         >
           <PreviewAdapter
-            mode="2d"
             gameState={state}
             beyblades={beyblades}
             width={280}

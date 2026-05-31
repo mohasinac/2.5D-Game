@@ -5,7 +5,7 @@
 import * as PIXI from "pixi.js";
 import type { ServerBeyblade, ServerGameState, ServerDetachedBody } from "@/types/game";
 import { getBeybladeStability } from "@/types/game";
-import { PX_PER_CM_BASE, PHYSICS_SCALE, getPxPerCm } from "@/constants/units";
+import { PX_PER_CM_BASE, PHYSICS_SCALE, getPxPerCm, recomputePxPerCm, zToScreenOffset as zToScreenOffsetUtil } from "@/constants/units";
 import { WorldTransform } from "./WorldTransform";
 import { FeatureRenderer } from "./FeatureRenderer";
 import { StateInterpolator } from "../interpolation/StateInterpolator";
@@ -156,6 +156,8 @@ export class BeybladeGameRenderer {
   private furyRings:        Map<string, PIXI.Graphics> = new Map();  // gold aura ring when furyGauge>=100
   private statusIconTexts:  Map<string, PIXI.Text>     = new Map(); // status emoji icon above bey
   private furyBars:         Map<string, PIXI.Graphics> = new Map();  // thin fury bar below spin bar
+  // 2j — 2px slot-color ring around each bey sprite; color driven by bey.slotColor
+  private slotColorRings:   Map<string, PIXI.Graphics> = new Map();
 
   // 6.13 — DetachedBody sprites (projectile / mini_bey / fragment)
   private detachedBodySprites: Map<string, PIXI.Graphics> = new Map();
@@ -194,8 +196,6 @@ export class BeybladeGameRenderer {
   // Phase LOS: 2.5D line-of-sight cull constants
   protected readonly LINE_OF_SIGHT_CM = 30;
   protected readonly FADE_START_CM    = 24;
-  /** Subclass overrides to true to enable LOS culling. */
-  protected get is25D(): boolean { return false; }
   /** Default tilt angle (degrees) when arena hasn't set one. 2.5D subclass overrides to 28. */
   protected get defaultTiltAngle(): number { return 0; }
 
@@ -381,6 +381,8 @@ export class BeybladeGameRenderer {
       }
     }
 
+    // Recompute vmin-proportional render scale before setting screen dimensions.
+    recomputePxPerCm(this.app.screen.width, this.app.screen.height);
     // Update screen size FIRST so zoom limits and camera init see the real canvas dimensions.
     this.world.setScreen(this.app.screen.width, this.app.screen.height);
     // Pre-compute zoom limits before camera initialisation so the initial snap uses the
@@ -607,6 +609,18 @@ export class BeybladeGameRenderer {
     };
   }
 
+  /**
+   * Screen-Y offset (world-px) for an element at `z_cm` above the arena floor.
+   * Negative = upward on screen (toward the viewer in a tilted 2.5D arena).
+   * Uses the renderer's live tilt angle; returns 0 when the arena is flat.
+   *
+   * Apply inside arenaTiltInner:
+   *   sprite.y += this.zToScreenOffset(z_cm);
+   */
+  zToScreenOffset(z_cm: number): number {
+    return zToScreenOffsetUtil(z_cm, this.arenaFloorTiltAngle === -9999 ? this.defaultTiltAngle : this.arenaFloorTiltAngle);
+  }
+
   // ─── Arena rendering ─────────────────────────────────────────────────────────
 
   // ─── World background (full-canvas, screen-space, behind everything) ─────────
@@ -732,6 +746,7 @@ export class BeybladeGameRenderer {
     const halfWcm = widthCm / 2;
     const halfHcm = heightCm / 2;
     this.world.setArenaBounds(-halfWcm, -halfHcm, halfWcm, halfHcm, false);
+    recomputePxPerCm(this.app.screen.width, this.app.screen.height);
     this.world.setScreen(this.app.screen.width, this.app.screen.height);
     // Use a sane default bey radius (cm) for zoom-limit computation; updated each frame
     // by syncBeyblades once real beys arrive.
@@ -816,29 +831,46 @@ export class BeybladeGameRenderer {
         const centerDot = new PIXI.Graphics();
         centerDot.circle(0, 0, 4).fill({ color: 0xff3333, alpha: 0.7 });
 
-        // 11. 2.5D bezel — thick dark outer ring that creates visual depth/stadium wall
+        // 11. Bezel — thick dark outer ring that creates visual depth/stadium wall
         const bezel = new PIXI.Graphics();
-        if (this.is25D) {
-          const bezelW = Math.max(18, this.arenaRadius * 0.08);
-          bezel.circle(0, 0, this.arenaRadius + bezelW);
-          bezel.fill({ color: 0x0d0d0d });
-          bezel.circle(0, 0, this.arenaRadius);
-          bezel.fill({ color: 0x0d0d0d });                    // punch out centre
-          // Inner shadow gradient to sell the "bowl" depth
-          bezel.circle(0, 0, this.arenaRadius + 2);
-          bezel.stroke({ color: 0x444444, width: 3, alpha: 0.8 });
-          bezel.circle(0, 0, this.arenaRadius + bezelW);
-          bezel.stroke({ color: 0x222222, width: 2, alpha: 0.6 });
-          // Notch marks at 0°, 90°, 180°, 270° (stadium entry points)
-          for (let deg = 0; deg < 360; deg += 90) {
-            const rad = (deg * Math.PI) / 180;
-            const nx = Math.cos(rad) * (this.arenaRadius + bezelW * 0.5);
-            const ny = Math.sin(rad) * (this.arenaRadius + bezelW * 0.5);
-            bezel.circle(nx, ny, bezelW * 0.25).fill({ color: 0x383838 });
-          }
-          // Top highlight (light source from above-left) — thin bright arc at top of bezel
-          bezel.arc(0, 0, this.arenaRadius + bezelW * 0.5, -2.2, -0.9);
-          bezel.stroke({ color: 0x666666, width: Math.max(3, bezelW * 0.3), alpha: 0.5 });
+        const bezelW = Math.max(18, this.arenaRadius * 0.08);
+        bezel.circle(0, 0, this.arenaRadius + bezelW);
+        bezel.fill({ color: 0x0d0d0d });
+        bezel.circle(0, 0, this.arenaRadius);
+        bezel.fill({ color: 0x0d0d0d });                    // punch out centre
+        // Inner shadow gradient to sell the "bowl" depth
+        bezel.circle(0, 0, this.arenaRadius + 2);
+        bezel.stroke({ color: 0x444444, width: 3, alpha: 0.8 });
+        bezel.circle(0, 0, this.arenaRadius + bezelW);
+        bezel.stroke({ color: 0x222222, width: 2, alpha: 0.6 });
+        // Notch marks at 0°, 90°, 180°, 270° (stadium entry points)
+        for (let deg = 0; deg < 360; deg += 90) {
+          const rad = (deg * Math.PI) / 180;
+          const nx = Math.cos(rad) * (this.arenaRadius + bezelW * 0.5);
+          const ny = Math.sin(rad) * (this.arenaRadius + bezelW * 0.5);
+          bezel.circle(nx, ny, bezelW * 0.25).fill({ color: 0x383838 });
+        }
+        // Top highlight (light source from above-left) — thin bright arc at top of bezel
+        bezel.arc(0, 0, this.arenaRadius + bezelW * 0.5, -2.2, -0.9);
+        bezel.stroke({ color: 0x666666, width: Math.max(3, bezelW * 0.3), alpha: 0.5 });
+
+        // Wall height cap — top face of the arena wall visible on the near side.
+        // AE-1: standard BBA stadium wall = 8 cm. Shifted up by zToScreenOffset so the
+        // tilt chain projects it toward the viewer (near side full height, far foreshortened).
+        const wallCapContainer = new PIXI.Container();
+        const wallYShift = this.zToScreenOffset(8);
+        if (wallYShift !== 0) {
+          const wallCap = new PIXI.Graphics();
+          wallCap.arc(0, 0, this.arenaRadius + bezelW, 0.15, Math.PI - 0.15);
+          wallCap.arc(0, 0, this.arenaRadius, Math.PI - 0.15, 0.15, true);
+          wallCap.closePath();
+          wallCap.fill({ color: 0x1a1a1a, alpha: 0.85 });
+          wallCap.arc(0, 0, this.arenaRadius + bezelW, 0.15, Math.PI - 0.15);
+          wallCap.stroke({ color: 0x404040, width: 2, alpha: 0.7 });
+          wallCap.arc(0, 0, this.arenaRadius, 0.15, Math.PI - 0.15);
+          wallCap.stroke({ color: 0x303030, width: 1.5, alpha: 0.5 });
+          wallCapContainer.addChild(wallCap);
+          wallCapContainer.y = wallYShift;
         }
 
         // Phase V3: dynamic shrink ring
@@ -847,11 +879,12 @@ export class BeybladeGameRenderer {
         this.lastShrinkRadiusPx = -1;
 
         this.arenaLayer.addChild(
-          this.is25D ? bezel : new PIXI.Container(),
+          bezel,
           g, pinkWallZone, pinkWall, innerFloor,
           ridge, flatFloor, flatZone,
           crosshair, centerDot,
           this.shrinkRingGraphics,
+          wallCapContainer,
         );
       } else {
         // ── Generic arena (no zone data) ────────────────────────────────────────
@@ -1156,6 +1189,7 @@ export class BeybladeGameRenderer {
         this.furyRings.delete(id);
         this.furyBars.delete(id);
         this.statusIconTexts.delete(id);
+        this.slotColorRings.delete(id);
         this.interpolator.remove(id);
       }
     });
@@ -1258,6 +1292,11 @@ export class BeybladeGameRenderer {
     container.addChild(furyBar);
     this.furyBars.set(id, furyBar);
 
+    // 2j — Slot color ring: 2px ring outside the sprite circle, colored by bey.slotColor
+    const slotRing = new PIXI.Graphics();
+    container.addChild(slotRing);
+    this.slotColorRings.set(id, slotRing);
+
     const statusIcon = new PIXI.Text({
       text: "",
       style: { fontSize: 14, fontFamily: "sans-serif" },
@@ -1349,20 +1388,11 @@ export class BeybladeGameRenderer {
     container.x = screenX;
     container.y = screenY;
 
-    // Phase LOS: cull/fade entities outside 30 cm range (2.5D only)
-    if (this.is25D) {
-      const posXcm = (interpX - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
-      const posYcm = (interpY - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
-      this.applyLOSCull(container, posXcm, posYcm);
-      if (!container.visible) return;
-    } else {
-      // L2B.5: 2D mode viewport cap — cull beys beyond 100cm from camera.
-      const posXcm = (interpX - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
-      const posYcm = (interpY - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
-      const dist = Math.hypot(posXcm - this.world.camera.x_cm, posYcm - this.world.camera.y_cm);
-      container.visible = dist <= 100;
-      if (!container.visible) return;
-    }
+    // Phase LOS: cull/fade entities outside 30 cm range
+    const posXcm = (interpX - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
+    const posYcm = (interpY - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
+    this.applyLOSCull(container, posXcm, posYcm);
+    if (!container.visible) return;
 
     // Stability-based 2.5D perspective effects
     const stability = getBeybladeStability(beyblade);
@@ -1758,6 +1788,22 @@ export class BeybladeGameRenderer {
     // Label position
     label.y = barY - 4;
 
+    // 2j — Slot color ring: 2px ring just outside the bey sprite circle
+    {
+      const slotRing = this.slotColorRings.get(id);
+      if (slotRing) {
+        const slotHex = (beyblade as any).slotColor as string | undefined;
+        if (slotHex) {
+          const slotInt = parseInt(slotHex.replace("#", ""), 16);
+          slotRing.clear();
+          slotRing.circle(0, 0, r + 3);
+          slotRing.stroke({ color: slotInt, width: 2, alpha: beyblade.isActive ? 1.0 : 0.35 });
+        } else {
+          slotRing.clear();
+        }
+      }
+    }
+
     // ── Fury bar (thin gold ring below spin bar) ───────────────────────────────
     {
       const furyBar = this.furyBars.get(id);
@@ -1847,11 +1893,9 @@ export class BeybladeGameRenderer {
         if (furyGaugeFull && beyblade.isActive) {
           const furyPulse = 0.5 + 0.5 * Math.sin(Date.now() / 90);
           furyRing.circle(0, 0, r * 1.85);
-          furyRing.stroke({ color: 0xffd700, width: this.is25D ? 3 : 2, alpha: 0.4 + furyPulse * 0.5 });
-          if (this.is25D) {
-            furyRing.circle(0, 0, r * 1.95);
-            furyRing.stroke({ color: 0xffee99, width: 1, alpha: 0.2 + furyPulse * 0.25 });
-          }
+          furyRing.stroke({ color: 0xffd700, width: 3, alpha: 0.4 + furyPulse * 0.5 });
+          furyRing.circle(0, 0, r * 1.95);
+          furyRing.stroke({ color: 0xffee99, width: 1, alpha: 0.2 + furyPulse * 0.25 });
         }
       }
     }
@@ -2713,6 +2757,8 @@ export class BeybladeGameRenderer {
   resize() {
     if (this.initialized) {
       this.app.resize();
+      // Recompute vmin-proportional render scale before updating camera.
+      recomputePxPerCm(this.app.screen.width, this.app.screen.height);
       // Update screen dimensions — do NOT rebuild the arena.
       // The viewport window into the world changes size; the arena and all
       // world objects stay at their current positions (warp-free camera).

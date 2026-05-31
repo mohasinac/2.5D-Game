@@ -78,11 +78,11 @@ test.describe("Prod Smoke: Auth Guards", () => {
     expect(page.url()).toMatch(/login|game/);
   });
 
-  test("tryout setup redirects or loads", async ({ page }) => {
-    await page.goto("/game/2d/tryout/setup");
+  test("battle page redirects or loads", async ({ page }) => {
+    await page.goto("/game/battle");
     await page.waitForTimeout(1_000);
-    await ss(page, "P08-prod-tryout-setup-redirect");
-    expect(page.url()).toMatch(/login|tryout|game/);
+    await ss(page, "P08-prod-battle-redirect");
+    expect(page.url()).toMatch(/login|battle|game/);
   });
 });
 

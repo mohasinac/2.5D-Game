@@ -23,17 +23,22 @@ describe("units", () => {
     expect(MM_PER_CM).toBe(10);
   });
 
-  it("recomputePxPerCm always returns PX_PER_CM_BASE (viewport-independent)", () => {
-    expect(recomputePxPerCm(1920, 1080)).toBe(24);
-    expect(getPxPerCm()).toBe(24);
+  it("recomputePxPerCm scales with vmin relative to REFERENCE_VMIN", () => {
+    // vmin = min(w, h) / REFERENCE_VMIN * PX_PER_CM_BASE
+    expect(recomputePxPerCm(1920, 1080)).toBeCloseTo(24, 8); // vmin=1080 → reference
+    expect(getPxPerCm()).toBeCloseTo(24, 8);
 
-    expect(recomputePxPerCm(375, 812)).toBe(24);
-    expect(getPxPerCm()).toBe(24);
+    expect(recomputePxPerCm(720, 720)).toBeCloseTo(16, 8);  // 24 * 720/1080
+    expect(getPxPerCm()).toBeCloseTo(16, 8);
 
-    expect(recomputePxPerCm(3840, 2160)).toBe(24);
-    expect(getPxPerCm()).toBe(24);
+    expect(recomputePxPerCm(2160, 2160)).toBeCloseTo(48, 8); // 24 * 2160/1080
+    expect(getPxPerCm()).toBeCloseTo(48, 8);
 
-    expect(recomputePxPerCm()).toBe(24);
+    expect(recomputePxPerCm(3840, 2160)).toBeCloseTo(48, 8); // vmin=2160 → 48
+    expect(getPxPerCm()).toBeCloseTo(48, 8);
+
+    expect(recomputePxPerCm()).toBe(24); // no args → PX_PER_CM_BASE fallback
+    expect(getPxPerCm()).toBe(24);
   });
 
   it("cm <-> px round-trips", () => {

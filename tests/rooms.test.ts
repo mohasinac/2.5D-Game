@@ -43,7 +43,7 @@ vi.mock("colyseus", () => {
 
 // ─── Firebase mock ────────────────────────────────────────────────────────────
 
-vi.mock("../src/utils/firebase", () => ({
+vi.mock("../server/utils/firebase", () => ({
   loadArena: vi.fn().mockResolvedValue(null),
   loadBeyblade: vi.fn().mockResolvedValue(null),
 }));
@@ -64,7 +64,7 @@ vi.mock("@colyseus/schema", () => {
 
 // ─── PhysicsEngine mock ───────────────────────────────────────────────────────
 
-vi.mock("../src/physics/PhysicsEngine", () => {
+vi.mock("../server/physics/PhysicsEngine", () => {
   class PhysicsEngine {
     setArenaConfig = vi.fn();
     createObstacles = vi.fn();
@@ -87,7 +87,7 @@ vi.mock("../src/physics/PhysicsEngine", () => {
 
 // ─── AIController mock ────────────────────────────────────────────────────────
 
-vi.mock("../src/ai/AIController", () => {
+vi.mock("../server/ai/AIController", () => {
   class AIController {
     computeInput = vi.fn().mockReturnValue({});
   }

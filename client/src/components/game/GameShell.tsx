@@ -15,6 +15,19 @@ function useIsPortrait() {
   return portrait;
 }
 
+// ─── Viewport vmin hook ───────────────────────────────────────────────────────
+function useVmin() {
+  const [v, setV] = useState(() =>
+    typeof window !== 'undefined' ? Math.min(window.innerWidth, window.innerHeight) : 1080
+  );
+  useEffect(() => {
+    const h = () => setV(Math.min(window.innerWidth, window.innerHeight));
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return v;
+}
+
 // ─── Touch helpers ─────────────────────────────────────────────────────────────
 function vibrate(ms: number) {
   if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(ms);
@@ -360,10 +373,12 @@ function ZoomStrip({
 
 // ─── Speaker grille ──────────────────────────────────────────────────────────
 function SpeakerDots({ cols = 5, rows = 4 }: { cols?: number; rows?: number }) {
+  const dot = 'clamp(4px, 0.6vmin, 7px)';
+  const gap = 'clamp(3px, 0.4vmin, 5px)';
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 6px)`, gap: 4 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, ${dot})`, gap }}>
       {Array.from({ length: cols * rows }).map((_, i) => (
-        <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(0,0,0,0.35)', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)' }} />
+        <div key={i} style={{ width: dot, height: dot, borderRadius: '50%', background: 'rgba(0,0,0,0.35)', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)' }} />
       ))}
     </div>
   );
@@ -400,6 +415,8 @@ interface ShellProps {
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onZoomReset?: () => void;
+  onRotate?: () => void;
+  isPortrait: boolean;
   controlsHidden: boolean;
   onToggleControls: () => void;
   show25D: boolean;
@@ -456,10 +473,14 @@ function useShellBackground(): string {
   return bg;
 }
 
-function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls, show25D }: ShellProps) {
+function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, onRotate, isPortrait, controlsHidden, onToggleControls, show25D }: ShellProps) {
   const T = '0.28s ease';
   const shellBg = useShellBackground();
   const isImageBg = shellBg.startsWith('data:');
+  const vmin = useVmin();
+  const joystickSize        = Math.round(Math.min(90,  Math.max(56,  vmin * 0.083)));
+  const actionBtnSize       = Math.round(Math.min(42,  Math.max(28,  vmin * 0.039)));
+  const actionContainerSize = Math.round(Math.min(114, Math.max(76,  vmin * 0.106)));
   return (
     <div style={{
       position: 'relative',
@@ -482,7 +503,7 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
           gap: 18, flexShrink: 0, minHeight: 0,
           transition: `width ${T}`,
         }}>
-          <VirtualJoystick size={90} />
+          <VirtualJoystick size={joystickSize} />
           <BigActionBtn label="CHARGE" subLabel="hold" action="chargeHeld" color="#1d4ed8" />
           <div style={{ display: 'flex', gap: 6 }}>
             <OvalBtn label="⏸" onPress={onExit} />
@@ -493,17 +514,18 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
         {/* Center — screen (always visible, expands when controls hidden) */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, minWidth: 0, minHeight: 0, height: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingBottom: 2 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>BEYBLADE GAME</div>
+            <div style={{ fontSize: 'clamp(7px, 0.9vmin, 11px)', fontWeight: 700, letterSpacing: '0.28em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>BEYBLADE GAME</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+              <RotateBtn isPortrait={isPortrait} onRotate={onRotate ?? (() => {})} />
               <ToggleBtn hidden={controlsHidden} onToggle={onToggleControls} />
             </div>
           </div>
           <ScreenBezel style={{ flex: 1, width: '100%', minHeight: 0 }}>
             {children}
           </ScreenBezel>
-          <div style={{ fontSize: 10, fontWeight: 900, background: 'linear-gradient(90deg,#fff,#c4b5fd,#fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.06em' }}>
-            <span style={{ fontStyle: 'italic' }}>GAME BOY</span> <span style={{ fontSize: 12 }}>ADVANCE</span>
+          <div style={{ fontSize: 'clamp(8px, 1vmin, 12px)', fontWeight: 900, background: 'linear-gradient(90deg,#fff,#c4b5fd,#fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.06em' }}>
+            <span style={{ fontStyle: 'italic' }}>GAME BOY</span> <span style={{ fontSize: 'clamp(9px, 1.2vmin, 14px)' }}>ADVANCE</span>
           </div>
         </div>
 
@@ -515,7 +537,7 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
           paddingTop: 4, paddingBottom: 8, gap: 18, flexShrink: 0,
           transition: `width ${T}`,
         }}>
-          <ActionCluster btnSize={42} containerSize={114} />
+          <ActionCluster btnSize={actionBtnSize} containerSize={actionContainerSize} />
           <BigActionBtn label="SPACE" subLabel="tap" action="specialTap" color="#7c3aed" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5, transform: 'rotate(-10deg)' }}>
             {[0,1,2,3,4].map(i => <div key={i} style={{ width: 36, height: 3, borderRadius: 2, background: 'rgba(0,0,0,0.28)' }} />)}
@@ -527,10 +549,14 @@ function LandscapeShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, co
 }
 
 // ─── PORTRAIT layout ──────────────────────────────────────────────────────────
-function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls, show25D }: ShellProps) {
+function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, onRotate, isPortrait, controlsHidden, onToggleControls, show25D }: ShellProps) {
   const T = '0.28s ease';
   const shellBg = useShellBackground();
   const isImageBg = shellBg.startsWith('data:');
+  const vmin = useVmin();
+  const joystickSize        = Math.round(Math.min(110, Math.max(64,  vmin * 0.1)));
+  const actionBtnSize       = Math.round(Math.min(48,  Math.max(30,  vmin * 0.044)));
+  const actionContainerSize = Math.round(Math.min(126, Math.max(80,  vmin * 0.117)));
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -571,11 +597,12 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
           paddingLeft: 10, paddingRight: 10, gap: 4,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 11, fontWeight: 900, fontStyle: 'italic', color: '#e5e7eb', letterSpacing: '0.05em' }}>GAME BOY</span>
-            <span style={{ fontSize: 11, fontWeight: 900, color: '#7c3aed', letterSpacing: '0.1em' }}>COLOR</span>
+            <span style={{ fontSize: 'clamp(8px, 1vmin, 12px)', fontWeight: 900, fontStyle: 'italic', color: '#e5e7eb', letterSpacing: '0.05em' }}>GAME BOY</span>
+            <span style={{ fontSize: 'clamp(8px, 1vmin, 12px)', fontWeight: 900, color: '#7c3aed', letterSpacing: '0.1em' }}>COLOR</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <ZoomStrip onZoomIn={onZoomIn} onZoomOut={onZoomOut} onZoomReset={onZoomReset} />
+            <RotateBtn isPortrait={isPortrait} onRotate={onRotate ?? (() => {})} />
             <ToggleBtn hidden={controlsHidden} onToggle={onToggleControls} />
           </div>
         </div>
@@ -596,7 +623,7 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
         {/* Nintendo emboss */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 3, flexShrink: 0 }}>
           <div style={{
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.2em',
+            fontSize: 'clamp(9px, 1.2vmin, 14px)', fontWeight: 700, letterSpacing: '0.2em',
             color: 'rgba(0,0,0,0.25)', textTransform: 'uppercase',
             textShadow: '0 1px 0 rgba(255,255,255,0.08)',
           }}>Nintendo</div>
@@ -606,7 +633,7 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
         <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', minHeight: 0, gap: 16, touchAction: 'none' }}>
           {/* Left: joystick + CHARGE below — increased gap so they don't touch */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 18 }}>
-            <VirtualJoystick size={110} />
+            <VirtualJoystick size={joystickSize} />
             <BigActionBtn label="CHARGE" subLabel="hold" action="chargeHeld" color="#1d4ed8" />
           </div>
 
@@ -618,7 +645,7 @@ function PortraitShell({ children, onExit, onZoomIn, onZoomOut, onZoomReset, con
 
           {/* Right: action cluster + SPACE below — increased gap so they don't touch */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', width: '42%', gap: 18 }}>
-            <ActionCluster btnSize={48} containerSize={126} />
+            <ActionCluster btnSize={actionBtnSize} containerSize={actionContainerSize} />
             <BigActionBtn label="SPACE" subLabel="tap" action="specialTap" color="#7c3aed" />
           </div>
         </div>
@@ -655,6 +682,27 @@ function ToggleBtn({ hidden, onToggle }: { hidden: boolean; onToggle: () => void
       }}
     >
       {hidden ? '⊕' : '⊖'}
+    </div>
+  );
+}
+
+// ─── Orientation rotate button ────────────────────────────────────────────────
+function RotateBtn({ isPortrait, onRotate }: { isPortrait: boolean; onRotate: () => void }) {
+  return (
+    <div
+      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); vibrate(12); onRotate(); }}
+      title={isPortrait ? 'Switch to landscape' : 'Switch to portrait'}
+      style={{
+        width: 22, height: 22, borderRadius: 4,
+        background: 'rgba(255,255,255,0.08)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 13, cursor: 'pointer', userSelect: 'none', touchAction: 'none',
+        color: 'rgba(255,255,255,0.65)', flexShrink: 0,
+        transition: 'background 0.15s',
+      }}
+    >
+      {isPortrait ? '⇆' : '⇅'}
     </div>
   );
 }
@@ -795,6 +843,15 @@ export function GameShell({
   const shellRef = useRef<HTMLDivElement>(null);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
 
+  // Manual orientation override — persists across sessions.
+  const [forceOrientation, setForceOrientation] = useState<'portrait' | 'landscape' | null>(() => {
+    try {
+      const s = localStorage.getItem('bey.forceOrientation');
+      return (s === 'portrait' || s === 'landscape') ? s : null;
+    } catch { return null; }
+  });
+  const effectivePortrait = forceOrientation === null ? portrait : forceOrientation === 'portrait';
+
   const [controlsHidden, setControlsHidden] = useState<boolean>(() => {
     try { return localStorage.getItem('bey.hideControls') === '1'; } catch { return false; }
   });
@@ -839,7 +896,16 @@ export function GameShell({
     });
   }
 
-  const shellProps = { onExit: requestExit, onZoomIn, onZoomOut, onZoomReset, controlsHidden, onToggleControls: toggleControls, show25D: show25DRotate };
+  function toggleOrientation() {
+    setForceOrientation(prev => {
+      const next = (prev ?? (portrait ? 'portrait' : 'landscape')) === 'portrait' ? 'landscape' : 'portrait';
+      try { localStorage.setItem('bey.forceOrientation', next); } catch { /* ignore */ }
+      vibrate(18);
+      return next;
+    });
+  }
+
+  const shellProps = { onExit: requestExit, onZoomIn, onZoomOut, onZoomReset, onRotate: toggleOrientation, isPortrait: effectivePortrait, controlsHidden, onToggleControls: toggleControls, show25D: show25DRotate };
 
   return (
     // tabIndex={-1}: focusable programmatically without entering the Tab order.
@@ -851,7 +917,7 @@ export function GameShell({
       style={{ outline: 'none' }}
       onClick={() => { if (!showExitConfirm) shellRef.current?.focus(); }}
     >
-      {portrait
+      {effectivePortrait
         ? <PortraitShell {...shellProps}>{children}</PortraitShell>
         : <LandscapeShell {...shellProps}>{children}</LandscapeShell>
       }

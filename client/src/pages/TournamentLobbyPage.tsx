@@ -269,7 +269,7 @@ export function TournamentLobbyPage() {
 
   return (
     <div className="min-h-screen bg-bg0 p-4 sm:p-8">
-      <div className="max-w-[860px] mx-auto">
+      <div className="max-w-[min(860px,92vw)] mx-auto">
         {/* Header */}
         <div className="mb-7">
           <Link to="/game/tournament" className="text-theme-faint text-[13px] no-underline">← Tournaments</Link>

@@ -25,6 +25,7 @@ import LinkAlignmentHUD from "@/components/game/LinkAlignmentHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
+import { useConfigStore } from "@/lib/configCache";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
 import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
@@ -57,6 +58,7 @@ export function TournamentBattleGamePage() {
   const location = useLocation();
   const { settings } = useGame();
   const { currentUser } = useAuth();
+  const { configStatus } = useConfigStore();
   const { byId: comboMap } = useCombos();
   const { resolve: resolveSpecialMove } = useSpecialMoves();
 
@@ -67,6 +69,9 @@ export function TournamentBattleGamePage() {
 
   const [colyseusRoomId, setColyseusRoomId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Global input focus — keyboard events register without requiring canvas click
+  useEffect(() => { document.body.focus(); }, []);
 
   // Load bracket doc to get colyseusRoomId
   useEffect(() => {
@@ -125,7 +130,7 @@ export function TournamentBattleGamePage() {
     cameraZoomIn,
     cameraZoomOut,
     cameraZoomReset,
-  } = usePixiRenderer(containerRef, mode);
+  } = usePixiRenderer(containerRef);
 
   const [spectatorFollowId, setSpectatorFollowId] = useState<string | null>(null);
   const spectatorFollowIdRef = useRef<string | null>(null);
@@ -254,7 +259,8 @@ export function TournamentBattleGamePage() {
   ) {
     gameEverActiveRef.current = true;
   }
-  const showLoading = loadingStep !== "warmup-ready" && !gameEverActiveRef.current && (
+  const effectiveLoadingStep = configStatus !== "ready" ? "config-preload" : (loadingStep ?? "connecting-ws");
+  const showLoading = (configStatus !== "ready" || loadingStep !== "warmup-ready") && !gameEverActiveRef.current && (
     !gameState || (
       gameState.status !== "in-progress" &&
       gameState.status !== "warmup" &&
@@ -270,7 +276,7 @@ export function TournamentBattleGamePage() {
 
       {showLoading && (
         <LoadingProgress
-          currentStep={loadingStep}
+          currentStep={effectiveLoadingStep as import("@/components/LoadingProgress").LoadingStep}
           stepProgress={connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />

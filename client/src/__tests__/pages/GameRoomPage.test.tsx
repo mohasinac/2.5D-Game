@@ -79,7 +79,6 @@ vi.mock("@/hooks/useSpecialMoves", () => ({
 vi.mock("@/contexts/GameContext", () => ({
   useGame: () => ({
     settings: { beybladeId: "bey1", arenaId: "arena1", username: "Player", userId: "u1" },
-    is25D: true,
   }),
   GameProvider: ({ children }: any) => children,
 }));

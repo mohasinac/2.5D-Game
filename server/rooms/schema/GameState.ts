@@ -473,6 +473,9 @@ export class Beyblade extends Schema {
   // ── Per-beyblade rendering color (hex, e.g. "#00d4ff") ──────────────────────
   @type("string") color: string = "";
 
+  // ── Player slot color (assigned by room on join; drives HUD + arena ring) ───
+  @type("string") slotColor: string = "#FFFFFF";
+
   // ── Launch phase (pre-match) ─────────────────────────────────────────────────
   @type("float32") launchTilt: number = 0;            // -45 to +45 deg; A/D during launch phase
   @type("float32") launchPosition: number = 0.5;      // 0=forward/defensive, 1=backward/aggressive
@@ -755,6 +758,9 @@ export class GameState extends Schema {
   @type("uint8") targetWins: number = 1;   // 1=BO1, 2=BO3, 3=BO5
   @type({ map: "uint8" }) seriesWins = new MapSchema<number>();
   @type("string") seriesLeader: string = "";
+
+  // ── Player slot indices (userId → slot 0–5; drives slot color assignment) ───
+  @type({ map: "uint8" }) playerSlots = new MapSchema<number>();
 
   // ── Round Modifiers (Phase X) ─────────────────────────────────────────────────
   @type(["string"]) activeModifierIds = new ArraySchema<string>();

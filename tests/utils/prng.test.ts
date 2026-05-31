@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { createPRNG } from "../../src/utils/prng";
-import { hashString } from "../../src/utils/hashString";
+import { createPRNG } from "../../server/utils/prng";
+import { hashString } from "../../server/utils/hashString";
 
 describe("createPRNG — Mulberry32", () => {
   test("same seed produces same sequence for 10 000 draws", () => {

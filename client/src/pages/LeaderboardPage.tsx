@@ -59,7 +59,7 @@ export function LeaderboardPage() {
 
   return (
     <div className="min-h-screen bg-bg0 py-8 px-6">
-      <div className="max-w-[720px] mx-auto">
+      <div className="max-w-[min(720px,92vw)] mx-auto">
         <div className="flex items-center gap-3 mb-2">
           <Link to="/game" className="text-theme-faint text-[13px] no-underline">← Back</Link>
         </div>

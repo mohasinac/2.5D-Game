@@ -18,9 +18,9 @@ export const DEFAULT_KEY_MAP: KeyMap = {
   moveUp:    "KeyW",
   moveDown:  "KeyS",
   jump:      "KeyI",   // I = top button
-  dodge:     "KeyJ",   // J = left button
+  attack:    "KeyJ",   // J = left button (attack)
   defense:   "KeyK",   // K = bottom button
-  attack:    "KeyL",   // L = right button
+  dodge:     "KeyL",   // L = right button (dodge)
   charge:    "Space",
 };
 

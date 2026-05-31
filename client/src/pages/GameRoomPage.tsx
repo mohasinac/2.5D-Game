@@ -13,7 +13,7 @@ import { useLaunchInput } from '../game/hooks/useLaunchInput';
 import { useBitBeastCinematic } from '../hooks/useBitBeastCinematic';
 import { useCombos } from '../hooks/useCombos';
 import { useSpecialMoves } from '../hooks/useSpecialMoves';
-import { getBeybladeStability, mapToRecord, TYPE_COLORS } from '../types/game';
+import { mapToRecord } from '../types/game';
 import type { ServerGameState } from '../types/game';
 import { isLocalRoom, roomNameForConfig, type GameRoomConfig } from '../types/gameRoom';
 import { ROOM_NAMES } from '../shared/utils/gameMode';
@@ -21,8 +21,11 @@ import { LocalGameSimulation, type SimSnapshot } from '../game/simulation/LocalG
 import { getScenario } from '../constants/gameModeScenarios';
 
 import { GameShell } from '../components/game/GameShell';
+import { PlayerStrip } from '../components/game/PlayerStrip';
+import { OpponentStrip } from '../components/game/OpponentStrip';
 import { PauseMenu } from '../components/game/PauseMenu';
 import { LoadingProgress } from '../components/LoadingProgress';
+import { useConfigStore } from '../lib/configCache';
 import { Countdown } from '../components/game/Countdown';
 import { LaunchPhase } from '../components/game/LaunchPhase';
 import { SpecialMoveHUD } from '../components/game/SpecialMoveHUD';
@@ -45,13 +48,13 @@ function HudBar({ label, value, max, pct, color }: {
   label: string; value: number; max: number; pct: number; color: string;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)', width: 18, textAlign: 'right', flexShrink: 0 }}>{label}</span>
-      <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(4px, 0.6vmin, 8px)' }}>
+      <span style={{ fontSize: 'clamp(7px, 0.9vmin, 11px)', fontWeight: 800, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)', width: 'clamp(14px, 1.8vmin, 22px)', textAlign: 'right', flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, height: 'clamp(4px, 0.6vmin, 8px)', background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${Math.round(pct * 100)}%`, background: color, borderRadius: 3, transition: 'width 150ms' }} />
       </div>
-      <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)', width: 32, textAlign: 'left', flexShrink: 0 }}>
-        {value}<span style={{ fontSize: 8, color: 'rgba(255,255,255,0.35)' }}>/{max}</span>
+      <span style={{ fontSize: 'clamp(7px, 0.9vmin, 11px)', fontWeight: 700, color: 'rgba(255,255,255,0.6)', width: 'clamp(26px, 3.2vmin, 40px)', textAlign: 'left', flexShrink: 0 }}>
+        {value}<span style={{ fontSize: 'clamp(6px, 0.8vmin, 10px)', color: 'rgba(255,255,255,0.35)' }}>/{max}</span>
       </span>
     </div>
   );
@@ -77,11 +80,15 @@ export function GameRoomPage() {
   const navigate = useNavigate();
   const config = (location.state as { config?: GameRoomConfig })?.config;
   const { settings } = useGame();
+  const { configStatus } = useConfigStore();
 
   // Redirect if no config provided
   useEffect(() => {
     if (!config) navigate('/game/battle', { replace: true });
   }, [config, navigate]);
+
+  // Global input focus — keyboard events register without requiring canvas click
+  useEffect(() => { document.body.focus(); }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const simRef = useRef<LocalGameSimulation | null>(null);
@@ -127,7 +134,7 @@ export function GameRoomPage() {
     };
   }, [config, settings]);
 
-  const roomName = config && !local ? roomNameForConfig(config) : ROOM_NAMES["2d"].battle;
+  const roomName = config && !local ? roomNameForConfig(config) : ROOM_NAMES["2.5d"].battle;
 
   // Always call useColyseus (hooks must be unconditional); for local rooms autoConnect=false
   const colyseus = useColyseus({
@@ -166,6 +173,14 @@ export function GameRoomPage() {
     ? (simSnap ? beyblades.get(simSnap.myBeyId) : undefined)
     : (colyseus.myBeyblade ?? undefined);
 
+  // Refs for RAF loop — avoids restarting the loop on every 60 Hz state update
+  const gameStateRef = useRef(gameState);
+  const beybladesRef = useRef(beyblades);
+  const visualEventQueueRef = useRef(colyseus.visualEventQueue);
+  gameStateRef.current = gameState;
+  beybladesRef.current = beyblades;
+  visualEventQueueRef.current = colyseus.visualEventQueue;
+
   const loadingStep = local
     ? (simSnap?.status === 'idle' || simSnap?.status === 'loading' ? 'connecting-ws' : 'warmup-ready')
     : colyseus.loadingStep;
@@ -174,12 +189,11 @@ export function GameRoomPage() {
     ? (simSnap?.loadingError ?? undefined)
     : colyseus.loadingError;
 
-  const showLoading = loadingStep !== 'warmup-ready' && gameState.status === 'waiting';
+  const effectiveLoadingStep = configStatus !== 'ready' ? 'config-preload' : (loadingStep ?? 'connecting-ws');
+  const showLoading = (configStatus !== 'ready' || loadingStep !== 'warmup-ready') && gameState.status === 'waiting';
 
   // ─── Renderer ─────────────────────────────────────────────────────────────
-  // Default to 2.5D — only use flat 2D when is25D is explicitly false.
-  const rendererMode = config?.is25D !== false ? '2.5d' : '2d';
-  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset, triggerScreenShake, triggerHitFlash } = usePixiRenderer(containerRef, rendererMode as '2d' | '2.5d');
+  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset, triggerScreenShake, triggerHitFlash } = usePixiRenderer(containerRef);
 
   useEffect(() => {
     if (myBeyblade?.id) setControlledBeyblade(myBeyblade.id);
@@ -203,16 +217,17 @@ export function GameRoomPage() {
   );
 
   // ─── RAF render loop ──────────────────────────────────────────────────────
+  // Reads from refs so the loop is never restarted on 60 Hz state updates.
   useEffect(() => {
     let rafId: number;
     const loop = () => {
-      render(gameState, beyblades, local ? undefined : colyseus.visualEventQueue);
+      render(gameStateRef.current, beybladesRef.current, local ? undefined : visualEventQueueRef.current);
       rafId = requestAnimationFrame(loop);
     };
     rafId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [render, gameState, beyblades]);
+  }, [render]);
 
   // ─── Start local simulation ───────────────────────────────────────────────
   useEffect(() => {
@@ -308,8 +323,6 @@ export function GameRoomPage() {
 
   if (!config) return null;
 
-  const typeColorHex = myBeyblade ? (TYPE_COLORS[myBeyblade.type] ?? 0x888888) : 0x888888;
-  const typeColor = `#${typeColorHex.toString(16).padStart(6, '0')}`;
 
   // ─── BeyLink QTE data conversions ─────────────────────────────────────────
   const escapeQTEData: SingleKeyQTEData | null = !local && colyseus.beyLinkQTE ? {
@@ -361,7 +374,7 @@ export function GameRoomPage() {
 
   return (
     <GameShell
-      show25DRotate={config.is25D}
+      show25DRotate={true}
       onExit={handleExit}
       onZoomIn={cameraZoomIn}
       onZoomOut={cameraZoomOut}
@@ -379,7 +392,7 @@ export function GameRoomPage() {
         {/* Loading */}
         {showLoading && (
           <LoadingProgress
-            currentStep={loadingStep as import('../components/LoadingProgress').LoadingStep}
+            currentStep={effectiveLoadingStep as import('../components/LoadingProgress').LoadingStep}
             error={loadingError}
             onRetry={local ? () => {
               if (config) {
@@ -541,30 +554,31 @@ export function GameRoomPage() {
           </div>
         )}
 
-        {/* HUD — health + SP bars */}
+        {/* HUD — opponent strips (top) */}
+        {gameState.status === 'in-progress' && (
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0,
+            padding: '6px 8px 0',
+            display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'flex-end',
+            pointerEvents: 'none',
+          }}>
+            {[...beyblades.values()]
+              .filter(b => b.id !== myBeyblade?.id)
+              .map(b => (
+                <OpponentStrip key={b.id} beyblade={b} compact={beyblades.size > 3} />
+              ))}
+          </div>
+        )}
+
+        {/* HUD — player strip (bottom) */}
         {myBeyblade && gameState.status === 'in-progress' && (
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0,
-            padding: '6px 10px 8px',
-            background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
-            display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none',
+            padding: '0 8px 8px',
+            display: 'flex', justifyContent: 'flex-start',
+            pointerEvents: 'none',
           }}>
-            {/* Health bar row */}
-            <HudBar
-              label="HP"
-              value={Math.round(myBeyblade.health)}
-              max={100}
-              pct={myBeyblade.health / 100}
-              color={myBeyblade.health > 50 ? '#22c55e' : myBeyblade.health > 25 ? '#f59e0b' : '#ef4444'}
-            />
-            {/* SP bar row — capped display at 100 */}
-            <HudBar
-              label="SP"
-              value={Math.min(100, Math.round(myBeyblade.power ?? 0))}
-              max={100}
-              pct={Math.min(1, (myBeyblade.power ?? 0) / 100)}
-              color={typeColor}
-            />
+            <PlayerStrip beyblade={myBeyblade} />
           </div>
         )}
 

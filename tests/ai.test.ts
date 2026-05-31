@@ -3,7 +3,7 @@
 // given known arena/opponent geometry. No Matter.js, no Firebase.
 
 import { describe, test, expect, beforeEach } from "vitest";
-import { AIController, type AIPlayerInput } from "../src/ai/AIController";
+import { AIController, type AIPlayerInput } from "../server/ai/AIController";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 

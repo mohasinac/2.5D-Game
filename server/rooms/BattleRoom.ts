@@ -13,6 +13,7 @@ import { loadGimmickDefs, initGimmickSynergies, loadBeyAccessories, type BeyAcce
 import { expandGimmicks } from "../utils/gimmickExpander";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
+import { getSlotColor } from "../constants/playerColors";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
 import {
@@ -662,6 +663,11 @@ export class BattleRoom extends BaseRoom<GameState> {
 
     const initialAngularVelocity = (beyblade.spinDirection === "left" ? -1 : 1) * (beyblade.maxSpin / 200);
     this.physics.setAngularVelocity(beyblade.id, initialAngularVelocity);
+
+    // Assign player slot color (slot = join order, 0-based)
+    const slotIndex = this.state.playerSlots.size;
+    this.state.playerSlots.set(beyblade.userId, slotIndex);
+    beyblade.slotColor = getSlotColor(slotIndex);
 
     this.state.beyblades.set(client.sessionId, beyblade);
     this.state.seriesWins.set(beyblade.userId, 0);

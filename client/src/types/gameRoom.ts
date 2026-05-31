@@ -16,7 +16,6 @@ export interface GameRoomConfig {
   roomType: RoomType;
   beybladeId: string;
   arenaId: string;
-  is25D?: boolean;
   aiDifficulty?: 'medium' | 'hard' | 'hell';
   aiCount?: number;
   bestOf?: 1 | 3 | 5;
@@ -43,25 +42,26 @@ export function isLocalRoom(roomType: RoomType): boolean {
   return LOCAL_ROOM_TYPES.includes(roomType);
 }
 
-// Maps each server room type to its Colyseus room name (mode-aware).
+// Maps each server room type to its Colyseus room name.
 // Use roomNameForConfig() instead of this map directly when you have a GameRoomConfig.
-export const COLYSEUS_ROOM_NAME: Record<Extract<RoomType, 'pvp' | 'teams' | 'tournament' | 'royale'>, (mode: GameMode, is25D?: boolean) => string> = {
-  pvp: (mode) => ROOM_NAMES[mode].battle,
-  teams: (_, is25D) => is25D ? ROOM_NAMES.global.teamBattle25d : ROOM_NAMES.global.teamBattle,
+export const COLYSEUS_ROOM_NAME: Record<Extract<RoomType, 'pvp' | 'teams' | 'tournament' | 'royale'>, (mode: GameMode) => string> = {
+  pvp:        (mode) => ROOM_NAMES[mode].battle,
+  teams:      () => ROOM_NAMES.global.teamBattle25d,
   tournament: (mode) => ROOM_NAMES[mode].tournament,
-  royale: () => ROOM_NAMES.global.royale,
+  royale:     () => ROOM_NAMES.global.royale,
 };
 
 export function roomNameForConfig(config: GameRoomConfig): string {
-  const mode: GameMode = config.is25D ? "2.5d" : "2d";
+  // Always use 2.5D rooms — 2D mode has been removed.
+  const mode: GameMode = "2.5d";
   switch (config.roomType) {
-    case 'pvp':        return ROOM_NAMES[mode].battle;
-    case 'teams':      return config.is25D ? ROOM_NAMES.global.teamBattle25d : ROOM_NAMES.global.teamBattle;
-    case 'tournament': return ROOM_NAMES[mode].tournament;
-    case 'royale':     return ROOM_NAMES.global.royale;
-    case 'pvai':       return ROOM_NAMES[mode].aiBattle;
-    case 'tryout':     return ROOM_NAMES[mode].tryout;
+    case 'pvp':          return ROOM_NAMES[mode].battle;
+    case 'teams':        return ROOM_NAMES.global.teamBattle25d;
+    case 'tournament':   return ROOM_NAMES[mode].tournament;
+    case 'royale':       return ROOM_NAMES.global.royale;
+    case 'pvai':         return ROOM_NAMES[mode].aiBattle;
+    case 'tryout':       return ROOM_NAMES[mode].tryout;
     case 'story-battle': return ROOM_NAMES.global.story;
-    default:           return ROOM_NAMES[mode].battle;
+    default:             return ROOM_NAMES[mode].battle;
   }
 }

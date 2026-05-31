@@ -15,6 +15,7 @@ import { MenuOverlay } from "../components/overlays/MenuOverlay";
 import { TransitionOverlay } from "../components/overlays/TransitionOverlay";
 import { RPGMiniGameOverlay } from "../components/mini-games/RPGMiniGameOverlay";
 import type { Quest, MiniGameResult } from "../data/schemas";
+import { saveRPGState } from "../lib/rpgSave";
 
 // GBC = portrait (160×144 → 10:9 aspect), GBA = landscape (240×160 → 3:2 aspect).
 // We detect orientation and apply the matching aspect ratio frame.
@@ -31,6 +32,7 @@ export default function RPGGamePage() {
   const activeCutsceneId    = useRPGStore((s) => s.activeCutsceneId);
   const isTransitioning     = useRPGStore((s) => s.isTransitioning);
   const pendingBattleResult = useRPGStore((s) => s.pendingBattleResult);
+  const pendingBattleParams = useRPGStore((s) => s.pendingBattleParams);
   const activeMiniGame      = useRPGStore((s) => s.activeMiniGame);
   const miniGameResult      = useRPGStore((s) => s.miniGameResult);
 
@@ -60,12 +62,28 @@ export default function RPGGamePage() {
     });
   }, [isReady, questDefs.length]);
 
-  // Handle battle return
+  // Save pre-battle checkpoint when a battle is about to start
+  useEffect(() => {
+    if (pendingBattleParams && userId) {
+      saveRPGState(userId).catch(() => {});
+    }
+  }, [pendingBattleParams, userId]);
+
+  // Save on unmount (room exit)
+  useEffect(() => {
+    return () => {
+      if (userId) saveRPGState(userId).catch(() => {});
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
+
+  // Handle battle return + auto-save after result is processed
   useEffect(() => {
     if (pendingBattleResult && engine) {
       engine.battleTransitionSystem.handleBattleReturn(pendingBattleResult);
+      if (userId) saveRPGState(userId).catch(() => {});
     }
-  }, [pendingBattleResult, engine]);
+  }, [pendingBattleResult, engine, userId]);
 
   // Handle mini-game completion — award XP, fire success/failure story event
   useEffect(() => {
@@ -183,8 +201,14 @@ export default function RPGGamePage() {
         <MenuOverlay
           open={menuOpen}
           initialTab={menuTab}
-          onClose={() => setMenuOpen(false)}
-          onSave={() => setMenuOpen(false)}
+          onClose={() => {
+            setMenuOpen(false);
+            if (userId) saveRPGState(userId).catch(() => {});
+          }}
+          onSave={() => {
+            setMenuOpen(false);
+            if (userId) saveRPGState(userId).catch(() => {});
+          }}
         />
 
         {/* Transition */}

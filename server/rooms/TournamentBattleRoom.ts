@@ -15,6 +15,7 @@ import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle, computeTiltForce, getFloorAngleAtRadius } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
+import { getSlotColor } from "../constants/playerColors";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
@@ -233,6 +234,10 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
     this.physics.createBeyblade(beyblade.id, beyblade.x, beyblade.y, beyblade.radius, beyblade.mass, beybladeData || undefined, pFlags);
     this.physics.setAngularVelocity(beyblade.id, (beyblade.spinDirection === "left" ? -1 : 1) * (beyblade.maxSpin / 200));
+    // P1 (bracket home) = slot 0, P2 (bracket away) = slot 1
+    const slotIndex = this.state.playerSlots.size;
+    this.state.playerSlots.set(beyblade.userId, slotIndex);
+    beyblade.slotColor = getSlotColor(slotIndex);
     this.state.beyblades.set(client.sessionId, beyblade);
     this.state.seriesWins.set(beyblade.userId, 0);
 
@@ -339,6 +344,9 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
     this.physics.createBeyblade(userId, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined, aiFlags);
     this.physics.setAngularVelocity(userId, (ai.spinDirection === "left" ? -1 : 1) * (ai.maxSpin / 200));
+    const aiSlotIndex = this.state.playerSlots.size;
+    this.state.playerSlots.set(userId, aiSlotIndex);
+    ai.slotColor = getSlotColor(aiSlotIndex);
     this.state.beyblades.set(userId, ai);
     this.state.seriesWins.set(userId, 0);
     this.aiControllers.set(userId, new AIController(difficulty));

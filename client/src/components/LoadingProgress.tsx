@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 
 export type LoadingStep =
+  | "config-preload"
   | "connecting-ws"
   | "joining-room"
   | "loading-arena-assets"
@@ -12,6 +13,7 @@ export type LoadingStep =
   | "warmup-ready";
 
 const STEP_ORDER: LoadingStep[] = [
+  "config-preload",
   "connecting-ws",
   "joining-room",
   "loading-arena-assets",
@@ -21,6 +23,7 @@ const STEP_ORDER: LoadingStep[] = [
 ];
 
 const STEP_LABEL: Record<LoadingStep, string> = {
+  "config-preload":            "Loading game data",
   "connecting-ws":             "Connecting to server",
   "joining-room":              "Joining room",
   "loading-arena-assets":      "Loading arena",
@@ -30,6 +33,7 @@ const STEP_LABEL: Record<LoadingStep, string> = {
 };
 
 const STEP_COLOR: Record<LoadingStep, string> = {
+  "config-preload":          "#6366f1",
   "connecting-ws":           "#3b82f6",
   "joining-room":            "#8b5cf6",
   "loading-arena-assets":    "#10b981",
@@ -149,7 +153,7 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error, onRetry,
   // Per-step timeout: reset on step change, fire if step stalls
   useEffect(() => {
     setTimedOut(false);
-    if (currentStep === 'warmup-ready' || error) return;
+    if (currentStep === 'warmup-ready' || currentStep === 'config-preload' || error) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => setTimedOut(true), stepTimeoutMs);
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };

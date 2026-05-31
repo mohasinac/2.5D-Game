@@ -18,6 +18,7 @@ import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { wallBowlForce, computeTiltForce, getFloorAngleAtRadius } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
+import { getSlotColor } from "../constants/playerColors";
 import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
 import {
   applyMovementInput,
@@ -239,6 +240,10 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
     this.physics.createBeyblade(bey.id, bey.x, bey.y, bey.radius, bey.mass, data || undefined, bFlags);
     this.physics.setAngularVelocity(bey.id, (bey.spinDirection === "left" ? -1 : 1) * (bey.maxSpin / 200));
+    // AI beys get the next slot color after the human player (slot 0 = human)
+    const aiSlotIndex = this.state.playerSlots.size;
+    this.state.playerSlots.set(bey.userId, aiSlotIndex);
+    bey.slotColor = getSlotColor(aiSlotIndex);
     this.state.beyblades.set(sessionId, bey);
     this.state.seriesWins.set(bey.userId, 0);
   }
@@ -312,6 +317,9 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
     this.physics.createBeyblade(human.id, human.x, human.y, human.radius, human.mass, humanData || undefined, humanFlags);
     this.physics.setAngularVelocity(human.id, (human.spinDirection === "left" ? -1 : 1) * (human.maxSpin / 200));
+    // Human player is always slot 0 (blue)
+    this.state.playerSlots.set(human.userId, 0);
+    human.slotColor = getSlotColor(0);
     this.state.beyblades.set(client.sessionId, human);
     this.state.seriesWins.set(human.userId, 0);
 

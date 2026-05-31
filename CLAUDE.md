@@ -56,7 +56,7 @@ Client is deployed on **Vercel** (not Firebase Hosting — `firebase.json` has n
 - **Server-authoritative physics** — Matter.js runs on the Colyseus server. The client only sends a `uint16` bitmask input and receives state updates.
 - **Colyseus schema auto-sync** — `GameState`, `Beyblade`, `ArenaState` are all `@Schema` classes. State propagates at 60Hz automatically.
 - **Firebase Firestore** — stores beyblade_stats, arenas, matches, player_stats, tournaments, and all asset collections.
-- **PixiJS WebGL** — client renders using PixiJS 8. 5-layer stack: arena → features → beyblades → particles → HUD.
+- **PixiJS WebGL** — client renders using PixiJS 8. 5-layer stack: arena → features → beyblades → particles → HUD. Render scale is vmin-proportional (`getPxPerCm()` / `PX_PER_CM_BASE`) — same world content visible on all screen sizes.
 - **Vite + React Router v6** — client-side routing only. No SSR.
 - **2D + 2.5D engines only; 2.5D is the 3D layer** — There is no true 3D physics engine (no Cannon.js, Rapier, or three.js). The 2.5D engine (`PartPhysics.ts` + `PartSystemManager.ts`) is the game's depth layer and serves the role that 3D would in another engine:
   - **Shape makers** — Fourier-series profiles and arc-segment contact points describe each part's 3D silhouette as a 2D cross-section; `renderRadius()` warps the sprite outline accordingly.
@@ -365,9 +365,41 @@ All asset libraries accept **PNG / JPG / GIF / WebP**. GIF uploads bypass the de
 ## Physics Coordinates
 
 - Arena dimensions stored in pixels in Firestore (e.g., `width: 1080`, `height: 1080`)
-- 1 cm = 24px at standard 1080p resolution
+- 1 cm = 24px at standard 1080p resolution (`PX_PER_CM_BASE = 24`, `REFERENCE_VMIN = 1080`)
 - Beyblade `radius` stored in cm; `createBeyblade()` converts to px: `radius * 24`
 - Arena `arenaPixelRadius = Math.min(width, height) * 0.45`
+- **Server physics always uses `PX_PER_CM_BASE = 24` (fixed)** — `cmToPhysics` / `physicsToCm` never change; deterministic replays depend on this.
+- **Client render scale is vmin-proportional** — `recomputePxPerCm(screenW, screenH)` returns `PX_PER_CM_BASE × (min(screenW, screenH) / REFERENCE_VMIN)`. At 1080p vmin=1080 → 24 px/cm (reference); at 4K vmin=2160 → 48 px/cm; at 720p vmin=720 → 16 px/cm. The renderer applies this via `viewportScale = getPxPerCm() / PX_PER_CM_BASE` in `worldRoot.scale`.
+- **`zToScreenOffset(z_cm, tiltAngle_deg)`** (exported from `client/src/constants/units.ts`) — returns the screen-Y shift in world-px for an element at `z_cm` above the arena floor. Negative = upward toward the viewer. At `tiltAngle=0` returns 0. Apply to sprite `.y` inside `arenaTiltInner`. The renderer method `this.zToScreenOffset(z_cm)` wraps this with the live tilt angle from `arenaFloorTiltAngle`.
+
+## Viewport Responsive Scaling
+
+The client UI and game canvas scale with `vmin = min(viewport width, viewport height)`. **Admin CRUD pages are excluded** — only player-facing pages apply these rules.
+
+### Layers (all implemented)
+
+| Layer | What | How |
+|-------|------|-----|
+| 0 — Canvas physics render | `recomputePxPerCm(w, h)` vmin-proportional | Called in `PixiRenderer.ts` on init, `setupArena`, and `resize()` |
+| 1 — Root font | `clamp(11px, 1.5vmin, 18px)` | `globals.css` — all Tailwind rem utilities auto-scale |
+| 2 — SVG arcs | `SpinArcBar` uses `viewBox` + em container | SVG geometry stays in user-units; container is `size/14 em` |
+| 3 — HUD inline px | `PlayerStrip`, `OpponentStrip`, `GameRoomPage` HudBar | em and `clamp()` replacements |
+| 4 — GameShell controllers | `useVmin()` hook; joystick/button sizes proportional | `joystickSize = clamp(56, vmin*0.1, 110)` etc. |
+| 5 — Orientation toggle | `RotateBtn` in GameShell; `forceOrientation` localStorage state | `toggleOrientation()` flips portrait↔landscape; persists across refreshes |
+| 6 — Lobby/auth pages | `min(Npx, 92vw)` on all fixed max-widths; `100dvh` on full-height pages | All player-facing lobbies, login, leaderboard, tournament, spectator pages |
+
+### Key rules when editing player-facing UI
+- **Never use bare `px` values** for font sizes, widths, or heights in player-facing pages. Use `em`, `rem`, `clamp()`, or `vmin`.
+- **Max-widths** must be `min(Npx, 92vw)` — never a bare `max-w-[Npx]` or `maxWidth: N`.
+- **Full-height containers** use `min-height: 100dvh` (not `100vh`) for mobile address-bar safety.
+- **Admin pages** (`client/src/pages/admin/`) are exempt — they use fixed px and that is intentional.
+- **Admin preview canvases** scale automatically via Layer 0 (the canvas dimensions become the vmin reference), so no extra changes are needed there.
+
+### Do NOT change
+- `PX_PER_CM_BASE = 24` — physics reference constant, never touch.
+- `cmToPhysics` / `physicsToCm` — always fixed; server determinism depends on these.
+- `PixiRenderer` `resizeTo: container` canvas sizing — already correct.
+- `GameShell` outer container formula `min(96vw, calc(96vh * 1.72))` — already correct.
 
 ## Beyblade Type Distribution
 

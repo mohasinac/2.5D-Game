@@ -11,7 +11,7 @@ export function HomePage() {
         <p className="text-[18px] text-theme-muted">Real-time multiplayer spinning top battles</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 max-w-[560px] w-full mb-10">
+      <div className="grid grid-cols-2 gap-4 max-w-[min(560px,92vw)] w-full mb-10">
         <Link
           to="/game"
           className="group block p-8 bg-bg2 rounded-[20px] border border-border-c no-underline transition-colors duration-200 hover:border-theme-blue"
