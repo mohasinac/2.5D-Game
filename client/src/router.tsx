@@ -3,6 +3,9 @@ import { RootLayout } from "./layouts/RootLayout";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRoute } from "./components/auth/AdminRoute";
 
+// Mock / sandbox pages (no auth required)
+import { BeybladeRendererPage } from "./pages/mock/BeybladeRendererPage";
+
 // Pages
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
@@ -41,6 +44,10 @@ function SuspenseWrap({ children }: { children: React.ReactNode }) {
 }
 
 export const router = createBrowserRouter([
+  {
+    path: "/mock/beyblade",
+    element: <BeybladeRendererPage />,
+  },
   {
     path: "/login",
     element: <LoginPage />,

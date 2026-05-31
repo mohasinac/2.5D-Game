@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@colyseus/schema": "^2.0.35",
+    "@types/three": "^0.184.1",
     "clsx": "^2.1.1",
     "colyseus.js": "^0.16.22",
     "firebase": "^11.0.0",
@@ -25,6 +26,7 @@
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^6.28.0",
     "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

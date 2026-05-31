@@ -5,3 +5,15 @@ client/.env.local
 node_modules
 client/node_modules
 src/node_modules
+.claude
+.firebase
+.vercel
+case study
+docs
+linka
+research
+test-results
+tests
+scripts
+client/.vercel
+client/dist
