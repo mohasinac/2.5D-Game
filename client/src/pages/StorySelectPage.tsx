@@ -92,15 +92,15 @@ export default function StorySelectPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="h-dvh overflow-hidden bg-gray-900 text-white flex items-center justify-center">
         <p className="text-xl">Loading Story Mode...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="h-dvh overflow-hidden bg-gray-900 text-white flex flex-col">
+      <div className="max-w-4xl mx-auto w-full flex flex-col" style={{ flex: 1, minHeight: 0, padding: '1.5rem', overflowY: 'auto' }}>
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Story Mode</h1>
           <button

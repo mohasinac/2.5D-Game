@@ -376,6 +376,8 @@ All asset libraries accept **PNG / JPG / GIF / WebP**. GIF uploads bypass the de
 
 The client UI and game canvas scale with `vmin = min(viewport width, viewport height)`. **Admin CRUD pages are excluded** — only player-facing pages apply these rules.
 
+**Global constraint:** `html { overflow: hidden; }` is set in `globals.css` (intentional — game canvas pages use `position: fixed`). Because of this, every player-facing page shell must use `height: 100dvh; overflow: hidden` — NOT `min-height`. Content that overflows `html { overflow: hidden }` is permanently inaccessible.
+
 ### Layers (all implemented)
 
 | Layer | What | How |
@@ -386,14 +388,30 @@ The client UI and game canvas scale with `vmin = min(viewport width, viewport he
 | 3 — HUD inline px | `PlayerStrip`, `OpponentStrip`, `GameRoomPage` HudBar | em and `clamp()` replacements |
 | 4 — GameShell controllers | `useVmin()` hook; joystick/button sizes proportional | `joystickSize = clamp(56, vmin*0.1, 110)` etc. |
 | 5 — Orientation toggle | `RotateBtn` in GameShell; `forceOrientation` localStorage state | `toggleOrientation()` flips portrait↔landscape; persists across refreshes |
-| 6 — Lobby/auth pages | `min(Npx, 92vw)` on all fixed max-widths; `100dvh` on full-height pages | All player-facing lobbies, login, leaderboard, tournament, spectator pages |
+| 6 — All player-facing pages | `height: 100dvh; overflow: hidden` shell on every page; `clamp()` fonts | Game-like viewport fit — no document scroll ever, content shrinks proportionally |
+
+### Page patterns (all player-facing pages follow one of these)
+
+| Pattern | Shell | When to use |
+|---------|-------|-------------|
+| **A — Focus** | `height:100dvh; overflow:hidden` + all fixed px → `clamp()` | Centered single-task pages: Login, Register, Home, TeamBattleLobby |
+| **B — Listing** | `height:100dvh; overflow:hidden; display:flex; flex-direction:column` shell + inner `flex:1; min-height:0; overflow-y:auto; data-testid="scroll-body"` | Pages with potentially long content: Leaderboard, MatchHistory, Profile, MyBeys, Settings, Tournament\* |
+| **C — Carousel** | `height:100dvh; overflow:hidden` shell + `CardCarousel` with `min(440px, calc(100dvh - 15vmin))` height | Multi-card navigation: BattleModeCards, StoryModeCards, GameModeSelect |
+| **D — Already-correct shell** | Shell already `height:100dvh; overflow:hidden` — font clamp only | BattleLobby, TournamentList |
+| **E — Rem-only** | Just `min-h-screen` → `h-dvh overflow-hidden` | All-Tailwind-rem pages: Matchmaking, NotFound |
 
 ### Key rules when editing player-facing UI
+- **Never use `min-height: 100dvh` or `min-h-screen`** on player-facing page shells — use `height: 100dvh; overflow: hidden` (`h-dvh overflow-hidden`).
 - **Never use bare `px` values** for font sizes, widths, or heights in player-facing pages. Use `em`, `rem`, `clamp()`, or `vmin`.
+- **Fixed px font sizes** must become `clamp(minPx, Xvmin, maxPx)`. Tailwind rem classes (`text-sm`, `text-xl`, etc.) already scale via the root font — only arbitrary `text-[Npx]` values need converting.
 - **Max-widths** must be `min(Npx, 92vw)` — never a bare `max-w-[Npx]` or `maxWidth: N`.
-- **Full-height containers** use `min-height: 100dvh` (not `100vh`) for mobile address-bar safety.
+- **Listing pages** need `data-testid="scroll-body"` on the inner scroll container for E2E tests.
+- **Multi-row grids** (more than 1 row at any viewport) must use `CardCarousel` instead — `CardCarousel` cards need `role="button"`, `tabIndex={0}`, `aria-label={card.title}`.
 - **Admin pages** (`client/src/pages/admin/`) are exempt — they use fixed px and that is intentional.
-- **Admin preview canvases** scale automatically via Layer 0 (the canvas dimensions become the vmin reference), so no extra changes are needed there.
+- **Admin preview canvases** scale automatically via Layer 0, so no extra changes needed.
+
+### Game canvas pages (fully exempt from all of the above)
+`GameRoomPage`, `BattleGamePage`, `TeamBattleGamePage`, `TournamentBattleGamePage`, `ReplayViewerPage` — these use `position: fixed` + PixiJS canvas.
 
 ### Do NOT change
 - `PX_PER_CM_BASE = 24` — physics reference constant, never touch.

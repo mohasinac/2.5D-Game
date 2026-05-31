@@ -8,36 +8,33 @@ const VIEWPORTS = [
 ];
 
 for (const vp of VIEWPORTS) {
-  test(`Login page: Sign In button reachable on ${vp.name} (${vp.width}×${vp.height})`, async ({ page }) => {
+  test(`Login page: Sign In button visible without scrolling on ${vp.name} (${vp.width}×${vp.height})`, async ({ page }) => {
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await page.goto('/login');
 
-    // Sign In button must exist and be reachable via scroll
+    // Both buttons must be immediately visible — no scroll needed
     const signInBtn = page.getByRole('button', { name: /sign in/i });
-    await signInBtn.scrollIntoViewIfNeeded();
     await expect(signInBtn).toBeVisible({ timeout: 8_000 });
 
-    // Google button also reachable
     const googleBtn = page.getByRole('button', { name: /continue with google/i });
-    await googleBtn.scrollIntoViewIfNeeded();
     await expect(googleBtn).toBeVisible();
 
-    // No layout ancestor blocking scroll
-    const blocked = await page.evaluate(() => {
-      const btn = document.querySelector('button[type="submit"]');
-      let el = btn?.parentElement ?? null;
-      while (el && el !== document.documentElement) {
-        if (['DIV', 'MAIN', 'BODY'].includes(el.tagName)) {
-          if (getComputedStyle(el).overflowY === 'hidden') {
-            return `overflow:hidden on <${el.tagName}>`;
-          }
-        }
-        el = el.parentElement;
-      }
-      return 'ok';
-    });
-    expect(blocked).toBe('ok');
+    // Sign In button must be within viewport bounds (not clipped)
+    const signInBox = await signInBtn.boundingBox();
+    expect(signInBox, 'Sign In button has no bounding box').not.toBeNull();
+    expect(signInBox!.y + signInBox!.height, 'Sign In button bottom is clipped below viewport').toBeLessThanOrEqual(vp.height + 2);
+    expect(signInBox!.y, 'Sign In button top is above viewport').toBeGreaterThanOrEqual(-2);
 
-    await page.screenshot({ path: `playwright-report/login-${vp.name}.png`, fullPage: true });
+    // No horizontal overflow
+    const scrollW = await page.evaluate(() => document.documentElement.scrollWidth);
+    const clientW = await page.evaluate(() => document.documentElement.clientWidth);
+    expect(scrollW, 'Horizontal overflow on login page').toBeLessThanOrEqual(clientW + 2);
+
+    // Page fits exactly in viewport — game-like no-document-scroll design
+    const scrollH = await page.evaluate(() => document.documentElement.scrollHeight);
+    const clientH = await page.evaluate(() => document.documentElement.clientHeight);
+    expect(scrollH, 'Login page taller than viewport (document scroll appeared)').toBeLessThanOrEqual(clientH + 2);
+
+    await page.screenshot({ path: `playwright-report/login-${vp.name}.png` });
   });
 }

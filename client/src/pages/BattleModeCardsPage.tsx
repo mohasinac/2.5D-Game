@@ -245,7 +245,7 @@ export function BattleModeCardsPage() {
       justifyContent: 'center',
       position: 'relative',
       overflow: 'hidden',
-      paddingTop: 'clamp(32px, 5vmin, 52px)',
+      paddingTop: 'clamp(12px,3vmin,52px)',
       paddingBottom: '8px',
       boxSizing: 'border-box',
     }}>
@@ -262,7 +262,7 @@ export function BattleModeCardsPage() {
         ← Back
       </button>
 
-      <div style={{ textAlign: 'center', marginBottom: 'clamp(12px, 2.5vh, 32px)', flexShrink: 0 }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(6px,1.5vmin,24px)', flexShrink: 0 }}>
         <h1 style={{
           fontSize: 'clamp(18px, 4vw, 32px)', fontWeight: 900, color: '#fff',
           letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
@@ -274,7 +274,7 @@ export function BattleModeCardsPage() {
         </p>
       </div>
 
-      <div style={{ width: '100%', height: 'min(440px, calc(100vh - 160px))', flexShrink: 0 }}>
+      <div style={{ width: '100%', height: 'min(440px, calc(100dvh - 15vmin))', flexShrink: 0 }}>
         <CardCarousel cards={cards} initialIndex={initialCardIndex} onIndexChange={saveCardIndex} />
       </div>
 

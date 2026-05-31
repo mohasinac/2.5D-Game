@@ -92,7 +92,7 @@ export function TournamentLobbyPage() {
 
   if (tournamentLoading || !tournament) {
     return (
-      <div className="min-h-screen bg-bg0 flex items-center justify-center">
+      <div className="h-dvh overflow-hidden bg-bg0 flex items-center justify-center">
         <div className="spin w-10 h-10 border-2 border-border-c border-t-theme-yellow rounded-full" />
       </div>
     );
@@ -268,13 +268,13 @@ export function TournamentLobbyPage() {
   }, [myParticipant]);
 
   return (
-    <div className="min-h-screen bg-bg0 p-4 sm:p-8">
-      <div className="max-w-[min(860px,92vw)] mx-auto">
+    <div className="h-dvh overflow-hidden bg-bg0 flex flex-col" style={{ boxSizing: 'border-box' }}>
+      <div className="max-w-[min(860px,92vw)] mx-auto w-full flex flex-col" style={{ flex: 1, minHeight: 0, padding: 'clamp(8px,1.5vmin,32px)', overflowY: 'auto' }} data-testid="scroll-body">
         {/* Header */}
         <div className="mb-7">
           <Link to="/game/tournament" className="text-theme-faint text-[13px] no-underline">← Tournaments</Link>
           <div className="flex items-center gap-3 mt-2">
-            <h1 className="text-[28px] font-black text-theme-text tracking-[-0.02em]">
+            <h1 className="font-black text-theme-text tracking-[-0.02em]" style={{ fontSize: 'clamp(16px,3vw,28px)' }}>
               {tournament.name}
             </h1>
             <span className={`${PILL_BASE} ${STATUS_PILL[tournament.status] ?? STATUS_PILL.draft}`}>
@@ -352,7 +352,7 @@ export function TournamentLobbyPage() {
               <div className="bg-yellow-10 border border-yellow-20 rounded-xl p-[16px_20px] mb-4 flex items-center gap-3">
                 <span className="text-[28px]">⏱</span>
                 <div>
-                  <p className="text-theme-yellow font-bold text-[20px]">{countdown}</p>
+                  <p className="text-theme-yellow font-bold" style={{ fontSize: 'clamp(14px,2.5vw,20px)' }}>{countdown}</p>
                   <p className="text-theme-muted text-[12px]">until tournament starts</p>
                 </div>
               </div>

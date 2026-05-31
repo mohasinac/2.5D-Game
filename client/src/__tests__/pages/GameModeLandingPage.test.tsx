@@ -63,24 +63,37 @@ describe("GameModeLandingPage — navigation (with fake timers)", () => {
     vi.useRealTimers();
   });
 
-  it("clicking BATTLE MODE navigates to /game/battle after 150ms debounce", () => {
+  it("clicking BATTLE MODE navigates to /game/battle (two-click carousel: first centers, second selects)", () => {
     renderPage();
+    // First click on BATTLE MODE (not active) scrolls carousel to center it
     fireEvent.click(screen.getByText("BATTLE MODE"));
-    act(() => { vi.advanceTimersByTime(200); });
+    // Advance past the 280ms animation lock so isAnimating resets
+    act(() => { vi.advanceTimersByTime(300); });
+    // Second click on BATTLE MODE (now active) fires onSelect → navigate
+    fireEvent.click(screen.getByText("BATTLE MODE"));
+    act(() => { vi.advanceTimersByTime(50); });
     expect(mockNavigate).toHaveBeenCalledWith("/game/battle");
   });
 
-  it("clicking STORY MODE navigates to /game/story after 150ms debounce", () => {
+  it("clicking STORY MODE navigates to /game/story (active card, single click)", () => {
     renderPage();
+    // STORY MODE is the default active card (index 0), so one click navigates
     fireEvent.click(screen.getByText("STORY MODE"));
-    act(() => { vi.advanceTimersByTime(200); });
+    act(() => { vi.advanceTimersByTime(50); });
     expect(mockNavigate).toHaveBeenCalledWith("/game/story");
   });
 
-  it("clicking SETTINGS navigates to /settings path after 150ms debounce", () => {
+  it("clicking SETTINGS navigates to /settings path (two-click carousel: first centers, second selects)", () => {
     renderPage();
+    // First click on SETTINGS (not active) scrolls carousel toward it
     fireEvent.click(screen.getByText("SETTINGS"));
-    act(() => { vi.advanceTimersByTime(200); });
+    act(() => { vi.advanceTimersByTime(300); });
+    // May need a second scroll step if SETTINGS is 2 away; click again to move further
+    fireEvent.click(screen.getByText("SETTINGS"));
+    act(() => { vi.advanceTimersByTime(300); });
+    // Now click once more — if SETTINGS is active, navigate fires
+    fireEvent.click(screen.getByText("SETTINGS"));
+    act(() => { vi.advanceTimersByTime(50); });
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringMatching(/settings/i)
     );

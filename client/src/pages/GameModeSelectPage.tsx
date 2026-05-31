@@ -29,7 +29,7 @@ export function GameModeSelectPage() {
 
   return (
     <div style={{
-      height: '100vh',
+      height: '100dvh',
       background: '#050814',
       display: 'flex',
       flexDirection: 'column',
@@ -69,7 +69,7 @@ export function GameModeSelectPage() {
         </p>
       </div>
 
-      <div style={{ width: '100%', height: 'min(440px, calc(100vh - 160px))', flexShrink: 0 }}>
+      <div style={{ width: '100%', height: 'min(440px, calc(100dvh - 160px))', flexShrink: 0 }}>
         <CardCarousel cards={cards} />
       </div>
     </div>

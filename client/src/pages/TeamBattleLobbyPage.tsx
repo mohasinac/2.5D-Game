@@ -50,11 +50,11 @@ export function TeamBattleLobbyPage() {
   const bluePlayers = players.filter(p => p.team === "blue");
 
   return (
-    <div className="min-h-screen bg-bg0 flex items-center justify-center p-6">
+    <div className="bg-bg0 flex items-center justify-center" style={{ height: '100dvh', overflow: 'hidden', padding: 'clamp(8px,2vmin,24px)', boxSizing: 'border-box' }}>
       <div className="w-full max-w-[min(560px,92vw)] flex flex-col gap-5">
         <div>
-          <h1 className="text-[24px] font-bold text-theme-text">Team Battle</h1>
-          <p className="text-theme-faint text-[13px]">2v2 — pick your team, then join the room</p>
+          <h1 className="font-bold text-theme-text" style={{ fontSize: 'clamp(16px,3vmin,24px)' }}>Team Battle</h1>
+          <p className="text-theme-faint" style={{ fontSize: 'clamp(11px,1.5vmin,13px)' }}>2v2 — pick your team, then join the room</p>
         </div>
 
         {/* Team picker */}
@@ -64,7 +64,7 @@ export function TeamBattleLobbyPage() {
               key={t}
               type="button"
               onClick={() => setTeam(t)}
-              className={`flex-1 py-3.5 rounded-xl text-[16px] font-bold cursor-pointer border-2 ${
+              className={`flex-1 py-3.5 rounded-xl text-base font-bold cursor-pointer border-2 ${
                 t === "blue"
                   ? `text-theme-blue ${team === t ? "border-theme-blue bg-blue-10" : "border-border-c bg-bg2"}`
                   : `text-theme-red ${team === t ? "border-theme-red bg-red-10" : "border-border-c bg-bg2"}`

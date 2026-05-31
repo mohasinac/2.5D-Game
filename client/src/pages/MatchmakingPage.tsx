@@ -38,7 +38,7 @@ export default function MatchmakingPage() {
   const modeLabel = MODE_LABELS[roomType ?? ""] ?? "Match";
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-bg1 p-6 text-center">
+    <div className="flex flex-col items-center justify-center h-dvh overflow-hidden bg-bg1 p-6 text-center">
       {matchmakingError ? (
         <>
           <p className="text-red-400 text-lg mb-4">{matchmakingError}</p>

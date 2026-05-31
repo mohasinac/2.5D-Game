@@ -75,7 +75,7 @@ export default function EpisodeOutroPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="h-dvh overflow-hidden bg-gray-900 text-white flex items-center justify-center">
         <p className="text-xl">Loading...</p>
       </div>
     );
@@ -83,7 +83,7 @@ export default function EpisodeOutroPage() {
 
   if (!episode) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center flex-col gap-4">
+      <div className="h-dvh overflow-hidden bg-gray-900 text-white flex items-center justify-center flex-col gap-4">
         <p className="text-xl">Episode not found</p>
         <button onClick={() => navigate("/game/story")} className="px-4 py-2 bg-gray-700 rounded">
           Back to Story
@@ -96,7 +96,7 @@ export default function EpisodeOutroPage() {
   const currentLine = hasDialogue ? episode.outroDialogue[dialogueIndex] : null;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
+    <div className="h-dvh overflow-hidden bg-gray-900 text-white flex flex-col items-center justify-center p-8">
       <div className="max-w-2xl w-full text-center">
         <div className={`text-5xl font-bold mb-4 ${won ? "text-green-400" : "text-red-400"}`}>
           {won ? "VICTORY" : "DEFEAT"}

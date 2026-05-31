@@ -70,10 +70,10 @@ export function TournamentListPage() {
   }, [filter]);
 
   const S = {
-    page: { height: '100vh', background: 'radial-gradient(ellipse at 50% 0%, #0d0a1e 0%, #080810 60%, #060810 100%)', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box' } as React.CSSProperties,
-    inner: { maxWidth: 'min(860px, 92vw)', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, padding: '20px 20px 0' } as React.CSSProperties,
+    page: { height: '100dvh', background: 'radial-gradient(ellipse at 50% 0%, #0d0a1e 0%, #080810 60%, #060810 100%)', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box' } as React.CSSProperties,
+    inner: { maxWidth: 'min(860px, 92vw)', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, padding: 'clamp(12px,2vmin,20px) clamp(12px,2vmin,20px) 0' } as React.CSSProperties,
     back: { color: 'rgba(255,255,255,0.35)', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 } as React.CSSProperties,
-    title: { fontSize: 32, fontWeight: 900, color: '#fff', margin: '8px 0 4px', letterSpacing: '-0.02em' } as React.CSSProperties,
+    title: { fontSize: 'clamp(20px,4vw,32px)', fontWeight: 900, color: '#fff', margin: '8px 0 4px', letterSpacing: '-0.02em' } as React.CSSProperties,
     sub: { color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: 0 } as React.CSSProperties,
   } as const;
 
@@ -107,7 +107,7 @@ export function TournamentListPage() {
         </div>
 
         {/* List — scrolls within its flex container so page never overflows */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 20 }}>
+        <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 20, minHeight: 0 }} data-testid="scroll-body">
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>
             <div style={{ width: 36, height: 36, border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#00e5ff', borderRadius: '50%', margin: '0 auto 16px', animation: 'spin 0.8s linear infinite' }} />
@@ -115,7 +115,7 @@ export function TournamentListPage() {
           </div>
         ) : tournaments.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🏆</div>
+            <div style={{ fontSize: 'clamp(32px,6vw,48px)', marginBottom: 12 }}>🏆</div>
             <p style={{ margin: 0 }}>No {filter === "active" ? "active " : ""}tournaments found.</p>
             <p style={{ fontSize: 13, marginTop: 4, color: 'rgba(255,255,255,0.2)' }}>Check back soon!</p>
           </div>

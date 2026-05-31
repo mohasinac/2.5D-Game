@@ -66,16 +66,19 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg0 flex items-center justify-center p-5">
+    <div
+      className="bg-bg0 flex items-center justify-center"
+      style={{ height: '100dvh', overflow: 'hidden', padding: 'clamp(8px,2dvh,20px)', boxSizing: 'border-box' }}
+    >
       <div className="fixed top-3 right-4 z-[100]">
         <ThemeToggle compact />
       </div>
 
-      <div className="w-full max-w-[min(420px,92vw)]">
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-2">🌀</div>
-          <h1 className="text-[22px] font-bold text-theme-text m-0">Create Account</h1>
-          <p className="text-theme-muted text-[13px] mt-1">Join the arena and start battling</p>
+      <div style={{ width: '100%', maxWidth: 'min(420px,92vw)' }}>
+        <div className="text-center" style={{ marginBottom: 'clamp(6px,1.5dvh,24px)' }}>
+          <div style={{ fontSize: 'clamp(24px,5vmin,48px)', marginBottom: 'clamp(4px,1dvh,8px)' }}>🌀</div>
+          <h1 className="font-bold text-theme-text" style={{ fontSize: 'clamp(14px,2.5vmin,22px)', margin: 0 }}>Create Account</h1>
+          <p className="text-theme-muted" style={{ fontSize: 'clamp(11px,1.5vmin,13px)', marginTop: 4 }}>Join the arena and start battling</p>
         </div>
 
         {/* Google sign-in */}
@@ -84,11 +87,12 @@ export function RegisterPage() {
           onClick={handleGoogleSignIn}
           disabled={googleLoading || loading}
           className={cn(
-            "w-full flex items-center justify-center gap-2.5 py-[11px] px-5 mb-5",
+            "w-full flex items-center justify-center gap-2.5",
             "bg-bg2 border border-border-c rounded-[10px]",
-            "text-[14px] font-semibold text-theme-text cursor-pointer",
+            "text-sm font-semibold text-theme-text cursor-pointer",
             (googleLoading || loading) && "opacity-50"
           )}
+          style={{ padding: 'clamp(7px,1.3dvh,11px) 20px', marginBottom: 'clamp(6px,1.5dvh,20px)', boxSizing: 'border-box' }}
         >
           <svg width="18" height="18" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.2 0 24 0 14.7 0 6.7 5.4 2.7 13.3l7.8 6.1C12.4 13.2 17.7 9.5 24 9.5z"/>
@@ -99,7 +103,7 @@ export function RegisterPage() {
           {googleLoading ? "Signing in…" : "Continue with Google"}
         </button>
 
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center gap-3" style={{ marginBottom: 'clamp(6px,1.5dvh,20px)' }}>
           <div className="flex-1 h-px bg-border-c" />
           <span className="text-theme-faint text-[12px]">or register with email</span>
           <div className="flex-1 h-px bg-border-c" />
@@ -107,54 +111,59 @@ export function RegisterPage() {
 
         <form
           onSubmit={handleEmailRegister}
-          className="bg-bg2 border border-border-c rounded-2xl p-7 flex flex-col gap-4"
+          className="bg-bg2 border border-border-c rounded-2xl flex flex-col"
+          style={{ padding: 'clamp(10px,2dvh,28px) clamp(12px,2.5vw,28px)', gap: 'clamp(6px,1.2dvh,16px)' }}
         >
           <div>
-            <label className="block text-xs text-muted mb-1.5">Display Name <span className="text-faint">(optional)</span></label>
+            <label className="block text-xs text-muted" style={{ marginBottom: 6 }}>Display Name <span className="text-faint">(optional)</span></label>
             <input
               type="text"
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
               placeholder="Blade Master"
-              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
+              className="w-full bg-bg3 border border-border rounded-lg text-text text-sm"
+              style={{ padding: 'clamp(4px,1dvh,8px) 12px', boxSizing: 'border-box' }}
               autoComplete="name"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-muted mb-1.5">Email</label>
+            <label className="block text-xs text-muted" style={{ marginBottom: 6 }}>Email</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
+              className="w-full bg-bg3 border border-border rounded-lg text-text text-sm"
+              style={{ padding: 'clamp(4px,1dvh,8px) 12px', boxSizing: 'border-box' }}
               autoComplete="email"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs text-muted mb-1.5">Password</label>
+            <label className="block text-xs text-muted" style={{ marginBottom: 6 }}>Password</label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Min. 6 characters"
-              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
+              className="w-full bg-bg3 border border-border rounded-lg text-text text-sm"
+              style={{ padding: 'clamp(4px,1dvh,8px) 12px', boxSizing: 'border-box' }}
               autoComplete="new-password"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs text-muted mb-1.5">Confirm Password</label>
+            <label className="block text-xs text-muted" style={{ marginBottom: 6 }}>Confirm Password</label>
             <input
               type="password"
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
               placeholder="Repeat your password"
-              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
+              className="w-full bg-bg3 border border-border rounded-lg text-text text-sm"
+              style={{ padding: 'clamp(4px,1dvh,8px) 12px', boxSizing: 'border-box' }}
               autoComplete="new-password"
               required
             />
@@ -164,20 +173,21 @@ export function RegisterPage() {
             type="submit"
             disabled={loading || googleLoading || !email.trim() || !password || !confirm}
             className={cn(
-              "py-[10px] px-5 bg-theme-purple text-white rounded-lg text-[14px] font-semibold border-none cursor-pointer mt-1",
+              "bg-theme-purple text-white rounded-lg text-sm font-semibold border-none cursor-pointer",
               (loading || googleLoading || !email.trim() || !password || !confirm) && "opacity-50"
             )}
+            style={{ padding: 'clamp(6px,1.3dvh,10px) 20px', marginTop: 4 }}
           >
             {loading ? "Creating account…" : "Create Account"}
           </button>
         </form>
 
-        <div className="text-center mt-5 flex justify-center gap-5">
+        <div className="text-center flex justify-center gap-5" style={{ marginTop: 'clamp(6px,1.5dvh,20px)' }}>
           <Link to="/login" className="text-theme-muted text-[13px] no-underline">
             Already have an account? <span className="text-theme-purple">Sign in</span>
           </Link>
         </div>
-        <div className="text-center mt-3">
+        <div className="text-center" style={{ marginTop: 'clamp(4px,1dvh,12px)' }}>
           <Link to="/" className="text-theme-faint text-[12px] no-underline">← Back to home</Link>
         </div>
       </div>

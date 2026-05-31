@@ -49,62 +49,67 @@ export default function SpectatorLobbyPage() {
     return '⚔';
   }
 
-  const pageStyle: React.CSSProperties = {
-    minHeight: '100vh', background: '#0a0a0f', color: '#fff',
-    padding: '24px 16px', fontFamily: 'inherit',
-  };
-
   return (
-    <div style={pageStyle}>
-      <div style={{ maxWidth: 'min(600px, 92vw)', margin: '0 auto' }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer', marginBottom: 20, padding: 0 }}>← Back</button>
-        <h1 style={{ fontSize: 24, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Spectate</h1>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Watch live matches in progress.</p>
+    <div style={{
+      height: '100dvh', overflow: 'hidden', background: '#0a0a0f', color: '#fff',
+      display: 'flex', flexDirection: 'column',
+      padding: 'clamp(8px,2vmin,24px) clamp(8px,2vmin,16px)', fontFamily: 'inherit', boxSizing: 'border-box',
+    }}>
+      <div style={{ maxWidth: 'min(600px, 92vw)', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+        {/* Fixed header */}
+        <div style={{ flexShrink: 0 }}>
+          <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer', marginBottom: 12, padding: 0 }}>← Back</button>
+          <h1 style={{ fontSize: 'clamp(18px,4vw,24px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Spectate</h1>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>Watch live matches in progress.</p>
+        </div>
 
-        {loading ? (
-          <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)' }}>Loading rooms…</div>
-        ) : rooms.length === 0 ? (
-          <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)', background: '#111120', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 40 }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>🎮</div>
-            <div style={{ fontSize: 15, fontWeight: 600 }}>No live matches right now.</div>
-            <div style={{ fontSize: 13, marginTop: 6 }}>Check back when players are competing.</div>
-          </div>
-        ) : (
-          rooms.map(room => (
-            <div key={room.id} style={{ background: '#111120', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '16px 20px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ fontSize: 28, flexShrink: 0 }}>{modeIcon(room.roomType)}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
-                  {room.playerNames?.join(' vs ') ?? 'Unknown Players'}
-                </div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                  {room.beyNames?.join(' · ')} · {formatElapsed(room.elapsedMs)}
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-                {(room.spectatorCount ?? 0) > 0 && (
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>👁 {room.spectatorCount}</span>
-                )}
-                <button
-                  onClick={() => {
-                    if (room.colyseusRoomId) {
-                      navigate(`/game/room?spectate=true&roomId=${room.colyseusRoomId}`);
-                    }
-                  }}
-                  disabled={!room.colyseusRoomId}
-                  style={{
-                    padding: '6px 16px', background: 'rgba(0,229,255,0.1)',
-                    border: '1px solid rgba(0,229,255,0.4)', borderRadius: 8,
-                    color: '#00e5ff', fontSize: 13, cursor: room.colyseusRoomId ? 'pointer' : 'not-allowed',
-                    opacity: room.colyseusRoomId ? 1 : 0.4,
-                  }}
-                >
-                  Watch
-                </button>
-              </div>
+        {/* Scrollable body */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} data-testid="scroll-body">
+          {loading ? (
+            <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)' }}>Loading rooms…</div>
+          ) : rooms.length === 0 ? (
+            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', background: '#111120', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 'clamp(16px,3vmin,40px)' }}>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>🎮</div>
+              <div style={{ fontSize: 15, fontWeight: 600 }}>No live matches right now.</div>
+              <div style={{ fontSize: 13, marginTop: 6 }}>Check back when players are competing.</div>
             </div>
-          ))
-        )}
+          ) : (
+            rooms.map(room => (
+              <div key={room.id} style={{ background: '#111120', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '16px 20px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ fontSize: 28, flexShrink: 0 }}>{modeIcon(room.roomType)}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
+                    {room.playerNames?.join(' vs ') ?? 'Unknown Players'}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                    {room.beyNames?.join(' · ')} · {formatElapsed(room.elapsedMs)}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                  {(room.spectatorCount ?? 0) > 0 && (
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>👁 {room.spectatorCount}</span>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (room.colyseusRoomId) {
+                        navigate(`/game/room?spectate=true&roomId=${room.colyseusRoomId}`);
+                      }
+                    }}
+                    disabled={!room.colyseusRoomId}
+                    style={{
+                      padding: '6px 16px', background: 'rgba(0,229,255,0.1)',
+                      border: '1px solid rgba(0,229,255,0.4)', borderRadius: 8,
+                      color: '#00e5ff', fontSize: 13, cursor: room.colyseusRoomId ? 'pointer' : 'not-allowed',
+                      opacity: room.colyseusRoomId ? 1 : 0.4,
+                    }}
+                  >
+                    Watch
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

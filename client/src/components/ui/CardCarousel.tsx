@@ -116,9 +116,9 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
         style={{
           position: 'absolute', left: '4px', top: '50%', transform: 'translateY(-50%)',
           zIndex: 20, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-          color: '#fff', borderRadius: '50%', width: 40, height: 40,
+          color: '#fff', borderRadius: '50%', width: 'clamp(28px,4vmin,40px)', height: 'clamp(28px,4vmin,40px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', fontSize: '18px', transition: 'background 150ms',
+          cursor: 'pointer', fontSize: 'clamp(14px,2.5vmin,18px)', transition: 'background 150ms',
         }}
       >
         ‹
@@ -130,9 +130,9 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
         style={{
           position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)',
           zIndex: 20, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-          color: '#fff', borderRadius: '50%', width: 40, height: 40,
+          color: '#fff', borderRadius: '50%', width: 'clamp(28px,4vmin,40px)', height: 'clamp(28px,4vmin,40px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', fontSize: '18px', transition: 'background 150ms',
+          cursor: 'pointer', fontSize: 'clamp(14px,2.5vmin,18px)', transition: 'background 150ms',
         }}
       >
         ›
@@ -142,6 +142,9 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
       {cards.map((card, idx) => (
         <div
           key={card.id}
+          role="button"
+          tabIndex={0}
+          aria-label={card.title}
           style={getCardStyle(idx)}
           onClick={() => {
             if (idx !== activeIndex) {
@@ -160,7 +163,7 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
             className="carousel-card"
             style={{
               width: 'min(280px, 72vmin)',
-              height: 'min(360px, calc(100svh - 140px))',
+              height: 'min(360px, calc(100dvh - 140px))',
               borderRadius: '16px',
               background: card.gradient,
               border: idx === activeIndex ? '2px solid rgba(255,255,255,0.4)' : '2px solid rgba(255,255,255,0.1)',
@@ -168,7 +171,7 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '24px',
+              padding: 'clamp(10px,3vmin,24px)',
               boxShadow: idx === activeIndex
                 ? '0 0 40px rgba(255,255,255,0.15), 0 20px 60px rgba(0,0,0,0.5)'
                 : '0 8px 32px rgba(0,0,0,0.4)',
@@ -200,13 +203,13 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
             )}
 
             {card.icon && (
-              <div style={{ fontSize: '64px', marginBottom: '16px', lineHeight: 1 }}>
+              <div style={{ fontSize: 'clamp(24px,7vmin,64px)', marginBottom: 'clamp(6px,2vmin,16px)', lineHeight: 1 }}>
                 {card.icon}
               </div>
             )}
 
             <div style={{
-              fontSize: '26px', fontWeight: 900, color: '#fff',
+              fontSize: 'clamp(13px,3vmin,26px)', fontWeight: 900, color: '#fff',
               textAlign: 'center', letterSpacing: '0.04em',
               textShadow: '0 2px 8px rgba(0,0,0,0.5)',
               textTransform: 'uppercase',
@@ -216,7 +219,7 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
 
             {card.subtitle && (
               <div style={{
-                fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.6)',
+                fontSize: 'clamp(10px,1.4vmin,12px)', fontWeight: 600, color: 'rgba(255,255,255,0.6)',
                 textAlign: 'center', marginTop: '4px', letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}>
@@ -225,7 +228,7 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
             )}
 
             <div style={{
-              marginTop: '16px', fontSize: '13px', color: 'rgba(255,255,255,0.75)',
+              marginTop: 'clamp(6px,2vmin,16px)', fontSize: 'clamp(10px,1.5vmin,13px)', color: 'rgba(255,255,255,0.75)',
               textAlign: 'center', lineHeight: 1.5,
             }}>
               {card.description}
@@ -233,10 +236,10 @@ export function CardCarousel({ cards, initialIndex = 0, onIndexChange, className
 
             {idx === activeIndex && !card.disabled && (
               <div style={{
-                marginTop: '24px', padding: '10px 28px',
+                marginTop: 'clamp(8px,2.5vmin,24px)', padding: 'clamp(6px,1.5vmin,10px) clamp(12px,3vmin,28px)',
                 background: 'rgba(255,255,255,0.2)', borderRadius: '24px',
                 border: '1px solid rgba(255,255,255,0.3)',
-                fontSize: '13px', fontWeight: 700, color: '#fff',
+                fontSize: 'clamp(10px,1.5vmin,13px)', fontWeight: 700, color: '#fff',
                 letterSpacing: '0.08em', textTransform: 'uppercase',
               }}>
                 SELECT

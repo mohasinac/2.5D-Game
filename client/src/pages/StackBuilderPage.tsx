@@ -432,7 +432,7 @@ export default function StackBuilderPage() {
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-bg1 text-text-primary flex flex-col">
+    <div className="h-dvh overflow-hidden bg-bg1 text-text-primary flex flex-col">
       {/* Header */}
       <div className="border-b border-border px-6 py-3 flex items-center gap-4 bg-bg2">
         <h1 className="text-lg font-bold text-text-primary">Stack Builder</h1>

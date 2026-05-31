@@ -73,86 +73,95 @@ export default function ProfilePage() {
     return '#888';
   }
 
-  const pageStyle: React.CSSProperties = {
-    minHeight: '100vh', background: '#0a0a0f', color: '#fff',
-    padding: '24px 16px', fontFamily: 'inherit',
-  };
   const cardStyle: React.CSSProperties = {
     background: '#111120', border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 12, padding: '20px 24px', marginBottom: 16,
+    borderRadius: 12, padding: 'clamp(12px,2vmin,20px) clamp(12px,2.5vmin,24px)', marginBottom: 16,
   };
 
-  if (loading) return <div style={pageStyle}><div style={{ textAlign: 'center', paddingTop: 80, color: 'rgba(255,255,255,0.4)' }}>Loading profile…</div></div>;
+  if (loading) return (
+    <div style={{ height: '100dvh', overflow: 'hidden', background: '#0a0a0f', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit' }}>
+      <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>Loading profile…</div>
+    </div>
+  );
 
   const displayName = username || stats?.username || (isOwn ? currentUser?.displayName : null) || 'Player';
 
   return (
-    <div style={pageStyle}>
-      <div style={{ maxWidth: 'min(560px, 92vw)', margin: '0 auto' }}>
-        {/* Back */}
-        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer', marginBottom: 20, padding: 0 }}>← Back</button>
+    <div style={{
+      height: '100dvh', overflow: 'hidden', background: '#0a0a0f', color: '#fff',
+      display: 'flex', flexDirection: 'column',
+      padding: 'clamp(8px,2vmin,24px) clamp(8px,2vmin,16px)', fontFamily: 'inherit', boxSizing: 'border-box',
+    }}>
+      <div style={{ maxWidth: 'min(560px, 92vw)', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+        {/* Fixed header */}
+        <div style={{ flexShrink: 0 }}>
+          <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 'clamp(12px,1.8vw,14px)', cursor: 'pointer', marginBottom: 12, padding: 0 }}>← Back</button>
+        </div>
 
-        {/* Header card */}
-        <div style={cardStyle}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg,#00e5ff,#aa44ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0 }}>
-              {displayName[0]?.toUpperCase() ?? '?'}
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 22, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{displayName}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
-                Win Rate: <span style={{ color: '#44ff88', fontWeight: 700 }}>{winRate}%</span>
-                &nbsp;·&nbsp;Points: <span style={{ color: '#ffcc44', fontWeight: 700 }}>{stats?.tournamentPoints ?? 0}</span>
+        {/* Scrollable body */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} data-testid="scroll-body">
+          {/* Header card */}
+          <div style={cardStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg,#00e5ff,#aa44ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0 }}>
+                {displayName[0]?.toUpperCase() ?? '?'}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 'clamp(14px,3vw,22px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{displayName}</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
+                  Win Rate: <span style={{ color: '#44ff88', fontWeight: 700 }}>{winRate}%</span>
+                  &nbsp;·&nbsp;Points: <span style={{ color: '#ffcc44', fontWeight: 700 }}>{stats?.tournamentPoints ?? 0}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Stats grid */}
-        <div style={{ ...cardStyle, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, textAlign: 'center' }}>
-          {[['Matches', total], ['Wins', wins], ['Losses', losses], ['Draws', draws]].map(([l, v]) => (
-            <div key={l as string}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#fff' }}>{v}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{l}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Damage stat */}
-        {(stats?.totalDamageDealt ?? 0) > 0 && (
-          <div style={{ ...cardStyle, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Total Damage Dealt</span>
-            <span style={{ fontSize: 18, fontWeight: 700, color: '#ff8844' }}>{(stats?.totalDamageDealt ?? 0).toLocaleString()}</span>
-          </div>
-        )}
-
-        {/* Recent matches */}
-        <div style={cardStyle}>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>Recent Matches</div>
-          {matches.length === 0 ? (
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>No matches yet.</div>
-          ) : (
-            matches.map(m => (
-              <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ width: 40, fontWeight: 700, fontSize: 13, color: resultColor(m.result), textTransform: 'uppercase' }}>{m.result ?? '—'}</span>
-                <span style={{ flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-                  {m.opponentName ? `vs ${m.opponentName}` : m.mode ?? 'Match'}
-                </span>
-                {m.score && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{m.score}</span>}
-                {m.createdAt && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(m.createdAt.seconds * 1000).toLocaleDateString()}</span>}
+          {/* Stats grid */}
+          <div style={{ ...cardStyle, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, textAlign: 'center' }}>
+            {[['Matches', total], ['Wins', wins], ['Losses', losses], ['Draws', draws]].map(([l, v]) => (
+              <div key={l as string}>
+                <div style={{ fontSize: 'clamp(14px,3vw,22px)', fontWeight: 900, color: '#fff' }}>{v}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{l}</div>
               </div>
-            ))
+            ))}
+          </div>
+
+          {/* Damage stat */}
+          {(stats?.totalDamageDealt ?? 0) > 0 && (
+            <div style={{ ...cardStyle, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Total Damage Dealt</span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: '#ff8844' }}>{(stats?.totalDamageDealt ?? 0).toLocaleString()}</span>
+            </div>
           )}
-          {matches.length > 0 && (
-            <button onClick={() => navigate('/game/history')} style={{ marginTop: 12, background: 'none', border: 'none', color: '#00e5ff', fontSize: 13, cursor: 'pointer', padding: 0 }}>View Full History →</button>
+
+          {/* Recent matches */}
+          <div style={cardStyle}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>Recent Matches</div>
+            {matches.length === 0 ? (
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>No matches yet.</div>
+            ) : (
+              matches.map(m => (
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <span style={{ width: 40, fontWeight: 700, fontSize: 13, color: resultColor(m.result), textTransform: 'uppercase' }}>{m.result ?? '—'}</span>
+                  <span style={{ flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
+                    {m.opponentName ? `vs ${m.opponentName}` : m.mode ?? 'Match'}
+                  </span>
+                  {m.score && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{m.score}</span>}
+                  {m.createdAt && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(m.createdAt.seconds * 1000).toLocaleDateString()}</span>}
+                </div>
+              ))
+            )}
+            {matches.length > 0 && (
+              <button onClick={() => navigate('/game/history')} style={{ marginTop: 12, background: 'none', border: 'none', color: '#00e5ff', fontSize: 13, cursor: 'pointer', padding: 0 }}>View Full History →</button>
+            )}
+          </div>
+
+          {isOwn && (
+            <button style={{ width: '100%', padding: '12px 0', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.7)', fontSize: 14, cursor: 'pointer' }}>
+              Edit Profile
+            </button>
           )}
         </div>
-
-        {isOwn && (
-          <button style={{ width: '100%', padding: '12px 0', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.7)', fontSize: 14, cursor: 'pointer' }}>
-            Edit Profile
-          </button>
-        )}
       </div>
     </div>
   );

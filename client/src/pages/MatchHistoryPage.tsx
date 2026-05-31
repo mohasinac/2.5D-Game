@@ -65,75 +65,80 @@ export default function MatchHistoryPage() {
     return '#888';
   }
 
-  const pageStyle: React.CSSProperties = {
-    minHeight: '100vh', background: '#0a0a0f', color: '#fff',
-    padding: '24px 16px', fontFamily: 'inherit',
-  };
-
   return (
-    <div style={pageStyle}>
-      <div style={{ maxWidth: 'min(560px, 92vw)', margin: '0 auto' }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer', marginBottom: 20, padding: 0 }}>← Back</button>
-        <h1 style={{ fontSize: 24, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 20 }}>Match History</h1>
+    <div style={{
+      height: '100dvh', overflow: 'hidden', background: '#0a0a0f', color: '#fff',
+      display: 'flex', flexDirection: 'column',
+      padding: 'clamp(8px,2vmin,24px) clamp(8px,2vmin,16px)', fontFamily: 'inherit', boxSizing: 'border-box',
+    }}>
+      <div style={{ maxWidth: 'min(560px, 92vw)', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+        {/* Fixed header */}
+        <div style={{ flexShrink: 0 }}>
+          <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer', marginBottom: 12, padding: 0 }}>← Back</button>
+          <h1 style={{ fontSize: 'clamp(18px,4vw,24px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Match History</h1>
 
-        {/* Filter pills */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-          {(Object.keys(PILL_LABELS) as FilterPill[]).map(p => (
-            <button
-              key={p}
-              onClick={() => setFilter(p)}
-              style={{
-                padding: '6px 14px', borderRadius: 20,
-                background: filter === p ? '#00e5ff22' : 'rgba(255,255,255,0.06)',
-                border: filter === p ? '1px solid #00e5ff88' : '1px solid rgba(255,255,255,0.1)',
-                color: filter === p ? '#00e5ff' : 'rgba(255,255,255,0.6)',
-                fontSize: 13, cursor: 'pointer', fontWeight: filter === p ? 700 : 400,
-              }}
-            >
-              {PILL_LABELS[p]}
-            </button>
-          ))}
+          {/* Filter pills */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+            {(Object.keys(PILL_LABELS) as FilterPill[]).map(p => (
+              <button
+                key={p}
+                onClick={() => setFilter(p)}
+                style={{
+                  padding: '6px 14px', borderRadius: 20,
+                  background: filter === p ? '#00e5ff22' : 'rgba(255,255,255,0.06)',
+                  border: filter === p ? '1px solid #00e5ff88' : '1px solid rgba(255,255,255,0.1)',
+                  color: filter === p ? '#00e5ff' : 'rgba(255,255,255,0.6)',
+                  fontSize: 13, cursor: 'pointer', fontWeight: filter === p ? 700 : 400,
+                }}
+              >
+                {PILL_LABELS[p]}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {loading ? (
-          <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)' }}>Loading…</div>
-        ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)' }}>No matches found.</div>
-        ) : (
-          filtered.map(m => (
-            <div key={m.id} style={{ background: '#111120', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, marginBottom: 10, overflow: 'hidden' }}>
-              <div
-                onClick={() => setExpanded(prev => prev === m.id ? null : m.id)}
-                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', cursor: 'pointer' }}
-              >
-                <span style={{ width: 40, fontWeight: 700, fontSize: 14, color: resultColor(m.result), textTransform: 'uppercase', flexShrink: 0 }}>{m.result ?? '—'}</span>
-                <span style={{ flex: 1, fontSize: 14, color: '#fff' }}>
-                  {m.opponentName ? `vs ${m.opponentName}` : m.mode ?? 'Match'}
-                </span>
-                {m.score && <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{m.score}</span>}
-                {m.createdAt && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}>{new Date(m.createdAt.seconds * 1000).toLocaleDateString()}</span>}
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginLeft: 4 }}>{expanded === m.id ? '▲' : '▼'}</span>
-              </div>
-              {expanded === m.id && (
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '12px 16px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
-                  <div style={{ marginBottom: 6 }}>Mode: <span style={{ color: '#fff' }}>{m.mode ?? 'PvP'}</span></div>
-                  {m.seriesFormat && <div style={{ marginBottom: 6 }}>Format: <span style={{ color: '#fff' }}>{m.seriesFormat}</span></div>}
-                  {(m.gameResults as unknown[])?.length > 0 && (
-                    <div style={{ marginBottom: 6 }}>Games: <span style={{ color: '#fff' }}>{(m.gameResults as unknown[]).length}</span></div>
-                  )}
-                  {m.replayId && (
-                    <button
-                      onClick={() => navigate(`/game/replay/${m.replayId}`)}
-                      style={{ marginTop: 8, padding: '6px 14px', background: 'rgba(0,229,255,0.1)', border: '1px solid rgba(0,229,255,0.3)', borderRadius: 8, color: '#00e5ff', fontSize: 13, cursor: 'pointer' }}
-                    >
-                      Watch Replay
-                    </button>
-                  )}
+        {/* Scrollable body */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} data-testid="scroll-body">
+          {loading ? (
+            <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)' }}>Loading…</div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', paddingTop: 60, color: 'rgba(255,255,255,0.3)' }}>No matches found.</div>
+          ) : (
+            filtered.map(m => (
+              <div key={m.id} style={{ background: '#111120', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, marginBottom: 10, overflow: 'hidden' }}>
+                <div
+                  onClick={() => setExpanded(prev => prev === m.id ? null : m.id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'clamp(8px,1.5vmin,14px) clamp(10px,2vmin,16px)', cursor: 'pointer' }}
+                >
+                  <span style={{ width: 40, fontWeight: 700, fontSize: 'clamp(12px,1.8vw,14px)', color: resultColor(m.result), textTransform: 'uppercase', flexShrink: 0 }}>{m.result ?? '—'}</span>
+                  <span style={{ flex: 1, fontSize: 'clamp(12px,1.8vw,14px)', color: '#fff' }}>
+                    {m.opponentName ? `vs ${m.opponentName}` : m.mode ?? 'Match'}
+                  </span>
+                  {m.score && <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{m.score}</span>}
+                  {m.createdAt && <span style={{ fontSize: 'clamp(10px,1.3vw,12px)', color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}>{new Date(m.createdAt.seconds * 1000).toLocaleDateString()}</span>}
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginLeft: 4 }}>{expanded === m.id ? '▲' : '▼'}</span>
                 </div>
-              )}
-            </div>
-          ))
-        )}
+                {expanded === m.id && (
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '12px 16px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                    <div style={{ marginBottom: 6 }}>Mode: <span style={{ color: '#fff' }}>{m.mode ?? 'PvP'}</span></div>
+                    {m.seriesFormat && <div style={{ marginBottom: 6 }}>Format: <span style={{ color: '#fff' }}>{m.seriesFormat}</span></div>}
+                    {(m.gameResults as unknown[])?.length > 0 && (
+                      <div style={{ marginBottom: 6 }}>Games: <span style={{ color: '#fff' }}>{(m.gameResults as unknown[]).length}</span></div>
+                    )}
+                    {m.replayId && (
+                      <button
+                        onClick={() => navigate(`/game/replay/${m.replayId}`)}
+                        style={{ marginTop: 8, padding: '6px 14px', background: 'rgba(0,229,255,0.1)', border: '1px solid rgba(0,229,255,0.3)', borderRadius: 8, color: '#00e5ff', fontSize: 13, cursor: 'pointer' }}
+                      >
+                        Watch Replay
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

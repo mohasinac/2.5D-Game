@@ -127,8 +127,8 @@ export default function SettingsPage() {
   const email    = currentUser?.email ?? "Not signed in";
 
   return (
-    <div className="min-h-screen bg-bg0 p-8">
-      <div className="max-w-lg mx-auto">
+    <div className="h-dvh overflow-hidden flex flex-col bg-bg0" style={{ boxSizing: 'border-box' }}>
+      <div className="max-w-lg mx-auto w-full flex flex-col" style={{ flex: 1, minHeight: 0, padding: '2rem', overflowY: 'auto' }} data-testid="scroll-body">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

@@ -58,86 +58,91 @@ export function LeaderboardPage() {
   const activeTab = TABS.find((t) => t.key === tab)!;
 
   return (
-    <div className="min-h-screen bg-bg0 py-8 px-6">
-      <div className="max-w-[min(720px,92vw)] mx-auto">
-        <div className="flex items-center gap-3 mb-2">
-          <Link to="/game" className="text-theme-faint text-[13px] no-underline">← Back</Link>
-        </div>
-        <h1 className="text-[32px] font-black text-theme-text tracking-[-0.02em] mb-1">
-          Leaderboard
-        </h1>
-        <p className="text-theme-muted text-[14px] mb-7">
-          Top {players.length} players — all time
-        </p>
+    <div className="h-dvh overflow-hidden flex flex-col bg-bg0" style={{ padding: 'clamp(8px,2vmin,32px) clamp(12px,2vmin,24px)', boxSizing: 'border-box' }}>
+      <div className="max-w-[min(720px,92vw)] mx-auto w-full flex flex-col" style={{ flex: 1, minHeight: 0 }}>
+        {/* Fixed header */}
+        <div style={{ flexShrink: 0 }}>
+          <div className="flex items-center gap-3 mb-2">
+            <Link to="/game" className="text-theme-faint text-[13px] no-underline">← Back</Link>
+          </div>
+          <h1 className="font-black text-theme-text tracking-[-0.02em] mb-1" style={{ fontSize: 'clamp(20px,4vw,32px)' }}>
+            Leaderboard
+          </h1>
+          <p className="text-theme-muted text-sm mb-5">
+            Top {players.length} players — all time
+          </p>
 
-        {/* Tab bar */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-4 py-[7px] rounded-full text-[13px] font-semibold cursor-pointer whitespace-nowrap shrink-0 border ${tab === t.key ? "bg-theme-blue text-white border-theme-blue" : "bg-bg2 text-theme-muted border-border-c"}`}
-            >
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Table */}
-        <div className="bg-bg1 border border-border-c rounded-2xl overflow-hidden">
-          {loading ? (
-            <div className="p-16 flex justify-center">
-              <div className="spin w-8 h-8 border-2 border-theme-blue border-t-transparent rounded-full" />
-            </div>
-          ) : sorted.length === 0 ? (
-            <div className="p-16 text-center text-theme-faint text-[14px]">
-              No match data yet — play some games!
-            </div>
-          ) : (
-            sorted.map((player, i) => (
-              <div
-                key={player.id}
-                className={`flex items-center gap-3.5 px-5 py-[13px] ${i < sorted.length - 1 ? "border-b border-border-c" : ""} ${i < 3 ? "bg-yellow-10" : ""}`}
+          {/* Tab bar */}
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`px-4 py-[7px] rounded-full text-[13px] font-semibold cursor-pointer whitespace-nowrap shrink-0 border ${tab === t.key ? "bg-theme-blue text-white border-theme-blue" : "bg-bg2 text-theme-muted border-border-c"}`}
               >
-                {/* Rank */}
-                <span className={`w-8 text-center shrink-0 font-mono ${i < 3 ? "text-[20px] text-theme-yellow" : "text-[14px] text-theme-faint"}`}>
-                  {i < 3 ? MEDALS[i] : `${i + 1}`}
-                </span>
-
-                {/* Avatar */}
-                <div className="w-[38px] h-[38px] rounded-full shrink-0 flex items-center justify-center text-[16px] font-bold bg-blue-13 text-theme-blue">
-                  {(player.username ?? player.id)[0]?.toUpperCase()}
-                </div>
-
-                {/* Name + secondary stats */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-theme-text text-[14px] font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
-                    {player.username ?? player.id.slice(0, 12)}
-                  </div>
-                  <div className="text-theme-faint text-[11px] mt-0.5">
-                    {player.matchesPlayed ?? 0} matches · {player.wins ?? 0}W / {player.losses ?? 0}L
-                  </div>
-                </div>
-
-                {/* Primary stat */}
-                <div className="text-right shrink-0">
-                  <div className={`font-mono font-bold text-[15px] ${i < 3 ? "text-theme-yellow" : "text-theme-text"}`}>
-                    {activeTab.format(player)}
-                  </div>
-                  {tab !== "winRate" && (
-                    <div className="text-[11px] text-theme-faint mt-0.5">
-                      {((player.winRate ?? 0) * 100).toFixed(0)}% win rate
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
+                {t.icon} {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <p className="text-theme-faint text-[11px] text-center mt-5">
-          Updates after each completed match
-        </p>
+        {/* Scrollable body */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} data-testid="scroll-body">
+          <div className="bg-bg1 border border-border-c rounded-2xl overflow-hidden">
+            {loading ? (
+              <div className="p-8 flex justify-center">
+                <div className="spin w-8 h-8 border-2 border-theme-blue border-t-transparent rounded-full" />
+              </div>
+            ) : sorted.length === 0 ? (
+              <div className="p-8 text-center text-theme-faint text-sm">
+                No match data yet — play some games!
+              </div>
+            ) : (
+              sorted.map((player, i) => (
+                <div
+                  key={player.id}
+                  className={`flex items-center gap-3.5 px-5 py-[13px] ${i < sorted.length - 1 ? "border-b border-border-c" : ""} ${i < 3 ? "bg-yellow-10" : ""}`}
+                >
+                  {/* Rank */}
+                  <span className={`w-8 text-center shrink-0 font-mono ${i < 3 ? "text-[20px] text-theme-yellow" : "text-[14px] text-theme-faint"}`}>
+                    {i < 3 ? MEDALS[i] : `${i + 1}`}
+                  </span>
+
+                  {/* Avatar */}
+                  <div className="w-[38px] h-[38px] rounded-full shrink-0 flex items-center justify-center text-[16px] font-bold bg-blue-13 text-theme-blue">
+                    {(player.username ?? player.id)[0]?.toUpperCase()}
+                  </div>
+
+                  {/* Name + secondary stats */}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-theme-text text-[14px] font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
+                      {player.username ?? player.id.slice(0, 12)}
+                    </div>
+                    <div className="text-theme-faint text-[11px] mt-0.5">
+                      {player.matchesPlayed ?? 0} matches · {player.wins ?? 0}W / {player.losses ?? 0}L
+                    </div>
+                  </div>
+
+                  {/* Primary stat */}
+                  <div className="text-right shrink-0">
+                    <div className={`font-mono font-bold text-[15px] ${i < 3 ? "text-theme-yellow" : "text-theme-text"}`}>
+                      {activeTab.format(player)}
+                    </div>
+                    {tab !== "winRate" && (
+                      <div className="text-[11px] text-theme-faint mt-0.5">
+                        {((player.winRate ?? 0) * 100).toFixed(0)}% win rate
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <p className="text-theme-faint text-[11px] text-center mt-5">
+            Updates after each completed match
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -59,7 +59,7 @@ export default function EpisodeIntroPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="h-dvh overflow-hidden bg-gray-900 text-white flex items-center justify-center">
         <p className="text-xl">Loading...</p>
       </div>
     );
@@ -67,7 +67,7 @@ export default function EpisodeIntroPage() {
 
   if (!episode) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center flex-col gap-4">
+      <div className="h-dvh overflow-hidden bg-gray-900 text-white flex items-center justify-center flex-col gap-4">
         <p className="text-xl">Episode not found</p>
         <button onClick={() => navigate("/game/story")} className="px-4 py-2 bg-gray-700 rounded">
           Back to Story
@@ -87,7 +87,7 @@ export default function EpisodeIntroPage() {
       : "text-red-300";
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+    <div className="h-dvh overflow-hidden bg-gray-900 text-white flex flex-col">
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="max-w-2xl w-full">
           <h2 className="text-2xl font-bold mb-2 text-center">{episode.title}</h2>

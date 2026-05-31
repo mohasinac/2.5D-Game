@@ -75,8 +75,8 @@ export default function TutorialPage() {
   const step = STEPS[currentStep];
 
   return (
-    <div className="min-h-screen bg-bg0 p-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="h-dvh overflow-hidden bg-bg0 flex flex-col">
+      <div className="max-w-2xl mx-auto w-full flex flex-col" style={{ flex: 1, minHeight: 0, padding: '2rem', overflowY: 'auto' }}>
         <div className="flex items-center gap-4 mb-8">
           <Link
             to="/"

@@ -362,7 +362,7 @@ export function BattleLobbyPage() {
 
   if (phase === 'choose') {
     return (
-      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-dvh overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[min(520px,92vw)]">
           <button
             onClick={() => navigate('/game/battle', { replace: true })}
@@ -391,7 +391,7 @@ export function BattleLobbyPage() {
             {/* Random Match */}
             <PhaseCard className="flex flex-col gap-3">
               <div className="text-[#00e5ff] text-2xl mb-1">⚡</div>
-              <h2 className="text-white font-bold text-[16px]">RANDOM MATCH</h2>
+              <h2 className="text-white font-bold text-base">RANDOM MATCH</h2>
               <p className="text-white/45 text-[12px] flex-1">
                 Auto-matched with strangers online. Jump in instantly.
               </p>
@@ -411,7 +411,7 @@ export function BattleLobbyPage() {
             {/* Friends Room */}
             <PhaseCard className="flex flex-col gap-3">
               <div className="text-purple-400 text-2xl mb-1">🔗</div>
-              <h2 className="text-white font-bold text-[16px]">FRIENDS ROOM</h2>
+              <h2 className="text-white font-bold text-base">FRIENDS ROOM</h2>
               <p className="text-white/45 text-[12px] flex-1">
                 Create a private room and share the code with friends.
               </p>
@@ -451,7 +451,7 @@ export function BattleLobbyPage() {
     const royaleSizeLabels: Record<RoyaleSize, string> = { '4': '4 Players', '8': '8 Players', '12': '12 Players' };
 
     return (
-      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-dvh overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[min(420px,92vw)]">
           <button
             onClick={() => setPhase('choose')}
@@ -460,7 +460,7 @@ export function BattleLobbyPage() {
             ← Back
           </button>
 
-          <h1 className="text-[24px] font-black text-white tracking-tight mb-1">
+          <h1 className="text-2xl font-black text-white tracking-tight mb-1">
             Match Preferences
           </h1>
           <p className="text-white/45 text-[13px] mb-6">
@@ -572,7 +572,7 @@ export function BattleLobbyPage() {
       ? 'Searching for opponent…'
       : 'Creating your room…';
     return (
-      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-dvh overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[min(360px,92vw)]">
           <PhaseCard>
             <ConnectingSpinner label={label} />
@@ -596,17 +596,17 @@ export function BattleLobbyPage() {
 
   if (phase === 'friends-join') {
     return (
-      <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
+      <div className="h-dvh overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-[min(360px,92vw)]">
           <PhaseCard>
-            <h2 className="text-white font-bold text-[18px] mb-1">Join a Room</h2>
+            <h2 className="text-white font-bold text-lg mb-1">Join a Room</h2>
             <p className="text-white/45 text-[13px] mb-5">Enter the room code shared by your friend.</p>
             <input
               type="text"
               placeholder="Enter room code…"
               value={joinCode}
               onChange={e => setJoinCode(e.target.value.trim())}
-              className="w-full bg-white/[.06] border border-white/[.1] rounded-xl px-4 py-3 text-white font-mono text-[16px] tracking-widest mb-4 outline-none focus:border-[#00e5ff]/50"
+              className="w-full bg-white/[.06] border border-white/[.1] rounded-xl px-4 py-3 text-white font-mono text-base tracking-widest mb-4 outline-none focus:border-[#00e5ff]/50"
             />
             {connectionState === 'error' && (
               <p className="text-red-400 text-[13px] mb-3">
@@ -640,13 +640,13 @@ export function BattleLobbyPage() {
   // ── Phase: in-lobby ───────────────────────────────────────────────────────────
 
   return (
-    <div className="h-screen overflow-hidden bg-[#0a0a0f] flex flex-col items-center p-4 pt-6">
+    <div className="h-dvh overflow-hidden bg-[#0a0a0f] flex flex-col items-center p-4 pt-6">
       <div className="w-full max-w-[min(540px,92vw)] flex flex-col h-full overflow-y-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h1 className="text-[22px] font-black text-white tracking-tight">{MODE_LABELS[lobbyMode]}</h1>
+            <h1 className="text-xl font-black text-white tracking-tight">{MODE_LABELS[lobbyMode]}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <div className={cn(
                 'w-2 h-2 rounded-full',
@@ -668,7 +668,7 @@ export function BattleLobbyPage() {
           <div className="mb-4 bg-white/[.04] rounded-xl border border-white/[.08] px-4 py-3 flex items-center justify-between">
             <div>
               <p className="text-white/40 text-[10px] uppercase tracking-[0.1em] mb-0.5">Room Code</p>
-              <p className="text-white font-mono text-[18px] tracking-[0.2em] font-bold">{room.roomId}</p>
+              <p className="text-white font-mono text-lg tracking-[0.2em] font-bold">{room.roomId}</p>
             </div>
             <button
               onClick={handleCopyCode}
@@ -845,7 +845,7 @@ export function BattleLobbyPage() {
               onClick={() => room && canStart && room.send('start-game', { bestOf, bracketSize, modifierIds: selectedModifierIds })}
               disabled={!canStart}
               className={cn(
-                'w-full py-4 rounded-2xl font-black text-[16px] border-none transition-all',
+                'w-full py-4 rounded-2xl font-black text-base border-none transition-all',
                 canStart
                   ? 'bg-[#00e5ff] text-[#0a0a0f] cursor-pointer hover:bg-[#00d4eb]'
                   : 'bg-white/[.06] text-white/25 cursor-not-allowed',

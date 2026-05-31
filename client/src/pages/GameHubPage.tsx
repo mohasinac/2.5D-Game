@@ -18,7 +18,7 @@ export function GameHubPage() {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-bg1">
+    <div className="flex flex-col h-dvh bg-bg1 overflow-hidden">
       <div className="flex-1 overflow-y-auto">
         {tab === "play"       && <ModeSelectPage />}
         {tab === "tournament" && <TournamentListPage />}
