@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@colyseus/schema": "^2.0.35",
+    "@dimforge/rapier3d-compat": "^0.19.3",
     "@types/three": "^0.184.1",
     "clsx": "^2.1.1",
     "colyseus.js": "^0.16.22",

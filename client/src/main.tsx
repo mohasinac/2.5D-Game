@@ -53,6 +53,11 @@ const TOAST_STYLE = {
   fontSize: "13px",
 };
 
+// Unregister any stale service worker on localhost so dev-mode F5 reloads work
+if ('serviceWorker' in navigator && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+}
+
 // StrictMode intentionally omitted: this app uses Colyseus WebSocket rooms and
 // PixiJS WebGL contexts. StrictMode's dev-only double-mount causes two rooms to
 // be created (one immediately disposed) and two WebGL contexts to be opened,
