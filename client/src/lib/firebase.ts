@@ -32,23 +32,7 @@ export const COLLECTIONS = {
   WATER_BODY_ASSETS: "water_body_assets",
   PORTAL_ASSETS: "portal_assets",
   SOUND_ASSETS: "sound_assets",
-  // 2.5D part library
-  BIT_BEAST_PARTS: "bit_beast_parts",
-  ATTACK_RING_PARTS: "attack_ring_parts",
-  WEIGHT_DISK_PARTS: "weight_disk_parts",
-  SUB_PARTS: "sub_parts",
-  TIP_PARTS: "tip_parts",
-  CORE_PARTS: "core_parts",
-  CASING_PARTS: "casing_parts",
-  SPIN_TRACK_PARTS: "spin_track_parts",
-  GEAR_PARTS: "gear_parts",
-  BEYBLADE_SYSTEMS: "beyblade_systems",
-  ARENA_SYSTEMS: "arena_systems",
   SPECIAL_MOVES: "special_moves",
-  // Tournament collections
-  TOURNAMENTS: "tournaments",
-  TOURNAMENT_PARTICIPANTS: "tournament_participants",
-  TOURNAMENT_BRACKETS: "tournament_brackets",
   SETTINGS: "settings",
   PARTICLE_PRESETS: "particle_presets",
   COMBO_EFFECTS: "combo_effects",
@@ -61,7 +45,6 @@ export const COLLECTIONS = {
   BEHAVIOR_DEFS: "behavior_defs",
   ROUND_MODIFIERS: "round_modifiers",
   AI_BATTLES: "ai_battles",
-  PART_MATERIALS: "part_materials",
   MECHANIC_DEFS: "mechanic_defs",
   GIMMICK_DEFS: "gimmick_defs",
   GIMMICK_SYNERGIES: "gimmick_synergies",
@@ -108,8 +91,6 @@ export const COLLECTIONS = {
   MECHANIC_PRESETS: "mechanic_presets",
   GIMMICK_PRESETS: "gimmick_presets",
   SPECIAL_MOVE_PRESETS: "special_move_presets",
-  PART_PRESETS: "part_presets",
-  SYSTEM_PRESETS: "system_presets",
   THEME_PRESETS: "theme_presets",
   OBSTACLE_PRESETS: "obstacle_presets",
   FEATURE_GROUP_PRESETS: "feature_group_presets",
@@ -147,7 +128,4 @@ export const COLLECTIONS = {
   PLAYER_PROGRESS: "player_progress",
   // Replay system
   MATCH_REPLAYS: "match_replays",
-  // Stack Builder (Phase 2m)
-  BEYBLADE_STACKS: "beyblade_stacks",
-  STACK_TEMPLATES: "stack_templates",
 } as const;

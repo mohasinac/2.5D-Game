@@ -380,7 +380,7 @@ export const useGameDataStore = create<GameDataState>()(persist((set, get) => ({
     if (isFresh(get()._fetchedAt, 'partMaterials')) return;
     set(s => ({ loading: { ...s.loading, partMaterials: true } }));
     try {
-      const snap = await getDocs(collection(db, COLLECTIONS.PART_MATERIALS));
+      const snap = await getDocs(collection(db, "part_materials"));
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as PartMaterialDoc));
       docs.sort((a, b) => a.label.localeCompare(b.label));
       set(s => ({ partMaterials: docs, partMaterialsLoaded: true, _fetchedAt: { ...s._fetchedAt, partMaterials: Date.now() }, loading: { ...s.loading, partMaterials: false }, errors: { ...s.errors, partMaterials: null } }));

@@ -13,64 +13,6 @@ import { create } from "zustand";
 import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// ─── Tier 1: TypeScript registries (synchronous, zero Firestore) ─────────────
-
-export {
-  MaterialRegistry,
-  resolveMaterial,
-  resolveCOR,
-  type MaterialProfile,
-} from "@server/physics/registries/MaterialRegistry";
-
-export {
-  AttackTypeRegistry,
-  resolveAttackType,
-  type AttackTypeProfile,
-} from "@server/physics/registries/AttackTypeRegistry";
-
-export {
-  GenerationRegistry,
-  type GenerationProfile,
-  type BeybladeGenKey,
-} from "@server/physics/registries/GenerationRegistry";
-
-export {
-  TipShapeRegistry,
-  type TipShapeProfile,
-} from "@server/physics/registries/TipShapeRegistry";
-
-export {
-  LiquidTypeRegistry,
-  type LiquidTypeProfile,
-} from "@server/physics/registries/LiquidTypeRegistry";
-
-export {
-  ElementTypeRegistry,
-  type ElementTypeProfile,
-  type ElementInteraction,
-} from "@server/physics/registries/ElementTypeRegistry";
-
-export {
-  BowlProfileRegistry,
-  type BowlProfile,
-} from "@server/physics/registries/BowlProfileRegistry";
-
-export {
-  ArenaShapeRegistry,
-  type ArenaShapeProfile,
-} from "@server/physics/registries/ArenaShapeRegistry";
-
-export {
-  PartLayerRegistry,
-  type PartLayerProfile,
-} from "@server/physics/registries/PartLayerRegistry";
-
-export {
-  GimmickRegistry,
-  type GimmickDef,
-  type MechanicRef,
-} from "@server/physics/registries/GimmickRegistry";
-
 // ─── Tier 2: Firestore admin-created content ─────────────────────────────────
 
 /** Collections to preload from Firestore. */
@@ -79,18 +21,6 @@ const FIRESTORE_COLLECTIONS = [
   "beyblade_stats",
   "special_moves",
   "combos",
-  "attack_ring_parts",
-  "weight_disk_parts",
-  "tip_parts",
-  "core_parts",
-  "casing_parts",
-  "spin_track_parts",
-  "sub_parts",
-  "bit_beast_parts",
-  "gear_parts",
-  "beyblade_systems",
-  "arena_systems",
-  "part_materials",
   "element_type_configs",
   "turret_attack_types",
   "arena_feature_configs",
@@ -120,14 +50,9 @@ const FIRESTORE_COLLECTIONS = [
   "combo_presets",
   "gimmick_presets",
   "mechanic_presets",
-  "system_presets",
-  "stack_templates",
 ] as const;
 
-/** beyblade_stacks needs a where("isPublic", "==", true) filter — handled separately. */
-const FILTERED_COLLECTIONS: Record<string, { field: string; value: unknown }> = {
-  beyblade_stacks: { field: "isPublic", value: true },
-};
+const FILTERED_COLLECTIONS: Record<string, { field: string; value: unknown }> = {};
 
 // ─── Zustand store ────────────────────────────────────────────────────────────
 

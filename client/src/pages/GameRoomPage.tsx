@@ -1,31 +1,27 @@
-// GameRoomPage — unified game room for all room types.
+// GameRoomPage — unified game room for all local room types.
 // Config comes from location.state.config (GameRoomConfig).
-// Local rooms (tryout, pvai, story-battle) run via LocalGameSimulation.
-// Server rooms (pvp, tournament, royale) connect to Colyseus.
+// All rooms run via LocalGameSimulation — no server required.
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGame } from '../contexts/GameContext';
 import { useGameInput } from '../game/hooks/useGameInput';
 import { usePixiRenderer } from '../game/hooks/usePixiRenderer';
-import { useColyseus } from '../game/hooks/useColyseus';
 import { useLaunchInput } from '../game/hooks/useLaunchInput';
 import { useBitBeastCinematic } from '../hooks/useBitBeastCinematic';
 import { useCombos } from '../hooks/useCombos';
 import { useSpecialMoves } from '../hooks/useSpecialMoves';
 import { mapToRecord } from '../types/game';
 import type { ServerGameState } from '../types/game';
-import { isLocalRoom, roomNameForConfig, type GameRoomConfig } from '../types/gameRoom';
-import { ROOM_NAMES } from '../shared/utils/gameMode';
+import type { GameRoomConfig } from '../types/gameRoom';
 import { LocalGameSimulation, type SimSnapshot } from '../game/simulation/LocalGameSimulation';
-import { getScenario } from '../constants/gameModeScenarios';
+import { useConfigStore } from '../lib/configCache';
 
 import { GameShell } from '../components/game/GameShell';
 import { PlayerStrip } from '../components/game/PlayerStrip';
 import { OpponentStrip } from '../components/game/OpponentStrip';
 import { PauseMenu } from '../components/game/PauseMenu';
 import { LoadingProgress } from '../components/LoadingProgress';
-import { useConfigStore } from '../lib/configCache';
 import { Countdown } from '../components/game/Countdown';
 import { LaunchPhase } from '../components/game/LaunchPhase';
 import { SpecialMoveHUD } from '../components/game/SpecialMoveHUD';
@@ -35,12 +31,9 @@ import VictoryOverlay from '../components/game/VictoryOverlay';
 import BurstOverlay from '../components/game/BurstOverlay';
 import LaunchCinematic from '../components/game/LaunchCinematic';
 import { BitBeastCinematic } from '../components/game/BitBeastCinematic';
-import { SequenceQTE, MashQTE, SingleKeyQTE, DebuffNotice } from '../components/game/QTENotificationSystem';
 import { RoyaleHUD } from '../components/game/RoyaleHUD';
 import { SafeZoneOverlay } from '../components/game/SafeZoneOverlay';
 import { ZoneDangerMeter } from '../components/game/ZoneDangerMeter';
-import type { SingleKeyQTEData, DebuffNoticeData } from '../components/game/QTENotificationSystem';
-import type { QTEPromptData } from '../game/hooks/useColyseus';
 import { LAUNCH_DURATION_S } from '../shared/constants/gameConstants';
 
 // ─── HUD bar component ────────────────────────────────────────────────────────
@@ -87,12 +80,11 @@ export function GameRoomPage() {
     if (!config) navigate('/game/battle', { replace: true });
   }, [config, navigate]);
 
-  // Global input focus — keyboard events register without requiring canvas click
+  // Global input focus
   useEffect(() => { document.body.focus(); }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const simRef = useRef<LocalGameSimulation | null>(null);
-  const local = config ? isLocalRoom(config.roomType) : true;
 
   // ─── Local simulation state ────────────────────────────────────────────────
   const [simSnap, setSimSnap] = useState<SimSnapshot | null>(null);
@@ -101,18 +93,9 @@ export function GameRoomPage() {
   const [burstVisible, setBurstVisible] = useState(false);
   const [koVisible, setKoVisible] = useState<{ visible: boolean; type: 'ko' | 'ring_out' | 'outspin' }>({ visible: false, type: 'ko' });
   const [victoryVisible, setVictoryVisible] = useState(false);
-  const [qtePrompt, setQTEPrompt] = useState<QTEPromptData | null>(null);
-  const [collisionQTEActive, setCollisionQTEActive] = useState(false);
-  const [collisionQTEPowerLocal, setCollisionQTEPowerLocal] = useState(0);
-  const [collisionQTEMultiplier, setCollisionQTEMultiplier] = useState(1);
-  const [collisionCanFireSpecial, setCollisionCanFireSpecial] = useState(false);
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
-  const [debuffStartedAt, setDebuffStartedAt] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
-  const [reconnecting, setReconnecting] = useState(false);
-  const [lostConnection, setLostConnection] = useState(false);
-  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showPostMatch, setShowPostMatch] = useState(false);
   const postMatchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -120,75 +103,19 @@ export function GameRoomPage() {
   const { byId: comboMap } = useCombos();
   const { resolve: resolveSpecialMove } = useSpecialMoves();
 
-  // ─── Server room (Colyseus) ───────────────────────────────────────────────
-  const colyseusOptions = useMemo(() => {
-    const scenario = getScenario(config?.roomType ?? 'pvp');
-    return {
-      beybladeId: config?.beybladeId || settings.beybladeId || scenario.beybladeId,
-      arenaId:    config?.arenaId    || settings.arenaId    || scenario.arenaId,
-      username:   settings.username  ?? 'Player',
-      userId:     settings.userId    ?? 'guest',
-      spectate:   config?.spectate   ?? false,
-      bestOf:     config?.bestOf     ?? scenario.bestOf,
-      modifierIds: config?.modifierIds ?? [],
-    };
-  }, [config, settings]);
-
-  const roomName = config && !local ? roomNameForConfig(config) : ROOM_NAMES["2.5d"].battle;
-
-  // Always call useColyseus (hooks must be unconditional); for local rooms autoConnect=false
-  const colyseus = useColyseus({
-    roomName,
-    options: local ? {} : colyseusOptions,
-    autoConnect: !local,
-    roomId: config?.pvpRoomId,
-    onQTEPrompt: (d) => setQTEPrompt(d),
-    onQTESuccess: () => setQTEPrompt(null),
-    onQTEExpired: () => setQTEPrompt(null),
-    onCollisionQTEStart: (_d) => {
-      setCollisionQTEActive(true);
-      setCollisionQTEPowerLocal(0);
-      setCollisionQTEMultiplier(1);
-    },
-    onCollisionQTESpecialPrompt: (d) => {
-      setCollisionCanFireSpecial(true);
-      setCollisionQTEMultiplier(d.qteMultiplier);
-    },
-    onCollisionQTEResult: () => {
-      setCollisionQTEActive(false);
-      setCollisionCanFireSpecial(false);
-    },
-  });
-
   // ─── Resolve active game state ────────────────────────────────────────────
-  const gameState: ServerGameState = local
-    ? (simSnap?.gameState ?? DEFAULT_GAME_STATE)
-    : (colyseus.gameState ?? DEFAULT_GAME_STATE);
+  const gameState: ServerGameState = simSnap?.gameState ?? DEFAULT_GAME_STATE;
+  const beyblades = simSnap?.beyblades ?? new Map();
+  const myBeyblade = simSnap ? beyblades.get(simSnap.myBeyId) : undefined;
 
-  const beyblades = local
-    ? (simSnap?.beyblades ?? new Map())
-    : (colyseus.beyblades ?? new Map());
-
-  const myBeyblade = local
-    ? (simSnap ? beyblades.get(simSnap.myBeyId) : undefined)
-    : (colyseus.myBeyblade ?? undefined);
-
-  // Refs for RAF loop — avoids restarting the loop on every 60 Hz state update
+  // Refs for RAF loop
   const gameStateRef = useRef(gameState);
   const beybladesRef = useRef(beyblades);
-  const visualEventQueueRef = useRef(colyseus.visualEventQueue);
   gameStateRef.current = gameState;
   beybladesRef.current = beyblades;
-  visualEventQueueRef.current = colyseus.visualEventQueue;
 
-  const loadingStep = local
-    ? (simSnap?.status === 'idle' || simSnap?.status === 'loading' ? 'connecting-ws' : 'warmup-ready')
-    : colyseus.loadingStep;
-
-  const loadingError = local
-    ? (simSnap?.loadingError ?? undefined)
-    : colyseus.loadingError;
-
+  const loadingStep = simSnap?.status === 'idle' || simSnap?.status === 'loading' ? 'connecting-ws' : 'warmup-ready';
+  const loadingError = simSnap?.loadingError ?? undefined;
   const effectiveLoadingStep = configStatus !== 'ready' ? 'config-preload' : (loadingStep ?? 'connecting-ws');
   const showLoading = (configStatus !== 'ready' || loadingStep !== 'warmup-ready') && gameState.status === 'waiting';
 
@@ -204,24 +131,17 @@ export function GameRoomPage() {
     simRef.current?.applyInput(input);
   }, []);
 
-  const sendInputFn = local ? localSendInput : colyseus.sendInput;
+  useGameInput(localSendInput, gameState.status === 'in-progress');
 
-  useGameInput(sendInputFn, gameState.status === 'in-progress');
-
-  // ─── Launch input (server rooms) ──────────────────────────────────────────
+  // ─── Launch input (local sim) ─────────────────────────────────────────────
   const launcherType = config?.launcherType ?? 'string';
-  const launchState = useLaunchInput(
-    !local ? (colyseus.room ?? null) : null,
-    gameState.status,
-    launcherType,
-  );
+  const launchState = useLaunchInput(null, gameState.status, launcherType);
 
   // ─── RAF render loop ──────────────────────────────────────────────────────
-  // Reads from refs so the loop is never restarted on 60 Hz state updates.
   useEffect(() => {
     let rafId: number;
     const loop = () => {
-      render(gameStateRef.current, beybladesRef.current, local ? undefined : visualEventQueueRef.current);
+      render(gameStateRef.current, beybladesRef.current, undefined);
       rafId = requestAnimationFrame(loop);
     };
     rafId = requestAnimationFrame(loop);
@@ -231,7 +151,7 @@ export function GameRoomPage() {
 
   // ─── Start local simulation ───────────────────────────────────────────────
   useEffect(() => {
-    if (!local || !config) return;
+    if (!config) return;
     const sim = new LocalGameSimulation(config, snap => setSimSnap(snap), (event) => {
       if (event.type === 'collision') {
         const mag = Math.min(8, 2 + event.relativeSpeed * 0.5);
@@ -250,19 +170,6 @@ export function GameRoomPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ─── Sync collision QTE power from server ─────────────────────────────────
-  useEffect(() => {
-    if (!local && collisionQTEActive) {
-      setCollisionQTEPowerLocal(colyseus.collisionQTEPower);
-    }
-  }, [local, collisionQTEActive, colyseus.collisionQTEPower]);
-
-  // ─── Track BeyLink debuff startedAt ──────────────────────────────────────
-  useEffect(() => {
-    if (!local && colyseus.beyLinkControlLoss) setDebuffStartedAt(Date.now());
-    else setDebuffStartedAt(null);
-  }, [local, colyseus.beyLinkControlLoss]);
-
   // ─── Victory detection ────────────────────────────────────────────────────
   useEffect(() => {
     if (gameState.status === 'finished' || gameState.status === 'series-finished') {
@@ -273,85 +180,30 @@ export function GameRoomPage() {
     return () => { if (postMatchTimerRef.current) clearTimeout(postMatchTimerRef.current); };
   }, [gameState.status, gameState.winner, navigate]);
 
-  // ─── Disconnect / reconnect (server rooms) ──────────────────────────────
-  useEffect(() => {
-    if (local) return;
-    const state = colyseus.connectionState;
-    if (state === 'disconnected' && gameState.status === 'in-progress') {
-      setReconnecting(true);
-      reconnectTimerRef.current = setTimeout(() => {
-        setReconnecting(false);
-        setLostConnection(true);
-      }, 30_000);
-    } else if (state === 'connected') {
-      setReconnecting(false);
-      setLostConnection(false);
-      if (reconnectTimerRef.current) { clearTimeout(reconnectTimerRef.current); reconnectTimerRef.current = null; }
-    }
-  }, [local, colyseus.connectionState, gameState.status]);
-
   // ─── Keyboard pause toggle (Escape) ──────────────────────────────────────
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setPaused(prev => {
           const next = !prev;
-          if (local) { if (next) simRef.current?.pause(); else simRef.current?.resume(); }
+          if (next) simRef.current?.pause(); else simRef.current?.resume();
           return next;
         });
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [local]);
+  }, []);
 
   const handleExit = useCallback(() => {
-    if (!local) colyseus.room?.leave();
     simRef.current?.stop();
-    const rt = config?.roomType;
-    if (rt === 'tournament') {
-      navigate(config?.tournamentId ? `/game/2d/tournament/${config.tournamentId}` : '/game/2d/tournament');
-    } else if (rt === 'pvp') {
-      navigate('/game/2d/battle/lobby');
-    } else {
-      navigate('/game/battle');
-    }
-  }, [local, colyseus.room, navigate, config]);
+    navigate('/game/battle', { replace: true });
+  }, [navigate]);
 
   // Tournament bracket info from local sim
   const tournamentBracket = simSnap?.tournamentBracket;
 
   if (!config) return null;
-
-
-  // ─── BeyLink QTE data conversions ─────────────────────────────────────────
-  const escapeQTEData: SingleKeyQTEData | null = !local && colyseus.beyLinkQTE ? {
-    key: colyseus.beyLinkQTE.key,
-    label: 'Escape!',
-    expiresAt: colyseus.beyLinkQTE.expiresAt,
-    variant: 'escape',
-  } : null;
-
-  const blockQTEData: SingleKeyQTEData | null = !local && colyseus.beyLinkHijackBlockQTE ? {
-    key: colyseus.beyLinkHijackBlockQTE.key,
-    label: 'Block Hijack!',
-    expiresAt: colyseus.beyLinkHijackBlockQTE.expiresAt,
-    variant: 'block',
-  } : null;
-
-  const hijackQTEPrompt: QTEPromptData | null = !local && colyseus.beyLinkHijackQTE ? {
-    attackerBeyId: colyseus.beyLinkHijackQTE.stackKey,
-    sequence: ['attack', 'attack', 'attack'],
-    windowTicks: colyseus.beyLinkHijackQTE.windowTicks,
-    powerCost: 0,
-    expiresAt: colyseus.beyLinkHijackQTE.expiresAt,
-  } : null;
-
-  const debuffData: DebuffNoticeData | null = !local && colyseus.beyLinkControlLoss && debuffStartedAt !== null ? {
-    mode: colyseus.beyLinkControlLoss.mode,
-    durationTicks: colyseus.beyLinkControlLoss.durationTicks,
-    startedAt: debuffStartedAt,
-  } : null;
 
   // Winner info for victory overlay
   const winnerBey = beyblades.get(gameState.winner ?? '') ?? [...beyblades.values()].find(b => b.userId === gameState.winner);
@@ -380,7 +232,7 @@ export function GameRoomPage() {
       onZoomOut={cameraZoomOut}
       onZoomReset={cameraZoomReset}
     >
-      {/* Canvas container — fills game-viewport-slot */}
+      {/* Canvas container */}
       <div
         ref={containerRef}
         style={{ position: 'absolute', inset: 0, background: '#000' }}
@@ -394,14 +246,14 @@ export function GameRoomPage() {
           <LoadingProgress
             currentStep={effectiveLoadingStep as import('../components/LoadingProgress').LoadingStep}
             error={loadingError}
-            onRetry={local ? () => {
+            onRetry={() => {
               if (config) {
                 simRef.current?.stop();
                 const sim = new LocalGameSimulation(config, snap => setSimSnap(snap));
                 simRef.current = sim;
                 sim.start();
               }
-            } : undefined}
+            }}
           />
         )}
 
@@ -417,11 +269,11 @@ export function GameRoomPage() {
         {gameState.status === 'launching' && (
           <LaunchPhase
             launchTimer={gameState.launchTimer ?? (simSnap?.launchTimer ?? LAUNCH_DURATION_S)}
-            launchTilt={local ? (simSnap?.launchTilt ?? 0) : launchState.tilt}
-            launchPosition={local ? (simSnap?.launchPosition ?? 0.5) : launchState.position}
-            launchPower={local ? (simSnap?.launchPower ?? 0) : launchState.power}
-            chargingStarted={local ? ((simSnap?.launchPower ?? 0) > 0) : launchState.chargingStarted}
-            launched={local ? false : launchState.launched}
+            launchTilt={simSnap?.launchTilt ?? 0}
+            launchPosition={simSnap?.launchPosition ?? 0.5}
+            launchPower={simSnap?.launchPower ?? 0}
+            chargingStarted={(simSnap?.launchPower ?? 0) > 0}
+            launched={false}
             failed={myBeyblade ? !!(myBeyblade as unknown as Record<string, boolean>)['launchFailed'] : false}
             myBeyId={myBeyblade?.id}
             beyblades={beyblades}
@@ -461,98 +313,8 @@ export function GameRoomPage() {
         {/* Launch cinematic */}
         <LaunchCinematic
           active={gameState.status === 'launching'}
-          power={local ? (simSnap?.launchPower ?? 0) : (myBeyblade ? (myBeyblade as unknown as Record<string, number>)['launchPower'] ?? launchState.power : launchState.power)}
+          power={simSnap?.launchPower ?? 0}
         />
-
-        {/* SequenceQTE — counter block (bottom-centre, yellow) */}
-        {qtePrompt && (
-          <div style={{ position: 'absolute', bottom: '12%', left: '50%', transform: 'translateX(-50%)', zIndex: 200 }}>
-            <SequenceQTE
-              prompt={qtePrompt}
-              variant="counter"
-              onKeyPress={(key) => colyseus.sendQTEInput(key)}
-              onDismiss={() => setQTEPrompt(null)}
-            />
-          </div>
-        )}
-
-        {/* SequenceQTE — BeyLink hijack attacker (bottom-centre, purple) */}
-        {hijackQTEPrompt && (
-          <div style={{ position: 'absolute', bottom: '12%', left: '50%', transform: 'translateX(-50%)', zIndex: 201 }}>
-            <SequenceQTE
-              prompt={hijackQTEPrompt}
-              variant="hijack"
-              onKeyPress={() => {}}
-              onSuccess={() => {
-                if (colyseus.beyLinkHijackQTE) {
-                  colyseus.sendHijackAttempt(
-                    colyseus.beyLinkHijackQTE.stackKey,
-                    colyseus.beyLinkHijackQTE.linkId,
-                  );
-                }
-              }}
-              onDismiss={() => {}}
-            />
-          </div>
-        )}
-
-        {/* MashQTE — collision clash (right edge, v-mid) */}
-        {collisionQTEActive && (
-          <div style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', zIndex: 200 }}>
-            <MashQTE
-              active={collisionQTEActive}
-              power={collisionQTEPowerLocal}
-              canFireSpecial={collisionCanFireSpecial}
-              qteMultiplier={collisionQTEMultiplier}
-              currentSP={myBeyblade?.power ?? 0}
-              onMash={colyseus.sendCollisionQTEMash}
-              onFireSpecial={() => {
-                colyseus.sendCollisionQTEFireSpecial();
-                setCollisionCanFireSpecial(false);
-                setCollisionQTEActive(false);
-              }}
-            />
-          </div>
-        )}
-
-        {/* SingleKeyQTE — BeyLink escape (top-centre, cyan) */}
-        {escapeQTEData && (
-          <div style={{ position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)', zIndex: 200 }}>
-            <SingleKeyQTE
-              data={escapeQTEData}
-              onPress={(key) => colyseus.sendBeyLinkQTEInput(key)}
-              onDismiss={() => {}}
-            />
-          </div>
-        )}
-
-        {/* SingleKeyQTE — BeyLink hijack block (top-centre, blue) */}
-        {blockQTEData && (
-          <div style={{ position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)', zIndex: 201 }}>
-            <SingleKeyQTE
-              data={blockQTEData}
-              onPress={(key) => {
-                if (colyseus.beyLinkHijackBlockQTE) {
-                  colyseus.sendHijackBlock(
-                    colyseus.beyLinkHijackBlockQTE.stackKey,
-                    key,
-                  );
-                }
-              }}
-              onDismiss={() => {}}
-            />
-          </div>
-        )}
-
-        {/* DebuffNotice — BeyLink control loss (top-left badge) */}
-        {debuffData && (
-          <div style={{ position: 'absolute', top: '8%', left: '5%', zIndex: 200 }}>
-            <DebuffNotice
-              data={debuffData}
-              onExpire={() => setDebuffStartedAt(null)}
-            />
-          </div>
-        )}
 
         {/* HUD — opponent strips (top) */}
         {gameState.status === 'in-progress' && (
@@ -602,18 +364,17 @@ export function GameRoomPage() {
           />
         )}
 
-        {/* Battle Royale HUD — zone timer + player strip */}
-        {config?.roomType === 'royale' && gameState.status === 'in-progress' && (
+        {/* Battle Royale HUD */}
+        {config?.roomType === 'royale-ai' && gameState.status === 'in-progress' && (
           <RoyaleHUD gameState={gameState} myId={settings.userId ?? 'guest'} />
         )}
 
-        {/* Battle Royale — zone closing overlay flash + outside-zone vignette */}
-        {config?.roomType === 'royale' && gameState.status === 'in-progress' && (
+        {/* Battle Royale zone overlays */}
+        {config?.roomType === 'royale-ai' && gameState.status === 'in-progress' && (
           <SafeZoneOverlay gameState={gameState} myId={settings.userId ?? 'guest'} />
         )}
 
-        {/* Battle Royale — mobile danger meter (right side bar) */}
-        {config?.roomType === 'royale' && gameState.status === 'in-progress' && (
+        {config?.roomType === 'royale-ai' && gameState.status === 'in-progress' && (
           <ZoneDangerMeter gameState={gameState} myId={settings.userId ?? 'guest'} />
         )}
 
@@ -625,11 +386,9 @@ export function GameRoomPage() {
             borderRadius: 10, padding: '5px 14px', pointerEvents: 'none',
             display: 'flex', alignItems: 'center', gap: 10, zIndex: 50,
           }}>
-            {/* Round label */}
             <span style={{ fontSize: 11, fontWeight: 800, color: '#fbbf24', letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
               {tournamentBracket.round === tournamentBracket.totalRounds ? 'FINAL' : `Round ${tournamentBracket.round}`}
             </span>
-            {/* Opponent difficulty badge */}
             <span style={{
               fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase',
               padding: '2px 7px', borderRadius: 6,
@@ -645,7 +404,6 @@ export function GameRoomPage() {
             }}>
               {tournamentBracket.opponentDifficulty}
             </span>
-            {/* Progress dots */}
             <div style={{ display: 'flex', gap: 4 }}>
               {Array.from({ length: tournamentBracket.totalRounds }).map((_, i) => (
                 <span key={i} style={{
@@ -664,30 +422,10 @@ export function GameRoomPage() {
       {/* Pause menu */}
       {paused && (
         <PauseMenu
-          isLocal={local}
-          onResume={() => { setPaused(false); if (local) simRef.current?.resume(); }}
-          onForfeit={() => { if (!local) colyseus.room?.leave(); simRef.current?.stop(); }}
+          isLocal={true}
+          onResume={() => { setPaused(false); simRef.current?.resume(); }}
+          onForfeit={() => { simRef.current?.stop(); }}
         />
-      )}
-
-      {/* Reconnecting toast */}
-      {reconnecting && !lostConnection && (
-        <div style={{ position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 600, background: 'rgba(20,20,40,0.95)', border: '1px solid rgba(255,200,0,0.4)', borderRadius: 10, padding: '10px 20px', color: '#ffcc00', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', border: '2px solid #ffcc00', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
-          Connection lost — reconnecting…
-        </div>
-      )}
-
-      {/* Lost connection overlay */}
-      {lostConnection && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-          <div style={{ fontSize: 32 }}>📡</div>
-          <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', textTransform: 'uppercase' }}>Match Ended</div>
-          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>Connection lost</div>
-          <button onClick={() => navigate('/game/battle', { replace: true })} style={{ padding: '12px 32px', background: 'rgba(0,229,255,0.15)', border: '1px solid rgba(0,229,255,0.4)', borderRadius: 10, color: '#00e5ff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-            Back to Lobby
-          </button>
-        </div>
       )}
 
       {/* Post-match summary */}
@@ -699,7 +437,6 @@ export function GameRoomPage() {
             </div>
             <div style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20 }}>Returning to lobby in 30s…</div>
 
-            {/* Per-player stats */}
             <div style={{ display: 'grid', gridTemplateColumns: beyblades.size === 1 ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 20 }}>
               {[...beyblades.values()].slice(0, 2).map(b => (
                 <div key={b.id} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '12px 14px' }}>

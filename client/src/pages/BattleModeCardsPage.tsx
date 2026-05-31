@@ -24,11 +24,6 @@ const DIFFICULTY_LABELS: Record<Difficulty, { label: string; color: string }> = 
   hell:   { label: 'Hell',   color: '#ff2a4d' },
 };
 
-const SEP: React.CSSProperties = {
-  margin: '18px 0 14px',
-  display: 'flex', alignItems: 'center', gap: 10,
-};
-
 export function BattleModeCardsPage() {
   const navigate = useNavigate();
   const { settings } = useGame();
@@ -48,7 +43,7 @@ export function BattleModeCardsPage() {
 
   // Modes that default to a random arena
   const isRandomDefaultMode = (rt: RoomType | null) =>
-    rt === 'tournament-ai' || rt === 'royale-ai' || rt === 'royale';
+    rt === 'tournament-ai' || rt === 'royale-ai';
 
   useEffect(() => {
     const go = settings?.beybladeId ?? '';
@@ -140,18 +135,6 @@ export function BattleModeCardsPage() {
     navigate('/game/room', { state: { config } });
   }, [drawer, selectedBey, selectedArena, difficulty, bestOf, aiCountTournament, aiCountRoyale, navigate]);
 
-  const goToPvPLobby = useCallback(() => {
-    navigate('/game/battle/lobby');
-  }, [navigate]);
-
-  const goToTournamentLobby = useCallback(() => {
-    navigate('/game/tournament/lobby');
-  }, [navigate]);
-
-  const goToRoyaleLobby = useCallback(() => {
-    navigate('/game/royale/lobby');
-  }, [navigate]);
-
   // Restore last-viewed card index from localStorage
   const initialCardIndex = (() => {
     try { const v = localStorage.getItem('bey.lastBattleCard'); return v !== null ? parseInt(v, 10) : 0; } catch { return 0; }
@@ -179,15 +162,6 @@ export function BattleModeCardsPage() {
       gradient: 'linear-gradient(135deg, #1c1917 0%, #44403c 50%, #1c1917 100%)',
       icon: '🤖',
       onSelect: () => openDrawer('pvai'),
-    },
-    {
-      id: 'pvp',
-      title: 'PvP',
-      subtitle: 'Online Multiplayer',
-      description: 'Challenge real players online. Random match or invite friends with a room code. Requires server.',
-      gradient: 'linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 50%, #1e3a5f 100%)',
-      icon: '🌐',
-      onSelect: () => goToPvPLobby(),
     },
     {
       id: 'tournament',
@@ -223,10 +197,6 @@ export function BattleModeCardsPage() {
   const showBotCount = drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
   const showDifficulty = drawer.roomType === 'pvai' || drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
   const showBestOf = drawer.roomType === 'pvai' || drawer.roomType === 'tournament-ai';
-  const showOnlineLink = drawer.roomType === 'tournament-ai' || drawer.roomType === 'royale-ai';
-
-  const onlineLinkLabel = drawer.roomType === 'tournament-ai' ? 'Create/Join Online Tournament →' : 'Join Online Royale →';
-  const onlineLinkAction = drawer.roomType === 'tournament-ai' ? goToTournamentLobby : goToRoyaleLobby;
 
   const isTournamentDrawer = drawer.roomType === 'tournament-ai';
   const botCountLabel = isTournamentDrawer ? 'Rounds (opponents)' : 'AI Bots (players)';
@@ -310,30 +280,6 @@ export function BattleModeCardsPage() {
               </div>
             ) : (
               <>
-                {/* Online shortcut link for tournament-ai / royale-ai */}
-                {showOnlineLink && (
-                  <>
-                    <button
-                      onClick={() => { setDrawer({ open: false, roomType: null }); onlineLinkAction(); }}
-                      style={{
-                        width: '100%', padding: '12px',
-                        background: 'rgba(99,102,241,0.1)',
-                        border: '1px solid rgba(99,102,241,0.4)',
-                        borderRadius: '12px', color: '#818cf8',
-                        fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-                        letterSpacing: '0.04em', marginBottom: '4px',
-                      }}
-                    >
-                      {onlineLinkLabel}
-                    </button>
-                    <div style={SEP}>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em' }}>or play offline vs AI</span>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-                    </div>
-                  </>
-                )}
-
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                     Beyblade

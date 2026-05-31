@@ -92,57 +92,6 @@ export const SCENARIO_MAP: Record<RoomType, GameModeScenario> = {
     royaleSize:     8,
   },
 
-  // ── Server (Colyseus) modes ────────────────────────────────────────────────
-  // These defaults are passed to the Colyseus join options when the caller
-  // has not explicitly set a field.
-
-  pvp: {
-    roomType:       'pvp',
-    description:    '1v1 live PvP match',
-    beybladeId:     PLAYER_BEY,
-    arenaId:        DEFAULT_ARENA_ID,
-    bestOf:         3,
-    aiCount:        0,
-    aiDifficulty:   'medium',
-    aiBeybladeIds:  [],
-    royaleSize:     4,
-  },
-
-  teams: {
-    roomType:       'teams',
-    description:    '2v2 team battle',
-    beybladeId:     PLAYER_BEY,
-    arenaId:        DEFAULT_ARENA_ID,
-    bestOf:         3,
-    aiCount:        0,
-    aiDifficulty:   'medium',
-    aiBeybladeIds:  [],
-    royaleSize:     4,
-  },
-
-  tournament: {
-    roomType:       'tournament',
-    description:    'Live tournament bracket match',
-    beybladeId:     PLAYER_BEY,
-    arenaId:        DEFAULT_ARENA_ID,
-    bestOf:         3,
-    aiCount:        0,
-    aiDifficulty:   'medium',
-    aiBeybladeIds:  [],
-    royaleSize:     4,
-  },
-
-  royale: {
-    roomType:       'royale',
-    description:    'Live Battle Royale — up to 12 players, last bey standing',
-    beybladeId:     PLAYER_BEY,
-    arenaId:        DEFAULT_ARENA_ID,
-    bestOf:         1,
-    aiCount:        0,
-    aiDifficulty:   'medium',
-    aiBeybladeIds:  [],
-    royaleSize:     8,
-  },
 };
 
 /**
