@@ -50,10 +50,11 @@ const SHAPES = [
   { id: "extrude_ellipse",    label: "Extrude — Ellipse (Oval disc)" },
   // ── Oval / Ellipsoidal ─────────────────────────────────────
   { id: "ellipsoid",          label: "Ellipsoid (3-D oval)" },
+  // ── Arc / Sector ───────────────────────────────────────────
+  { id: "arc_disc",           label: "Arc — Disc Sector (pie slice)" },
+  { id: "arc_ring",           label: "Arc — Ring Sector (annulus slice)" },
   // ── Image-traced ───────────────────────────────────────────
   { id: "silhouette",         label: "Silhouette (top view → flat extrusion)" },
-  { id: "lathe_custom",       label: "Lathe (side view → revolution solid)" },
-  { id: "base_3view",         label: "Base (3-view: left · right · bottom)" },
   // ── Joined ─────────────────────────────────────────────────
   { id: "merged",             label: "Joined (merged geometry)" },
 ] as const;
@@ -216,19 +217,22 @@ const SHAPE_PARAMS: Record<ShapeId, ParamDef[]> = {
     { key: "radiusY", label: "Radius Y (depth)",  min: 1, max: 40, step: 0.5, unit: "mm", default: 10 },
     { key: "radiusZ", label: "Radius Z (height)", min: 1, max: 40, step: 0.5, unit: "mm", default: 12 },
   ],
+  arc_disc: [
+    { key: "radius",    label: "Radius",       min: 1,   max: 40,  step: 0.5, unit: "mm", default: 20 },
+    { key: "thickness", label: "Thickness",    min: 0.5, max: 20,  step: 0.5, unit: "mm", default: 4  },
+    { key: "sweep",     label: "Sweep angle",  min: 1,   max: 360, step: 1,   unit: "°",  default: 120 },
+    { key: "startAngle",label: "Start angle",  min: 0,   max: 360, step: 1,   unit: "°",  default: 0  },
+  ],
+  arc_ring: [
+    { key: "outerRadius", label: "Outer radius",  min: 2,   max: 40,  step: 0.5, unit: "mm", default: 22 },
+    { key: "innerRadius", label: "Inner radius",  min: 1,   max: 38,  step: 0.5, unit: "mm", default: 14 },
+    { key: "thickness",   label: "Thickness",     min: 0.5, max: 20,  step: 0.5, unit: "mm", default: 4  },
+    { key: "sweep",       label: "Sweep angle",   min: 1,   max: 360, step: 1,   unit: "°",  default: 120 },
+    { key: "startAngle",  label: "Start angle",   min: 0,   max: 360, step: 1,   unit: "°",  default: 0  },
+  ],
   silhouette: [
     { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80, step: 0.5, unit: "mm", default: 40 },
     { key: "thickness",   label: "Thickness",      min: 0.5, max: 20, step: 0.5, unit: "mm", default: 3  },
-  ],
-  lathe_custom: [
-    { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80,  step: 0.5, unit: "mm", default: 40 },
-    { key: "height_mm",   label: "Height",         min: 1, max: 60,  step: 0.5, unit: "mm", default: 20 },
-    { key: "segments",    label: "Revolve segs",   min: 8, max: 128, step: 4,   unit: "",   default: 64 },
-  ],
-  base_3view: [
-    { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80,  step: 0.5, unit: "mm", default: 30 },
-    { key: "height_mm",   label: "Height",         min: 1, max: 60,  step: 0.5, unit: "mm", default: 18 },
-    { key: "segments",    label: "Revolve segs",   min: 8, max: 128, step: 4,   unit: "",   default: 64 },
   ],
   merged: [], // no adjustable params — geometry is baked from the original parts
 };
@@ -433,9 +437,35 @@ function buildGeometry(id: ShapeId, p: Record<string, number>): THREE.BufferGeom
       geo.scale(u(p.radiusX), u(p.radiusZ), u(p.radiusY));
       return geo;
     }
+    case "arc_disc": {
+      const r = u(p.radius), h = u(p.thickness);
+      const start = THREE.MathUtils.degToRad(p.startAngle ?? 0);
+      const sweep = THREE.MathUtils.degToRad(Math.min(p.sweep ?? 120, 359.99));
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.absarc(0, 0, r, start, start + sweep, false);
+      shape.lineTo(0, 0);
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false, curveSegments: 64 });
+      geo.rotateX(Math.PI / 2);
+      geo.translate(0, -h / 2, 0);
+      return geo;
+    }
+    case "arc_ring": {
+      const ro = u(p.outerRadius), ri = u(Math.min(p.innerRadius, p.outerRadius - 0.5));
+      const h = u(p.thickness);
+      const start = THREE.MathUtils.degToRad(p.startAngle ?? 0);
+      const sweep = THREE.MathUtils.degToRad(Math.min(p.sweep ?? 120, 359.99));
+      const shape = new THREE.Shape();
+      shape.absarc(0, 0, ro, start, start + sweep, false);
+      shape.absarc(0, 0, ri, start + sweep, start, true);
+      shape.closePath();
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false, curveSegments: 64 });
+      geo.rotateX(Math.PI / 2);
+      geo.translate(0, -h / 2, 0);
+      return geo;
+    }
     // These shapes are built in the render loop from stored data
     case "silhouette":
-    case "lathe_custom":
     case "merged":
       return new THREE.CylinderGeometry(u(20), u(20), u(3), 64);
   }
@@ -456,9 +486,7 @@ function buildMergedGeometry(parts: PartNode[]): THREE.BufferGeometry {
   for (const p of parts) {
     const geo = p.shape === "silhouette"
       ? buildSilhouetteGeometry(p.silhouettePoints, p.silhouetteHoles, p.shapeParams)
-      : p.shape === "lathe_custom" && p.lathedProfile.length > 0
-        ? buildLatheGeometry(p.lathedProfile, p.lathedWidthPx, p.lathedHeightPx, p.shapeParams)
-        : buildGeometry(p.shape, p.shapeParams);
+      : buildGeometry(p.shape, p.shapeParams);
     if (!geo.getAttribute('normal')) geo.computeVertexNormals();
     // User coords → Three.js: (posX→X, posZ→Y, posY→Z)
     const mat = new THREE.Matrix4();
@@ -477,112 +505,140 @@ function buildMergedGeometry(parts: PartNode[]): THREE.BufferGeometry {
   return mergeGeometries(geos, false) ?? geos[0];
 }
 
-// ── Lathe (side-view) helpers ─────────────────────────────────────────────────
 
-// Extract a lathe profile from a side-view image.
-// Assumes left edge = spin axis, right edge = outer radius.
-// Returns [r_px, h_px] pairs (top-to-bottom order).
-function extractLatheProfile(img: HTMLImageElement): { profile: [number,number][]; widthPx: number; heightPx: number } {
-  const W = img.naturalWidth, H = img.naturalHeight;
-  if (!W || !H) return { profile: [], widthPx: 0, heightPx: 0 };
-  const canvas = document.createElement("canvas");
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(img, 0, 0);
-  const { data } = ctx.getImageData(0, 0, W, H);
-  const alpha = (x: number, y: number) => {
-    if (x < 0 || x >= W || y < 0 || y >= H) return 0;
-    return data[(y * W + x) * 4 + 3];
-  };
-  const profile: [number,number][] = [];
-  let maxR = 0;
-  for (let y = 0; y < H; y++) {
-    let rPx = 0;
-    for (let x = W - 1; x >= 0; x--) { if (alpha(x, y) > 32) { rPx = x; break; } }
-    if (rPx > 0) { profile.push([rPx, y]); if (rPx > maxR) maxR = rPx; }
+// ── Warp deformation ─────────────────────────────────────────────────────────
+type WarpType = "none" | "taper" | "bend" | "twist" | "skew" | "bowl";
+
+function applyWarp(geo: THREE.BufferGeometry, type: WarpType, amount: number, angleDeg: number): void {
+  if (type === "none" || amount === 0) return;
+  const pos = geo.getAttribute("position") as THREE.BufferAttribute;
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox!;
+  const yMin = bb.min.y, yRange = (bb.max.y - bb.min.y) || 1;
+  const a = amount / 100;
+  const rad = THREE.MathUtils.degToRad(angleDeg);
+  const ca = Math.cos(rad), sa = Math.sin(rad);
+
+  for (let i = 0; i < pos.count; i++) {
+    let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const t = (y - yMin) / yRange;
+
+    if (type === "taper") {
+      const proj = x * ca + z * sa;
+      const perp = -x * sa + z * ca;
+      const newProj = proj * (1 + a * t);
+      x = newProj * ca - perp * sa;
+      z = newProj * sa + perp * ca;
+    } else if (type === "bend") {
+      const shift = a * yRange * t * t;
+      x += shift * ca;
+      z += shift * sa;
+    } else if (type === "twist") {
+      const theta = a * Math.PI * t;
+      const nx = x * Math.cos(theta) - z * Math.sin(theta);
+      z = x * Math.sin(theta) + z * Math.cos(theta);
+      x = nx;
+    } else if (type === "skew") {
+      const shift = a * yRange * 0.5 * t;
+      x += shift * ca;
+      z += shift * sa;
+    } else if (type === "bowl") {
+      geo.computeBoundingBox();
+      const bb2 = geo.boundingBox!;
+      const maxR2 = Math.max(
+        bb2.max.x * bb2.max.x + bb2.max.z * bb2.max.z,
+        bb2.min.x * bb2.min.x + bb2.min.z * bb2.min.z,
+        1,
+      );
+      const r2 = x * x + z * z;
+      y -= a * yRange * 0.6 * (r2 / maxR2);
+    }
+    pos.setXYZ(i, x, y, z);
   }
-  return { profile, widthPx: maxR, heightPx: H };
+  pos.needsUpdate = true;
+  geo.computeVertexNormals();
 }
 
-function buildLatheGeometry(
-  profile: [number,number][],
-  widthPx: number,
-  heightPx: number,
-  params: Record<string, number>,
-): THREE.BufferGeometry {
-  const diamMm   = params.diameter_mm ?? 40;
-  const heightMm = params.height_mm   ?? 20;
-  const segments = Math.round(params.segments ?? 64);
-  if (!profile.length || widthPx === 0) {
-    return new THREE.CylinderGeometry(u(diamMm / 2), u(diamMm / 2), u(heightMm), segments);
-  }
-  const rScale = (diamMm / 2) / widthPx;
-  const topY   = profile[0][1];
-  const botY   = profile[profile.length - 1][1];
-  const hPxRange = (botY - topY) || heightPx;
-  const hScale = heightMm / hPxRange;
-  const points: THREE.Vector2[] = profile.map(([rPx, yPx]) =>
-    new THREE.Vector2(u(Math.max(0, rPx * rScale)), u((botY - yPx) * hScale)),
-  );
-  const geo = new THREE.LatheGeometry(points, segments);
-  geo.translate(0, -u(heightMm) / 2, 0);
-  return geo;
+// ── Contact-point arc deformation ────────────────────────────────────────────
+interface ContactDeform {
+  id: string;
+  angleStart: number;  // 0–360° arc selection start (in XZ plane, top-down view)
+  angleEnd:   number;  // 0–360° arc selection end
+  heightMin:  number;  // 0–100% of shape height (bottom = 0)
+  heightMax:  number;  // 0–100% of shape height
+  type:       "extrude" | "bend"; // extrude = push outward radially; bend = push up/down
+  amount:     number;  // displacement in mm (positive = out/up, negative = in/down)
 }
 
-// Build base from 3-view images.
-// Lathe body from the active side profile + bottom cap from bottom silhouette (or auto circle).
-function buildBase3ViewGeometry(part: {
-  base3vActive: "left" | "right";
-  base3vLeftProfile: [number,number][]; base3vLeftWidthPx: number; base3vLeftHeightPx: number;
-  base3vRightProfile:[number,number][]; base3vRightWidthPx:number; base3vRightHeightPx:number;
-  base3vBottomPoints:[number,number][]; base3vBottomHoles: [number,number][][];
-  shapeParams: Record<string,number>;
-}): THREE.BufferGeometry {
-  const params   = part.shapeParams;
-  const diamMm   = params.diameter_mm ?? 30;
-  const heightMm = params.height_mm   ?? 18;
-  const segs     = Math.round(params.segments ?? 64);
-  const halfH    = u(heightMm) / 2;
+// Applies per-arc deformations to an already-built BufferGeometry.
+// Each ContactDeform selects vertices by (angle in XZ plane, height band)
+// and displaces them — "extrude" pushes radially outward, "bend" pushes along Y.
+// Gaussian falloff (σ = half arc-width) softens the edges of the selection.
+function applyContactDeforms(geo: THREE.BufferGeometry, deforms: ContactDeform[]): void {
+  if (!deforms || deforms.length === 0) return;
+  const pos = geo.getAttribute("position") as THREE.BufferAttribute;
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox!;
+  const yMin = bb.min.y, yRange = (bb.max.y - bb.min.y) || 1;
 
-  // ── Side body ─────────────────────────────────────────────────────────────
-  const useLeft  = part.base3vActive !== "right" || part.base3vLeftProfile.length > 2;
-  const profile  = useLeft ? part.base3vLeftProfile  : part.base3vRightProfile;
-  const wPx      = useLeft ? part.base3vLeftWidthPx  : part.base3vRightWidthPx;
+  for (const d of deforms) {
+    if (d.amount === 0) continue;
+    const disp = d.amount * 0.1; // mm → Three.js units (×0.1 since 1 unit = 1 cm here)
 
-  const geos: THREE.BufferGeometry[] = [];
-  if (profile.length > 2 && wPx > 0) {
-    geos.push(buildLatheGeometry(profile, wPx, 0, params));
-  } else {
-    // Fallback frustum if no profile uploaded yet
-    geos.push(new THREE.CylinderGeometry(u(diamMm * 0.15), u(diamMm / 2), u(heightMm), segs));
-  }
+    // Arc span in radians — normalise so end > start (handle wrapping)
+    let aStart = THREE.MathUtils.degToRad(d.angleStart);
+    let aEnd   = THREE.MathUtils.degToRad(d.angleEnd);
+    if (aEnd <= aStart) aEnd += Math.PI * 2;
+    const arcSpan = aEnd - aStart;
+    const arcMid  = aStart + arcSpan / 2;
+    const arcSigma = arcSpan / 2; // Gaussian σ = half arc-width
 
-  // ── Bottom cap ────────────────────────────────────────────────────────────
-  if (part.base3vBottomPoints.length > 2) {
-    // Traced silhouette from bottom image — placed at the base bottom face
-    const bottomShape = buildSilhouetteShape(part.base3vBottomPoints, part.base3vBottomHoles, params);
-    if (bottomShape) {
-      const capGeo = new THREE.ShapeGeometry(bottomShape, segs);
-      // ShapeGeometry sits in XY plane (Z=0). Rotate −90° around X → into XZ plane (Y=0)
-      capGeo.rotateX(-Math.PI / 2);
-      capGeo.translate(0, -halfH, 0);
-      geos.push(capGeo);
+    const hMin = d.heightMin / 100;
+    const hMax = d.heightMax / 100;
+    const hMid  = (hMin + hMax) / 2;
+    const hSigma = Math.max((hMax - hMin) / 2, 0.001);
+
+    for (let i = 0; i < pos.count; i++) {
+      let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+
+      // Normalised height within bounding box
+      const ht = (y - yMin) / yRange;
+      if (ht < hMin - hSigma * 2 || ht > hMax + hSigma * 2) continue;
+
+      // Horizontal angle in XZ plane (Three.js coords: X and Z)
+      let angle = Math.atan2(z, x); // −π … +π
+      if (angle < 0) angle += Math.PI * 2; // 0 … 2π
+
+      // Handle wrap-around: try shifting angle by 2π to stay close to arc centre
+      let angle2 = angle < arcMid ? angle + Math.PI * 2 : angle - Math.PI * 2;
+      const closestAngle = Math.abs(angle - arcMid) < Math.abs(angle2 - arcMid) ? angle : angle2;
+
+      // Angular distance from arc centre (signed)
+      const dAngle = closestAngle - arcMid;
+      if (Math.abs(dAngle) > arcSigma * 2.5) continue; // outside 2.5σ — no effect
+
+      // Gaussian falloff: angle dimension × height dimension
+      const wAngle  = Math.exp(-(dAngle * dAngle) / (2 * arcSigma  * arcSigma));
+      const dH      = ht - hMid;
+      const wHeight = Math.exp(-(dH * dH)           / (2 * hSigma   * hSigma));
+      const weight  = wAngle * wHeight;
+
+      if (d.type === "extrude") {
+        // Push radially outward (or inward if negative) in XZ plane
+        const r = Math.sqrt(x * x + z * z) || 0.0001;
+        const nx = x / r, nz = z / r;
+        x += nx * disp * weight;
+        z += nz * disp * weight;
+      } else {
+        // "bend" — push up (+Y) or down (−Y)
+        y += disp * weight;
+      }
+
+      pos.setXYZ(i, x, y, z);
     }
-  } else if (profile.length > 2 && wPx > 0) {
-    // Auto circle matching the profile's bottom radius
-    const rScale  = (diamMm / 2) / wPx;
-    const botR    = u(profile[profile.length - 1][0] * rScale);
-    if (botR > 0) {
-      const capGeo = new THREE.CircleGeometry(botR, segs);
-      capGeo.rotateX(-Math.PI / 2);
-      capGeo.translate(0, -halfH, 0);
-      geos.push(capGeo);
-    }
   }
-
-  if (geos.length === 0) return new THREE.BufferGeometry();
-  if (geos.length === 1) return geos[0];
-  return mergeGeometries(geos) ?? geos[0];
+  pos.needsUpdate = true;
+  geo.computeVertexNormals();
 }
 
 // ── Silhouette helpers ────────────────────────────────────────────────────────
@@ -932,28 +988,12 @@ interface PartNode {
   decalY:         number;
   decalScale:     number;   // editor px per source image px (1.0 = natural)
   decalAngle:     number;   // rotation in degrees
-  // Lathe (side-view) fields
-  lathedProfile:      [number, number][]; // [r_px, h_px] side-view profile
-  lathedWidthPx:      number;
-  lathedHeightPx:     number;
-  lathedImageUrl:     string;
-  // Base 3-view fields
-  base3vLeftUrl:     string;
-  base3vRightUrl:    string;
-  base3vBottomUrl:   string;
-  base3vLeftProfile: [number,number][];
-  base3vLeftWidthPx: number;
-  base3vLeftHeightPx:number;
-  base3vRightProfile:[number,number][];
-  base3vRightWidthPx:number;
-  base3vRightHeightPx:number;
-  base3vBottomPoints:[number,number][];
-  base3vBottomHoles: [number,number][][];
-  base3vBottomCx:    number;
-  base3vBottomCy:    number;
-  base3vBottomImgW:  number;
-  base3vBottomImgH:  number;
-  base3vActive:      "left" | "right"; // which side drives the lathe
+  // Warp deformation (whole-shape)
+  warpType:   WarpType;
+  warpAmount: number;
+  warpAngle:  number;
+  // Contact-point arc deformations (per-arc localized)
+  contactDeforms: ContactDeform[];
   // General texture (applies to any shape; wraps using built-in Three.js UV)
   textureUrl: string;
   // Merged (joined) fields
@@ -1000,26 +1040,10 @@ function sanitizePart(raw: Record<string, unknown>): PartNode {
     decalY:         typeof raw.decalY         === "number" ? raw.decalY         : 0,
     decalScale:     typeof raw.decalScale     === "number" ? raw.decalScale     : 0,
     decalAngle:     typeof raw.decalAngle     === "number" ? raw.decalAngle     : 0,
-    lathedProfile:   Array.isArray(raw.lathedProfile)   ? raw.lathedProfile   as [number,number][] : [],
-    lathedWidthPx:   typeof raw.lathedWidthPx  === "number" ? raw.lathedWidthPx  : 0,
-    lathedHeightPx:  typeof raw.lathedHeightPx === "number" ? raw.lathedHeightPx : 0,
-    lathedImageUrl:  typeof raw.lathedImageUrl === "string" ? raw.lathedImageUrl : "",
-    base3vLeftUrl:      typeof raw.base3vLeftUrl      === "string" ? raw.base3vLeftUrl      : "",
-    base3vRightUrl:     typeof raw.base3vRightUrl     === "string" ? raw.base3vRightUrl     : "",
-    base3vBottomUrl:    typeof raw.base3vBottomUrl    === "string" ? raw.base3vBottomUrl    : "",
-    base3vLeftProfile:  Array.isArray(raw.base3vLeftProfile)  ? raw.base3vLeftProfile  as [number,number][] : [],
-    base3vLeftWidthPx:  typeof raw.base3vLeftWidthPx  === "number" ? raw.base3vLeftWidthPx  : 0,
-    base3vLeftHeightPx: typeof raw.base3vLeftHeightPx === "number" ? raw.base3vLeftHeightPx : 0,
-    base3vRightProfile: Array.isArray(raw.base3vRightProfile) ? raw.base3vRightProfile as [number,number][] : [],
-    base3vRightWidthPx: typeof raw.base3vRightWidthPx === "number" ? raw.base3vRightWidthPx : 0,
-    base3vRightHeightPx:typeof raw.base3vRightHeightPx=== "number" ? raw.base3vRightHeightPx: 0,
-    base3vBottomPoints: Array.isArray(raw.base3vBottomPoints) ? raw.base3vBottomPoints as [number,number][]  : [],
-    base3vBottomHoles:  Array.isArray(raw.base3vBottomHoles)  ? raw.base3vBottomHoles  as [number,number][][] : [],
-    base3vBottomCx:     typeof raw.base3vBottomCx     === "number" ? raw.base3vBottomCx     : 0,
-    base3vBottomCy:     typeof raw.base3vBottomCy     === "number" ? raw.base3vBottomCy     : 0,
-    base3vBottomImgW:   typeof raw.base3vBottomImgW   === "number" ? raw.base3vBottomImgW   : 0,
-    base3vBottomImgH:   typeof raw.base3vBottomImgH   === "number" ? raw.base3vBottomImgH   : 0,
-    base3vActive:       raw.base3vActive === "right" ? "right" : "left",
+    warpType:   (["none","taper","bend","twist","skew","bowl"] as WarpType[]).includes(raw.warpType as WarpType) ? raw.warpType as WarpType : "none",
+    warpAmount: typeof raw.warpAmount === "number" ? raw.warpAmount : 0,
+    warpAngle:  typeof raw.warpAngle  === "number" ? raw.warpAngle  : 0,
+    contactDeforms: Array.isArray(raw.contactDeforms) ? (raw.contactDeforms as ContactDeform[]) : [],
     textureUrl:      typeof raw.textureUrl     === "string" ? raw.textureUrl     : "",
     mergedParts:     Array.isArray(raw.mergedParts) ? (raw.mergedParts as Record<string,unknown>[]).map(sanitizePart) : [],
   };
@@ -1039,12 +1063,9 @@ function makeAxisPart(): PartNode {
     weight: 0, partRole: "Spin Axis", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
     decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
-    base3vLeftUrl: "", base3vRightUrl: "", base3vBottomUrl: "",
-    base3vLeftProfile: [], base3vLeftWidthPx: 0, base3vLeftHeightPx: 0,
-    base3vRightProfile: [], base3vRightWidthPx: 0, base3vRightHeightPx: 0,
-    base3vBottomPoints: [], base3vBottomHoles: [], base3vBottomCx: 0, base3vBottomCy: 0, base3vBottomImgW: 0, base3vBottomImgH: 0,
-    base3vActive: "left" as const,
-    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", textureUrl: "", mergedParts: [],
+    warpType: "none" as WarpType, warpAmount: 0, warpAngle: 0,
+    contactDeforms: [],
+    textureUrl: "", mergedParts: [],
   };
 }
 
@@ -1062,12 +1083,9 @@ function makePartNode(id: string, label: string, parentId: string | null, colorI
     weight: 0, partRole: "Other", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
     decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
-    base3vLeftUrl: "", base3vRightUrl: "", base3vBottomUrl: "",
-    base3vLeftProfile: [], base3vLeftWidthPx: 0, base3vLeftHeightPx: 0,
-    base3vRightProfile: [], base3vRightWidthPx: 0, base3vRightHeightPx: 0,
-    base3vBottomPoints: [], base3vBottomHoles: [], base3vBottomCx: 0, base3vBottomCy: 0, base3vBottomImgW: 0, base3vBottomImgH: 0,
-    base3vActive: "left" as const,
-    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", textureUrl: "", mergedParts: [],
+    warpType: "none" as WarpType, warpAmount: 0, warpAngle: 0,
+    contactDeforms: [],
+    textureUrl: "", mergedParts: [],
   };
 }
 
@@ -1855,11 +1873,11 @@ export function BeybladeRendererPage() {
 
         const geo = part.shape === "silhouette"
           ? buildSilhouetteGeometry(part.silhouettePoints, part.silhouetteHoles, part.shapeParams)
-          : part.shape === "lathe_custom" && part.lathedProfile.length > 0
-            ? buildLatheGeometry(part.lathedProfile, part.lathedWidthPx, part.lathedHeightPx, part.shapeParams)
-            : part.shape === "merged" && part.mergedParts.length > 0
-              ? buildMergedGeometry(part.mergedParts)
-              : buildGeometry(part.shape, part.shapeParams);
+          : part.shape === "merged" && part.mergedParts.length > 0
+            ? buildMergedGeometry(part.mergedParts)
+            : buildGeometry(part.shape, part.shapeParams);
+        applyWarp(geo, part.warpType ?? "none", part.warpAmount ?? 0, part.warpAngle ?? 0);
+        applyContactDeforms(geo, part.contactDeforms ?? []);
         const mp = MATERIALS[part.materialId ?? DEFAULT_MAT];
         const isTransparent = part.color === "transparent";
         const mat = new THREE.MeshStandardMaterial({
@@ -1916,6 +1934,9 @@ export function BeybladeRendererPage() {
               ua.needsUpdate=true; }
             faceGeo.rotateX(Math.PI / 2);                  // same as extrusion
             faceGeo.translate(0, -u(tMm) / 2, 0);          // same as extrusion
+            // Apply the same deformations so the decal follows the mesh surface
+            applyWarp(faceGeo, part.warpType ?? "none", part.warpAmount ?? 0, part.warpAngle ?? 0);
+            applyContactDeforms(faceGeo, part.contactDeforms ?? []);
             faceGeo.translate(0, 0.0002, 0);                // tiny Z-fight epsilon
             const faceMat = new THREE.MeshBasicMaterial({
               transparent: true, alphaTest: 0.05, side: THREE.DoubleSide,
@@ -2563,77 +2584,140 @@ export function BeybladeRendererPage() {
                       })} />
                   ))}
 
-                  {/* ── Lathe side-view upload ── */}
-                  {selectedPart.shape === "lathe_custom" && (
+                  {/* ── Warp deformation ── */}
+                  <SectionTitle>Warp</SectionTitle>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:3, marginBottom:8 }}>
+                    {(["none","bowl","taper","bend","twist","skew"] as WarpType[]).map(wt => (
+                      <button key={wt}
+                        onClick={() => updatePart(selectedPart.id, { warpType: wt })}
+                        style={{
+                          padding:"3px 8px", fontFamily:"monospace", fontSize:10,
+                          background: selectedPart.warpType === wt ? "#1a3366" : "#0a0a18",
+                          color: selectedPart.warpType === wt ? "#aaddff" : "#445566",
+                          border: selectedPart.warpType === wt ? "1px solid #3366cc" : "1px solid #1a2244",
+                          borderRadius:4, cursor:"pointer", textTransform:"capitalize",
+                        }}>
+                        {wt}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedPart.warpType !== "none" && (
                     <>
-                      <SectionTitle>Side View Image</SectionTitle>
-                      {selectedPart.lathedProfile.length > 0 ? (
-                        <div style={{ marginBottom:8 }}>
-                          <div style={{ display:"flex", gap:6, marginBottom:6 }}>
-                            <label style={{ flex:1, cursor:"pointer" }}>
-                              <div style={{ background:"#0d1e36", border:"1px solid #2a4a7a", color:"#5588cc", borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, textAlign:"center" }}>
-                                ↑ Re-upload side view
-                              </div>
-                              <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
-                                onChange={e => {
-                                  const file = e.target.files?.[0]; if (!file) return;
-                                  const reader = new FileReader();
-                                  reader.onload = ev => {
-                                    const url = ev.target?.result as string; if (!url) return;
-                                    const img = new Image();
-                                    img.onload = () => {
-                                      const { profile, widthPx, heightPx } = extractLatheProfile(img);
-                                      if (profile.length > 2) updatePart(selectedPart.id, {
-                                        lathedProfile: profile, lathedWidthPx: widthPx, lathedHeightPx: heightPx,
-                                        lathedImageUrl: url, color: extractDominantColor(img),
-                                      });
-                                    };
-                                    img.src = url;
-                                  };
-                                  reader.readAsDataURL(file); e.target.value = "";
-                                }} />
-                            </label>
-                            <button onClick={() => updatePart(selectedPart.id, { shape: "cylinder", shapeParams: defaultShapeParams("cylinder"), lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "" })}
-                              style={{ flex:1, background:"#1a1a0d", border:"1px solid #4a4a22", color:"#aaaa55", borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer" }}>
-                              ↩ Reset shape
-                            </button>
-                          </div>
-                          <div style={{ color:"#334455", fontSize:9 }}>{selectedPart.lathedProfile.length} profile pts</div>
-                        </div>
-                      ) : (
-                        <div style={{ marginBottom:8 }}>
-                          <label style={{ display:"block", cursor:"pointer", marginBottom:6 }}>
-                            <div style={{ background:"#0d1e36", border:"1px dashed #2a4a7a", color:"#4488bb", borderRadius:5, padding:"10px 0", fontFamily:"monospace", fontSize:11, textAlign:"center" }}>
-                              ↑ Upload side view image
-                            </div>
-                            <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
-                              onChange={e => {
-                                const file = e.target.files?.[0]; if (!file) return;
-                                const reader = new FileReader();
-                                reader.onload = ev => {
-                                  const url = ev.target?.result as string; if (!url) return;
-                                  const img = new Image();
-                                  img.onload = () => {
-                                    const { profile, widthPx, heightPx } = extractLatheProfile(img);
-                                    if (profile.length > 2) updatePart(selectedPart.id, {
-                                      lathedProfile: profile, lathedWidthPx: widthPx, lathedHeightPx: heightPx,
-                                      lathedImageUrl: url, color: extractDominantColor(img),
-                                    });
-                                  };
-                                  img.src = url;
-                                };
-                                reader.readAsDataURL(file); e.target.value = "";
-                              }} />
-                          </label>
-                          <div style={{ color:"#334455", fontSize:9, lineHeight:1.6 }}>
-                            Side-view PNG with transparent background. Left edge = spin axis.
-                          </div>
-                        </div>
+                      <Slider
+                        def={{ key:"warpAmount", label:"Amount", min:-100, max:100, step:1, unit:"%", default:0 }}
+                        value={selectedPart.warpAmount ?? 0}
+                        onChange={v => updatePart(selectedPart.id, { warpAmount: v })}
+                      />
+                      {selectedPart.warpType !== "bowl" && selectedPart.warpType !== "twist" && (
+                        <Slider
+                          def={{ key:"warpAngle", label:"Direction", min:0, max:360, step:1, unit:"°", default:0 }}
+                          value={selectedPart.warpAngle ?? 0}
+                          onChange={v => updatePart(selectedPart.id, { warpAngle: v })}
+                        />
                       )}
+                      <div style={{ color:"#334455", fontSize:9, lineHeight:1.6, marginBottom:6 }}>
+                        {selectedPart.warpType === "bowl" && "Outer edges curve down (+) or up (−). Use for disc/AR curvature."}
+                        {selectedPart.warpType === "taper" && "Scale one side wider (+) or narrower (−) toward the top, in the given direction."}
+                        {selectedPart.warpType === "bend" && "Curve the top of the part toward the given direction."}
+                        {selectedPart.warpType === "twist" && "Spiral the vertices around the spin axis toward the top."}
+                        {selectedPart.warpType === "skew" && "Lean the part linearly toward the given direction."}
+                      </div>
                     </>
                   )}
 
+                  {/* ── Contact-point arc deformations ── */}
+                  <SectionTitle>Arc Deforms</SectionTitle>
+                  <div style={{ marginBottom:8 }}>
+                    {(selectedPart.contactDeforms ?? []).map((cd, idx) => (
+                      <div key={cd.id} style={{
+                        background:"rgba(10,18,36,0.8)", border:"1px solid #1a3055",
+                        borderRadius:6, padding:"8px 10px", marginBottom:8,
+                      }}>
+                        {/* Header row: type toggle + delete */}
+                        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+                          <span style={{ color:"#5577aa", fontSize:9, flex:1 }}>Deform #{idx + 1}</span>
+                          <div style={{ display:"flex", gap:3 }}>
+                            {(["extrude","bend"] as const).map(t => (
+                              <button key={t}
+                                onClick={() => updatePart(selectedPart.id, {
+                                  contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, type: t } : c),
+                                })}
+                                style={{
+                                  padding:"2px 7px", fontSize:9, fontFamily:"monospace",
+                                  background: cd.type === t ? "#1a3366" : "#0a0a18",
+                                  color: cd.type === t ? "#aaddff" : "#445566",
+                                  border: cd.type === t ? "1px solid #3366cc" : "1px solid #1a2244",
+                                  borderRadius:3, cursor:"pointer",
+                                }}>{t}</button>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => updatePart(selectedPart.id, {
+                              contactDeforms: (selectedPart.contactDeforms ?? []).filter((_, i) => i !== idx),
+                            })}
+                            style={{ background:"#2a0a0a", border:"1px solid #552222", color:"#cc4444", borderRadius:3, padding:"2px 6px", fontSize:11, cursor:"pointer" }}>×</button>
+                        </div>
+                        {/* Arc angle range */}
+                        <Slider
+                          def={{ key:`cd_aStart_${idx}`, label:"Arc start", min:0, max:360, step:1, unit:"°", default:0 }}
+                          value={cd.angleStart}
+                          onChange={v => updatePart(selectedPart.id, {
+                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, angleStart: v } : c),
+                          })} />
+                        <Slider
+                          def={{ key:`cd_aEnd_${idx}`, label:"Arc end", min:0, max:360, step:1, unit:"°", default:120 }}
+                          value={cd.angleEnd}
+                          onChange={v => updatePart(selectedPart.id, {
+                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, angleEnd: v } : c),
+                          })} />
+                        {/* Height band */}
+                        <Slider
+                          def={{ key:`cd_hMin_${idx}`, label:"Height min", min:0, max:100, step:1, unit:"%", default:0 }}
+                          value={cd.heightMin}
+                          onChange={v => updatePart(selectedPart.id, {
+                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, heightMin: v } : c),
+                          })} />
+                        <Slider
+                          def={{ key:`cd_hMax_${idx}`, label:"Height max", min:0, max:100, step:1, unit:"%", default:100 }}
+                          value={cd.heightMax}
+                          onChange={v => updatePart(selectedPart.id, {
+                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, heightMax: v } : c),
+                          })} />
+                        {/* Amount */}
+                        <Slider
+                          def={{ key:`cd_amt_${idx}`, label: cd.type === "extrude" ? "Extrude (mm)" : "Bend up/down (mm)", min:-20, max:20, step:0.5, unit:"mm", default:0 }}
+                          value={cd.amount}
+                          onChange={v => updatePart(selectedPart.id, {
+                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, amount: v } : c),
+                          })} />
+                        <div style={{ color:"#334455", fontSize:9, lineHeight:1.5, marginTop:2 }}>
+                          {cd.type === "extrude" ? "Pushes vertices radially outward (+) or inward (−) in the selected arc." : "Pushes vertices upward (+) or downward (−) in the selected arc."}
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const newDeform: ContactDeform = {
+                          id: `cd_${Date.now()}`,
+                          angleStart: 0, angleEnd: 120,
+                          heightMin: 0, heightMax: 100,
+                          type: "extrude", amount: 0,
+                        };
+                        updatePart(selectedPart.id, {
+                          contactDeforms: [...(selectedPart.contactDeforms ?? []), newDeform],
+                        });
+                      }}
+                      style={{
+                        display:"block", width:"100%", marginBottom:6,
+                        background:"#0d2240", border:"1px dashed #2244aa", color:"#4488cc",
+                        borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer",
+                      }}>
+                      + Add arc deform
+                    </button>
+                  </div>
+
                   {/* ── Silhouette trace upload ── */}
+                  <>
                   <SectionTitle>Trace from Image</SectionTitle>
                   {selectedPart.shape === "silhouette" ? (
                     <div style={{ marginBottom:8 }}>
@@ -2795,6 +2879,7 @@ export function BeybladeRendererPage() {
                       </div>
                     </div>
                   )}
+                  </>
                 </>
               )}
 
