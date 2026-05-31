@@ -506,139 +506,61 @@ function buildMergedGeometry(parts: PartNode[]): THREE.BufferGeometry {
 }
 
 
-// ── Warp deformation ─────────────────────────────────────────────────────────
-type WarpType = "none" | "taper" | "bend" | "twist" | "skew" | "bowl";
+// ── Silhouette contact points — 2D outline deformation ───────────────────────
+// Contact points are defined on the 2D silhouette and applied before extrusion.
+// This ensures the 3D shape is always derived from the 2D outline — no post-hoc
+// vertex manipulation needed.
 
-function applyWarp(geo: THREE.BufferGeometry, type: WarpType, amount: number, angleDeg: number): void {
-  if (type === "none" || amount === 0) return;
-  const pos = geo.getAttribute("position") as THREE.BufferAttribute;
-  geo.computeBoundingBox();
-  const bb = geo.boundingBox!;
-  const yMin = bb.min.y, yRange = (bb.max.y - bb.min.y) || 1;
-  const a = amount / 100;
-  const rad = THREE.MathUtils.degToRad(angleDeg);
-  const ca = Math.cos(rad), sa = Math.sin(rad);
-
-  for (let i = 0; i < pos.count; i++) {
-    let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-    const t = (y - yMin) / yRange;
-
-    if (type === "taper") {
-      const proj = x * ca + z * sa;
-      const perp = -x * sa + z * ca;
-      const newProj = proj * (1 + a * t);
-      x = newProj * ca - perp * sa;
-      z = newProj * sa + perp * ca;
-    } else if (type === "bend") {
-      const shift = a * yRange * t * t;
-      x += shift * ca;
-      z += shift * sa;
-    } else if (type === "twist") {
-      const theta = a * Math.PI * t;
-      const nx = x * Math.cos(theta) - z * Math.sin(theta);
-      z = x * Math.sin(theta) + z * Math.cos(theta);
-      x = nx;
-    } else if (type === "skew") {
-      const shift = a * yRange * 0.5 * t;
-      x += shift * ca;
-      z += shift * sa;
-    } else if (type === "bowl") {
-      geo.computeBoundingBox();
-      const bb2 = geo.boundingBox!;
-      const maxR2 = Math.max(
-        bb2.max.x * bb2.max.x + bb2.max.z * bb2.max.z,
-        bb2.min.x * bb2.min.x + bb2.min.z * bb2.min.z,
-        1,
-      );
-      const r2 = x * x + z * z;
-      y -= a * yRange * 0.6 * (r2 / maxR2);
-    }
-    pos.setXYZ(i, x, y, z);
-  }
-  pos.needsUpdate = true;
-  geo.computeVertexNormals();
+interface SilhouetteContactPoint {
+  id:         string;
+  angleStart: number;  // 0–360° (measured from right, CCW in top-view image coords)
+  angleEnd:   number;  // 0–360°
+  amount:     number;  // push outward (+) or inward (−), in mm
 }
 
-// ── Contact-point arc deformation ────────────────────────────────────────────
-interface ContactDeform {
-  id: string;
-  angleStart: number;  // 0–360° arc selection start (in XZ plane, top-down view)
-  angleEnd:   number;  // 0–360° arc selection end
-  heightMin:  number;  // 0–100% of shape height (bottom = 0)
-  heightMax:  number;  // 0–100% of shape height
-  type:       "extrude" | "bend"; // extrude = push outward radially; bend = push up/down
-  amount:     number;  // displacement in mm (positive = out/up, negative = in/down)
-}
+// Returns a new outline with each point pushed radially by the contact points.
+// `maxR` is the max pixel-space radius of the original outline.
+// `diameterMm` is the target output diameter in mm.
+function applyContactsToOutline(
+  outline: [number, number][],
+  contacts: SilhouetteContactPoint[],
+  maxR: number,
+  diameterMm: number,
+): [number, number][] {
+  if (!contacts.length) return outline;
+  // pixels per mm — converts mm amount to pixel-space push
+  const pxPerMm = maxR / (diameterMm / 2);
 
-// Applies per-arc deformations to an already-built BufferGeometry.
-// Each ContactDeform selects vertices by (angle in XZ plane, height band)
-// and displaces them — "extrude" pushes radially outward, "bend" pushes along Y.
-// Gaussian falloff (σ = half arc-width) softens the edges of the selection.
-function applyContactDeforms(geo: THREE.BufferGeometry, deforms: ContactDeform[]): void {
-  if (!deforms || deforms.length === 0) return;
-  const pos = geo.getAttribute("position") as THREE.BufferAttribute;
-  geo.computeBoundingBox();
-  const bb = geo.boundingBox!;
-  const yMin = bb.min.y, yRange = (bb.max.y - bb.min.y) || 1;
+  return outline.map(([px, py]) => {
+    const r = Math.sqrt(px * px + py * py) || 0.0001;
+    // angle 0-360 measured from +X axis in image coords (atan2(y,x))
+    let angle = (Math.atan2(py, px) * 180 / Math.PI + 360) % 360;
 
-  for (const d of deforms) {
-    if (d.amount === 0) continue;
-    const disp = d.amount * 0.1; // mm → Three.js units (×0.1 since 1 unit = 1 cm here)
+    let totalPush = 0;
+    for (const cp of contacts) {
+      let aS = cp.angleStart, aE = cp.angleEnd;
+      if (aE <= aS) aE += 360; // normalise so end > start
+      const arcMid = (aS + aE) / 2;
 
-    // Arc span in radians — normalise so end > start (handle wrapping)
-    let aStart = THREE.MathUtils.degToRad(d.angleStart);
-    let aEnd   = THREE.MathUtils.degToRad(d.angleEnd);
-    if (aEnd <= aStart) aEnd += Math.PI * 2;
-    const arcSpan = aEnd - aStart;
-    const arcMid  = aStart + arcSpan / 2;
-    const arcSigma = arcSpan / 2; // Gaussian σ = half arc-width
+      // Shift test angle to be close to arcMid
+      let a = angle;
+      if (a < arcMid - 180) a += 360;
+      if (a > arcMid + 180) a -= 360;
 
-    const hMin = d.heightMin / 100;
-    const hMax = d.heightMax / 100;
-    const hMid  = (hMin + hMax) / 2;
-    const hSigma = Math.max((hMax - hMin) / 2, 0.001);
+      if (a < aS - 45 || a > aE + 45) continue; // well outside — skip
 
-    for (let i = 0; i < pos.count; i++) {
-      let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      const arcSpan = aE - aS;
+      const sigma = Math.max(arcSpan / 2, 1);
+      const d = a - arcMid;
+      const weight = Math.exp(-(d * d) / (2 * sigma * sigma));
 
-      // Normalised height within bounding box
-      const ht = (y - yMin) / yRange;
-      if (ht < hMin - hSigma * 2 || ht > hMax + hSigma * 2) continue;
-
-      // Horizontal angle in XZ plane (Three.js coords: X and Z)
-      let angle = Math.atan2(z, x); // −π … +π
-      if (angle < 0) angle += Math.PI * 2; // 0 … 2π
-
-      // Handle wrap-around: try shifting angle by 2π to stay close to arc centre
-      let angle2 = angle < arcMid ? angle + Math.PI * 2 : angle - Math.PI * 2;
-      const closestAngle = Math.abs(angle - arcMid) < Math.abs(angle2 - arcMid) ? angle : angle2;
-
-      // Angular distance from arc centre (signed)
-      const dAngle = closestAngle - arcMid;
-      if (Math.abs(dAngle) > arcSigma * 2.5) continue; // outside 2.5σ — no effect
-
-      // Gaussian falloff: angle dimension × height dimension
-      const wAngle  = Math.exp(-(dAngle * dAngle) / (2 * arcSigma  * arcSigma));
-      const dH      = ht - hMid;
-      const wHeight = Math.exp(-(dH * dH)           / (2 * hSigma   * hSigma));
-      const weight  = wAngle * wHeight;
-
-      if (d.type === "extrude") {
-        // Push radially outward (or inward if negative) in XZ plane
-        const r = Math.sqrt(x * x + z * z) || 0.0001;
-        const nx = x / r, nz = z / r;
-        x += nx * disp * weight;
-        z += nz * disp * weight;
-      } else {
-        // "bend" — push up (+Y) or down (−Y)
-        y += disp * weight;
-      }
-
-      pos.setXYZ(i, x, y, z);
+      totalPush += cp.amount * pxPerMm * weight;
     }
-  }
-  pos.needsUpdate = true;
-  geo.computeVertexNormals();
+
+    if (Math.abs(totalPush) < 0.0001) return [px, py] as [number, number];
+    const newR = r + totalPush;
+    return [px / r * newR, py / r * newR] as [number, number];
+  });
 }
 
 // ── Silhouette helpers ────────────────────────────────────────────────────────
@@ -988,12 +910,8 @@ interface PartNode {
   decalY:         number;
   decalScale:     number;   // editor px per source image px (1.0 = natural)
   decalAngle:     number;   // rotation in degrees
-  // Warp deformation (whole-shape)
-  warpType:   WarpType;
-  warpAmount: number;
-  warpAngle:  number;
-  // Contact-point arc deformations (per-arc localized)
-  contactDeforms: ContactDeform[];
+  // Silhouette contact points (2D outline deformations → reflected in 3D)
+  silhouetteContactPoints: SilhouetteContactPoint[];
   // General texture (applies to any shape; wraps using built-in Three.js UV)
   textureUrl: string;
   // Merged (joined) fields
@@ -1040,10 +958,7 @@ function sanitizePart(raw: Record<string, unknown>): PartNode {
     decalY:         typeof raw.decalY         === "number" ? raw.decalY         : 0,
     decalScale:     typeof raw.decalScale     === "number" ? raw.decalScale     : 0,
     decalAngle:     typeof raw.decalAngle     === "number" ? raw.decalAngle     : 0,
-    warpType:   (["none","taper","bend","twist","skew","bowl"] as WarpType[]).includes(raw.warpType as WarpType) ? raw.warpType as WarpType : "none",
-    warpAmount: typeof raw.warpAmount === "number" ? raw.warpAmount : 0,
-    warpAngle:  typeof raw.warpAngle  === "number" ? raw.warpAngle  : 0,
-    contactDeforms: Array.isArray(raw.contactDeforms) ? (raw.contactDeforms as ContactDeform[]) : [],
+    silhouetteContactPoints: Array.isArray(raw.silhouetteContactPoints) ? (raw.silhouetteContactPoints as SilhouetteContactPoint[]) : [],
     textureUrl:      typeof raw.textureUrl     === "string" ? raw.textureUrl     : "",
     mergedParts:     Array.isArray(raw.mergedParts) ? (raw.mergedParts as Record<string,unknown>[]).map(sanitizePart) : [],
   };
@@ -1063,8 +978,7 @@ function makeAxisPart(): PartNode {
     weight: 0, partRole: "Spin Axis", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
     decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
-    warpType: "none" as WarpType, warpAmount: 0, warpAngle: 0,
-    contactDeforms: [],
+    silhouetteContactPoints: [],
     textureUrl: "", mergedParts: [],
   };
 }
@@ -1083,8 +997,7 @@ function makePartNode(id: string, label: string, parentId: string | null, colorI
     weight: 0, partRole: "Other", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
     decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
-    warpType: "none" as WarpType, warpAmount: 0, warpAngle: 0,
-    contactDeforms: [],
+    silhouetteContactPoints: [],
     textureUrl: "", mergedParts: [],
   };
 }
@@ -1876,8 +1789,6 @@ export function BeybladeRendererPage() {
           : part.shape === "merged" && part.mergedParts.length > 0
             ? buildMergedGeometry(part.mergedParts)
             : buildGeometry(part.shape, part.shapeParams);
-        applyWarp(geo, part.warpType ?? "none", part.warpAmount ?? 0, part.warpAngle ?? 0);
-        applyContactDeforms(geo, part.contactDeforms ?? []);
         const mp = MATERIALS[part.materialId ?? DEFAULT_MAT];
         const isTransparent = part.color === "transparent";
         const mat = new THREE.MeshStandardMaterial({
@@ -1934,9 +1845,6 @@ export function BeybladeRendererPage() {
               ua.needsUpdate=true; }
             faceGeo.rotateX(Math.PI / 2);                  // same as extrusion
             faceGeo.translate(0, -u(tMm) / 2, 0);          // same as extrusion
-            // Apply the same deformations so the decal follows the mesh surface
-            applyWarp(faceGeo, part.warpType ?? "none", part.warpAmount ?? 0, part.warpAngle ?? 0);
-            applyContactDeforms(faceGeo, part.contactDeforms ?? []);
             faceGeo.translate(0, 0.0002, 0);                // tiny Z-fight epsilon
             const faceMat = new THREE.MeshBasicMaterial({
               transparent: true, alphaTest: 0.05, side: THREE.DoubleSide,
@@ -2583,138 +2491,6 @@ export function BeybladeRendererPage() {
                         shapeParams: { ...selectedPart.shapeParams, [def.key]: v },
                       })} />
                   ))}
-
-                  {/* ── Warp deformation ── */}
-                  <SectionTitle>Warp</SectionTitle>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:3, marginBottom:8 }}>
-                    {(["none","bowl","taper","bend","twist","skew"] as WarpType[]).map(wt => (
-                      <button key={wt}
-                        onClick={() => updatePart(selectedPart.id, { warpType: wt })}
-                        style={{
-                          padding:"3px 8px", fontFamily:"monospace", fontSize:10,
-                          background: selectedPart.warpType === wt ? "#1a3366" : "#0a0a18",
-                          color: selectedPart.warpType === wt ? "#aaddff" : "#445566",
-                          border: selectedPart.warpType === wt ? "1px solid #3366cc" : "1px solid #1a2244",
-                          borderRadius:4, cursor:"pointer", textTransform:"capitalize",
-                        }}>
-                        {wt}
-                      </button>
-                    ))}
-                  </div>
-                  {selectedPart.warpType !== "none" && (
-                    <>
-                      <Slider
-                        def={{ key:"warpAmount", label:"Amount", min:-100, max:100, step:1, unit:"%", default:0 }}
-                        value={selectedPart.warpAmount ?? 0}
-                        onChange={v => updatePart(selectedPart.id, { warpAmount: v })}
-                      />
-                      {selectedPart.warpType !== "bowl" && selectedPart.warpType !== "twist" && (
-                        <Slider
-                          def={{ key:"warpAngle", label:"Direction", min:0, max:360, step:1, unit:"°", default:0 }}
-                          value={selectedPart.warpAngle ?? 0}
-                          onChange={v => updatePart(selectedPart.id, { warpAngle: v })}
-                        />
-                      )}
-                      <div style={{ color:"#334455", fontSize:9, lineHeight:1.6, marginBottom:6 }}>
-                        {selectedPart.warpType === "bowl" && "Outer edges curve down (+) or up (−). Use for disc/AR curvature."}
-                        {selectedPart.warpType === "taper" && "Scale one side wider (+) or narrower (−) toward the top, in the given direction."}
-                        {selectedPart.warpType === "bend" && "Curve the top of the part toward the given direction."}
-                        {selectedPart.warpType === "twist" && "Spiral the vertices around the spin axis toward the top."}
-                        {selectedPart.warpType === "skew" && "Lean the part linearly toward the given direction."}
-                      </div>
-                    </>
-                  )}
-
-                  {/* ── Contact-point arc deformations ── */}
-                  <SectionTitle>Arc Deforms</SectionTitle>
-                  <div style={{ marginBottom:8 }}>
-                    {(selectedPart.contactDeforms ?? []).map((cd, idx) => (
-                      <div key={cd.id} style={{
-                        background:"rgba(10,18,36,0.8)", border:"1px solid #1a3055",
-                        borderRadius:6, padding:"8px 10px", marginBottom:8,
-                      }}>
-                        {/* Header row: type toggle + delete */}
-                        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
-                          <span style={{ color:"#5577aa", fontSize:9, flex:1 }}>Deform #{idx + 1}</span>
-                          <div style={{ display:"flex", gap:3 }}>
-                            {(["extrude","bend"] as const).map(t => (
-                              <button key={t}
-                                onClick={() => updatePart(selectedPart.id, {
-                                  contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, type: t } : c),
-                                })}
-                                style={{
-                                  padding:"2px 7px", fontSize:9, fontFamily:"monospace",
-                                  background: cd.type === t ? "#1a3366" : "#0a0a18",
-                                  color: cd.type === t ? "#aaddff" : "#445566",
-                                  border: cd.type === t ? "1px solid #3366cc" : "1px solid #1a2244",
-                                  borderRadius:3, cursor:"pointer",
-                                }}>{t}</button>
-                            ))}
-                          </div>
-                          <button
-                            onClick={() => updatePart(selectedPart.id, {
-                              contactDeforms: (selectedPart.contactDeforms ?? []).filter((_, i) => i !== idx),
-                            })}
-                            style={{ background:"#2a0a0a", border:"1px solid #552222", color:"#cc4444", borderRadius:3, padding:"2px 6px", fontSize:11, cursor:"pointer" }}>×</button>
-                        </div>
-                        {/* Arc angle range */}
-                        <Slider
-                          def={{ key:`cd_aStart_${idx}`, label:"Arc start", min:0, max:360, step:1, unit:"°", default:0 }}
-                          value={cd.angleStart}
-                          onChange={v => updatePart(selectedPart.id, {
-                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, angleStart: v } : c),
-                          })} />
-                        <Slider
-                          def={{ key:`cd_aEnd_${idx}`, label:"Arc end", min:0, max:360, step:1, unit:"°", default:120 }}
-                          value={cd.angleEnd}
-                          onChange={v => updatePart(selectedPart.id, {
-                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, angleEnd: v } : c),
-                          })} />
-                        {/* Height band */}
-                        <Slider
-                          def={{ key:`cd_hMin_${idx}`, label:"Height min", min:0, max:100, step:1, unit:"%", default:0 }}
-                          value={cd.heightMin}
-                          onChange={v => updatePart(selectedPart.id, {
-                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, heightMin: v } : c),
-                          })} />
-                        <Slider
-                          def={{ key:`cd_hMax_${idx}`, label:"Height max", min:0, max:100, step:1, unit:"%", default:100 }}
-                          value={cd.heightMax}
-                          onChange={v => updatePart(selectedPart.id, {
-                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, heightMax: v } : c),
-                          })} />
-                        {/* Amount */}
-                        <Slider
-                          def={{ key:`cd_amt_${idx}`, label: cd.type === "extrude" ? "Extrude (mm)" : "Bend up/down (mm)", min:-20, max:20, step:0.5, unit:"mm", default:0 }}
-                          value={cd.amount}
-                          onChange={v => updatePart(selectedPart.id, {
-                            contactDeforms: (selectedPart.contactDeforms ?? []).map((c, i) => i === idx ? { ...c, amount: v } : c),
-                          })} />
-                        <div style={{ color:"#334455", fontSize:9, lineHeight:1.5, marginTop:2 }}>
-                          {cd.type === "extrude" ? "Pushes vertices radially outward (+) or inward (−) in the selected arc." : "Pushes vertices upward (+) or downward (−) in the selected arc."}
-                        </div>
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => {
-                        const newDeform: ContactDeform = {
-                          id: `cd_${Date.now()}`,
-                          angleStart: 0, angleEnd: 120,
-                          heightMin: 0, heightMax: 100,
-                          type: "extrude", amount: 0,
-                        };
-                        updatePart(selectedPart.id, {
-                          contactDeforms: [...(selectedPart.contactDeforms ?? []), newDeform],
-                        });
-                      }}
-                      style={{
-                        display:"block", width:"100%", marginBottom:6,
-                        background:"#0d2240", border:"1px dashed #2244aa", color:"#4488cc",
-                        borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer",
-                      }}>
-                      + Add arc deform
-                    </button>
-                  </div>
 
                   {/* ── Silhouette trace upload ── */}
                   <>
