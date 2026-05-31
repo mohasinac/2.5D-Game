@@ -53,6 +53,7 @@ const SHAPES = [
   // ── Image-traced ───────────────────────────────────────────
   { id: "silhouette",         label: "Silhouette (top view → flat extrusion)" },
   { id: "lathe_custom",       label: "Lathe (side view → revolution solid)" },
+  { id: "base_3view",         label: "Base (3-view: left · right · bottom)" },
   // ── Joined ─────────────────────────────────────────────────
   { id: "merged",             label: "Joined (merged geometry)" },
 ] as const;
@@ -222,6 +223,11 @@ const SHAPE_PARAMS: Record<ShapeId, ParamDef[]> = {
   lathe_custom: [
     { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80,  step: 0.5, unit: "mm", default: 40 },
     { key: "height_mm",   label: "Height",         min: 1, max: 60,  step: 0.5, unit: "mm", default: 20 },
+    { key: "segments",    label: "Revolve segs",   min: 8, max: 128, step: 4,   unit: "",   default: 64 },
+  ],
+  base_3view: [
+    { key: "diameter_mm", label: "Outer diameter", min: 5, max: 80,  step: 0.5, unit: "mm", default: 30 },
+    { key: "height_mm",   label: "Height",         min: 1, max: 60,  step: 0.5, unit: "mm", default: 18 },
     { key: "segments",    label: "Revolve segs",   min: 8, max: 128, step: 4,   unit: "",   default: 64 },
   ],
   merged: [], // no adjustable params — geometry is baked from the original parts
@@ -521,6 +527,62 @@ function buildLatheGeometry(
   const geo = new THREE.LatheGeometry(points, segments);
   geo.translate(0, -u(heightMm) / 2, 0);
   return geo;
+}
+
+// Build base from 3-view images.
+// Lathe body from the active side profile + bottom cap from bottom silhouette (or auto circle).
+function buildBase3ViewGeometry(part: {
+  base3vActive: "left" | "right";
+  base3vLeftProfile: [number,number][]; base3vLeftWidthPx: number; base3vLeftHeightPx: number;
+  base3vRightProfile:[number,number][]; base3vRightWidthPx:number; base3vRightHeightPx:number;
+  base3vBottomPoints:[number,number][]; base3vBottomHoles: [number,number][][];
+  shapeParams: Record<string,number>;
+}): THREE.BufferGeometry {
+  const params   = part.shapeParams;
+  const diamMm   = params.diameter_mm ?? 30;
+  const heightMm = params.height_mm   ?? 18;
+  const segs     = Math.round(params.segments ?? 64);
+  const halfH    = u(heightMm) / 2;
+
+  // ── Side body ─────────────────────────────────────────────────────────────
+  const useLeft  = part.base3vActive !== "right" || part.base3vLeftProfile.length > 2;
+  const profile  = useLeft ? part.base3vLeftProfile  : part.base3vRightProfile;
+  const wPx      = useLeft ? part.base3vLeftWidthPx  : part.base3vRightWidthPx;
+
+  const geos: THREE.BufferGeometry[] = [];
+  if (profile.length > 2 && wPx > 0) {
+    geos.push(buildLatheGeometry(profile, wPx, 0, params));
+  } else {
+    // Fallback frustum if no profile uploaded yet
+    geos.push(new THREE.CylinderGeometry(u(diamMm * 0.15), u(diamMm / 2), u(heightMm), segs));
+  }
+
+  // ── Bottom cap ────────────────────────────────────────────────────────────
+  if (part.base3vBottomPoints.length > 2) {
+    // Traced silhouette from bottom image — placed at the base bottom face
+    const bottomShape = buildSilhouetteShape(part.base3vBottomPoints, part.base3vBottomHoles, params);
+    if (bottomShape) {
+      const capGeo = new THREE.ShapeGeometry(bottomShape, segs);
+      // ShapeGeometry sits in XY plane (Z=0). Rotate −90° around X → into XZ plane (Y=0)
+      capGeo.rotateX(-Math.PI / 2);
+      capGeo.translate(0, -halfH, 0);
+      geos.push(capGeo);
+    }
+  } else if (profile.length > 2 && wPx > 0) {
+    // Auto circle matching the profile's bottom radius
+    const rScale  = (diamMm / 2) / wPx;
+    const botR    = u(profile[profile.length - 1][0] * rScale);
+    if (botR > 0) {
+      const capGeo = new THREE.CircleGeometry(botR, segs);
+      capGeo.rotateX(-Math.PI / 2);
+      capGeo.translate(0, -halfH, 0);
+      geos.push(capGeo);
+    }
+  }
+
+  if (geos.length === 0) return new THREE.BufferGeometry();
+  if (geos.length === 1) return geos[0];
+  return mergeGeometries(geos) ?? geos[0];
 }
 
 // ── Silhouette helpers ────────────────────────────────────────────────────────
@@ -859,16 +921,41 @@ interface PartNode {
   partRole: PartRole;
   silhouettePoints:   [number, number][]; // outer outline — pixel-offsets from centre of mass
   silhouetteHoles:    [number, number][][]; // inner holes in same coordinate space
-  silhouetteImageUrl: string; // original data-URL painted on the top face
-  silhouetteCx:       number; // centre-of-mass X in original image pixels
-  silhouetteCy:       number; // centre-of-mass Y in original image pixels
-  silhouetteImgW:     number; // original image width (px)
-  silhouetteImgH:     number; // original image height (px)
+  silhouetteImageUrl: string; // baked composite data-URL painted on the top face
+  silhouetteCx:       number; // centre-of-mass X in baked image pixels
+  silhouetteCy:       number; // centre-of-mass Y in baked image pixels
+  silhouetteImgW:     number; // baked image width (px)
+  silhouetteImgH:     number; // baked image height (px)
+  // Decal editor state (non-destructive source + placement)
+  decalSourceUrl: string;   // original uploaded decal image (before compositing)
+  decalX:         number;   // editor-space offset from silhouette center (px)
+  decalY:         number;
+  decalScale:     number;   // editor px per source image px (1.0 = natural)
+  decalAngle:     number;   // rotation in degrees
   // Lathe (side-view) fields
   lathedProfile:      [number, number][]; // [r_px, h_px] side-view profile
   lathedWidthPx:      number;
   lathedHeightPx:     number;
   lathedImageUrl:     string;
+  // Base 3-view fields
+  base3vLeftUrl:     string;
+  base3vRightUrl:    string;
+  base3vBottomUrl:   string;
+  base3vLeftProfile: [number,number][];
+  base3vLeftWidthPx: number;
+  base3vLeftHeightPx:number;
+  base3vRightProfile:[number,number][];
+  base3vRightWidthPx:number;
+  base3vRightHeightPx:number;
+  base3vBottomPoints:[number,number][];
+  base3vBottomHoles: [number,number][][];
+  base3vBottomCx:    number;
+  base3vBottomCy:    number;
+  base3vBottomImgW:  number;
+  base3vBottomImgH:  number;
+  base3vActive:      "left" | "right"; // which side drives the lathe
+  // General texture (applies to any shape; wraps using built-in Three.js UV)
+  textureUrl: string;
   // Merged (joined) fields
   mergedParts:        PartNode[]; // snapshots of the original parts baked into this mesh
 }
@@ -908,10 +995,32 @@ function sanitizePart(raw: Record<string, unknown>): PartNode {
     silhouetteCy:   typeof raw.silhouetteCy   === "number" ? raw.silhouetteCy   : 0,
     silhouetteImgW: typeof raw.silhouetteImgW === "number" ? raw.silhouetteImgW : 0,
     silhouetteImgH: typeof raw.silhouetteImgH === "number" ? raw.silhouetteImgH : 0,
+    decalSourceUrl: typeof raw.decalSourceUrl === "string" ? raw.decalSourceUrl : "",
+    decalX:         typeof raw.decalX         === "number" ? raw.decalX         : 0,
+    decalY:         typeof raw.decalY         === "number" ? raw.decalY         : 0,
+    decalScale:     typeof raw.decalScale     === "number" ? raw.decalScale     : 0,
+    decalAngle:     typeof raw.decalAngle     === "number" ? raw.decalAngle     : 0,
     lathedProfile:   Array.isArray(raw.lathedProfile)   ? raw.lathedProfile   as [number,number][] : [],
     lathedWidthPx:   typeof raw.lathedWidthPx  === "number" ? raw.lathedWidthPx  : 0,
     lathedHeightPx:  typeof raw.lathedHeightPx === "number" ? raw.lathedHeightPx : 0,
     lathedImageUrl:  typeof raw.lathedImageUrl === "string" ? raw.lathedImageUrl : "",
+    base3vLeftUrl:      typeof raw.base3vLeftUrl      === "string" ? raw.base3vLeftUrl      : "",
+    base3vRightUrl:     typeof raw.base3vRightUrl     === "string" ? raw.base3vRightUrl     : "",
+    base3vBottomUrl:    typeof raw.base3vBottomUrl    === "string" ? raw.base3vBottomUrl    : "",
+    base3vLeftProfile:  Array.isArray(raw.base3vLeftProfile)  ? raw.base3vLeftProfile  as [number,number][] : [],
+    base3vLeftWidthPx:  typeof raw.base3vLeftWidthPx  === "number" ? raw.base3vLeftWidthPx  : 0,
+    base3vLeftHeightPx: typeof raw.base3vLeftHeightPx === "number" ? raw.base3vLeftHeightPx : 0,
+    base3vRightProfile: Array.isArray(raw.base3vRightProfile) ? raw.base3vRightProfile as [number,number][] : [],
+    base3vRightWidthPx: typeof raw.base3vRightWidthPx === "number" ? raw.base3vRightWidthPx : 0,
+    base3vRightHeightPx:typeof raw.base3vRightHeightPx=== "number" ? raw.base3vRightHeightPx: 0,
+    base3vBottomPoints: Array.isArray(raw.base3vBottomPoints) ? raw.base3vBottomPoints as [number,number][]  : [],
+    base3vBottomHoles:  Array.isArray(raw.base3vBottomHoles)  ? raw.base3vBottomHoles  as [number,number][][] : [],
+    base3vBottomCx:     typeof raw.base3vBottomCx     === "number" ? raw.base3vBottomCx     : 0,
+    base3vBottomCy:     typeof raw.base3vBottomCy     === "number" ? raw.base3vBottomCy     : 0,
+    base3vBottomImgW:   typeof raw.base3vBottomImgW   === "number" ? raw.base3vBottomImgW   : 0,
+    base3vBottomImgH:   typeof raw.base3vBottomImgH   === "number" ? raw.base3vBottomImgH   : 0,
+    base3vActive:       raw.base3vActive === "right" ? "right" : "left",
+    textureUrl:      typeof raw.textureUrl     === "string" ? raw.textureUrl     : "",
     mergedParts:     Array.isArray(raw.mergedParts) ? (raw.mergedParts as Record<string,unknown>[]).map(sanitizePart) : [],
   };
 }
@@ -929,7 +1038,13 @@ function makeAxisPart(): PartNode {
     materialId: "abs_hard",
     weight: 0, partRole: "Spin Axis", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
-    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", mergedParts: [],
+    decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
+    base3vLeftUrl: "", base3vRightUrl: "", base3vBottomUrl: "",
+    base3vLeftProfile: [], base3vLeftWidthPx: 0, base3vLeftHeightPx: 0,
+    base3vRightProfile: [], base3vRightWidthPx: 0, base3vRightHeightPx: 0,
+    base3vBottomPoints: [], base3vBottomHoles: [], base3vBottomCx: 0, base3vBottomCy: 0, base3vBottomImgW: 0, base3vBottomImgH: 0,
+    base3vActive: "left" as const,
+    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", textureUrl: "", mergedParts: [],
   };
 }
 
@@ -946,7 +1061,13 @@ function makePartNode(id: string, label: string, parentId: string | null, colorI
     materialId: DEFAULT_MAT,
     weight: 0, partRole: "Other", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
-    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", mergedParts: [],
+    decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
+    base3vLeftUrl: "", base3vRightUrl: "", base3vBottomUrl: "",
+    base3vLeftProfile: [], base3vLeftWidthPx: 0, base3vLeftHeightPx: 0,
+    base3vRightProfile: [], base3vRightWidthPx: 0, base3vRightHeightPx: 0,
+    base3vBottomPoints: [], base3vBottomHoles: [], base3vBottomCx: 0, base3vBottomCy: 0, base3vBottomImgW: 0, base3vBottomImgH: 0,
+    base3vActive: "left" as const,
+    lathedProfile: [], lathedWidthPx: 0, lathedHeightPx: 0, lathedImageUrl: "", textureUrl: "", mergedParts: [],
   };
 }
 
@@ -1120,6 +1241,300 @@ function TowerItem({
   );
 }
 
+// ── Decal Editor (WhatsApp-style positioning overlay) ─────────────────────────
+const DECAL_EDITOR_SIZE = 380;
+
+type DecalState = { x: number; y: number; scale: number; angle: number };
+
+interface DecalEditorProps {
+  part: PartNode;
+  sourceUrl: string;
+  onConfirm: (bakedUrl: string, state: DecalState) => void;
+  onCancel: () => void;
+}
+
+function DecalEditor({ part, sourceUrl, onConfirm, onCancel }: DecalEditorProps) {
+  const S = DECAL_EDITOR_SIZE;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef    = useRef<HTMLImageElement | null>(null);
+
+  // Compute silhouette display radius once
+  const maxR_raw = part.silhouettePoints.length > 0
+    ? part.silhouettePoints.reduce((m, [x, y]) => Math.max(m, Math.sqrt(x * x + y * y)), 0)
+    : 1;
+  const editorRadius = S * 0.42; // px — how wide the silhouette appears in the editor
+
+  // Restore saved placement if re-editing same source, otherwise auto-fit
+  const initialScale = (part.decalScale > 0 && part.decalSourceUrl === sourceUrl)
+    ? part.decalScale
+    : 0; // 0 = defer until image loads
+
+  const [decal, setDecal] = useState<DecalState>({
+    x: (part.decalSourceUrl === sourceUrl) ? part.decalX : 0,
+    y: (part.decalSourceUrl === sourceUrl) ? part.decalY : 0,
+    scale: initialScale,
+    angle: (part.decalSourceUrl === sourceUrl) ? part.decalAngle : 0,
+  });
+  const decalRef = useRef(decal);
+  useEffect(() => { decalRef.current = decal; }, [decal]);
+
+  // Drag state
+  type DragMode = "move" | "scale" | "rotate" | null;
+  const dragRef = useRef<{ mode: DragMode; smx: number; smy: number; sd: DecalState }>({
+    mode: null, smx: 0, smy: 0, sd: decal,
+  });
+
+  // ── Draw ──────────────────────────────────────────────────────────────────
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, S, S);
+
+    // Checkerboard background
+    for (let i = 0; i < S; i += 14) {
+      for (let j = 0; j < S; j += 14) {
+        ctx.fillStyle = ((Math.floor(i / 14) + Math.floor(j / 14)) % 2 === 0) ? "#18182a" : "#222236";
+        ctx.fillRect(i, j, 14, 14);
+      }
+    }
+
+    // Silhouette outline guide
+    const pts = part.silhouettePoints;
+    if (pts.length > 2) {
+      const s = editorRadius / maxR_raw;
+      ctx.save();
+      ctx.translate(S / 2, S / 2);
+      ctx.beginPath();
+      pts.forEach(([x, y], i) => { if (i === 0) ctx.moveTo(x * s, -y * s); else ctx.lineTo(x * s, -y * s); });
+      ctx.closePath();
+      for (const hole of part.silhouetteHoles) {
+        hole.forEach(([x, y], i) => { if (i === 0) ctx.moveTo(x * s, -y * s); else ctx.lineTo(x * s, -y * s); });
+        ctx.closePath();
+      }
+      ctx.fillStyle = part.color && part.color !== "transparent" ? part.color + "30" : "#ffffff18";
+      ctx.fill("evenodd");
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = "#4488ff70";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // Decal image + handles
+    const img = imgRef.current;
+    const d = decalRef.current;
+    if (img && d.scale > 0) {
+      const w = img.naturalWidth  * d.scale;
+      const h = img.naturalHeight * d.scale;
+      const rad = d.angle * Math.PI / 180;
+      const cx = S / 2 + d.x, cy = S / 2 + d.y;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rad);
+      ctx.drawImage(img, -w / 2, -h / 2, w, h);
+
+      // Selection border
+      ctx.strokeStyle = "#007fff";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(-w / 2, -h / 2, w, h);
+
+      // Corner scale handles (white circles with blue ring)
+      ([[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]] as [number, number][]).forEach(([hx, hy]) => {
+        ctx.beginPath();
+        ctx.arc(hx, hy, 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.strokeStyle = "#007fff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+
+      // Rotation handle (orange dot above top-center)
+      const ROT_DIST = 26;
+      ctx.beginPath(); ctx.moveTo(0, -h / 2); ctx.lineTo(0, -h / 2 - ROT_DIST);
+      ctx.strokeStyle = "#ff880066"; ctx.lineWidth = 1; ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, -h / 2 - ROT_DIST, 8, 0, Math.PI * 2);
+      ctx.fillStyle = "#ff8800"; ctx.fill();
+      ctx.strokeStyle = "#ffffffcc"; ctx.lineWidth = 1.5; ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // Center crosshair
+    ctx.strokeStyle = "#ffffff20"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(S / 2 - 10, S / 2); ctx.lineTo(S / 2 + 10, S / 2);
+    ctx.moveTo(S / 2, S / 2 - 10); ctx.lineTo(S / 2, S / 2 + 10);
+    ctx.stroke();
+  }, [part, editorRadius, maxR_raw]);
+
+  // Redraw whenever decal state changes
+  useEffect(() => { draw(); }, [decal, draw]);
+
+  // Load image
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      imgRef.current = img;
+      setDecal(prev => {
+        if (prev.scale > 0) { draw(); return prev; } // restored saved scale
+        // Auto-fit: size image so longest dimension = ~80% of editor diameter
+        const fitScale = (editorRadius * 1.6) / Math.max(img.naturalWidth, img.naturalHeight);
+        const next = { x: 0, y: 0, scale: fitScale, angle: 0 };
+        decalRef.current = next;
+        return next;
+      });
+    };
+    img.src = sourceUrl;
+  }, [sourceUrl, editorRadius, draw]);
+
+  // ── Hit testing ───────────────────────────────────────────────────────────
+  function hitTest(mx: number, my: number, d: DecalState): DragMode {
+    const img = imgRef.current; if (!img || d.scale <= 0) return null;
+    const rad = d.angle * Math.PI / 180;
+    const cx = S / 2 + d.x, cy = S / 2 + d.y;
+    const w = img.naturalWidth * d.scale, h = img.naturalHeight * d.scale;
+    // Un-rotate mouse into image-local space
+    const dx = mx - cx, dy = my - cy;
+    const lx = dx * Math.cos(-rad) - dy * Math.sin(-rad);
+    const ly = dx * Math.sin(-rad) + dy * Math.cos(-rad);
+    // Rotation handle
+    if ((lx) ** 2 + (ly + h / 2 + 26) ** 2 < 144) return "rotate";
+    // Corner handles
+    for (const [hx, hy] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]] as [number,number][]) {
+      if ((lx - hx) ** 2 + (ly - hy) ** 2 < 144) return "scale";
+    }
+    // Inside image
+    if (Math.abs(lx) < w / 2 && Math.abs(ly) < h / 2) return "move";
+    return null;
+  }
+
+  function getCanvasPos(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>): [number, number] {
+    const rect = (e.currentTarget as HTMLCanvasElement).getBoundingClientRect();
+    const sx = S / rect.width, sy = S / rect.height;
+    const src = "touches" in e ? (e as React.TouchEvent).touches[0] : (e as React.MouseEvent);
+    return [(src.clientX - rect.left) * sx, (src.clientY - rect.top) * sy];
+  }
+
+  function startDrag(mx: number, my: number) {
+    const mode = hitTest(mx, my, decalRef.current);
+    if (mode) dragRef.current = { mode, smx: mx, smy: my, sd: { ...decalRef.current } };
+  }
+
+  function moveDrag(mx: number, my: number) {
+    const { mode, smx, smy, sd } = dragRef.current;
+    if (!mode) return;
+    const img = imgRef.current; if (!img) return;
+    const ddx = mx - smx, ddy = my - smy;
+    const cx = S / 2 + sd.x, cy = S / 2 + sd.y;
+
+    if (mode === "move") {
+      setDecal(prev => ({ ...prev, x: sd.x + ddx, y: sd.y + ddy }));
+    } else if (mode === "scale") {
+      const d0 = Math.sqrt((smx - cx) ** 2 + (smy - cy) ** 2) || 1;
+      const d1 = Math.sqrt((mx  - cx) ** 2 + (my  - cy) ** 2);
+      setDecal(prev => ({ ...prev, scale: Math.max(0.02, sd.scale * (d1 / d0)) }));
+    } else if (mode === "rotate") {
+      const a0 = Math.atan2(smy - cy, smx - cx);
+      const a1 = Math.atan2(my  - cy, mx  - cx);
+      setDecal(prev => ({ ...prev, angle: sd.angle + (a1 - a0) * 180 / Math.PI }));
+    }
+  }
+
+  const [cursor, setCursor] = useState("default");
+
+  function onMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
+    const [mx, my] = getCanvasPos(e);
+    startDrag(mx, my);
+    e.preventDefault();
+  }
+  function onMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
+    const [mx, my] = getCanvasPos(e);
+    moveDrag(mx, my);
+    if (!dragRef.current.mode) {
+      const h = hitTest(mx, my, decalRef.current);
+      setCursor(h === "move" ? "grab" : h === "scale" ? "nwse-resize" : h === "rotate" ? "crosshair" : "default");
+    }
+  }
+  function onMouseUp() { dragRef.current.mode = null; setCursor("default"); }
+  function onTouchStart(e: React.TouchEvent<HTMLCanvasElement>) { const [mx, my] = getCanvasPos(e); startDrag(mx, my); }
+  function onTouchMove(e: React.TouchEvent<HTMLCanvasElement>)  { const [mx, my] = getCanvasPos(e); moveDrag(mx, my); e.preventDefault(); }
+  function onTouchEnd()  { dragRef.current.mode = null; }
+
+  // ── Confirm ───────────────────────────────────────────────────────────────
+  function handleConfirm() {
+    const img = imgRef.current; if (!img) return;
+    const OUT = 1024;
+    const out = document.createElement("canvas");
+    out.width = out.height = OUT;
+    const ctx = out.getContext("2d")!;
+
+    // Scale from editor coordinates to output coordinates
+    const ratio = maxR_raw / editorRadius; // editor → output pixel scale
+    const d = decalRef.current;
+    const w = img.naturalWidth  * d.scale * ratio;
+    const h = img.naturalHeight * d.scale * ratio;
+    const cx = OUT / 2 + d.x * ratio;
+    const cy = OUT / 2 + d.y * ratio;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(d.angle * Math.PI / 180);
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+    ctx.restore();
+
+    onConfirm(out.toDataURL("image/png"), { ...d });
+  }
+
+  function handleReset() {
+    const img = imgRef.current;
+    const fitScale = img ? (editorRadius * 1.6) / Math.max(img.naturalWidth, img.naturalHeight) : 1;
+    setDecal({ x: 0, y: 0, scale: fitScale, angle: 0 });
+  }
+
+  const btnBase: React.CSSProperties = {
+    padding: "8px 22px", borderRadius: 7, fontFamily: "monospace", fontSize: 12,
+    cursor: "pointer", fontWeight: 700, border: "none",
+  };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      background: "rgba(0,0,0,0.88)",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14,
+    }}>
+      <div style={{ color: "#aaccff", fontSize: 13, letterSpacing: 1, fontFamily: "monospace" }}>
+        Position Decal Image
+      </div>
+
+      <div style={{ background: "#0a0a18", border: "1px solid #2a3a5a", borderRadius: 10, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.7)" }}>
+        <canvas
+          ref={canvasRef}
+          width={S} height={S}
+          style={{ display: "block", cursor, touchAction: "none",
+            width: Math.min(S, window.innerWidth - 48), height: Math.min(S, window.innerWidth - 48) }}
+          onMouseDown={onMouseDown} onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
+          onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+        />
+      </div>
+
+      <div style={{ color: "#445566", fontSize: 10, fontFamily: "monospace" }}>
+        drag to move · corner ○ to scale · orange ○ to rotate
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <button onClick={onCancel}    style={{ ...btnBase, background: "#1a0a0a", color: "#cc4444", border: "1px solid #442222" }}>✕ Cancel</button>
+        <button onClick={handleReset} style={{ ...btnBase, background: "#0d1e36", color: "#5588cc", border: "1px solid #2a4a7a" }}>↺ Reset</button>
+        <button onClick={handleConfirm} style={{ ...btnBase, background: "#0d3a22", color: "#44cc88", border: "1px solid #2a6a44" }}>✓ Apply</button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 export function BeybladeRendererPage() {
   const mountRef        = useRef<HTMLDivElement>(null);
@@ -1160,6 +1575,9 @@ export function BeybladeRendererPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [spinning,   setSpinning]   = useState(false);
   const [beyTilt,    setBeyTilt]    = useState(0);  // degrees — how much the spin axis leans
+  // Decal editor
+  const [decalEditorPartId, setDecalEditorPartId] = useState<string | null>(null);
+  const [decalEditorSrc,    setDecalEditorSrc]    = useState("");
   const beyTiltRef = useRef(0);
   const [nextColor,  setNextColor]  = useState(() => {
     try { return (JSON.parse(localStorage.getItem(LS_KEY) ?? "[]") as PartNode[]).length; } catch { return 0; }
@@ -1432,6 +1850,9 @@ export function BeybladeRendererPage() {
 
       // create meshes
       snapshot.forEach(part => {
+        // The axis rod is a virtual anchor — represented by the dashed axis line, not a 3D mesh
+        if (part.id === "axis_rod") return;
+
         const geo = part.shape === "silhouette"
           ? buildSilhouetteGeometry(part.silhouettePoints, part.silhouetteHoles, part.shapeParams)
           : part.shape === "lathe_custom" && part.lathedProfile.length > 0
@@ -1448,6 +1869,23 @@ export function BeybladeRendererPage() {
           transparent: isTransparent,
           opacity: isTransparent ? 0 : 1,
         });
+        // Apply general texture map (non-silhouette shapes use built-in Three.js UV)
+        const texUrl = part.shape !== "silhouette" ? part.textureUrl : "";
+        if (texUrl) {
+          const cached = texCache.current.get(texUrl);
+          if (cached) { mat.map = cached; mat.needsUpdate = true; }
+          else {
+            const img = new Image();
+            img.onload = () => {
+              const tex = new THREE.Texture(img);
+              tex.colorSpace = THREE.SRGBColorSpace;
+              tex.needsUpdate = true;
+              texCache.current.set(texUrl, tex);
+              mat.map = tex; mat.needsUpdate = true;
+            };
+            img.src = texUrl;
+          }
+        }
         const mesh = new THREE.Mesh(geo, mat);
         mesh.castShadow = true;
         const group = new THREE.Group();
@@ -1564,22 +2002,28 @@ export function BeybladeRendererPage() {
         [u(px), u(pz), u(py)];
 
       snapshot.forEach(part => {
-        const { group } = threeObjs.current.get(part.id)!;
+        if (part.id === "axis_rod") return; // virtual — no mesh to place
+
+        const obj = threeObjs.current.get(part.id);
+        if (!obj) return; // mesh not built (geometry error or virtual part)
+        const { group } = obj;
+        // Treat axis_rod as equivalent to axisRoot for parenting purposes
+        const effectiveParentId = part.parentId === "axis_rod" ? null : part.parentId;
         if (part.freeSpin) {
           group.position.set(...toThree(part.posX, part.posY, part.posZ));
           freeSpinRoot.add(group);
-        } else if (part.parentId === null) {
+        } else if (effectiveParentId === null) {
           group.position.set(...toThree(part.posX, part.posY, part.posZ));
           axisRoot.add(group);
         } else {
-          const parentPart = snapshot.find(p => p.id === part.parentId);
+          const parentPart = snapshot.find(p => p.id === effectiveParentId);
           if (parentPart) {
             group.position.set(...toThree(
               part.posX - parentPart.posX,
               part.posY - parentPart.posY,
               part.posZ - parentPart.posZ,
             ));
-            (threeObjs.current.get(part.parentId)?.group ?? axisRoot).add(group);
+            (threeObjs.current.get(effectiveParentId)?.group ?? axisRoot).add(group);
           } else {
             group.position.set(...toThree(part.posX, part.posY, part.posZ));
             axisRoot.add(group);
@@ -1710,21 +2154,27 @@ export function BeybladeRendererPage() {
     tiltGroup.add(axisRoot);
     axisRootRef.current = axisRoot;
 
-    // Free-spin root — sibling of tiltGroup, never rotates, never tilts
+    // Free-spin root — child of tiltGroup so it tilts with the assembly,
+    // but it never receives the axisRoot spin, so free-spin parts stay stationary while tilting.
     const freeSpinRoot = new THREE.Group();
-    scene.add(freeSpinRoot);
+    tiltGroup.add(freeSpinRoot);
     freeSpinRootRef.current = freeSpinRoot;
 
     // Parts-sync may have already run (it fires before scene-setup in effect order).
     // Call it directly now that the roots exist — guaranteed to build all meshes.
     rebuildMeshesRef.current();
 
-    // Axis overlay (always on top)
-    const axisOverlay = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(0,8*CM,0)]),
-      new THREE.LineBasicMaterial({ color: 0xff3333, depthTest: false, transparent: true, opacity: 0.35 })
+    // Imaginary axis line — dashed, extends full 80 mm height (0 → 8 CM)
+    const axisLineGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, -1 * CM, 0),   // extend slightly below floor for visual continuity
+      new THREE.Vector3(0,  9 * CM, 0),   // extend slightly above top
+    ]);
+    const axisLine = new THREE.Line(
+      axisLineGeo,
+      new THREE.LineDashedMaterial({ color: 0xff4444, dashSize: 0.15, gapSize: 0.10, depthTest: false, transparent: true, opacity: 0.55 })
     );
-    scene.add(axisOverlay);
+    axisLine.computeLineDistances();
+    scene.add(axisLine);
 
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -1761,7 +2211,15 @@ export function BeybladeRendererPage() {
       } else if (spinningRef.current) {
         // Fallback visual spin — delta-time so speed is identical on all refresh rates
         axisRoot.rotation.y += SPIN_RAD_PER_SEC * dt;
+        // Precession: when tilted, the lean axis slowly rotates around world-Y (like a real top)
+        const tiltRad = THREE.MathUtils.degToRad(beyTiltRef.current);
+        if (tiltRad > 0.01) {
+          tiltGroup.rotation.y += (SPIN_RAD_PER_SEC * 0.05) * dt; // ~18× slower than spin
+        }
       }
+      // Apply current lean angle to tiltGroup (Z-axis lean so spin stays around world-Y)
+      const tiltRad = THREE.MathUtils.degToRad(beyTiltRef.current);
+      tiltGroup.rotation.z = tiltRad;
       // own-rotation parts — skip free-spin parts (they are decoupled from all driven rotation)
       partsRef.current.forEach(part => {
         if (part.rotationMode === "own" && !part.freeSpin) {
@@ -1779,7 +2237,7 @@ export function BeybladeRendererPage() {
       window.removeEventListener("resize", onResize);
       controls.dispose();
       renderer.dispose();
-      axisRootRef.current = null; freeSpinRootRef.current = null; sceneRef.current = null;
+      axisRootRef.current = null; tiltGroupRef.current = null; freeSpinRootRef.current = null; sceneRef.current = null;
       rebuildMeshesRef.current = () => {}; // scene gone — next mount will reset this
       // Canvas is owned by React (canvasRef) — do NOT remove it from the DOM
     };
@@ -1813,6 +2271,15 @@ export function BeybladeRendererPage() {
         }}>
           {spinning ? "⏸ Stop Spin" : "▶ Spin Axis"}
         </button>
+
+        {/* Tilt (nutation) slider */}
+        <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+          <span style={{ color:"#445566", fontSize:10, whiteSpace:"nowrap" }}>Tilt</span>
+          <input type="range" min={0} max={360} step={1} value={beyTilt}
+            onChange={e => setBeyTilt(Number(e.target.value))}
+            style={{ width:70, accentColor:"#55aaff", cursor:"pointer" }} />
+          <span style={{ color:"#55aaff", fontSize:10, width:32, textAlign:"right" }}>{beyTilt}°</span>
+        </div>
 
         <div style={{ width:1, height:20, background:"#1a2244" }} />
 
@@ -2226,6 +2693,62 @@ export function BeybladeRendererPage() {
                         {selectedPart.silhouetteHoles.length > 0 &&
                           ` · ${selectedPart.silhouetteHoles.length} hole${selectedPart.silhouetteHoles.length > 1 ? "s" : ""} detected`}
                       </div>
+
+                      {/* ── Decal image — WhatsApp-style editor ── */}
+                      <div style={{ marginTop:10 }}>
+                        <div style={{ color:"#445566", fontSize:9, letterSpacing:1, textTransform:"uppercase", marginBottom:6 }}>Decal Image</div>
+                        {selectedPart.decalSourceUrl ? (
+                          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+                            <img src={selectedPart.decalSourceUrl}
+                              style={{ width:48, height:48, objectFit:"contain", borderRadius:4, border:"1px solid #223344", background:"#0a0a18" }} />
+                            <div style={{ display:"flex", flexDirection:"column", gap:4, flex:1 }}>
+                              <button
+                                onClick={() => { setDecalEditorSrc(selectedPart.decalSourceUrl); setDecalEditorPartId(selectedPart.id); }}
+                                style={{ background:"#0d2a1a", border:"1px solid #2a6a44", color:"#44cc88", borderRadius:4, padding:"4px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer" }}>
+                                ✎ Edit placement
+                              </button>
+                              <label style={{ cursor:"pointer" }}>
+                                <div style={{ background:"#0d1e36", border:"1px solid #2a4a7a", color:"#5588cc", borderRadius:4, padding:"4px 0", fontFamily:"monospace", fontSize:10, textAlign:"center" }}>
+                                  ↑ Change image
+                                </div>
+                                <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
+                                  onChange={e => {
+                                    const file = e.target.files?.[0]; if (!file) return;
+                                    const reader = new FileReader();
+                                    reader.onload = ev => {
+                                      const url = ev.target?.result as string; if (!url) return;
+                                      setDecalEditorSrc(url);
+                                      setDecalEditorPartId(selectedPart.id);
+                                    };
+                                    reader.readAsDataURL(file); e.target.value = "";
+                                  }} />
+                              </label>
+                              <button
+                                onClick={() => updatePart(selectedPart.id, { silhouetteImageUrl: "", decalSourceUrl: "", decalX:0, decalY:0, decalScale:0, decalAngle:0 })}
+                                style={{ background:"#1a0a0a", border:"1px solid #442222", color:"#cc4444", borderRadius:4, padding:"4px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer" }}>
+                                ✕ Remove
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <label style={{ display:"block", cursor:"pointer" }}>
+                            <div style={{ background:"#0d1e1a", border:"1px dashed #2a4a3a", color:"#44aa77", borderRadius:4, padding:"6px 0", fontFamily:"monospace", fontSize:10, textAlign:"center" }}>
+                              ↑ Add decal image
+                            </div>
+                            <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
+                              onChange={e => {
+                                const file = e.target.files?.[0]; if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = ev => {
+                                  const url = ev.target?.result as string; if (!url) return;
+                                  setDecalEditorSrc(url);
+                                  setDecalEditorPartId(selectedPart.id);
+                                };
+                                reader.readAsDataURL(file); e.target.value = "";
+                              }} />
+                          </label>
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <div style={{ marginBottom:8 }}>
@@ -2328,6 +2851,57 @@ export function BeybladeRendererPage() {
                       }}
                     />
                   </div>
+
+                  {/* ── Texture image (all shapes except silhouette which has its own decal) ── */}
+                  {selectedPart.shape !== "silhouette" && (
+                    <>
+                      <SectionTitle>Texture Image</SectionTitle>
+                      {selectedPart.textureUrl ? (
+                        <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+                          <img src={selectedPart.textureUrl}
+                            style={{ width:48, height:48, objectFit:"cover", borderRadius:4, border:"1px solid #223344", background:"#0a0a18" }} />
+                          <div style={{ display:"flex", flexDirection:"column", gap:4, flex:1 }}>
+                            <label style={{ cursor:"pointer" }}>
+                              <div style={{ background:"#0d1e36", border:"1px solid #2a4a7a", color:"#5588cc", borderRadius:4, padding:"4px 0", fontFamily:"monospace", fontSize:10, textAlign:"center" }}>
+                                ✎ Change texture
+                              </div>
+                              <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
+                                onChange={e => {
+                                  const file = e.target.files?.[0]; if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = ev => {
+                                    const url = ev.target?.result as string; if (!url) return;
+                                    updatePart(selectedPart.id, { textureUrl: url });
+                                  };
+                                  reader.readAsDataURL(file); e.target.value = "";
+                                }} />
+                            </label>
+                            <button
+                              onClick={() => updatePart(selectedPart.id, { textureUrl: "" })}
+                              style={{ background:"#1a0a0a", border:"1px solid #442222", color:"#cc4444", borderRadius:4, padding:"4px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer" }}>
+                              ✕ Remove texture
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label style={{ display:"block", cursor:"pointer", marginBottom:14 }}>
+                          <div style={{ background:"#0d1e1a", border:"1px dashed #2a4a3a", color:"#44aa77", borderRadius:5, padding:"8px 0", fontFamily:"monospace", fontSize:10, textAlign:"center" }}>
+                            ↑ Upload texture image
+                          </div>
+                          <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display:"none" }}
+                            onChange={e => {
+                              const file = e.target.files?.[0]; if (!file) return;
+                              const reader = new FileReader();
+                              reader.onload = ev => {
+                                const url = ev.target?.result as string; if (!url) return;
+                                updatePart(selectedPart.id, { textureUrl: url });
+                              };
+                              reader.readAsDataURL(file); e.target.value = "";
+                            }} />
+                        </label>
+                      )}
+                    </>
+                  )}
 
                   <SectionTitle>Visible in Scene</SectionTitle>
                   <label style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14, cursor:"pointer" }}>
@@ -2571,6 +3145,30 @@ export function BeybladeRendererPage() {
           </>
         )}
       </div>
+
+      {/* ── Decal placement editor ── */}
+      {decalEditorPartId && (() => {
+        const edPart = parts.find(p => p.id === decalEditorPartId);
+        if (!edPart) return null;
+        return (
+          <DecalEditor
+            part={edPart}
+            sourceUrl={decalEditorSrc}
+            onConfirm={(bakedUrl, state) => {
+              updatePart(decalEditorPartId, {
+                silhouetteImageUrl: bakedUrl,
+                silhouetteCx: 512, silhouetteCy: 512,
+                silhouetteImgW: 1024, silhouetteImgH: 1024,
+                decalSourceUrl: decalEditorSrc,
+                decalX: state.x, decalY: state.y,
+                decalScale: state.scale, decalAngle: state.angle,
+              });
+              setDecalEditorPartId(null);
+            }}
+            onCancel={() => setDecalEditorPartId(null)}
+          />
+        );
+      })()}
 
       {/* ── Assembly weight footer (always visible) ── */}
       {parts.length > 0 && (() => {
