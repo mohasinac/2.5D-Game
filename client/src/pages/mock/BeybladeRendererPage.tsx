@@ -485,7 +485,7 @@ function buildMergedGeometry(parts: PartNode[]): THREE.BufferGeometry {
   const geos: THREE.BufferGeometry[] = [];
   for (const p of parts) {
     const geo = p.shape === "silhouette"
-      ? buildSilhouetteGeometry(p.silhouettePoints, p.silhouetteHoles, p.shapeParams)
+      ? buildSilhouetteGeometry(p.silhouettePoints, p.silhouetteHoles, p.shapeParams, p.silhouetteArcs, p.silhouetteSectors)
       : buildGeometry(p.shape, p.shapeParams);
     if (!geo.getAttribute('normal')) geo.computeVertexNormals();
     // User coords → Three.js: (posX→X, posZ→Y, posY→Z)
@@ -734,6 +734,54 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 2160, forceC
   return { outline, holes, cx: rcx, cy: rcy, imgW: W, imgH: H };
 }
 
+// Apply arc/sector bends to an outline array (same radial-scale logic as bentPt in drawCanvas).
+// Returns a new outline array with points moved radially wherever arcs/sectors define a non-zero bend.
+function applyBends(
+  outline: [number,number][],
+  arcs: SilhouetteArc[],
+  sectors: SilhouetteSector[],
+  diameterMm: number,
+): [number,number][] {
+  const hasBend = arcs.some(a => Math.abs(a.bendTheta) >= 0.5) ||
+                  sectors.some(s => Math.abs(s.bendTheta) >= 0.5);
+  if (!hasBend) return outline;
+  const maxR = outline.reduce((m, [x, y]) => Math.max(m, Math.sqrt(x*x + y*y)), 0);
+  if (maxR < 0.5) return outline;
+
+  const inRange = (rotation: number, arcAngle: number, theta: number) => {
+    const half = arcAngle / 2;
+    const lo   = ((rotation - half) % 360 + 360) % 360;
+    const hi   = ((rotation + half) % 360 + 360) % 360;
+    const t    = ((theta   % 360)   + 360) % 360;
+    return lo <= hi ? t >= lo && t <= hi : t >= lo || t <= hi;
+  };
+
+  return outline.map(([x, y]): [number,number] => {
+    const rPx = Math.sqrt(x*x + y*y);
+    if (rPx < 0.5) return [x, y];
+    const rMm   = rPx * (diameterMm / 2) / maxR;
+    const theta = ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360; // CCW, 0=right, y+=up
+
+    let scale = 1;
+    for (const sec of sectors) {
+      if (!inRange(sec.rotation, sec.arcAngle, theta)) continue;
+      if (rMm < sec.innerRadiusMm || rMm > sec.outerRadiusMm) continue;
+      if (Math.abs(sec.bendTheta) < 0.5) continue;
+      const br   = sec.bendTheta * Math.PI / 180;
+      const arm  = rMm - sec.innerRadiusMm;
+      scale     *= (sec.innerRadiusMm + arm * Math.cos(br)) / rMm;
+      break;
+    }
+    for (const arc of arcs) {
+      if (!inRange(arc.rotation, arc.arcAngle, theta)) continue;
+      if (Math.abs(arc.bendTheta) < 0.5) continue;
+      scale *= Math.cos(arc.bendTheta * Math.PI / 180);
+      break;
+    }
+    return scale === 1 ? [x, y] : [x * scale, y * scale];
+  });
+}
+
 // Build the THREE.Shape (outline + holes) in XY — shared by the extrusion and the top-face decal.
 function buildSilhouetteShape(
   outline: [number,number][],
@@ -771,8 +819,12 @@ function buildSilhouetteGeometry(
   outline: [number,number][],
   holes: [number,number][][],
   params: Record<string, number>,
+  arcs: SilhouetteArc[] = [],
+  sectors: SilhouetteSector[] = [],
 ): THREE.BufferGeometry {
-  const shape = buildSilhouetteShape(outline, holes, params);
+  const diameterMm  = params.diameter_mm ?? 40;
+  const bentOutline = applyBends(outline, arcs, sectors, diameterMm);
+  const shape = buildSilhouetteShape(bentOutline, holes, params);
   if (!shape) return new THREE.CylinderGeometry(u(20), u(20), u(3), 64);
   const thickness = params.thickness ?? 3;
   const geo = new THREE.ExtrudeGeometry(shape, { depth: u(thickness), bevelEnabled: false, steps: 1 });
@@ -843,17 +895,18 @@ function buildRapierCollider(RAPIER: any, part: PartNode): any {
 // ── 2D silhouette editor types ────────────────────────────────────────────────
 interface SilhouetteArc {
   id: string;
-  angleStart: number;  // 0–360°
-  angleEnd:   number;  // 0–360°
-  bendTheta:  number;  // degrees: + = flap up (upper attack), − = flap down (force smash)
+  arcAngle:     number;  // angular width of the arc (degrees, 1–360)
+  rotation:     number;  // center angle of the arc (degrees, 0 = 3-o'clock, CCW)
+  distanceMm:   number;  // distance from spin axis (mm) — arc drawn as a band at this radius
+  bendTheta:    number;  // degrees: + = flap up (upper attack), − = flap down (force smash)
 }
 
 interface SilhouetteSector {
   id: string;
-  angleStart:      number;  // 0–360°
-  angleEnd:        number;  // 0–360°
-  innerRadiusMm:   number;  // mm from spin axis
-  outerRadiusMm:   number;  // mm from spin axis
+  arcAngle:        number;  // angular width of the wedge (degrees)
+  rotation:        number;  // center angle of the wedge (degrees, 0=3 o'clock, CCW)
+  innerRadiusMm:   number;  // mm from spin axis to inner edge
+  outerRadiusMm:   number;  // mm from spin axis to outer edge
   extrudeHeightMm: number;  // + = protrudes up, − = recessed
   bendTheta:       number;  // rigid joint bend at inner-radius hinge
   material:        string;  // physics material id
@@ -1405,17 +1458,37 @@ function SilhouetteEditorModal({
     const ctx    = canvas.getContext("2d")!;
     ctx.clearRect(0,0,S,S);
 
-    // checkerboard
-    for (let i=0;i<S;i+=14) for (let j=0;j<S;j+=14) {
-      ctx.fillStyle=((Math.floor(i/14)+Math.floor(j/14))%2===0)?"#18182a":"#222236";
-      ctx.fillRect(i,j,14,14);
+    // ── Background: checkerboard outside the disc, solid dark inside ──────────
+    const cx2 = S/2, cy2 = S/2;
+    // Draw checkerboard everywhere first
+    for (let i=0;i<S;i+=12) for (let j=0;j<S;j+=12) {
+      ctx.fillStyle=((Math.floor(i/12)+Math.floor(j/12))%2===0)?"#14141e":"#1c1c2a";
+      ctx.fillRect(i,j,12,12);
     }
+    // Paint a clean dark disc over the part area
+    const discGrad = ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,CANVAS_R);
+    discGrad.addColorStop(0,   "#1a1a2e");
+    discGrad.addColorStop(0.85,"#161625");
+    discGrad.addColorStop(1,   "#0e0e1a");
+    ctx.beginPath(); ctx.arc(cx2,cy2,CANVAS_R,0,Math.PI*2);
+    ctx.fillStyle = discGrad; ctx.fill();
+    // Soft inner shadow ring
+    const shadowGrad = ctx.createRadialGradient(cx2,cy2,CANVAS_R*0.78,cx2,cy2,CANVAS_R);
+    shadowGrad.addColorStop(0,"transparent");
+    shadowGrad.addColorStop(1,"rgba(0,0,0,0.5)");
+    ctx.beginPath(); ctx.arc(cx2,cy2,CANVAS_R,0,Math.PI*2);
+    ctx.fillStyle = shadowGrad; ctx.fill();
+    // Outer glow + hard ring
+    ctx.beginPath(); ctx.arc(cx2,cy2,CANVAS_R,0,Math.PI*2);
+    ctx.strokeStyle="#3a5080"; ctx.lineWidth=3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx2,cy2,CANVAS_R,0,Math.PI*2);
+    ctx.strokeStyle="rgba(80,140,220,0.35)"; ctx.lineWidth=8; ctx.stroke();
 
-    // guide rings at 25/50/75/100% radius
-    ctx.setLineDash([3,3]);
-    [0.25,0.5,0.75,1.0].forEach(f => {
-      ctx.beginPath(); ctx.arc(S/2,S/2,CANVAS_R*f,0,Math.PI*2);
-      ctx.strokeStyle="#223344"; ctx.lineWidth=1; ctx.stroke();
+    // ── Guide rings at 25 / 50 / 75 % radius ─────────────────────────────────
+    ctx.setLineDash([2,4]);
+    [0.25,0.5,0.75].forEach(f => {
+      ctx.beginPath(); ctx.arc(cx2,cy2,CANVAS_R*f,0,Math.PI*2);
+      ctx.strokeStyle="rgba(60,90,140,0.5)"; ctx.lineWidth=1; ctx.stroke();
     });
     ctx.setLineDash([]);
 
@@ -1424,20 +1497,21 @@ function SilhouetteEditorModal({
     const sc  = sectorsRef.current;
     const sid = selIdRef.current;
 
-    // ── Sector overlays (behind outline)
+    // ── Sector overlays (annular wedge: arcAngle wide, centered at rotation) ──
     sc.forEach((sec,i) => {
-      const col   = SEP_COLORS[i%SEP_COLORS.length];
-      const isSel = sec.id === sid;
-      const aS    = sec.angleStart * Math.PI/180;
-      const aE    = sec.angleEnd   * Math.PI/180;
-      const rIn   = Math.max(0, sec.innerRadiusMm * pxPerMm);
-      const rOut  = Math.min(sec.outerRadiusMm * pxPerMm, CANVAS_R * 1.2);
-      // Canvas angles go clockwise; our angles go counter-clockwise → negate
+      const col    = SEP_COLORS[i%SEP_COLORS.length];
+      const isSel  = sec.id === sid;
+      const half   = (sec.arcAngle / 2) * Math.PI / 180;
+      const center = -sec.rotation * Math.PI / 180;   // negate for canvas CW
+      const aS     = center - half;
+      const aE     = center + half;
+      const rIn    = Math.max(0, sec.innerRadiusMm * pxPerMm);
+      const rOut   = Math.min(sec.outerRadiusMm * pxPerMm, CANVAS_R * 1.2);
       ctx.beginPath();
-      ctx.arc(S/2,S/2, rOut, -aS, -aE, true);
-      ctx.arc(S/2,S/2, rIn,  -aE, -aS, false);
+      ctx.arc(S/2, S/2, rOut, aS, aE);
+      ctx.arc(S/2, S/2, rIn,  aE, aS, true);
       ctx.closePath();
-      ctx.globalAlpha = isSel ? 0.45 : 0.22;
+      ctx.globalAlpha = isSel ? 0.50 : 0.25;
       ctx.fillStyle   = col;
       ctx.fill();
       ctx.globalAlpha = 1;
@@ -1446,33 +1520,98 @@ function SilhouetteEditorModal({
       ctx.stroke();
     });
 
-    // ── Arc overlays (thick band just outside the outline boundary)
+    // ── Arc overlays — drawn as a band at distanceMm, spanning arcAngle around rotation ─
     ar.forEach((arc,i) => {
-      const col   = SEP_COLORS[i%SEP_COLORS.length];
-      const isSel = arc.id === sid;
-      const aS    = -arc.angleStart * Math.PI/180;
-      const aE    = -arc.angleEnd   * Math.PI/180;
-      const ccw   = arc.angleEnd > arc.angleStart;
+      const col     = SEP_COLORS[i%SEP_COLORS.length];
+      const isSel   = arc.id === sid;
+      const half    = (arc.arcAngle / 2) * Math.PI / 180;
+      const center  = -arc.rotation * Math.PI / 180;   // negate: canvas CCW = our CCW
+      const aS      = center - half;
+      const aE      = center + half;
+      const r       = Math.max(4, arc.distanceMm * pxPerMm);
+      const bw      = Math.max(6, pxPerMm * 2.5);      // band width scales with pxPerMm
+      // Filled band (annular arc)
       ctx.beginPath();
-      ctx.arc(S/2,S/2, CANVAS_R+6, aS, aE, ccw);
+      ctx.arc(S/2, S/2, r + bw/2, aS, aE);
+      ctx.arc(S/2, S/2, Math.max(2, r - bw/2), aE, aS, true);
+      ctx.closePath();
+      ctx.globalAlpha = isSel ? 0.55 : 0.30;
+      ctx.fillStyle   = col;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      // Outer arc stroke
+      ctx.beginPath();
+      ctx.arc(S/2, S/2, r, aS, aE);
       ctx.strokeStyle = col;
-      ctx.lineWidth   = isSel ? 8 : 5;
-      ctx.globalAlpha = isSel ? 0.95 : 0.65;
+      ctx.lineWidth   = isSel ? 3 : 2;
+      ctx.globalAlpha = isSel ? 1 : 0.7;
       ctx.stroke();
+      ctx.globalAlpha = 1;
+      // End-cap tick marks
+      ctx.globalAlpha = isSel ? 0.8 : 0.45;
+      for (const a of [aS, aE]) {
+        const tx = S/2 + Math.cos(a) * r, ty = S/2 + Math.sin(a) * r;
+        const nx = Math.cos(a + Math.PI/2), ny = Math.sin(a + Math.PI/2);
+        ctx.beginPath();
+        ctx.moveTo(tx - nx*(bw/2), ty - ny*(bw/2));
+        ctx.lineTo(tx + nx*(bw/2), ty + ny*(bw/2));
+        ctx.strokeStyle = col; ctx.lineWidth = isSel ? 2 : 1.5; ctx.stroke();
+      }
       ctx.globalAlpha = 1;
     });
 
-    // ── Outline
+    // ── Bend preview helper ───────────────────────────────────────────────────
+    // Returns the VISUALLY BENT position of an outline point (image-px coords).
+    // Only points that fall inside a sector/arc region are moved radially;
+    // everything else is returned unchanged.
+    function bentPt(x: number, y: number): [number, number] {
+      const rPx = Math.sqrt(x * x + y * y);
+      if (rPx < 0.5) return [x, y];
+      const rMm    = rPx * (diameterMm / 2) / maxR;
+      const theta  = ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360; // CCW, 0=right, y+ = up
+
+      const inArcRange = (rotation: number, arcAngle: number) => {
+        const half = arcAngle / 2;
+        const lo   = ((rotation - half) % 360 + 360) % 360;
+        const hi   = ((rotation + half) % 360 + 360) % 360;
+        const t    = ((theta % 360) + 360) % 360;
+        return lo <= hi ? t >= lo && t <= hi : t >= lo || t <= hi;
+      };
+
+      let scaleFactor = 1;
+      for (const sec of sc) {
+        if (!inArcRange(sec.rotation, sec.arcAngle)) continue;
+        if (rMm < sec.innerRadiusMm || rMm > sec.outerRadiusMm) continue;
+        if (Math.abs(sec.bendTheta) < 0.5) continue;
+        const br      = sec.bendTheta * Math.PI / 180;
+        const armMm   = rMm - sec.innerRadiusMm;
+        const newRMm  = sec.innerRadiusMm + armMm * Math.cos(br);
+        scaleFactor  *= newRMm / rMm;
+        break; // first matching sector wins
+      }
+      for (const arc of ar) {
+        if (!inArcRange(arc.rotation, arc.arcAngle)) continue;
+        if (Math.abs(arc.bendTheta) < 0.5) continue;
+        const br    = arc.bendTheta * Math.PI / 180;
+        scaleFactor *= Math.cos(br);
+        break;
+      }
+
+      return scaleFactor === 1 ? [x, y] : [x * scaleFactor, y * scaleFactor];
+    }
+
+    // ── Outline (bent where sectors/arcs apply) ───────────────────────────────
     if (ol.length > 2) {
       ctx.beginPath();
       ol.forEach(([x,y],idx) => {
-        const [cx,cy] = toC(x,y);
+        const [bx,by] = bentPt(x, y);
+        const [cx,cy] = toC(bx, by);
         if (idx===0) ctx.moveTo(cx,cy); else ctx.lineTo(cx,cy);
       });
       ctx.closePath();
       for (const hole of initialHoles) {
         hole.forEach(([x,y],idx) => {
-          const [cx,cy] = toC(x,y);
+          const [cx,cy] = toC(x, y);
           if (idx===0) ctx.moveTo(cx,cy); else ctx.lineTo(cx,cy);
         });
         ctx.closePath();
@@ -1481,16 +1620,19 @@ function SilhouetteEditorModal({
       ctx.strokeStyle="#6699ffcc"; ctx.lineWidth=1.5; ctx.stroke();
     }
 
-    // ── Point handles (points or eraser mode)
+    // ── Point handles — bent handles shown in accent colour ──────────────────
     const t = toolRef.current;
     if (t === "points" || t === "eraser") {
       const hStep = Math.max(1, Math.floor(ol.length/48));
       for (let i=0;i<ol.length;i+=hStep) {
-        const [cx,cy] = toC(ol[i][0],ol[i][1]);
+        const [rx,ry]  = ol[i];
+        const [bx,by]  = bentPt(rx, ry);
+        const isBent   = bx !== rx || by !== ry;
+        const [cx,cy]  = toC(bx, by);
         ctx.beginPath(); ctx.arc(cx,cy, t==="eraser"?5:4, 0, Math.PI*2);
-        ctx.fillStyle  = t==="eraser" ? "#ff8844" : "#88aaff";
+        ctx.fillStyle  = t==="eraser" ? "#ff8844" : isBent ? "#ffcc44" : "#88aaff";
         ctx.fill();
-        ctx.strokeStyle="#ffffff44"; ctx.lineWidth=1; ctx.stroke();
+        ctx.strokeStyle= isBent ? "#ffeeaacc" : "#ffffff44"; ctx.lineWidth=1; ctx.stroke();
       }
     }
 
@@ -1665,7 +1807,7 @@ function SilhouetteEditorModal({
                     <span style={{color:"#5577aa",fontSize:10}}>Arcs ({arcs.length})</span>
                     <button style={smBtn} onClick={()=>{
                       const id=`arc_${Date.now()}`;
-                      setArcs(prev=>[...prev,{id,angleStart:0,angleEnd:90,bendTheta:20}]);
+                      setArcs(prev=>[...prev,{id,arcAngle:60,rotation:0,distanceMm:diameterMm/2,bendTheta:0}]);
                       setSelectedId(id);
                     }}>+ Add arc</button>
                   </div>
@@ -1680,7 +1822,7 @@ function SilhouetteEditorModal({
                         <div style={{ display:"flex",alignItems:"center",gap:4 }}>
                           <span style={{ width:9,height:9,borderRadius:"50%",background:col,display:"inline-block",flexShrink:0 }}/>
                           <span style={{color:"#aaccff",fontSize:10,flex:1}}>
-                            Arc {i+1} · {arc.angleStart}°→{arc.angleEnd}° · θ{arc.bendTheta>=0?"+":""}{arc.bendTheta}°
+                            Arc {i+1} · {arc.arcAngle}° @ {arc.rotation}° · r{arc.distanceMm.toFixed(1)}mm
                           </span>
                           <button onClick={e=>{e.stopPropagation();setArcs(p=>p.filter(a=>a.id!==arc.id));if(selectedId===arc.id)setSelectedId(null);}}
                             style={{background:"#2a0a0a",border:"1px solid #552222",color:"#cc4444",borderRadius:3,padding:"1px 5px",fontSize:10,cursor:"pointer"}}>×</button>
@@ -1688,18 +1830,19 @@ function SilhouetteEditorModal({
                         {isSel && (
                           <div style={{marginTop:6}} onClick={e=>e.stopPropagation()}>
                             {([
-                              {label:"Arc start",  key:"angleStart" as const, min:0,   max:360, step:1,  unit:"°", hint:"Start of the angular region (0° = 3 o'clock, CCW positive)"},
-                              {label:"Arc end",    key:"angleEnd"   as const, min:0,   max:360, step:1,  unit:"°", hint:"End of the angular region — set a wide range to cover a whole blade arm"},
-                              {label:"Bend θ",     key:"bendTheta"  as const, min:-90, max:90,  step:1,  unit:"°", hint:"Hinge at the arc base: + flaps the arm upward (upper attack), − pushes it downward (force smash)"},
+                              {label:"Arc angle",      key:"arcAngle"    as const, min:1,   max:360, step:1,   unit:"°",  hint:"Total angular width of this arc (how many degrees it spans)"},
+                              {label:"Rotation",       key:"rotation"    as const, min:0,   max:360, step:1,   unit:"°",  hint:"Center position of the arc — rotate it around the spin axis (0° = 3 o'clock, CCW)"},
+                              {label:"Distance (r)",   key:"distanceMm"  as const, min:0,   max:diameterMm, step:0.5, unit:"mm", hint:"Distance from spin axis — 0 = center, diameter/2 = outer edge"},
+                              {label:"Bend θ",         key:"bendTheta"   as const, min:-90, max:90,  step:1,   unit:"°",  hint:"Hinge at the arc base: + flaps up (upper attack), − pushes down (force smash)"},
                             ]).map(({label,key,min,max,step,unit,hint}) => (
                               <div key={key} style={{marginBottom:5}}>
-                                <div style={{display:"flex",justifyContent:"space-between",color:"#445577",fontSize:9,marginBottom:1}}>
-                                  <span>{label}</span><span style={{color:"#8899bb"}}>{arc[key]}{unit}</span>
+                                <div style={{display:"flex",justifyContent:"space-between",color:"#7799cc",fontSize:9,marginBottom:1}}>
+                                  <span>{label}</span><span style={{color:"#aaccff"}}>{(arc[key] as number).toFixed(key==="distanceMm"?1:0)}{unit}</span>
                                 </div>
-                                <input type="range" min={min} max={max} step={step} value={arc[key]}
+                                <input type="range" min={min} max={max} step={step} value={arc[key] as number}
                                   onChange={e=>setArcs(prev=>prev.map(a=>a.id===arc.id?{...a,[key]:parseFloat(e.target.value)}:a))}
                                   style={{width:"100%",accentColor:col}} />
-                                <div style={{color:"#33445566",fontSize:8,marginTop:1,fontStyle:"italic"}}>{hint}</div>
+                                <div style={{color:"#6688aa",fontSize:8,marginTop:1,fontStyle:"italic"}}>{hint}</div>
                               </div>
                             ))}
                           </div>
@@ -1718,7 +1861,7 @@ function SilhouetteEditorModal({
                     <button style={smBtn} onClick={()=>{
                       const id=`sec_${Date.now()}`;
                       const dOut = diameterMm/2, dIn = dOut*0.5;
-                      setSectors(prev=>[...prev,{id,angleStart:0,angleEnd:90,innerRadiusMm:dIn,outerRadiusMm:dOut,extrudeHeightMm:2,bendTheta:0,material:"abs_hard"}]);
+                      setSectors(prev=>[...prev,{id,arcAngle:90,rotation:0,innerRadiusMm:dIn,outerRadiusMm:dOut,extrudeHeightMm:2,bendTheta:0,material:"abs_hard"}]);
                       setSelectedId(id);
                     }}>+ Add sector</button>
                   </div>
@@ -1733,7 +1876,7 @@ function SilhouetteEditorModal({
                         <div style={{ display:"flex",alignItems:"center",gap:4 }}>
                           <span style={{ width:9,height:9,borderRadius:"50%",background:col,display:"inline-block",flexShrink:0 }}/>
                           <span style={{color:"#aaccff",fontSize:10,flex:1}}>
-                            Sector {i+1} · {sec.angleStart}°→{sec.angleEnd}° · {sec.innerRadiusMm.toFixed(1)}–{sec.outerRadiusMm.toFixed(1)}mm
+                            Sector {i+1} · {sec.arcAngle}° @ {sec.rotation}° · {sec.innerRadiusMm.toFixed(1)}–{sec.outerRadiusMm.toFixed(1)}mm
                           </span>
                           <button onClick={e=>{e.stopPropagation();setSectors(p=>p.filter(s=>s.id!==sec.id));if(selectedId===sec.id)setSelectedId(null);}}
                             style={{background:"#2a0a0a",border:"1px solid #552222",color:"#cc4444",borderRadius:3,padding:"1px 5px",fontSize:10,cursor:"pointer"}}>×</button>
@@ -1741,25 +1884,25 @@ function SilhouetteEditorModal({
                         {isSel && (
                           <div style={{marginTop:6}} onClick={e=>e.stopPropagation()}>
                             {([
-                              {label:"Arc start",     key:"angleStart"      as const, min:0,              max:360,           step:1,   unit:"°",  hint:"Wedge start angle (0° = 3 o'clock, CCW positive)"},
-                              {label:"Arc end",       key:"angleEnd"        as const, min:0,              max:360,           step:1,   unit:"°",  hint:"Wedge end angle — the sector spans from start to end counterclockwise"},
-                              {label:"Inner radius",  key:"innerRadiusMm"   as const, min:0,              max:diameterMm/2,  step:0.5, unit:"mm", hint:"Distance from spin axis to the inner edge of this annular wedge"},
-                              {label:"Outer radius",  key:"outerRadiusMm"   as const, min:0,              max:diameterMm,    step:0.5, unit:"mm", hint:"Distance from spin axis to the outer edge — keep ≤ part diameter/2"},
-                              {label:"Extrude height",key:"extrudeHeightMm" as const, min:-10,            max:10,            step:0.5, unit:"mm", hint:"+ raises this wedge above the base disc; − recesses it below"},
-                              {label:"Bend θ (joint)",key:"bendTheta"       as const, min:-90,            max:90,            step:1,   unit:"°",  hint:"Rigid-joint bend at the inner edge: + tips the wedge upward, − downward"},
+                              {label:"Arc angle",      key:"arcAngle"        as const, min:1,              max:360,           step:1,   unit:"°",  hint:"Angular width of this wedge in degrees"},
+                              {label:"Rotation",       key:"rotation"        as const, min:0,              max:360,           step:1,   unit:"°",  hint:"Center angle of the wedge — rotate it around the spin axis (0° = 3 o'clock, CCW)"},
+                              {label:"Inner radius",   key:"innerRadiusMm"   as const, min:0,              max:diameterMm/2,  step:0.5, unit:"mm", hint:"Distance from spin axis to the inner edge"},
+                              {label:"Outer radius",   key:"outerRadiusMm"   as const, min:0,              max:diameterMm,    step:0.5, unit:"mm", hint:"Distance from spin axis to the outer edge"},
+                              {label:"Extrude height", key:"extrudeHeightMm" as const, min:-10,            max:10,            step:0.5, unit:"mm", hint:"+ raises this wedge above the base disc; − recesses it below"},
+                              {label:"Bend θ (joint)", key:"bendTheta"       as const, min:-90,            max:90,            step:1,   unit:"°",  hint:"Rigid-joint bend at the inner edge: + tips upward, − downward"},
                             ]).map(({label,key,min,max,step,unit,hint}) => (
                               <div key={key} style={{marginBottom:5}}>
-                                <div style={{display:"flex",justifyContent:"space-between",color:"#445577",fontSize:9,marginBottom:1}}>
-                                  <span>{label}</span><span style={{color:"#8899bb"}}>{(sec[key] as number).toFixed(key==="bendTheta"||key==="angleStart"||key==="angleEnd"?0:1)}{unit}</span>
+                                <div style={{display:"flex",justifyContent:"space-between",color:"#7799cc",fontSize:9,marginBottom:1}}>
+                                  <span>{label}</span><span style={{color:"#aaccff"}}>{(sec[key] as number).toFixed(key==="innerRadiusMm"||key==="outerRadiusMm"||key==="extrudeHeightMm"?1:0)}{unit}</span>
                                 </div>
                                 <input type="range" min={min} max={max} step={step} value={sec[key] as number}
                                   onChange={e=>setSectors(prev=>prev.map(s=>s.id===sec.id?{...s,[key]:parseFloat(e.target.value)}:s))}
                                   style={{width:"100%",accentColor:col}} />
-                                <div style={{color:"#33445566",fontSize:8,marginTop:1,fontStyle:"italic"}}>{hint}</div>
+                                <div style={{color:"#6688aa",fontSize:8,marginTop:1,fontStyle:"italic"}}>{hint}</div>
                               </div>
                             ))}
                             {/* Material */}
-                            <div style={{marginBottom:4,color:"#445577",fontSize:9,marginTop:2}}>Material</div>
+                            <div style={{marginBottom:4,color:"#7799cc",fontSize:9,marginTop:2}}>Material</div>
                             <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
                               {(["abs_hard","rubber_soft","metal_zinc","pom","polycarbonate"] as const).map(m=>(
                                 <button key={m}
@@ -2421,7 +2564,7 @@ export function BeybladeRendererPage() {
         if (part.id === "axis_rod") return;
 
         const geo = part.shape === "silhouette"
-          ? buildSilhouetteGeometry(part.silhouettePoints, part.silhouetteHoles, part.shapeParams)
+          ? buildSilhouetteGeometry(part.silhouettePoints, part.silhouetteHoles, part.shapeParams, part.silhouetteArcs, part.silhouetteSectors)
           : part.shape === "merged" && part.mergedParts.length > 0
             ? buildMergedGeometry(part.mergedParts)
             : buildGeometry(part.shape, part.shapeParams);
@@ -2459,8 +2602,9 @@ export function BeybladeRendererPage() {
         // Image decal on top face of silhouette shapes — clipped to exact outline+holes
         if (part.shape === "silhouette" && part.silhouetteImageUrl) {
           const tMm = part.shapeParams.thickness ?? 3;
+          const bentPts  = applyBends(part.silhouettePoints, part.silhouetteArcs, part.silhouetteSectors, part.shapeParams.diameter_mm ?? 40);
           const silShape = buildSilhouetteShape(
-            part.silhouettePoints, part.silhouetteHoles, part.shapeParams,
+            bentPts, part.silhouetteHoles, part.shapeParams,
           );
           if (silShape) {
             // Apply the EXACT same transforms as buildSilhouetteGeometry so the decal
@@ -2515,7 +2659,8 @@ export function BeybladeRendererPage() {
           for (const mp of part.mergedParts) {
             if (mp.shape !== "silhouette" || !mp.silhouetteImageUrl) continue;
             const tMm = mp.shapeParams.thickness ?? 3;
-            const silShape = buildSilhouetteShape(mp.silhouettePoints, mp.silhouetteHoles, mp.shapeParams);
+            const bentMp   = applyBends(mp.silhouettePoints, mp.silhouetteArcs, mp.silhouetteSectors, mp.shapeParams.diameter_mm ?? 40);
+            const silShape = buildSilhouetteShape(bentMp, mp.silhouetteHoles, mp.shapeParams);
             if (!silShape) continue;
             const faceGeo = new THREE.ShapeGeometry(silShape);
             { const maxR_raw = mp.silhouettePoints.reduce((m,[x,y])=>Math.max(m,Math.sqrt(x*x+y*y)),0);
