@@ -1,5 +1,5 @@
 // @refresh reset
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
@@ -603,7 +603,7 @@ function extractDominantColor(img: HTMLImageElement): string {
   return `#${toHex(sumR[best])}${toHex(sumG[best])}${toHex(sumB[best])}`;
 }
 
-function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): SilhouetteData {
+function extractSilhouettePoints(img: HTMLImageElement, numAngles = 2160, forceCx?: number, forceCy?: number): SilhouetteData {
   const W = img.naturalWidth, H = img.naturalHeight;
   if (!W || !H) return { outline: [], holes: [], cx: 0, cy: 0, imgW: 0, imgH: 0 };
   const canvas = document.createElement("canvas");
@@ -612,72 +612,23 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
   ctx.drawImage(img, 0, 0);
   const { data } = ctx.getImageData(0, 0, W, H);
 
-  // Bilinear alpha sample for sub-pixel accuracy
-  const sampleAlpha = (x: number, y: number): number => {
-    const x0 = Math.floor(x), y0 = Math.floor(y);
-    const x1 = x0 + 1, y1 = y0 + 1;
-    const fx = x - x0, fy = y - y0;
-    const get = (xi: number, yi: number) => {
-      if (xi < 0 || xi >= W || yi < 0 || yi >= H) return 0;
-      return data[(yi * W + xi) * 4 + 3];
-    };
-    return (1 - fx) * (1 - fy) * get(x0, y0) +
-           fx       * (1 - fy) * get(x1, y0) +
-           (1 - fx) * fy       * get(x0, y1) +
-           fx       * fy       * get(x1, y1);
-  };
   const isOpaque = (x: number, y: number): boolean => {
     const xi = x | 0, yi = y | 0;
     if (xi < 0 || xi >= W || yi < 0 || yi >= H) return false;
-    return data[(yi * W + xi) * 4 + 3] > 32;
+    return data[(yi * W + xi) * 4 + 3] > 48;
   };
 
-  // ── Centre of mass of opaque pixels ──────────────────────────────────────────
-  let sx = 0, sy = 0, cnt = 0;
-  for (let y = 0; y < H; y++)
-    for (let x = 0; x < W; x++)
-      if (isOpaque(x, y)) { sx += x; sy += y; cnt++; }
-  if (cnt === 0) return { outline: [], holes: [], cx: 0, cy: 0, imgW: W, imgH: H };
-  const cx0 = sx / cnt, cy0 = sy / cnt;
-
-  // ── Outer contour — scan INWARD from image edge along each ray ───────────
-  // Scanning inward finds the outermost opaque boundary even for concave shapes.
-  const maxR = Math.sqrt(W * W + H * H);
-  const outline: [number, number][] = [];
-  for (let i = 0; i < numAngles; i++) {
-    const angle = (i / numAngles) * Math.PI * 2;
-    const dx = Math.cos(angle), dy = Math.sin(angle);
-    // Walk from image boundary inward; first opaque pixel IS the outer boundary
-    let foundR = 0;
-    for (let r = maxR; r >= 1; r -= 0.5) {
-      const px = cx0 + dx * r, py = cy0 + dy * r;
-      if (px < 0 || px >= W || py < 0 || py >= H) continue;
-      if (sampleAlpha(px, py) > 32) { foundR = r; break; }
-    }
-    if (foundR > 0) outline.push([dx * foundR, dy * foundR]);
-  }
-
-  // ── Clamp spike outliers in outline ──────────────────────────────────────────
-  // For each point, if its radius exceeds 1.25× the median of the surrounding
-  // 11 points, snap it back to that median. Two passes catches double-spikes.
-  for (let pass = 0; pass < 2; pass++) {
-    const n = outline.length;
-    for (let i = 0; i < n; i++) {
-      const [ox, oy] = outline[i];
-      const r = Math.sqrt(ox * ox + oy * oy);
-      const win: number[] = [];
-      for (let d = -5; d <= 5; d++) {
-        if (d === 0) continue;
-        const [nx, ny] = outline[(i + d + n) % n];
-        win.push(Math.sqrt(nx * nx + ny * ny));
-      }
-      win.sort((a, b) => a - b);
-      const med = win[5]; // median of 10 neighbors
-      if (r > med * 1.25) {
-        const angle = Math.atan2(oy, ox);
-        outline[i] = [Math.cos(angle) * med, Math.sin(angle) * med];
-      }
-    }
+  // ── Centre: prefer forced center (aligner positions spin-axis at canvas center) ─
+  let rcx: number, rcy: number;
+  if (forceCx !== undefined && forceCy !== undefined) {
+    rcx = forceCx; rcy = forceCy;
+  } else {
+    let sx = 0, sy = 0, cnt = 0;
+    for (let y = 0; y < H; y++)
+      for (let x = 0; x < W; x++)
+        if (isOpaque(x, y)) { sx += x; sy += y; cnt++; }
+    if (cnt === 0) return { outline: [], holes: [], cx: W / 2, cy: H / 2, imgW: W, imgH: H };
+    rcx = sx / cnt; rcy = sy / cnt;
   }
 
   // ── Flood-fill "outside" transparent pixels from every border pixel ───────
@@ -701,7 +652,24 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
     tryEnqueue(x, y - 1); tryEnqueue(x, y + 1);
   }
 
-  // ── Find hole regions: connected transparent pixels not reached by flood-fill
+  // ── Outer contour — high-resolution inward ray scan (2160 angles, 0.25 px step) ─
+  // Inward scan finds the outermost opaque pixel at each angle, correctly tracing
+  // both convex blade arms AND concave notches between them.
+  const maxR = Math.sqrt(W * W + H * H);
+  const outline: [number, number][] = [];
+  for (let i = 0; i < numAngles; i++) {
+    const angle = (i / numAngles) * Math.PI * 2;
+    const dx = Math.cos(angle), dy = Math.sin(angle);
+    let foundR = 0;
+    for (let r = maxR; r >= 0.5; r -= 0.25) {
+      const px = rcx + dx * r, py = rcy + dy * r;
+      if (px < 0 || px >= W || py < 0 || py >= H) continue;
+      if (isOpaque(px, py)) { foundR = r; break; }
+    }
+    if (foundR > 0) outline.push([dx * foundR, dy * foundR]);
+  }
+
+  // ── Find hole regions: connected transparent pixels not reached by flood-fill ─
   const visited = new Uint8Array(N);
   const holes: [number, number][][] = [];
   for (let y = 0; y < H; y++) {
@@ -718,8 +686,8 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
         const hidx = hq[hqi++];
         const hx = hidx % W, hy = (hidx / W) | 0;
         holePixels.push([hx, hy]);
-        for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]] as [number,number][]) {
-          const nx = hx + dx, ny = hy + dy;
+        for (const [ddx, ddy] of [[-1,0],[1,0],[0,-1],[0,1]] as [number,number][]) {
+          const nx = hx + ddx, ny = hy + ddy;
           if (nx < 0 || nx >= W || ny < 0 || ny >= H) continue;
           const nidx = ny * W + nx;
           if (visited[nidx] || isOpaque(nx, ny)) continue;
@@ -727,14 +695,13 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
           hq.push(nidx);
         }
       }
-      if (holePixels.length < 40) continue; // skip noise / tiny gaps
+      if (holePixels.length < 40) continue;
 
-      // ── True centroid of all hole pixels (better than boundary centroid) ──────
+      // ── Centroid of hole pixels ──────────────────────────────────────────────
       let hcx = 0, hcy = 0;
       for (const [hx, hy] of holePixels) { hcx += hx; hcy += hy; }
       hcx /= holePixels.length; hcy /= holePixels.length;
 
-      // ── Bounding-box diagonal gives a safe max scan radius ───────────────────
       let hxMin = Infinity, hxMax = -Infinity, hyMin = Infinity, hyMax = -Infinity;
       for (const [hx, hy] of holePixels) {
         if (hx < hxMin) hxMin = hx; if (hx > hxMax) hxMax = hx;
@@ -744,28 +711,27 @@ function extractSilhouettePoints(img: HTMLImageElement, numAngles = 720): Silhou
         Math.pow(hxMax - hxMin, 2) + Math.pow(hyMax - hyMin, 2)
       ) / 2 + 4;
 
-      // ── Ray-cast from hole centroid outward — same technique as outer outline ─
-      // Scan outward; the boundary is the last transparent pixel before hitting opaque.
-      const HOLE_ANGLES = 720;
+      // ── Scan outward from hole centroid — find last transparent before opaque ─
+      const HOLE_ANGLES = 1080;
       const holePts: [number, number][] = [];
       for (let a = 0; a < HOLE_ANGLES; a++) {
         const ang = (a / HOLE_ANGLES) * Math.PI * 2;
-        const dx = Math.cos(ang), dy = Math.sin(ang);
+        const dx2 = Math.cos(ang), dy2 = Math.sin(ang);
         let foundR = 0;
-        for (let r = 1; r <= hMaxR; r += 0.5) {
-          const px = hcx + dx * r, py = hcy + dy * r;
+        for (let r = 1; r <= hMaxR; r += 0.25) {
+          const px = hcx + dx2 * r, py = hcy + dy2 * r;
           if (px < 0 || px >= W || py < 0 || py >= H) break;
-          if (sampleAlpha(px, py) > 32) break; // opaque — boundary was one step back
+          if (isOpaque(px, py)) break;
           foundR = r;
         }
-        if (foundR > 0) holePts.push([hcx + dx * foundR - cx0, hcy + dy * foundR - cy0]);
+        if (foundR > 0) holePts.push([hcx + dx2 * foundR - rcx, hcy + dy2 * foundR - rcy]);
       }
 
       if (holePts.length >= 6) holes.push(holePts);
     }
   }
 
-  return { outline, holes, cx: cx0, cy: cy0, imgW: W, imgH: H };
+  return { outline, holes, cx: rcx, cy: rcy, imgW: W, imgH: H };
 }
 
 // Build the THREE.Shape (outline + holes) in XY — shared by the extrusion and the top-face decal.
@@ -798,6 +764,9 @@ function buildSilhouetteShape(
   return shape;
 }
 
+// Apply sector extrude + rigid-joint bend to an already-rotated silhouette geometry.
+// After rotateX(PI/2): disc is in XZ plane, Y is up.
+// Vertex (vx, vy, vz): r = sqrt(vx²+vz²), angle = atan2(-vz, vx) (matches our CCW system).
 function buildSilhouetteGeometry(
   outline: [number,number][],
   holes: [number,number][][],
@@ -806,7 +775,7 @@ function buildSilhouetteGeometry(
   const shape = buildSilhouetteShape(outline, holes, params);
   if (!shape) return new THREE.CylinderGeometry(u(20), u(20), u(3), 64);
   const thickness = params.thickness ?? 3;
-  const geo = new THREE.ExtrudeGeometry(shape, { depth: u(thickness), bevelEnabled: false });
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: u(thickness), bevelEnabled: false, steps: 1 });
   geo.rotateX(Math.PI / 2);
   geo.translate(0, -u(thickness) / 2, 0);
   return geo;
@@ -814,16 +783,16 @@ function buildSilhouetteGeometry(
 
 // ── Material profiles ─────────────────────────────────────────────────────────
 const MATERIALS = {
-  abs_hard:        { label: "ABS — Hard",          metalness: 0.05, roughness: 0.60, color: 0xdde0e8 },
-  rubber_soft:     { label: "Rubber — Soft",        metalness: 0.00, roughness: 0.95, color: 0x1e1e24 },
-  rubber_hard:     { label: "Rubber — Hard",        metalness: 0.00, roughness: 0.80, color: 0x2e2e3a },
-  metal_zinc:      { label: "Metal — Zinc Alloy",   metalness: 0.85, roughness: 0.25, color: 0xa0a4b8 },
-  metal_steel:     { label: "Metal — Steel",        metalness: 0.92, roughness: 0.15, color: 0xc8ccd8 },
-  bearing_steel:   { label: "Bearing Steel",        metalness: 0.98, roughness: 0.05, color: 0xe0e4f4 },
-  iron_powder_abs: { label: "Iron-Powder ABS",      metalness: 0.35, roughness: 0.50, color: 0x888898 },
-  nylon:           { label: "Nylon",                metalness: 0.00, roughness: 0.55, color: 0xf0ede0 },
-  polycarbonate:   { label: "Polycarbonate (PC)",   metalness: 0.00, roughness: 0.20, color: 0xe8f4fc },
-  pom:             { label: "POM — Delrin",         metalness: 0.08, roughness: 0.35, color: 0xf5f5f8 },
+  abs_hard:        { label: "ABS — Hard",          metalness: 0.05, roughness: 0.60, color: 0xd8d0c4 }, // warm grey plastic
+  rubber_soft:     { label: "Rubber — Soft",        metalness: 0.00, roughness: 0.95, color: 0x0c0c14 }, // near-black
+  rubber_hard:     { label: "Rubber — Hard",        metalness: 0.00, roughness: 0.80, color: 0x1e222e }, // very dark navy
+  metal_zinc:      { label: "Metal — Zinc Alloy",   metalness: 0.85, roughness: 0.25, color: 0x7a9098 }, // cool pewter
+  metal_steel:     { label: "Metal — Steel",        metalness: 0.92, roughness: 0.15, color: 0xb0c4d8 }, // blue-silver
+  bearing_steel:   { label: "Bearing Steel",        metalness: 0.98, roughness: 0.05, color: 0xd8eeff }, // bright chrome-blue
+  iron_powder_abs: { label: "Iron-Powder ABS",      metalness: 0.35, roughness: 0.50, color: 0x36363e }, // dark iron charcoal
+  nylon:           { label: "Nylon",                metalness: 0.00, roughness: 0.55, color: 0xe8d8a0 }, // warm beige
+  polycarbonate:   { label: "Polycarbonate (PC)",   metalness: 0.00, roughness: 0.20, color: 0x88c8f0 }, // clear blue
+  pom:             { label: "POM — Delrin",         metalness: 0.08, roughness: 0.35, color: 0xf8f4e8 }, // ivory white
 } as const;
 type MaterialId = keyof typeof MATERIALS;
 const DEFAULT_MAT: MaterialId = "abs_hard";
@@ -871,6 +840,25 @@ function buildRapierCollider(RAPIER: any, part: PartNode): any {
   }
 }
 
+// ── 2D silhouette editor types ────────────────────────────────────────────────
+interface SilhouetteArc {
+  id: string;
+  angleStart: number;  // 0–360°
+  angleEnd:   number;  // 0–360°
+  bendTheta:  number;  // degrees: + = flap up (upper attack), − = flap down (force smash)
+}
+
+interface SilhouetteSector {
+  id: string;
+  angleStart:      number;  // 0–360°
+  angleEnd:        number;  // 0–360°
+  innerRadiusMm:   number;  // mm from spin axis
+  outerRadiusMm:   number;  // mm from spin axis
+  extrudeHeightMm: number;  // + = protrudes up, − = recessed
+  bendTheta:       number;  // rigid joint bend at inner-radius hinge
+  material:        string;  // physics material id
+}
+
 // ── Part data model ───────────────────────────────────────────────────────────
 const PART_COLORS = [0x007fff,0xff8800,0x00cc66,0xcc44ff,0xffcc00,0xff44aa,0x00ddff,0xff4444,0x88ff44,0xff6600];
 
@@ -912,6 +900,9 @@ interface PartNode {
   decalAngle:     number;   // rotation in degrees
   // Silhouette contact points (2D outline deformations → reflected in 3D)
   silhouetteContactPoints: SilhouetteContactPoint[];
+  // 2D silhouette editor: arcs + sectors
+  silhouetteArcs:    SilhouetteArc[];
+  silhouetteSectors: SilhouetteSector[];
   // General texture (applies to any shape; wraps using built-in Three.js UV)
   textureUrl: string;
   // Merged (joined) fields
@@ -959,6 +950,8 @@ function sanitizePart(raw: Record<string, unknown>): PartNode {
     decalScale:     typeof raw.decalScale     === "number" ? raw.decalScale     : 0,
     decalAngle:     typeof raw.decalAngle     === "number" ? raw.decalAngle     : 0,
     silhouetteContactPoints: Array.isArray(raw.silhouetteContactPoints) ? (raw.silhouetteContactPoints as SilhouetteContactPoint[]) : [],
+    silhouetteArcs:    Array.isArray(raw.silhouetteArcs)    ? (raw.silhouetteArcs    as SilhouetteArc[])    : [],
+    silhouetteSectors: Array.isArray(raw.silhouetteSectors) ? (raw.silhouetteSectors as SilhouetteSector[]) : [],
     textureUrl:      typeof raw.textureUrl     === "string" ? raw.textureUrl     : "",
     mergedParts:     Array.isArray(raw.mergedParts) ? (raw.mergedParts as Record<string,unknown>[]).map(sanitizePart) : [],
   };
@@ -978,7 +971,7 @@ function makeAxisPart(): PartNode {
     weight: 0, partRole: "Spin Axis", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
     decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
-    silhouetteContactPoints: [],
+    silhouetteContactPoints: [], silhouetteArcs: [], silhouetteSectors: [],
     textureUrl: "", mergedParts: [],
   };
 }
@@ -997,7 +990,7 @@ function makePartNode(id: string, label: string, parentId: string | null, colorI
     weight: 0, partRole: "Other", silhouettePoints: [], silhouetteHoles: [], silhouetteImageUrl: "",
     silhouetteCx: 0, silhouetteCy: 0, silhouetteImgW: 0, silhouetteImgH: 0,
     decalSourceUrl: "", decalX: 0, decalY: 0, decalScale: 0, decalAngle: 0,
-    silhouetteContactPoints: [],
+    silhouetteContactPoints: [], silhouetteArcs: [], silhouetteSectors: [],
     textureUrl: "", mergedParts: [],
   };
 }
@@ -1168,6 +1161,642 @@ function TowerItem({
           onAddChild={onAddChild} onDelete={onDelete} onToggleVisible={onToggleVisible}
           onReparent={onReparent} dragOverId={dragOverId} onDragOver={onDragOver} onDragLeave={onDragLeave} />
       ))}
+    </div>
+  );
+}
+
+// ── Silhouette Aligner (center + rotate before tracing) ───────────────────────
+const SIL_ALIGNER_SIZE = 360;
+type SilAlignerState = { x: number; y: number; scale: number; angle: number };
+
+function SilhouetteAlignerModal({ sourceUrl, onConfirm, onCancel }: {
+  sourceUrl: string;
+  onConfirm: (alignedUrl: string) => void;
+  onCancel: () => void;
+}) {
+  const S = SIL_ALIGNER_SIZE;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef    = useRef<HTMLImageElement | null>(null);
+  const [st, setSt] = useState<SilAlignerState>({ x: 0, y: 0, scale: 1, angle: 0 });
+  const stRef = useRef(st);
+  useEffect(() => { stRef.current = st; }, [st]);
+
+  type DragMode = "move" | "scale" | null;
+  const dragRef = useRef<{ mode: DragMode; smx: number; smy: number; ss: SilAlignerState }>({
+    mode: null, smx: 0, smy: 0, ss: st,
+  });
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, S, S);
+    // checkerboard
+    for (let i = 0; i < S; i += 14)
+      for (let j = 0; j < S; j += 14) {
+        ctx.fillStyle = ((Math.floor(i/14)+Math.floor(j/14))%2===0) ? "#18182a" : "#222236";
+        ctx.fillRect(i, j, 14, 14);
+      }
+    // guide circle
+    ctx.beginPath(); ctx.arc(S/2, S/2, S*0.42, 0, Math.PI*2);
+    ctx.strokeStyle = "#334466"; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+    // image
+    const img = imgRef.current; const s = stRef.current;
+    if (img && s.scale > 0) {
+      const w = img.naturalWidth*s.scale, h = img.naturalHeight*s.scale;
+      const rad = s.angle * Math.PI/180;
+      const cx = S/2+s.x, cy = S/2+s.y;
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(rad); ctx.drawImage(img, -w/2, -h/2, w, h);
+      // corner scale handles
+      ctx.strokeStyle = "#007fff"; ctx.lineWidth = 1.5; ctx.strokeRect(-w/2, -h/2, w, h);
+      for (const [hx,hy] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]] as [number,number][]) {
+        ctx.beginPath(); ctx.arc(hx, hy, 6, 0, Math.PI*2);
+        ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = "#007fff"; ctx.lineWidth = 2; ctx.stroke();
+      }
+      ctx.restore();
+    }
+    // red center dot (fixed, always on top)
+    ctx.beginPath(); ctx.arc(S/2, S/2, 6, 0, Math.PI*2);
+    ctx.fillStyle = "#ff2222"; ctx.fill();
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.strokeStyle = "#ff222288"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(S/2-14, S/2); ctx.lineTo(S/2+14, S/2);
+    ctx.moveTo(S/2, S/2-14); ctx.lineTo(S/2, S/2+14);
+    ctx.stroke();
+  }, [S]);
+
+  useEffect(() => { draw(); }, [st, draw]);
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      imgRef.current = img;
+      const fitScale = (S*0.80) / Math.max(img.naturalWidth, img.naturalHeight);
+      const next: SilAlignerState = { x:0, y:0, scale:fitScale, angle:0 };
+      stRef.current = next; setSt(next);
+    };
+    img.src = sourceUrl;
+  }, [sourceUrl, S]);
+
+  function getPos(e: React.MouseEvent<HTMLCanvasElement>|React.TouchEvent<HTMLCanvasElement>): [number,number] {
+    const rect = (e.currentTarget as HTMLCanvasElement).getBoundingClientRect();
+    const sx = S/rect.width, sy = S/rect.height;
+    const src = "touches" in e ? (e as React.TouchEvent).touches[0] : (e as React.MouseEvent);
+    return [(src.clientX-rect.left)*sx, (src.clientY-rect.top)*sy];
+  }
+  function hitTest(mx: number, my: number): DragMode {
+    const img = imgRef.current; if (!img) return null;
+    const s = stRef.current;
+    const rad = s.angle*Math.PI/180, cx = S/2+s.x, cy = S/2+s.y;
+    const w = img.naturalWidth*s.scale, h = img.naturalHeight*s.scale;
+    const dx = mx-cx, dy = my-cy;
+    const lx = dx*Math.cos(-rad)-dy*Math.sin(-rad);
+    const ly = dx*Math.sin(-rad)+dy*Math.cos(-rad);
+    for (const [hx,hy] of [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]] as [number,number][])
+      if ((lx-hx)**2+(ly-hy)**2 < 144) return "scale";
+    if (Math.abs(lx)<w/2 && Math.abs(ly)<h/2) return "move";
+    return null;
+  }
+  function startDrag(mx: number, my: number) {
+    const mode = hitTest(mx, my);
+    if (mode) dragRef.current = { mode, smx:mx, smy:my, ss:{...stRef.current} };
+  }
+  function moveDrag(mx: number, my: number) {
+    const {mode, smx, smy, ss} = dragRef.current; if (!mode) return;
+    const cx = S/2+ss.x, cy = S/2+ss.y;
+    if (mode === "move") {
+      setSt(p => ({...p, x:ss.x+(mx-smx), y:ss.y+(my-smy)}));
+    } else {
+      const d0 = Math.sqrt((smx-cx)**2+(smy-cy)**2)||1;
+      const d1 = Math.sqrt((mx-cx)**2+(my-cy)**2);
+      setSt(p => ({...p, scale:Math.max(0.01, ss.scale*(d1/d0))}));
+    }
+  }
+  const endDrag = () => { dragRef.current.mode = null; };
+
+  function handleConfirm() {
+    const img = imgRef.current; if (!img) return;
+    const OUT = 1024; const ratio = OUT/S;
+    const out = document.createElement("canvas"); out.width = out.height = OUT;
+    const ctx = out.getContext("2d")!;
+    const s = stRef.current;
+    const w = img.naturalWidth*s.scale*ratio, h = img.naturalHeight*s.scale*ratio;
+    const rad = s.angle*Math.PI/180;
+    ctx.save();
+    ctx.translate(OUT/2+s.x*ratio, OUT/2+s.y*ratio);
+    ctx.rotate(rad);
+    ctx.drawImage(img, -w/2, -h/2, w, h);
+    ctx.restore();
+    onConfirm(out.toDataURL("image/png"));
+  }
+
+  const btnBase: React.CSSProperties = {
+    background:"#0a0a18", border:"1px solid #1a2244", color:"#aaccff",
+    borderRadius:4, padding:"4px 10px", fontFamily:"monospace", fontSize:11, cursor:"pointer",
+  };
+
+  return (
+    <div style={{
+      position:"fixed", inset:0, background:"rgba(0,0,0,0.82)", zIndex:9000,
+      display:"flex", alignItems:"center", justifyContent:"center",
+    }}>
+      <div style={{
+        background:"#0a0a1a", border:"1px solid #1a2244", borderRadius:10,
+        padding:16, display:"flex", flexDirection:"column", gap:10, width:S+32,
+      }}>
+        <div style={{ color:"#aaccff", fontFamily:"monospace", fontSize:12, fontWeight:700, letterSpacing:1 }}>
+          Align Center
+          <span style={{ color:"#445566", fontWeight:400, fontSize:10, marginLeft:8 }}>
+            drag to pan · corners to scale · spin to find center
+          </span>
+        </div>
+
+        <canvas ref={canvasRef} width={S} height={S}
+          style={{ width:S, height:S, borderRadius:6, border:"1px solid #1a2244", cursor:"crosshair", display:"block" }}
+          onMouseDown={e => { const [mx,my]=getPos(e); startDrag(mx,my); e.preventDefault(); }}
+          onMouseMove={e => { const [mx,my]=getPos(e); moveDrag(mx,my); }}
+          onMouseUp={endDrag}
+          onMouseLeave={endDrag}
+          onTouchStart={e => { const [mx,my]=getPos(e); startDrag(mx,my); }}
+          onTouchMove={e => { const [mx,my]=getPos(e); moveDrag(mx,my); e.preventDefault(); }}
+          onTouchEnd={endDrag}
+        />
+
+        {/* Rotate controls */}
+        <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+          <button style={btnBase} onClick={() => setSt(p => ({...p, angle:p.angle-90}))}>↺ 90°</button>
+          <button style={btnBase} onClick={() => setSt(p => ({...p, angle:p.angle-1}))}>−1°</button>
+          <input type="range" min={-180} max={180} step={0.5}
+            value={st.angle}
+            onChange={e => setSt(p => ({...p, angle:parseFloat(e.target.value)}))}
+            style={{ flex:1, accentColor:"#4488ff" }}
+          />
+          <button style={btnBase} onClick={() => setSt(p => ({...p, angle:p.angle+1}))}>+1°</button>
+          <button style={btnBase} onClick={() => setSt(p => ({...p, angle:p.angle+90}))}>+90° ↻</button>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:6, justifyContent:"center" }}>
+          <span style={{ color:"#445566", fontFamily:"monospace", fontSize:10 }}>
+            {st.angle.toFixed(1)}°
+          </span>
+          <button style={{...btnBase, fontSize:10, padding:"2px 8px"}}
+            onClick={() => setSt(p => ({...p, angle:0}))}>Reset rotation</button>
+        </div>
+
+        {/* Confirm / Cancel */}
+        <div style={{ display:"flex", gap:8 }}>
+          <button style={{...btnBase, flex:1}} onClick={onCancel}>Cancel</button>
+          <button style={{...btnBase, flex:2, background:"#0d2a1a", border:"1px solid #2a6a44", color:"#44cc88", fontWeight:700}}
+            onClick={handleConfirm}>Trace silhouette →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Silhouette 2D Editor ──────────────────────────────────────────────────────
+const SIL_EDITOR_SIZE   = 460;
+const SEP_COLORS        = ["#ff6644","#44cc88","#4488ff","#ffcc44","#cc44ff","#44ccff"];
+
+function SilhouetteEditorModal({
+  initialOutline, initialHoles, initialArcs, initialSectors, diameterMm,
+  onConfirm, onCancel,
+}: {
+  initialOutline:  [number,number][];
+  initialHoles:    [number,number][][];
+  initialArcs:     SilhouetteArc[];
+  initialSectors:  SilhouetteSector[];
+  diameterMm:      number;
+  onConfirm: (outline: [number,number][], arcs: SilhouetteArc[], sectors: SilhouetteSector[]) => void;
+  onCancel:  () => void;
+}) {
+  const S = SIL_EDITOR_SIZE;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [outline,    setOutline]    = useState<[number,number][]>(() => [...initialOutline]);
+  const [arcs,       setArcs]       = useState<SilhouetteArc[]>(initialArcs);
+  const [sectors,    setSectors]    = useState<SilhouetteSector[]>(initialSectors);
+  const [tool,       setTool]       = useState<"points"|"eraser"|"arcs"|"sectors">("points");
+  const [selectedId, setSelectedId] = useState<string|null>(null);
+
+  // Refs so event handlers always see current state without re-binding
+  const outlineRef   = useRef(outline);
+  const arcsRef      = useRef(arcs);
+  const sectorsRef   = useRef(sectors);
+  const selIdRef     = useRef(selectedId);
+  const toolRef      = useRef(tool);
+  useEffect(() => { outlineRef.current   = outline;    }, [outline]);
+  useEffect(() => { arcsRef.current      = arcs;       }, [arcs]);
+  useEffect(() => { sectorsRef.current   = sectors;    }, [sectors]);
+  useEffect(() => { selIdRef.current     = selectedId; }, [selectedId]);
+  useEffect(() => { toolRef.current      = tool;       }, [tool]);
+
+  // Scale: raw outline pixels → canvas pixels
+  const maxR     = useMemo(() => initialOutline.reduce((m,[x,y]) => Math.max(m,Math.sqrt(x*x+y*y)),1), [initialOutline]);
+  const CANVAS_R = S * 0.42;
+  const ds       = CANVAS_R / maxR;           // outline-px → canvas-px
+  const pxPerMm  = CANVAS_R / (diameterMm/2); // mm → canvas-px
+
+  const toC   = (x: number, y: number): [number,number] => [S/2+x*ds, S/2-y*ds];
+  const fromC = (cx: number, cy: number): [number,number] => [(cx-S/2)/ds, -(cy-S/2)/ds];
+
+  // ── Draw ────────────────────────────────────────────────────────────────────
+  function drawCanvas() {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx    = canvas.getContext("2d")!;
+    ctx.clearRect(0,0,S,S);
+
+    // checkerboard
+    for (let i=0;i<S;i+=14) for (let j=0;j<S;j+=14) {
+      ctx.fillStyle=((Math.floor(i/14)+Math.floor(j/14))%2===0)?"#18182a":"#222236";
+      ctx.fillRect(i,j,14,14);
+    }
+
+    // guide rings at 25/50/75/100% radius
+    ctx.setLineDash([3,3]);
+    [0.25,0.5,0.75,1.0].forEach(f => {
+      ctx.beginPath(); ctx.arc(S/2,S/2,CANVAS_R*f,0,Math.PI*2);
+      ctx.strokeStyle="#223344"; ctx.lineWidth=1; ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    const ol  = outlineRef.current;
+    const ar  = arcsRef.current;
+    const sc  = sectorsRef.current;
+    const sid = selIdRef.current;
+
+    // ── Sector overlays (behind outline)
+    sc.forEach((sec,i) => {
+      const col   = SEP_COLORS[i%SEP_COLORS.length];
+      const isSel = sec.id === sid;
+      const aS    = sec.angleStart * Math.PI/180;
+      const aE    = sec.angleEnd   * Math.PI/180;
+      const rIn   = Math.max(0, sec.innerRadiusMm * pxPerMm);
+      const rOut  = Math.min(sec.outerRadiusMm * pxPerMm, CANVAS_R * 1.2);
+      // Canvas angles go clockwise; our angles go counter-clockwise → negate
+      ctx.beginPath();
+      ctx.arc(S/2,S/2, rOut, -aS, -aE, true);
+      ctx.arc(S/2,S/2, rIn,  -aE, -aS, false);
+      ctx.closePath();
+      ctx.globalAlpha = isSel ? 0.45 : 0.22;
+      ctx.fillStyle   = col;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = col;
+      ctx.lineWidth   = isSel ? 2 : 1;
+      ctx.stroke();
+    });
+
+    // ── Arc overlays (thick band just outside the outline boundary)
+    ar.forEach((arc,i) => {
+      const col   = SEP_COLORS[i%SEP_COLORS.length];
+      const isSel = arc.id === sid;
+      const aS    = -arc.angleStart * Math.PI/180;
+      const aE    = -arc.angleEnd   * Math.PI/180;
+      const ccw   = arc.angleEnd > arc.angleStart;
+      ctx.beginPath();
+      ctx.arc(S/2,S/2, CANVAS_R+6, aS, aE, ccw);
+      ctx.strokeStyle = col;
+      ctx.lineWidth   = isSel ? 8 : 5;
+      ctx.globalAlpha = isSel ? 0.95 : 0.65;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    });
+
+    // ── Outline
+    if (ol.length > 2) {
+      ctx.beginPath();
+      ol.forEach(([x,y],idx) => {
+        const [cx,cy] = toC(x,y);
+        if (idx===0) ctx.moveTo(cx,cy); else ctx.lineTo(cx,cy);
+      });
+      ctx.closePath();
+      for (const hole of initialHoles) {
+        hole.forEach(([x,y],idx) => {
+          const [cx,cy] = toC(x,y);
+          if (idx===0) ctx.moveTo(cx,cy); else ctx.lineTo(cx,cy);
+        });
+        ctx.closePath();
+      }
+      ctx.globalAlpha=0.15; ctx.fillStyle="#4477cc"; ctx.fill("evenodd"); ctx.globalAlpha=1;
+      ctx.strokeStyle="#6699ffcc"; ctx.lineWidth=1.5; ctx.stroke();
+    }
+
+    // ── Point handles (points or eraser mode)
+    const t = toolRef.current;
+    if (t === "points" || t === "eraser") {
+      const hStep = Math.max(1, Math.floor(ol.length/48));
+      for (let i=0;i<ol.length;i+=hStep) {
+        const [cx,cy] = toC(ol[i][0],ol[i][1]);
+        ctx.beginPath(); ctx.arc(cx,cy, t==="eraser"?5:4, 0, Math.PI*2);
+        ctx.fillStyle  = t==="eraser" ? "#ff8844" : "#88aaff";
+        ctx.fill();
+        ctx.strokeStyle="#ffffff44"; ctx.lineWidth=1; ctx.stroke();
+      }
+    }
+
+    // ── Center dot
+    ctx.beginPath(); ctx.arc(S/2,S/2,5,0,Math.PI*2);
+    ctx.fillStyle="#ff2222"; ctx.fill();
+    ctx.strokeStyle="#fff"; ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  useEffect(() => { drawCanvas(); }, [outline, arcs, sectors, tool, selectedId]); // eslint-disable-line
+
+  // ── Canvas interactions ──────────────────────────────────────────────────────
+  const dragRef = useRef<{
+    active: boolean; hIdx: number;
+    startCX: number; startCY: number;
+    origOutline: [number,number][];
+  }>({ active:false, hIdx:-1, startCX:0, startCY:0, origOutline:[] });
+
+  function getPos(e: React.MouseEvent<HTMLCanvasElement>|React.TouchEvent<HTMLCanvasElement>): [number,number] {
+    const rect = (e.currentTarget as HTMLCanvasElement).getBoundingClientRect();
+    const sx = S/rect.width, sy = S/rect.height;
+    const src = "touches" in e ? (e as React.TouchEvent).touches[0] : (e as React.MouseEvent);
+    return [(src.clientX-rect.left)*sx, (src.clientY-rect.top)*sy];
+  }
+
+  function findNearestHandle(cx: number, cy: number, ol: [number,number][]): number {
+    const hStep = Math.max(1, Math.floor(ol.length/48));
+    let bestD = Infinity, bestHIdx = -1;
+    for (let i=0;i<ol.length;i+=hStep) {
+      const [hx,hy] = toC(ol[i][0],ol[i][1]);
+      const d = (cx-hx)**2+(cy-hy)**2;
+      if (d<bestD) { bestD=d; bestHIdx=Math.floor(i/hStep); }
+    }
+    return bestD < 144 ? bestHIdx : -1; // 12px threshold
+  }
+
+  function onMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
+    const t = toolRef.current;
+    if (t !== "points" && t !== "eraser") return;
+    const [cx,cy] = getPos(e);
+    const ol = outlineRef.current;
+    const hStep = Math.max(1,Math.floor(ol.length/48));
+    const hIdx  = findNearestHandle(cx,cy,ol);
+    if (hIdx >= 0) {
+      dragRef.current = {
+        active:true, hIdx, startCX:cx, startCY:cy,
+        origOutline: ol.map(p=>[p[0],p[1]] as [number,number]),
+      };
+      e.preventDefault();
+    }
+  }
+
+  function onMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
+    const dr = dragRef.current;
+    if (!dr.active) return;
+    const t = toolRef.current;
+    const [cx,cy] = getPos(e);
+    const ol = dr.origOutline;
+    const n  = ol.length;
+    const hStep  = Math.max(1,Math.floor(n/48));
+    const ptIdx  = dr.hIdx * hStep;
+    const sigma  = hStep * 2.5;
+
+    if (t === "points") {
+      // Stretch/compress: move handle region in canvas-space delta
+      const ddx = (cx-dr.startCX)/ds;
+      const ddy = -(cy-dr.startCY)/ds;
+      const newOl: [number,number][] = ol.map((pt,i) => {
+        const dist = Math.min(Math.abs(i-ptIdx), n-Math.abs(i-ptIdx));
+        const w    = Math.exp(-(dist*dist)/(2*sigma*sigma));
+        return [pt[0]+ddx*w, pt[1]+ddy*w];
+      });
+      setOutline(newOl);
+    } else if (t === "eraser") {
+      // Eraser: blend handle region back toward the original radius (shrink bumps)
+      const [ox,oy] = fromC(cx,cy);
+      const eraseR  = 20/ds; // eraser radius in outline-space
+      const newOl: [number,number][] = ol.map((pt,i) => {
+        const dx = pt[0]-ox, dy = pt[1]-oy;
+        const d  = Math.sqrt(dx*dx+dy*dy);
+        if (d > eraseR) return pt;
+        const origR   = Math.sqrt(pt[0]**2+pt[1]**2)||0.0001;
+        // Blend toward a smoothed radius (average of neighbors within sigma)
+        const dist = Math.min(Math.abs(i-ptIdx), n-Math.abs(i-ptIdx));
+        const w    = Math.exp(-(dist*dist)/(2*sigma*sigma)) * (1-d/eraseR);
+        const targetR = maxR * 0.8; // pull back toward 80% of max
+        const newR    = origR + (targetR-origR)*w*0.3;
+        return [pt[0]/origR*newR, pt[1]/origR*newR] as [number,number];
+      });
+      setOutline(newOl);
+    }
+  }
+
+  function onMouseUp()    { dragRef.current.active = false; }
+  function onTouchStart(e: React.TouchEvent<HTMLCanvasElement>) { onMouseDown(e as unknown as React.MouseEvent<HTMLCanvasElement>); }
+  function onTouchMove(e: React.TouchEvent<HTMLCanvasElement>)  { onMouseMove(e as unknown as React.MouseEvent<HTMLCanvasElement>); e.preventDefault(); }
+  function onTouchEnd()   { dragRef.current.active = false; }
+
+  // ── Styles helpers
+  const toolBtn = (active: boolean): React.CSSProperties => ({
+    flex:1, padding:"5px 0", fontFamily:"monospace", fontSize:10,
+    background: active?"#1a3366":"#0a0a18", color: active?"#aaddff":"#445566",
+    border: active?"1px solid #3366cc":"1px solid #1a2244", borderRadius:4, cursor:"pointer",
+  });
+  const smBtn: React.CSSProperties = {
+    background:"#0a0a18", border:"1px solid #1a2244", color:"#aaccff",
+    borderRadius:4, padding:"3px 8px", fontFamily:"monospace", fontSize:10, cursor:"pointer",
+  };
+
+  return (
+    <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,0.86)",zIndex:9100,display:"flex",alignItems:"center",justifyContent:"center" }}>
+      <div style={{ background:"#0a0a1a",border:"1px solid #1a2244",borderRadius:10,display:"flex",flexDirection:"column",maxWidth:"92vw",maxHeight:"94vh",overflow:"hidden" }}>
+
+        {/* Title */}
+        <div style={{ padding:"8px 14px",borderBottom:"1px solid #1a2244",color:"#aaccff",fontFamily:"monospace",fontSize:12,fontWeight:700,letterSpacing:1,flexShrink:0 }}>
+          2D Silhouette Editor
+        </div>
+
+        <div style={{ display:"flex",flex:1,overflow:"hidden" }}>
+
+          {/* Canvas */}
+          <canvas ref={canvasRef} width={S} height={S}
+            style={{ width:S,height:S,display:"block",flexShrink:0,
+              cursor: tool==="eraser"?"cell" : tool==="points"?"crosshair" : "default" }}
+            onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
+            onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+          />
+
+          {/* Right panel */}
+          <div style={{ width:300,display:"flex",flexDirection:"column",borderLeft:"1px solid #1a2244",overflow:"hidden" }}>
+
+            {/* Tool selector */}
+            <div style={{ display:"flex",gap:4,padding:"8px 10px",borderBottom:"1px solid #1a2244",flexShrink:0 }}>
+              <button style={toolBtn(tool==="points")}  onClick={()=>{setTool("points");setSelectedId(null);}}>Points</button>
+              <button style={toolBtn(tool==="eraser")}  onClick={()=>{setTool("eraser");setSelectedId(null);}}>Eraser</button>
+              <button style={toolBtn(tool==="arcs")}    onClick={()=>setTool("arcs")}>Arcs</button>
+              <button style={toolBtn(tool==="sectors")} onClick={()=>setTool("sectors")}>Sectors</button>
+            </div>
+
+            {/* Tool content */}
+            <div style={{ flex:1,overflowY:"auto",padding:"10px" }}>
+
+              {/* ── Points ── */}
+              {tool==="points" && (
+                <div>
+                  <div style={{ color:"#445566",fontSize:9,lineHeight:1.8,marginBottom:8 }}>
+                    Drag a blue handle to stretch or compress that region of the outline.
+                    Influence fades smoothly to neighbouring points.
+                  </div>
+                  <button style={{...smBtn,display:"block",width:"100%"}} onClick={()=>setOutline([...initialOutline])}>
+                    ↺ Reset outline
+                  </button>
+                </div>
+              )}
+
+              {/* ── Eraser ── */}
+              {tool==="eraser" && (
+                <div>
+                  <div style={{ color:"#445566",fontSize:9,lineHeight:1.8,marginBottom:8 }}>
+                    Drag over a region to smooth away extra traced bumps — pulls that area back toward a natural radius.
+                  </div>
+                  <button style={{...smBtn,display:"block",width:"100%"}} onClick={()=>setOutline([...initialOutline])}>
+                    ↺ Reset outline
+                  </button>
+                </div>
+              )}
+
+              {/* ── Arcs ── */}
+              {tool==="arcs" && (
+                <div>
+                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
+                    <span style={{color:"#5577aa",fontSize:10}}>Arcs ({arcs.length})</span>
+                    <button style={smBtn} onClick={()=>{
+                      const id=`arc_${Date.now()}`;
+                      setArcs(prev=>[...prev,{id,angleStart:0,angleEnd:90,bendTheta:20}]);
+                      setSelectedId(id);
+                    }}>+ Add arc</button>
+                  </div>
+                  {arcs.map((arc,i) => {
+                    const col   = SEP_COLORS[i%SEP_COLORS.length];
+                    const isSel = arc.id===selectedId;
+                    return (
+                      <div key={arc.id}
+                        onClick={()=>setSelectedId(isSel?null:arc.id)}
+                        style={{ background:isSel?"rgba(26,51,102,0.5)":"rgba(10,14,28,0.5)",
+                          border:`1px solid ${col}44`, borderRadius:5, padding:"6px 8px", marginBottom:6, cursor:"pointer" }}>
+                        <div style={{ display:"flex",alignItems:"center",gap:4 }}>
+                          <span style={{ width:9,height:9,borderRadius:"50%",background:col,display:"inline-block",flexShrink:0 }}/>
+                          <span style={{color:"#aaccff",fontSize:10,flex:1}}>
+                            Arc {i+1} · {arc.angleStart}°→{arc.angleEnd}° · θ{arc.bendTheta>=0?"+":""}{arc.bendTheta}°
+                          </span>
+                          <button onClick={e=>{e.stopPropagation();setArcs(p=>p.filter(a=>a.id!==arc.id));if(selectedId===arc.id)setSelectedId(null);}}
+                            style={{background:"#2a0a0a",border:"1px solid #552222",color:"#cc4444",borderRadius:3,padding:"1px 5px",fontSize:10,cursor:"pointer"}}>×</button>
+                        </div>
+                        {isSel && (
+                          <div style={{marginTop:6}} onClick={e=>e.stopPropagation()}>
+                            {([
+                              {label:"Arc start",  key:"angleStart" as const, min:0,   max:360, step:1,  unit:"°", hint:"Start of the angular region (0° = 3 o'clock, CCW positive)"},
+                              {label:"Arc end",    key:"angleEnd"   as const, min:0,   max:360, step:1,  unit:"°", hint:"End of the angular region — set a wide range to cover a whole blade arm"},
+                              {label:"Bend θ",     key:"bendTheta"  as const, min:-90, max:90,  step:1,  unit:"°", hint:"Hinge at the arc base: + flaps the arm upward (upper attack), − pushes it downward (force smash)"},
+                            ]).map(({label,key,min,max,step,unit,hint}) => (
+                              <div key={key} style={{marginBottom:5}}>
+                                <div style={{display:"flex",justifyContent:"space-between",color:"#445577",fontSize:9,marginBottom:1}}>
+                                  <span>{label}</span><span style={{color:"#8899bb"}}>{arc[key]}{unit}</span>
+                                </div>
+                                <input type="range" min={min} max={max} step={step} value={arc[key]}
+                                  onChange={e=>setArcs(prev=>prev.map(a=>a.id===arc.id?{...a,[key]:parseFloat(e.target.value)}:a))}
+                                  style={{width:"100%",accentColor:col}} />
+                                <div style={{color:"#33445566",fontSize:8,marginTop:1,fontStyle:"italic"}}>{hint}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* ── Sectors ── */}
+              {tool==="sectors" && (
+                <div>
+                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
+                    <span style={{color:"#5577aa",fontSize:10}}>Sectors ({sectors.length})</span>
+                    <button style={smBtn} onClick={()=>{
+                      const id=`sec_${Date.now()}`;
+                      const dOut = diameterMm/2, dIn = dOut*0.5;
+                      setSectors(prev=>[...prev,{id,angleStart:0,angleEnd:90,innerRadiusMm:dIn,outerRadiusMm:dOut,extrudeHeightMm:2,bendTheta:0,material:"abs_hard"}]);
+                      setSelectedId(id);
+                    }}>+ Add sector</button>
+                  </div>
+                  {sectors.map((sec,i) => {
+                    const col   = SEP_COLORS[i%SEP_COLORS.length];
+                    const isSel = sec.id===selectedId;
+                    return (
+                      <div key={sec.id}
+                        onClick={()=>setSelectedId(isSel?null:sec.id)}
+                        style={{ background:isSel?"rgba(26,51,102,0.5)":"rgba(10,14,28,0.5)",
+                          border:`1px solid ${col}44`, borderRadius:5, padding:"6px 8px", marginBottom:6, cursor:"pointer" }}>
+                        <div style={{ display:"flex",alignItems:"center",gap:4 }}>
+                          <span style={{ width:9,height:9,borderRadius:"50%",background:col,display:"inline-block",flexShrink:0 }}/>
+                          <span style={{color:"#aaccff",fontSize:10,flex:1}}>
+                            Sector {i+1} · {sec.angleStart}°→{sec.angleEnd}° · {sec.innerRadiusMm.toFixed(1)}–{sec.outerRadiusMm.toFixed(1)}mm
+                          </span>
+                          <button onClick={e=>{e.stopPropagation();setSectors(p=>p.filter(s=>s.id!==sec.id));if(selectedId===sec.id)setSelectedId(null);}}
+                            style={{background:"#2a0a0a",border:"1px solid #552222",color:"#cc4444",borderRadius:3,padding:"1px 5px",fontSize:10,cursor:"pointer"}}>×</button>
+                        </div>
+                        {isSel && (
+                          <div style={{marginTop:6}} onClick={e=>e.stopPropagation()}>
+                            {([
+                              {label:"Arc start",     key:"angleStart"      as const, min:0,              max:360,           step:1,   unit:"°",  hint:"Wedge start angle (0° = 3 o'clock, CCW positive)"},
+                              {label:"Arc end",       key:"angleEnd"        as const, min:0,              max:360,           step:1,   unit:"°",  hint:"Wedge end angle — the sector spans from start to end counterclockwise"},
+                              {label:"Inner radius",  key:"innerRadiusMm"   as const, min:0,              max:diameterMm/2,  step:0.5, unit:"mm", hint:"Distance from spin axis to the inner edge of this annular wedge"},
+                              {label:"Outer radius",  key:"outerRadiusMm"   as const, min:0,              max:diameterMm,    step:0.5, unit:"mm", hint:"Distance from spin axis to the outer edge — keep ≤ part diameter/2"},
+                              {label:"Extrude height",key:"extrudeHeightMm" as const, min:-10,            max:10,            step:0.5, unit:"mm", hint:"+ raises this wedge above the base disc; − recesses it below"},
+                              {label:"Bend θ (joint)",key:"bendTheta"       as const, min:-90,            max:90,            step:1,   unit:"°",  hint:"Rigid-joint bend at the inner edge: + tips the wedge upward, − downward"},
+                            ]).map(({label,key,min,max,step,unit,hint}) => (
+                              <div key={key} style={{marginBottom:5}}>
+                                <div style={{display:"flex",justifyContent:"space-between",color:"#445577",fontSize:9,marginBottom:1}}>
+                                  <span>{label}</span><span style={{color:"#8899bb"}}>{(sec[key] as number).toFixed(key==="bendTheta"||key==="angleStart"||key==="angleEnd"?0:1)}{unit}</span>
+                                </div>
+                                <input type="range" min={min} max={max} step={step} value={sec[key] as number}
+                                  onChange={e=>setSectors(prev=>prev.map(s=>s.id===sec.id?{...s,[key]:parseFloat(e.target.value)}:s))}
+                                  style={{width:"100%",accentColor:col}} />
+                                <div style={{color:"#33445566",fontSize:8,marginTop:1,fontStyle:"italic"}}>{hint}</div>
+                              </div>
+                            ))}
+                            {/* Material */}
+                            <div style={{marginBottom:4,color:"#445577",fontSize:9,marginTop:2}}>Material</div>
+                            <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+                              {(["abs_hard","rubber_soft","metal_zinc","pom","polycarbonate"] as const).map(m=>(
+                                <button key={m}
+                                  onClick={()=>setSectors(prev=>prev.map(s=>s.id===sec.id?{...s,material:m}:s))}
+                                  style={{
+                                    padding:"2px 5px",fontSize:9,fontFamily:"monospace",
+                                    background:sec.material===m?"#1a3366":"#0a0a18",
+                                    color:sec.material===m?"#aaddff":"#445566",
+                                    border:sec.material===m?"1px solid #3366cc":"1px solid #1a2244",
+                                    borderRadius:3,cursor:"pointer",
+                                  }}>{m.replace("_hard","").replace("_soft","").replace("_zinc","")}</button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+            </div>{/* end tool content */}
+
+            {/* Confirm / Cancel */}
+            <div style={{ padding:"8px 10px",borderTop:"1px solid #1a2244",display:"flex",gap:6,flexShrink:0 }}>
+              <button style={{flex:1,background:"#0a0a18",border:"1px solid #1a2244",color:"#aaccff",borderRadius:4,padding:"6px 0",fontFamily:"monospace",fontSize:11,cursor:"pointer"}} onClick={onCancel}>
+                Cancel
+              </button>
+              <button style={{flex:2,background:"#0d2a1a",border:"1px solid #2a6a44",color:"#44cc88",borderRadius:4,padding:"6px 0",fontFamily:"monospace",fontSize:11,fontWeight:700,cursor:"pointer"}}
+                onClick={()=>onConfirm(outline,arcs,sectors)}>
+                Apply to 3D →
+              </button>
+            </div>
+
+          </div>{/* end right panel */}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1506,6 +2135,13 @@ export function BeybladeRendererPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [spinning,   setSpinning]   = useState(false);
   const [beyTilt,    setBeyTilt]    = useState(0);  // degrees — how much the spin axis leans
+  // Silhouette aligner
+  const [silAlignerSrc,     setSilAlignerSrc]     = useState<string | null>(null);
+  const [silAlignerPartId,  setSilAlignerPartId]  = useState<string | null>(null);
+  const [silAlignerIsFirst, setSilAlignerIsFirst] = useState(false);
+  // Silhouette 2D editor
+  const [silEditorPartId, setSilEditorPartId] = useState<string | null>(null);
+
   // Decal editor
   const [decalEditorPartId, setDecalEditorPartId] = useState<string | null>(null);
   const [decalEditorSrc,    setDecalEditorSrc]    = useState("");
@@ -2513,19 +3149,9 @@ export function BeybladeRendererPage() {
                               reader.onload = ev => {
                                 const url = ev.target?.result as string;
                                 if (!url) return;
-                                const img = new Image();
-                                img.onload = () => {
-                                  const { outline, holes, cx, cy, imgW, imgH } = extractSilhouettePoints(img);
-                                  if (outline.length > 2) updatePart(selectedPart.id, {
-                                    silhouettePoints: outline,
-                                    silhouetteHoles: holes,
-                                    silhouetteImageUrl: url,
-                                    silhouetteCx: cx, silhouetteCy: cy,
-                                    silhouetteImgW: imgW, silhouetteImgH: imgH,
-                                    color: extractDominantColor(img),
-                                  });
-                                };
-                                img.src = url;
+                                setSilAlignerSrc(url);
+                                setSilAlignerPartId(selectedPart.id);
+                                setSilAlignerIsFirst(false);
                               };
                               reader.readAsDataURL(file);
                               e.target.value = "";
@@ -2548,6 +3174,13 @@ export function BeybladeRendererPage() {
                           ↩ Reset shape
                         </button>
                       </div>
+                      <button
+                        onClick={() => setSilEditorPartId(selectedPart.id)}
+                        style={{
+                          display:"block", width:"100%", marginBottom:6,
+                          background:"#0d1e36", border:"1px solid #2a4a7a", color:"#5588cc",
+                          borderRadius:4, padding:"5px 0", fontFamily:"monospace", fontSize:10, cursor:"pointer",
+                        }}>✎ Edit 2D shape</button>
                       <div style={{ color:"#334455", fontSize:9 }}>
                         {selectedPart.silhouettePoints.length} outline pts
                         {selectedPart.silhouetteHoles.length > 0 &&
@@ -2628,23 +3261,9 @@ export function BeybladeRendererPage() {
                             reader.onload = ev => {
                               const url = ev.target?.result as string;
                               if (!url) return;
-                              const img = new Image();
-                              img.onload = () => {
-                                const { outline, holes, cx, cy, imgW, imgH } = extractSilhouettePoints(img);
-                                if (outline.length > 2) {
-                                  updatePart(selectedPart.id, {
-                                    shape: "silhouette",
-                                    silhouettePoints: outline,
-                                    silhouetteHoles: holes,
-                                    silhouetteImageUrl: url,
-                                    silhouetteCx: cx, silhouetteCy: cy,
-                                    silhouetteImgW: imgW, silhouetteImgH: imgH,
-                                    shapeParams: defaultShapeParams("silhouette"),
-                                    color: extractDominantColor(img),
-                                  });
-                                }
-                              };
-                              img.src = url;
+                              setSilAlignerSrc(url);
+                              setSilAlignerPartId(selectedPart.id);
+                              setSilAlignerIsFirst(true);
                             };
                             reader.readAsDataURL(file);
                             e.target.value = "";
@@ -2778,7 +3397,7 @@ export function BeybladeRendererPage() {
                     const active = selectedPart.materialId === id;
                     const swatch = "#" + mat.color.toString(16).padStart(6, "0");
                     return (
-                      <div key={id} onClick={() => updatePart(selectedPart.id, { materialId: id })}
+                      <div key={id} onClick={() => updatePart(selectedPart.id, { materialId: id, color: "#" + mat.color.toString(16).padStart(6, "0") })}
                         style={{
                           display:"flex", alignItems:"center", gap:8,
                           padding:"6px 8px", marginBottom:4, borderRadius:5, cursor:"pointer",
@@ -3027,6 +3646,60 @@ export function BeybladeRendererPage() {
               setDecalEditorPartId(null);
             }}
             onCancel={() => setDecalEditorPartId(null)}
+          />
+        );
+      })()}
+
+      {/* ── Silhouette aligner modal ── */}
+      {silAlignerSrc && silAlignerPartId && (
+        <SilhouetteAlignerModal
+          sourceUrl={silAlignerSrc}
+          onConfirm={alignedUrl => {
+            const partId = silAlignerPartId!;
+            const isFirst = silAlignerIsFirst;
+            setSilAlignerSrc(null); setSilAlignerPartId(null);
+            const img = new Image();
+            img.onload = () => {
+              const { outline, holes, cx, cy, imgW, imgH } = extractSilhouettePoints(img, 2160, img.naturalWidth / 2, img.naturalHeight / 2);
+              if (outline.length > 2) {
+                updatePart(partId, {
+                  ...(isFirst ? { shape: "silhouette", shapeParams: defaultShapeParams("silhouette") } : {}),
+                  silhouettePoints: outline,
+                  silhouetteHoles: holes,
+                  silhouetteImageUrl: alignedUrl,
+                  silhouetteCx: cx, silhouetteCy: cy,
+                  silhouetteImgW: imgW, silhouetteImgH: imgH,
+                  color: extractDominantColor(img),
+                });
+                setSilEditorPartId(partId);
+              }
+            };
+            img.src = alignedUrl;
+          }}
+          onCancel={() => { setSilAlignerSrc(null); setSilAlignerPartId(null); }}
+        />
+      )}
+
+      {/* ── Silhouette 2D editor modal ── */}
+      {silEditorPartId && (() => {
+        const edPart = parts.find(p => p.id === silEditorPartId);
+        if (!edPart || edPart.silhouettePoints.length < 3) { setSilEditorPartId(null); return null; }
+        return (
+          <SilhouetteEditorModal
+            initialOutline={edPart.silhouettePoints}
+            initialHoles={edPart.silhouetteHoles}
+            initialArcs={edPart.silhouetteArcs}
+            initialSectors={edPart.silhouetteSectors}
+            diameterMm={edPart.shapeParams.diameter_mm ?? 40}
+            onConfirm={(outline, arcs, sectors) => {
+              updatePart(silEditorPartId, {
+                silhouettePoints: outline,
+                silhouetteArcs:   arcs,
+                silhouetteSectors: sectors,
+              });
+              setSilEditorPartId(null);
+            }}
+            onCancel={() => setSilEditorPartId(null)}
           />
         );
       })()}

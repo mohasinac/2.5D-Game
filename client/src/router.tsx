@@ -5,6 +5,7 @@ import { AdminRoute } from "./components/auth/AdminRoute";
 
 // Mock / sandbox pages (no auth required)
 import { BeybladeRendererPage } from "./pages/mock/BeybladeRendererPage";
+import { ArenaMockPage } from "./pages/mock/ArenaMockPage";
 
 // Pages
 import { LoginPage } from "./pages/LoginPage";
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
   {
     path: "/mock/beyblade",
     element: <BeybladeRendererPage />,
+  },
+  {
+    path: "/mock/arena",
+    element: <ArenaMockPage />,
   },
   {
     path: "/login",
