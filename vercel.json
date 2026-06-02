@@ -1,6 +1,0 @@
-{
-  "installCommand": "cd client && npm install",
-  "buildCommand": "cd client && rm -rf node_modules/.vite node_modules/.cache && npm run build",
-  "outputDirectory": "client/dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
