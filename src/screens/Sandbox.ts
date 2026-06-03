@@ -32,6 +32,8 @@ const DEFAULT_TGT = { x: 0, y: 0, z: 0 } as const;
 export class Sandbox {
   private el: HTMLElement;
   private canvasWrap: HTMLDivElement;
+  private topBar!: HTMLElement;
+  private overlayEl!: HTMLElement;
   private readonly storageKey: string;
 
   private scene:    THREE.Scene | null = null;
@@ -67,10 +69,38 @@ export class Sandbox {
     this.el.appendChild(overlay);
     container.appendChild(this.el);
 
+    this.overlayEl = overlay;
+    this.topBar = overlay.querySelector('.sandbox-top-bar')!;
     overlay.querySelector('#sb-back')!.addEventListener('click',  () => opts.onBack());
     overlay.querySelector('#sb-reset')!.addEventListener('click', () => this.resetView());
 
     this.ro = new ResizeObserver(() => this.resize());
+  }
+
+  /** Append a button to the top bar. Subclasses call this in their constructor. */
+  protected addTopBarButton(label: string, title = ''): HTMLButtonElement {
+    const btn = document.createElement('button');
+    btn.className   = 'game-btn';
+    btn.textContent = label;
+    btn.title       = title;
+    this.topBar.appendChild(btn);
+    return btn;
+  }
+
+  /** Add / remove objects from the live scene. Safe to call before scene is ready (no-op). */
+  protected addToScene(...objects: THREE.Object3D[]): void {
+    objects.forEach(o => this.scene?.add(o));
+  }
+  protected removeFromScene(...objects: THREE.Object3D[]): void {
+    objects.forEach(o => this.scene?.remove(o));
+  }
+
+  /** Create and append a panel div inside the overlay. Subclasses use this for side panels. */
+  protected addOverlayPanel(className: string): HTMLDivElement {
+    const panel = document.createElement('div');
+    panel.className = className;
+    this.overlayEl.appendChild(panel);
+    return panel;
   }
 
   /* ── Scene + camera: created once ──────────────────────────── */
@@ -89,7 +119,7 @@ export class Sandbox {
 
   /* ── Renderer + controls: fresh on each show ────────────────── */
   private mountRenderer(): void {
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, stencil: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setClearColor(0x08080f);
     this.canvasWrap.appendChild(this.renderer.domElement);
@@ -160,6 +190,10 @@ export class Sandbox {
     this.savedTarget.set(DEFAULT_TGT.x, DEFAULT_TGT.y, DEFAULT_TGT.z);
   }
 
+  /* ── Extension hook — subclasses add their geometry here ─────── */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected buildCustom(_scene: THREE.Scene): void { /* overridden by subclasses */ }
+
   /* ── Scene content ──────────────────────────────────────────── */
   private buildScene(): void {
     const s = this.scene!;
@@ -212,6 +246,8 @@ export class Sandbox {
     const pt = new THREE.PointLight(accent, 2, ptRange);
     pt.position.set(0, gridSize * 0.05, 0);
     s.add(pt);
+
+    this.buildCustom(s);
   }
 
   private addAxisLabel(text: string, pos: THREE.Vector3, color: string): void {

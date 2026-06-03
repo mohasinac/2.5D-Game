@@ -1,7 +1,8 @@
 import './styles/global.css';
-import { LandingScreen } from './screens/LandingScreen';
-import { Sandbox }       from './screens/Sandbox';
-import { gameConfirm }   from './utils/dialog';
+import { LandingScreen }  from './screens/LandingScreen';
+import { Sandbox }        from './screens/Sandbox';
+import { ArenaSandbox }   from './screens/ArenaSandbox';
+import { gameConfirm }    from './utils/dialog';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
 type ScreenId = 'landing' | 'beyblade' | 'arena';
@@ -10,7 +11,7 @@ class App {
   private current: ScreenId = 'landing';
   private landing:  LandingScreen;
   private beyblade: Sandbox;
-  private arena:    Sandbox;
+  private arena:    ArenaSandbox;
 
   constructor() {
     const root = document.getElementById('app')!;
@@ -36,7 +37,7 @@ class App {
     });
 
     /* 200 cm × 200 cm × 200 cm (2 m cube) — full arena space */
-    this.arena = new Sandbox(root, {
+    this.arena = new ArenaSandbox(root, {
       title:      'Arena Sandbox',
       accentHex:  0xff6b35,
       onBack:     () => { void this.confirmLeave(); },
