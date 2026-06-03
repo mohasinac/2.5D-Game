@@ -2,29 +2,51 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export interface SandboxOptions {
-  title: string;
-  accentHex: number;
-  onBack: () => void;
+  title:      string;
+  accentHex:  number;
+  onBack:     () => void;
+  /** Total grid side length in cm (= Three.js world units). */
+  gridSize:   number;
+  /** Number of cells per side (cell size = gridSize / gridDivs cm). */
+  gridDivs:   number;
+  /** Place a numeric tick label every N cm along X and Z. */
+  tickEvery:  number;
+  /** Label from -tickRange to +tickRange cm. */
+  tickRange:  number;
+  /** Default camera position in cm. */
+  defaultCam: { x: number; y: number; z: number };
+  /** Camera frustum far plane in cm. */
+  camFar:     number;
+  /** OrbitControls min/max distance in cm. */
+  minZoom:    number;
+  maxZoom:    number;
 }
+
+interface SavedView {
+  camX: number; camY: number; camZ: number;
+  tgtX: number; tgtY: number; tgtZ: number;
+}
+
+const DEFAULT_TGT = { x: 0, y: 0, z: 0 } as const;
 
 export class Sandbox {
   private el: HTMLElement;
   private canvasWrap: HTMLDivElement;
+  private readonly storageKey: string;
 
-  /* Scene + camera persist across visits; renderer is torn down on hide */
   private scene:    THREE.Scene | null = null;
   private camera:   THREE.PerspectiveCamera | null = null;
   private renderer: THREE.WebGLRenderer | null = null;
   private controls: OrbitControls | null = null;
 
-  /* Remembered between renderer teardown/rebuild so orbit state is kept */
   private savedTarget = new THREE.Vector3();
-
   private rafId = 0;
   private ro: ResizeObserver;
   private textures: THREE.Texture[] = [];
 
   constructor(container: HTMLElement, private readonly opts: SandboxOptions) {
+    this.storageKey = `bey_view_${opts.title.toLowerCase().replace(/\s+/g, '_')}`;
+
     this.el = document.createElement('div');
     this.el.className = 'screen sandbox-screen hidden';
 
@@ -36,35 +58,36 @@ export class Sandbox {
     overlay.className = 'sandbox-overlay';
     overlay.innerHTML = `
       <div class="sandbox-top-bar">
-        <button class="game-btn back-btn" id="sb-back">← Back</button>
-        <span class="sandbox-title">${opts.title}</span>
+        <button class="game-btn back-btn"  id="sb-back">← Back</button>
+        <span  class="sandbox-title">${opts.title}</span>
+        <button class="game-btn reset-btn" id="sb-reset" title="Reset view to default">↺ Reset</button>
       </div>
       <div class="sandbox-hint">Orbit · Left drag &nbsp;|&nbsp; Pan · Right drag &nbsp;|&nbsp; Zoom · Scroll</div>
     `;
     this.el.appendChild(overlay);
     container.appendChild(this.el);
 
-    overlay.querySelector('#sb-back')!.addEventListener('click', () => opts.onBack());
+    overlay.querySelector('#sb-back')!.addEventListener('click',  () => opts.onBack());
+    overlay.querySelector('#sb-reset')!.addEventListener('click', () => this.resetView());
 
     this.ro = new ResizeObserver(() => this.resize());
   }
 
-  /* ── Scene + camera: created once, never destroyed until dispose() ── */
+  /* ── Scene + camera: created once ──────────────────────────── */
   private initScene(): void {
     if (this.scene) return;
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x08080f, 0.018);
 
-    this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
-    this.camera.position.set(60, 40, 70);
+    const { defaultCam: dc, camFar } = this.opts;
+    this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, camFar);
+    this.camera.position.set(dc.x, dc.y, dc.z);
     this.camera.lookAt(0, 0, 0);
 
-    this.buildScene(this.opts.accentHex);
+    this.buildScene();
   }
 
-  /* ── Renderer + controls: created on show, destroyed on hide ───────
-   * Only ONE WebGL context is ever alive at a time across all sandboxes. */
+  /* ── Renderer + controls: fresh on each show ────────────────── */
   private mountRenderer(): void {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -72,13 +95,11 @@ export class Sandbox {
     this.canvasWrap.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera!, this.renderer.domElement);
-    this.controls.enableDamping    = true;
-    this.controls.dampingFactor    = 0.07;
+    this.controls.enableDamping      = true;
+    this.controls.dampingFactor      = 0.07;
     this.controls.screenSpacePanning = true;
-    this.controls.minDistance      = 0.5;
-    this.controls.maxDistance      = 500;
-    this.controls.target.copy(this.savedTarget);   /* restore orbit target */
-    this.controls.update();
+    this.controls.minDistance        = this.opts.minZoom;
+    this.controls.maxDistance        = this.opts.maxZoom;
     this.controls.mouseButtons = {
       LEFT:   THREE.MOUSE.ROTATE,
       MIDDLE: THREE.MOUSE.DOLLY,
@@ -88,10 +109,12 @@ export class Sandbox {
       ONE: THREE.TOUCH.ROTATE,
       TWO: THREE.TOUCH.DOLLY_PAN,
     };
+
+    this.loadView();
   }
 
   private unmountRenderer(): void {
-    /* Save orbit target so next visit restores the same view */
+    this.saveView();
     if (this.controls) {
       this.savedTarget.copy(this.controls.target);
       this.controls.dispose();
@@ -104,50 +127,96 @@ export class Sandbox {
     }
   }
 
-  /* ── Scene content ─────────────────────────────────────────────── */
-  private buildScene(accent: number): void {
+  /* ── localStorage ───────────────────────────────────────────── */
+  private saveView(): void {
+    if (!this.camera || !this.controls) return;
+    const d: SavedView = {
+      camX: this.camera.position.x, camY: this.camera.position.y, camZ: this.camera.position.z,
+      tgtX: this.controls.target.x, tgtY: this.controls.target.y, tgtZ: this.controls.target.z,
+    };
+    localStorage.setItem(this.storageKey, JSON.stringify(d));
+  }
+
+  private loadView(): void {
+    if (!this.camera || !this.controls) return;
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) return;
+      const d = JSON.parse(raw) as SavedView;
+      this.camera.position.set(d.camX, d.camY, d.camZ);
+      this.controls.target.set(d.tgtX, d.tgtY, d.tgtZ);
+      this.controls.update();
+    } catch { /* corrupted */ }
+  }
+
+  resetView(): void {
+    localStorage.removeItem(this.storageKey);
+    const { defaultCam: dc } = this.opts;
+    this.camera?.position.set(dc.x, dc.y, dc.z);
+    if (this.controls) {
+      this.controls.target.set(DEFAULT_TGT.x, DEFAULT_TGT.y, DEFAULT_TGT.z);
+      this.controls.update();
+    }
+    this.savedTarget.set(DEFAULT_TGT.x, DEFAULT_TGT.y, DEFAULT_TGT.z);
+  }
+
+  /* ── Scene content ──────────────────────────────────────────── */
+  private buildScene(): void {
     const s = this.scene!;
+    const { gridSize, gridDivs, tickEvery, tickRange, accentHex: accent } = this.opts;
 
-    /* Ground grid: 100 cm × 100 cm, 1 cm per cell */
-    s.add(new THREE.GridHelper(100, 100, accent, 0x1a1a2e));
+    /* Ground grid (XZ) */
+    s.add(new THREE.GridHelper(gridSize, gridDivs, accent, 0x2a2a4a));
 
-    /* Subtle vertical XY guide */
-    const gridXY = new THREE.GridHelper(100, 100, 0x1a1a2e, 0x111120);
+    /* Subtle vertical guide grid (XY plane) */
+    const gridXY = new THREE.GridHelper(gridSize, gridDivs, 0x2a2a4a, 0x1a1a2e);
     gridXY.rotation.x = Math.PI / 2;
-    gridXY.position.set(0, 50, 0);
+    gridXY.position.set(0, gridSize / 2, 0);
     s.add(gridXY);
 
-    /* Axes: X=red Y=green Z=blue, 10 cm */
-    s.add(new THREE.AxesHelper(10));
+    /* Axes: sized at 25% of half-grid */
+    const axisLen = (gridSize / 2) * 0.25;
+    s.add(new THREE.AxesHelper(axisLen));
 
-    /* Axis end-labels at 12 cm */
-    this.addAxisLabel('X', new THREE.Vector3(12, 0.5, 0),  '#ff4d4d');
-    this.addAxisLabel('Y', new THREE.Vector3(0.5, 12, 0),  '#4dff88');
-    this.addAxisLabel('Z', new THREE.Vector3(0,   0.5, 12), '#4db8ff');
+    /* Axis end-labels */
+    const labelDist = (gridSize / 2) * 0.32;
+    this.addAxisLabel('X', new THREE.Vector3(labelDist, axisLen * 0.1, 0),         '#ff4d4d');
+    this.addAxisLabel('Y', new THREE.Vector3(axisLen * 0.1, labelDist, 0),         '#4dff88');
+    this.addAxisLabel('Z', new THREE.Vector3(0, axisLen * 0.1, labelDist),         '#4db8ff');
 
-    /* Grid scale — tick numbers every 10 cm along X and Z */
-    this.addGridTicks(10, 50);
+    /* Axis label sprite scale: 7% of half-grid */
+    /* (set inside addAxisLabel via spriteScale param) */
+    const labelScale = (gridSize / 2) * 0.07;
+    this.setLastSpriteScale(labelScale);
+    this.setLastSpriteScale(labelScale);
+    this.setLastSpriteScale(labelScale);
 
-    /* Origin sphere — 1 mm radius */
-    const geo = new THREE.SphereGeometry(0.1, 12, 12);
-    const mat = new THREE.MeshBasicMaterial({ color: accent });
-    s.add(new THREE.Mesh(geo, mat));
+    /* Grid tick numbers */
+    const tickOffset = Math.max(0.1, gridSize * 0.018);
+    this.addGridTicks(tickEvery, tickRange, tickOffset);
+
+    /* Origin sphere — 1 mm (0.1 unit) or 0.1% of gridSize, whichever larger */
+    const originR = Math.max(0.1, gridSize * 0.001);
+    s.add(new THREE.Mesh(
+      new THREE.SphereGeometry(originR, 12, 12),
+      new THREE.MeshBasicMaterial({ color: accent }),
+    ));
 
     /* Lights */
-    s.add(new THREE.AmbientLight(0xffffff, 0.35));
-    const dir = new THREE.DirectionalLight(0xffffff, 0.9);
-    dir.position.set(30, 50, 30);
+    s.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dir = new THREE.DirectionalLight(0xffffff, 1.0);
+    dir.position.set(gridSize * 0.3, gridSize * 0.5, gridSize * 0.3);
     s.add(dir);
 
-    const pt = new THREE.PointLight(accent, 1.5, 20);
-    pt.position.set(0, 5, 0);
+    const ptRange = gridSize * 0.2;
+    const pt = new THREE.PointLight(accent, 2, ptRange);
+    pt.position.set(0, gridSize * 0.05, 0);
     s.add(pt);
   }
 
   private addAxisLabel(text: string, pos: THREE.Vector3, color: string): void {
     const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
+    canvas.width = 64; canvas.height = 64;
     const ctx = canvas.getContext('2d')!;
     ctx.font = 'bold 48px Orbitron, monospace';
     ctx.fillStyle = color;
@@ -157,58 +226,58 @@ export class Sandbox {
 
     const tex = new THREE.CanvasTexture(canvas);
     this.textures.push(tex);
-
     const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
     const sprite = new THREE.Sprite(mat);
     sprite.position.copy(pos);
-    sprite.scale.set(0.7, 0.7, 0.7);
+    sprite.scale.set(1, 1, 1);   /* overridden by setLastSpriteScale */
     this.scene!.add(sprite);
   }
 
-  /* Tick numbers every `interval` cm along X and Z axes, ±`range` cm */
-  private addGridTicks(interval: number, range: number): void {
+  /** Retroactively set the scale of the last sprite added to the scene. */
+  private setLastSpriteScale(s: number): void {
+    const children = this.scene!.children;
+    for (let i = children.length - 1; i >= 0; i--) {
+      if (children[i] instanceof THREE.Sprite) {
+        children[i].scale.set(s, s, s);
+        break;
+      }
+    }
+  }
+
+  private addGridTicks(interval: number, range: number, offset: number): void {
     for (let v = -range; v <= range; v += interval) {
       if (v === 0) continue;
-      const label = String(v);
-      /* Along X axis: label sits just below the axis line, offset +Z */
-      this.addTickSprite(label, new THREE.Vector3(v, 0, 2.2),  'x');
-      /* Along Z axis: label sits just beside the axis line, offset +X */
-      this.addTickSprite(label, new THREE.Vector3(2.2, 0, v),  'z');
+      this.addTickSprite(String(v), new THREE.Vector3(v,      0, offset), 'x');
+      this.addTickSprite(String(v), new THREE.Vector3(offset, 0, v),      'z');
     }
-    /* "0" at origin offset so it doesn't sit on the origin sphere */
-    this.addTickSprite('0', new THREE.Vector3(2.2, 0, 2.2), 'o');
+    this.addTickSprite('0', new THREE.Vector3(offset, 0, offset), 'o');
   }
 
   private addTickSprite(text: string, pos: THREE.Vector3, axis: 'x' | 'z' | 'o'): void {
-    const w = 128, h = 64;
     const canvas = document.createElement('canvas');
-    canvas.width  = w;
-    canvas.height = h;
+    canvas.width = 128; canvas.height = 64;
     const ctx = canvas.getContext('2d')!;
     ctx.font = 'bold 26px Orbitron, monospace';
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
-
-    /* Tint: X-axis ticks warm red, Z-axis ticks cool blue, origin white */
-    ctx.fillStyle = axis === 'x' ? 'rgba(255,120,100,0.75)'
-                  : axis === 'z' ? 'rgba(100,180,255,0.75)'
-                  : 'rgba(200,210,255,0.6)';
-    ctx.fillText(text, w / 2, h / 2);
+    ctx.fillStyle = axis === 'x' ? 'rgba(255,120,100,0.85)'
+                  : axis === 'z' ? 'rgba(100,180,255,0.85)'
+                  : 'rgba(220,230,255,0.7)';
+    ctx.fillText(text, 64, 32);
 
     const tex = new THREE.CanvasTexture(canvas);
     this.textures.push(tex);
-
-    const mat = new THREE.SpriteMaterial({
-      map: tex,
-      depthTest:   false,
-      transparent: true,
-    });
+    const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true });
     const sprite = new THREE.Sprite(mat);
     sprite.position.copy(pos);
-    sprite.scale.set(3, 1.5, 1);   /* wider canvas → wider sprite */
+
+    /* Tick sprite width = 5% of gridSize */
+    const sw = this.opts.gridSize * 0.05;
+    sprite.scale.set(sw, sw * 0.5, 1);
     this.scene!.add(sprite);
   }
 
+  /* ── Resize ─────────────────────────────────────────────────── */
   private resize(): void {
     if (!this.renderer || !this.camera) return;
     const w = this.canvasWrap.clientWidth;
@@ -219,28 +288,38 @@ export class Sandbox {
     this.camera.updateProjectionMatrix();
   }
 
+  /* ── Render loop — self-heals canvas size every frame ───────── */
   private loop = (): void => {
     this.rafId = requestAnimationFrame(this.loop);
+    const w = this.canvasWrap.clientWidth;
+    const h = this.canvasWrap.clientHeight;
+    if (w === 0 || h === 0) return;
+    const c = this.renderer!.domElement;
+    if (c.width !== w || c.height !== h) {
+      this.renderer!.setSize(w, h, false);
+      this.camera!.aspect = w / h;
+      this.camera!.updateProjectionMatrix();
+    }
     this.controls!.update();
     this.renderer!.render(this.scene!, this.camera!);
   };
 
+  /* ── Visibility ─────────────────────────────────────────────── */
   setVisible(v: boolean): void {
     this.el.classList.toggle('hidden', !v);
     if (v) {
-      this.initScene();           /* no-op after first visit */
-      this.mountRenderer();       /* fresh GL context */
+      this.initScene();
+      this.mountRenderer();
       this.ro.observe(this.canvasWrap);
-      this.resize();
       this.rafId = requestAnimationFrame(this.loop);
     } else {
       cancelAnimationFrame(this.rafId);
       this.ro.disconnect();
-      this.unmountRenderer();     /* GL context freed immediately */
+      this.unmountRenderer();
     }
   }
 
-  /* ── Full teardown — call when permanently removing this sandbox ── */
+  /* ── Full teardown ──────────────────────────────────────────── */
   dispose(): void {
     cancelAnimationFrame(this.rafId);
     this.ro.disconnect();
@@ -262,7 +341,6 @@ export class Sandbox {
 
     for (const tex of this.textures) tex.dispose();
     this.textures.length = 0;
-
     this.scene  = null;
     this.camera = null;
     this.el.remove();
