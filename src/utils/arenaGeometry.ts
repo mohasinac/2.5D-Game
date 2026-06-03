@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 
+/* ── Stencil ref counter — each zone gets a unique ref (1–255, wraps) ─────── */
+let _stencilCtr = 0;
+function nextStencilRef(): number { return (_stencilCtr++ % 255) + 1; }
+
 /* ── Constants ───────────────────────────────────────────────────────────── */
 export const TWO_PI = Math.PI * 2;
 export const APOTHEM = 100;
@@ -237,6 +241,8 @@ export interface ZoneData {
   pitIds: string[]; zoneIds: string[];
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   fillMesh: THREE.Mesh; fillLight: THREE.PointLight | null;
+  /** Stencil cap — clips fillMesh to the zone opening. Runtime-only, never serialized. */
+  maskMesh: THREE.Mesh;
 }
 
 /* ── ChildHole — used to punch holes in arena bowl mesh ─────────────────── */
@@ -894,28 +900,22 @@ export function buildIslandCapGeo(arena: ArenaData, holes: IslandHole[] = []): T
   return geo;
 }
 
-/** Tessellated disc for zone liquid surface — wave displacement vertex shader.
- *  Fill plane is 1 cm below the arena surface at the zone centre.
- *  Disc radius is derived so it stays inside the parabolic scoop at that fill height.
+/** Flat polygon for zone liquid surface matching the exact zone opening outline.
+ *  Stencil masking clips the fill to the visible zone opening from any camera angle.
  */
-export function buildZoneFillGeo(zone: { radiusX: number; radiusZ: number; depth: number; isMoat: boolean; innerRadiusX: number; innerRadiusZ: number }): THREE.BufferGeometry {
-  // For a parabolic scoop at fillFrac of depth: bowl t = sqrt(fillFrac). 1 cm below rim means fillFrac = 1/depth.
-  const fillFrac = Math.min(1 / Math.max(zone.depth, 1.01), 0.96);
-  const fillT = Math.sqrt(1 - fillFrac) * 0.97; // small safety margin keeps disc inside bowl
+export function buildZoneFillGeo(zone: ZoneData): THREE.BufferGeometry {
+  const outerPts = shapePoints(zone);
+  const shape = new THREE.Shape(outerPts.map(p => new THREE.Vector2(p.x, p.y)));
   if (zone.isMoat) {
-    const outerR = Math.min(zone.radiusX, zone.radiusZ) * fillT;
-    const innerR = Math.min(zone.innerRadiusX, zone.innerRadiusZ) * 1.05;
-    const geo = new THREE.RingGeometry(innerR, outerR, 64, 20);
-    geo.rotateX(-Math.PI/2);
-    return geo;
+    const innerPts = shapePoints({ openingShape: zone.innerOpeningShape, radiusX: zone.innerRadiusX, radiusZ: zone.innerRadiusZ, sides: zone.innerSides, starInner: zone.innerStarInner });
+    shape.holes.push(new THREE.Path(innerPts.map(p => new THREE.Vector2(p.x, p.y))));
   }
-  const r = Math.min(zone.radiusX, zone.radiusZ) * fillT;
-  const geo = new THREE.CircleGeometry(r, 64, 20);
-  geo.rotateX(-Math.PI/2);
+  const geo = new THREE.ShapeGeometry(shape, 32);
+  geo.rotateX(Math.PI / 2);
   return geo;
 }
 
-export function buildFillShaderMaterial(fc: { color: number; opacity: number; emissive: number; emissiveIntensity: number }, wave: WaveParams): THREE.ShaderMaterial {
+export function buildFillShaderMaterial(fc: { color: number; opacity: number; emissive: number; emissiveIntensity: number }, wave: WaveParams, stencilRef = 0): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     uniforms: {
       uTime: {value:0}, uAmplitude:{value:wave.amplitude}, uFrequency:{value:wave.frequency},
@@ -925,6 +925,9 @@ export function buildFillShaderMaterial(fc: { color: number; opacity: number; em
     },
     vertexShader: WAVE_VERT, fragmentShader: WAVE_FRAG,
     transparent: true, side: THREE.DoubleSide, depthWrite: false,
+    stencilWrite: false,
+    stencilRef,
+    stencilFunc: stencilRef > 0 ? THREE.EqualStencilFunc : THREE.AlwaysStencilFunc,
   });
 }
 
@@ -1083,7 +1086,7 @@ export function applyPit(pit: PitData, arena: ArenaData, pits: Map<string, PitDa
 }
 
 /* ── Build zone Three.js objects ─────────────────────────────────────────── */
-export function buildZoneObjects(zone: ZoneData, arena: ArenaData, pits: Map<string, PitData>, zones: Map<string, ZoneData>): [THREE.Mesh, THREE.LineSegments, THREE.Mesh, THREE.PointLight | null] {
+export function buildZoneObjects(zone: ZoneData, arena: ArenaData, pits: Map<string, PitData>, zones: Map<string, ZoneData>): [THREE.Mesh, THREE.LineSegments, THREE.Mesh, THREE.PointLight | null, THREE.Mesh] {
   const pts = shapePoints(zone);
   const mat = buildSurfaceMaterial({ color:zone.color, surface:zone.surface, customTileData:zone.customTileData, tileScale:zone.tileScale, side: zone.isMoat ? THREE.DoubleSide : THREE.FrontSide });
   const zoneCX = zone.posR * Math.cos(zone.posAngle * DEG2RAD);
@@ -1111,13 +1114,22 @@ export function buildZoneObjects(zone: ZoneData, arena: ArenaData, pits: Map<str
 
   const fc = zoneFillConfig(zone);
   const fillY = surfFn(zoneCX, zoneCZ) - 1.0;
+  const sRef = nextStencilRef();
+
+  /* Stencil cap — opaque, invisible, writes stencilRef into the stencil buffer.
+     Renders before fill (opaque pass comes before transparent). */
+  const maskGeo = buildZoneFillGeo(zone);
+  const maskMat = new THREE.MeshBasicMaterial({
+    colorWrite: false, depthWrite: false, depthTest: true, side: THREE.DoubleSide,
+    stencilWrite: true, stencilRef: sRef,
+    stencilFunc: THREE.AlwaysStencilFunc, stencilZPass: THREE.ReplaceStencilOp,
+  });
+  const maskMesh = new THREE.Mesh(maskGeo, maskMat);
+  maskMesh.position.set(wx, fillY, wz); maskMesh.rotation.y = wRotY;
+
   const fillGeo = buildZoneFillGeo(zone);
-  const fillMat = buildFillShaderMaterial(fc, FILL_WAVE[zone.fill]);
+  const fillMat = buildFillShaderMaterial(fc, FILL_WAVE[zone.fill], sRef);
   const fillMesh = new THREE.Mesh(fillGeo, fillMat);
-  if (!zone.isMoat && zone.radiusX !== zone.radiusZ) {
-    const r = Math.min(zone.radiusX, zone.radiusZ);
-    fillMesh.scale.set(zone.radiusX/r, 1, zone.radiusZ/r);
-  }
   fillMesh.position.set(wx, fillY, wz); fillMesh.rotation.y = wRotY;
   fillMesh.onBeforeRender = (_r,_s,_c,_g,mat) => { (mat as THREE.ShaderMaterial).uniforms['uTime'].value = performance.now()/1000; };
 
@@ -1126,7 +1138,7 @@ export function buildZoneObjects(zone: ZoneData, arena: ArenaData, pits: Map<str
     fillLight = new THREE.PointLight(fc.glowColor, 2, arena.radiusX*1.5);
     fillLight.position.set(wx, fillY+2, wz);
   }
-  return [mesh, edges, fillMesh, fillLight];
+  return [mesh, edges, fillMesh, fillLight, maskMesh];
 }
 
 export function applyZone(zone: ZoneData, arena: ArenaData, scene: THREE.Scene | null, pits: Map<string, PitData>, zones: Map<string, ZoneData>): void {
@@ -1153,17 +1165,18 @@ export function applyZone(zone: ZoneData, arena: ArenaData, scene: THREE.Scene |
 
   zone.fillMesh.geometry.dispose();
   zone.fillMesh.geometry = buildZoneFillGeo(zone);
-  if (!zone.isMoat && zone.radiusX !== zone.radiusZ) {
-    const r = Math.min(zone.radiusX, zone.radiusZ);
-    zone.fillMesh.scale.set(zone.radiusX/r, 1, zone.radiusZ/r);
-  } else {
-    zone.fillMesh.scale.set(1,1,1);
-  }
+  zone.fillMesh.scale.set(1, 1, 1);
   zone.fillMesh.position.set(wx, fillY, wz); zone.fillMesh.rotation.y = wRotY;
 
+  /* Rebuild mask cap with same shape and position as fill. */
+  zone.maskMesh.geometry.dispose();
+  zone.maskMesh.geometry = buildZoneFillGeo(zone);
+  zone.maskMesh.position.set(wx, fillY, wz); zone.maskMesh.rotation.y = wRotY;
+
   const fc = zoneFillConfig(zone);
+  const sRef = (zone.maskMesh.material as THREE.MeshBasicMaterial).stencilRef;
   ;(zone.fillMesh.material as THREE.Material).dispose();
-  const newFillMat = buildFillShaderMaterial(fc, FILL_WAVE[zone.fill]);
+  const newFillMat = buildFillShaderMaterial(fc, FILL_WAVE[zone.fill], sRef);
   zone.fillMesh.material = newFillMat;
   zone.fillMesh.onBeforeRender = (_r,_s,_c,_g,mat) => { (mat as THREE.ShaderMaterial).uniforms['uTime'].value = performance.now()/1000; };
 
@@ -1224,5 +1237,6 @@ export function defaultZone(name: string, parentArenaId: string, id: string, par
     edges: null as unknown as THREE.LineSegments,
     fillMesh: null as unknown as THREE.Mesh,
     fillLight: null,
+    maskMesh: null as unknown as THREE.Mesh,
   };
 }
