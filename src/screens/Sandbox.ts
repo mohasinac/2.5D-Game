@@ -62,7 +62,7 @@ export class Sandbox {
       <div class="sandbox-top-bar">
         <button class="game-btn back-btn"  id="sb-back">← Back</button>
         <span  class="sandbox-title">${opts.title}</span>
-        <button class="game-btn reset-btn" id="sb-reset" title="Reset view to default">↺ Reset</button>
+        <button class="game-btn reset-btn" id="sb-reset" title="Reset camera view to default">↺ View</button>
       </div>
       <div class="sandbox-hint">Orbit · Left drag &nbsp;|&nbsp; Pan · Right drag &nbsp;|&nbsp; Zoom · Scroll</div>
     `;

@@ -324,7 +324,7 @@ body {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* ── Sandbox reset button ────────────────────────────────────────────────── */
+/* ── Sandbox view-reset button ───────────────────────────────────────────── */
 .reset-btn {
   margin-left: auto;
   padding: 0.45em 0.9em;
@@ -341,10 +341,25 @@ body {
   color: rgba(255, 180, 130, 1);
 }
 
+/* ── Reset Arena button (red/danger variant) ─────────────────────────────── */
+.reset-arena-btn {
+  padding:      0.45em 0.9em;
+  font-size:    0.78em;
+  background:   rgba(220, 50, 50, 0.06);
+  border-color: rgba(220, 50, 50, 0.25);
+  color:        rgba(255, 130, 130, 0.75);
+}
+.reset-arena-btn:hover {
+  background:   rgba(220, 50, 50, 0.18);
+  border-color: rgba(220, 50, 50, 0.70);
+  box-shadow:   0 0 0.6em rgba(220, 50, 50, 0.30);
+  color:        rgba(255, 160, 160, 1);
+}
+
 /* ── Scene tree — Blender-style outliner ────────────────────────────────── */
 .sandbox-left-panel {
   position: absolute;
-  top: calc(5 * var(--cm));
+  top: calc(7 * var(--cm));
   left: 0;
   width: calc(50 * var(--cm));
   max-height: calc(100% - calc(6 * var(--cm)));
@@ -382,13 +397,13 @@ body {
   --depth: 0;
   display: flex;
   align-items: center;
-  height: calc(80 * var(--mm));
-  padding-left: calc(calc(var(--depth) * calc(38 * var(--mm))) + calc(24 * var(--mm)));
-  padding-right: calc(18 * var(--mm));
-  gap: calc(16 * var(--mm));
+  height: calc(52 * var(--mm));
+  padding-left: calc(calc(var(--depth) * calc(20 * var(--mm))) + calc(16 * var(--mm)));
+  padding-right: calc(12 * var(--mm));
+  gap: calc(10 * var(--mm));
   cursor: pointer;
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(38 * var(--mm));
+  font-size:   1em;
   font-weight: 600;
   letter-spacing: 0.03em;
   color: rgba(221, 232, 255, 0.82);
@@ -401,8 +416,8 @@ body {
 
 /* Expand / collapse caret */
 .tree-caret {
-  font-size:  calc(30 * var(--mm));
-  min-width:  calc(34 * var(--mm));
+  font-size:  0.85em;
+  min-width:  calc(18 * var(--mm));
   text-align: center;
   color: rgba(255, 107, 53, 0.65);
   line-height: 1;
@@ -411,7 +426,7 @@ body {
 
 /* Object-type icon  (⬡, ▣, etc.) */
 .tree-node-icon {
-  font-size:  calc(40 * var(--mm));
+  font-size:  1.1em;
   color: rgba(255, 107, 53, 0.80);
   line-height: 1;
   flex-shrink: 0;
@@ -427,7 +442,7 @@ body {
 
 /* Eye / visibility toggle (right side of row) */
 .tree-vis-btn {
-  font-size:   calc(36 * var(--mm));
+  font-size:   1em;
   line-height: 1;
   background:  transparent;
   border:      none;
@@ -483,9 +498,9 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: calc(22 * var(--mm)) calc(28 * var(--mm));
+  padding: calc(16 * var(--mm)) calc(22 * var(--mm));
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(38 * var(--mm));
+  font-size:   1em;
   font-weight: 600;
   letter-spacing: 0.06em;
   color: rgba(221, 232, 255, 0.85);
@@ -602,7 +617,7 @@ body {
 
 /* ── [+] Add-child button on tree nodes ─────────────────────────────────── */
 .tree-add-btn {
-  font-size:    calc(36 * var(--mm));
+  font-size:    1em;
   font-weight:  700;
   line-height:  1;
   background:   rgba(0, 229, 255, 0.10);
@@ -689,7 +704,7 @@ body {
 /* ── Right panel — Properties inspector ─────────────────────────────────── */
 .sandbox-right-panel {
   position:   absolute;
-  top:        calc(5 * var(--cm));
+  top:        calc(7 * var(--cm));
   right:      0;
   width:      calc(52 * var(--cm));
   max-height: calc(100% - calc(6 * var(--cm)));
@@ -710,15 +725,32 @@ body {
 }
 
 .prop-header {
+  display:        flex;
+  align-items:    center;
   font-family:    'Orbitron', monospace;
-  font-size:      calc(36 * var(--mm));
+  font-size:      calc(32 * var(--mm));
   font-weight:    700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color:          rgba(0, 229, 255, 0.55);
-  padding:        calc(24 * var(--mm)) calc(28 * var(--mm)) calc(20 * var(--mm));
+  padding:        calc(20 * var(--mm)) calc(20 * var(--mm)) calc(16 * var(--mm));
   border-bottom:  calc(1 * var(--mm)) solid rgba(0, 229, 255, 0.14);
 }
+
+.prop-close-btn {
+  margin-left:   auto;
+  flex-shrink:   0;
+  background:    transparent;
+  border:        none;
+  color:         rgba(0, 229, 255, 0.40);
+  font-size:     1.2em;
+  line-height:   1;
+  cursor:        pointer;
+  padding:       0 calc(4 * var(--mm));
+  border-radius: calc(3 * var(--mm));
+  transition:    color 0.12s;
+}
+.prop-close-btn:hover { color: rgba(255, 90, 70, 0.9); }
 
 .prop-content {
   padding: calc(10 * var(--mm)) calc(16 * var(--mm)) calc(20 * var(--mm));
@@ -730,7 +762,7 @@ body {
 .prop-empty {
   padding:     calc(2.5 * var(--cm)) calc(14 * var(--mm));
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(32 * var(--mm));
+  font-size:   1em;
   color:       rgba(221, 232, 255, 0.28);
   text-align:  center;
   line-height: 1.7;
@@ -738,7 +770,7 @@ body {
 
 .prop-hint {
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(28 * var(--mm));
+  font-size:   0.85em;
   color:       rgba(0, 229, 255, 0.35);
   text-align:  center;
   line-height: 1.5;
@@ -769,19 +801,19 @@ body {
 
 .prop-label {
   font-family:  'Rajdhani', sans-serif;
-  font-size:    calc(30 * var(--mm));
+  font-size:    1em;
   font-weight:  600;
   color:        rgba(221, 232, 255, 0.60);
-  flex:         0 0 calc(16 * var(--cm));
+  flex:         0 0 calc(12 * var(--cm));
   white-space:  nowrap;
 }
 
 .prop-input {
   flex:        1;
-  height:      calc(52 * var(--mm));
-  padding:     0 calc(10 * var(--mm));
+  height:      calc(44 * var(--mm));
+  padding:     0 calc(8 * var(--mm));
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(30 * var(--mm));
+  font-size:   1em;
   font-weight: 600;
   color:       var(--text);
   background:  rgba(0, 229, 255, 0.05);
@@ -801,19 +833,19 @@ body {
 .prop-value-read {
   flex:        1;
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(30 * var(--mm));
+  font-size:   1em;
   font-weight: 600;
   color:       rgba(221, 232, 255, 0.45);
-  padding:     0 calc(10 * var(--mm));
+  padding:     0 calc(8 * var(--mm));
 }
 
 /* Name text input */
 .prop-text-input {
   width:       100%;
-  height:      calc(58 * var(--mm));
-  padding:     0 calc(12 * var(--mm));
+  height:      calc(48 * var(--mm));
+  padding:     0 calc(10 * var(--mm));
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(34 * var(--mm));
+  font-size:   1em;
   font-weight: 600;
   color:       var(--text);
   background:  rgba(0, 229, 255, 0.05);
@@ -840,10 +872,10 @@ body {
   flex-direction:  column;
   align-items:     center;
   justify-content: center;
-  gap:             calc(5 * var(--mm));
-  padding:         calc(12 * var(--mm)) calc(6 * var(--mm));
+  gap:             calc(4 * var(--mm));
+  padding:         calc(10 * var(--mm)) calc(4 * var(--mm));
   font-family:     'Rajdhani', sans-serif;
-  font-size:       calc(24 * var(--mm));
+  font-size:       0.85em;
   font-weight:     600;
   color:           rgba(221, 232, 255, 0.55);
   background:      rgba(255, 255, 255, 0.03);
@@ -864,7 +896,7 @@ body {
   box-shadow:   0 0 calc(8 * var(--mm)) rgba(0, 229, 255, 0.20);
 }
 .prop-shape-icon {
-  font-size:   calc(32 * var(--mm));
+  font-size:   1.1em;
   line-height: 1;
 }
 
@@ -876,9 +908,9 @@ body {
 }
 .prop-profile-btn {
   flex:        1;
-  padding:     calc(14 * var(--mm)) calc(8 * var(--mm));
+  padding:     calc(10 * var(--mm)) calc(8 * var(--mm));
   font-family: 'Rajdhani', sans-serif;
-  font-size:   calc(30 * var(--mm));
+  font-size:   1em;
   font-weight: 700;
   letter-spacing: 0.04em;
   color:       rgba(221, 232, 255, 0.55);
@@ -898,4 +930,155 @@ body {
   border-color: rgba(0, 229, 255, 0.70);
   color:        #fff;
   box-shadow:   0 0 calc(8 * var(--mm)) rgba(0, 229, 255, 0.20);
+}
+
+/* Color picker input */
+.prop-color-input {
+  width:         calc(52 * var(--mm));
+  height:        calc(42 * var(--mm));
+  padding:       calc(2 * var(--mm));
+  border:        calc(1 * var(--mm)) solid rgba(0, 229, 255, 0.28);
+  border-radius: calc(3 * var(--mm));
+  background:    transparent;
+  cursor:        pointer;
+  flex-shrink:   0;
+}
+.prop-color-input::-webkit-color-swatch-wrapper { padding: 0; }
+.prop-color-input::-webkit-color-swatch {
+  border:        none;
+  border-radius: calc(2 * var(--mm));
+}
+
+/* ── [P+] pit and [Z+] zone buttons on arena tree nodes ─────────────────── */
+.tree-add-btn.pit-btn {
+  background:   rgba(255, 160, 40, 0.12);
+  border-color: rgba(255, 160, 40, 0.35);
+  color:        rgba(255, 160, 40, 0.90);
+}
+.tree-add-btn.pit-btn:hover {
+  background:   rgba(255, 160, 40, 0.28);
+  border-color: rgba(255, 160, 40, 0.75);
+  color:        #fff;
+}
+.tree-add-btn.zone-btn {
+  background:   rgba(40, 220, 180, 0.12);
+  border-color: rgba(40, 220, 180, 0.35);
+  color:        rgba(40, 220, 180, 0.90);
+}
+.tree-add-btn.zone-btn:hover {
+  background:   rgba(40, 220, 180, 0.28);
+  border-color: rgba(40, 220, 180, 0.75);
+  color:        #fff;
+}
+
+/* ── Surface material grid ───────────────────────────────────────────────── */
+.prop-surface-grid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   calc(5 * var(--mm));
+  padding:               calc(4 * var(--mm)) 0;
+}
+.prop-surface-btn {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: flex-start;
+  gap:             calc(3 * var(--mm));
+  padding:         calc(6 * var(--mm)) calc(3 * var(--mm));
+  font-family:     'Rajdhani', sans-serif;
+  font-size:       0.72em;
+  font-weight:     600;
+  color:           rgba(221, 232, 255, 0.50);
+  background:      rgba(255, 255, 255, 0.03);
+  border:          calc(1 * var(--mm)) solid rgba(255, 255, 255, 0.08);
+  border-radius:   calc(3 * var(--mm));
+  cursor:          pointer;
+  transition:      background 0.14s, border-color 0.14s, color 0.14s;
+  overflow:        hidden;
+}
+.prop-surface-btn:hover {
+  background:   rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.30);
+  color:        rgba(221, 232, 255, 0.85);
+}
+.prop-surface-btn.active {
+  background:   rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.65);
+  color:        #fff;
+  box-shadow:   0 0 calc(6 * var(--mm)) rgba(0, 229, 255, 0.20);
+}
+.prop-surface-preview {
+  width:         32px;
+  height:        32px;
+  border-radius: calc(2 * var(--mm));
+  image-rendering: pixelated;
+  flex-shrink:   0;
+}
+
+/* Custom tile row */
+.prop-surface-custom-row {
+  display:     flex;
+  align-items: center;
+  gap:         calc(8 * var(--mm));
+  padding:     calc(6 * var(--mm)) 0;
+  flex-wrap:   wrap;
+}
+.prop-surface-thumb {
+  width:         calc(48 * var(--mm));
+  height:        calc(48 * var(--mm));
+  border:        calc(1 * var(--mm)) solid rgba(0, 229, 255, 0.30);
+  border-radius: calc(3 * var(--mm));
+  object-fit:    cover;
+  flex-shrink:   0;
+}
+
+/* ── Zone fill grid ──────────────────────────────────────────────────────── */
+.prop-fill-grid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   calc(5 * var(--mm));
+  padding:               calc(4 * var(--mm)) 0;
+}
+.prop-fill-btn {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             calc(3 * var(--mm));
+  padding:         calc(8 * var(--mm)) calc(4 * var(--mm));
+  font-family:     'Rajdhani', sans-serif;
+  font-size:       0.72em;
+  font-weight:     600;
+  color:           rgba(221, 232, 255, 0.55);
+  background:      rgba(255, 255, 255, 0.03);
+  border:          calc(1 * var(--mm)) solid rgba(255, 255, 255, 0.10);
+  border-radius:   calc(3 * var(--mm));
+  cursor:          pointer;
+  transition:      background 0.14s, border-color 0.14s, color 0.14s;
+}
+.prop-fill-btn:hover {
+  background:   rgba(40, 220, 180, 0.09);
+  border-color: rgba(40, 220, 180, 0.35);
+  color:        rgba(221, 232, 255, 0.90);
+}
+.prop-fill-btn.active {
+  background:   rgba(40, 220, 180, 0.18);
+  border-color: rgba(40, 220, 180, 0.70);
+  color:        #fff;
+  box-shadow:   0 0 calc(6 * var(--mm)) rgba(40, 220, 180, 0.20);
+}
+.prop-fill-swatch {
+  width:         calc(20 * var(--mm));
+  height:        calc(20 * var(--mm));
+  border-radius: 50%;
+  border:        calc(1 * var(--mm)) solid rgba(255, 255, 255, 0.20);
+  flex-shrink:   0;
+}
+
+/* Glow toggle button — amber when active */
+.prop-fill-glow-toggle.active {
+  background:   rgba(255, 180, 40, 0.18);
+  border-color: rgba(255, 180, 40, 0.70);
+  color:        #fff;
+  box-shadow:   0 0 calc(8 * var(--mm)) rgba(255, 180, 40, 0.25);
 }
