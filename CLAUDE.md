@@ -123,6 +123,7 @@ src/
   screens/
     LandingScreen.ts    — Title + sandbox nav buttons (Back button is disabled placeholder)
     Sandbox.ts          — Reusable Three.js XYZ viewport (accepts SandboxOptions)
+    ArenaSandbox.ts     — Full arena builder: arenas, pits, zones, moats, properties panel
   utils/
     dialog.ts           — gameConfirm() modal utility
 ```
@@ -133,9 +134,151 @@ npm run dev     # Vite dev server — single instance enforced via strictPort: t
 npm run build   # TypeScript check + Vite build
 ```
 
+---
+
+## Arena Sandbox — Architecture & Rules
+
+### Coordinate system
+
+| Level | World Y | Notes |
+|-------|---------|-------|
+| Scene origin | 0 | Grid floor, AxesHelper base |
+| Octagon Base top face | 30 cm (`OCTAGON_BASE.height`) | Everything arena-related is anchored here |
+| Arena rim | 30 + posY | `posY` lifts an arena above the base |
+| Arena bowl center | 30 + posY − depth | Bottom of the parabola |
+| Moat island top | 30 + posY + innerRimOffset | Elevated platform; child arenas sit at this Y |
+
+`mesh.position.set(posX, posY, posZ)` applies the Y offset. Geometry is always built with `baseY = OCTAGON_BASE.height` (30); the mesh position adds `posY` on top. **Never bake `posY` into vertex Y — it will double-count.**
+
+---
+
+### Octagon Base (immutable platform)
+
+```typescript
+export const OCTAGON_BASE = {
+  radius: APOTHEM / Math.cos(Math.PI / 8),  // ≈108.24 cm — centre to vertex
+  height: 30,   // cm — top face Y
+  sides:  8,
+  align:  Math.PI / 8,  // flat sides face ±X, ±Z
+};
+```
+
+Never change these unless the user explicitly asks. All arena geometry sits ON or IN the octagon base.
+
+---
+
+### Objects in the scene
+
+#### ArenaData
+- `wallProfile`: `'parabolic'` | `'straight'` — shape of the bowl walls
+- `openingShape`: `'circle'` | `'ellipse'` | `'rectangle'` | `'hexagon'` | `'triangle'` | `'star'`
+- `radiusX`, `radiusZ`, `depth` — bowl dimensions in cm
+- `posX`, `posZ`, `posY`, `rotY` — world position; posY lifts arena above base
+- `isMoat`: when true the arena is a ring (outer bowl + inner island); adds `innerRadiusX/Z`, `innerWallProfile`, `innerRimOffset`, `innerOpeningShape`
+- `pitIds[]`, `zoneIds[]` — owned children
+
+#### PitData
+- A depression cut INTO the arena surface — like a dent on a car, not a separate object
+- `posR`, `posAngle` — polar position within the parent arena (not world coords)
+- `rotY` — self-rotation
+- `wallProfile`: parabolic or straight
+- Also supports `isMoat` (ring pit)
+
+#### ZoneData
+- A liquid-fill area (water, lava, swamp, poison, sand, ice, void, custom)
+- Same positioning as PitData
+- Has a `fillMesh` driven by `WAVE_VERT`/`WAVE_FRAG` vertex-displacement shader for animated liquid surfaces
+- `fill`, `fillColor`, `fillOpacity`, `fillGlow` — preset or custom appearance
+
+---
+
+### Key geometry functions (all in ArenaSandbox.ts)
+
+| Function | Purpose |
+|----------|---------|
+| `buildParabolicBowl(pts, depth, baseY, holes?)` | Main arena bowl mesh; skips triangles in `holes` (for pit/zone openings) |
+| `buildStraightCut(pts, depth, baseY)` | Straight-wall arena variant |
+| `buildMoatGeometry(outerPts, innerPts, ...)` | Ring moat bowl with inner rise |
+| `buildScoopGeometry(pts, depth, profile, pitCX, pitCZ, pitRotY, arena)` | **Pit/zone bowl** — every vertex Y follows the arena surface curvature (ice-cream-scoop dent). RIM_EPS=0.15 cm lifts rim above arena surface to prevent z-fighting |
+| `buildScoopEdgeLines(...)` | Surface-conforming edge wires for pits/zones |
+| `buildIslandCapGeo(arena, holes?)` | Flat disc at inner island top; `holes` are cut for child arenas sitting on the island |
+| `buildArenaFloorGeo(arena, pits, zones)` | Flat floor for straight-wall arenas with pit/zone cutouts |
+| `buildTopFaceGeo(...)` | Octagon top face with arena-opening holes |
+| `buildZoneFillGeo(zone)` | Tessellated disc/ring for wave-shader liquid surface |
+
+#### `arenaSurfaceYAtArenaLocal(arena, alx, alz)`
+Returns the world Y of the arena bowl surface at any arena-local XZ position:
+```typescript
+const H = OCTAGON_BASE.height + arena.posY;
+// parabolic: H - depth*(1 - t²) where t = normalised elliptical distance from centre
+// straight:  H - depth
+```
+Used by `buildScoopGeometry` so pit/zone geometry conforms to the parent bowl's curvature.
+
+---
+
+### Pit/zone coordinate transform (important)
+A pit vertex at pit-local `(lx, lz)` maps to arena-local:
+```
+arena_lx = pitCX + lx*cos(pitRotY) - lz*sin(pitRotY)
+arena_lz = pitCZ + lx*sin(pitRotY) + lz*cos(pitRotY)
+```
+where `pitCX = posR*cos(posAngle)`, `pitCZ = posR*sin(posAngle)`.  
+Arena `rotY` cancels algebraically — only the pit's own `rotY` matters.
+
+Pit/zone meshes are positioned at `(wx, 0, wz)` in world space (`mesh.position.y = 0` always — the geometry bakes absolute world Y using `arenaSurfaceYAtArenaLocal`).
+
+---
+
+### Moat island + child arenas (stacking)
+
+When a moat arena has `innerRimOffset > 0`, its inner island is elevated. A second arena can sit on this platform:
+
+- Set child arena `posY = moatArena.innerRimOffset`
+- Child arena's bowl rim then sits at the same world Y as the island cap
+- `getArenasOnIsland(moatArena)` detects this: checks `abs(arenaB.posY − innerRimOffset) ≤ 1cm` AND `arenaB`'s centre is within the inner boundary
+- `buildIslandCapGeo(arena, holes)` cuts an elliptical hole in the island cap so the child arena bowl is visible through it
+- `updateAllMoatIslandCaps()` — must be called whenever any arena is added, removed, or its posX/posZ/posY/radius changes
+
+Pits/zones added to the child arena automatically conform to the child arena's elevated surface because `arenaSurfaceYAtArenaLocal` uses `arena.posY`.
+
+---
+
+### Zone fill system
+
+Fill presets (`water`, `lava`, `swamp`, `poison`, `sand`, `ice`, `void`, `custom`) each drive a `THREE.ShaderMaterial` with `WAVE_VERT`/`WAVE_FRAG` vertex-displacement shaders.  
+Fill Y = `arenaSurfaceYAtArenaLocal(arena, zoneCX, zoneCZ) - 1.0` — 1 cm below the zone rim, looks like liquid pooling at the surface.  
+Future fill types (whirlpool, lava flow, tsunami) should be implemented as additional shader presets in `FILL_PRESET` / `FILL_WAVE`, **not** as CPU particle systems.
+
+---
+
+### Surface material system
+
+`buildSurfaceMaterial(opts)` returns a cached `THREE.MeshStandardMaterial` with a procedural canvas texture. Types: `plain`, `checker`, `grid`, `hex`, `stripes`, `dots`, `concrete`, `metal`, `wood`, `ice`, `sand`, `lava_rock`, `custom_png`. All use `side: THREE.DoubleSide`.
+
+---
+
+### Axes helper — axisYOffset
+
+`SandboxOptions.axisYOffset?: number` lifts the `THREE.AxesHelper` and axis labels to that Y so they appear above the scene floor rather than inside bowl geometry. Arena sandbox passes `axisYOffset: 30` (= `OCTAGON_BASE.height`). Beyblade sandbox omits it (defaults 0).
+
+---
+
+### Save / load (localStorage)
+
+Schema version **3** (bump when adding new fields to ArenaData/PitData/ZoneData). Old versions are discarded on load. Key: `bey_arena_arena_sandbox`. All `posY`, `innerRimOffset`, `innerOpeningShape`, `innerSides`, `innerStarInner` fields are serialized.
+
+---
+
 ## Known pitfalls (do not re-introduce)
+
 - **Fog**: removed — causes black screens against dark background at all normal distances.
 - **Grid colour `0x1a1a2e`** for subdivisions: too dark, renders invisible. Use `0x2a2a4a`.
 - **Hash routing** (`location.hash`, `hashchange`): user wants real paths. Use `pushState`/`popstate`.
 - **Eager renderer init**: creating `WebGLRenderer` in constructor for both sandboxes = two GL contexts upfront. Only create renderer inside `mountRenderer()` (called from `setVisible(true)`).
 - **Single deferred RAF for resize**: not reliable before layout is ready. Use self-healing check inside the continuous `loop()` instead.
+- **baking posY into vertex Y**: `buildArenaFloorGeo` and `buildIslandCapGeo` must NOT include `arena.posY` in their geometry Y — `mesh.position.set(posX, posY, posZ)` already applies it. Double-counting shifts the mesh up by `posY` twice.
+- **Island cap covering child arena**: When a second arena is placed on a moat island (`posY = innerRimOffset`), its bowl rim is at the same world Y as the island cap. Without `buildIslandCapGeo(arena, holes)` the island cap is a solid disc that occludes the child bowl. Always call `updateAllMoatIslandCaps()` after any arena add/remove/property-change.
+- **Zone fill at bowl bottom**: Fill Y must be near the rim (`surfY - 1.0`), not the floor (`surfY - depth + 0.1`). The floor value places the fill plane under the bowl surface and makes it invisible.
+- **Pit/zone outside arena bounds**: Slider max for `posR` must subtract the child radius (`arenaMinR - childMaxR`); radius sliders must subtract `posR`. Without this, children extend outside the parent arena.
+- **AxesHelper inside bowl**: Default `AxesHelper` at Y=0..axisLen pokes into arena bowls. Use `axisYOffset: OCTAGON_BASE.height` in `SandboxOptions` to lift axes to the octagon surface level.

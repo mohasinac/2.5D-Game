@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { SandboxSprites } from '../utils/SandboxSprites';
 
 export interface SandboxOptions {
   title:      string;
@@ -20,6 +21,8 @@ export interface SandboxOptions {
   /** OrbitControls min/max distance in cm. */
   minZoom:    number;
   maxZoom:    number;
+  /** Lift the axes helper and labels to this Y (cm) so they sit above the scene floor, not inside geometry. Default 0. */
+  axisYOffset?: number;
 }
 
 interface SavedView {
@@ -208,26 +211,29 @@ export class Sandbox {
     gridXY.position.set(0, gridSize / 2, 0);
     s.add(gridXY);
 
-    /* Axes: sized at 25% of half-grid */
+    /* Axes: sized at 25% of half-grid, lifted to axisYOffset so they sit above the scene floor */
     const axisLen = (gridSize / 2) * 0.25;
-    s.add(new THREE.AxesHelper(axisLen));
+    const axisOY  = this.opts.axisYOffset ?? 0;
+    const axisGrp = new THREE.Group();
+    axisGrp.position.set(0, axisOY, 0);
+    axisGrp.add(new THREE.AxesHelper(axisLen));
+    s.add(axisGrp);
 
     /* Axis end-labels */
     const labelDist = (gridSize / 2) * 0.32;
-    this.addAxisLabel('X', new THREE.Vector3(labelDist, axisLen * 0.1, 0),         '#ff4d4d');
-    this.addAxisLabel('Y', new THREE.Vector3(axisLen * 0.1, labelDist, 0),         '#4dff88');
-    this.addAxisLabel('Z', new THREE.Vector3(0, axisLen * 0.1, labelDist),         '#4db8ff');
+    SandboxSprites.addAxisLabel(s, 'X', new THREE.Vector3(labelDist,       axisOY + axisLen * 0.1, 0         ), '#ff4d4d', this.textures);
+    SandboxSprites.addAxisLabel(s, 'Y', new THREE.Vector3(axisLen * 0.1,   axisOY + labelDist,     0         ), '#4dff88', this.textures);
+    SandboxSprites.addAxisLabel(s, 'Z', new THREE.Vector3(0,               axisOY + axisLen * 0.1, labelDist ), '#4db8ff', this.textures);
 
     /* Axis label sprite scale: 7% of half-grid */
-    /* (set inside addAxisLabel via spriteScale param) */
     const labelScale = (gridSize / 2) * 0.07;
-    this.setLastSpriteScale(labelScale);
-    this.setLastSpriteScale(labelScale);
-    this.setLastSpriteScale(labelScale);
+    SandboxSprites.setLastSpriteScale(s, labelScale);
+    SandboxSprites.setLastSpriteScale(s, labelScale);
+    SandboxSprites.setLastSpriteScale(s, labelScale);
 
     /* Grid tick numbers */
     const tickOffset = Math.max(0.1, gridSize * 0.018);
-    this.addGridTicks(tickEvery, tickRange, tickOffset);
+    SandboxSprites.addGridTicks(s, tickEvery, tickRange, tickOffset, gridSize, this.textures);
 
     /* Origin sphere — 1 mm (0.1 unit) or 0.1% of gridSize, whichever larger */
     const originR = Math.max(0.1, gridSize * 0.001);
@@ -248,69 +254,6 @@ export class Sandbox {
     s.add(pt);
 
     this.buildCustom(s);
-  }
-
-  private addAxisLabel(text: string, pos: THREE.Vector3, color: string): void {
-    const canvas = document.createElement('canvas');
-    canvas.width = 64; canvas.height = 64;
-    const ctx = canvas.getContext('2d')!;
-    ctx.font = 'bold 48px Orbitron, monospace';
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, 32, 32);
-
-    const tex = new THREE.CanvasTexture(canvas);
-    this.textures.push(tex);
-    const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
-    const sprite = new THREE.Sprite(mat);
-    sprite.position.copy(pos);
-    sprite.scale.set(1, 1, 1);   /* overridden by setLastSpriteScale */
-    this.scene!.add(sprite);
-  }
-
-  /** Retroactively set the scale of the last sprite added to the scene. */
-  private setLastSpriteScale(s: number): void {
-    const children = this.scene!.children;
-    for (let i = children.length - 1; i >= 0; i--) {
-      if (children[i] instanceof THREE.Sprite) {
-        children[i].scale.set(s, s, s);
-        break;
-      }
-    }
-  }
-
-  private addGridTicks(interval: number, range: number, offset: number): void {
-    for (let v = -range; v <= range; v += interval) {
-      if (v === 0) continue;
-      this.addTickSprite(String(v), new THREE.Vector3(v,      0, offset), 'x');
-      this.addTickSprite(String(v), new THREE.Vector3(offset, 0, v),      'z');
-    }
-    this.addTickSprite('0', new THREE.Vector3(offset, 0, offset), 'o');
-  }
-
-  private addTickSprite(text: string, pos: THREE.Vector3, axis: 'x' | 'z' | 'o'): void {
-    const canvas = document.createElement('canvas');
-    canvas.width = 128; canvas.height = 64;
-    const ctx = canvas.getContext('2d')!;
-    ctx.font = 'bold 26px Orbitron, monospace';
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = axis === 'x' ? 'rgba(255,120,100,0.85)'
-                  : axis === 'z' ? 'rgba(100,180,255,0.85)'
-                  : 'rgba(220,230,255,0.7)';
-    ctx.fillText(text, 64, 32);
-
-    const tex = new THREE.CanvasTexture(canvas);
-    this.textures.push(tex);
-    const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true });
-    const sprite = new THREE.Sprite(mat);
-    sprite.position.copy(pos);
-
-    /* Tick sprite width = 5% of gridSize */
-    const sw = this.opts.gridSize * 0.05;
-    sprite.scale.set(sw, sw * 0.5, 1);
-    this.scene!.add(sprite);
   }
 
   /* ── Resize ─────────────────────────────────────────────────── */
