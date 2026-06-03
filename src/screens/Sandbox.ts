@@ -120,10 +120,13 @@ export class Sandbox {
     /* Axes: X=red Y=green Z=blue, 10 cm */
     s.add(new THREE.AxesHelper(10));
 
-    /* Labels at 12 cm */
+    /* Axis end-labels at 12 cm */
     this.addAxisLabel('X', new THREE.Vector3(12, 0.5, 0),  '#ff4d4d');
     this.addAxisLabel('Y', new THREE.Vector3(0.5, 12, 0),  '#4dff88');
     this.addAxisLabel('Z', new THREE.Vector3(0,   0.5, 12), '#4db8ff');
+
+    /* Grid scale — tick numbers every 10 cm along X and Z */
+    this.addGridTicks(10, 50);
 
     /* Origin sphere — 1 mm radius */
     const geo = new THREE.SphereGeometry(0.1, 12, 12);
@@ -159,6 +162,50 @@ export class Sandbox {
     const sprite = new THREE.Sprite(mat);
     sprite.position.copy(pos);
     sprite.scale.set(0.7, 0.7, 0.7);
+    this.scene!.add(sprite);
+  }
+
+  /* Tick numbers every `interval` cm along X and Z axes, ±`range` cm */
+  private addGridTicks(interval: number, range: number): void {
+    for (let v = -range; v <= range; v += interval) {
+      if (v === 0) continue;
+      const label = String(v);
+      /* Along X axis: label sits just below the axis line, offset +Z */
+      this.addTickSprite(label, new THREE.Vector3(v, 0, 2.2),  'x');
+      /* Along Z axis: label sits just beside the axis line, offset +X */
+      this.addTickSprite(label, new THREE.Vector3(2.2, 0, v),  'z');
+    }
+    /* "0" at origin offset so it doesn't sit on the origin sphere */
+    this.addTickSprite('0', new THREE.Vector3(2.2, 0, 2.2), 'o');
+  }
+
+  private addTickSprite(text: string, pos: THREE.Vector3, axis: 'x' | 'z' | 'o'): void {
+    const w = 128, h = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width  = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d')!;
+    ctx.font = 'bold 26px Orbitron, monospace';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+
+    /* Tint: X-axis ticks warm red, Z-axis ticks cool blue, origin white */
+    ctx.fillStyle = axis === 'x' ? 'rgba(255,120,100,0.75)'
+                  : axis === 'z' ? 'rgba(100,180,255,0.75)'
+                  : 'rgba(200,210,255,0.6)';
+    ctx.fillText(text, w / 2, h / 2);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    this.textures.push(tex);
+
+    const mat = new THREE.SpriteMaterial({
+      map: tex,
+      depthTest:   false,
+      transparent: true,
+    });
+    const sprite = new THREE.Sprite(mat);
+    sprite.position.copy(pos);
+    sprite.scale.set(3, 1.5, 1);   /* wider canvas → wider sprite */
     this.scene!.add(sprite);
   }
 

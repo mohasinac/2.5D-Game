@@ -32,14 +32,32 @@ class App {
     });
 
     this.mountGlobalControls(root);
-    this.go('landing');
+
+    /* Restore active screen from URL hash — survives HMR and page reload.
+     * hashchange handles browser back/forward without a full page load. */
+    window.addEventListener('hashchange', () => this.show(this.hashToScreen()));
+    this.show(this.hashToScreen());
   }
 
+  /* Navigate: update URL then show — browser history entry created. */
   private go(id: ScreenId): void {
+    location.hash = id === 'landing' ? '' : id;
+    this.show(id);
+  }
+
+  /* Show without touching the URL (used by hashchange + init). */
+  private show(id: ScreenId): void {
     this.current = id;
     this.landing.setVisible(id === 'landing');
     this.beyblade.setVisible(id === 'beyblade');
     this.arena.setVisible(id === 'arena');
+  }
+
+  private hashToScreen(): ScreenId {
+    const h = location.hash.slice(1);
+    if (h === 'beyblade') return 'beyblade';
+    if (h === 'arena')    return 'arena';
+    return 'landing';
   }
 
   /* ── Scale controls + fullscreen ──────────────────────────────────── */
