@@ -1113,18 +1113,21 @@ export function buildZoneObjects(zone: ZoneData, arena: ArenaData, pits: Map<str
   edges.position.set(wx, 0, wz); edges.rotation.y = wRotY;
 
   const fc = zoneFillConfig(zone);
-  const fillY = surfFn(zoneCX, zoneCZ) - 1.0;
+  /* Fill sits just above the zone rim so it acts as a lid over the opening.
+     The stencil mask (renderOrder=-1, depthTest=false) writes the zone opening's
+     screen footprint unconditionally before any other geometry, then the fill
+     reads that stencil so it is clipped to the zone shape from every angle. */
+  const fillY = surfFn(zoneCX, zoneCZ) + 0.2;
   const sRef = nextStencilRef();
 
-  /* Stencil cap — opaque, invisible, writes stencilRef into the stencil buffer.
-     Renders before fill (opaque pass comes before transparent). */
   const maskGeo = buildZoneFillGeo(zone);
   const maskMat = new THREE.MeshBasicMaterial({
-    colorWrite: false, depthWrite: false, depthTest: true, side: THREE.DoubleSide,
+    colorWrite: false, depthWrite: false, depthTest: false, side: THREE.DoubleSide,
     stencilWrite: true, stencilRef: sRef,
     stencilFunc: THREE.AlwaysStencilFunc, stencilZPass: THREE.ReplaceStencilOp,
   });
   const maskMesh = new THREE.Mesh(maskGeo, maskMat);
+  maskMesh.renderOrder = -1;
   maskMesh.position.set(wx, fillY, wz); maskMesh.rotation.y = wRotY;
 
   const fillGeo = buildZoneFillGeo(zone);
@@ -1148,7 +1151,7 @@ export function applyZone(zone: ZoneData, arena: ArenaData, scene: THREE.Scene |
   const zoneRotY = zone.rotY * DEG2RAD;
   const { wx, wz, wRotY } = childWorldPos(arena, zone);
   const surfFn = makeSurfFn(zone, arena, pits, zones);
-  const fillY = surfFn(zoneCX, zoneCZ) - 1.0;
+  const fillY = surfFn(zoneCX, zoneCZ) + 0.2;
 
   zone.mesh.geometry.dispose();
   zone.edges.geometry.dispose();
