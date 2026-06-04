@@ -8,6 +8,7 @@ const DEG_TO_RAD = Math.PI / 180;
 export class BeybladeAnimator {
   private spinning = false;
   private angle = 0;
+  private readonly _scratchDir = new THREE.Vector3();
 
   constructor(private renderer: BeybladeRenderer) {}
 
@@ -40,7 +41,7 @@ export class BeybladeAnimator {
   // Rotates the axisRoot so the tilt leans toward the camera's XZ direction.
   // Optional helper — used by the UI when the user rotates the view.
   orientTiltToCamera(camera: THREE.Camera): void {
-    const dir = new THREE.Vector3();
+    const dir = this._scratchDir;
     camera.getWorldDirection(dir);
     dir.y = 0;
     if (dir.lengthSq() < 0.0001) return;

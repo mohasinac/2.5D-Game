@@ -281,15 +281,16 @@ export class Sandbox {
     const w = this.canvasWrap.clientWidth;
     const h = this.canvasWrap.clientHeight;
     if (w === 0 || h === 0) return;
-    const c = this.renderer!.domElement;
+    const renderer = this.renderer!;
+    const c = renderer.domElement;
     if (c.width !== w || c.height !== h) {
-      this.renderer!.setSize(w, h, false);
+      renderer.setSize(w, h, false);
       this.camera!.aspect = w / h;
       this.camera!.updateProjectionMatrix();
     }
     this.onTick(dt);
     this.controls!.update();
-    this.renderer!.render(this.scene!, this.camera!);
+    renderer.render(this.scene!, this.camera!);
   };
 
   /* ── Visibility ─────────────────────────────────────────────── */

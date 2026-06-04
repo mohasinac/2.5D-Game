@@ -61,9 +61,16 @@ export class BeybladeSandbox extends Sandbox {
     this.redoBtn.addEventListener('click', () => this._redo());
     resetBtn.addEventListener('click', () => { void this._confirmReset(); });
 
-    document.addEventListener('keydown', this._onKey);
     this.history.onStackChange = () => this._syncUndoButtons();
     this._syncUndoButtons();
+  }
+
+  // ── Visibility — scope keydown to when sandbox is active ─────────────────
+
+  override setVisible(v: boolean): void {
+    super.setVisible(v);
+    if (v) document.addEventListener('keydown', this._onKey);
+    else   document.removeEventListener('keydown', this._onKey);
   }
 
   // ── Scene setup ───────────────────────────────────────────────────────────
@@ -228,7 +235,7 @@ export class BeybladeSandbox extends Sandbox {
       if (this.store.hasPart(id)) {
         this._selectPart(id);
       } else if (this.store.hasSector(id)) {
-        const parentId = this._findPartOfSector(id);
+        const parentId = this.store.findPartOfSector(id);
         if (parentId) this._selectSector(id, parentId);
       } else if (this.store.hasGroup(id)) {
         this._selectGroup(id);
@@ -241,7 +248,7 @@ export class BeybladeSandbox extends Sandbox {
         if (this.store.hasPart(id)) {
           this.history.execute(new DeletePartCmd(this._ctx(), id));
         } else if (this.store.hasSector(id)) {
-          const parentId = this._findPartOfSector(id);
+          const parentId = this.store.findPartOfSector(id);
           if (parentId) this.history.execute(new DeleteSectorCmd(this._ctx(), parentId, id));
         } else if (this.store.hasGroup(id)) {
           this.history.execute(new DeleteGroupCmd(this._ctx(), id));
@@ -443,7 +450,7 @@ export class BeybladeSandbox extends Sandbox {
   }
 
   private _onSectorUpdated(sectorId: string): void {
-    const partId = this._findPartOfSector(sectorId);
+    const partId = this.store.findPartOfSector(sectorId);
     if (partId) this.beyRenderer.rebuildPart(partId);
     this._saveToStorage();
   }
@@ -514,13 +521,6 @@ export class BeybladeSandbox extends Sandbox {
     }
     this.panel.showEmpty();
     this._saveToStorage();
-  }
-
-  private _findPartOfSector(sectorId: string): string | null {
-    for (const part of this.store.getAllParts()) {
-      if (part.sectorIds.includes(sectorId)) return part.id;
-    }
-    return null;
   }
 
   // ── Undo / Redo ───────────────────────────────────────────────────────────
