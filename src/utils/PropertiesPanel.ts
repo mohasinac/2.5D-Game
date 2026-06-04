@@ -315,16 +315,6 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       btns.push(btn);grid.appendChild(btn);
     }
     this.content.appendChild(grid);
-    const glowRow=document.createElement('div');glowRow.className='prop-row';
-    const glowLbl=document.createElement('span');glowLbl.className='prop-label';glowLbl.textContent='Glow light';
-    const glowBtn=document.createElement('button');
-    glowBtn.className='prop-profile-btn prop-fill-glow-toggle'+(zone.fillGlow?' active':'');
-    glowBtn.textContent=zone.fillGlow?'✦ On':'◌ Off';
-    glowBtn.addEventListener('click',()=>{
-      zone.fillGlow=!zone.fillGlow;glowBtn.textContent=zone.fillGlow?'✦ On':'◌ Off';
-      glowBtn.classList.toggle('active',zone.fillGlow);onChange();
-    });
-    glowRow.appendChild(glowLbl);glowRow.appendChild(glowBtn);this.content.appendChild(glowRow);
     this.numRow('Opacity',zone.fillOpacity,0.1,1.0,0.05,v=>{zone.fillOpacity=v;onChange();});
     if(zone.fill==='custom') this.buildFillCustomRow(zone,onChange);
   }

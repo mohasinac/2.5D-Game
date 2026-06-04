@@ -77,15 +77,18 @@ export function buildSurfaceMaterial(opts: SurfaceMaterialOpts): THREE.MeshStand
   _matCache.set(mk, { mat, refs: 1 }); return mat;
 }
 
-/** MeshStandardMaterial coloured by a zone fill preset — used for zone bowl walls. */
-export function buildFillBowlMaterial(fc: FillPreset): THREE.MeshStandardMaterial {
+/** MeshStandardMaterial coloured by a zone fill preset — used for zone bowl. */
+export function buildFillBowlMaterial(fc: FillPreset, opacity = 1): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(fc.color),
     emissive: new THREE.Color(fc.emissive),
     emissiveIntensity: fc.emissiveIntensity * 0.5,
-    side: THREE.FrontSide,
+    side: THREE.DoubleSide,
     roughness: 0.6,
     metalness: 0,
+    transparent: opacity < 1.0,
+    opacity,
+    depthWrite: opacity >= 1.0,
   });
 }
 

@@ -140,17 +140,12 @@ export function parentSurfaceY(
  * Nested pits/zones conform to their direct parent's floor, not the arena bowl.
  */
 export function makeSurfFn(
-  pit: { parentPitId: string | null; parentZoneId: string | null },
+  child: { parentZoneId: string | null },
   arena: ArenaData,
-  pits: Map<string, PitData>,
   zones: Map<string, ZoneData>,
 ): (alx: number, alz: number) => number {
-  if (pit.parentPitId) {
-    const parentPit = pits.get(pit.parentPitId);
-    if (parentPit) return (alx, alz) => parentSurfaceY(parentPit, arena, alx, alz);
-  }
-  if (pit.parentZoneId) {
-    const parentZone = zones.get(pit.parentZoneId);
+  if (child.parentZoneId) {
+    const parentZone = zones.get(child.parentZoneId);
     if (parentZone) return (alx, alz) => parentSurfaceY(parentZone, arena, alx, alz);
   }
   return (alx, alz) => arenaSurfaceYAtArenaLocal(arena, alx, alz);

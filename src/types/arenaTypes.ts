@@ -69,29 +69,27 @@ export interface ArenaData {
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   floorMesh: THREE.Mesh | null;
   islandMesh: THREE.Mesh | null;
+  rimSeamMesh: THREE.Mesh | null;
 }
 
 export interface PitData {
   id: string; name: string; parentArenaId: string;
-  parentPitId:  string | null; parentZoneId: string | null;
   openingShape: OpeningShape;
   radiusX: number; radiusZ: number; depth: number;
   sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   posR: number; posAngle: number; rotY: number;
-  pitIds: string[]; zoneIds: string[];
   mesh: THREE.Mesh; edges: THREE.LineSegments;
-  seamMesh: THREE.Mesh;
 }
 
 export interface ZoneData {
   id: string; name: string; parentArenaId: string;
-  parentPitId:  string | null; parentZoneId: string | null;
+  parentZoneId: string | null;
   openingShape: OpeningShape;
   radiusX: number; radiusZ: number; depth: number;
   sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
-  fill: ZoneFill; fillColor: number | null; fillOpacity: number; fillGlow: boolean;
+  fill: ZoneFill; fillColor: number | null; fillOpacity: number;
   posR: number; posAngle: number; rotY: number;
   isMoat: boolean;
   innerRadiusX: number; innerRadiusZ: number;
@@ -101,6 +99,5 @@ export interface ZoneData {
   innerRimOffset: number;
   pitIds: string[]; zoneIds: string[];
   mesh: THREE.Mesh; edges: THREE.LineSegments;
-  lidMesh: THREE.Mesh; fillMesh: THREE.Mesh; fillLight: THREE.PointLight | null;
   seamMesh: THREE.Mesh;
 }

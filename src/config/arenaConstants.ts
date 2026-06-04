@@ -13,7 +13,8 @@ export const DEFAULT_BASE_TILE   = 20;
 export const ARENA_ELEVATED_THRESHOLD = 0.5; // cm — posY above this = on moat island, not base
 export const ZONE_FILL_OFFSET         = -1.0; // cm — wave fill surface sits below zone rim
 export const RIM_EPS                  = 0.02; // cm — rim lift above parent surface (z-fight guard)
-export const SEAM_OVERHANG            = RIM_EPS * 3; // cm — seam-ring outward extension onto arena surface
+export const SEAM_TRANSITION_WIDTH    = 2.0;  // cm — seam collar outward width; must exceed arena ring spacing to cover jagged cuts
+export const SEAM_RINGS               = 6;    // ring count in seam transition strip
 
 /* ── Tessellation quality ────────────────────────────────────────────────── */
 export const TESS = {

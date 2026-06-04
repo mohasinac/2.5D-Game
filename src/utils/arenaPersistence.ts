@@ -14,20 +14,18 @@ export interface ArenaSave {
 
 export interface PitSave {
   id: string; name: string;
-  parentPitId: string | null; parentZoneId: string | null;
   openingShape: OpeningShape;
   radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   posR: number; posAngle: number; rotY: number;
-  pits: PitSave[]; zones: ZoneSave[];
 }
 
 export interface ZoneSave {
   id: string; name: string; openingShape: OpeningShape;
-  parentPitId: string | null; parentZoneId: string | null;
+  parentZoneId: string | null;
   radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
-  fill: ZoneFill; fillColor: number | null; fillOpacity: number; fillGlow: boolean;
+  fill: ZoneFill; fillColor: number | null; fillOpacity: number;
   posR: number; posAngle: number; rotY: number;
   isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
   innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
@@ -41,30 +39,28 @@ export interface ArenaConfig {
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
 }
 
-export function pitToSave(p: PitData, pits: Map<string, PitData>, zones: Map<string, ZoneData>): PitSave {
+export function pitToSave(p: PitData): PitSave {
   return {
-    id:p.id,name:p.name,parentPitId:p.parentPitId,parentZoneId:p.parentZoneId,
+    id:p.id,name:p.name,
     openingShape:p.openingShape,
     radiusX:p.radiusX,radiusZ:p.radiusZ,depth:p.depth,sides:p.sides,starInner:p.starInner,
     color:p.color,surface:p.surface,customTileData:p.customTileData,tileScale:p.tileScale,
     posR:p.posR,posAngle:p.posAngle,rotY:p.rotY,
-    pits:p.pitIds.map(id=>{ const c=pits.get(id); return c?pitToSave(c,pits,zones):null!; }).filter(Boolean),
-    zones:p.zoneIds.map(id=>{ const c=zones.get(id); return c?zoneToSave(c,pits,zones):null!; }).filter(Boolean),
   };
 }
 
 export function zoneToSave(z: ZoneData, pits: Map<string, PitData>, zones: Map<string, ZoneData>): ZoneSave {
   return {
-    id:z.id,name:z.name,parentPitId:z.parentPitId,parentZoneId:z.parentZoneId,
+    id:z.id,name:z.name,parentZoneId:z.parentZoneId,
     openingShape:z.openingShape,
     radiusX:z.radiusX,radiusZ:z.radiusZ,depth:z.depth,sides:z.sides,starInner:z.starInner,
     color:z.color,surface:z.surface,customTileData:z.customTileData,tileScale:z.tileScale,
-    fill:z.fill,fillColor:z.fillColor,fillOpacity:z.fillOpacity,fillGlow:z.fillGlow,
+    fill:z.fill,fillColor:z.fillColor,fillOpacity:z.fillOpacity,
     posR:z.posR,posAngle:z.posAngle,rotY:z.rotY,
     isMoat:z.isMoat,innerRadiusX:z.innerRadiusX,innerRadiusZ:z.innerRadiusZ,
     innerOpeningShape:z.innerOpeningShape,innerSides:z.innerSides,innerStarInner:z.innerStarInner,
     innerWallProfile:z.innerWallProfile,innerRimOffset:z.innerRimOffset,
-    pits:z.pitIds.map(id=>{ const c=pits.get(id); return c?pitToSave(c,pits,zones):null!; }).filter(Boolean),
+    pits:z.pitIds.map(id=>{ const c=pits.get(id); return c?pitToSave(c):null!; }).filter(Boolean),
     zones:z.zoneIds.map(id=>{ const c=zones.get(id); return c?zoneToSave(c,pits,zones):null!; }).filter(Boolean),
   };
 }
@@ -83,7 +79,7 @@ export function arenaToSave(
     isMoat:a.isMoat,innerRadiusX:a.innerRadiusX,innerRadiusZ:a.innerRadiusZ,
     innerOpeningShape:a.innerOpeningShape,innerSides:a.innerSides,innerStarInner:a.innerStarInner,
     innerWallProfile:a.innerWallProfile,innerRimOffset:a.innerRimOffset,
-    pits:a.pitIds.filter(pid=>{ const p=pits.get(pid); return p&&!p.parentPitId&&!p.parentZoneId; }).map(pid=>pitToSave(pits.get(pid)!,pits,zones)),
-    zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentPitId&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
+    pits:a.pitIds.map(pid=>pitToSave(pits.get(pid)!)).filter(Boolean),
+    zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
   };
 }

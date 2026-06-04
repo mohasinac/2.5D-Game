@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RIM_EPS, SEAM_OVERHANG, TESS } from '../config/arenaConstants';
+import { RIM_EPS, SEAM_TRANSITION_WIDTH, SEAM_RINGS, TESS } from '../config/arenaConstants';
 import { WallProfile } from '../types/arenaTypes';
 import { buildParabolicRingGeo, buildRimEdges } from './primitives';
 
@@ -154,12 +154,15 @@ export function buildScoopLidGeo(
 }
 
 /**
- * Seam ring — a thin flat ring slightly outside the pit/zone opening that
- * lies on the arena surface, filling the gap between the arena hole edge
- * and the scoop rim. Eliminates jagged-triangle artifacts at the cut boundary.
+ * Seam collar — a multi-ring transition strip radiating outward from the
+ * pit/zone rim onto the parent arena surface.  Each ring follows the arena
+ * bowl curvature so the collar blends smoothly from the scoop rim into the
+ * surrounding surface, covering all jagged triangle artifacts produced by the
+ * arena bowl's hole-skipping tessellation.
  *
- * Inner ring: pts at surfFn + RIM_EPS (scoop rim level).
- * Outer ring: pts extended outward by SEAM_OVERHANG, at surfFn (arena surface).
+ * Ring 0  (inner): zone/pit rim at surfFn + RIM_EPS.
+ * Ring SEAM_RINGS (outer): arena surface SEAM_TRANSITION_WIDTH cm outward, flush.
+ * Intermediate rings follow the arena surface Y, with RIM_EPS fading to zero.
  */
 export function buildScoopSeam(
   pts: THREE.Vector2[], cx: number, cz: number, rotY: number,
@@ -175,27 +178,24 @@ export function buildScoopSeam(
   const pos: number[] = [];
   const idx: number[] = [];
 
-  // Inner ring (ring 0): at rim positions, surfFn + RIM_EPS
-  for (let i = 0; i < N; i++) {
-    const lx = pts[i].x; const lz = pts[i].y;
-    pos.push(lx, surfY(lx, lz) + RIM_EPS, lz);
+  for (let r = 0; r <= SEAM_RINGS; r++) {
+    const t = r / SEAM_RINGS; // 0 = rim, 1 = outer edge
+    for (let i = 0; i < N; i++) {
+      const lx = pts[i].x; const lz = pts[i].y;
+      const len = Math.sqrt(lx * lx + lz * lz);
+      const ox = len > 0 ? lx + (lx / len) * SEAM_TRANSITION_WIDTH * t : lx;
+      const oz = len > 0 ? lz + (lz / len) * SEAM_TRANSITION_WIDTH * t : lz;
+      // Rim gets RIM_EPS lift above surface; outer edge is flush; interpolate linearly
+      pos.push(ox, surfY(ox, oz) + RIM_EPS * (1 - t), oz);
+    }
   }
 
-  // Outer ring (ring 1): extend each point outward by SEAM_OVERHANG
-  for (let i = 0; i < N; i++) {
-    const lx = pts[i].x; const lz = pts[i].y;
-    const len = Math.sqrt(lx * lx + lz * lz);
-    const ox = len > 0 ? lx + (lx / len) * SEAM_OVERHANG : lx;
-    const oz = len > 0 ? lz + (lz / len) * SEAM_OVERHANG : lz;
-    pos.push(ox, surfY(ox, oz), oz);
-  }
-
-  // N quads: inner[i], inner[i+1], outer[i+1], outer[i]
-  // CCW winding from above → normals point upward
-  for (let i = 0; i < N; i++) {
-    const i0 = i; const i1 = (i + 1) % N;
-    const o0 = N + i; const o1 = N + i1;
-    idx.push(i0, i1, o0, i1, o1, o0);
+  for (let r = 0; r < SEAM_RINGS; r++) {
+    for (let i = 0; i < N; i++) {
+      const i0 = r * N + i;       const i1 = r * N + (i + 1) % N;
+      const o0 = (r + 1) * N + i; const o1 = (r + 1) * N + (i + 1) % N;
+      idx.push(i0, i1, o0, i1, o1, o0);
+    }
   }
 
   const geo = new THREE.BufferGeometry();
