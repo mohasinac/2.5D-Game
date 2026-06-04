@@ -1,3 +1,5 @@
+import { VISUAL_THEME_PRESETS, VisualTheme } from '../config/arenaConstants';
+
 /** Shared base for all properties panels. Provides the chrome (header + close) and DOM-builder helpers. */
 export abstract class AbstractPropertiesPanel {
   protected content: HTMLElement;
@@ -157,5 +159,27 @@ export abstract class AbstractPropertiesPanel {
     row.appendChild(btn);
     this.content.appendChild(row);
     return btn;
+  }
+
+  protected themeRow(onApply: (theme: VisualTheme) => void): void {
+    const row = document.createElement('div');
+    row.className = 'prop-row prop-theme-row';
+    const lbl = document.createElement('span');
+    lbl.className = 'prop-label';
+    lbl.textContent = 'Theme';
+    const grid = document.createElement('div');
+    grid.className = 'prop-theme-grid';
+    for (const [key, theme] of Object.entries(VISUAL_THEME_PRESETS)) {
+      const btn = document.createElement('button');
+      btn.className = 'game-btn prop-theme-btn';
+      btn.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+      btn.title = `Apply ${key} theme`;
+      btn.style.borderColor = '#' + theme.color.toString(16).padStart(6, '0');
+      btn.addEventListener('click', () => onApply(theme));
+      grid.appendChild(btn);
+    }
+    row.appendChild(lbl);
+    row.appendChild(grid);
+    this.content.appendChild(row);
   }
 }

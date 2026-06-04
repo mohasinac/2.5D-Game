@@ -1,6 +1,6 @@
 import {
   OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill,
-  ArenaData, PitData, ZoneData, SpeedLineData,
+  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset,
   SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
   SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
   WallTopProfile, WallHoleData, WallData,
@@ -26,6 +26,8 @@ export interface SpeedLineSave {
   oscillate: boolean; oscAxis: SpeedLineOscAxis;
   oscAmplitude: number; oscFrequency: number; oscPhase: number;
   width: number; color: number; opacity: number; glowColor: number | null;
+  customTileData: string | null; tileScale: number;
+  presentStlb64: string | null; presentColor: number;
   speedMultiplier: number; entryCondition: SpeedLineEntryCondition;
   direction: SpeedLineDirection; exitBehavior: SpeedLineExitBehavior;
   launchForce: number; specialMoveName: string;
@@ -37,6 +39,7 @@ export interface PitSave {
   openingShape: OpeningShape;
   radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  rimGlowColor: number; rimGlowIntensity: number;
   posR: number; posAngle: number; rotY: number;
 }
 
@@ -46,6 +49,8 @@ export interface ZoneSave {
   radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   fill: ZoneFill; fillColor: number | null; fillOpacity: number;
+  seamGlowColor: number; seamGlowIntensity: number;
+  particlePreset: ParticlePreset;
   posR: number; posAngle: number; rotY: number;
   isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
   innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
@@ -69,13 +74,18 @@ export interface WallSave {
   topProfile: WallTopProfile; topAmplitude: number; topFrequency: number;
   isDouble: boolean; peakHeight: number; peakTilt: number;
   holes: WallHoleSave[];
-  color: number; surface: SurfaceType; material: ArenaMaterial;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number; emissiveIntensity: number; opacity: number;
+  material: ArenaMaterial;
+  presentStlb64: string | null; presentColor: number;
 }
 
 export interface BridgeSectionSave {
   width: number; crossSection: BridgeCrossSection; depth: number;
   hasLeftWall: boolean; hasRightWall: boolean; sideWallHeight: number;
   material: ArenaMaterial;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number; emissiveIntensity: number; opacity: number;
 }
 
 export interface BridgeSegmentSave {
@@ -101,6 +111,7 @@ export interface BridgeSave {
   segments: BridgeSegmentSave[];
   section: BridgeSectionSave;
   color: number; surface: SurfaceType;
+  presentStlb64: string | null; presentColor: number;
   walls: WallSave[];
 }
 
@@ -119,6 +130,11 @@ export interface ArenaSave {
   rampMode: RampMode; rampAngle: number; rampWidth: number;
   spiralTurns: number; spiralClockwise: boolean; spiralCount: number;
   spiralLedgeWidth: number; spiralLedgeHeight: number; spiralRadiusFrac: number;
+  stepsColor: number | null; stepsSurface: SurfaceType | null; stepsCustomTileData: string | null;
+  spiralColor: number | null; spiralSurface: SurfaceType | null; spiralCustomTileData: string | null;
+  lightColor: number; lightIntensity: number; lightPosY: number; lightRange: number;
+  particlePreset: ParticlePreset;
+  presentStlb64: string | null; presentColor: number;
   pits: PitSave[]; zones: ZoneSave[];
   walls: WallSave[];   // rim walls attached to this arena
   speedLines: SpeedLineSave[];
@@ -131,8 +147,10 @@ export interface ObstacleSave {
   rotX: number; rotY: number; rotZ: number;
   isFloating: boolean; isDestructible: boolean; hitPoints: number;
   contactForceX: number; contactForceY: number; contactForceZ: number;
-  color: number; surface: SurfaceType; tileScale: number;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number; emissiveIntensity: number; opacity: number;
   material: ArenaMaterial; speedPathId: string | null;
+  presentStlb64: string | null; presentColor: number;
 }
 
 export interface TrapDurationTierSave {
@@ -153,7 +171,10 @@ export interface TrapSave {
   isPeriodic: boolean; safeInterval: number; unsafeInterval: number;
   activationLimit: number; speedPathId: string | null;
   durationTiers: TrapDurationTierSave[];
-  color: number; surface: SurfaceType; tileScale: number;
+  baseMaterial: ArenaMaterial;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number; emissiveIntensity: number;
+  presentStlb64: string | null; presentColor: number;
 }
 
 export interface PortalSave {
@@ -165,6 +186,8 @@ export interface PortalSave {
   destPosX: number; destPosY: number; destPosZ: number;
   exitVelScale: number; exitRotY: number; isBidirectional: boolean;
   color: number; glowColor: number;
+  surface: SurfaceType; customTileData: string | null; tileScale: number;
+  presentStlb64: string | null; presentColor: number;
 }
 
 export interface BridgeSnapRuleSave { id: string; bridgeId: string; minDeg: number; maxDeg: number; }
@@ -206,6 +229,8 @@ export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
     oscillate:sl.oscillate, oscAxis:sl.oscAxis,
     oscAmplitude:sl.oscAmplitude, oscFrequency:sl.oscFrequency, oscPhase:sl.oscPhase,
     width:sl.width, color:sl.color, opacity:sl.opacity, glowColor:sl.glowColor,
+    customTileData:sl.customTileData, tileScale:sl.tileScale,
+    presentStlb64:sl.presentStlb64, presentColor:sl.presentColor,
     speedMultiplier:sl.speedMultiplier, entryCondition:sl.entryCondition,
     direction:sl.direction, exitBehavior:sl.exitBehavior,
     launchForce:sl.launchForce, specialMoveName:sl.specialMoveName,
@@ -220,6 +245,7 @@ export function pitToSave(p: PitData): PitSave {
     openingShape:p.openingShape,
     radiusX:p.radiusX,radiusZ:p.radiusZ,depth:p.depth,sides:p.sides,starInner:p.starInner,
     color:p.color,surface:p.surface,customTileData:p.customTileData,tileScale:p.tileScale,
+    rimGlowColor:p.rimGlowColor,rimGlowIntensity:p.rimGlowIntensity,
     posR:p.posR,posAngle:p.posAngle,rotY:p.rotY,
   };
 }
@@ -231,6 +257,8 @@ export function zoneToSave(z: ZoneData, pits: Map<string, PitData>, zones: Map<s
     radiusX:z.radiusX,radiusZ:z.radiusZ,depth:z.depth,sides:z.sides,starInner:z.starInner,
     color:z.color,surface:z.surface,customTileData:z.customTileData,tileScale:z.tileScale,
     fill:z.fill,fillColor:z.fillColor,fillOpacity:z.fillOpacity,
+    seamGlowColor:z.seamGlowColor,seamGlowIntensity:z.seamGlowIntensity,
+    particlePreset:z.particlePreset,
     posR:z.posR,posAngle:z.posAngle,rotY:z.rotY,
     isMoat:z.isMoat,innerRadiusX:z.innerRadiusX,innerRadiusZ:z.innerRadiusZ,
     innerOpeningShape:z.innerOpeningShape,innerSides:z.innerSides,innerStarInner:z.innerStarInner,
@@ -260,6 +288,11 @@ export function arenaToSave(
     rampMode:a.rampMode,rampAngle:a.rampAngle,rampWidth:a.rampWidth,
     spiralTurns:a.spiralTurns,spiralClockwise:a.spiralClockwise,spiralCount:a.spiralCount,
     spiralLedgeWidth:a.spiralLedgeWidth,spiralLedgeHeight:a.spiralLedgeHeight,spiralRadiusFrac:a.spiralRadiusFrac,
+    stepsColor:a.stepsColor,stepsSurface:a.stepsSurface,stepsCustomTileData:a.stepsCustomTileData,
+    spiralColor:a.spiralColor,spiralSurface:a.spiralSurface,spiralCustomTileData:a.spiralCustomTileData,
+    lightColor:a.lightColor,lightIntensity:a.lightIntensity,lightPosY:a.lightPosY,lightRange:a.lightRange,
+    particlePreset:a.particlePreset,
+    presentStlb64:a.presentStlb64,presentColor:a.presentColor,
     pits:a.pitIds.map(pid=>pitToSave(pits.get(pid)!)).filter(Boolean),
     zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
     walls:[],       // populated by ArenaSandbox
@@ -280,7 +313,10 @@ export function wallToSave(w: WallData): WallSave {
       id:h.id, shape:h.shape, posAlong:h.posAlong, posHeight:h.posHeight,
       radiusU:h.radiusU, radiusV:h.radiusV,
     })),
-    color:w.color, surface:w.surface, material:w.material,
+    color:w.color, surface:w.surface, customTileData:w.customTileData, tileScale:w.tileScale,
+    emissiveColor:w.emissiveColor, emissiveIntensity:w.emissiveIntensity, opacity:w.opacity,
+    material:w.material,
+    presentStlb64:w.presentStlb64, presentColor:w.presentColor,
   };
 }
 
@@ -318,8 +354,11 @@ export function bridgeToSave(
       width:sec.width, crossSection:sec.crossSection, depth:sec.depth,
       hasLeftWall:sec.hasLeftWall, hasRightWall:sec.hasRightWall,
       sideWallHeight:sec.sideWallHeight, material:sec.material,
+      color:sec.color, surface:sec.surface, customTileData:sec.customTileData, tileScale:sec.tileScale,
+      emissiveColor:sec.emissiveColor, emissiveIntensity:sec.emissiveIntensity, opacity:sec.opacity,
     },
     color:b.color, surface:b.surface,
+    presentStlb64:b.presentStlb64, presentColor:b.presentColor,
     walls: b.wallIds.map(id=>{ const w=walls.get(id); return w?wallToSave(w):null!; }).filter(Boolean),
   };
 }
@@ -332,8 +371,10 @@ export function obstacleToSave(o: ObstacleData): ObstacleSave {
     rotX:o.rotX, rotY:o.rotY, rotZ:o.rotZ,
     isFloating:o.isFloating, isDestructible:o.isDestructible, hitPoints:o.hitPoints,
     contactForceX:o.contactForceX, contactForceY:o.contactForceY, contactForceZ:o.contactForceZ,
-    color:o.color, surface:o.surface, tileScale:o.tileScale,
+    color:o.color, surface:o.surface, customTileData:o.customTileData, tileScale:o.tileScale,
+    emissiveColor:o.emissiveColor, emissiveIntensity:o.emissiveIntensity, opacity:o.opacity,
     material:o.material, speedPathId:o.speedPathId,
+    presentStlb64:o.presentStlb64, presentColor:o.presentColor,
   };
 }
 
@@ -354,7 +395,10 @@ export function trapToSave(t: TrapData): TrapSave {
       thresholdSeconds:d.thresholdSeconds, tierEffect:d.tierEffect,
       rpmLossFactor:d.rpmLossFactor, speedFactor:d.speedFactor, notes:d.notes,
     })),
-    color:t.color, surface:t.surface, tileScale:t.tileScale,
+    baseMaterial:t.baseMaterial,
+    color:t.color, surface:t.surface, customTileData:t.customTileData, tileScale:t.tileScale,
+    emissiveColor:t.emissiveColor, emissiveIntensity:t.emissiveIntensity,
+    presentStlb64:t.presentStlb64, presentColor:t.presentColor,
   };
 }
 
@@ -367,6 +411,8 @@ export function portalToSave(p: PortalData): PortalSave {
     destPosX:p.destPosX, destPosY:p.destPosY, destPosZ:p.destPosZ,
     exitVelScale:p.exitVelScale, exitRotY:p.exitRotY, isBidirectional:p.isBidirectional,
     color:p.color, glowColor:p.glowColor,
+    surface:p.surface, customTileData:p.customTileData, tileScale:p.tileScale,
+    presentStlb64:p.presentStlb64, presentColor:p.presentColor,
   };
 }
 

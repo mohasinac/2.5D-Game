@@ -43,7 +43,7 @@ export const DEFAULT_PORTAL_DIM     = 20;   // cm — default pad size
 export const DEFAULT_EXIT_VEL_SCALE = 1.0;  // speed multiplier on portal exit
 
 /* ── Physics material presets ───────────────────────────────────────────── */
-import type { ArenaMaterial, ArenaMaterialProps, TrapDurationTier, TrapTierEffect } from '../types/arenaTypes';
+import type { ArenaMaterial, ArenaMaterialProps, TrapDurationTier, TrapTierEffect, SurfaceType } from '../types/arenaTypes';
 
 export const ARENA_MATERIAL_PRESETS: Record<ArenaMaterial, ArenaMaterialProps> = {
   // Walls: rubber|stone|abs|metal  Bridges: stone|abs|metal
@@ -168,6 +168,43 @@ export const SL = {
   DEFAULT_OSC_PHASE:       0,
   DEFAULT_OSC_AXIS:        'lateral'   as const,
 } as const;
+
+/* ── Visual theme quick-pick presets ────────────────────────────────────── */
+export interface VisualTheme {
+  color: number;
+  surface: SurfaceType;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  baseMaterial: ArenaMaterial;
+  tileScale: number;
+}
+
+export const VISUAL_THEME_PRESETS: Record<string, VisualTheme> = {
+  neon:   { color: 0x00e5ff, surface: 'plain',    emissiveColor: 0x00e5ff, emissiveIntensity: 0.8, baseMaterial: 'abs',    tileScale: 1 },
+  steel:  { color: 0x888899, surface: 'metal',    emissiveColor: 0x000000, emissiveIntensity: 0,   baseMaterial: 'metal',  tileScale: 1 },
+  magma:  { color: 0xff4400, surface: 'lava_rock', emissiveColor: 0xff2200, emissiveIntensity: 0.4, baseMaterial: 'stone',  tileScale: 1 },
+  ice:    { color: 0xaaddff, surface: 'ice',      emissiveColor: 0x88bbff, emissiveIntensity: 0.3, baseMaterial: 'abs',    tileScale: 1 },
+  wood:   { color: 0xc8844a, surface: 'wood',     emissiveColor: 0x000000, emissiveIntensity: 0,   baseMaterial: 'abs',    tileScale: 1 },
+  void:   { color: 0x220044, surface: 'plain',    emissiveColor: 0x6600ff, emissiveIntensity: 0.6, baseMaterial: 'abs',    tileScale: 1 },
+  rubber: { color: 0x222222, surface: 'plain',    emissiveColor: 0x000000, emissiveIntensity: 0,   baseMaterial: 'rubber', tileScale: 1 },
+};
+
+/* ── Per-arena PointLight presets ───────────────────────────────────────── */
+export interface ArenaLightPreset {
+  color: number;
+  intensity: number;
+  posY: number;
+  range: number;
+}
+
+export const ARENA_LIGHT_PRESETS: Record<string, ArenaLightPreset> = {
+  none:    { color: 0xffffff, intensity: 0,   posY: 40, range: 200 },
+  volcano: { color: 0xff3300, intensity: 1.5, posY: 40, range: 180 },
+  ice:     { color: 0x44aaff, intensity: 1.2, posY: 40, range: 200 },
+  void:    { color: 0x8800ff, intensity: 1.0, posY: 40, range: 150 },
+  neon:    { color: 0x00ffcc, intensity: 1.5, posY: 40, range: 200 },
+  gold:    { color: 0xffaa00, intensity: 1.2, posY: 40, range: 180 },
+};
 
 /* ── Rotation animation constants ───────────────────────────────────────── */
 export const ROT = {

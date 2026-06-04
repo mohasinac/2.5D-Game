@@ -1,11 +1,12 @@
 import * as THREE from 'three';
-import { ArenaData, ArenaMaterial, ChildHole } from '../types/arenaTypes';
+import { ArenaData, ArenaMaterial, ChildHole, SurfaceType } from '../types/arenaTypes';
 import {
   TWO_PI, STEP_RING_SEGS, STEP_SLOPE_FRAC,
   SPIRAL_SEGS_PER_TURN,
 } from '../config/arenaConstants';
 import { effectiveProfile, rampExistsAt } from './surfaceUtils';
 import { inChildHole } from './primitives';
+import { buildSurfaceMaterial } from './materialBuilders';
 
 /* ══════════════════════════════════════════════════════════════════════════
    Floor Profile Builders — stepped terraces and spiral ledge.
@@ -157,6 +158,9 @@ export function buildSteppedBowl(
 export function buildSpiralLedgeMesh(
   arena: ArenaData, baseY: number, helixIndex: number, totalHelices: number,
   baseMaterial?: ArenaMaterial,
+  spiralColorOverride?: number | null,
+  spiralSurfaceOverride?: SurfaceType | null,
+  spiralCustomTileDataOverride?: string | null,
 ): THREE.Mesh {
   const {
     depth, radiusX, radiusZ, color,
@@ -207,12 +211,15 @@ export function buildSpiralLedgeMesh(
   geo.setIndex(idx);
   geo.computeVertexNormals();
 
-  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02], rubber: [0.95, 0.00] } as const;
-  const [roughness, metalness] = baseMaterial ? PBR[baseMaterial] : [0.65, 0.08];
-  const mat = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.3),
+  const resolvedColor = spiralColorOverride != null ? spiralColorOverride : new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.3).getHex();
+  const resolvedSurface: SurfaceType = spiralSurfaceOverride ?? 'plain';
+  const mat = buildSurfaceMaterial({
+    color: resolvedColor,
+    surface: resolvedSurface,
+    customTileData: spiralCustomTileDataOverride ?? null,
+    tileScale: 1,
+    baseMaterial: baseMaterial,
     side: THREE.DoubleSide,
-    roughness, metalness,
   });
   return new THREE.Mesh(geo, mat);
 }

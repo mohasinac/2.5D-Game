@@ -438,6 +438,13 @@ export function defaultBridgeSection(): BridgeSection {
     hasLeftWall: true, hasRightWall: true,
     sideWallHeight: 5,
     material: 'abs',
+    color: 0x888888,
+    surface: 'plain',
+    customTileData: null,
+    tileScale: 1,
+    emissiveColor: 0x000000,
+    emissiveIntensity: 0,
+    opacity: 1,
   };
 }
 

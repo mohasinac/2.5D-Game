@@ -1167,6 +1167,32 @@ body {
   display: none;
 }
 
+/* ── Arena Sandbox — view mode bar ─────────────────────────────────────────── */
+.arena-view-bar {
+  position:       absolute;
+  bottom:         calc(8 * var(--mm));
+  left:           50%;
+  transform:      translateX(-50%);
+  display:        flex;
+  gap:            calc(4 * var(--mm));
+  background:     rgba(8, 8, 16, 0.82);
+  border:         calc(1 * var(--mm)) solid rgba(255, 107, 53, 0.25);
+  border-radius:  calc(4 * var(--mm));
+  padding:        calc(4 * var(--mm)) calc(8 * var(--mm));
+  pointer-events: auto;
+  z-index:        20;
+}
+.arena-view-btn {
+  font-size:      calc(13 * var(--mm));
+  padding:        calc(4 * var(--mm)) calc(10 * var(--mm));
+  opacity:        0.6;
+  transition:     opacity 0.15s, box-shadow 0.15s;
+}
+.arena-view-btn.active {
+  opacity:        1;
+  box-shadow:     0 0 calc(8 * var(--mm)) rgba(255, 107, 53, 0.5);
+}
+
 /* Single-row controls */
 .bey-bar-row {
   display:     flex;
@@ -1256,4 +1282,19 @@ body {
   color:       rgba(221, 232, 255, 0.5);
   margin-left: calc(4 * var(--mm));
   white-space: nowrap;
+}
+.prop-theme-row { align-items: flex-start; }
+.prop-theme-grid {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       calc(3 * var(--mm));
+  flex:      1;
+}
+.prop-theme-btn {
+  font-size: calc(9 * var(--mm));
+  padding:   calc(3 * var(--mm)) calc(7 * var(--mm));
+  border-width: calc(1 * var(--mm));
+}
+.prop-theme-btn:hover {
+  filter: brightness(1.3);
 }

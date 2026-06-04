@@ -5,7 +5,7 @@ import {
   DEG2RAD,
 } from '../config/arenaConstants';
 import {
-  TrapData, TrapShape, TrapEffect, TrapVariant, TrapDurationTier, SurfaceType, OpeningShape, ArenaData,
+  TrapData, TrapShape, TrapEffect, TrapVariant, TrapDurationTier, SurfaceType, OpeningShape, ArenaData, ArenaMaterial,
 } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from './materialBuilders';
 import { polarToLocalXZ, arenaSurfaceYAtArenaLocal } from './surfaceUtils';
@@ -142,10 +142,11 @@ export function buildTrapObjects(
 ): [THREE.Mesh, THREE.LineSegments, THREE.Mesh | null] {
   const plateGeo = _plateGeo(data.shape, data.dimX, data.dimZ);
   const plateMat = buildSurfaceMaterial({
-    color: data.color,
-    surface: data.surface,
-    tileScale: data.tileScale,
+    color: data.color, surface: data.surface, customTileData: data.customTileData, tileScale: data.tileScale, baseMaterial: data.baseMaterial,
   });
+  const bm = plateMat as THREE.MeshStandardMaterial;
+  bm.emissive.setHex(data.emissiveColor);
+  bm.emissiveIntensity = data.emissiveIntensity;
   const mesh = new THREE.Mesh(plateGeo, plateMat);
   mesh.rotation.y = data.rotY * DEG2RAD;
   _setTrapWorldPos(data, mesh, surfY);
@@ -188,8 +189,11 @@ export function applyTrap(data: TrapData, surfY: number): void {
   data.edges.rotation.copy(data.mesh.rotation);
 
   const plateMat = buildSurfaceMaterial({
-    color: data.color, surface: data.surface, tileScale: data.tileScale,
+    color: data.color, surface: data.surface, customTileData: data.customTileData, tileScale: data.tileScale, baseMaterial: data.baseMaterial,
   });
+  const pm = plateMat as THREE.MeshStandardMaterial;
+  pm.emissive.setHex(data.emissiveColor);
+  pm.emissiveIntensity = data.emissiveIntensity;
   (data.mesh.material as THREE.Material).dispose();
   data.mesh.material = plateMat;
 
@@ -240,9 +244,15 @@ export function defaultTrap(
     activationLimit: 0,
     speedPathId: null,
     durationTiers: [] as TrapDurationTier[],
+    baseMaterial: 'abs' as ArenaMaterial,
     color: 0xcc4400,
     surface: 'plain' as SurfaceType,
+    customTileData: null,
     tileScale: 1,
+    emissiveColor: 0x000000,
+    emissiveIntensity: 0,
+    presentStlb64: null,
+    presentColor: 0xaaaaaa,
     mesh, edges, variantMesh: null,
   };
 }

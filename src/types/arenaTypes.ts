@@ -5,6 +5,16 @@ export type OpeningShape = 'circle' | 'ellipse' | 'rectangle' | 'hexagon' | 'tri
 export type WallProfile  = 'parabolic' | 'straight' | 'step' | 'spiral';
 export type RampMode     = 'full' | 'one-side' | 'zigzag' | 'none';
 
+/* ── Particle VFX preset ─────────────────────────────────────────────────── */
+export type ParticlePreset = 'none' | 'embers' | 'snow' | 'sparks' | 'dust' | 'bubbles' | 'void_motes';
+
+/** Runtime particle system — returned by particleBuilders.ts, stored on ArenaData/ZoneData. Not saved. */
+export interface ParticleSystem {
+  points: THREE.Points;
+  tick(dt: number): void;
+  dispose(): void;
+}
+
 /* ── Surface material types ──────────────────────────────────────────────── */
 export type SurfaceType =
   | 'plain' | 'checker' | 'grid' | 'hex' | 'stripes' | 'dots'
@@ -97,13 +107,32 @@ export interface ArenaData {
   spiralLedgeHeight:  number;
   spiralRadiusFrac:   number;
   spiralMeshes:       THREE.Mesh[];
+  /* Steps / spiral appearance overrides */
+  stepsColor: number | null;
+  stepsSurface: SurfaceType | null;
+  stepsCustomTileData: string | null;
+  spiralColor: number | null;
+  spiralSurface: SurfaceType | null;
+  spiralCustomTileData: string | null;
+  /* Per-arena lighting */
+  lightColor: number;
+  lightIntensity: number;
+  lightPosY: number;
+  lightRange: number;
+  /* Particle VFX */
+  particlePreset: ParticlePreset;
+  /* Presentation STL overlay */
+  presentStlb64: string | null;
+  presentColor: number;
   /* Children */
   pitIds: string[]; zoneIds: string[]; wallIds: string[]; speedLineIds: string[];
-  /* Three.js */
+  /* Three.js — runtime only */
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   floorMesh: THREE.Mesh | null;
   islandMesh: THREE.Mesh | null;
   rimSeamMesh: THREE.Mesh | null;
+  light: THREE.PointLight | null;
+  particleSystem: ParticleSystem | null;
 }
 
 export interface PitData {
@@ -112,6 +141,8 @@ export interface PitData {
   radiusX: number; radiusZ: number; depth: number;
   sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  rimGlowColor: number;
+  rimGlowIntensity: number;
   posR: number; posAngle: number; rotY: number;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   seamMesh: THREE.Mesh;
@@ -125,6 +156,9 @@ export interface ZoneData {
   sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   fill: ZoneFill; fillColor: number | null; fillOpacity: number;
+  seamGlowColor: number;
+  seamGlowIntensity: number;
+  particlePreset: ParticlePreset;
   posR: number; posAngle: number; rotY: number;
   isMoat: boolean;
   innerRadiusX: number; innerRadiusZ: number;
@@ -135,6 +169,7 @@ export interface ZoneData {
   pitIds: string[]; zoneIds: string[]; speedLineIds: string[];
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   seamMesh: THREE.Mesh;
+  particleSystem: ParticleSystem | null;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -212,6 +247,10 @@ export interface SpeedLineData {
   color:     number;
   opacity:   number;
   glowColor: number | null;
+  customTileData: string | null;
+  tileScale: number;
+  presentStlb64: string | null;
+  presentColor: number;
 
   speedMultiplier:  number;
   entryCondition:   SpeedLineEntryCondition;
@@ -290,8 +329,15 @@ export interface WallData {
 
   color: number;
   surface: SurfaceType;
+  customTileData: string | null;
+  tileScale: number;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  opacity: number;
   /** Physics material. Walls allow: rubber|stone|abs|metal. Default: abs. */
   material: ArenaMaterial;
+  presentStlb64: string | null;
+  presentColor: number;
 
   mesh: THREE.Mesh | null;
   edges: THREE.LineSegments | null;
@@ -317,6 +363,13 @@ export interface BridgeSection {
   sideWallHeight: number;           // cm
   /** Physics material. Bridges allow: stone|abs|metal. Default: abs. */
   material: ArenaMaterial;
+  color: number;
+  surface: SurfaceType;
+  customTileData: string | null;
+  tileScale: number;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  opacity: number;
 }
 
 export interface BridgeSegmentData {
@@ -380,6 +433,8 @@ export interface BridgeData {
   section: BridgeSection;
   color: number;
   surface: SurfaceType;
+  presentStlb64: string | null;
+  presentColor: number;
   wallIds: string[];      // child wall ids (walls on bridge deck)
   group: THREE.Group;     // Three.js container for all segment meshes
 }
@@ -408,10 +463,15 @@ export interface ObstacleData {
   isDestructible: boolean;
   hitPoints: number;
   contactForceX: number; contactForceY: number; contactForceZ: number;
-  color: number; surface: SurfaceType; tileScale: number;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  opacity: number;
   material: ArenaMaterial;
   theme: ObstacleTheme;
   speedPathId: string | null;
+  presentStlb64: string | null;
+  presentColor: number;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
 }
 
@@ -464,7 +524,12 @@ export interface TrapData {
   activationLimit: number;
   speedPathId: string | null;
   durationTiers: TrapDurationTier[];
-  color: number; surface: SurfaceType; tileScale: number;
+  baseMaterial: ArenaMaterial;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  presentStlb64: string | null;
+  presentColor: number;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   variantMesh: THREE.Mesh | null;
 }
@@ -532,6 +597,11 @@ export interface PortalData {
   isBidirectional: boolean;
   color: number;
   glowColor: number;
+  surface: SurfaceType;
+  customTileData: string | null;
+  tileScale: number;
+  presentStlb64: string | null;
+  presentColor: number;
   mesh: THREE.Mesh;
   edges: THREE.LineSegments;
   ringMesh: THREE.Mesh | null;

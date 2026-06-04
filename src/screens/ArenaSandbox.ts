@@ -11,6 +11,8 @@ import {
   DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
   DEFAULT_ARENA_MATERIAL,
 } from '../config/arenaConstants';
+import { buildParticleSystem } from '../geometry/particleBuilders';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import {
   OpeningShape, WallProfile, SurfaceType, ChildHole, IslandHole,
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment, SpeedLineHandleType,
@@ -108,6 +110,9 @@ export class ArenaSandbox extends Sandbox {
   private _onPointerUp:   (e: PointerEvent) => void;
   private props:        PropertiesPanel;
   private selectedId:   string | null = null;
+  private _presentMeshes = new Map<string, THREE.Mesh>();
+  private _arenaViewMode: 'hitbox' | 'both' | 'present' = 'both';
+  private _viewBtns: HTMLButtonElement[] = [];
 
   /* ── Undo / Redo ── */
   private undoStack: string[] = [];
@@ -160,6 +165,20 @@ export class ArenaSandbox extends Sandbox {
     const rightPanel = this.addOverlayPanel('sandbox-right-panel');
     this.props = new PropertiesPanel(rightPanel);
     this.props.onClose = ()=>{ this.selectedId=null; this.sceneTree.clearSel(); this.props.showEmpty(); };
+
+    // View mode bottom bar
+    const viewBar = this.addOverlayPanel('arena-view-bar');
+    const viewModes: Array<['hitbox'|'both'|'present', string]> = [
+      ['hitbox', '⬡ Hitbox'], ['both', '◈ Both'], ['present', '✦ Visual'],
+    ];
+    for (const [mode, label] of viewModes) {
+      const btn = document.createElement('button');
+      btn.className = 'game-btn arena-view-btn' + (mode === 'both' ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { this._setViewMode(mode); });
+      viewBar.appendChild(btn);
+      this._viewBtns.push(btn);
+    }
 
     this.sceneTree.onSelect = (ids)=>{
       // Hide handles of previously selected speed line
@@ -415,6 +434,121 @@ export class ArenaSandbox extends Sandbox {
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
 
+  /* ── Arena light helpers ──────────────────────────────────────────────── */
+  private _createArenaLight(arena: ArenaData): void {
+    if (arena.light) { this.removeFromScene(arena.light); arena.light.dispose(); }
+    if (arena.lightIntensity <= 0) { arena.light = null; return; }
+    const light = new THREE.PointLight(arena.lightColor, arena.lightIntensity, arena.lightRange);
+    light.position.set(arena.posX, this.baseConfig.height + arena.posY + arena.lightPosY, arena.posZ);
+    this.addToScene(light);
+    arena.light = light;
+  }
+  private _updateArenaLight(arena: ArenaData): void {
+    if (!arena.light) { this._createArenaLight(arena); return; }
+    if (arena.lightIntensity <= 0) {
+      this.removeFromScene(arena.light); arena.light.dispose(); arena.light = null; return;
+    }
+    arena.light.color.setHex(arena.lightColor);
+    arena.light.intensity = arena.lightIntensity;
+    arena.light.distance = arena.lightRange;
+    arena.light.position.set(arena.posX, this.baseConfig.height + arena.posY + arena.lightPosY, arena.posZ);
+  }
+
+  /* ── Particle system helpers ──────────────────────────────────────────── */
+  private _createArenaParticles(arenaId: string, arena: ArenaData): void {
+    if (arena.particleSystem) { this.removeFromScene(arena.particleSystem.points); arena.particleSystem.dispose(); arena.particleSystem = null; }
+    if (arena.particlePreset === 'none') return;
+    const ps = buildParticleSystem(arena.particlePreset, arena.posX, arena.posZ, Math.max(arena.radiusX, arena.radiusZ), this.baseConfig.height + arena.posY);
+    this.addToScene(ps.points);
+    arena.particleSystem = ps;
+    void arenaId;
+  }
+  private _createZoneParticles(zone: ZoneData): void {
+    if (zone.particleSystem) { this.removeFromScene(zone.particleSystem.points); zone.particleSystem.dispose(); zone.particleSystem = null; }
+    if (zone.particlePreset === 'none') return;
+    const arena = this.arenas.get(zone.parentArenaId);
+    const baseY = arena ? this.baseConfig.height + arena.posY : this.baseConfig.height;
+    const { lx: cx, lz: cz } = polarToLocalXZ(zone.posR, zone.posAngle);
+    const wx = arena ? arena.posX + cx : cx;
+    const wz = arena ? arena.posZ + cz : cz;
+    const ps = buildParticleSystem(zone.particlePreset, wx, wz, Math.max(zone.radiusX, zone.radiusZ), baseY);
+    this.addToScene(ps.points);
+    zone.particleSystem = ps;
+  }
+
+  /* ── View mode ────────────────────────────────────────────────────────── */
+  private _setViewMode(mode: 'hitbox' | 'both' | 'present'): void {
+    this._arenaViewMode = mode;
+    this._viewBtns.forEach((btn, i) => {
+      const modes: Array<'hitbox'|'both'|'present'> = ['hitbox','both','present'];
+      btn.classList.toggle('active', modes[i] === mode);
+    });
+    this._applyViewMode();
+  }
+  private _applyViewMode(): void {
+    const showHitbox  = this._arenaViewMode !== 'present';
+    const showPresent = this._arenaViewMode !== 'hitbox';
+    // Hitbox objects
+    const hitboxSets: THREE.Object3D[][] = [];
+    for (const objs of this.sceneObjects.values()) hitboxSets.push(objs);
+    for (const objs of hitboxSets) for (const o of objs) o.visible = showHitbox;
+    // Present meshes
+    for (const [nodeId, pm] of this._presentMeshes) {
+      pm.visible = showPresent;
+      // If present is shown and hitbox hidden, keep hitbox hidden even if no present mesh
+      if (!showHitbox && showPresent) {
+        // The hitbox for this node was already hidden above; present mesh is visible
+      }
+      void nodeId;
+    }
+  }
+  private _loadPresentStl(nodeId: string, b64: string, color: number): void {
+    this._disposePresentMesh(nodeId);
+    const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const loader = new STLLoader();
+    const geo = loader.parse(bin.buffer);
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.1 });
+    const mesh = new THREE.Mesh(geo, mat);
+    // Position to match hitbox
+    const hitbox = this._getHitboxMesh(nodeId);
+    if (hitbox) { mesh.position.copy(hitbox.position); mesh.rotation.copy(hitbox.rotation); }
+    this.addToScene(mesh);
+    this._presentMeshes.set(nodeId, mesh);
+    this._applyViewMode();
+  }
+  private _disposePresentMesh(nodeId: string): void {
+    const pm = this._presentMeshes.get(nodeId);
+    if (!pm) return;
+    this.removeFromScene(pm);
+    pm.geometry.dispose();
+    (pm.material as THREE.Material).dispose();
+    this._presentMeshes.delete(nodeId);
+  }
+  private _getHitboxMesh(nodeId: string): THREE.Mesh | null {
+    const arena = this.arenas.get(nodeId); if (arena) return arena.mesh;
+    const obs = this.obstacles.get(nodeId); if (obs) return obs.mesh;
+    const trap = this.traps.get(nodeId); if (trap) return trap.mesh;
+    const portal = this.portals.get(nodeId); if (portal) return portal.mesh;
+    const wall = this.walls.get(nodeId); if (wall?.mesh) return wall.mesh;
+    return null;
+  }
+  _fileInputStl(nodeId: string, color: number, onLoaded: (b64: string) => void): void {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.stl';
+    inp.onchange = () => {
+      const file = inp.files?.[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const ab = reader.result as ArrayBuffer;
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(ab)));
+        this._loadPresentStl(nodeId, b64, color);
+        onLoaded(b64);
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    inp.click();
+  }
+
   /* ── Dispose helpers ── */
   private disposeArena(arena: ArenaData): void {
     for(const m of arena.spiralMeshes ?? []){
@@ -430,6 +564,8 @@ export class ArenaSandbox extends Sandbox {
     if(arena.floorMesh){ arena.floorMesh.geometry.dispose();(arena.floorMesh.material as THREE.Material).dispose();this.removeFromScene(arena.floorMesh); }
     if(arena.islandMesh){ arena.islandMesh.geometry.dispose();(arena.islandMesh.material as THREE.Material).dispose();this.removeFromScene(arena.islandMesh); }
     if(arena.rimSeamMesh){ arena.rimSeamMesh.geometry.dispose();(arena.rimSeamMesh.material as THREE.Material).dispose();this.removeFromScene(arena.rimSeamMesh); }
+    if(arena.light){ this.removeFromScene(arena.light); arena.light.dispose(); arena.light = null; }
+    if(arena.particleSystem){ this.removeFromScene(arena.particleSystem.points); arena.particleSystem.dispose(); arena.particleSystem = null; }
   }
   private disposePit(pit: PitData): void {
     pit.mesh.geometry.dispose();(pit.mesh.material as THREE.Material).dispose();
@@ -440,6 +576,7 @@ export class ArenaSandbox extends Sandbox {
     zone.mesh.geometry.dispose();(zone.mesh.material as THREE.Material).dispose();
     zone.edges.geometry.dispose();(zone.edges.material as THREE.Material).dispose();
     if(zone.seamMesh){ zone.seamMesh.geometry.dispose();(zone.seamMesh.material as THREE.Material).dispose(); }
+    if(zone.particleSystem){ this.removeFromScene(zone.particleSystem.points); zone.particleSystem.dispose(); zone.particleSystem = null; }
   }
 
   /* ── Speed line helpers ───────────────────────────────────────────────── */
@@ -711,19 +848,29 @@ export class ArenaSandbox extends Sandbox {
     const geo  = buildWallGeometry(wall, rimPts, rimY, cx, cz);
     const eGeo = buildWallEdgeGeometry(wall, rimPts, rimY, cx, cz);
 
+    const wallMat = buildSurfaceMaterial({
+      color: wall.color, surface: wall.surface,
+      customTileData: wall.customTileData, tileScale: wall.tileScale,
+      transparent: wall.opacity < 1, opacity: wall.opacity,
+    });
+    (wallMat as THREE.MeshStandardMaterial).emissive.setHex(wall.emissiveColor);
+    (wallMat as THREE.MeshStandardMaterial).emissiveIntensity = wall.emissiveIntensity;
+    (wallMat as THREE.MeshStandardMaterial).depthWrite = wall.opacity >= 1;
     if(wall.mesh){
       wall.mesh.geometry.dispose();
       wall.mesh.geometry = geo;
+      (wall.mesh.material as THREE.Material).dispose();
+      wall.mesh.material = wallMat;
     } else {
-      const mat = buildSurfaceMaterial({ color:wall.color, surface:wall.surface, customTileData:null, tileScale:20 });
-      wall.mesh = new THREE.Mesh(geo, mat);
+      wall.mesh = new THREE.Mesh(geo, wallMat);
       scene.add(wall.mesh);
     }
+    const edgeCol = new THREE.Color(wall.color).lerp(new THREE.Color(0xffffff), 0.5);
     if(wall.edges){
       wall.edges.geometry.dispose();
       wall.edges.geometry = eGeo;
+      (wall.edges.material as THREE.LineBasicMaterial).color.copy(edgeCol);
     } else {
-      const edgeCol = new THREE.Color(wall.color).lerp(new THREE.Color(0xffffff), 0.5);
       wall.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
       scene.add(wall.edges);
     }
@@ -808,6 +955,12 @@ export class ArenaSandbox extends Sandbox {
       contactForceX: os.contactForceX, contactForceY: os.contactForceY, contactForceZ: os.contactForceZ,
       color: os.color, surface: os.surface, tileScale: os.tileScale,
       material: os.material, speedPathId: os.speedPathId,
+      customTileData:    os.customTileData    ?? null,
+      emissiveColor:     os.emissiveColor     ?? 0x000000,
+      emissiveIntensity: os.emissiveIntensity ?? 0,
+      opacity:           os.opacity           ?? 1,
+      presentStlb64:     os.presentStlb64     ?? null,
+      presentColor:      os.presentColor      ?? 0xaaaaaa,
     });
     const [mesh, edges] = buildObstacleObjects(data);
     data.mesh = mesh; data.edges = edges;
@@ -884,6 +1037,12 @@ export class ArenaSandbox extends Sandbox {
       activationLimit: ts.activationLimit, speedPathId: ts.speedPathId,
       durationTiers: ts.durationTiers.map(d=>({...d})),
       color: ts.color, surface: ts.surface, tileScale: ts.tileScale,
+      baseMaterial:      ts.baseMaterial      ?? 'abs',
+      customTileData:    ts.customTileData    ?? null,
+      emissiveColor:     ts.emissiveColor     ?? 0x000000,
+      emissiveIntensity: ts.emissiveIntensity ?? 0,
+      presentStlb64:     ts.presentStlb64     ?? null,
+      presentColor:      ts.presentColor      ?? 0xaaaaaa,
     });
     const surfY = this._getTrapSurfY(data);
     const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
@@ -954,6 +1113,11 @@ export class ArenaSandbox extends Sandbox {
       destPosX: ps.destPosX, destPosY: ps.destPosY, destPosZ: ps.destPosZ,
       exitVelScale: ps.exitVelScale, exitRotY: ps.exitRotY, isBidirectional: ps.isBidirectional,
       color: ps.color, glowColor: ps.glowColor,
+      surface:       ps.surface       ?? 'plain',
+      customTileData:ps.customTileData?? null,
+      tileScale:     ps.tileScale     ?? 1,
+      presentStlb64: ps.presentStlb64 ?? null,
+      presentColor:  ps.presentColor  ?? 0xaaaaaa,
     });
     const surfY = this._getPortalSurfY(data);
     const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
@@ -1007,27 +1171,36 @@ export class ArenaSandbox extends Sandbox {
     const scene=this.getScene(); if(!scene) return;
     const startPose=this._segmentStartPose(seg);
 
-    const color  = seg.color   ?? bridge.color;
-    const surface: SurfaceType = (seg.surface ?? bridge.surface) as SurfaceType;
+    const sec = bridge.section;
+    const color: number = sec.color;
+    const surface: SurfaceType = sec.surface;
 
-    const geo  = buildSegmentDeckGeometry(seg, startPose, bridge.section);
-    const eGeo = buildSegmentEdgeGeometry(seg, startPose, bridge.section);
+    const geo  = buildSegmentDeckGeometry(seg, startPose, sec);
+    const eGeo = buildSegmentEdgeGeometry(seg, startPose, sec);
 
+    const segMat = buildSurfaceMaterial({
+      color, surface, customTileData: sec.customTileData, tileScale: sec.tileScale,
+      transparent: sec.opacity < 1, opacity: sec.opacity,
+    });
+    (segMat as THREE.MeshStandardMaterial).emissive.setHex(sec.emissiveColor);
+    (segMat as THREE.MeshStandardMaterial).emissiveIntensity = sec.emissiveIntensity;
+    (segMat as THREE.MeshStandardMaterial).depthWrite = sec.opacity >= 1;
     if(seg.mesh){
       seg.mesh.geometry.dispose();
       (seg.mesh.material as THREE.Material).dispose();
       seg.mesh.geometry = geo;
-      (seg.mesh.material as THREE.Material) = buildSurfaceMaterial({ color, surface, customTileData:null, tileScale:20 });
+      seg.mesh.material = segMat;
     } else {
-      seg.mesh = new THREE.Mesh(geo, buildSurfaceMaterial({ color, surface, customTileData:null, tileScale:20 }));
+      seg.mesh = new THREE.Mesh(geo, segMat);
       bridge.group.add(seg.mesh);
       scene.add(bridge.group);
     }
+    const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
     if(seg.edges){
       seg.edges.geometry.dispose();
       seg.edges.geometry = eGeo;
+      (seg.edges.material as THREE.LineBasicMaterial).color.copy(edgeCol);
     } else {
-      const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
       seg.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
       bridge.group.add(seg.edges);
     }
@@ -1059,6 +1232,7 @@ export class ArenaSandbox extends Sandbox {
       color: 0xaaaacc,
       surface: 'metal' as SurfaceType,
       wallIds: [],
+      presentStlb64: null, presentColor: 0xaaaaaa,
       group,
     };
     this.bridges.set(bid, bridge);
@@ -1125,6 +1299,12 @@ export class ArenaSandbox extends Sandbox {
 
   protected override onTick(dtMs: number): void {
     const dt = dtMs / 1000;
+    for (const arena of this.arenas.values()) {
+      if (arena.particleSystem) arena.particleSystem.tick(dt);
+    }
+    for (const zone of this.zones.values()) {
+      if (zone.particleSystem) zone.particleSystem.tick(dt);
+    }
     for (const rot of this.rotations.values()) {
       if (!rot.enabled || !rot.pivotGroup) continue;
       if (rot.mode === 'continuous') {
@@ -1763,6 +1943,7 @@ export class ArenaSandbox extends Sandbox {
     this.addToScene(mesh,edges,rim,...(data.spiralMeshes??[]));
     this.sceneObjects.set(id,[mesh,edges,rim]);
     this.arenas.set(id,data);
+    this._createArenaLight(data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
       addChildButtons:[
         {label:'P+',   title:'Add pit',         className:'pit-btn',  onClick:()=>this.addPit(id)},
@@ -2059,6 +2240,8 @@ export class ArenaSandbox extends Sandbox {
       openingShape:ps.openingShape,
       radiusX:ps.radiusX,radiusZ:ps.radiusZ,depth:ps.depth,sides:ps.sides,starInner:ps.starInner,
       color:ps.color,surface:ps.surface,customTileData:ps.customTileData,tileScale:ps.tileScale,
+      rimGlowColor:     ps.rimGlowColor     ?? 0x000000,
+      rimGlowIntensity: ps.rimGlowIntensity ?? 0,
       posR:ps.posR,posAngle:ps.posAngle,rotY:ps.rotY,
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
@@ -2080,6 +2263,9 @@ export class ArenaSandbox extends Sandbox {
       radiusX:zs.radiusX,radiusZ:zs.radiusZ,depth:zs.depth,sides:zs.sides,starInner:zs.starInner,
       color:zs.color,surface:zs.surface,customTileData:zs.customTileData,tileScale:zs.tileScale,
       fill:zs.fill,fillColor:zs.fillColor,fillOpacity:zs.fillOpacity,
+      seamGlowColor:  zs.seamGlowColor  ?? 0x000000,
+      seamGlowIntensity: zs.seamGlowIntensity ?? 0,
+      particlePreset: zs.particlePreset ?? 'none',
       posR:zs.posR,posAngle:zs.posAngle,rotY:zs.rotY,
       isMoat:zs.isMoat,innerRadiusX:zs.innerRadiusX,innerRadiusZ:zs.innerRadiusZ,
       innerOpeningShape:zs.innerOpeningShape,innerSides:zs.innerSides,innerStarInner:zs.innerStarInner,
@@ -2087,6 +2273,7 @@ export class ArenaSandbox extends Sandbox {
       pitIds:[],zoneIds:[],speedLineIds:[],
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
+      particleSystem: null,
     };
     this.zones.set(zs.id,zone);
     data.zoneIds.push(zs.id);
@@ -2103,6 +2290,7 @@ export class ArenaSandbox extends Sandbox {
     });
     for(const cps of zs.pits)  this.restorePitSave(cps,arenaId,zs.id,data);
     for(const czs of zs.zones) this.restoreZoneSave(czs,arenaId,zs.id,data);
+    this._createZoneParticles(zone);
   }
 
   /** Core load — restore arenas from a config object (shared by loadArena and undo/redo). */
@@ -2133,6 +2321,20 @@ export class ArenaSandbox extends Sandbox {
         spiralLedgeHeight:as.spiralLedgeHeight?? DEFAULT_SPIRAL_LEDGE_H,
         spiralRadiusFrac: as.spiralRadiusFrac ?? DEFAULT_SPIRAL_RADIUS_FRAC,
         spiralMeshes:     [],
+        stepsColor:         as.stepsColor         ?? null,
+        stepsSurface:       as.stepsSurface        ?? null,
+        stepsCustomTileData:as.stepsCustomTileData ?? null,
+        spiralColor:         as.spiralColor         ?? null,
+        spiralSurface:       as.spiralSurface        ?? null,
+        spiralCustomTileData:as.spiralCustomTileData ?? null,
+        lightColor:     as.lightColor     ?? 0xffffff,
+        lightIntensity: as.lightIntensity ?? 0,
+        lightPosY:      as.lightPosY      ?? 40,
+        lightRange:     as.lightRange     ?? 200,
+        particlePreset: as.particlePreset ?? 'none',
+        presentStlb64:  as.presentStlb64  ?? null,
+        presentColor:   as.presentColor   ?? 0xaaaaaa,
+        light: null, particleSystem: null,
         pitIds:[],zoneIds:[],wallIds:[],speedLineIds:[],
         mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
         floorMesh:null,islandMesh:null,rimSeamMesh:null,
@@ -2183,6 +2385,12 @@ export class ArenaSandbox extends Sandbox {
       }
 
       this.sceneObjects.set(as.id,objs);
+
+      // Create PointLight and particle system
+      this._createArenaLight(data);
+      this._createArenaParticles(as.id, data);
+      // Restore present STL if saved
+      if(data.presentStlb64) this._loadPresentStl(as.id, data.presentStlb64, data.presentColor);
 
       // Restore walls attached to this arena
       for(const ws of (as.walls??[])) this._restoreWallSave(ws);
@@ -2235,6 +2443,13 @@ export class ArenaSandbox extends Sandbox {
       isDouble:ws.isDouble, peakHeight:ws.peakHeight, peakTilt:ws.peakTilt,
       holes:ws.holes.map(h=>({...h})),
       color:ws.color, surface:ws.surface, material:ws.material,
+      customTileData:   ws.customTileData   ?? null,
+      tileScale:        ws.tileScale        ?? 20,
+      emissiveColor:    ws.emissiveColor    ?? 0x000000,
+      emissiveIntensity:ws.emissiveIntensity?? 0,
+      opacity:          ws.opacity          ?? 1,
+      presentStlb64:    ws.presentStlb64    ?? null,
+      presentColor:     ws.presentColor     ?? 0xaaaaaa,
       mesh:null, edges:null,
     };
     this.walls.set(ws.id, wall);
@@ -2260,6 +2475,7 @@ export class ArenaSandbox extends Sandbox {
       section:{ ...bs.section },
       color:bs.color, surface:bs.surface as SurfaceType,
       wallIds:[],
+      presentStlb64: bs.presentStlb64 ?? null, presentColor: bs.presentColor ?? 0xaaaaaa,
       group,
     };
     this.bridges.set(bs.id, bridge);

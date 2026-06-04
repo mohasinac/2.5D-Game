@@ -33,9 +33,16 @@ export function buildObstacleObjects(data: ObstacleData): [THREE.Mesh, THREE.Lin
   const mat = buildSurfaceMaterial({
     color: data.color,
     surface: data.surface,
+    customTileData: data.customTileData,
     tileScale: data.tileScale,
     baseMaterial: data.material,
+    transparent: data.opacity < 1,
+    opacity: data.opacity,
   });
+  const m = mat as THREE.MeshStandardMaterial;
+  m.emissive.setHex(data.emissiveColor);
+  m.emissiveIntensity = data.emissiveIntensity;
+  if (data.opacity < 1) { m.transparent = true; m.opacity = data.opacity; m.depthWrite = false; }
   const geo = _shapeGeometry(data);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.castShadow = true;
@@ -69,9 +76,16 @@ export function applyObstacle(data: ObstacleData): void {
   const mat = buildSurfaceMaterial({
     color: data.color,
     surface: data.surface,
+    customTileData: data.customTileData,
     tileScale: data.tileScale,
     baseMaterial: data.material,
+    transparent: data.opacity < 1,
+    opacity: data.opacity,
   });
+  const m = mat as THREE.MeshStandardMaterial;
+  m.emissive.setHex(data.emissiveColor);
+  m.emissiveIntensity = data.emissiveIntensity;
+  if (data.opacity < 1) { m.transparent = true; m.opacity = data.opacity; m.depthWrite = false; }
   (data.mesh.material as THREE.Material).dispose();
   data.mesh.material = mat;
 }
@@ -91,10 +105,16 @@ export function defaultObstacle(name: string, id: string, baseHeight: number): O
     contactForceX: 0, contactForceY: 0, contactForceZ: 0,
     color: 0x888888,
     surface: 'plain' as SurfaceType,
+    customTileData: null,
     tileScale: 1,
+    emissiveColor: 0x000000,
+    emissiveIntensity: 0,
+    opacity: 1,
     material: DEFAULT_ARENA_MATERIAL as ArenaMaterial,
     theme: 'default',
     speedPathId: null,
+    presentStlb64: null,
+    presentColor: 0xaaaaaa,
     mesh, edges,
   };
 }

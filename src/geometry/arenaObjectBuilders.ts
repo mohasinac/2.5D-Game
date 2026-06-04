@@ -83,7 +83,10 @@ function buildSpiralMeshes(data: ArenaData, scene: THREE.Scene): THREE.Mesh[] {
   const meshes: THREE.Mesh[] = [];
   if (!usesSpiralProfile(data)) return meshes;
   for (let hi = 0; hi < data.spiralCount; hi++) {
-    const m = buildSpiralLedgeMesh(data, 0, hi, data.spiralCount, data.baseMaterial);
+    const m = buildSpiralLedgeMesh(
+      data, 0, hi, data.spiralCount, data.baseMaterial,
+      data.spiralColor, data.spiralSurface, data.spiralCustomTileData,
+    );
     m.position.set(data.posX, data.posY, data.posZ);
     m.rotation.y = data.rotY;
     scene.add(m);
@@ -183,6 +186,8 @@ export function buildPitObjects(
   edges.position.set(wx, 0, wz); edges.rotation.y = wRotY;
 
   const seamMat = buildSurfaceMaterial({ color:pit.color, surface:pit.surface, customTileData:pit.customTileData, tileScale:pit.tileScale });
+  (seamMat as THREE.MeshStandardMaterial).emissive.setHex(pit.rimGlowColor);
+  (seamMat as THREE.MeshStandardMaterial).emissiveIntensity = pit.rimGlowIntensity;
   const seamMesh = new THREE.Mesh(buildScoopSeam(pts, cx, cz, pitRotY, surfFn), seamMat);
   seamMesh.position.set(wx, 0, wz); seamMesh.rotation.y = wRotY;
 
@@ -203,6 +208,9 @@ export function applyPit(
 
   pit.seamMesh.geometry.dispose();
   pit.seamMesh.geometry = buildScoopSeam(pts, cx, cz, pitRotY, surfFn);
+  const seamM = pit.seamMesh.material as THREE.MeshStandardMaterial;
+  seamM.emissive.setHex(pit.rimGlowColor);
+  seamM.emissiveIntensity = pit.rimGlowIntensity;
 
   const { wx, wz, wRotY } = childWorldPos(arena, pit);
   for (const obj of [pit.mesh, pit.edges, pit.seamMesh]) { obj.position.set(wx, 0, wz); obj.rotation.y = wRotY; }
@@ -234,7 +242,10 @@ export function buildZoneObjects(
   const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: edgeColor(fc.color) }));
   edges.position.set(wx, 0, wz); edges.rotation.y = wRotY;
 
-  const seamMesh = new THREE.Mesh(buildScoopSeam(pts, zoneCX, zoneCZ, zoneRotY, surfFn), buildFillBowlMaterial(fc, zone.fillOpacity));
+  const seamMat = buildFillBowlMaterial(fc, zone.fillOpacity);
+  (seamMat as THREE.MeshStandardMaterial).emissive.setHex(zone.seamGlowColor);
+  (seamMat as THREE.MeshStandardMaterial).emissiveIntensity = zone.seamGlowIntensity;
+  const seamMesh = new THREE.Mesh(buildScoopSeam(pts, zoneCX, zoneCZ, zoneRotY, surfFn), seamMat);
   seamMesh.position.set(wx, 0, wz); seamMesh.rotation.y = wRotY;
 
   return [mesh, edges, seamMesh];
@@ -269,7 +280,10 @@ export function applyZone(
   zone.seamMesh.geometry.dispose();
   zone.seamMesh.geometry = buildScoopSeam(pts, zoneCX, zoneCZ, zoneRotY, surfFn);
   (zone.seamMesh.material as THREE.Material).dispose();
-  zone.seamMesh.material = buildFillBowlMaterial(fc, zone.fillOpacity);
+  const newSeamMat = buildFillBowlMaterial(fc, zone.fillOpacity);
+  (newSeamMat as THREE.MeshStandardMaterial).emissive.setHex(zone.seamGlowColor);
+  (newSeamMat as THREE.MeshStandardMaterial).emissiveIntensity = zone.seamGlowIntensity;
+  zone.seamMesh.material = newSeamMat;
   zone.seamMesh.position.set(wx, 0, wz); zone.seamMesh.rotation.y = wRotY;
 }
 
@@ -301,6 +315,8 @@ export function defaultSpeedLine(
     oscillate: false, oscAxis: SL.DEFAULT_OSC_AXIS,
     oscAmplitude: SL.DEFAULT_OSC_AMP, oscFrequency: SL.DEFAULT_OSC_FREQ, oscPhase: SL.DEFAULT_OSC_PHASE,
     width: SL.DEFAULT_WIDTH, color: SL.DEFAULT_COLOR, opacity: SL.DEFAULT_OPACITY, glowColor: null,
+    customTileData: null, tileScale: 1,
+    presentStlb64: null, presentColor: 0xaaaaaa,
     speedMultiplier: SL.DEFAULT_SPEED_MULT,
     entryCondition: 'always',
     direction: SL.DEFAULT_DIRECTION, exitBehavior: SL.DEFAULT_EXIT,
@@ -331,12 +347,19 @@ export function buildSpeedLineObjects(
   const ribbonGeo = buildRibbon3D(pts, normals, sl.width);
   const isInactive = sl.activationMode !== 'always';
   const effectiveOpacity = isInactive ? sl.opacity * SL.INACTIVE_OPACITY_MULT : sl.opacity;
-  const mat = new THREE.MeshStandardMaterial({
-    color: sl.color, emissive: sl.glowColor ?? sl.color,
-    emissiveIntensity: sl.glowColor ? 0.6 : 0.2,
-    transparent: true, opacity: effectiveOpacity,
-    side: THREE.DoubleSide, depthWrite: false,
+  const ribbonSurface = sl.customTileData ? 'custom_png' as const : 'plain' as const;
+  const mat = buildSurfaceMaterial({
+    color: sl.color,
+    surface: ribbonSurface,
+    customTileData: sl.customTileData,
+    tileScale: sl.tileScale,
+    transparent: true,
+    opacity: effectiveOpacity,
+    side: THREE.DoubleSide,
   });
+  (mat as THREE.MeshStandardMaterial).emissive.setHex(sl.glowColor ?? sl.color);
+  (mat as THREE.MeshStandardMaterial).emissiveIntensity = sl.glowColor ? 0.6 : 0.2;
+  (mat as THREE.MeshStandardMaterial).depthWrite = false;
   const mesh = new THREE.Mesh(ribbonGeo, mat);
 
   // Centerline edge wire
@@ -425,10 +448,16 @@ export function defaultArena(name: string): ArenaData {
     spiralCount: DEFAULT_SPIRAL_COUNT, spiralLedgeWidth: DEFAULT_SPIRAL_LEDGE_W,
     spiralLedgeHeight: DEFAULT_SPIRAL_LEDGE_H, spiralRadiusFrac: DEFAULT_SPIRAL_RADIUS_FRAC,
     spiralMeshes: [],
+    stepsColor: null, stepsSurface: null, stepsCustomTileData: null,
+    spiralColor: null, spiralSurface: null, spiralCustomTileData: null,
+    lightColor: 0xffffff, lightIntensity: 0, lightPosY: 40, lightRange: 200,
+    particlePreset: 'none',
+    presentStlb64: null, presentColor: 0xaaaaaa,
     pitIds: [], zoneIds: [], wallIds: [], speedLineIds: [],
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,
     floorMesh: null, islandMesh: null, rimSeamMesh: null,
+    light: null, particleSystem: null,
   };
 }
 
@@ -441,6 +470,7 @@ export function defaultPit(
     radiusX: 10, radiusZ: 10, depth: 8,
     sides: 5, starInner: 0.5, color: 0x555555,
     surface: 'plain', customTileData: null, tileScale: 10,
+    rimGlowColor: 0x000000, rimGlowIntensity: 0,
     posR: 0, posAngle: 0, rotY: 0,
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,
@@ -458,6 +488,8 @@ export function defaultZone(
     sides: 5, starInner: 0.5, color: 0x336699,
     surface: 'plain', customTileData: null, tileScale: 10,
     fill: 'water', fillColor: null, fillOpacity: 0.65,
+    seamGlowColor: 0x000000, seamGlowIntensity: 0,
+    particlePreset: 'none',
     posR: 0, posAngle: 0, rotY: 0,
     isMoat: false, innerRadiusX: 8, innerRadiusZ: 8,
     innerOpeningShape: 'circle', innerSides: 5, innerStarInner: 0.5,
@@ -466,5 +498,6 @@ export function defaultZone(
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,
     seamMesh: null as unknown as THREE.Mesh,
+    particleSystem: null,
   };
 }

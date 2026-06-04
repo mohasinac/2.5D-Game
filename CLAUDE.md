@@ -141,12 +141,13 @@ src/
                                   DeleteGroupCmd, UpdateGroupCmd, MoveNodeCmd
   geometry/
     sectorBuilders.ts           — ISectorGeometryBuilder + SolidSectorBuilder + HollowSectorBuilder + getSectorBuilder()
-    wallBuilders.ts             — Wall mesh/edge builders; arcFilterPts; defaultWallData
-    bridgeSegmentBuilders.ts    — Bridge segment path samplers; cross-section sweep; SegmentPose; defaultSegment
+    wallBuilders.ts             — Wall mesh/edge builders; arcFilterPts; defaultWallData (incl. emissive/opacity/presentStlb64)
+    bridgeSegmentBuilders.ts    — Bridge segment path samplers; cross-section sweep; SegmentPose; defaultSegment; defaultBridgeSection (incl. color/surface/emissive/opacity)
     speedLineBuilders.ts        — Speed line path computation; ribbon mesh; arrow/handle/marker builders; overlap detection
-    obstacleBuilders.ts         — 6-shape obstacle geometry; buildObstacleObjects; applyObstacle; defaultObstacle
-    trapBuilders.ts             — Trap plate + variant meshes; buildTrapObjects; trapSurfY; defaultTrap
-    portalBuilders.ts           — Portal pad + torus ring; buildPortalObjects; portalSurfY; defaultPortal
+    obstacleBuilders.ts         — 6-shape obstacle geometry; buildObstacleObjects; applyObstacle; defaultObstacle (incl. emissive/opacity/presentStlb64)
+    trapBuilders.ts             — Trap plate + variant meshes; buildTrapObjects; trapSurfY; defaultTrap (incl. baseMaterial/emissive/presentStlb64)
+    portalBuilders.ts           — Portal pad + torus ring; buildPortalObjects; portalSurfY; defaultPortal (incl. surface/customTileData/presentStlb64)
+    particleBuilders.ts         — NEW: ParticleSystem interface; buildParticleSystem(preset, cx, cz, radius, baseY); 6 presets: embers/snow/sparks/dust/bubbles/void_motes
     [arena geometry files...]
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
@@ -154,14 +155,14 @@ src/
   animation/
     BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
-    AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow helpers
-    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal
+    AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow/themeRow helpers; themeRow renders 7-button VisualTheme quick-pick grid
+    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal; all showX() methods accept optional onStlImport/onStlClear callbacks
     BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
     SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click
     dialog.ts                   — gameConfirm() modal utility
     arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal save interfaces
   config/
-    arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + wall/bridge/obstacle/trap/portal defaults + BUFF_TIER_PRESETS
+    arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + VISUAL_THEME_PRESETS (7 themes) + ARENA_LIGHT_PRESETS (6 presets) + BUFF_TIER_PRESETS
 ```
 
 ## Running
@@ -703,6 +704,15 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - Calling `applyWall` for bridge-type walls from outside `applyBridgeFromSegment` — bridge walls rebuild with their parent bridge.
 - Skipping `rebuildDependentsOf(arenaId)` after an arena geometry change — omitting it leaves rim walls and anchored bridges stale.
 - Adding a `version` field to `ArenaConfig` or any save interface — the project is in development; saves are discarded on parse error, no migration needed.
+- **Presentational STL view mode**: `_arenaViewMode` (`'hitbox'|'both'|'present'`) is toggled by the **⬡ Hitbox / ◈ Both / ✦ Visual** bottom bar. `_applyViewMode()` sets `.visible` on all hitbox objects and `_presentMeshes`. Call `_applyViewMode()` any time a present mesh is added/removed. Default mode is `'both'`.
+- **Present mesh node IDs**: `_presentMeshes` is keyed by node ID (`wall.id`, `arena.id`, etc.). Call `_loadPresentStl(nodeId, b64, color)` to add, `_disposePresentMesh(nodeId)` to remove. The STL file picker is `_fileInputStl(nodeId, color, onLoaded)`.
+- **Arena PointLight disposal**: `disposeArena` disposes `arena.light` explicitly. If you add light creation, always pair it with disposal. `_createArenaLight` skips light when `lightIntensity === 0`.
+- **Particle system disposal**: `disposeArena` and `disposeZone` dispose `particleSystem.points` from scene and call `.dispose()`. `onTick` calls `.tick(dt)` for all live particle systems. ParticlePreset `'none'` means no system is created.
+- **surfaceRow proxy bug (do not re-introduce)**: `surfaceRow(target, onChange)` mutates `target.surface` and `target.customTileData` directly. Always pass the actual data object (wall, trap, portal, etc.) — never a temporary `{ surface, customTileData: null }` proxy, or `customTileData` changes will be lost.
+- **TrapData.baseMaterial vs material**: TrapData has `baseMaterial: ArenaMaterial`, not `material`. When calling `_wallMaterialRow` for a trap, wrap it: `const proxy = { material: data.baseMaterial }; _wallMaterialRow(proxy, ..., () => { data.baseMaterial = proxy.material; onChange(); })`.
+- **BridgeSection is the source of truth for deck appearance**: `bridge.section.color/surface/customTileData/tileScale/emissiveColor/emissiveIntensity/opacity` drive all deck rendering. The old `bridge.color` and `bridge.surface` legacy fields are unused — do not wire them in new UI or geometry code.
+- **Steps/Spiral appearance overrides**: `ArenaData.stepsColor/stepsSurface/stepsCustomTileData` (null = inherit arena color) and `spiralColor/spiralSurface/spiralCustomTileData` are passed to `buildSteppedBowl` / `buildSpiralLedgeMesh`. When null, the builder falls back to `lightColor(arena.color)`.
+- **Particle builders live in `particleBuilders.ts`**: `buildParticleSystem(preset, cx, cz, radius, baseY)` returns `{ points: THREE.Points, tick(dt): void, dispose(): void }`. Never inline particle creation in ArenaSandbox.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.
@@ -714,3 +724,4 @@ Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers
 - If it assembles a Three.js Mesh + edges for arenas/pits/zones: it belongs in `arenaObjectBuilders.ts`.
 - Wall geometry → `wallBuilders.ts`. Bridge path/sweep geometry → `bridgeSegmentBuilders.ts`. Speed line ribbon/path → `speedLineBuilders.ts`.
 - Obstacle 3D shapes → `obstacleBuilders.ts`. Trap plate + variants → `trapBuilders.ts`. Portal pad + ring → `portalBuilders.ts`. None of these belong in `arenaObjectBuilders.ts`.
+- Ambient particle VFX → `particleBuilders.ts`. Never create `THREE.Points` in `ArenaSandbox.ts` directly.

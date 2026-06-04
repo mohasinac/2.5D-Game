@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {
   APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL,
-  MIN_OBSTACLE_DIM, MIN_TRAP_DIM, BUFF_TIER_PRESETS,
+  MIN_OBSTACLE_DIM, MIN_TRAP_DIM, BUFF_TIER_PRESETS, ARENA_LIGHT_PRESETS,
 } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment,
@@ -13,6 +13,7 @@ import {
   TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
   PortalData, PortalDestType,
   RotationData, BridgeSnapRule,
+  ParticlePreset,
 } from '../types/arenaTypes';
 import {
   templateStraight, templateCircle, templateSpiral, templateZigzag, templateWave,
@@ -65,6 +66,10 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onRename: (name: string) => void,
     onColorChange: () => void,
     onSurfaceChange: () => void,
+    onLightChange?: () => void,
+    onParticleChange?: () => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
     this.section('NAME');
@@ -115,12 +120,79 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Y (tower)', data.posY, 0, 200, 1, v=>{ data.posY=v; onGeomChange(); });
     this.numRow('Rot Y °',  THREE.MathUtils.radToDeg(data.rotY), -180, 180, 1,
       v=>{ data.rotY=THREE.MathUtils.degToRad(v); onGeomChange(); });
+
+    if (data.wallProfile === 'step') {
+      this.section('STEPS APPEARANCE');
+      this.colorRow('Steps Color', data.stepsColor ?? data.color, v => { data.stepsColor = v; onFullChange(); });
+      const stepsProxy = {
+        surface: (data.stepsSurface ?? 'plain') as SurfaceType,
+        customTileData: data.stepsCustomTileData,
+        tileScale: 1,
+        color: data.stepsColor ?? data.color,
+      };
+      this.surfaceRow(stepsProxy, () => {
+        data.stepsSurface = stepsProxy.surface;
+        data.stepsCustomTileData = stepsProxy.customTileData;
+        onFullChange();
+      });
+    }
+
+    if (data.wallProfile === 'spiral' && data.spiralCount > 0) {
+      this.section('SPIRAL APPEARANCE');
+      this.colorRow('Spiral Color', data.spiralColor ?? data.color, v => { data.spiralColor = v; onFullChange(); });
+      const spiralProxy = {
+        surface: (data.spiralSurface ?? 'plain') as SurfaceType,
+        customTileData: data.spiralCustomTileData,
+        tileScale: 1,
+        color: data.spiralColor ?? data.color,
+      };
+      this.surfaceRow(spiralProxy, () => {
+        data.spiralSurface = spiralProxy.surface;
+        data.spiralCustomTileData = spiralProxy.customTileData;
+        onFullChange();
+      });
+    }
+
+    this.section('ARENA LIGHT');
+    const lightPresetRow = document.createElement('div'); lightPresetRow.className = 'prop-profile-row';
+    for (const [key, preset] of Object.entries(ARENA_LIGHT_PRESETS)) {
+      const btn = document.createElement('button');
+      btn.className = 'game-btn prop-profile-btn'; btn.textContent = key;
+      if (preset.intensity > 0) btn.style.color = '#' + preset.color.toString(16).padStart(6, '0');
+      btn.addEventListener('click', () => {
+        data.lightColor = preset.color; data.lightIntensity = preset.intensity;
+        data.lightPosY = preset.posY; data.lightRange = preset.range;
+        (onLightChange ?? onGeomChange)();
+      });
+      lightPresetRow.appendChild(btn);
+    }
+    this.content.appendChild(lightPresetRow);
+    this.colorRow('Light Color', data.lightColor, v => { data.lightColor = v; (onLightChange ?? onGeomChange)(); });
+    this.numRow('Intensity', data.lightIntensity, 0, 3, 0.1, v => { data.lightIntensity = v; (onLightChange ?? onGeomChange)(); });
+    this.numRow('Height cm', data.lightPosY, 0, 100, 1, v => { data.lightPosY = v; (onLightChange ?? onGeomChange)(); });
+    this.numRow('Range cm', data.lightRange, 50, 500, 10, v => { data.lightRange = v; (onLightChange ?? onGeomChange)(); });
+
+    this.section('PARTICLES');
+    const PARTICLE_OPTS: ParticlePreset[] = ['none','embers','snow','sparks','dust','bubbles','void_motes'];
+    this.selectRow('Preset', PARTICLE_OPTS.map(p => ({ value: p, label: p })), data.particlePreset, v => {
+      data.particlePreset = v as ParticlePreset; (onParticleChange ?? onGeomChange)();
+    });
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', data.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { data.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (data.presentStlb64) {
+      this.colorRow('Present Color', data.presentColor, v => { data.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { data.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
   }
 
   showPit(
     pit: PitData, arena: ArenaData,
     onGeomChange: () => void, onFullChange: () => void,
     onRename: (name: string) => void, onColorChange: () => void, onSurfaceChange: () => void,
+    onGlowChange?: () => void,
   ): void {
     this.content.innerHTML = '';
     this.section('NAME');
@@ -151,12 +223,18 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Dist (cm)', pit.posR,     0, Math.max(0, arenaMinR_pit - maxChildR_pit), 1, v=>{ pit.posR=v; onGeomChange(); });
     this.numRow('Angle °',   pit.posAngle, 0, 360,     1, v=>{ pit.posAngle=v; onGeomChange(); });
     this.numRow('Rotate °',  pit.rotY,     0, 360,     1, v=>{ pit.rotY=v; onGeomChange(); });
+
+    this.section('RIM GLOW');
+    this.colorRow('Glow Color', pit.rimGlowColor, v => { pit.rimGlowColor = v; (onGlowChange ?? onGeomChange)(); });
+    this.numRow('Intensity', pit.rimGlowIntensity, 0, 3, 0.1, v => { pit.rimGlowIntensity = v; (onGlowChange ?? onGeomChange)(); });
   }
 
   showZone(
     zone: ZoneData, arena: ArenaData,
     onGeomChange: () => void, onFullChange: () => void,
     onRename: (name: string) => void,
+    onGlowChange?: () => void,
+    onParticleChange?: () => void,
   ): void {
     this.content.innerHTML = '';
     this.section('NAME');
@@ -199,6 +277,16 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Dist (cm)', zone.posR,     0, Math.max(0, arenaMinR_zone - maxChildR_zone), 1, v=>{ zone.posR=v; onGeomChange(); });
     this.numRow('Angle °',   zone.posAngle, 0, 360,     1, v=>{ zone.posAngle=v; onGeomChange(); });
     this.numRow('Rotate °',  zone.rotY,     0, 360,     1, v=>{ zone.rotY=v; onGeomChange(); });
+
+    this.section('SEAM GLOW');
+    this.colorRow('Glow Color', zone.seamGlowColor, v => { zone.seamGlowColor = v; (onGlowChange ?? onGeomChange)(); });
+    this.numRow('Intensity', zone.seamGlowIntensity, 0, 3, 0.1, v => { zone.seamGlowIntensity = v; (onGlowChange ?? onGeomChange)(); });
+
+    this.section('PARTICLES');
+    const ZONE_PARTICLE_OPTS: ParticlePreset[] = ['none','embers','snow','sparks','dust','bubbles','void_motes'];
+    this.selectRow('Preset', ZONE_PARTICLE_OPTS.map(p => ({ value: p, label: p })), zone.particlePreset, v => {
+      zone.particlePreset = v as ParticlePreset; (onParticleChange ?? onGeomChange)();
+    });
   }
 
   /* ── Shared UI helpers ── */
@@ -549,6 +637,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     wall: WallData,
     onGeomChange: () => void,
     onRename: (name: string) => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -626,10 +716,26 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     // ── Appearance ────────────────────────────────────────────────────────
     this.section('APPEARANCE');
     this.colorRow('Color', wall.color, v => { wall.color = v; onGeomChange(); });
-    this.surfaceRow(
-      { surface: wall.surface, customTileData: null, tileScale: 20, color: wall.color },
-      () => onGeomChange(),
-    );
+    this.surfaceRow(wall, () => onGeomChange());
+    this.numRow('Tile Scale', wall.tileScale, 0.1, 20, 0.1, v => { wall.tileScale = v; onGeomChange(); });
+    this.colorRow('Glow Color', wall.emissiveColor, v => { wall.emissiveColor = v; onGeomChange(); });
+    this.numRow('Glow Intensity', wall.emissiveIntensity, 0, 3, 0.1, v => { wall.emissiveIntensity = v; onGeomChange(); });
+    this.numRow('Opacity', wall.opacity, 0, 1, 0.05, v => { wall.opacity = v; onGeomChange(); });
+    this.themeRow(theme => {
+      wall.color = theme.color; wall.surface = theme.surface;
+      wall.emissiveColor = theme.emissiveColor; wall.emissiveIntensity = theme.emissiveIntensity;
+      wall.material = theme.baseMaterial; wall.tileScale = theme.tileScale;
+      onGeomChange();
+    });
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', wall.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { wall.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (wall.presentStlb64) {
+      this.colorRow('Present Color', wall.presentColor, v => { wall.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { wall.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -643,6 +749,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onGeomChange: () => void,
     onRename: (name: string) => void,
     onAddSegment: (type: BridgeSegmentType) => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -718,12 +826,28 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this._wallMaterialRow(sec, ['stone','abs','metal'], onGeomChange);
 
     // ── Appearance ────────────────────────────────────────────────────────
-    this.section('APPEARANCE');
-    this.colorRow('Color', bridge.color, v => { bridge.color = v; onGeomChange(); });
-    this.surfaceRow(
-      { surface: bridge.surface, customTileData: null, tileScale: 20, color: bridge.color },
-      () => onGeomChange(),
-    );
+    this.section('DECK APPEARANCE');
+    this.colorRow('Color', sec.color, v => { sec.color = v; onGeomChange(); });
+    this.surfaceRow(sec, () => onGeomChange());
+    this.numRow('Tile Scale', sec.tileScale, 0.1, 20, 0.1, v => { sec.tileScale = v; onGeomChange(); });
+    this.colorRow('Glow Color', sec.emissiveColor, v => { sec.emissiveColor = v; onGeomChange(); });
+    this.numRow('Glow Intensity', sec.emissiveIntensity, 0, 3, 0.1, v => { sec.emissiveIntensity = v; onGeomChange(); });
+    this.numRow('Opacity', sec.opacity, 0, 1, 0.05, v => { sec.opacity = v; onGeomChange(); });
+    this.themeRow(theme => {
+      sec.color = theme.color; sec.surface = theme.surface;
+      sec.emissiveColor = theme.emissiveColor; sec.emissiveIntensity = theme.emissiveIntensity;
+      sec.material = theme.baseMaterial; sec.tileScale = theme.tileScale;
+      onGeomChange();
+    });
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', bridge.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { bridge.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (bridge.presentStlb64) {
+      this.colorRow('Present Color', bridge.presentColor, v => { bridge.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { bridge.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
 
     // ── Add segment ───────────────────────────────────────────────────────
     this.section('SEGMENTS');
@@ -913,6 +1037,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onColorChange: () => void,
     onAddSegment: (segs: SpeedLineSegment[]) => void,
     onRemoveSegment: (k: number) => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -1030,6 +1156,19 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       sl.glowColor = v ? sl.color : null; onColorChange();
     });
 
+    this.section('RIBBON TEXTURE');
+    const slTexProxy = {
+      surface: (sl.customTileData ? 'custom_png' : 'plain') as SurfaceType,
+      customTileData: sl.customTileData,
+      tileScale: sl.tileScale,
+      color: sl.color,
+    };
+    this.surfaceRow(slTexProxy, () => {
+      sl.customTileData = slTexProxy.surface === 'custom_png' ? slTexProxy.customTileData : null;
+      onGeomChange();
+    });
+    this.numRow('Tile Scale', sl.tileScale, 0.1, 20, 0.1, v => { sl.tileScale = v; onGeomChange(); });
+
     this.section('TARGET & ACTIVATION');
     this.selectRow('Target', [
       {value:'beyblade',label:'Beyblade'},{value:'water',label:'Water'},
@@ -1098,6 +1237,15 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.readRow('Total Length', `${sl.totalLength.toFixed(1)} cm`);
     this.readRow('Segments', String(sl.segments.length));
     this.readRow('Overlaps', String(sl.overlapMarkers.length));
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', sl.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { sl.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (sl.presentStlb64) {
+      this.colorRow('Present Color', sl.presentColor, v => { sl.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { sl.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -1109,6 +1257,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onGeomChange: () => void,
     onRename: (name: string) => void,
     speedLineNames: Map<string, string>,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -1153,8 +1303,17 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('SURFACE');
     this._wallMaterialRow(data, ['abs','metal','stone','rubber'], onGeomChange);
     this.colorRow('Color', data.color, v => { data.color = v; onGeomChange(); });
-    const obsSurfProxy = { surface: data.surface, customTileData: null as string|null, tileScale: data.tileScale, color: data.color };
-    this.surfaceRow(obsSurfProxy, () => { data.surface = obsSurfProxy.surface; data.tileScale = obsSurfProxy.tileScale; onGeomChange(); });
+    this.surfaceRow(data, () => onGeomChange());
+    this.numRow('Tile Scale', data.tileScale, 0.1, 20, 0.1, v => { data.tileScale = v; onGeomChange(); });
+    this.colorRow('Glow Color', data.emissiveColor, v => { data.emissiveColor = v; onGeomChange(); });
+    this.numRow('Glow Intensity', data.emissiveIntensity, 0, 3, 0.1, v => { data.emissiveIntensity = v; onGeomChange(); });
+    this.numRow('Opacity', data.opacity, 0, 1, 0.05, v => { data.opacity = v; onGeomChange(); });
+    this.themeRow(theme => {
+      data.color = theme.color; data.surface = theme.surface;
+      data.emissiveColor = theme.emissiveColor; data.emissiveIntensity = theme.emissiveIntensity;
+      data.material = theme.baseMaterial; data.tileScale = theme.tileScale;
+      onGeomChange();
+    });
 
     this.section('THEME');
     const THEMES: ObstacleTheme[] = ['default','rock','boat','aircraft','bird','cloud'];
@@ -1167,6 +1326,15 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.selectRow('Speed Path', slOpts, data.speedPathId ?? '', v => {
       data.speedPathId = v || null;
     });
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', data.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { data.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (data.presentStlb64) {
+      this.colorRow('Present Color', data.presentColor, v => { data.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { data.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
   }
 
   private _obstaclesDimRows(data: ObstacleData, onGeomChange: () => void): void {
@@ -1231,6 +1399,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onGeomChange: () => void,
     onRename: (name: string) => void,
     speedLineNames: Map<string, string>,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -1291,9 +1461,28 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     }
 
     this.section('APPEARANCE');
+    const trapMatProxy = { material: data.baseMaterial };
+    this._wallMaterialRow(trapMatProxy, ['abs','metal','stone','rubber'], () => { data.baseMaterial = trapMatProxy.material; onGeomChange(); });
     this.colorRow('Color', data.color, v => { data.color = v; onGeomChange(); });
-    const trapSurfProxy = { surface: data.surface, customTileData: null as string|null, tileScale: data.tileScale, color: data.color };
-    this.surfaceRow(trapSurfProxy, () => { data.surface = trapSurfProxy.surface; data.tileScale = trapSurfProxy.tileScale; onGeomChange(); });
+    this.surfaceRow(data, () => onGeomChange());
+    this.numRow('Tile Scale', data.tileScale, 0.1, 20, 0.1, v => { data.tileScale = v; onGeomChange(); });
+    this.colorRow('Glow Color', data.emissiveColor, v => { data.emissiveColor = v; onGeomChange(); });
+    this.numRow('Glow Intensity', data.emissiveIntensity, 0, 3, 0.1, v => { data.emissiveIntensity = v; onGeomChange(); });
+    this.themeRow(theme => {
+      data.color = theme.color; data.surface = theme.surface;
+      data.emissiveColor = theme.emissiveColor; data.emissiveIntensity = theme.emissiveIntensity;
+      data.baseMaterial = theme.baseMaterial; data.tileScale = theme.tileScale;
+      onGeomChange();
+    });
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', data.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { data.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (data.presentStlb64) {
+      this.colorRow('Present Color', data.presentColor, v => { data.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { data.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
   }
 
   private _trapEffectRows(data: TrapData, onGeomChange: () => void): void {
@@ -1459,6 +1648,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     portalNames: Map<string, string>,
     onGeomChange: () => void,
     onRename: (name: string) => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -1524,6 +1715,17 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('APPEARANCE');
     this.colorRow('Pad Color',  data.color,     v => { data.color = v;     onGeomChange(); });
     this.colorRow('Glow Color', data.glowColor, v => { data.glowColor = v; onGeomChange(); });
+    this.surfaceRow(data, () => onGeomChange());
+    this.numRow('Tile Scale', data.tileScale, 0.1, 20, 0.1, v => { data.tileScale = v; onGeomChange(); });
+
+    this.section('PRESENTATION STL');
+    this.buttonRow('', data.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { data.presentStlb64 = b64; onGeomChange(); });
+    });
+    if (data.presentStlb64) {
+      this.colorRow('Present Color', data.presentColor, v => { data.presentColor = v; onGeomChange(); });
+      this.buttonRow('', 'Clear STL', () => { data.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
   }
 
   showRotation(

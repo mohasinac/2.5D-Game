@@ -81,13 +81,16 @@ export function buildPortalObjects(
   surfY: number,
 ): [THREE.Mesh, THREE.LineSegments, THREE.Mesh | null] {
   const padGeo = _padGeo(data.shape, data.dimX, data.dimZ);
-  const padMat = new THREE.MeshStandardMaterial({
+  const padMat = buildSurfaceMaterial({
     color: data.color,
-    emissive: data.glowColor,
-    emissiveIntensity: 0.6,
+    surface: data.surface,
+    customTileData: data.customTileData,
+    tileScale: data.tileScale,
     transparent: true,
     opacity: 0.85,
   });
+  (padMat as THREE.MeshStandardMaterial).emissive.setHex(data.glowColor);
+  (padMat as THREE.MeshStandardMaterial).emissiveIntensity = 0.6;
   const mesh = new THREE.Mesh(padGeo, padMat);
   _setPadPos(data, mesh, surfY);
 
@@ -114,9 +117,14 @@ export function applyPortal(data: PortalData, surfY: number): void {
   data.edges.position.copy(data.mesh.position);
   data.edges.rotation.copy(data.mesh.rotation);
 
-  const padMat = data.mesh.material as THREE.MeshStandardMaterial;
-  padMat.color.setHex(data.color);
-  padMat.emissive.setHex(data.glowColor);
+  const newPadMat = buildSurfaceMaterial({
+    color: data.color, surface: data.surface, customTileData: data.customTileData,
+    tileScale: data.tileScale, transparent: true, opacity: 0.85,
+  });
+  (newPadMat as THREE.MeshStandardMaterial).emissive.setHex(data.glowColor);
+  (newPadMat as THREE.MeshStandardMaterial).emissiveIntensity = 0.6;
+  (data.mesh.material as THREE.Material).dispose();
+  data.mesh.material = newPadMat;
   (data.edges.material as THREE.LineBasicMaterial).color.setHex(data.glowColor);
 
   if (data.ringMesh) {
@@ -164,6 +172,11 @@ export function defaultPortal(
     isBidirectional: false,
     color: DEFAULT_PORTAL_COLOR,
     glowColor: DEFAULT_PORTAL_COLOR,
+    surface: 'plain' as SurfaceType,
+    customTileData: null,
+    tileScale: 1,
+    presentStlb64: null,
+    presentColor: 0xaaaaaa,
     mesh, edges, ringMesh,
   };
 }
