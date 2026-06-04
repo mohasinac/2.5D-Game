@@ -18,7 +18,7 @@ export function _texKey(opts: SurfaceMaterialOpts): string {
   return `${opts.color}_${opts.surface}`;
 }
 export function _matKey(opts: SurfaceMaterialOpts): string {
-  return `${_texKey(opts)}:${opts.transparent ? 't' : 'o'}:${opts.opacity ?? 1}:${opts.side ?? THREE.DoubleSide}`;
+  return `${_texKey(opts)}:${opts.transparent ? 't' : 'o'}:${opts.opacity ?? 1}:${opts.side ?? THREE.DoubleSide}:${opts.baseMaterial ?? ''}`;
 }
 
 export function _paintCanvas(color: number, surface: SurfaceType): HTMLCanvasElement {
@@ -66,8 +66,11 @@ export function buildSurfaceMaterial(opts: SurfaceMaterialOpts): THREE.MeshStand
       _texCache.set(tk, { tex, refs: 1 }); map = tex;
     }
   }
-  const roughness = opts.surface==='metal'?0.25:opts.surface==='ice'?0.10:0.65;
-  const metalness = opts.surface==='metal'?0.70:opts.surface==='ice'?0.10:0.08;
+  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02] } as const;
+  const [roughness, metalness] = opts.baseMaterial
+    ? PBR[opts.baseMaterial]
+    : [opts.surface==='metal'?0.25:opts.surface==='ice'?0.10:0.65,
+       opts.surface==='metal'?0.70:opts.surface==='ice'?0.10:0.08];
   const mat = new THREE.MeshStandardMaterial({
     color: opts.surface==='plain'?opts.color:0xffffff,
     map: map??undefined, side: opts.side ?? THREE.DoubleSide,

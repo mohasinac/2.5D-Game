@@ -10,6 +10,9 @@ export type SurfaceType =
   | 'plain' | 'checker' | 'grid' | 'hex' | 'stripes' | 'dots'
   | 'concrete' | 'metal' | 'wood' | 'ice' | 'sand' | 'lava_rock' | 'custom_png';
 
+/** Physical base material — drives PBR roughness/metalness across all arena geometry. */
+export type ArenaMaterial = 'abs' | 'metal' | 'stone';
+
 export interface SurfaceMaterialOpts {
   color:           number;
   surface:         SurfaceType;
@@ -18,6 +21,8 @@ export interface SurfaceMaterialOpts {
   transparent?:    boolean;
   opacity?:        number;
   side?:           THREE.Side;
+  /** Physical base material — overrides surface-type PBR heuristics. */
+  baseMaterial?:   ArenaMaterial;
 }
 
 /* ── Zone fill types ─────────────────────────────────────────────────────── */
@@ -57,6 +62,7 @@ export interface ArenaData {
   radiusX: number; radiusZ: number; depth: number;
   sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  baseMaterial: ArenaMaterial;
   posX: number; posZ: number; posY: number; rotY: number;
   /* Moat */
   isMoat:             boolean;

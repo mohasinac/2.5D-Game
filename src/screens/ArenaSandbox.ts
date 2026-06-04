@@ -9,6 +9,7 @@ import {
   DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS,
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
   DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
+  DEFAULT_ARENA_MATERIAL,
 } from '../config/arenaConstants';
 import {
   OpeningShape, WallProfile, SurfaceType, ChildHole, IslandHole,
@@ -913,6 +914,7 @@ export class ArenaSandbox extends Sandbox {
         name:as.name,openingShape:as.openingShape,wallProfile:as.wallProfile,
         radiusX:as.radiusX,radiusZ:as.radiusZ,depth:as.depth,sides:as.sides,starInner:as.starInner,
         color:as.color,surface:as.surface,customTileData:as.customTileData,tileScale:as.tileScale,
+        baseMaterial: as.baseMaterial ?? DEFAULT_ARENA_MATERIAL,
         posX:as.posX,posZ:as.posZ,posY:as.posY,rotY:as.rotY,
         isMoat:as.isMoat,innerRadiusX:as.innerRadiusX,innerRadiusZ:as.innerRadiusZ,
         innerOpeningShape:as.innerOpeningShape,innerSides:as.innerSides,innerStarInner:as.innerStarInner,

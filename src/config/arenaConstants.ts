@@ -17,7 +17,10 @@ export const SEAM_TRANSITION_WIDTH    = 2.0;  // cm — seam collar outward widt
 export const SEAM_RINGS               = 6;    // ring count in seam transition strip
 
 /* ── Save schema version ─────────────────────────────────────────────────── */
-export const ARENA_SAVE_VERSION = 5;
+export const ARENA_SAVE_VERSION = 6;
+
+/* ── Arena physical material default ────────────────────────────────────── */
+export const DEFAULT_ARENA_MATERIAL = 'abs' as const;
 
 /* ── Step / spiral wall profile defaults ────────────────────────────────── */
 export const DEFAULT_STEP_COUNT         = 3;

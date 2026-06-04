@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC } from '../config/arenaConstants';
+import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL } from '../config/arenaConstants';
 import {
-  ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType,
+  ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
 } from '../types/arenaTypes';
 import { shapePoints, childArenaBaseY, childWorldPos, makeSurfFn } from './surfaceUtils';
 import { extractChildTransform } from './surfaceUtils';
@@ -78,7 +78,7 @@ function buildSpiralMeshes(data: ArenaData, scene: THREE.Scene): THREE.Mesh[] {
   const meshes: THREE.Mesh[] = [];
   if (!usesSpiralProfile(data)) return meshes;
   for (let hi = 0; hi < data.spiralCount; hi++) {
-    const m = buildSpiralLedgeMesh(data, 0, hi, data.spiralCount);
+    const m = buildSpiralLedgeMesh(data, 0, hi, data.spiralCount, data.baseMaterial);
     m.position.set(data.posX, data.posY, data.posZ);
     m.rotation.y = data.rotY;
     scene.add(m);
@@ -98,7 +98,7 @@ function disposeSpiralMeshes(data: ArenaData, scene: THREE.Scene | null): void {
 
 export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = [], scene?: THREE.Scene): [THREE.Mesh, THREE.LineSegments] {
   const pts = shapePoints(data);
-  const mat = buildSurfaceMaterial({ color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale });
+  const mat = buildSurfaceMaterial({ color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale, baseMaterial:data.baseMaterial });
   const baseY = 0;
 
   const [meshGeo, edgeGeo] = buildArenaBowlGeo(data, pts, baseY, holes);
@@ -153,7 +153,7 @@ export function buildArenaRimSeam(
 }
 
 export function applyArenaColor(data: ArenaData): void {
-  const opts: SurfaceMaterialOpts = { color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale };
+  const opts: SurfaceMaterialOpts = { color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale, baseMaterial:data.baseMaterial };
   releaseMaterial(opts);
   data.mesh.material = buildSurfaceMaterial(opts);
   (data.edges.material as THREE.LineBasicMaterial).color.copy(edgeColor(data.color));
@@ -275,6 +275,7 @@ export function defaultArena(name: string): ArenaData {
     radiusX: 50, radiusZ: 50, depth: 20,
     sides: 5, starInner: 0.5, color: 0x888888,
     surface: 'plain', customTileData: null, tileScale: 20,
+    baseMaterial: DEFAULT_ARENA_MATERIAL,
     posX: 0, posZ: 0, posY: 0, rotY: 0,
     isMoat: false, innerRadiusX: 25, innerRadiusZ: 25,
     innerOpeningShape: 'circle', innerSides: 5, innerStarInner: 0.5,

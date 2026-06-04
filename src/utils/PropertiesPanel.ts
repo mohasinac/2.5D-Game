@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { APOTHEM } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData,
-  OpeningShape, WallProfile, RampMode, ZoneFill, SurfaceType, ShapeParams,
+  OpeningShape, WallProfile, RampMode, ZoneFill, SurfaceType, ArenaMaterial, ShapeParams,
 } from '../types/arenaTypes';
 import { _paintCanvas } from '../geometry/materialBuilders';
 import { FILL_PRESET, FILL_LABEL } from '../geometry/surfaceUtils';
@@ -91,6 +91,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Depth',    data.depth,   1, baseHeight, 0.5, v=>{ data.depth=v; this._refreshStepCountMax(data); onGeomChange(); });
 
     this.section('SURFACE');
+    this.materialRow(data, onColorChange);
     this.colorRow('Color', data.color, v=>{ data.color=v; onColorChange(); });
     this.surfaceRow(data, onSurfaceChange);
 
@@ -406,6 +407,31 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     if (s === 'rectangle') return ['N side','E side','S side','W side'];
     if (s === 'circle' || s === 'ellipse') return Array.from({length: count}, (_,i) => `Arc ${i+1}`);
     return Array.from({length: count}, (_,i) => `Side ${i+1}`);
+  }
+
+  private materialRow(data: ArenaData, onChange: () => void): void {
+    const MATERIALS: [ArenaMaterial, string, string][] = [
+      ['abs',   '▣ ABS',   'Plastic (smooth, low grip)'],
+      ['metal', '⬡ Metal', 'Metal (shiny, very low friction)'],
+      ['stone', '◈ Stone', 'Stone (rough, high grip)'],
+    ];
+    const wrap = document.createElement('div'); wrap.className = 'prop-row';
+    const label = document.createElement('span'); label.className = 'prop-label'; label.textContent = 'Material';
+    wrap.appendChild(label);
+    const btnGroup = document.createElement('div'); btnGroup.className = 'prop-profile-row';
+    const btns: HTMLButtonElement[] = [];
+    for (const [mat, icon, tip] of MATERIALS) {
+      const btn = document.createElement('button');
+      btn.className = 'game-btn prop-profile-btn' + (data.baseMaterial === mat ? ' active' : '');
+      btn.textContent = icon; btn.title = tip;
+      btn.addEventListener('click', () => {
+        data.baseMaterial = mat;
+        btns.forEach((b, i) => b.classList.toggle('active', MATERIALS[i][0] === mat));
+        onChange();
+      });
+      btns.push(btn); btnGroup.appendChild(btn);
+    }
+    wrap.appendChild(btnGroup); this.content.appendChild(wrap);
   }
 
   private surfaceRow(

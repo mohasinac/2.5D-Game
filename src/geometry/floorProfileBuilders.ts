@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { ArenaData, ChildHole } from '../types/arenaTypes';
+import { ArenaData, ArenaMaterial, ChildHole } from '../types/arenaTypes';
 import {
   TWO_PI, STEP_RING_SEGS, STEP_SLOPE_FRAC,
   SPIRAL_SEGS_PER_TURN,
@@ -156,6 +156,7 @@ export function buildSteppedBowl(
  */
 export function buildSpiralLedgeMesh(
   arena: ArenaData, baseY: number, helixIndex: number, totalHelices: number,
+  baseMaterial?: ArenaMaterial,
 ): THREE.Mesh {
   const {
     depth, radiusX, radiusZ, color,
@@ -206,10 +207,12 @@ export function buildSpiralLedgeMesh(
   geo.setIndex(idx);
   geo.computeVertexNormals();
 
+  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02] } as const;
+  const [roughness, metalness] = baseMaterial ? PBR[baseMaterial] : [0.65, 0.08];
   const mat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.3),
     side: THREE.DoubleSide,
-    roughness: 0.7, metalness: 0.1,
+    roughness, metalness,
   });
   return new THREE.Mesh(geo, mat);
 }

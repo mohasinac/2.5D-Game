@@ -1,10 +1,11 @@
-import { OpeningShape, WallProfile, RampMode, SurfaceType, ZoneFill, ArenaData, PitData, ZoneData } from '../types/arenaTypes';
+import { OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill, ArenaData, PitData, ZoneData } from '../types/arenaTypes';
 
 export interface ArenaSave {
   id: string; name: string;
   openingShape: OpeningShape; wallProfile: WallProfile;
   radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  baseMaterial: ArenaMaterial;
   posX: number; posZ: number; posY: number; rotY: number;
   isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
   innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
@@ -80,6 +81,7 @@ export function arenaToSave(
     id,name:a.name,openingShape:a.openingShape,wallProfile:a.wallProfile,
     radiusX:a.radiusX,radiusZ:a.radiusZ,depth:a.depth,sides:a.sides,starInner:a.starInner,
     color:a.color,surface:a.surface,customTileData:a.customTileData,tileScale:a.tileScale,
+    baseMaterial:a.baseMaterial,
     posX:a.posX,posZ:a.posZ,posY:a.posY,rotY:a.rotY,
     isMoat:a.isMoat,innerRadiusX:a.innerRadiusX,innerRadiusZ:a.innerRadiusZ,
     innerOpeningShape:a.innerOpeningShape,innerSides:a.innerSides,innerStarInner:a.innerStarInner,
