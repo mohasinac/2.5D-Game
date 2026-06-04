@@ -12,6 +12,7 @@ import {
   ObstacleData, ObstacleShape, ObstacleTheme,
   TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
   PortalData, PortalDestType,
+  RotationData, BridgeSnapRule,
 } from '../types/arenaTypes';
 import {
   templateStraight, templateCircle, templateSpiral, templateZigzag, templateWave,
@@ -1523,6 +1524,79 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('APPEARANCE');
     this.colorRow('Pad Color',  data.color,     v => { data.color = v;     onGeomChange(); });
     this.colorRow('Glow Color', data.glowColor, v => { data.glowColor = v; onGeomChange(); });
+  }
+
+  showRotation(
+    data: RotationData,
+    onUpdate: () => void,
+    onRename: (name: string) => void,
+    bridgeNames?: Map<string, string>,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = this.textRow('Name', data.name, v => { data.name = v; onRename(v); });
+    nameInp.style.fontFamily = 'Rajdhani, sans-serif';
+
+    this.section('ROTATION');
+    this.selectRow('Mode', [
+      { value: 'continuous', label: 'Continuous' },
+      { value: 'oscillate',  label: 'Oscillate' },
+    ], data.mode, v => { data.mode = v as RotationData['mode']; this.showRotation(data, onUpdate, onRename, bridgeNames); });
+
+    this.numRow('Speed (°/s)', data.speed, 0, 720, 1, v => { data.speed = v; });
+
+    const dirBtn = this.toggleRow(
+      data.direction === 1 ? '↺ CCW' : '↻ CW',
+      data.direction === 1,
+      v => { data.direction = v ? 1 : -1; dirBtn.textContent = v ? '↺ CCW' : '↻ CW'; },
+    );
+
+    this.toggleRow('Enabled', data.enabled, v => { data.enabled = v; });
+
+    this.section('PIVOT');
+    this.numRow('Pivot X (cm)', data.pivotX, -500, 500, 0.5, v => { data.pivotX = v; onUpdate(); });
+    this.numRow('Pivot Y (cm)', data.pivotY,  -10, 500, 0.5, v => { data.pivotY = v; onUpdate(); });
+    this.numRow('Pivot Z (cm)', data.pivotZ, -500, 500, 0.5, v => { data.pivotZ = v; onUpdate(); });
+
+    if (data.mode === 'oscillate') {
+      this.section('OSCILLATE');
+      this.numRow('Amplitude (°)',   data.oscAmplitude, 0,   360,  1,   v => { data.oscAmplitude = v; });
+      this.numRow('Frequency (Hz)',  data.oscFrequency, 0.1, 10,   0.1, v => { data.oscFrequency = v; });
+      this.numRow('Phase (°)',       data.oscPhase * 180 / Math.PI, 0, 360, 1, v => { data.oscPhase = v * Math.PI / 180; });
+    }
+
+    if (bridgeNames && bridgeNames.size > 0) {
+      this.section('BRIDGE SNAP RULES');
+      for (const rule of data.snapRules) {
+        const row = document.createElement('div');
+        row.className = 'prop-row';
+        const bname = bridgeNames.get(rule.bridgeId) ?? rule.bridgeId;
+        row.innerHTML = `<span class="prop-label" style="font-size:0.75em">${bname}</span>`;
+        const remBtn = document.createElement('button');
+        remBtn.className = 'game-btn'; remBtn.textContent = '×';
+        remBtn.style.cssText = 'padding:0 0.3em;font-size:0.8em;';
+        remBtn.addEventListener('click', () => {
+          data.snapRules = data.snapRules.filter(r => r.id !== rule.id);
+          this.showRotation(data, onUpdate, onRename, bridgeNames);
+        });
+        this.content.appendChild(row);
+        this.numRow(`  Min°`, rule.minDeg, 0, 360, 1, v => { rule.minDeg = v; });
+        this.numRow(`  Max°`, rule.maxDeg, 0, 360, 1, v => { rule.maxDeg = v; });
+        this.content.appendChild(remBtn);
+      }
+      if (bridgeNames.size > 0) {
+        const addBtn = this.buttonRow('Add Snap Rule', '+ Rule', () => {
+          const [[firstId]] = bridgeNames.entries();
+          const newRule: BridgeSnapRule = {
+            id: `sr-${Date.now()}`, bridgeId: firstId, minDeg: 0, maxDeg: 90,
+          };
+          data.snapRules.push(newRule);
+          this.showRotation(data, onUpdate, onRename, bridgeNames);
+        });
+        void addBtn;
+      }
+    }
   }
 
 }

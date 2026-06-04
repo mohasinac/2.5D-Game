@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { Sandbox, SandboxOptions } from './Sandbox';
 import { gameConfirm } from '../utils/dialog';
 import {
-  APOTHEM, DEG2RAD,
+  APOTHEM, DEG2RAD, TWO_PI,
   DEFAULT_BASE_HEIGHT, DEFAULT_BASE_SIDES, DEFAULT_BASE_COLOR, DEFAULT_BASE_TILE,
-  ARENA_ELEVATED_THRESHOLD, SL,
+  ARENA_ELEVATED_THRESHOLD, SL, ROT, TRAP_PLATE_HEIGHT,
   DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER,
   DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS,
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
@@ -16,10 +16,11 @@ import {
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment, SpeedLineHandleType,
   WallData, BridgeData, BridgeSegmentData, BridgeSegmentType,
   ObstacleData, TrapData, PortalData,
+  RotationData, RotationNodeType,
 } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from '../geometry/materialBuilders';
 import {
-  shapePoints, childWorldPos, makeSurfFn, polarToLocalXZ,
+  shapePoints, childWorldPos, makeSurfFn, polarToLocalXZ, arenaSurfaceYAtArenaLocal,
 } from '../geometry/surfaceUtils';
 import { buildParabolicBowl, buildFreeArenaMesh } from '../geometry/bowlBuilders';
 import { buildScoopGeometry, buildScoopEdgeLines, buildScoopSeam } from '../geometry/scoopBuilders';
@@ -35,10 +36,10 @@ import { samplePathForOverlap, buildOverlapSphere } from '../geometry/speedLineB
 import { SceneTree } from '../utils/SceneTree';
 import { PropertiesPanel } from '../utils/PropertiesPanel';
 import {
-  PitSave, ZoneSave, WallSave, BridgeSave, SpeedLineSave, ArenaConfig,
+  PitSave, ZoneSave, WallSave, BridgeSave, SpeedLineSave, ArenaConfig, RotationSave,
   ObstacleSave, TrapSave, PortalSave,
   pitToSave, zoneToSave, arenaToSave, wallToSave, bridgeToSave, speedLineToSave,
-  obstacleToSave, trapToSave, portalToSave,
+  obstacleToSave, trapToSave, portalToSave, rotationToSave,
 } from '../utils/arenaPersistence';
 import { buildObstacleObjects, applyObstacle, defaultObstacle } from '../geometry/obstacleBuilders';
 import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY } from '../geometry/trapBuilders';
@@ -91,6 +92,9 @@ export class ArenaSandbox extends Sandbox {
   private trapSeq       = 0;
   private portals       = new Map<string, PortalData>();
   private portalSeq     = 0;
+  private rotations     = new Map<string, RotationData>();
+  private rotationSeq   = 0;
+  private nodeRotationId = new Map<string, string>(); // nodeId → rotationId
   private selectedSlId: string | null = null;
   private slDrag: {
     slId: string;
@@ -198,23 +202,53 @@ export class ArenaSandbox extends Sandbox {
         if(this.zones.has(id)){
           const zone=this.zones.get(id)!;
           const parentArena=this.arenas.get(zone.parentArenaId);
+          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
           this.removeZoneFromScene(id);
           if(parentArena){ this.updateArenaFloor(parentArena); this.updateArenaBowlHoles(parentArena,zone.parentArenaId); }
           continue;
         }
         if(this.speedLines.has(id)){ this.captureUndo(); this._removeSpeedLine(id); continue; }
-        if(this.walls.has(id)){ this.removeWall(id); continue; }
+        if(this.walls.has(id)){
+          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+          this.removeWall(id); continue;
+        }
         if(this.segments.has(id)){ this.removeSegment(id); continue; }
         if(this.bridges.has(id)){ this.removeBridge(id); continue; }
-        if(this.obstacles.has(id)){ this.removeObstacle(id); continue; }
-        if(this.traps.has(id)){ this.removeTrap(id); continue; }
+        if(this.obstacles.has(id)){
+          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+          this.removeObstacle(id); continue;
+        }
+        if(this.traps.has(id)){
+          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+          this.removeTrap(id); continue;
+        }
         if(this.portals.has(id)){ this.removePortal(id); continue; }
+        if(this.rotations.has(id)){ this.removeRotation(id); continue; }
         const objs=this.sceneObjects.get(id);
         if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
       }
       if(ids.some(id=>id===this.selectedId)){ this.selectedId=null; this.props.showEmpty(); }
       this.saveArena();
       this._flushUndoPending();
+    };
+
+    this.sceneTree.onGroup = (autoGroupId: string, childIds: string[]) => {
+      // SceneTree already created the auto group node — remove it, we'll create our own rotation node
+      this.sceneTree.remove(autoGroupId);
+      const validIds: string[] = [];
+      const validTypes: RotationNodeType[] = [];
+      for (const cid of childIds) {
+        const t = this._nodeTypeOf(cid);
+        if (t && !this.nodeRotationId.has(cid)) { validIds.push(cid); validTypes.push(t); }
+      }
+      if (validIds.length < 1) return;
+      let sumX=0, sumY=0, sumZ=0;
+      for (let i=0; i<validIds.length; i++) {
+        const p = this._defaultPivotForMember(validIds[i], validTypes[i]);
+        sumX+=p.pivotX; sumY+=p.pivotY; sumZ+=p.pivotZ;
+      }
+      const n = validIds.length;
+      this.addRotation(validIds, validTypes, sumX/n, sumY/n, sumZ/n);
     };
 
     /* Keyboard shortcuts: Ctrl+Z = undo, Ctrl+Y / Ctrl+Shift+Z = redo */
@@ -266,6 +300,8 @@ export class ArenaSandbox extends Sandbox {
       trapSeq: this.trapSeq,
       portals: [...this.portals.values()].map(portalToSave),
       portalSeq: this.portalSeq,
+      rotations: [...this.rotations.values()].map(rotationToSave),
+      rotationSeq: this.rotationSeq,
     };
     return JSON.stringify(config);
   }
@@ -321,6 +357,15 @@ export class ArenaSandbox extends Sandbox {
 
   /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
+    // Remove rotations first to return objects to scene root before clearing
+    for(const rot of this.rotations.values()){
+      const scene=this.getScene();
+      if(rot.pivotGroup && scene){
+        for(const mid of rot.memberIds) for(const obj of this._getMemberObjects(mid)) scene.attach(obj);
+        scene.remove(rot.pivotGroup);
+      }
+    }
+    this.rotations.clear(); this.nodeRotationId.clear(); this.rotationSeq=0;
     for(const sl of this.speedLines.values()) this._disposeSpeedLine(sl);
     this.speedLines.clear();
     this.speedlineSeq = 0; this.slSegSeq = 0;
@@ -365,6 +410,7 @@ export class ArenaSandbox extends Sandbox {
     this.obstacleSeq = cfg.obstacleSeq ?? 0;
     this.trapSeq = cfg.trapSeq ?? 0;
     this.portalSeq = cfg.portalSeq ?? 0;
+    this.rotationSeq = cfg.rotationSeq ?? 0;
     this._loadArenasFromConfig(cfg);
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
@@ -693,7 +739,11 @@ export class ArenaSandbox extends Sandbox {
     this.applyWall(wall);
 
     const parentTreeId = parentType==='base' ? 'octagon-base' : parentId;
-    this.sceneTree.add(id, name, '🧱', parentTreeId);
+    this.sceneTree.add(id, name, '🧱', parentTreeId, {
+      addChildButtons: [
+        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'wall'); this.addRotation([id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+      ],
+    });
     this.saveArena();
   }
 
@@ -723,7 +773,11 @@ export class ArenaSandbox extends Sandbox {
     this.addToScene(mesh, edges);
     this.sceneObjects.set(id, [mesh, edges]);
     this.obstacles.set(id, data);
-    this.sceneTree.add(id, data.name, '⬛', 'octagon-base');
+    this.sceneTree.add(id, data.name, '⬛', 'octagon-base', {
+      addChildButtons: [
+        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'obstacle'); this.addRotation([id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+      ],
+    });
     this.saveArena();
   }
 
@@ -760,7 +814,11 @@ export class ArenaSandbox extends Sandbox {
     this.addToScene(mesh, edges);
     this.sceneObjects.set(os.id, [mesh, edges]);
     this.obstacles.set(os.id, data);
-    this.sceneTree.add(os.id, data.name, '⬛', 'octagon-base');
+    this.sceneTree.add(os.id, data.name, '⬛', 'octagon-base', {
+      addChildButtons: [
+        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+      ],
+    });
   }
 
   /* ── Trap methods ────────────────────────────────────────────────────── */
@@ -778,7 +836,11 @@ export class ArenaSandbox extends Sandbox {
     this.sceneObjects.set(id, objs);
     this.traps.set(id, data);
     const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
-    this.sceneTree.add(id, data.name, '⚡', parentTreeId);
+    this.sceneTree.add(id, data.name, '⚡', parentTreeId, {
+      addChildButtons: [
+        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'trap'); this.addRotation([id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+      ],
+    });
     this.saveArena();
   }
 
@@ -832,7 +894,11 @@ export class ArenaSandbox extends Sandbox {
     this.sceneObjects.set(ts.id, objs);
     this.traps.set(ts.id, data);
     const parentTreeId = ts.parentType === 'base' ? 'octagon-base' : ts.parentId;
-    this.sceneTree.add(ts.id, data.name, '⚡', parentTreeId);
+    this.sceneTree.add(ts.id, data.name, '⚡', parentTreeId, {
+      addChildButtons: [
+        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+      ],
+    });
   }
 
   /* ── Portal methods ──────────────────────────────────────────────────── */
@@ -1053,6 +1119,240 @@ export class ArenaSandbox extends Sandbox {
       if(s){ s.orderIndex=i; this.applySegment(s); }
     }
     this.saveArena();
+  }
+
+  /* ── Rotation animation tick ─────────────────────────────────────────── */
+
+  protected override onTick(dtMs: number): void {
+    const dt = dtMs / 1000;
+    for (const rot of this.rotations.values()) {
+      if (!rot.enabled || !rot.pivotGroup) continue;
+      if (rot.mode === 'continuous') {
+        rot.currentAngle += rot.speed * rot.direction * dt;
+      } else {
+        const t = performance.now() / 1000;
+        rot.currentAngle = rot.oscAmplitude *
+          Math.sin(TWO_PI * rot.oscFrequency * t + rot.oscPhase);
+      }
+      rot.pivotGroup.rotation.y = DEG2RAD * rot.currentAngle;
+      this._applyFloorCorrection(rot);
+      // Bridge snap rules
+      for (const rule of rot.snapRules) {
+        const bridge = this.bridges.get(rule.bridgeId);
+        if (bridge) {
+          const a = ((rot.currentAngle % 360) + 360) % 360;
+          bridge.group.visible = a >= rule.minDeg && a <= rule.maxDeg;
+        }
+      }
+    }
+  }
+
+  /** For trap/zone members: after pivotGroup rotates, fix Y to follow arena bowl surface. */
+  private _applyFloorCorrection(rot: RotationData): void {
+    const pg = rot.pivotGroup; if (!pg) return;
+    const wp = new THREE.Vector3();
+    for (const mid of rot.memberIds) {
+      const trap = this.traps.get(mid);
+      if (trap) {
+        let arenaForTrap: ArenaData | undefined;
+        if (trap.parentType === 'arena') arenaForTrap = this.arenas.get(trap.parentId);
+        if (!arenaForTrap) continue;
+        trap.mesh.getWorldPosition(wp);
+        const { alx, alz } = worldToArenaLocal(wp.x, wp.z, arenaForTrap);
+        const surfY = arenaSurfaceYAtArenaLocal(arenaForTrap, alx, alz);
+        const localY = surfY + TRAP_PLATE_HEIGHT / 2 - pg.position.y;
+        trap.mesh.position.y = localY;
+        trap.edges.position.y = localY;
+        if (trap.variantMesh) trap.variantMesh.position.y = localY;
+        continue;
+      }
+      const zone = this.zones.get(mid);
+      if (zone) {
+        const arenaForZone = this.arenas.get(zone.parentArenaId); if (!arenaForZone) continue;
+        zone.mesh.getWorldPosition(wp);
+        const { alx, alz } = worldToArenaLocal(wp.x, wp.z, arenaForZone);
+        const surfY = arenaSurfaceYAtArenaLocal(arenaForZone, alx, alz);
+        const localY = surfY - pg.position.y;
+        zone.mesh.position.y = localY;
+        zone.edges.position.y = localY;
+        if (zone.seamMesh) zone.seamMesh.position.y = localY;
+      }
+    }
+  }
+
+  /** Returns all Three.js scene objects belonging to a node. */
+  private _getMemberObjects(nodeId: string): THREE.Object3D[] {
+    const objs: THREE.Object3D[] = [];
+    const trap = this.traps.get(nodeId);
+    if (trap) { objs.push(trap.mesh, trap.edges); if (trap.variantMesh) objs.push(trap.variantMesh); return objs; }
+    const obs = this.obstacles.get(nodeId);
+    if (obs) { return [obs.mesh, obs.edges]; }
+    const zone = this.zones.get(nodeId);
+    if (zone) { objs.push(zone.mesh, zone.edges); if (zone.seamMesh) objs.push(zone.seamMesh); return objs; }
+    const wall = this.walls.get(nodeId);
+    if (wall) { if (wall.mesh) objs.push(wall.mesh); if (wall.edges) objs.push(wall.edges); return objs; }
+    return objs;
+  }
+
+  private _nodeTypeOf(id: string): RotationNodeType | undefined {
+    if (this.traps.has(id))     return 'trap';
+    if (this.obstacles.has(id)) return 'obstacle';
+    if (this.zones.has(id))     return 'zone';
+    if (this.walls.has(id))     return 'wall';
+    return undefined;
+  }
+
+  private _defaultPivotForMember(nodeId: string, nodeType: RotationNodeType): { pivotX: number; pivotY: number; pivotZ: number } {
+    if (nodeType === 'trap') {
+      const trap = this.traps.get(nodeId);
+      if (trap) {
+        const surfY = this._getTrapSurfY(trap);
+        if (trap.parentType === 'arena') {
+          const arena = this.arenas.get(trap.parentId);
+          if (arena) {
+            const { lx, lz } = polarToLocalXZ(trap.posR, trap.posAngle);
+            const c = Math.cos(arena.rotY * DEG2RAD); const s = Math.sin(arena.rotY * DEG2RAD);
+            return { pivotX: arena.posX + lx * c - lz * s, pivotY: surfY, pivotZ: arena.posZ + lx * s + lz * c };
+          }
+        }
+        return { pivotX: trap.basePosX, pivotY: surfY, pivotZ: trap.basePosZ };
+      }
+    }
+    if (nodeType === 'obstacle') {
+      const obs = this.obstacles.get(nodeId);
+      if (obs) return { pivotX: obs.posX, pivotY: obs.posY, pivotZ: obs.posZ };
+    }
+    if (nodeType === 'zone') {
+      const zone = this.zones.get(nodeId);
+      if (zone) {
+        const arena = this.arenas.get(zone.parentArenaId);
+        if (arena) {
+          const { lx, lz } = polarToLocalXZ(zone.posR, zone.posAngle);
+          const c = Math.cos(arena.rotY * DEG2RAD); const s = Math.sin(arena.rotY * DEG2RAD);
+          const wx = arena.posX + lx * c - lz * s;
+          const wz = arena.posZ + lx * s + lz * c;
+          return { pivotX: wx, pivotY: arenaSurfaceYAtArenaLocal(arena, lx, lz), pivotZ: wz };
+        }
+      }
+    }
+    if (nodeType === 'wall') {
+      const wall = this.walls.get(nodeId);
+      if (wall) {
+        if (wall.parentType === 'arena') {
+          const arena = this.arenas.get(wall.parentId);
+          if (arena) return { pivotX: arena.posX, pivotY: this.baseConfig.height + arena.posY, pivotZ: arena.posZ };
+        }
+        return { pivotX: wall.basePosX, pivotY: this.baseConfig.height, pivotZ: wall.basePosZ };
+      }
+    }
+    return { pivotX: 0, pivotY: this.baseConfig.height, pivotZ: 0 };
+  }
+
+  private _commonTreeParent(nodeIds: string[]): string | null {
+    if (nodeIds.length === 0) return null;
+    const getParent = (id: string): string | null => {
+      const trap = this.traps.get(id);
+      if (trap) return trap.parentType === 'base' ? 'octagon-base' : trap.parentId;
+      const obs = this.obstacles.get(id); if (obs) return 'octagon-base';
+      const zone = this.zones.get(id);
+      if (zone) return zone.parentZoneId ?? zone.parentArenaId;
+      const wall = this.walls.get(id);
+      if (wall) return wall.parentType === 'base' ? 'octagon-base' : wall.parentId;
+      return null;
+    };
+    const first = getParent(nodeIds[0]);
+    if (nodeIds.every(id => getParent(id) === first)) return first;
+    return null;
+  }
+
+  private addRotation(memberIds: string[], memberTypes: RotationNodeType[], pivotX: number, pivotY: number, pivotZ: number): void {
+    if (memberIds.some(id => this.nodeRotationId.has(id))) return;
+    this.captureUndo();
+    const id   = `rot-${++this.rotationSeq}`;
+    const name = memberIds.length === 1 ? `Rotate ${this.rotationSeq}` : `Group ↻ ${this.rotationSeq}`;
+    const rot: RotationData = {
+      id, name, memberIds, memberTypes,
+      pivotX, pivotY, pivotZ,
+      mode: 'continuous', speed: ROT.DEFAULT_SPEED, direction: 1,
+      oscAmplitude: ROT.DEFAULT_OSC_AMP, oscFrequency: ROT.DEFAULT_OSC_FREQ, oscPhase: 0,
+      enabled: true, currentAngle: 0, snapRules: [], pivotGroup: null,
+    };
+    const scene = this.getScene();
+    if (scene) {
+      const pg = new THREE.Group();
+      pg.position.set(pivotX, pivotY, pivotZ);
+      scene.add(pg);
+      rot.pivotGroup = pg;
+      for (const mid of memberIds) {
+        for (const obj of this._getMemberObjects(mid)) pg.attach(obj);
+      }
+    }
+    this.rotations.set(id, rot);
+    memberIds.forEach(mid => this.nodeRotationId.set(mid, id));
+    const treeParent = this._commonTreeParent(memberIds) ?? 'octagon-base';
+    this.sceneTree.add(id, name, '↻', treeParent);
+    this.saveArena();
+  }
+
+  private removeRotation(id: string): void {
+    const rot = this.rotations.get(id); if (!rot) return;
+    const scene = this.getScene();
+    if (rot.pivotGroup && scene) {
+      for (const mid of rot.memberIds) {
+        for (const obj of this._getMemberObjects(mid)) scene.attach(obj);
+      }
+      scene.remove(rot.pivotGroup);
+    }
+    rot.memberIds.forEach(mid => this.nodeRotationId.delete(mid));
+    this.rotations.delete(id);
+    this.sceneTree.remove(id);
+    this.saveArena();
+  }
+
+  private _removeMemberFromRotation(nodeId: string): void {
+    const rotId = this.nodeRotationId.get(nodeId); if (!rotId) return;
+    const rot = this.rotations.get(rotId); if (!rot) return;
+    if (rot.memberIds.length <= 1) {
+      this.removeRotation(rotId);
+      return;
+    }
+    const scene = this.getScene();
+    if (rot.pivotGroup && scene) {
+      for (const obj of this._getMemberObjects(nodeId)) scene.attach(obj);
+    }
+    this.nodeRotationId.delete(nodeId);
+    rot.memberIds = rot.memberIds.filter(id => id !== nodeId);
+    rot.memberTypes = rot.memberTypes.filter((_, i) => rot.memberIds[i] !== nodeId);
+  }
+
+  /**
+   * Called after applyTrap/applyObstacle/applyZone/applyWall for any node in a rotation.
+   * The apply functions set mesh.position in scene-root coords; we need to correct to group-local.
+   */
+  private _afterApply(nodeId: string): void {
+    const rotId = this.nodeRotationId.get(nodeId); if (!rotId) return;
+    const rot = this.rotations.get(rotId); if (!rot || !rot.pivotGroup) return;
+    const pg = rot.pivotGroup;
+    const scene = this.getScene();
+    for (const obj of this._getMemberObjects(nodeId)) {
+      if (obj.parent === pg) {
+        obj.position.x -= pg.position.x;
+        obj.position.y -= pg.position.y;
+        obj.position.z -= pg.position.z;
+      } else if (obj.parent === scene && scene) {
+        const nat = obj.position.clone();
+        pg.add(obj);
+        obj.position.set(nat.x - pg.position.x, nat.y - pg.position.y, nat.z - pg.position.z);
+      }
+    }
+  }
+
+  private _updateRotationPivot(rot: RotationData): void {
+    const pg = rot.pivotGroup; if (!pg) return;
+    pg.position.set(rot.pivotX, rot.pivotY, rot.pivotZ);
+    for (const mid of rot.memberIds) {
+      for (const obj of this._getMemberObjects(mid)) pg.attach(obj);
+    }
   }
 
   protected override buildCustom(scene: THREE.Scene): void {
@@ -1403,6 +1703,18 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
+    const rotation=this.rotations.get(id);
+    if(rotation){
+      const bridgeNames = new Map([...this.bridges.entries()].map(([bid,b])=>[bid,b.name]));
+      this.props.showRotation(
+        rotation,
+        ()=>{ this.captureUndo(); this._updateRotationPivot(rotation); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+        bridgeNames,
+      );
+      return;
+    }
+
     this.props.showEmpty();
   }
 
@@ -1634,6 +1946,7 @@ export class ArenaSandbox extends Sandbox {
         addChildButtons: [
           {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone')},
           {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone')},
+          {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
         ],
       });
     }
@@ -1726,6 +2039,7 @@ export class ArenaSandbox extends Sandbox {
       addChildButtons: [
         {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(id,'zone')},
         {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(id,'zone')},
+        {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(id,'zone'); this.addRotation([id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
       ],
     });
     this.updateArenaBowlHoles(arena, arenaId);
@@ -1784,6 +2098,7 @@ export class ArenaSandbox extends Sandbox {
       addChildButtons:[
         {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(zs.id,'zone')},
         {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(zs.id,'zone')},
+        {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(zs.id,'zone'); this.addRotation([zs.id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
       ],
     });
     for(const cps of zs.pits)  this.restorePitSave(cps,arenaId,zs.id,data);
@@ -1904,6 +2219,9 @@ export class ArenaSandbox extends Sandbox {
 
     // Restore portals
     for(const ps of (cfg.portals??[])) this._restorePortalSave(ps);
+
+    // Restore rotations after all nodes are loaded
+    for(const rs of (cfg.rotations??[])) this._restoreRotationSave(rs);
   }
 
   private _restoreWallSave(ws: WallSave): void {
@@ -1922,7 +2240,11 @@ export class ArenaSandbox extends Sandbox {
     this.walls.set(ws.id, wall);
     this.applyWall(wall);
     const parentTreeId = ws.parentType==='base' ? 'octagon-base' : ws.parentId;
-    this.sceneTree.add(ws.id, wall.name, '🧱', parentTreeId);
+    this.sceneTree.add(ws.id, wall.name, '🧱', parentTreeId, {
+      addChildButtons: [
+        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(ws.id,'wall'); this.addRotation([ws.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+      ],
+    });
     if(ws.parentType==='arena'){
       const arena=this.arenas.get(ws.parentId);
       if(arena && !arena.wallIds.includes(ws.id)) arena.wallIds.push(ws.id);
@@ -1974,6 +2296,33 @@ export class ArenaSandbox extends Sandbox {
     for(const ws of bs.walls) this._restoreWallSave(ws);
   }
 
+  private _restoreRotationSave(rs: RotationSave): void {
+    if (rs.memberIds.some(id => this.nodeRotationId.has(id))) return;
+    const scene = this.getScene();
+    const rot: RotationData = {
+      id: rs.id, name: rs.name,
+      memberIds: [...rs.memberIds], memberTypes: [...rs.memberTypes],
+      pivotX: rs.pivotX, pivotY: rs.pivotY, pivotZ: rs.pivotZ,
+      mode: rs.mode, speed: rs.speed, direction: rs.direction,
+      oscAmplitude: rs.oscAmplitude, oscFrequency: rs.oscFrequency, oscPhase: rs.oscPhase,
+      enabled: rs.enabled, currentAngle: 0, snapRules: rs.snapRules.map(s=>({...s})),
+      pivotGroup: null,
+    };
+    if (scene) {
+      const pg = new THREE.Group();
+      pg.position.set(rot.pivotX, rot.pivotY, rot.pivotZ);
+      scene.add(pg);
+      rot.pivotGroup = pg;
+      for (const mid of rot.memberIds) {
+        for (const obj of this._getMemberObjects(mid)) pg.attach(obj);
+      }
+    }
+    this.rotations.set(rs.id, rot);
+    rs.memberIds.forEach(mid => this.nodeRotationId.set(mid, rs.id));
+    const treeParent = this._commonTreeParent(rs.memberIds) ?? 'octagon-base';
+    this.sceneTree.add(rs.id, rs.name, '↻', treeParent);
+  }
+
   private loadArena(): void {
     try {
       const raw=localStorage.getItem(this.arenaStorageKey); if(!raw) return;
@@ -1984,6 +2333,7 @@ export class ArenaSandbox extends Sandbox {
       this.wallSeq=cfg.wallSeq??0; this.bridgeSeq=cfg.bridgeSeq??0; this.segmentSeq=cfg.segmentSeq??0;
       this.speedlineSeq=cfg.speedLineSeq??0;
       this.obstacleSeq=cfg.obstacleSeq??0; this.trapSeq=cfg.trapSeq??0; this.portalSeq=cfg.portalSeq??0;
+      this.rotationSeq=cfg.rotationSeq??0;
       this._loadArenasFromConfig(cfg);
     } catch { localStorage.removeItem(this.arenaStorageKey); }
   }

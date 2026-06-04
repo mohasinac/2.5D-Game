@@ -169,6 +169,15 @@ export const SL = {
   DEFAULT_OSC_AXIS:        'lateral'   as const,
 } as const;
 
+/* ── Rotation animation constants ───────────────────────────────────────── */
+export const ROT = {
+  DEFAULT_SPEED:    30,    // deg/s
+  DEFAULT_OSC_AMP:  45,    // degrees half-swing
+  DEFAULT_OSC_FREQ:  0.5,  // Hz
+  MIN_SPEED:          0,
+  MAX_SPEED:        720,
+} as const;
+
 /* ── Octagon base — frozen default, never mutate ─────────────────────────
    ArenaSandbox stores a mutable copy in this.baseConfig; this is only the
    default seed value. The `as const` makes TypeScript enforce that nobody

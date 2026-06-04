@@ -9,6 +9,7 @@ import {
   ObstacleData, ObstacleShape, ObstacleTheme,
   TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
   PortalData, PortalDestType,
+  RotationData, RotationMode, RotationNodeType,
 } from '../types/arenaTypes';
 
 export interface SpeedLineSave {
@@ -166,6 +167,18 @@ export interface PortalSave {
   color: number; glowColor: number;
 }
 
+export interface BridgeSnapRuleSave { id: string; bridgeId: string; minDeg: number; maxDeg: number; }
+
+export interface RotationSave {
+  id: string; name: string;
+  memberIds: string[]; memberTypes: RotationNodeType[];
+  pivotX: number; pivotY: number; pivotZ: number;
+  mode: RotationMode; speed: number; direction: 1 | -1;
+  oscAmplitude: number; oscFrequency: number; oscPhase: number;
+  enabled: boolean;
+  snapRules: BridgeSnapRuleSave[];
+}
+
 export interface ArenaConfig {
   baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
@@ -177,6 +190,7 @@ export interface ArenaConfig {
   obstacles: ObstacleSave[]; obstacleSeq: number;
   traps: TrapSave[];        trapSeq: number;
   portals: PortalSave[];    portalSeq: number;
+  rotations: RotationSave[]; rotationSeq: number;
 }
 
 export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
@@ -353,5 +367,17 @@ export function portalToSave(p: PortalData): PortalSave {
     destPosX:p.destPosX, destPosY:p.destPosY, destPosZ:p.destPosZ,
     exitVelScale:p.exitVelScale, exitRotY:p.exitRotY, isBidirectional:p.isBidirectional,
     color:p.color, glowColor:p.glowColor,
+  };
+}
+
+export function rotationToSave(r: RotationData): RotationSave {
+  return {
+    id:r.id, name:r.name,
+    memberIds:[...r.memberIds], memberTypes:[...r.memberTypes],
+    pivotX:r.pivotX, pivotY:r.pivotY, pivotZ:r.pivotZ,
+    mode:r.mode, speed:r.speed, direction:r.direction,
+    oscAmplitude:r.oscAmplitude, oscFrequency:r.oscFrequency, oscPhase:r.oscPhase,
+    enabled:r.enabled,
+    snapRules:r.snapRules.map(s=>({ id:s.id, bridgeId:s.bridgeId, minDeg:s.minDeg, maxDeg:s.maxDeg })),
   };
 }

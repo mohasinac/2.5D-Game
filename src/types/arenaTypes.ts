@@ -475,6 +475,45 @@ export interface TrapData {
 
 export type PortalDestType = 'portal' | 'random_arena' | 'world_point';
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ROTATION DATA
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export type RotationMode     = 'continuous' | 'oscillate';
+export type RotationNodeType = 'trap' | 'obstacle' | 'zone' | 'wall';
+
+export interface BridgeSnapRule {
+  id:       string;
+  bridgeId: string;
+  minDeg:   number;
+  maxDeg:   number;
+}
+
+export interface RotationData {
+  id:          string;
+  name:        string;
+  memberIds:   string[];
+  memberTypes: RotationNodeType[];
+
+  pivotX: number;
+  pivotY: number;
+  pivotZ: number;
+
+  mode:      RotationMode;
+  speed:     number;
+  direction: 1 | -1;
+
+  oscAmplitude: number;
+  oscFrequency: number;
+  oscPhase:     number;
+
+  enabled:      boolean;
+  currentAngle: number;          // runtime — not saved
+  snapRules:    BridgeSnapRule[];
+
+  pivotGroup: THREE.Group | null; // runtime — not saved
+}
+
 export interface PortalData {
   id: string; name: string;
   parentId: string;

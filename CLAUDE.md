@@ -129,6 +129,7 @@ src/
   types/
     arenaTypes.ts               — Arena data model interfaces (ArenaData, PitData, ZoneData, WallData,
                                   BridgeData, BridgeSegmentData, SpeedLineData, SpeedLineSegment,
+                                  RotationData, BridgeSnapRule, RotationMode, RotationNodeType,
                                   ArenaMaterial, BridgeSection, and all related enums)
     beybladeTypes.ts            — Beyblade data model: AxisData, PartData, SectorData, GroupData, BeybladeBuildConfig
   stores/
@@ -323,6 +324,24 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `mesh` + `edges` (flat pad) + `ringMesh` (TorusGeometry floating `PORTAL_RING_HEIGHT` cm above pad)
 - Pad world Y derived via `portalSurfY()`, same pattern as `trapSurfY()`
 
+#### RotationData
+- Animate one or more objects spinning around a shared 3D pivot
+- `memberIds: string[]` — 1 entry = individual node rotation; N entries = group rotation
+- `memberTypes: RotationNodeType[]` — parallel array of `'trap' | 'obstacle' | 'zone' | 'wall'`
+- `pivotX/Y/Z` — world pivot point in cm; `pivotGroup: THREE.Group` holds the pivot at runtime (not saved)
+- `mode: RotationMode` — `'continuous'` (constant angular velocity) | `'oscillate'` (sine swing)
+- `speed` — deg/s for continuous mode; `direction: 1 | -1` — CW/CCW
+- `oscAmplitude` — half-swing in degrees; `oscFrequency` — Hz; `oscPhase` — radians start phase
+- `enabled` — pause/resume the animation without removing it
+- `currentAngle` — runtime-only accumulator; not saved
+- `snapRules: BridgeSnapRule[]` — each rule shows/hides a bridge when `currentAngle` is in `[minDeg, maxDeg]`
+- **Pivot group mechanism**: `THREE.Group` at `(pivotX, pivotY, pivotZ)`; member objects are `attach()`-ed so world transform is preserved. Each tick: `pivotGroup.rotation.y = DEG2RAD * currentAngle`
+- **Floor Y correction** (traps/zones only): after each tick, `mesh.getWorldPosition()` → arena-local XZ → `arenaSurfaceYAtArenaLocal()` → correct `mesh.position.y` in group-local space — prevents objects clipping below curved bowl surfaces during orbit
+- **Post-apply correction**: after any `applyTrap/applyZone/applyObstacle/applyWall` for a rotating member, call `_afterApply(nodeId)` to subtract `pivotGroup.position` and restore correct group-local coordinates
+- **NOT rotatable**: arenas, pits (geometry is radially conformed), bridges, portals, speed lines
+- **Saved in** `ArenaConfig.rotations: RotationSave[]` + `rotationSeq`; `pivotGroup` and `currentAngle` are stripped on save
+- Tree node: `↻` icon; parent is the common scene-tree parent of all members, or `octagon-base` if mixed
+
 #### ArenaMaterial (physics material)
 Independent of `SurfaceType` (visual texture). Controls restitution, spin loss, and damage on impact.
 
@@ -454,10 +473,11 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 ### ArenaSandbox internal structure
 
 ```
-Maps:          arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals
+Maps:          arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals, rotations
 Seq counters:  arenaSeq, pitSeq, zoneSeq, wallSeq, bridgeSeq, segmentSeq, speedlineSeq, slSegSeq,
-               obstacleSeq, trapSeq, portalSeq
-Dep index:     bridgesByArena  — arenaId → Set<bridgeId> (rebuilt on anchor change)
+               obstacleSeq, trapSeq, portalSeq, rotationSeq
+Dep index:     bridgesByArena   — arenaId → Set<bridgeId> (rebuilt on anchor change)
+               nodeRotationId   — nodeId → rotationId (each rotatable node belongs to at most one rotation)
 Raycaster:     slRaycaster — used for speed line handle hit-testing on mouse move
 Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set on mouse-down, cleared on mouse-up
 ```
@@ -468,9 +488,9 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 **Bridge rebuild propagation**: `applyBridgeFromSegment(segId)` reapplies `segId` and every subsequent segment in the chain. Earlier segments are unaffected. Always call this after changing any segment property or the bridge's `startRef` / `section`.
 
-**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`, obstacles `⬛`, traps `⚡`, portals `◉`.
+**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`, obstacles `⬛`, traps `⚡`, portals `◉`, rotations `↻`.
 
-**Tree node add button**: every node that can have children shows a single `+` button. Clicking it opens a floating add-popup listing all available child types by title (e.g. "Add arena", "Add bridge", "Add base wall"). If a node has exactly one child type the `+` fires it directly with no popup. The popup is a `.tree-ctx-menu.tree-add-menu` element (cyan border) positioned below the anchor button. `addChildButtons` on the octagon-base node offers: Add arena, Add bridge, Add base wall, Add obstacle, Add base trap, Add base portal. Arena nodes offer: Add pit, Add zone, Add wall, Add speed line, Add arena trap, Add arena portal. Bridge nodes offer: Add segment, Add wall. Zone nodes offer: Add speed line. Beyblade part nodes offer: Cut into sectors (single-action, no popup).
+**Tree node add button**: every node that can have children shows a single `+` button. Clicking it opens a floating add-popup listing all available child types by title (e.g. "Add arena", "Add bridge", "Add base wall"). If a node has exactly one child type the `+` fires it directly with no popup. The popup is a `.tree-ctx-menu.tree-add-menu` element (cyan border) positioned below the anchor button. `addChildButtons` on the octagon-base node offers: Add arena, Add bridge, Add base wall, Add obstacle, Add base trap, Add base portal. Arena nodes offer: Add pit, Add zone, Add wall, Add speed line, Add arena trap, Add arena portal. Bridge nodes offer: Add segment, Add wall. Zone nodes offer: Add speed line, Add rotation (↻+). Trap nodes offer: Add rotation (↻+). Obstacle nodes offer: Add rotation (↻+). Wall nodes offer: Add rotation (↻+). Beyblade part nodes offer: Cut into sectors (single-action, no popup). Multi-select → Group creates a group rotation via `sceneTree.onGroup`.
 
 ### Save / load (localStorage)
 
@@ -484,6 +504,7 @@ Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 7`. On any parse error `lo
 - `obstacles: ObstacleSave[]`, `obstacleSeq` — free-standing obstacles (world-positioned)
 - `traps: TrapSave[]`, `trapSeq` — includes `durationTiers: TrapDurationTierSave[]` for buff_zone traps
 - `portals: PortalSave[]`, `portalSeq` — teleport pads with destination config
+- `rotations: RotationSave[]`, `rotationSeq` — pivot-group rotation animations; `pivotGroup` and `currentAngle` are runtime-only and stripped on save
 
 ---
 
@@ -622,6 +643,12 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **`BUFF_TIER_PRESETS` keys are surface names, not tier-effect names**: The keys are `'sand'|'lava'|'ice'|'water'|'oil'` (matching `buffSurface`). The `tierEffect` values inside each preset entry are `TrapTierEffect` variants. Never confuse the two.
 - **Duration tiers only rendered for `effect='buff_zone'`**: The `_trapDurationTiersSection` call in `showTrap()` is conditional. Tiers stored in `TrapData.durationTiers` are serialized/deserialized regardless of effect type, but only shown in the UI and applied at runtime for `buff_zone`.
 - **Obstacle/trap/portal sequences in both `_applyConfigToScene` AND `loadArena`**: Both code paths that restore config must set `obstacleSeq`, `trapSeq`, `portalSeq` from `cfg`. Missing either one causes ID collisions after load.
+- **Rotation sequences in both `_applyConfigToScene` AND `loadArena`**: Same pattern — both paths must set `rotationSeq` from `cfg.rotationSeq ?? 0`.
+- **`_clearArenas` must detach rotations first**: Before disposing any node objects, iterate `this.rotations` and call `scene.attach(obj)` for all member objects to return them to scene root, then `scene.remove(pivotGroup)`. Skipping this causes objects to vanish when the pivot group is garbage-collected.
+- **`_afterApply` after every rotation-member rebuild**: Whenever `applyTrap/applyObstacle/applyZone/applyWall` is called for a node in a rotation, call `_afterApply(nodeId)` afterward. The apply functions reset `mesh.position` to natural world coords; `_afterApply` corrects to group-local by subtracting `pivotGroup.position`.
+- **SceneTree `onGroup` auto-creates a group node**: `sceneTree.onGroup(autoGroupId, childIds)` is called after the tree already added a `group-N` node. Call `this.sceneTree.remove(autoGroupId)` first, then `addRotation()` which creates its own `rot-N` node with the `↻` icon.
+- **`ROT` constants namespace**: All rotation tuning values live in the `ROT` object in `arenaConstants.ts` (`DEFAULT_SPEED`, `DEFAULT_OSC_AMP`, `DEFAULT_OSC_FREQ`, `MIN_SPEED`, `MAX_SPEED`). Never inline these as magic numbers.
+- **Rotation floor Y correction is per-tick, not per-apply**: Trap/zone members must have their Y corrected every tick via `_applyFloorCorrection()` because the bowl surface Y at their world XZ changes continuously as they orbit. Do not try to bake a fixed Y at attach time.
 
 ---
 
