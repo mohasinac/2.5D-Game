@@ -156,7 +156,7 @@ src/
     AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow helpers
     PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal
     BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
-    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes)
+    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click
     dialog.ts                   — gameConfirm() modal utility
     arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal save interfaces
   config/
@@ -470,7 +470,7 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 **Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`, obstacles `⬛`, traps `⚡`, portals `◉`.
 
-**Octagon base tree buttons**: `A+` (add arena), `B+` (add bridge), `W+` (add base wall), `Obs+` (add obstacle), `Trap+` (add base trap), `⬡+` (add base portal). Arena nodes have `W+` (add rim wall), `SL+` (add speed line), `Trap+` (add arena trap), `⬡+` (add arena portal). Zone nodes have `SL+` (add speed line parented to zone).
+**Tree node add button**: every node that can have children shows a single `+` button. Clicking it opens a floating add-popup listing all available child types by title (e.g. "Add arena", "Add bridge", "Add base wall"). If a node has exactly one child type the `+` fires it directly with no popup. The popup is a `.tree-ctx-menu.tree-add-menu` element (cyan border) positioned below the anchor button. `addChildButtons` on the octagon-base node offers: Add arena, Add bridge, Add base wall, Add obstacle, Add base trap, Add base portal. Arena nodes offer: Add pit, Add zone, Add wall, Add speed line, Add arena trap, Add arena portal. Bridge nodes offer: Add segment, Add wall. Zone nodes offer: Add speed line. Beyblade part nodes offer: Cut into sectors (single-action, no popup).
 
 ### Save / load (localStorage)
 

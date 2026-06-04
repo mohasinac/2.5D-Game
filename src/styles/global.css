@@ -505,6 +505,12 @@ body {
 
 .tree-ctx-menu.hidden { display: none; }
 
+/* Add-child popup (single + button) */
+.tree-add-menu {
+  border-color: rgba(0, 229, 255, 0.35);
+  min-width: calc(14 * var(--cm));
+}
+
 .tree-ctx-item {
   display: flex;
   align-items: center;
