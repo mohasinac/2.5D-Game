@@ -151,11 +151,11 @@ src/
     BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
     AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow helpers
-    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment
+    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine
     BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
     SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes)
     dialog.ts                   — gameConfirm() modal utility
-    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge save interfaces (version 6)
+    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line save interfaces (no version field)
   config/
     arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + wall/bridge defaults
 ```
@@ -420,7 +420,7 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 ### Save / load (localStorage)
 
-Key: `bey_arena_arena_sandbox`. Save version: **6** (`ARENA_SAVE_VERSION`). Corrupted/version-mismatched data is discarded. `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
+Key: `bey_arena_arena_sandbox`. **No version field** — `JSON.parse` directly; on any parse error `localStorage.removeItem(key)` and return (no migration, no version check). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
 
 `ArenaConfig` (top-level save):
 - `arenas[]` — each `ArenaSave` includes `walls: WallSave[]` (rim walls) and `speedLines: SpeedLineSave[]`
@@ -607,6 +607,7 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - Adding PBR material lookup tables that omit `rubber` — the `ArenaMaterial` type includes `'rubber'` and all tables must handle it.
 - Calling `applyWall` for bridge-type walls from outside `applyBridgeFromSegment` — bridge walls rebuild with their parent bridge.
 - Skipping `rebuildDependentsOf(arenaId)` after an arena geometry change — omitting it leaves rim walls and anchored bridges stale.
+- Adding a `version` field to `ArenaConfig` or any save interface — the project is in development; saves are discarded on parse error, no migration needed.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.

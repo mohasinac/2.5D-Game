@@ -982,6 +982,16 @@ body {
   border-color: rgba(40, 220, 180, 0.75);
   color:        #fff;
 }
+.tree-add-btn.sl-btn {
+  background:   rgba(85, 68, 204, 0.15);
+  border-color: rgba(85, 68, 204, 0.45);
+  color:        rgba(170, 150, 255, 0.90);
+}
+.tree-add-btn.sl-btn:hover {
+  background:   rgba(119, 102, 238, 0.30);
+  border-color: rgba(119, 102, 238, 0.75);
+  color:        #fff;
+}
 
 /* ── Surface material grid ───────────────────────────────────────────────── */
 .prop-surface-grid {
