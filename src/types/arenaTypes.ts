@@ -383,3 +383,117 @@ export interface BridgeData {
   wallIds: string[];      // child wall ids (walls on bridge deck)
   group: THREE.Group;     // Three.js container for all segment meshes
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   OBSTACLE DATA
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export type ObstacleShape = 'cube' | 'cuboid' | 'sphere' | 'cylinder' | 'pyramid' | 'frustum';
+export type ObstacleTheme = 'default' | 'rock' | 'boat' | 'aircraft' | 'bird' | 'cloud';
+
+export interface ObstacleData {
+  id: string; name: string;
+  shape: ObstacleShape;
+  // dim semantics by shape:
+  //  cube     → dimX = all sides (dimY/dimZ unused)
+  //  cuboid   → dimX × dimY × dimZ
+  //  sphere   → dimX = diameter
+  //  cylinder → dimX = diameter, dimY = height
+  //  pyramid  → dimX = base width, dimZ = base depth, dimY = height
+  //  frustum  → dimX = bottom diameter, dimZ = top diameter, dimY = height
+  dimX: number; dimY: number; dimZ: number;
+  posX: number; posY: number; posZ: number;
+  rotX: number; rotY: number; rotZ: number;
+  isFloating: boolean;
+  isDestructible: boolean;
+  hitPoints: number;
+  contactForceX: number; contactForceY: number; contactForceZ: number;
+  color: number; surface: SurfaceType; tileScale: number;
+  material: ArenaMaterial;
+  theme: ObstacleTheme;
+  speedPathId: string | null;
+  mesh: THREE.Mesh; edges: THREE.LineSegments;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TRAP DATA
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export type TrapShape   = 'rectangle' | 'circle' | 'ellipse' | 'hexagon';
+export type TrapEffect  = 'damage' | 'heal' | 'launch' | 'reverse_controls' | 'freeze' | 'buff_zone' | 'hidden_pit' | 'chomper';
+export type TrapVariant = 'generic' | 'spike' | 'trampoline' | 'hammer' | 'saw' | 'buff' | 'chomper' | 'hidden_pit';
+
+export type TrapTierEffect =
+  | 'friction'
+  | 'slow'
+  | 'burn_damage'
+  | 'chill'
+  | 'freeze'
+  | 'sand_pile'
+  | 'custom';
+
+export interface TrapDurationTier {
+  thresholdSeconds: number;
+  tierEffect: TrapTierEffect;
+  rpmLossFactor: number;
+  speedFactor: number;
+  notes: string;
+}
+
+export interface TrapData {
+  id: string; name: string;
+  parentId: string;
+  parentType: 'arena' | 'base';
+  shape: TrapShape;
+  dimX: number; dimZ: number;
+  rotY: number;
+  posR: number; posAngle: number;
+  basePosX: number; basePosZ: number;
+  effect: TrapEffect;
+  variant: TrapVariant;
+  forceX: number; forceY: number; forceZ: number;
+  damageFactor: number;
+  healFactor: number;
+  freezeDuration: number;
+  buffSurface: SurfaceType | null;
+  pitShape: OpeningShape; pitRadiusX: number; pitRadiusZ: number; pitDepth: number;
+  pitSides: number; pitStarInner: number;
+  isPeriodic: boolean;
+  safeInterval: number;
+  unsafeInterval: number;
+  activationLimit: number;
+  speedPathId: string | null;
+  durationTiers: TrapDurationTier[];
+  color: number; surface: SurfaceType; tileScale: number;
+  mesh: THREE.Mesh; edges: THREE.LineSegments;
+  variantMesh: THREE.Mesh | null;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PORTAL DATA
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export type PortalDestType = 'portal' | 'random_arena' | 'world_point';
+
+export interface PortalData {
+  id: string; name: string;
+  parentId: string;
+  parentType: 'arena' | 'base';
+  shape: TrapShape;
+  dimX: number; dimZ: number;
+  rotY: number;
+  posR: number; posAngle: number;
+  basePosX: number; basePosZ: number;
+  destType: PortalDestType;
+  destPortalId: string | null;
+  destArenaId:  string | null;
+  destPosX: number; destPosY: number; destPosZ: number;
+  exitVelScale: number;
+  exitRotY: number;
+  isBidirectional: boolean;
+  color: number;
+  glowColor: number;
+  mesh: THREE.Mesh;
+  edges: THREE.LineSegments;
+  ringMesh: THREE.Mesh | null;
+}

@@ -1,11 +1,17 @@
 import * as THREE from 'three';
-import { APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL } from '../config/arenaConstants';
+import {
+  APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL,
+  MIN_OBSTACLE_DIM, MIN_TRAP_DIM, BUFF_TIER_PRESETS,
+} from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment,
   OpeningShape, WallProfile, RampMode, ZoneFill, SurfaceType, ArenaMaterial, ShapeParams,
   WallData, WallTopProfile, WallHoleData,
   BridgeData, BridgeSection, BridgeSegmentData, BridgeSegmentType, BridgeCrossSection,
   BridgeEndpointRef, BridgeEndpointType,
+  ObstacleData, ObstacleShape, ObstacleTheme,
+  TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
+  PortalData, PortalDestType,
 } from '../types/arenaTypes';
 import {
   templateStraight, templateCircle, templateSpiral, templateZigzag, templateWave,
@@ -1091,6 +1097,432 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.readRow('Total Length', `${sl.totalLength.toFixed(1)} cm`);
     this.readRow('Segments', String(sl.segments.length));
     this.readRow('Overlaps', String(sl.overlapMarkers.length));
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     OBSTACLE PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showObstacle(
+    data: ObstacleData,
+    onGeomChange: () => void,
+    onRename: (name: string) => void,
+    speedLineNames: Map<string, string>,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
+    nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
+    this.content.appendChild(nameInp);
+
+    this.section('SHAPE');
+    const SHAPES: ObstacleShape[] = ['cube','cuboid','sphere','cylinder','pyramid','frustum'];
+    const SHAPE_ICONS: Record<ObstacleShape, string> = {
+      cube:'⬛', cuboid:'▬', sphere:'●', cylinder:'⬭', pyramid:'△', frustum:'⬡',
+    };
+    this._shapeButtonRow(SHAPES, data.shape, SHAPE_ICONS as Record<string,string>, s => {
+      data.shape = s as ObstacleShape; this._refreshObstacleDims(data, onGeomChange); onGeomChange();
+    });
+
+    this.section('DIMENSIONS');
+    this._obstaclesDimRows(data, onGeomChange);
+
+    this.section('POSITION');
+    this.numRow('X (cm)', data.posX, -200, 200, 1, v => { data.posX = v; onGeomChange(); });
+    this.numRow('Y (cm)', data.posY, -10,  200, 1, v => { data.posY = v; onGeomChange(); });
+    this.numRow('Z (cm)', data.posZ, -200, 200, 1, v => { data.posZ = v; onGeomChange(); });
+
+    this.section('ROTATION');
+    this.numRow('Rot X°', data.rotX, -180, 180, 1, v => { data.rotX = v; onGeomChange(); });
+    this.numRow('Rot Y°', data.rotY, -180, 180, 1, v => { data.rotY = v; onGeomChange(); });
+    this.numRow('Rot Z°', data.rotZ, -180, 180, 1, v => { data.rotZ = v; onGeomChange(); });
+
+    this.section('PHYSICS');
+    this.toggleRow('Floating', data.isFloating, v => { data.isFloating = v; });
+    this.toggleRow('Destructible', data.isDestructible, v => { data.isDestructible = v; onGeomChange(); });
+    if (data.isDestructible) {
+      this.numRow('Hit Points', data.hitPoints, 1, 100, 1, v => { data.hitPoints = Math.round(v); });
+    }
+    this.numRow('Force X (cm/s)', data.contactForceX, -500, 500, 1, v => { data.contactForceX = v; });
+    this.numRow('Force Y (cm/s)', data.contactForceY, -500, 500, 1, v => { data.contactForceY = v; });
+    this.numRow('Force Z (cm/s)', data.contactForceZ, -500, 500, 1, v => { data.contactForceZ = v; });
+
+    this.section('SURFACE');
+    this._wallMaterialRow(data, ['abs','metal','stone','rubber'], onGeomChange);
+    this.colorRow('Color', data.color, v => { data.color = v; onGeomChange(); });
+    const obsSurfProxy = { surface: data.surface, customTileData: null as string|null, tileScale: data.tileScale, color: data.color };
+    this.surfaceRow(obsSurfProxy, () => { data.surface = obsSurfProxy.surface; data.tileScale = obsSurfProxy.tileScale; onGeomChange(); });
+
+    this.section('THEME');
+    const THEMES: ObstacleTheme[] = ['default','rock','boat','aircraft','bird','cloud'];
+    this.selectRow('Theme', THEMES.map(t => ({ value: t, label: t })), data.theme, v => {
+      data.theme = v as ObstacleTheme;
+    });
+
+    this.section('SPEED PATH');
+    const slOpts = [{ value: '', label: '— None —' }, ...[...speedLineNames.entries()].map(([id,name]) => ({ value: id, label: name }))];
+    this.selectRow('Speed Path', slOpts, data.speedPathId ?? '', v => {
+      data.speedPathId = v || null;
+    });
+  }
+
+  private _obstaclesDimRows(data: ObstacleData, onGeomChange: () => void): void {
+    switch (data.shape) {
+      case 'cube':
+        this.numRow('Side (cm)', data.dimX, MIN_OBSTACLE_DIM, 500, 1, v => {
+          data.dimX = data.dimY = data.dimZ = v; onGeomChange();
+        });
+        break;
+      case 'cuboid':
+        this.numRow('Width  (cm)', data.dimX, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimX = v; onGeomChange(); });
+        this.numRow('Height (cm)', data.dimY, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimY = v; onGeomChange(); });
+        this.numRow('Depth  (cm)', data.dimZ, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimZ = v; onGeomChange(); });
+        break;
+      case 'sphere':
+        this.numRow('Diameter (cm)', data.dimX, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimX = v; onGeomChange(); });
+        break;
+      case 'cylinder':
+        this.numRow('Diameter (cm)', data.dimX, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimX = v; onGeomChange(); });
+        this.numRow('Height   (cm)', data.dimY, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimY = v; onGeomChange(); });
+        break;
+      case 'pyramid':
+        this.numRow('Base W (cm)', data.dimX, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimX = v; onGeomChange(); });
+        this.numRow('Base D (cm)', data.dimZ, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimZ = v; onGeomChange(); });
+        this.numRow('Height (cm)', data.dimY, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimY = v; onGeomChange(); });
+        break;
+      case 'frustum':
+        this.numRow('Bottom D (cm)', data.dimX, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimX = v; onGeomChange(); });
+        this.numRow('Top D    (cm)', data.dimZ, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimZ = v; onGeomChange(); });
+        this.numRow('Height   (cm)', data.dimY, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimY = v; onGeomChange(); });
+        break;
+    }
+  }
+
+  private _refreshObstacleDims(_data: ObstacleData, _onGeomChange: () => void): void {
+    // Re-render will happen via onGeomChange → renderProps — dims section is rebuilt
+  }
+
+  private _shapeButtonRow(shapes: string[], current: string, icons: Record<string, string>, onChange: (s: string) => void): void {
+    const row = document.createElement('div'); row.className = 'prop-profile-row';
+    const btns: HTMLButtonElement[] = [];
+    for (const s of shapes) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (s === current ? ' active' : '');
+      btn.textContent = (icons[s] ?? '') + ' ' + s;
+      btn.title = s;
+      btn.addEventListener('click', () => {
+        btns.forEach((b, i) => b.classList.toggle('active', shapes[i] === s));
+        onChange(s);
+      });
+      btns.push(btn); row.appendChild(btn);
+    }
+    this.content.appendChild(row);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     TRAP PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showTrap(
+    data: TrapData,
+    onGeomChange: () => void,
+    onRename: (name: string) => void,
+    speedLineNames: Map<string, string>,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
+    nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
+    this.content.appendChild(nameInp);
+
+    this.section('SHAPE');
+    const TRAP_SHAPES: TrapShape[] = ['rectangle','circle','ellipse','hexagon'];
+    const TRAP_ICONS: Record<TrapShape, string> = { rectangle:'▭', circle:'●', ellipse:'◯', hexagon:'⬡' };
+    this._shapeButtonRow(TRAP_SHAPES, data.shape, TRAP_ICONS as Record<string,string>, s => {
+      data.shape = s as TrapShape; onGeomChange();
+    });
+
+    this.section('VARIANT');
+    const VARIANTS: TrapVariant[] = ['generic','spike','trampoline','hammer','saw','buff','chomper','hidden_pit'];
+    this.selectRow('Variant', VARIANTS.map(v => ({ value: v, label: v })), data.variant, v => {
+      data.variant = v as TrapVariant; onGeomChange();
+    });
+
+    this.section('DIMENSIONS');
+    this.numRow('Width  (cm)', data.dimX, MIN_TRAP_DIM, 200, 1, v => { data.dimX = v; onGeomChange(); });
+    this.numRow('Depth  (cm)', data.dimZ, MIN_TRAP_DIM, 200, 1, v => { data.dimZ = v; onGeomChange(); });
+
+    this.section('POSITION');
+    if (data.parentType === 'arena') {
+      this.numRow('Radius (cm)',  data.posR,     0, 200, 1,   v => { data.posR = v;     onGeomChange(); });
+      this.numRow('Angle°',       data.posAngle, 0, 360, 1,   v => { data.posAngle = v; onGeomChange(); });
+    } else {
+      this.numRow('X (cm)', data.basePosX, -200, 200, 1, v => { data.basePosX = v; onGeomChange(); });
+      this.numRow('Z (cm)', data.basePosZ, -200, 200, 1, v => { data.basePosZ = v; onGeomChange(); });
+    }
+    this.numRow('Rot Y°', data.rotY, -180, 180, 1, v => { data.rotY = v; onGeomChange(); });
+
+    this.section('EFFECT');
+    const EFFECTS: TrapEffect[] = ['damage','heal','launch','reverse_controls','freeze','buff_zone','hidden_pit','chomper'];
+    this.selectRow('Effect', EFFECTS.map(e => ({ value: e, label: e })), data.effect, v => {
+      data.effect = v as TrapEffect; onGeomChange();
+    });
+    this._trapEffectRows(data, onGeomChange);
+
+    this.section('TIMING');
+    this.toggleRow('Periodic', data.isPeriodic, v => { data.isPeriodic = v; onGeomChange(); });
+    if (data.isPeriodic) {
+      this.numRow('Safe (s)',   data.safeInterval,   0.1, 60, 0.5, v => { data.safeInterval = v; });
+      this.numRow('Unsafe (s)', data.unsafeInterval, 0.1, 60, 0.5, v => { data.unsafeInterval = v; });
+    }
+    this.numRow('Act. Limit (0=∞)', data.activationLimit, 0, 100, 1, v => { data.activationLimit = Math.round(v); });
+
+    this.section('SPEED PATH');
+    const slOpts = [{ value: '', label: '— None —' }, ...[...speedLineNames.entries()].map(([id,name]) => ({ value: id, label: name }))];
+    this.selectRow('Speed Path', slOpts, data.speedPathId ?? '', v => { data.speedPathId = v || null; });
+
+    if (data.effect === 'buff_zone') {
+      this._trapDurationTiersSection(data, onGeomChange);
+    }
+
+    this.section('APPEARANCE');
+    this.colorRow('Color', data.color, v => { data.color = v; onGeomChange(); });
+    const trapSurfProxy = { surface: data.surface, customTileData: null as string|null, tileScale: data.tileScale, color: data.color };
+    this.surfaceRow(trapSurfProxy, () => { data.surface = trapSurfProxy.surface; data.tileScale = trapSurfProxy.tileScale; onGeomChange(); });
+  }
+
+  private _trapEffectRows(data: TrapData, onGeomChange: () => void): void {
+    switch (data.effect) {
+      case 'damage':
+        this.numRow('Damage Factor', data.damageFactor, 0, 1, 0.01, v => { data.damageFactor = v; });
+        break;
+      case 'heal':
+        this.numRow('Heal Factor', data.healFactor, 0, 1, 0.01, v => { data.healFactor = v; });
+        break;
+      case 'launch':
+        this.numRow('Force X (cm/s)', data.forceX, -500, 500, 1, v => { data.forceX = v; });
+        this.numRow('Force Y (cm/s)', data.forceY, -500, 500, 1, v => { data.forceY = v; });
+        this.numRow('Force Z (cm/s)', data.forceZ, -500, 500, 1, v => { data.forceZ = v; });
+        break;
+      case 'freeze':
+        this.numRow('Duration (s)', data.freezeDuration, 0.5, 30, 0.5, v => { data.freezeDuration = v; });
+        break;
+      case 'buff_zone': {
+        const SURFACES: SurfaceType[] = ['plain','checker','grid','hex','stripes','dots','concrete','metal','wood','ice','sand','lava_rock'];
+        const surfOpts = SURFACES.map(s => ({ value: s, label: SURFACE_LABEL[s] }));
+        this.selectRow('Buff Surface', surfOpts, data.buffSurface ?? 'plain', v => {
+          data.buffSurface = v as SurfaceType;
+        });
+        break;
+      }
+      case 'chomper':
+        this.numRow('Crush Damage', data.damageFactor, 0, 1, 0.01, v => { data.damageFactor = v; });
+        break;
+      case 'hidden_pit': {
+        const PIT_SHAPES: OpeningShape[] = ['circle','ellipse','rectangle','hexagon','triangle','star'];
+        this.selectRow('Pit Shape', PIT_SHAPES.map(s => ({ value: s, label: s })), data.pitShape, v => {
+          data.pitShape = v as OpeningShape;
+        });
+        this.numRow('Pit Radius X (cm)', data.pitRadiusX, 5, 100, 1, v => { data.pitRadiusX = v; });
+        this.numRow('Pit Radius Z (cm)', data.pitRadiusZ, 5, 100, 1, v => { data.pitRadiusZ = v; });
+        this.numRow('Pit Depth  (cm)',   data.pitDepth,   5, 100, 1, v => { data.pitDepth = v; });
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  private _trapDurationTiersSection(data: TrapData, onGeomChange: () => void): void {
+    this.section('DURATION TIERS');
+    const hint = document.createElement('div'); hint.className = 'prop-hint';
+    hint.textContent = 'Each tier activates after bey stays on trap for that many seconds.';
+    this.content.appendChild(hint);
+
+    const tiersContainer = document.createElement('div');
+    tiersContainer.className = 'prop-tiers-container';
+    this.content.appendChild(tiersContainer);
+
+    const rebuild = () => {
+      tiersContainer.innerHTML = '';
+      data.durationTiers.forEach((tier, idx) => {
+        const tierDiv = document.createElement('div');
+        tierDiv.className = 'prop-tier-block';
+        const TIER_EFFECTS: TrapTierEffect[] = ['friction','slow','burn_damage','chill','freeze','sand_pile','custom'];
+        const header = document.createElement('div'); header.className = 'prop-tier-header';
+        header.textContent = `Tier ${idx + 1}`;
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'game-btn prop-tier-remove'; removeBtn.textContent = '✕';
+        removeBtn.addEventListener('click', () => {
+          data.durationTiers.splice(idx, 1); rebuild(); onGeomChange();
+        });
+        header.appendChild(removeBtn);
+        tierDiv.appendChild(header);
+
+        // After X seconds row
+        const rowAfter = document.createElement('div'); rowAfter.className = 'prop-row';
+        const lblAfter = document.createElement('span'); lblAfter.className = 'prop-label'; lblAfter.textContent = 'After (s)';
+        const inpAfter = document.createElement('input'); inpAfter.type = 'number'; inpAfter.className = 'prop-input';
+        inpAfter.min = '0'; inpAfter.step = '0.5'; inpAfter.value = String(tier.thresholdSeconds);
+        inpAfter.addEventListener('input', () => { tier.thresholdSeconds = parseFloat(inpAfter.value) || 0; });
+        rowAfter.appendChild(lblAfter); rowAfter.appendChild(inpAfter); tierDiv.appendChild(rowAfter);
+
+        // Effect select
+        const sel = this._appendSelectTo(tierDiv, 'Effect', TIER_EFFECTS.map(e => ({ value: e, label: e })), tier.tierEffect, v => {
+          tier.tierEffect = v as TrapTierEffect;
+        });
+
+        // RPM loss / speed mult
+        const rpmRow = document.createElement('div'); rpmRow.className = 'prop-row';
+        const lblRpm = document.createElement('span'); lblRpm.className = 'prop-label'; lblRpm.textContent = 'RPM loss/s';
+        const inpRpm = document.createElement('input'); inpRpm.type = 'number'; inpRpm.className = 'prop-input';
+        inpRpm.min = '0'; inpRpm.max = '1'; inpRpm.step = '0.01'; inpRpm.value = String(tier.rpmLossFactor);
+        inpRpm.addEventListener('input', () => { tier.rpmLossFactor = parseFloat(inpRpm.value) || 0; });
+        rpmRow.appendChild(lblRpm); rpmRow.appendChild(inpRpm); tierDiv.appendChild(rpmRow);
+
+        const spdRow = document.createElement('div'); spdRow.className = 'prop-row';
+        const lblSpd = document.createElement('span'); lblSpd.className = 'prop-label'; lblSpd.textContent = 'Speed mult';
+        const inpSpd = document.createElement('input'); inpSpd.type = 'number'; inpSpd.className = 'prop-input';
+        inpSpd.min = '0'; inpSpd.max = '3'; inpSpd.step = '0.05'; inpSpd.value = String(tier.speedFactor);
+        inpSpd.addEventListener('input', () => { tier.speedFactor = parseFloat(inpSpd.value) || 0; });
+        spdRow.appendChild(lblSpd); spdRow.appendChild(inpSpd); tierDiv.appendChild(spdRow);
+
+        const notesRow = document.createElement('div'); notesRow.className = 'prop-row';
+        const lblNotes = document.createElement('span'); lblNotes.className = 'prop-label'; lblNotes.textContent = 'Notes';
+        const inpNotes = document.createElement('input'); inpNotes.type = 'text'; inpNotes.className = 'prop-text-input';
+        inpNotes.value = tier.notes;
+        inpNotes.addEventListener('input', () => { tier.notes = inpNotes.value; });
+        notesRow.appendChild(lblNotes); notesRow.appendChild(inpNotes); tierDiv.appendChild(notesRow);
+
+        tiersContainer.appendChild(tierDiv);
+        void sel; // suppress unused warning
+      });
+
+      // Add tier button
+      const addBtn = document.createElement('button'); addBtn.className = 'game-btn prop-add-tier-btn';
+      addBtn.textContent = '+ Add Tier';
+      addBtn.addEventListener('click', () => {
+        data.durationTiers.push({ thresholdSeconds: 0, tierEffect: 'friction', rpmLossFactor: 0.05, speedFactor: 0.9, notes: '' });
+        rebuild(); onGeomChange();
+      });
+      tiersContainer.appendChild(addBtn);
+
+      // Preset button (only for known buff surfaces)
+      if (data.buffSurface && data.buffSurface in BUFF_TIER_PRESETS) {
+        const presetBtn = document.createElement('button'); presetBtn.className = 'game-btn';
+        presetBtn.textContent = '↺ Preset';
+        presetBtn.title = `Re-seed tiers from ${data.buffSurface} preset`;
+        presetBtn.addEventListener('click', () => {
+          const key = data.buffSurface as keyof typeof BUFF_TIER_PRESETS;
+          data.durationTiers = BUFF_TIER_PRESETS[key].map(t => ({...t}));
+          rebuild(); onGeomChange();
+        });
+        tiersContainer.appendChild(presetBtn);
+      }
+    };
+
+    rebuild();
+  }
+
+  private _appendSelectTo(
+    parent: HTMLElement,
+    label: string,
+    options: { value: string; label: string }[],
+    current: string,
+    onChange: (v: string) => void,
+  ): HTMLSelectElement {
+    const row = document.createElement('div'); row.className = 'prop-row';
+    const lbl = document.createElement('span'); lbl.className = 'prop-label'; lbl.textContent = label;
+    const sel = document.createElement('select'); sel.className = 'prop-select';
+    for (const opt of options) {
+      const el = document.createElement('option');
+      el.value = opt.value; el.textContent = opt.label; el.selected = opt.value === current;
+      sel.appendChild(el);
+    }
+    sel.addEventListener('change', () => onChange(sel.value));
+    row.appendChild(lbl); row.appendChild(sel); parent.appendChild(row);
+    return sel;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PORTAL PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showPortal(
+    data: PortalData,
+    arenaNames: Map<string, string>,
+    portalNames: Map<string, string>,
+    onGeomChange: () => void,
+    onRename: (name: string) => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
+    nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
+    this.content.appendChild(nameInp);
+
+    this.section('SHAPE');
+    const PORTAL_SHAPES: TrapShape[] = ['rectangle','circle','ellipse','hexagon'];
+    const PORTAL_ICONS: Record<TrapShape, string> = { rectangle:'▭', circle:'●', ellipse:'◯', hexagon:'⬡' };
+    this._shapeButtonRow(PORTAL_SHAPES, data.shape, PORTAL_ICONS as Record<string,string>, s => {
+      data.shape = s as TrapShape; onGeomChange();
+    });
+
+    this.section('DIMENSIONS');
+    this.numRow('Width (cm)', data.dimX, MIN_TRAP_DIM, 200, 1, v => { data.dimX = v; onGeomChange(); });
+    this.numRow('Depth (cm)', data.dimZ, MIN_TRAP_DIM, 200, 1, v => { data.dimZ = v; onGeomChange(); });
+
+    this.section('POSITION');
+    if (data.parentType === 'arena') {
+      this.numRow('Radius (cm)', data.posR,     0, 200, 1, v => { data.posR = v;     onGeomChange(); });
+      this.numRow('Angle°',      data.posAngle, 0, 360, 1, v => { data.posAngle = v; onGeomChange(); });
+    } else {
+      this.numRow('X (cm)', data.basePosX, -200, 200, 1, v => { data.basePosX = v; onGeomChange(); });
+      this.numRow('Z (cm)', data.basePosZ, -200, 200, 1, v => { data.basePosZ = v; onGeomChange(); });
+    }
+    this.numRow('Rot Y°', data.rotY, -180, 180, 1, v => { data.rotY = v; onGeomChange(); });
+
+    this.section('DESTINATION');
+    const DEST_TYPES: PortalDestType[] = ['portal','random_arena','world_point'];
+    const DEST_LABELS: Record<PortalDestType, string> = {
+      portal: 'Linked Portal', random_arena: 'Random Arena Drop', world_point: 'World Point',
+    };
+    this.selectRow('Type', DEST_TYPES.map(t => ({ value: t, label: DEST_LABELS[t] })), data.destType, v => {
+      data.destType = v as PortalDestType; onGeomChange();
+    });
+
+    if (data.destType === 'portal') {
+      const others = [...portalNames.entries()].filter(([id]) => id !== data.id);
+      const opts = [{ value: '', label: '— None —' }, ...others.map(([id,name]) => ({ value: id, label: name }))];
+      this.selectRow('Target Portal', opts, data.destPortalId ?? '', v => { data.destPortalId = v || null; });
+      this.toggleRow('Bidirectional', data.isBidirectional, v => { data.isBidirectional = v; });
+    } else if (data.destType === 'random_arena') {
+      const opts = [{ value: '', label: '— Any —' }, ...[...arenaNames.entries()].map(([id,name]) => ({ value: id, label: name }))];
+      this.selectRow('Arena', opts, data.destArenaId ?? '', v => { data.destArenaId = v || null; });
+    } else {
+      this.numRow('Dest X (cm)', data.destPosX, -500, 500, 1, v => { data.destPosX = v; });
+      this.numRow('Dest Y (cm)', data.destPosY, -500, 500, 1, v => { data.destPosY = v; });
+      this.numRow('Dest Z (cm)', data.destPosZ, -500, 500, 1, v => { data.destPosZ = v; });
+    }
+
+    this.section('EXIT');
+    this.numRow('Vel Scale', data.exitVelScale, 0.1, 3.0, 0.1, v => { data.exitVelScale = v; });
+    this.numRow('Heading° (NaN=keep)', isNaN(data.exitRotY) ? 0 : data.exitRotY, -180, 180, 1, v => {
+      data.exitRotY = v;
+    });
+    this.toggleRow('Preserve heading', isNaN(data.exitRotY), v => {
+      data.exitRotY = v ? NaN : 0;
+    });
+
+    this.section('APPEARANCE');
+    this.colorRow('Pad Color',  data.color,     v => { data.color = v;     onGeomChange(); });
+    this.colorRow('Glow Color', data.glowColor, v => { data.glowColor = v; onGeomChange(); });
   }
 
 }

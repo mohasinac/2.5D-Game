@@ -6,6 +6,9 @@ import {
   WallTopProfile, WallHoleData, WallData,
   BridgeCrossSection, BridgeSegmentType, BridgeEndpointType, BridgeSection,
   BridgeSegmentData, BridgeData, BridgeEndpointRef,
+  ObstacleData, ObstacleShape, ObstacleTheme,
+  TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
+  PortalData, PortalDestType,
 } from '../types/arenaTypes';
 
 export interface SpeedLineSave {
@@ -120,6 +123,49 @@ export interface ArenaSave {
   speedLines: SpeedLineSave[];
 }
 
+export interface ObstacleSave {
+  id: string; name: string; shape: ObstacleShape; theme: ObstacleTheme;
+  dimX: number; dimY: number; dimZ: number;
+  posX: number; posY: number; posZ: number;
+  rotX: number; rotY: number; rotZ: number;
+  isFloating: boolean; isDestructible: boolean; hitPoints: number;
+  contactForceX: number; contactForceY: number; contactForceZ: number;
+  color: number; surface: SurfaceType; tileScale: number;
+  material: ArenaMaterial; speedPathId: string | null;
+}
+
+export interface TrapDurationTierSave {
+  thresholdSeconds: number; tierEffect: TrapTierEffect;
+  rpmLossFactor: number; speedFactor: number; notes: string;
+}
+
+export interface TrapSave {
+  id: string; name: string; parentId: string; parentType: 'arena' | 'base';
+  shape: TrapShape; variant: TrapVariant; effect: TrapEffect;
+  dimX: number; dimZ: number; rotY: number;
+  posR: number; posAngle: number; basePosX: number; basePosZ: number;
+  forceX: number; forceY: number; forceZ: number;
+  damageFactor: number; healFactor: number; freezeDuration: number;
+  buffSurface: SurfaceType | null;
+  pitShape: OpeningShape; pitRadiusX: number; pitRadiusZ: number;
+  pitDepth: number; pitSides: number; pitStarInner: number;
+  isPeriodic: boolean; safeInterval: number; unsafeInterval: number;
+  activationLimit: number; speedPathId: string | null;
+  durationTiers: TrapDurationTierSave[];
+  color: number; surface: SurfaceType; tileScale: number;
+}
+
+export interface PortalSave {
+  id: string; name: string; parentId: string; parentType: 'arena' | 'base';
+  shape: TrapShape; dimX: number; dimZ: number; rotY: number;
+  posR: number; posAngle: number; basePosX: number; basePosZ: number;
+  destType: PortalDestType;
+  destPortalId: string | null; destArenaId: string | null;
+  destPosX: number; destPosY: number; destPosZ: number;
+  exitVelScale: number; exitRotY: number; isBidirectional: boolean;
+  color: number; glowColor: number;
+}
+
 export interface ArenaConfig {
   baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
@@ -128,6 +174,9 @@ export interface ArenaConfig {
   wallSeq: number; bridgeSeq: number; segmentSeq: number;
   speedLineSeq: number;
   speedLines: SpeedLineSave[];
+  obstacles: ObstacleSave[]; obstacleSeq: number;
+  traps: TrapSave[];        trapSeq: number;
+  portals: PortalSave[];    portalSeq: number;
 }
 
 export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
@@ -258,5 +307,51 @@ export function bridgeToSave(
     },
     color:b.color, surface:b.surface,
     walls: b.wallIds.map(id=>{ const w=walls.get(id); return w?wallToSave(w):null!; }).filter(Boolean),
+  };
+}
+
+export function obstacleToSave(o: ObstacleData): ObstacleSave {
+  return {
+    id:o.id, name:o.name, shape:o.shape, theme:o.theme,
+    dimX:o.dimX, dimY:o.dimY, dimZ:o.dimZ,
+    posX:o.posX, posY:o.posY, posZ:o.posZ,
+    rotX:o.rotX, rotY:o.rotY, rotZ:o.rotZ,
+    isFloating:o.isFloating, isDestructible:o.isDestructible, hitPoints:o.hitPoints,
+    contactForceX:o.contactForceX, contactForceY:o.contactForceY, contactForceZ:o.contactForceZ,
+    color:o.color, surface:o.surface, tileScale:o.tileScale,
+    material:o.material, speedPathId:o.speedPathId,
+  };
+}
+
+export function trapToSave(t: TrapData): TrapSave {
+  return {
+    id:t.id, name:t.name, parentId:t.parentId, parentType:t.parentType,
+    shape:t.shape, variant:t.variant, effect:t.effect,
+    dimX:t.dimX, dimZ:t.dimZ, rotY:t.rotY,
+    posR:t.posR, posAngle:t.posAngle, basePosX:t.basePosX, basePosZ:t.basePosZ,
+    forceX:t.forceX, forceY:t.forceY, forceZ:t.forceZ,
+    damageFactor:t.damageFactor, healFactor:t.healFactor, freezeDuration:t.freezeDuration,
+    buffSurface:t.buffSurface,
+    pitShape:t.pitShape, pitRadiusX:t.pitRadiusX, pitRadiusZ:t.pitRadiusZ,
+    pitDepth:t.pitDepth, pitSides:t.pitSides, pitStarInner:t.pitStarInner,
+    isPeriodic:t.isPeriodic, safeInterval:t.safeInterval, unsafeInterval:t.unsafeInterval,
+    activationLimit:t.activationLimit, speedPathId:t.speedPathId,
+    durationTiers: t.durationTiers.map(d=>({
+      thresholdSeconds:d.thresholdSeconds, tierEffect:d.tierEffect,
+      rpmLossFactor:d.rpmLossFactor, speedFactor:d.speedFactor, notes:d.notes,
+    })),
+    color:t.color, surface:t.surface, tileScale:t.tileScale,
+  };
+}
+
+export function portalToSave(p: PortalData): PortalSave {
+  return {
+    id:p.id, name:p.name, parentId:p.parentId, parentType:p.parentType,
+    shape:p.shape, dimX:p.dimX, dimZ:p.dimZ, rotY:p.rotY,
+    posR:p.posR, posAngle:p.posAngle, basePosX:p.basePosX, basePosZ:p.basePosZ,
+    destType:p.destType, destPortalId:p.destPortalId, destArenaId:p.destArenaId,
+    destPosX:p.destPosX, destPosY:p.destPosY, destPosZ:p.destPosZ,
+    exitVelScale:p.exitVelScale, exitRotY:p.exitRotY, isBidirectional:p.isBidirectional,
+    color:p.color, glowColor:p.glowColor,
   };
 }

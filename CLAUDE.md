@@ -143,6 +143,9 @@ src/
     wallBuilders.ts             — Wall mesh/edge builders; arcFilterPts; defaultWallData
     bridgeSegmentBuilders.ts    — Bridge segment path samplers; cross-section sweep; SegmentPose; defaultSegment
     speedLineBuilders.ts        — Speed line path computation; ribbon mesh; arrow/handle/marker builders; overlap detection
+    obstacleBuilders.ts         — 6-shape obstacle geometry; buildObstacleObjects; applyObstacle; defaultObstacle
+    trapBuilders.ts             — Trap plate + variant meshes; buildTrapObjects; trapSurfY; defaultTrap
+    portalBuilders.ts           — Portal pad + torus ring; buildPortalObjects; portalSurfY; defaultPortal
     [arena geometry files...]
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
@@ -151,13 +154,13 @@ src/
     BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
     AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow helpers
-    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine
+    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal
     BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
     SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes)
     dialog.ts                   — gameConfirm() modal utility
-    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line save interfaces (no version field)
+    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal save interfaces
   config/
-    arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + wall/bridge defaults
+    arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + wall/bridge/obstacle/trap/portal defaults + BUFF_TIER_PRESETS
 ```
 
 ## Running
@@ -281,6 +284,45 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `totalLength` — computed arc length in cm
 - **All Speed Line meshes** are positioned in world space with `position.set(arena.posX, 0, arena.posZ)` + `rotation.y = arena.rotY` — geometry bakes arena-local coordinates directly
 
+#### ObstacleData
+- A solid 3D shape placed freely in world space (can float above any surface)
+- `shape`: `'cube'` | `'cuboid'` | `'sphere'` | `'cylinder'` | `'pyramid'` | `'frustum'`
+- `dimX/Y/Z` — dimensions in cm; semantics vary by shape (cube: all sides = dimX; sphere: diameter = dimX; frustum: dimX = bottom D, dimZ = top D, dimY = height)
+- `posX/Y/Z`, `rotX/Y/Z` — world position + Euler rotation in degrees; `posY` is set manually, NOT derived from arena surface
+- `isFloating` — editor flag (no physics effect yet)
+- `isDestructible` + `hitPoints` — editor flags for future simulation
+- `contactForceX/Y/Z` — cm/s impulse applied on contact (editor placeholder)
+- `material: ArenaMaterial`, `theme: ObstacleTheme` — physics material and visual theme
+- `speedPathId: string | null` — ID of a SpeedLineData that targets this obstacle (reverse reference)
+- `mesh` + `edges` — Three.js objects built by `obstacleBuilders.ts`
+- Minimum dimension: `MIN_OBSTACLE_DIM` (10 cm). Default: 20 cm cube floating 10 cm above base
+
+#### TrapData
+- A flat trigger pad on an arena surface or the octagon base
+- `parentType`: `'arena'` | `'base'` — polar placement on arenas (`posR`, `posAngle`), world XZ on base (`basePosX`, `basePosZ`)
+- `shape`: `'rectangle'` | `'circle'` | `'ellipse'` | `'hexagon'`; `dimX/Z` — footprint in cm (min `MIN_TRAP_DIM` = 10 cm)
+- `effect`: `'damage'` | `'heal'` | `'launch'` | `'reverse_controls'` | `'freeze'` | `'buff_zone'` | `'hidden_pit'` | `'chomper'`
+- `variant`: `'generic'` | `'spike'` | `'trampoline'` | `'hammer'` | `'saw'` | `'buff'` | `'chomper'` | `'hidden_pit'` — drives `variantMesh` geometry
+- Effect parameters: `forceX/Y/Z`, `damageFactor`, `healFactor`, `freezeDuration`, `buffSurface`, `pitShape/RadiusX/Z/Depth` (hidden_pit, self-contained)
+- `isPeriodic` + `safeInterval` + `unsafeInterval` — periodic safe/unsafe cycling
+- `activationLimit` (0 = infinite)
+- `durationTiers: TrapDurationTier[]` — escalating effects when bey stays on a `buff_zone` trap; each tier has `thresholdSeconds`, `tierEffect`, `rpmLossFactor`, `speedFactor`, `notes`. Only used when `effect='buff_zone'`
+- `BUFF_TIER_PRESETS` in `arenaConstants.ts` seeds sand/lava/ice/water/oil tier templates (↺ Preset button in PropertiesPanel)
+- `speedPathId: string | null` — reverse reference to a SpeedLineData
+- `mesh` + `edges` + `variantMesh` — Three.js objects; plate built by `trapBuilders.ts`; `variantMesh` disposed separately (like `arena.spiralMeshes`)
+- Plate world Y is auto-derived from arena surface at placement time via `trapSurfY()` — NOT stored explicitly
+
+#### PortalData
+- An instant-teleport pad (distinct from traps: no damage/force, purely relocates beyblades)
+- `parentType`/shape/dimX/dimZ/posR/posAngle/basePosX/basePosZ — same placement scheme as TrapData
+- `destType`: `'portal'` (linked pair by ID) | `'random_arena'` (random drop inside named arena) | `'world_point'` (explicit XYZ)
+- `destPortalId`, `destArenaId`, `destPosX/Y/Z` — destination depending on destType
+- `exitVelScale` — speed multiplier on exit (0.1–3.0); `exitRotY` — exit heading override in degrees (NaN = preserve)
+- `isBidirectional` — entering from either end teleports to the other
+- `color` (pad fill) + `glowColor` (pad emissive + ring color)
+- `mesh` + `edges` (flat pad) + `ringMesh` (TorusGeometry floating `PORTAL_RING_HEIGHT` cm above pad)
+- Pad world Y derived via `portalSurfY()`, same pattern as `trapSurfY()`
+
 #### ArenaMaterial (physics material)
 Independent of `SurfaceType` (visual texture). Controls restitution, spin loss, and damage on impact.
 
@@ -338,6 +380,17 @@ Geometry lives in `src/geometry/` — never in `ArenaSandbox.ts`.
 | `defaultSpeedLine(name, arenaId, id, zoneId?)` | `arenaObjectBuilders.ts` | Default SpeedLineData factory |
 | `buildSpeedLineObjects(sl, arena, zones)` | `arenaObjectBuilders.ts` | Assembles all Three.js objects for a speed line (ribbon, edges, markers, handles) |
 | `applySpeedLine(sl, arena, zones, scene, add, remove)` | `arenaObjectBuilders.ts` | Dispose + rebuild all speed line objects in-place |
+| `buildObstacleObjects(data)` | `obstacleBuilders.ts` | Mesh + edges for 6 obstacle shapes; positions at posX/Y/Z with rotX/Y/Z |
+| `applyObstacle(data)` | `obstacleBuilders.ts` | Dispose + rebuild obstacle mesh + edges in-place |
+| `defaultObstacle(name, id, baseHeight)` | `obstacleBuilders.ts` | Default 20 cm cube floating 10 cm above base |
+| `buildTrapObjects(data, surfY)` | `trapBuilders.ts` | Plate mesh + edges + variantMesh for chosen shape/variant; plate sits at surfY |
+| `applyTrap(data, surfY)` | `trapBuilders.ts` | Dispose + rebuild trap plate in-place |
+| `trapSurfY(data, arenas, baseHeight)` | `trapBuilders.ts` | World Y of arena surface (or baseHeight) where trap sits |
+| `defaultTrap(name, id, parentId, parentType)` | `trapBuilders.ts` | Default 20×20 cm rectangle trap, effect='launch' |
+| `buildPortalObjects(data, surfY)` | `portalBuilders.ts` | Pad mesh + edges + torus ringMesh |
+| `applyPortal(data, surfY)` | `portalBuilders.ts` | Dispose + rebuild portal pad + ring in-place |
+| `portalSurfY(data, arenas, baseHeight)` | `portalBuilders.ts` | Same pattern as trapSurfY |
+| `defaultPortal(name, id, parentId, parentType)` | `portalBuilders.ts` | Default 20 cm circle pad, cyan 0x00e5ff, destType='portal' |
 
 #### `arenaSurfaceYAtArenaLocal(arena, alx, alz)`
 Returns the world Y of the arena bowl surface at any arena-local XZ position:
@@ -401,8 +454,9 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 ### ArenaSandbox internal structure
 
 ```
-Maps:          arenas, pits, zones, walls, bridges, segments, speedLines
-Seq counters:  arenaSeq, pitSeq, zoneSeq, wallSeq, bridgeSeq, segmentSeq, speedlineSeq, slSegSeq
+Maps:          arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals
+Seq counters:  arenaSeq, pitSeq, zoneSeq, wallSeq, bridgeSeq, segmentSeq, speedlineSeq, slSegSeq,
+               obstacleSeq, trapSeq, portalSeq
 Dep index:     bridgesByArena  — arenaId → Set<bridgeId> (rebuilt on anchor change)
 Raycaster:     slRaycaster — used for speed line handle hit-testing on mouse move
 Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set on mouse-down, cleared on mouse-up
@@ -414,19 +468,22 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 **Bridge rebuild propagation**: `applyBridgeFromSegment(segId)` reapplies `segId` and every subsequent segment in the chain. Earlier segments are unaffected. Always call this after changing any segment property or the bridge's `startRef` / `section`.
 
-**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`.
+**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`, obstacles `⬛`, traps `⚡`, portals `◉`.
 
-**Octagon base tree buttons**: `A+` (add arena), `B+` (add bridge), `W+` (add base wall). Arena nodes have `W+` (add rim wall) and `SL+` (add speed line). Zone nodes have `SL+` (add speed line parented to zone).
+**Octagon base tree buttons**: `A+` (add arena), `B+` (add bridge), `W+` (add base wall), `Obs+` (add obstacle), `Trap+` (add base trap), `⬡+` (add base portal). Arena nodes have `W+` (add rim wall), `SL+` (add speed line), `Trap+` (add arena trap), `⬡+` (add arena portal). Zone nodes have `SL+` (add speed line parented to zone).
 
 ### Save / load (localStorage)
 
-Key: `bey_arena_arena_sandbox`. **No version field** — `JSON.parse` directly; on any parse error `localStorage.removeItem(key)` and return (no migration, no version check). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
+Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 7`. On any parse error `localStorage.removeItem(key)` and return (no migration). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
 
 `ArenaConfig` (top-level save):
 - `arenas[]` — each `ArenaSave` includes `walls: WallSave[]` (rim walls) and `speedLines: SpeedLineSave[]`
 - `baseWalls: WallSave[]` — free-standing walls on the octagon base
 - `bridges: BridgeSave[]` — each includes `segments: BridgeSegmentSave[]` and `walls: WallSave[]`
 - `wallSeq`, `bridgeSeq`, `segmentSeq`, `speedLineSeq` — sequence counters
+- `obstacles: ObstacleSave[]`, `obstacleSeq` — free-standing obstacles (world-positioned)
+- `traps: TrapSave[]`, `trapSeq` — includes `durationTiers: TrapDurationTierSave[]` for buff_zone traps
+- `portals: PortalSave[]`, `portalSeq` — teleport pads with destination config
 
 ---
 
@@ -558,6 +615,13 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **Speed line `exitBehavior` vs `direction`**: `'loop'` is a valid `SpeedLineExitBehavior`, not a `SpeedLineDirection` (`'forward'|'reverse'|'bidirectional'`). Use `sl.exitBehavior !== 'loop'` to gate end-marker placement, never `sl.direction !== 'loop'`.
 - **Speed line handles on wrong object type**: `handleMeshes` contain `THREE.Mesh` objects; hit-testing returns `THREE.Object3D`. Always cast to `THREE.Mesh` before accessing `.material`. Use `(hits[0].object as THREE.Mesh).material`.
 - **`SL` constants namespace**: All speed line tuning values live in the `SL` object in `arenaConstants.ts`. Never inline magic numbers for speed line geometry (e.g. `SL.ARROW_SPACING`, `SL.SURFACE_LIFT`, `SL.HANDLE_RADIUS`).
+- **Obstacle `posY` is manual, trap/portal Y is automatic**: Obstacle position is fully user-controlled — do NOT derive `posY` from the arena surface. Trap and portal Y IS derived from `trapSurfY()`/`portalSurfY()` at creation and rebuild time — do NOT store it explicitly.
+- **Trap `variantMesh` needs separate disposal**: `_disposeTrap` must dispose `trap.variantMesh` independently (like `arena.spiralMeshes`). Never skip it — it leaks GPU memory.
+- **Portal `ringMesh` needs separate disposal**: Same pattern — `_disposePortal` must dispose `portal.ringMesh` explicitly.
+- **`speedPathId` is a reverse reference, not a path builder**: `ObstacleData.speedPathId`, `TrapData.speedPathId`, `PortalData.speedPathId` are ID strings pointing to existing `SpeedLineData` that targets this object. They do NOT create new speed lines and require no geometry rebuild when changed.
+- **`BUFF_TIER_PRESETS` keys are surface names, not tier-effect names**: The keys are `'sand'|'lava'|'ice'|'water'|'oil'` (matching `buffSurface`). The `tierEffect` values inside each preset entry are `TrapTierEffect` variants. Never confuse the two.
+- **Duration tiers only rendered for `effect='buff_zone'`**: The `_trapDurationTiersSection` call in `showTrap()` is conditional. Tiers stored in `TrapData.durationTiers` are serialized/deserialized regardless of effect type, but only shown in the UI and applied at runtime for `buff_zone`.
+- **Obstacle/trap/portal sequences in both `_applyConfigToScene` AND `loadArena`**: Both code paths that restore config must set `obstacleSeq`, `trapSeq`, `portalSeq` from `cfg`. Missing either one causes ID collisions after load.
 
 ---
 
@@ -579,6 +643,9 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/geometry/wallBuilders.ts` | Wall mesh/edge algorithm changes (tilt, gaps, top profile, holes) |
 | `src/geometry/bridgeSegmentBuilders.ts` | Bridge path sampling, cross-section sweep, or pose chaining changes |
 | `src/geometry/speedLineBuilders.ts` | Speed line path computation, ribbon, handles, arrows, overlap detection changes |
+| `src/geometry/obstacleBuilders.ts` | Obstacle shape geometry or default factory changes |
+| `src/geometry/trapBuilders.ts` | Trap plate geometry, variant meshes, or surface-Y derivation changes |
+| `src/geometry/portalBuilders.ts` | Portal pad geometry, torus ring, or surface-Y derivation changes |
 
 ### Allowed import direction (never reverse)
 ```
@@ -589,6 +656,7 @@ arenaConstants + arenaTypes  ←  primitives.ts
                              ←  bridgeSegmentBuilders.ts
                              ←  speedLineBuilders.ts
                              ←  arenaObjectBuilders.ts  (also imports speedLineBuilders)
+                             ←  obstacleBuilders.ts / trapBuilders.ts / portalBuilders.ts
                              ←  ArenaSandbox.ts
                              ←  PropertiesPanel.ts (imports arenaTypes + arenaConstants ONLY — no geometry)
 ```
@@ -618,3 +686,4 @@ Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers
 - If it builds edges: call `buildRimEdges` / `buildFloorAndPillarEdges` from `primitives.ts`.
 - If it assembles a Three.js Mesh + edges for arenas/pits/zones: it belongs in `arenaObjectBuilders.ts`.
 - Wall geometry → `wallBuilders.ts`. Bridge path/sweep geometry → `bridgeSegmentBuilders.ts`. Speed line ribbon/path → `speedLineBuilders.ts`.
+- Obstacle 3D shapes → `obstacleBuilders.ts`. Trap plate + variants → `trapBuilders.ts`. Portal pad + ring → `portalBuilders.ts`. None of these belong in `arenaObjectBuilders.ts`.

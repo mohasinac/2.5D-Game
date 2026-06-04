@@ -17,6 +17,7 @@ export class SceneTree {
   private dragId:  string | null = null;
   private dropTarget: { id: string; pos: DropPos } | null = null;
   private ctxMenu: HTMLElement;
+  private addMenu: HTMLElement;
   private idSeq   = 0;
   private nodeActions = new Map<string, CtxItem[]>();
 
@@ -39,7 +40,13 @@ export class SceneTree {
     this.ctxMenu  = document.createElement('div');
     this.ctxMenu.className = 'tree-ctx-menu hidden';
     document.body.appendChild(this.ctxMenu);
-    document.addEventListener('pointerdown', (e) => { if (!this.ctxMenu.contains(e.target as Node)) this.hideCtx(); });
+    this.addMenu  = document.createElement('div');
+    this.addMenu.className = 'tree-ctx-menu tree-add-menu hidden';
+    document.body.appendChild(this.addMenu);
+    document.addEventListener('pointerdown', (e) => {
+      if (!this.ctxMenu.contains(e.target as Node)) this.hideCtx();
+      if (!this.addMenu.contains(e.target as Node) && !(e.target as HTMLElement).classList.contains('tree-add-btn')) this.hideAddMenu();
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Delete') this.deleteSelected();
       if (e.key === 'Escape') this.clearSel();
@@ -56,20 +63,19 @@ export class SceneTree {
     const iconEl = document.createElement('span'); iconEl.className = 'tree-node-icon'; iconEl.textContent = icon;
     const labelEl = document.createElement('span'); labelEl.className = 'tree-node-label'; labelEl.textContent = label;
     rowEl.appendChild(caret); rowEl.appendChild(iconEl); rowEl.appendChild(labelEl);
-    if (opts?.onAddChild) {
+    const buttons: AddChildBtn[] = [];
+    if (opts?.onAddChild) buttons.push({ label: '+', title: 'Add child', onClick: opts.onAddChild });
+    if (opts?.addChildButtons) buttons.push(...opts.addChildButtons);
+    if (buttons.length === 1) {
       const addBtn = document.createElement('button');
-      addBtn.className = 'tree-add-btn'; addBtn.textContent = '+'; addBtn.title = 'Add arena';
-      addBtn.addEventListener('click', (e) => { e.stopPropagation(); opts.onAddChild!(); });
+      addBtn.className = 'tree-add-btn'; addBtn.textContent = '+'; addBtn.title = buttons[0].title;
+      addBtn.addEventListener('click', (e) => { e.stopPropagation(); buttons[0].onClick(); });
       rowEl.appendChild(addBtn);
-    }
-    if (opts?.addChildButtons) {
-      for (const cb of opts.addChildButtons) {
-        const btn = document.createElement('button');
-        btn.className = `tree-add-btn${cb.className ? ' ' + cb.className : ''}`;
-        btn.textContent = cb.label; btn.title = cb.title;
-        btn.addEventListener('click', (e) => { e.stopPropagation(); cb.onClick(); });
-        rowEl.appendChild(btn);
-      }
+    } else if (buttons.length > 1) {
+      const addBtn = document.createElement('button');
+      addBtn.className = 'tree-add-btn'; addBtn.textContent = '+'; addBtn.title = 'Add…';
+      addBtn.addEventListener('click', (e) => { e.stopPropagation(); this.showAddMenu(buttons, addBtn); });
+      rowEl.appendChild(addBtn);
     }
     const visBtn = document.createElement('button');
     visBtn.className = 'tree-vis-btn'; visBtn.textContent = '👁'; visBtn.title = 'Toggle visibility'; visBtn.tabIndex = -1;
@@ -226,5 +232,26 @@ export class SceneTree {
     const p=this.nodes.get(parentId);
     return p?this.depthOf(p.parentId)+1:0;
   }
-  dispose(): void { this.ctxMenu.remove(); }
+  private showAddMenu(buttons: AddChildBtn[], anchor: HTMLElement): void {
+    if (!this.addMenu.classList.contains('hidden')) { this.hideAddMenu(); return; }
+    this.addMenu.innerHTML = '';
+    for (const btn of buttons) {
+      const item = document.createElement('button');
+      item.className = 'tree-ctx-item';
+      item.textContent = btn.label !== '+' ? btn.label : btn.title;
+      item.title = btn.title;
+      item.addEventListener('click', () => { btn.onClick(); this.hideAddMenu(); });
+      this.addMenu.appendChild(item);
+    }
+    this.addMenu.classList.remove('hidden');
+    const ar = anchor.getBoundingClientRect();
+    const mr = this.addMenu.getBoundingClientRect();
+    const left = Math.min(ar.left, window.innerWidth  - mr.width  - 8);
+    const top  = Math.min(ar.bottom + 4, window.innerHeight - mr.height - 8);
+    this.addMenu.style.left = `${left}px`;
+    this.addMenu.style.top  = `${top}px`;
+  }
+  private hideAddMenu(): void { this.addMenu.classList.add('hidden'); }
+
+  dispose(): void { this.ctxMenu.remove(); this.addMenu.remove(); }
 }

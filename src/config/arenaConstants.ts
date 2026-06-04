@@ -17,13 +17,33 @@ export const SEAM_TRANSITION_WIDTH    = 2.0;  // cm — seam collar outward widt
 export const SEAM_RINGS               = 6;    // ring count in seam transition strip
 
 /* ── Save schema version ─────────────────────────────────────────────────── */
-export const ARENA_SAVE_VERSION = 6;
+export const ARENA_SAVE_VERSION = 7;
 
 /* ── Arena physical material default ────────────────────────────────────── */
 export const DEFAULT_ARENA_MATERIAL = 'abs' as const;
 
+/* ── Obstacle constants ──────────────────────────────────────────────────── */
+export const MIN_OBSTACLE_DIM     = 10;   // cm — minimum any obstacle dimension
+export const DEFAULT_OBSTACLE_DIM = 20;   // cm — default cube side length
+
+/* ── Trap constants ──────────────────────────────────────────────────────── */
+export const MIN_TRAP_DIM         = 10;   // cm — minimum footprint dimension
+export const DEFAULT_TRAP_DIM_X   = 20;   // cm
+export const DEFAULT_TRAP_DIM_Z   = 20;   // cm
+export const TRAP_PLATE_HEIGHT    = 2;    // cm — visual thickness of trigger plate
+export const SPIKE_COUNT          = 9;    // 3×3 grid of spikes
+export const SPIKE_HEIGHT         = 8;    // cm — spike cone height
+export const TRAP_SAFE_INTERVAL   = 2;    // s — default safe interval for periodic traps
+export const TRAP_UNSAFE_INTERVAL = 1;    // s — default unsafe interval
+
+/* ── Portal constants ────────────────────────────────────────────────────── */
+export const PORTAL_RING_HEIGHT     = 2;    // cm — torus ring sits this far above pad
+export const PORTAL_RING_TUBE_R     = 1.5;  // cm — torus tube radius
+export const DEFAULT_PORTAL_DIM     = 20;   // cm — default pad size
+export const DEFAULT_EXIT_VEL_SCALE = 1.0;  // speed multiplier on portal exit
+
 /* ── Physics material presets ───────────────────────────────────────────── */
-import type { ArenaMaterial, ArenaMaterialProps } from '../types/arenaTypes';
+import type { ArenaMaterial, ArenaMaterialProps, TrapDurationTier, TrapTierEffect } from '../types/arenaTypes';
 
 export const ARENA_MATERIAL_PRESETS: Record<ArenaMaterial, ArenaMaterialProps> = {
   // Walls: rubber|stone|abs|metal  Bridges: stone|abs|metal
@@ -32,6 +52,30 @@ export const ARENA_MATERIAL_PRESETS: Record<ArenaMaterial, ArenaMaterialProps> =
   abs:    { restitution: 0.65, spinLossFactor: 0.15, damageFactor: 0.70 },
   metal:  { restitution: 0.90, spinLossFactor: 0.20, damageFactor: 1.00 },
 } as const;
+
+/* ── Buff-zone duration tier presets ────────────────────────────────────── */
+export const BUFF_TIER_PRESETS: Record<'sand' | 'lava' | 'ice' | 'water' | 'oil', TrapDurationTier[]> = {
+  sand: [
+    { thresholdSeconds: 0, tierEffect: 'friction'    as TrapTierEffect, rpmLossFactor: 0.02, speedFactor: 0.90, notes: 'Light friction' },
+    { thresholdSeconds: 5, tierEffect: 'sand_pile'   as TrapTierEffect, rpmLossFactor: 0.05, speedFactor: 0.60, notes: 'Sand piles up' },
+  ],
+  lava: [
+    { thresholdSeconds: 0, tierEffect: 'burn_damage' as TrapTierEffect, rpmLossFactor: 0.10, speedFactor: 1.00, notes: 'Burning' },
+    { thresholdSeconds: 3, tierEffect: 'burn_damage' as TrapTierEffect, rpmLossFactor: 0.25, speedFactor: 1.00, notes: 'Intense burn' },
+  ],
+  ice: [
+    { thresholdSeconds: 0, tierEffect: 'friction'    as TrapTierEffect, rpmLossFactor: 0.00, speedFactor: 1.10, notes: 'Slippery' },
+    { thresholdSeconds: 2, tierEffect: 'chill'       as TrapTierEffect, rpmLossFactor: 0.03, speedFactor: 0.80, notes: 'Chilled' },
+    { thresholdSeconds: 5, tierEffect: 'freeze'      as TrapTierEffect, rpmLossFactor: 0.50, speedFactor: 0.00, notes: 'Frozen!' },
+  ],
+  water: [
+    { thresholdSeconds: 0, tierEffect: 'slow'        as TrapTierEffect, rpmLossFactor: 0.03, speedFactor: 0.75, notes: 'Water resistance' },
+  ],
+  oil: [
+    { thresholdSeconds: 0, tierEffect: 'friction'    as TrapTierEffect, rpmLossFactor: 0.00, speedFactor: 1.20, notes: 'Slick oil' },
+    { thresholdSeconds: 3, tierEffect: 'slow'        as TrapTierEffect, rpmLossFactor: 0.02, speedFactor: 0.85, notes: 'Oil coated' },
+  ],
+};
 
 /* ── Wall constants ──────────────────────────────────────────────────────── */
 export const MIN_WALL_HEIGHT       = 10;  // cm

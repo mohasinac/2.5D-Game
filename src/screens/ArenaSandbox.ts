@@ -15,6 +15,7 @@ import {
   OpeningShape, WallProfile, SurfaceType, ChildHole, IslandHole,
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment, SpeedLineHandleType,
   WallData, BridgeData, BridgeSegmentData, BridgeSegmentType,
+  ObstacleData, TrapData, PortalData,
 } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from '../geometry/materialBuilders';
 import {
@@ -35,8 +36,13 @@ import { SceneTree } from '../utils/SceneTree';
 import { PropertiesPanel } from '../utils/PropertiesPanel';
 import {
   PitSave, ZoneSave, WallSave, BridgeSave, SpeedLineSave, ArenaConfig,
+  ObstacleSave, TrapSave, PortalSave,
   pitToSave, zoneToSave, arenaToSave, wallToSave, bridgeToSave, speedLineToSave,
+  obstacleToSave, trapToSave, portalToSave,
 } from '../utils/arenaPersistence';
+import { buildObstacleObjects, applyObstacle, defaultObstacle } from '../geometry/obstacleBuilders';
+import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY } from '../geometry/trapBuilders';
+import { buildPortalObjects, applyPortal, defaultPortal, portalSurfY } from '../geometry/portalBuilders';
 import { buildWallGeometry, buildWallEdgeGeometry, defaultWallData } from '../geometry/wallBuilders';
 import {
   SegmentPose, DEFAULT_START_POSE,
@@ -79,6 +85,12 @@ export class ArenaSandbox extends Sandbox {
   private speedLines    = new Map<string, SpeedLineData>();
   private speedlineSeq  = 0;
   private slSegSeq      = 0;
+  private obstacles     = new Map<string, ObstacleData>();
+  private obstacleSeq   = 0;
+  private traps         = new Map<string, TrapData>();
+  private trapSeq       = 0;
+  private portals       = new Map<string, PortalData>();
+  private portalSeq     = 0;
   private selectedSlId: string | null = null;
   private slDrag: {
     slId: string;
@@ -132,9 +144,12 @@ export class ArenaSandbox extends Sandbox {
     this.sceneTree.add('octagon-base', 'Octagon Base', '⬡', null, {
       onAddChild: ()=>this.addArena(),
       addChildButtons: [
-        {label:'A+',   title:'Add arena',  className:'',        onClick:()=>this.addArena()},
-        {label:'B+',   title:'Add bridge', className:'zone-btn',onClick:()=>this.addBridge()},
-        {label:'W+',   title:'Add base wall', className:'pit-btn',onClick:()=>this.addWall('octagon-base','base')},
+        {label:'A+',   title:'Add arena',       className:'',        onClick:()=>this.addArena()},
+        {label:'B+',   title:'Add bridge',      className:'zone-btn',onClick:()=>this.addBridge()},
+        {label:'W+',   title:'Add base wall',   className:'pit-btn', onClick:()=>this.addWall('octagon-base','base')},
+        {label:'Obs+', title:'Add obstacle',    className:'sl-btn',  onClick:()=>this.addObstacle()},
+        {label:'Trap+',title:'Add base trap',   className:'pit-btn', onClick:()=>this.addTrap('octagon-base','base')},
+        {label:'⬡+',   title:'Add base portal', className:'zone-btn',onClick:()=>this.addPortal('octagon-base','base')},
       ],
     });
 
@@ -191,6 +206,9 @@ export class ArenaSandbox extends Sandbox {
         if(this.walls.has(id)){ this.removeWall(id); continue; }
         if(this.segments.has(id)){ this.removeSegment(id); continue; }
         if(this.bridges.has(id)){ this.removeBridge(id); continue; }
+        if(this.obstacles.has(id)){ this.removeObstacle(id); continue; }
+        if(this.traps.has(id)){ this.removeTrap(id); continue; }
+        if(this.portals.has(id)){ this.removePortal(id); continue; }
         const objs=this.sceneObjects.get(id);
         if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
       }
@@ -242,6 +260,12 @@ export class ArenaSandbox extends Sandbox {
       speedLines: [...this.speedLines.values()]
         .filter(sl => sl.parentZoneId !== null)
         .map(speedLineToSave),
+      obstacles: [...this.obstacles.values()].map(obstacleToSave),
+      obstacleSeq: this.obstacleSeq,
+      traps: [...this.traps.values()].map(trapToSave),
+      trapSeq: this.trapSeq,
+      portals: [...this.portals.values()].map(portalToSave),
+      portalSeq: this.portalSeq,
     };
     return JSON.stringify(config);
   }
@@ -319,6 +343,12 @@ export class ArenaSandbox extends Sandbox {
     this.pits.clear(); this.zones.clear(); this.arenas.clear();
     this.walls.clear(); this.bridges.clear(); this.segments.clear();
     this.bridgesByArena.clear();
+    for(const obs of this.obstacles.values()) this._disposeObstacle(obs);
+    this.obstacles.clear(); this.obstacleSeq = 0;
+    for(const trap of this.traps.values()) this._disposeTrap(trap);
+    this.traps.clear(); this.trapSeq = 0;
+    for(const portal of this.portals.values()) this._disposePortal(portal);
+    this.portals.clear(); this.portalSeq = 0;
     this.sceneObjects.clear();
     this.arenaSeq = 0; this.pitSeq = 0; this.zoneSeq = 0;
     this.wallSeq = 0; this.bridgeSeq = 0; this.segmentSeq = 0;
@@ -332,6 +362,9 @@ export class ArenaSandbox extends Sandbox {
     this.arenaSeq = cfg.arenaSeq; this.pitSeq = cfg.pitSeq; this.zoneSeq = cfg.zoneSeq;
     this.wallSeq = cfg.wallSeq ?? 0; this.bridgeSeq = cfg.bridgeSeq ?? 0; this.segmentSeq = cfg.segmentSeq ?? 0;
     this.speedlineSeq = cfg.speedLineSeq ?? 0;
+    this.obstacleSeq = cfg.obstacleSeq ?? 0;
+    this.trapSeq = cfg.trapSeq ?? 0;
+    this.portalSeq = cfg.portalSeq ?? 0;
     this._loadArenasFromConfig(cfg);
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
@@ -677,6 +710,200 @@ export class ArenaSandbox extends Sandbox {
       if(bridge) bridge.wallIds=bridge.wallIds.filter(x=>x!==id);
     }
     this.saveArena();
+  }
+
+  /* ── Obstacle methods ────────────────────────────────────────────────── */
+
+  private addObstacle(): void {
+    this.captureUndo();
+    const id = `obstacle-${++this.obstacleSeq}`;
+    const data = defaultObstacle(`Obstacle ${this.obstacleSeq}`, id, this.baseConfig.height);
+    const [mesh, edges] = buildObstacleObjects(data);
+    data.mesh = mesh; data.edges = edges;
+    this.addToScene(mesh, edges);
+    this.sceneObjects.set(id, [mesh, edges]);
+    this.obstacles.set(id, data);
+    this.sceneTree.add(id, data.name, '⬛', 'octagon-base');
+    this.saveArena();
+  }
+
+  private removeObstacle(id: string): void {
+    const obs = this.obstacles.get(id); if(!obs) return;
+    this._disposeObstacle(obs);
+    this.obstacles.delete(id);
+    this.saveArena();
+  }
+
+  private _disposeObstacle(obs: ObstacleData): void {
+    this.removeFromScene(obs.mesh, obs.edges);
+    obs.mesh.geometry.dispose();
+    (obs.mesh.material as THREE.Material).dispose();
+    obs.edges.geometry.dispose();
+    (obs.edges.material as THREE.Material).dispose();
+    this.sceneObjects.delete(obs.id);
+  }
+
+  private _restoreObstacleSave(os: ObstacleSave): void {
+    const data = defaultObstacle(os.name, os.id, this.baseConfig.height);
+    Object.assign(data, {
+      shape: os.shape, theme: os.theme,
+      dimX: os.dimX, dimY: os.dimY, dimZ: os.dimZ,
+      posX: os.posX, posY: os.posY, posZ: os.posZ,
+      rotX: os.rotX, rotY: os.rotY, rotZ: os.rotZ,
+      isFloating: os.isFloating, isDestructible: os.isDestructible, hitPoints: os.hitPoints,
+      contactForceX: os.contactForceX, contactForceY: os.contactForceY, contactForceZ: os.contactForceZ,
+      color: os.color, surface: os.surface, tileScale: os.tileScale,
+      material: os.material, speedPathId: os.speedPathId,
+    });
+    const [mesh, edges] = buildObstacleObjects(data);
+    data.mesh = mesh; data.edges = edges;
+    this.addToScene(mesh, edges);
+    this.sceneObjects.set(os.id, [mesh, edges]);
+    this.obstacles.set(os.id, data);
+    this.sceneTree.add(os.id, data.name, '⬛', 'octagon-base');
+  }
+
+  /* ── Trap methods ────────────────────────────────────────────────────── */
+
+  private addTrap(parentId: string, parentType: 'arena' | 'base'): void {
+    this.captureUndo();
+    const id = `trap-${++this.trapSeq}`;
+    const data = defaultTrap(`Trap ${this.trapSeq}`, id, parentId, parentType);
+    const surfY = this._getTrapSurfY(data);
+    const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
+    data.mesh = mesh; data.edges = edges; data.variantMesh = variantMesh;
+    const objs: THREE.Object3D[] = [mesh, edges];
+    if(variantMesh) objs.push(variantMesh);
+    this.addToScene(...objs);
+    this.sceneObjects.set(id, objs);
+    this.traps.set(id, data);
+    const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
+    this.sceneTree.add(id, data.name, '⚡', parentTreeId);
+    this.saveArena();
+  }
+
+  private removeTrap(id: string): void {
+    const trap = this.traps.get(id); if(!trap) return;
+    this._disposeTrap(trap);
+    this.traps.delete(id);
+    this.saveArena();
+  }
+
+  private _disposeTrap(trap: TrapData): void {
+    this.removeFromScene(trap.mesh, trap.edges);
+    trap.mesh.geometry.dispose();
+    (trap.mesh.material as THREE.Material).dispose();
+    trap.edges.geometry.dispose();
+    (trap.edges.material as THREE.Material).dispose();
+    if(trap.variantMesh){
+      this.removeFromScene(trap.variantMesh);
+      trap.variantMesh.geometry.dispose();
+      (trap.variantMesh.material as THREE.Material).dispose();
+    }
+    this.sceneObjects.delete(trap.id);
+  }
+
+  private _getTrapSurfY(trap: TrapData): number {
+    return trapSurfY(trap, this.arenas, this.baseConfig.height);
+  }
+
+  private _restoreTrapSave(ts: TrapSave): void {
+    const data = defaultTrap(ts.name, ts.id, ts.parentId, ts.parentType);
+    Object.assign(data, {
+      shape: ts.shape, variant: ts.variant, effect: ts.effect,
+      dimX: ts.dimX, dimZ: ts.dimZ, rotY: ts.rotY,
+      posR: ts.posR, posAngle: ts.posAngle, basePosX: ts.basePosX, basePosZ: ts.basePosZ,
+      forceX: ts.forceX, forceY: ts.forceY, forceZ: ts.forceZ,
+      damageFactor: ts.damageFactor, healFactor: ts.healFactor, freezeDuration: ts.freezeDuration,
+      buffSurface: ts.buffSurface,
+      pitShape: ts.pitShape, pitRadiusX: ts.pitRadiusX, pitRadiusZ: ts.pitRadiusZ,
+      pitDepth: ts.pitDepth, pitSides: ts.pitSides, pitStarInner: ts.pitStarInner,
+      isPeriodic: ts.isPeriodic, safeInterval: ts.safeInterval, unsafeInterval: ts.unsafeInterval,
+      activationLimit: ts.activationLimit, speedPathId: ts.speedPathId,
+      durationTiers: ts.durationTiers.map(d=>({...d})),
+      color: ts.color, surface: ts.surface, tileScale: ts.tileScale,
+    });
+    const surfY = this._getTrapSurfY(data);
+    const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
+    data.mesh = mesh; data.edges = edges; data.variantMesh = variantMesh;
+    const objs: THREE.Object3D[] = [mesh, edges];
+    if(variantMesh) objs.push(variantMesh);
+    this.addToScene(...objs);
+    this.sceneObjects.set(ts.id, objs);
+    this.traps.set(ts.id, data);
+    const parentTreeId = ts.parentType === 'base' ? 'octagon-base' : ts.parentId;
+    this.sceneTree.add(ts.id, data.name, '⚡', parentTreeId);
+  }
+
+  /* ── Portal methods ──────────────────────────────────────────────────── */
+
+  private addPortal(parentId: string, parentType: 'arena' | 'base'): void {
+    this.captureUndo();
+    const id = `portal-${++this.portalSeq}`;
+    const data = defaultPortal(`Portal ${this.portalSeq}`, id, parentId, parentType);
+    const surfY = this._getPortalSurfY(data);
+    const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
+    data.mesh = mesh; data.edges = edges; data.ringMesh = ringMesh;
+    const objs: THREE.Object3D[] = [mesh, edges];
+    if(ringMesh) objs.push(ringMesh);
+    this.addToScene(...objs);
+    this.sceneObjects.set(id, objs);
+    this.portals.set(id, data);
+    const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
+    this.sceneTree.add(id, data.name, '◉', parentTreeId);
+    this.saveArena();
+  }
+
+  private removePortal(id: string): void {
+    const portal = this.portals.get(id); if(!portal) return;
+    this._disposePortal(portal);
+    this.portals.delete(id);
+    this.saveArena();
+  }
+
+  private _disposePortal(portal: PortalData): void {
+    this.removeFromScene(portal.mesh, portal.edges);
+    portal.mesh.geometry.dispose();
+    (portal.mesh.material as THREE.Material).dispose();
+    portal.edges.geometry.dispose();
+    (portal.edges.material as THREE.Material).dispose();
+    if(portal.ringMesh){
+      this.removeFromScene(portal.ringMesh);
+      portal.ringMesh.geometry.dispose();
+      (portal.ringMesh.material as THREE.Material).dispose();
+    }
+    this.sceneObjects.delete(portal.id);
+  }
+
+  private _getPortalSurfY(portal: PortalData): number {
+    return portalSurfY(portal, this.arenas, this.baseConfig.height);
+  }
+
+  private _restorePortalSave(ps: PortalSave): void {
+    const data = defaultPortal(ps.name, ps.id, ps.parentId, ps.parentType);
+    Object.assign(data, {
+      shape: ps.shape, dimX: ps.dimX, dimZ: ps.dimZ, rotY: ps.rotY,
+      posR: ps.posR, posAngle: ps.posAngle, basePosX: ps.basePosX, basePosZ: ps.basePosZ,
+      destType: ps.destType, destPortalId: ps.destPortalId, destArenaId: ps.destArenaId,
+      destPosX: ps.destPosX, destPosY: ps.destPosY, destPosZ: ps.destPosZ,
+      exitVelScale: ps.exitVelScale, exitRotY: ps.exitRotY, isBidirectional: ps.isBidirectional,
+      color: ps.color, glowColor: ps.glowColor,
+    });
+    const surfY = this._getPortalSurfY(data);
+    const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
+    data.mesh = mesh; data.edges = edges; data.ringMesh = ringMesh;
+    const objs: THREE.Object3D[] = [mesh, edges];
+    if(ringMesh) objs.push(ringMesh);
+    this.addToScene(...objs);
+    this.sceneObjects.set(ps.id, objs);
+    this.portals.set(ps.id, data);
+    const parentTreeId = ps.parentType === 'base' ? 'octagon-base' : ps.parentId;
+    this.sceneTree.add(ps.id, data.name, '◉', parentTreeId);
+  }
+
+  /** Returns Map<id, name> of all speed lines — used to populate speed path dropdowns. */
+  private _getSpeedLineNames(): Map<string, string> {
+    return new Map([...this.speedLines.entries()].map(([slId, sl])=>[slId, sl.name]));
   }
 
   /** Rebuild all walls attached to an arena, then rebuild dependent bridges. */
@@ -1142,6 +1369,40 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
+    const obstacle=this.obstacles.get(id);
+    if(obstacle){
+      this.props.showObstacle(
+        obstacle,
+        ()=>{ this.captureUndo(); applyObstacle(obstacle); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+        this._getSpeedLineNames(),
+      );
+      return;
+    }
+
+    const trap=this.traps.get(id);
+    if(trap){
+      this.props.showTrap(
+        trap,
+        ()=>{ this.captureUndo(); applyTrap(trap, this._getTrapSurfY(trap)); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+        this._getSpeedLineNames(),
+      );
+      return;
+    }
+
+    const portal=this.portals.get(id);
+    if(portal){
+      const arenaNames = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
+      const portalNames = new Map([...this.portals.entries()].map(([pid,p])=>[pid,p.name]));
+      this.props.showPortal(
+        portal, arenaNames, portalNames,
+        ()=>{ this.captureUndo(); applyPortal(portal, this._getPortalSurfY(portal)); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+      );
+      return;
+    }
+
     this.props.showEmpty();
   }
 
@@ -1165,6 +1426,17 @@ export class ArenaSandbox extends Sandbox {
       zone.mesh.visible=this.solidMode;
       if(zone.seamMesh) zone.seamMesh.visible=this.solidMode;
     }
+    for(const obs of this.obstacles.values()){
+      obs.mesh.visible=this.solidMode;
+    }
+    for(const trap of this.traps.values()){
+      trap.mesh.visible=this.solidMode;
+      if(trap.variantMesh) trap.variantMesh.visible=this.solidMode;
+    }
+    for(const portal of this.portals.values()){
+      portal.mesh.visible=this.solidMode;
+      if(portal.ringMesh) portal.ringMesh.visible=this.solidMode;
+    }
   }
 
   /* ── Add arena ── */
@@ -1181,10 +1453,12 @@ export class ArenaSandbox extends Sandbox {
     this.arenas.set(id,data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
       addChildButtons:[
-        {label:'P+',  title:'Add pit',        className:'pit-btn',  onClick:()=>this.addPit(id)},
-        {label:'Z+',  title:'Add zone',       className:'zone-btn', onClick:()=>this.addZone(id)},
-        {label:'W+',  title:'Add wall',       className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
-        {label:'SL+', title:'Add speed line', className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
+        {label:'P+',   title:'Add pit',         className:'pit-btn',  onClick:()=>this.addPit(id)},
+        {label:'Z+',   title:'Add zone',        className:'zone-btn', onClick:()=>this.addZone(id)},
+        {label:'W+',   title:'Add wall',        className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
+        {label:'SL+',  title:'Add speed line',  className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
+        {label:'Trap+',title:'Add arena trap',  className:'pit-btn',  onClick:()=>this.addTrap(id,'arena')},
+        {label:'⬡+',   title:'Add arena portal',className:'zone-btn', onClick:()=>this.addPortal(id,'arena')},
       ],
     });
     this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
@@ -1553,10 +1827,12 @@ export class ArenaSandbox extends Sandbox {
       // Arena node must exist in the tree before children are added as its descendants
       this.sceneTree.add(as.id,data.name,'⏺','octagon-base',{
         addChildButtons:[
-          {label:'P+',  title:'Add pit',        className:'pit-btn',  onClick:()=>this.addPit(as.id)},
-          {label:'Z+',  title:'Add zone',       className:'zone-btn', onClick:()=>this.addZone(as.id)},
-          {label:'W+',  title:'Add wall',       className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
-          {label:'SL+', title:'Add speed line', className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
+          {label:'P+',   title:'Add pit',          className:'pit-btn',  onClick:()=>this.addPit(as.id)},
+          {label:'Z+',   title:'Add zone',         className:'zone-btn', onClick:()=>this.addZone(as.id)},
+          {label:'W+',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
+          {label:'SL+',  title:'Add speed line',   className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
+          {label:'Trap+',title:'Add arena trap',   className:'pit-btn',  onClick:()=>this.addTrap(as.id,'arena')},
+          {label:'⬡+',   title:'Add arena portal', className:'zone-btn', onClick:()=>this.addPortal(as.id,'arena')},
         ],
       });
 
@@ -1619,6 +1895,15 @@ export class ArenaSandbox extends Sandbox {
 
     // Check overlaps for each arena
     for(const arenaId of this.arenas.keys()) this._checkSpeedLineOverlaps(arenaId);
+
+    // Restore obstacles
+    for(const os of (cfg.obstacles??[])) this._restoreObstacleSave(os);
+
+    // Restore traps
+    for(const ts of (cfg.traps??[])) this._restoreTrapSave(ts);
+
+    // Restore portals
+    for(const ps of (cfg.portals??[])) this._restorePortalSave(ps);
   }
 
   private _restoreWallSave(ws: WallSave): void {
@@ -1698,6 +1983,7 @@ export class ArenaSandbox extends Sandbox {
       this.arenaSeq=cfg.arenaSeq; this.pitSeq=cfg.pitSeq; this.zoneSeq=cfg.zoneSeq;
       this.wallSeq=cfg.wallSeq??0; this.bridgeSeq=cfg.bridgeSeq??0; this.segmentSeq=cfg.segmentSeq??0;
       this.speedlineSeq=cfg.speedLineSeq??0;
+      this.obstacleSeq=cfg.obstacleSeq??0; this.trapSeq=cfg.trapSeq??0; this.portalSeq=cfg.portalSeq??0;
       this._loadArenasFromConfig(cfg);
     } catch { localStorage.removeItem(this.arenaStorageKey); }
   }
