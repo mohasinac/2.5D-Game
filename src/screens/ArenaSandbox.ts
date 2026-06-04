@@ -269,16 +269,16 @@ export class ArenaSandbox extends Sandbox {
 
     const baseMat = buildSurfaceMaterial({ color:this.baseConfig.color, surface:this.baseConfig.surface, customTileData:this.baseConfig.customTileData, tileScale:this.baseConfig.tileScale });
     this.baseMesh = new THREE.Mesh(new THREE.CylinderGeometry(R,R,H,sides,1,true), baseMat);
-    this.baseMesh.rotation.y=align; this.baseMesh.position.y=H/2;
+    this.baseMesh.rotation.y=align; this.baseMesh.position.y=-H/2;
     scene.add(this.baseMesh);
 
     const fullGeo=new THREE.CylinderGeometry(R,R,H,sides,1,false);
     this.baseEdges=new THREE.LineSegments(new THREE.EdgesGeometry(fullGeo), new THREE.LineBasicMaterial({color:0xb8a888}));
-    this.baseEdges.rotation.y=align; this.baseEdges.position.y=H/2;
+    this.baseEdges.rotation.y=align; this.baseEdges.position.y=-H/2;
     scene.add(this.baseEdges); fullGeo.dispose();
 
     const topFaceMat=buildSurfaceMaterial({ color:this.baseConfig.color, surface:this.baseConfig.surface, customTileData:this.baseConfig.customTileData, tileScale:this.baseConfig.tileScale });
-    this.topFaceMesh=new THREE.Mesh(buildTopFaceGeo(sides,R,align,H,[]),topFaceMat);
+    this.topFaceMesh=new THREE.Mesh(buildTopFaceGeo(sides,R,align,0,[]),topFaceMat);
     scene.add(this.topFaceMesh);
 
     this.sceneObjects.set('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
@@ -294,12 +294,12 @@ export class ArenaSandbox extends Sandbox {
     const{radius:R,height:H,sides,align}=OCTAGON_BASE;
     this.baseMesh.geometry.dispose();
     this.baseMesh.geometry=new THREE.CylinderGeometry(R,R,H,sides,1,true);
-    this.baseMesh.rotation.y=align; this.baseMesh.position.y=H/2;
+    this.baseMesh.rotation.y=align; this.baseMesh.position.y=-H/2;
     const newBaseMat=buildSurfaceMaterial({color:this.baseConfig.color,surface:this.baseConfig.surface,customTileData:this.baseConfig.customTileData,tileScale:this.baseConfig.tileScale});
     (this.baseMesh.material as THREE.Material).dispose(); this.baseMesh.material=newBaseMat;
     const fullGeo=new THREE.CylinderGeometry(R,R,H,sides,1,false);
     this.baseEdges.geometry.dispose(); this.baseEdges.geometry=new THREE.EdgesGeometry(fullGeo);
-    this.baseEdges.rotation.y=align; this.baseEdges.position.y=H/2; fullGeo.dispose();
+    this.baseEdges.rotation.y=align; this.baseEdges.position.y=-H/2; fullGeo.dispose();
     const newTopMat=buildSurfaceMaterial({color:this.baseConfig.color,surface:this.baseConfig.surface,customTileData:this.baseConfig.customTileData,tileScale:this.baseConfig.tileScale});
     (this.topFaceMesh.material as THREE.Material).dispose(); this.topFaceMesh.material=newTopMat;
     for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena)); }
@@ -308,7 +308,7 @@ export class ArenaSandbox extends Sandbox {
   private updateTopFace(): void {
     if(!this.topFaceMesh) return;
     const{radius:R,height:H,sides,align}=OCTAGON_BASE;
-    const newGeo=buildTopFaceGeo(sides,R,align,H,[...this.arenas.values()]);
+    const newGeo=buildTopFaceGeo(sides,R,align,0,[...this.arenas.values()]);
     this.topFaceMesh.geometry.dispose();
     this.topFaceMesh.geometry=newGeo;
   }

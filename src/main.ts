@@ -49,7 +49,7 @@ class App {
       camFar:     2000,
       minZoom:    5,           /* 5 cm */
       maxZoom:    1500,        /* 15 m */
-      axisYOffset: 30,         /* lift axes to octagon base top face (30 cm) */
+      axisYOffset: 0,          /* base top face is at Y=0 */
     });
 
     this.mountGlobalControls(root);

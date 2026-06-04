@@ -208,7 +208,7 @@ export class Sandbox {
     /* Subtle vertical guide grid (XY plane) */
     const gridXY = new THREE.GridHelper(gridSize, gridDivs, 0x2a2a4a, 0x1a1a2e);
     gridXY.rotation.x = Math.PI / 2;
-    gridXY.position.set(0, gridSize / 2, 0);
+    gridXY.position.set(0, gridSize / 2, -gridSize / 2);
     s.add(gridXY);
 
     /* Axes: sized at 25% of half-grid, lifted to axisYOffset so they sit above the scene floor */

@@ -307,7 +307,7 @@ export function resamplePts(pts: THREE.Vector2[], N: number): THREE.Vector2[] {
 
 /* ── Arena surface Y at child radial position ────────────────────────────── */
 export function childArenaBaseY(arena: ArenaData, posR: number): number {
-  const H = OCTAGON_BASE.height + arena.posY;
+  const H = arena.posY;
   if (arena.wallProfile === 'straight') return H - arena.depth;
   const maxR = Math.max(arena.radiusX, arena.radiusZ, 0.001);
   const t = Math.min(posR / maxR, 1);
@@ -319,7 +319,7 @@ export function childArenaBaseY(arena: ArenaData, posR: number): number {
  * Used by scoop geometry to make pits/zones conform to the bowl curvature.
  */
 export function arenaSurfaceYAtArenaLocal(arena: ArenaData, alx: number, alz: number): number {
-  const H = OCTAGON_BASE.height + arena.posY;
+  const H = arena.posY;
   if (arena.wallProfile === 'straight') return H - arena.depth;
   const t = Math.min(Math.sqrt((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2), 1);
   return H - arena.depth * (1 - t * t);
@@ -500,7 +500,7 @@ export function buildScoopEdgeLines(
  */
 export function buildParabolicBowl(
   pts: THREE.Vector2[], depth: number,
-  baseY = OCTAGON_BASE.height,
+  baseY = 0,
   holes: ChildHole[] = [],
 ): THREE.BufferGeometry {
   const N = pts.length;
@@ -542,7 +542,7 @@ export function buildParabolicBowl(
   return geo;
 }
 
-export function buildStraightCut(pts: THREE.Vector2[], depth: number, baseY = OCTAGON_BASE.height): THREE.BufferGeometry {
+export function buildStraightCut(pts: THREE.Vector2[], depth: number, baseY = 0): THREE.BufferGeometry {
   const N = pts.length;
   const pos: number[] = []; const idx: number[] = [];
   for (const p of pts) pos.push(p.x, baseY, p.y);
@@ -559,7 +559,7 @@ export function buildStraightCut(pts: THREE.Vector2[], depth: number, baseY = OC
   return geo;
 }
 
-export function buildEdgeLines(pts: THREE.Vector2[], depth: number, profile: WallProfile, baseY = OCTAGON_BASE.height): THREE.BufferGeometry {
+export function buildEdgeLines(pts: THREE.Vector2[], depth: number, profile: WallProfile, baseY = 0): THREE.BufferGeometry {
   const N = pts.length; const v: number[] = [];
   // Rim loop
   for (let i = 0; i < N; i++) {
@@ -593,7 +593,7 @@ export function buildMoatGeometry(
   depth: number,
   outerProfile: WallProfile, innerProfile: WallProfile,
   innerRimOffset: number,
-  baseY = OCTAGON_BASE.height,
+  baseY = 0,
 ): THREE.BufferGeometry {
   const N = outerPts.length;
   const innerPts = resamplePts(_innerPts, N);
@@ -698,7 +698,7 @@ export function buildMoatGeometry(
 
 export function buildMoatEdgeLines(
   outerPts: THREE.Vector2[], _innerPts: THREE.Vector2[],
-  depth: number, innerRimOffset: number, baseY = OCTAGON_BASE.height,
+  depth: number, innerRimOffset: number, baseY = 0,
 ): THREE.BufferGeometry {
   const N = outerPts.length;
   const innerPts = resamplePts(_innerPts, N);
@@ -725,7 +725,7 @@ export function buildMoatEdgeLines(
 }
 
 /** Self-contained arena: interior bowl + outer skirt walls + bottom cap. posY applied by mesh.position. */
-export function buildFreeArenaMesh(pts: THREE.Vector2[], depth: number, wallProfile: WallProfile, baseY = OCTAGON_BASE.height, holes: ChildHole[] = []): THREE.BufferGeometry {
+export function buildFreeArenaMesh(pts: THREE.Vector2[], depth: number, wallProfile: WallProfile, baseY = 0, holes: ChildHole[] = []): THREE.BufferGeometry {
   const N = pts.length;
   const floorY = baseY - depth;
   const pos: number[] = [];
@@ -813,7 +813,7 @@ export function buildFreeArenaMesh(pts: THREE.Vector2[], depth: number, wallProf
 }
 
 /** Edge lines for a free-floating arena: rim loop + floor loop + vertical pillars. */
-export function buildFreeArenaEdges(pts: THREE.Vector2[], depth: number, baseY = OCTAGON_BASE.height): THREE.BufferGeometry {
+export function buildFreeArenaEdges(pts: THREE.Vector2[], depth: number, baseY = 0): THREE.BufferGeometry {
   const N = pts.length;
   const floorY = baseY - depth;
   const v: number[] = [];
@@ -868,7 +868,7 @@ export function buildTopFaceGeo(
 
 /** Flat arena floor for straight-wall arenas, with pit+zone holes. */
 export function buildArenaFloorGeo(arena: ArenaData, pits: PitData[], zones: ZoneData[]): THREE.BufferGeometry {
-  const floorY = OCTAGON_BASE.height - arena.depth;
+  const floorY = -arena.depth;
   const cosA=Math.cos(arena.rotY),sinA=Math.sin(arena.rotY);
   const outerShape2D = shapePoints(arena).map(p=>new THREE.Vector2(p.x*cosA-p.y*sinA,p.x*sinA+p.y*cosA));
   const floorShape = new THREE.Shape(outerShape2D);
@@ -887,7 +887,7 @@ export function buildArenaFloorGeo(arena: ArenaData, pits: PitData[], zones: Zon
 
 /** Island cap for moat: flat disc at Y = baseY + innerRimOffset, with optional holes for child arenas. */
 export function buildIslandCapGeo(arena: ArenaData, holes: IslandHole[] = []): THREE.BufferGeometry {
-  const H = OCTAGON_BASE.height + arena.innerRimOffset;  // posY applied by islandMesh.position
+  const H = arena.innerRimOffset;  // posY applied by islandMesh.position
   const innerPts = shapePoints({ openingShape:arena.innerOpeningShape, radiusX:arena.innerRadiusX, radiusZ:arena.innerRadiusZ, sides:arena.innerSides, starInner:arena.innerStarInner });
   const shape = new THREE.Shape(innerPts);
   for (const h of holes) {
@@ -979,7 +979,7 @@ export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = []): [TH
   const mat = buildSurfaceMaterial({ color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale });
   let meshGeo: THREE.BufferGeometry;
   let edgeGeo: THREE.BufferGeometry;
-  const baseY = OCTAGON_BASE.height;  // geometry local Y; mesh.posY handles elevation
+  const baseY = 0;  // geometry local Y; mesh.posY handles elevation; base top face is at Y=0
 
   if (data.isMoat) {
     const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
@@ -1009,7 +1009,7 @@ export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = []): [TH
 export function applyArena(data: ArenaData, holes: ChildHole[] = []): void {
   const pts = shapePoints(data);
   data.mesh.geometry.dispose(); data.edges.geometry.dispose();
-  const baseY = OCTAGON_BASE.height;
+  const baseY = 0;
   if (data.isMoat) {
     const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
     data.mesh.geometry  = buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY);
