@@ -108,9 +108,9 @@ export function applyArenaColor(data: ArenaData): void {
 export function buildPitObjects(
   pit: PitData, arena: ArenaData,
   pits: Map<string, PitData>, zones: Map<string, ZoneData>,
-): [THREE.Mesh, THREE.LineSegments] {
+): [THREE.Mesh, THREE.LineSegments, THREE.Mesh] {
   const pts = shapePoints(pit);
-  const mat = buildSurfaceMaterial({ color:pit.color, surface:pit.surface, customTileData:pit.customTileData, tileScale:pit.tileScale, side: THREE.FrontSide });
+  const mat = buildSurfaceMaterial({ color:pit.color, surface:pit.surface, customTileData:pit.customTileData, tileScale:pit.tileScale });
   const { cx, cz, rotY: pitRotY } = extractChildTransform(pit);
   const surfFn = makeSurfFn({ parentZoneId: null }, arena, zones);
 
@@ -122,7 +122,11 @@ export function buildPitObjects(
   const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: edgeColor(pit.color) }));
   edges.position.set(wx, 0, wz); edges.rotation.y = wRotY;
 
-  return [mesh, edges];
+  const seamMat = buildSurfaceMaterial({ color:pit.color, surface:pit.surface, customTileData:pit.customTileData, tileScale:pit.tileScale });
+  const seamMesh = new THREE.Mesh(buildScoopSeam(pts, cx, cz, pitRotY, surfFn), seamMat);
+  seamMesh.position.set(wx, 0, wz); seamMesh.rotation.y = wRotY;
+
+  return [mesh, edges, seamMesh];
 }
 
 export function applyPit(
@@ -137,8 +141,11 @@ export function applyPit(
   const { meshGeo, edgeGeo } = buildScoopPair(pts, pit.depth, 'straight', cx, cz, pitRotY, surfFn);
   pit.mesh.geometry = meshGeo; pit.edges.geometry = edgeGeo;
 
+  pit.seamMesh.geometry.dispose();
+  pit.seamMesh.geometry = buildScoopSeam(pts, cx, cz, pitRotY, surfFn);
+
   const { wx, wz, wRotY } = childWorldPos(arena, pit);
-  for (const obj of [pit.mesh, pit.edges]) { obj.position.set(wx, 0, wz); obj.rotation.y = wRotY; }
+  for (const obj of [pit.mesh, pit.edges, pit.seamMesh]) { obj.position.set(wx, 0, wz); obj.rotation.y = wRotY; }
 }
 
 /* ── Zone ────────────────────────────────────────────────────────────────── */
@@ -236,6 +243,7 @@ export function defaultPit(
     posR: 0, posAngle: 0, rotY: 0,
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,
+    seamMesh: null as unknown as THREE.Mesh,
   };
 }
 

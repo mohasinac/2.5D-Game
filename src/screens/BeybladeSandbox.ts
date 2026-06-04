@@ -28,6 +28,9 @@ export class BeybladeSandbox extends Sandbox {
   private tree!:     SceneTree;
   private panel!:    BeybladePropertiesPanel;
 
+  private rightPanelEl!: HTMLDivElement;
+  private leftPanelEl!:  HTMLDivElement;
+
   private undoBtn!: HTMLButtonElement;
   private redoBtn!: HTMLButtonElement;
   private playBtn!: HTMLButtonElement;
@@ -79,20 +82,24 @@ export class BeybladeSandbox extends Sandbox {
     this.beyRenderer = new BeybladeRenderer(scene, this.store);
     this.animator = new BeybladeAnimator(this.beyRenderer);
 
-    // Left panel (scene tree)
+    // Left panel (scene tree) — SceneTree owns the container directly, collapse btn goes in header
     const leftPanel = this.addOverlayPanel('sandbox-left-panel');
-    leftPanel.innerHTML = `
-      <div class="tree-collapse-wrap">
-        <button class="tree-collapse-btn" title="Collapse panel">◀</button>
-      </div>
-    `;
-    const treeContainer = document.createElement('div');
-    treeContainer.className = 'scene-tree-container';
-    leftPanel.appendChild(treeContainer);
-    this.tree = new SceneTree(treeContainer);
+    this.leftPanelEl = leftPanel;
+    this.tree = new SceneTree(leftPanel);
 
-    // Add-buttons below the tree header
-    const addPartBtn  = document.createElement('button');
+    const collapseBtn = document.createElement('button');
+    collapseBtn.className = 'tree-collapse-btn';
+    collapseBtn.textContent = '◀';
+    collapseBtn.title = 'Collapse panel';
+    this.tree.header.appendChild(collapseBtn);
+    collapseBtn.addEventListener('click', () => {
+      const collapsed = leftPanel.classList.toggle('sandbox-left-panel--collapsed');
+      collapseBtn.textContent = collapsed ? '▶' : '◀';
+      collapseBtn.title = collapsed ? 'Expand panel' : 'Collapse panel';
+    });
+
+    // Add-buttons below the tree
+    const addPartBtn = document.createElement('button');
     addPartBtn.className = 'game-btn tree-add-root-btn';
     addPartBtn.textContent = '+ Part';
     addPartBtn.title = 'Add a new part to the scene';
@@ -110,17 +117,14 @@ export class BeybladeSandbox extends Sandbox {
     addRow.appendChild(addGroupBtn);
     leftPanel.appendChild(addRow);
 
-    // Collapse toggle
-    const collapseBtn = leftPanel.querySelector<HTMLButtonElement>('.tree-collapse-btn')!;
-    collapseBtn.addEventListener('click', () => {
-      leftPanel.classList.toggle('collapsed');
-      collapseBtn.textContent = leftPanel.classList.contains('collapsed') ? '▶' : '◀';
-    });
-
     // Right panel (properties)
     const rightPanel = this.addOverlayPanel('sandbox-right-panel');
+    this.rightPanelEl = rightPanel;
     this.panel = new BeybladePropertiesPanel(rightPanel);
-    this.panel.onClose = () => { this.tree.clearSel(); this.panel.showEmpty(); };
+    this.panel.onClose = () => {
+      this.tree.clearSel();
+      this.rightPanelEl.style.display = 'none';
+    };
 
     // Axis node in tree (always present, cannot be deleted)
     this.tree.add('axis', '🔄 Axis', '🔄', null);
@@ -147,28 +151,56 @@ export class BeybladeSandbox extends Sandbox {
   // ── Bottom controls bar ───────────────────────────────────────────────────
 
   private _buildBottomBar(): void {
+    // Total bar heights (header 22mm + border 1mm + content 44mm = 67mm expanded, 23mm collapsed)
+    const BEY_BAR_H_EXP = 'calc(67 * var(--mm))';
+    const BEY_BAR_H_COL = 'calc(23 * var(--mm))';
+
+    const syncPanels = (collapsed: boolean): void => {
+      const h = collapsed ? BEY_BAR_H_COL : BEY_BAR_H_EXP;
+      this.rightPanelEl.style.bottom = h;
+      this.leftPanelEl.style.bottom  = h;
+    };
+
     const bar = this.addOverlayPanel('beyblade-bottom-bar');
     bar.innerHTML = `
-      <div class="bey-bar-row">
-        <span class="bey-bar-label">TILT</span>
-        <input class="bey-bar-input" id="bey-tilt" type="number" min="0" max="45" step="0.5" value="0">
-        <span class="bey-bar-unit">°</span>
-        <span class="bey-bar-sep"></span>
-        <span class="bey-bar-label">PIVOT</span>
-        <input class="bey-bar-input" id="bey-pivot" type="number" min="0" max="20" step="0.1" value="0">
-        <span class="bey-bar-unit">cm</span>
-        <span class="bey-bar-sep"></span>
-        <button class="game-btn bey-spin-btn" id="bey-spin-left"  title="Spin left">◀ LEFT</button>
-        <button class="game-btn bey-spin-btn active" id="bey-spin-right" title="Spin right">RIGHT ▶</button>
-        <span class="bey-bar-sep"></span>
-        <button class="game-btn" id="bey-play" title="Start spin animation">▶ PLAY</button>
-        <button class="game-btn" id="bey-stop" title="Stop spin animation">■ STOP</button>
-        <span class="bey-bar-sep"></span>
-        <button class="game-btn bey-view-btn active" id="bey-view-hitbox"  title="Hitbox only">HITBOX</button>
-        <button class="game-btn bey-view-btn" id="bey-view-both"    title="Hitbox + presentation">BOTH</button>
-        <button class="game-btn bey-view-btn" id="bey-view-present" title="Presentation only">PRESENT</button>
+      <div class="bey-bar-header">
+        <button class="bey-bar-collapse-btn" id="bey-bar-toggle">
+          <span class="bey-bar-collapse-arrow">▼</span>
+          <span>ANIMATION</span>
+        </button>
+      </div>
+      <div class="bey-bar-content">
+        <div class="bey-bar-row">
+          <span class="bey-bar-label">TILT</span>
+          <input class="bey-bar-input" id="bey-tilt" type="number" min="0" max="45" step="0.5" value="0">
+          <span class="bey-bar-unit">°</span>
+          <span class="bey-bar-sep"></span>
+          <span class="bey-bar-label">PIVOT</span>
+          <input class="bey-bar-input" id="bey-pivot" type="number" min="0" max="20" step="0.1" value="0">
+          <span class="bey-bar-unit">cm</span>
+          <span class="bey-bar-sep"></span>
+          <button class="game-btn bey-spin-btn" id="bey-spin-left"  title="Spin left">◀ LEFT</button>
+          <button class="game-btn bey-spin-btn active" id="bey-spin-right" title="Spin right">RIGHT ▶</button>
+          <span class="bey-bar-sep"></span>
+          <button class="game-btn bey-spin-btn" id="bey-play" title="Start spin animation">▶ PLAY</button>
+          <button class="game-btn bey-spin-btn" id="bey-stop" title="Stop spin animation">■ STOP</button>
+          <span class="bey-bar-sep"></span>
+          <button class="game-btn bey-view-btn active" id="bey-view-hitbox"  title="Hitbox only">HITBOX</button>
+          <button class="game-btn bey-view-btn" id="bey-view-both"    title="Hitbox + presentation">BOTH</button>
+          <button class="game-btn bey-view-btn" id="bey-view-present" title="Presentation only">PRESENT</button>
+        </div>
       </div>
     `;
+
+    const toggleBtn = bar.querySelector<HTMLButtonElement>('#bey-bar-toggle')!;
+    const arrow     = bar.querySelector<HTMLElement>('.bey-bar-collapse-arrow')!;
+    toggleBtn.addEventListener('click', () => {
+      const collapsed = bar.classList.toggle('beyblade-bottom-bar--collapsed');
+      arrow.textContent = collapsed ? '▶' : '▼';
+      syncPanels(collapsed);
+    });
+
+    syncPanels(false);
 
     this.tiltInput  = bar.querySelector<HTMLInputElement>('#bey-tilt')!;
     this.pivotInput = bar.querySelector<HTMLInputElement>('#bey-pivot')!;
@@ -272,6 +304,7 @@ export class BeybladeSandbox extends Sandbox {
   // ── Selection handlers ────────────────────────────────────────────────────
 
   private _selectAxis(): void {
+    this.rightPanelEl.style.display = '';
     const axis = this.store.getAxis();
     this.panel.showAxis(axis, (changes) => {
       this.store.setAxis(changes);
@@ -283,6 +316,7 @@ export class BeybladeSandbox extends Sandbox {
   }
 
   private _selectPart(id: string): void {
+    this.rightPanelEl.style.display = '';
     const part = this.store.getPart(id);
     this.panel.showPart(
       part,
@@ -295,6 +329,7 @@ export class BeybladeSandbox extends Sandbox {
   }
 
   private _selectSector(sectorId: string, partId: string): void {
+    this.rightPanelEl.style.display = '';
     const sector = this.store.getSector(sectorId);
     const part   = this.store.getPart(partId);
     this.panel.showSector(sector, part, (changes) => {
@@ -303,6 +338,7 @@ export class BeybladeSandbox extends Sandbox {
   }
 
   private _selectGroup(id: string): void {
+    this.rightPanelEl.style.display = '';
     const group = this.store.getGroup(id);
     this.panel.showGroup(group, (name) => {
       this.history.execute(new UpdateGroupCmd(this._ctx(), id, { name }));

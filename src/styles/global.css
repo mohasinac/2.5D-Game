@@ -372,8 +372,8 @@ body {
   position: absolute;
   top: calc(10 * var(--cm));
   left: 0;
+  bottom: 0;
   width: calc(50 * var(--cm));
-  max-height: calc(100% - calc(11 * var(--cm)));
   overflow-y: auto;
   overflow-x: hidden;
   background: rgba(6, 6, 12, 0.92);
@@ -614,7 +614,8 @@ body {
   overflow: hidden;
 }
 .sandbox-left-panel--collapsed .scene-tree-header-title,
-.sandbox-left-panel--collapsed .scene-tree-body {
+.sandbox-left-panel--collapsed .scene-tree-body,
+.sandbox-left-panel--collapsed .tree-add-root-row {
   display: none;
 }
 /* Keep header visible in collapsed mode as a thin strip */
@@ -717,8 +718,8 @@ body {
   position:   absolute;
   top:        calc(10 * var(--cm));
   right:      0;
+  bottom:     0;
   width:      calc(52 * var(--cm));
-  max-height: calc(100% - calc(11 * var(--cm)));
   overflow-y: auto;
   overflow-x: hidden;
   background: rgba(6, 6, 12, 0.92);
@@ -1098,21 +1099,64 @@ body {
 
 /* Bottom controls bar */
 .beyblade-bottom-bar {
-  position:        absolute;
-  bottom:          0;
-  left:            0;
-  right:           0;
-  background:      rgba(8, 8, 16, 0.92);
-  border-top:      calc(1 * var(--mm)) solid var(--border);
-  padding:         calc(6 * var(--mm)) calc(12 * var(--mm));
-  pointer-events:  auto;
-  z-index:         20;
+  position:       absolute;
+  bottom:         0;
+  left:           0;
+  right:          0;
+  background:     rgba(8, 8, 16, 0.92);
+  border-top:     calc(1 * var(--mm)) solid var(--border);
+  pointer-events: auto;
+  z-index:        20;
 }
+
+/* Collapse toggle strip — always visible */
+.bey-bar-header {
+  display:     flex;
+  align-items: center;
+  height:      calc(22 * var(--mm));
+  padding:     0 calc(12 * var(--mm));
+}
+.beyblade-bottom-bar:not(.beyblade-bottom-bar--collapsed) .bey-bar-header {
+  border-bottom: calc(1 * var(--mm)) solid rgba(0, 229, 255, 0.08);
+}
+
+.bey-bar-collapse-btn {
+  display:        flex;
+  align-items:    center;
+  gap:            calc(6 * var(--mm));
+  background:     transparent;
+  border:         none;
+  color:          rgba(221, 232, 255, 0.45);
+  font-family:    'Orbitron', monospace;
+  font-size:      calc(9 * var(--mm));
+  font-weight:    700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  cursor:         pointer;
+  padding:        0;
+  transition:     color 0.15s;
+}
+.bey-bar-collapse-btn:hover { color: var(--accent); }
+
+.bey-bar-collapse-arrow {
+  font-size:   calc(8 * var(--mm));
+  line-height: 1;
+}
+
+/* Collapsible content area */
+.bey-bar-content {
+  padding: calc(6 * var(--mm)) calc(12 * var(--mm));
+}
+.beyblade-bottom-bar--collapsed .bey-bar-content {
+  display: none;
+}
+
+/* Single-row controls */
 .bey-bar-row {
   display:     flex;
   align-items: center;
   gap:         calc(6 * var(--mm));
-  flex-wrap:   wrap;
+  flex-wrap:   nowrap;
 }
 .bey-bar-label {
   font-family:    'Orbitron', sans-serif;

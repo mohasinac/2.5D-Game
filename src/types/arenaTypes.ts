@@ -41,8 +41,9 @@ export interface ShapeParams {
 /* ── Child hole — used to punch holes in arena bowl mesh ─────────────────── */
 export interface ChildHole {
   cx: number; cz: number;   // child centre in arena geometry local space (XZ)
-  rx: number; rz: number;   // shape half-radii for ellipse test
-  rotY: number;              // shape self-rotation (rad) for oriented ellipse
+  rx: number; rz: number;   // shape half-radii (fallback ellipse test)
+  rotY: number;              // shape self-rotation (rad)
+  pts?: THREE.Vector2[];     // polygon vertices in child-local space (no rotation/translation); when present, PIP test is used
 }
 
 /* ── Island hole — cutout in moat island cap for nested arenas ───────────── */
@@ -80,6 +81,7 @@ export interface PitData {
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   posR: number; posAngle: number; rotY: number;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
+  seamMesh: THREE.Mesh;
 }
 
 export interface ZoneData {

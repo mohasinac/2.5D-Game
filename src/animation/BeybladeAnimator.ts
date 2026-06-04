@@ -47,6 +47,8 @@ export class BeybladeAnimator {
     if (dir.lengthSq() < 0.0001) return;
     dir.normalize();
     const angle = Math.atan2(dir.x, dir.z);
+    // Rotate the axis assembly around world Y so the tilt leans toward the camera.
+    // axisRoot.rotation.y is in axisRoot's local space (= world Y when no self-rotation).
     this.renderer.axisRoot.rotation.y = angle;
   }
 }

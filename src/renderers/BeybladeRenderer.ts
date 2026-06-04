@@ -33,6 +33,10 @@ interface PartObjects {
 }
 
 export class BeybladeRenderer {
+  // pivotAnchor is the outer group: positioned at y=pivotOffset and X-tilted.
+  // axisRoot is a child of pivotAnchor positioned at y=-pivotOffset, so parts
+  // always sit at their world axisOffsetY regardless of pivot changes.
+  private readonly pivotAnchor = new THREE.Group();
   readonly axisRoot      = new THREE.Group();
   readonly spinGroup     = new THREE.Group();
   readonly freeSpinGroup = new THREE.Group();
@@ -50,8 +54,9 @@ export class BeybladeRenderer {
   });
 
   constructor(private scene: THREE.Scene, private store: BeybladeStore) {
+    this.pivotAnchor.add(this.axisRoot);
     this.axisRoot.add(this.spinGroup, this.freeSpinGroup);
-    scene.add(this.axisRoot);
+    scene.add(this.pivotAnchor);
 
     const axisGeo  = new THREE.CylinderGeometry(AXIS_RADIUS, AXIS_RADIUS, 40, 12);
     const axisMat  = new THREE.MeshBasicMaterial({ color: AXIS_COLOR, transparent: true, opacity: 0.5 });
@@ -72,10 +77,15 @@ export class BeybladeRenderer {
   // ── Axis pose ─────────────────────────────────────────────────────────────
 
   setAxisPose(tiltAngle: number, pivotOffset: number): void {
-    this.axisRoot.position.y = pivotOffset;
-    this.axisRoot.rotation.x = THREE.MathUtils.degToRad(tiltAngle);
-    this.groundDisc.position.y = -pivotOffset;
-    this.pivotMarker.position.y = 0;
+    // pivotAnchor lifts to the tilt center and rotates; axisRoot counter-offsets
+    // back down so parts remain at their world axisOffsetY regardless of pivot.
+    this.pivotAnchor.position.y = pivotOffset;
+    this.pivotAnchor.rotation.x = THREE.MathUtils.degToRad(tiltAngle);
+    this.axisRoot.position.y    = -pivotOffset;
+    // Pivot marker sits at pivot height in axisRoot local space (world y = pivotOffset)
+    this.pivotMarker.position.y = pivotOffset;
+    // Ground disc stays at world y = 0 (axisRoot local y = 0)
+    this.groundDisc.position.y  = 0;
   }
 
   rebuildAxis(): void {
@@ -150,7 +160,7 @@ export class BeybladeRenderer {
 
   dispose(): void {
     for (const id of [...this.partObjects.keys()]) this._disposePartObjects(id);
-    this.scene.remove(this.axisRoot);
+    this.scene.remove(this.pivotAnchor);
     this._disposeMeshObj(this.axisLine);
     this._disposeMeshObj(this.pivotMarker);
     this._disposeMeshObj(this.groundDisc);

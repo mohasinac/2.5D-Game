@@ -220,6 +220,7 @@ export class ArenaSandbox extends Sandbox {
     for(const pit of this.pits.values()){
       this.disposePit(pit);
       this.removeFromScene(pit.mesh, pit.edges);
+      if(pit.seamMesh) this.removeFromScene(pit.seamMesh);
     }
     for(const zone of this.zones.values()){
       this.disposeZone(zone);
@@ -257,6 +258,7 @@ export class ArenaSandbox extends Sandbox {
   private disposePit(pit: PitData): void {
     pit.mesh.geometry.dispose();(pit.mesh.material as THREE.Material).dispose();
     pit.edges.geometry.dispose();(pit.edges.material as THREE.Material).dispose();
+    if(pit.seamMesh){ pit.seamMesh.geometry.dispose();(pit.seamMesh.material as THREE.Material).dispose(); }
   }
   private disposeZone(zone: ZoneData): void {
     zone.mesh.geometry.dispose();(zone.mesh.material as THREE.Material).dispose();
@@ -304,7 +306,7 @@ export class ArenaSandbox extends Sandbox {
     this.baseEdges.rotation.y=align; this.baseEdges.position.y=-H/2; fullGeo.dispose();
     const newTopMat=buildSurfaceMaterial({color:this.baseConfig.color,surface:this.baseConfig.surface,customTileData:this.baseConfig.customTileData,tileScale:this.baseConfig.tileScale});
     (this.topFaceMesh.material as THREE.Material).dispose(); this.topFaceMesh.material=newTopMat;
-    for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena)); this.updateArenaRimSeam(arena); }
+    for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena)); this.updateArenaChildren(arena); this.updateArenaRimSeam(arena); }
   }
 
   private updateTopFace(): void {
@@ -323,12 +325,12 @@ export class ArenaSandbox extends Sandbox {
     for (const pid of arena.pitIds) {
       const p = this.pits.get(pid); if (!p) continue;
       const { lx: cx, lz: cz } = polarToLocalXZ(p.posR, p.posAngle);
-      holes.push({ cx, cz, rx:p.radiusX, rz:p.radiusZ, rotY:p.rotY*DEG2RAD });
+      holes.push({ cx, cz, rx:p.radiusX, rz:p.radiusZ, rotY:p.rotY*DEG2RAD, pts:shapePoints(p) });
     }
     for (const zid of arena.zoneIds) {
       const z = this.zones.get(zid); if (!z) continue;
       const { lx: cx, lz: cz } = polarToLocalXZ(z.posR, z.posAngle);
-      holes.push({ cx, cz, rx:z.radiusX, rz:z.radiusZ, rotY:z.rotY*DEG2RAD });
+      holes.push({ cx, cz, rx:z.radiusX, rz:z.radiusZ, rotY:z.rotY*DEG2RAD, pts:shapePoints(z) });
     }
     return holes;
   }
@@ -435,6 +437,30 @@ export class ArenaSandbox extends Sandbox {
     return '';
   }
 
+  /** Re-conform all pits and zones to the current arena surface after any arena geometry change. */
+  private updateArenaChildren(arena: ArenaData): void {
+    for (const pid of arena.pitIds) {
+      const pit = this.pits.get(pid); if (!pit) continue;
+      applyPit(pit, arena, this.pits, this.zones);
+    }
+    for (const zid of arena.zoneIds) {
+      const zone = this.zones.get(zid); if (!zone) continue;
+      applyZone(zone, arena, this.getScene(), this.pits, this.zones);
+      this._updateZoneChildren(zone, arena);
+    }
+  }
+  private _updateZoneChildren(parentZone: ZoneData, arena: ArenaData): void {
+    for (const pid of parentZone.pitIds) {
+      const pit = this.pits.get(pid); if (!pit) continue;
+      applyPit(pit, arena, this.pits, this.zones);
+    }
+    for (const zid of parentZone.zoneIds) {
+      const zone = this.zones.get(zid); if (!zone) continue;
+      applyZone(zone, arena, this.getScene(), this.pits, this.zones);
+      this._updateZoneChildren(zone, arena);
+    }
+  }
+
   /* ── Properties panel ── */
   private renderProps(): void {
     const id=this.selectedId;
@@ -463,8 +489,8 @@ export class ArenaSandbox extends Sandbox {
       this.props.showArena(
         arena,
         this.baseConfig.height,
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena)); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena)); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.renderProps(); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena)); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena)); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.renderProps(); this.saveArena(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
@@ -518,6 +544,7 @@ export class ArenaSandbox extends Sandbox {
     }
     for(const pit of this.pits.values()){
       pit.mesh.visible=this.solidMode;
+      if(pit.seamMesh) pit.seamMesh.visible=this.solidMode;
     }
     for(const zone of this.zones.values()){
       zone.mesh.visible=this.solidMode;
@@ -682,12 +709,18 @@ export class ArenaSandbox extends Sandbox {
       const { wx, wz, wRotY } = childWorldPos(arena, mergedPit);
       mesh.position.set(wx, 0, wz); mesh.rotation.y = wRotY;
       edges.position.set(wx, 0, wz); edges.rotation.y = wRotY;
-      mergedPit.mesh = mesh; mergedPit.edges = edges;
+      const pitSeam = new THREE.Mesh(
+        new THREE.BufferGeometry(),
+        buildSurfaceMaterial({ color:pa.color, surface:pa.surface, customTileData:pa.customTileData, tileScale:pa.tileScale }),
+      );
+      pitSeam.position.set(wx, 0, wz); pitSeam.rotation.y = wRotY;
+      mergedPit.mesh = mesh; mergedPit.edges = edges; mergedPit.seamMesh = pitSeam;
 
       this.removePitFromScene(a.id); this.removePitFromScene(b.id);
       this.pits.set(newId, mergedPit);
-      this.addToScene(mesh, edges);
-      this.sceneObjects.set(newId, [mesh, edges]);
+      applyPit(mergedPit, arena, this.pits, this.zones);
+      this.addToScene(mesh, edges, pitSeam);
+      this.sceneObjects.set(newId, [mesh, edges, pitSeam]);
       this.addChildToParent(newId, 'pit', parentId, parentType);
       this.sceneTree.add(newId, mergedPit.name, '▼', parentId);
     } else {
@@ -726,6 +759,7 @@ export class ArenaSandbox extends Sandbox {
     const pit = this.pits.get(id); if (!pit) return;
     this.disposePit(pit);
     this.removeFromScene(pit.mesh, pit.edges);
+    if(pit.seamMesh) this.removeFromScene(pit.seamMesh);
     this.sceneObjects.delete(id);
     this.sceneTree.remove(id);
     this.pits.delete(id);
@@ -762,10 +796,10 @@ export class ArenaSandbox extends Sandbox {
     pit.radiusX = Math.min(pit.radiusX, arena.radiusX * 0.4);
     pit.radiusZ = Math.min(pit.radiusZ, arena.radiusZ * 0.4);
 
-    const [mesh, edges] = buildPitObjects(pit, arena, this.pits, this.zones);
-    pit.mesh = mesh; pit.edges = edges;
-    this.addToScene(mesh, edges);
-    this.sceneObjects.set(id, [mesh, edges]);
+    const [mesh, edges, seamMesh] = buildPitObjects(pit, arena, this.pits, this.zones);
+    pit.mesh = mesh; pit.edges = edges; pit.seamMesh = seamMesh;
+    this.addToScene(mesh, edges, seamMesh);
+    this.sceneObjects.set(id, [mesh, edges, seamMesh]);
     this.pits.set(id, pit);
     this.addChildToParent(id, 'pit', parentId, parentType);
 
@@ -822,13 +856,14 @@ export class ArenaSandbox extends Sandbox {
       color:ps.color,surface:ps.surface,customTileData:ps.customTileData,tileScale:ps.tileScale,
       posR:ps.posR,posAngle:ps.posAngle,rotY:ps.rotY,
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
+      seamMesh:null as unknown as THREE.Mesh,
     };
     this.pits.set(ps.id,pit);
     data.pitIds.push(ps.id);
-    const[pm,pe]=buildPitObjects(pit,data,this.pits,this.zones);
-    pit.mesh=pm; pit.edges=pe;
-    this.addToScene(pm,pe);
-    this.sceneObjects.set(ps.id,[pm,pe]);
+    const[pm,pe,psm]=buildPitObjects(pit,data,this.pits,this.zones);
+    pit.mesh=pm; pit.edges=pe; pit.seamMesh=psm;
+    this.addToScene(pm,pe,psm);
+    this.sceneObjects.set(ps.id,[pm,pe,psm]);
     this.sceneTree.add(ps.id,pit.name,'▼',parentId);
   }
 
@@ -943,7 +978,7 @@ export class ArenaSandbox extends Sandbox {
     if(!ok) return;
     this.captureUndo();
     for(const[id,arena] of this.arenas.entries()){
-      for(const pid of arena.pitIds){const p=this.pits.get(pid);if(p){this.disposePit(p);this.removeFromScene(p.mesh,p.edges);}this.pits.delete(pid);this.sceneObjects.delete(pid);}
+      for(const pid of arena.pitIds){const p=this.pits.get(pid);if(p){this.disposePit(p);this.removeFromScene(p.mesh,p.edges);if(p.seamMesh)this.removeFromScene(p.seamMesh);}this.pits.delete(pid);this.sceneObjects.delete(pid);}
       for(const zid of arena.zoneIds){const z=this.zones.get(zid);if(z){this.disposeZone(z);this.removeFromScene(z.mesh,z.edges);if(z.seamMesh)this.removeFromScene(z.seamMesh);}this.zones.delete(zid);this.sceneObjects.delete(zid);}
       this.disposeArena(arena); this.removeFromScene(arena.mesh,arena.edges);
       this.sceneObjects.delete(id); this.sceneTree.remove(id);
