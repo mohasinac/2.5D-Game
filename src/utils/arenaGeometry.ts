@@ -395,8 +395,8 @@ export function buildScoopGeometry(
         pos.push(lx, sy - depth * (1 - t * t) + RIM_EPS * t * t, lz);
       }
     }
-    // Center fan
-    for (let i = 0; i < N; i++) idx.push(0, 1 + (i + 1) % N, 1 + i);
+    // Center fan — CCW from above so the bowl bottom is front-facing toward the camera
+    for (let i = 0; i < N; i++) idx.push(0, 1 + i, 1 + (i + 1) % N);
     // Ring strips
     for (let r = 1; r < RINGS; r++) {
       const b0 = 1 + (r - 1) * N; const b1 = 1 + r * N;
@@ -1113,11 +1113,11 @@ export function buildZoneObjects(zone: ZoneData, arena: ArenaData, pits: Map<str
   edges.position.set(wx, 0, wz); edges.rotation.y = wRotY;
 
   const fc = zoneFillConfig(zone);
-  /* Fill sits just above the zone rim so it acts as a lid over the opening.
-     The stencil mask (renderOrder=-1, depthTest=false) writes the zone opening's
-     screen footprint unconditionally before any other geometry, then the fill
-     reads that stencil so it is clipped to the zone shape from every angle. */
-  const fillY = surfFn(zoneCX, zoneCZ) + 0.2;
+  /* Fill is 1 cm below the zone rim — appears as liquid pooling inside the bowl.
+     Mask renders first (renderOrder=-1, depthTest=false) to write the stencil
+     footprint unconditionally; fill reads that stencil so it clips to the zone
+     shape, then its own depthTest prevents it rendering through solid walls. */
+  const fillY = surfFn(zoneCX, zoneCZ) - 1.0;
   const sRef = nextStencilRef();
 
   const maskGeo = buildZoneFillGeo(zone);
@@ -1151,7 +1151,7 @@ export function applyZone(zone: ZoneData, arena: ArenaData, scene: THREE.Scene |
   const zoneRotY = zone.rotY * DEG2RAD;
   const { wx, wz, wRotY } = childWorldPos(arena, zone);
   const surfFn = makeSurfFn(zone, arena, pits, zones);
-  const fillY = surfFn(zoneCX, zoneCZ) + 0.2;
+  const fillY = surfFn(zoneCX, zoneCZ) - 1.0;
 
   zone.mesh.geometry.dispose();
   zone.edges.geometry.dispose();
