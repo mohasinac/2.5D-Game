@@ -1,8 +1,8 @@
 import './styles/global.css';
-import { LandingScreen }  from './screens/LandingScreen';
-import { Sandbox }        from './screens/Sandbox';
-import { ArenaSandbox }   from './screens/ArenaSandbox';
-import { gameConfirm }    from './utils/dialog';
+import { LandingScreen }   from './screens/LandingScreen';
+import { BeybladeSandbox } from './screens/BeybladeSandbox';
+import { ArenaSandbox }    from './screens/ArenaSandbox';
+import { gameConfirm }     from './utils/dialog';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
 type ScreenId = 'landing' | 'beyblade' | 'arena';
@@ -10,7 +10,7 @@ type ScreenId = 'landing' | 'beyblade' | 'arena';
 class App {
   private current: ScreenId = 'landing';
   private landing:  LandingScreen;
-  private beyblade: Sandbox;
+  private beyblade: BeybladeSandbox;
   private arena:    ArenaSandbox;
 
   constructor() {
@@ -21,20 +21,7 @@ class App {
       onArena:    () => this.go('arena'),
     });
 
-    /* 15 cm × 15 cm × 15 cm — close-up beyblade inspection space */
-    this.beyblade = new Sandbox(root, {
-      title:      'Beyblade Sandbox',
-      accentHex:  0x00e5ff,
-      onBack:     () => { void this.confirmLeave(); },
-      gridSize:   15,          /* 15 cm per side */
-      gridDivs:   15,          /* 1 cell = 1 cm */
-      tickEvery:  5,           /* labels at ±5, ±10 cm */
-      tickRange:  7,           /* ±7 cm (fits ±7.5 half-grid) */
-      defaultCam: { x: 12, y: 8, z: 14 },
-      camFar:     500,
-      minZoom:    0.5,         /* 5 mm */
-      maxZoom:    50,          /* 50 cm */
-    });
+    this.beyblade = new BeybladeSandbox(root, () => { void this.confirmLeave(); });
 
     /* 200 cm × 200 cm × 200 cm (2 m cube) — full arena space */
     this.arena = new ArenaSandbox(root, {

@@ -1,10 +1,12 @@
 import * as THREE from 'three';
+import { APOTHEM } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData,
   OpeningShape, WallProfile, ZoneFill, SurfaceType, ShapeParams,
-  APOTHEM, OCTAGON_BASE,
-  _paintCanvas, FILL_PRESET, FILL_LABEL,
-} from './arenaGeometry';
+} from '../types/arenaTypes';
+import { _paintCanvas } from '../geometry/materialBuilders';
+import { FILL_PRESET, FILL_LABEL } from '../geometry/surfaceUtils';
+import { AbstractPropertiesPanel } from './AbstractPropertiesPanel';
 
 export const SHAPE_LABEL: Record<OpeningShape, string> = {
   circle: 'Circle', ellipse: 'Ellipse', rectangle: 'Rect',
@@ -20,21 +22,7 @@ export const SURFACE_LABEL: Record<SurfaceType, string> = {
   wood: 'Wood', ice: 'Ice', sand: 'Sand', lava_rock: 'Lava', custom_png: 'Custom',
 };
 
-export class PropertiesPanel {
-  private content: HTMLElement;
-  onClose: () => void = () => {};
-
-  constructor(container: HTMLElement) {
-    container.innerHTML = `
-      <div class="prop-header">PROPERTIES<button class="prop-close-btn" title="Close panel">×</button></div>
-      <div class="prop-content"></div>
-    `;
-    this.content = container.querySelector<HTMLElement>('.prop-content')!;
-    container.querySelector<HTMLButtonElement>('.prop-close-btn')!.addEventListener('click', ()=>this.onClose());
-    this.showEmpty();
-  }
-
-  showEmpty(): void { this.content.innerHTML = `<div class="prop-empty">Select an item<br>to inspect</div>`; }
+export class PropertiesPanel extends AbstractPropertiesPanel {
 
   showBase(
     cfg: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number },
@@ -57,6 +45,7 @@ export class PropertiesPanel {
 
   showArena(
     data: ArenaData,
+    baseHeight: number,
     onGeomChange: () => void,
     onFullChange: () => void,
     onRename: (name: string) => void,
@@ -99,7 +88,7 @@ export class PropertiesPanel {
     this.section('DIMENSIONS');
     this.numRow('Radius X', data.radiusX, 5, APOTHEM, 1, v=>{ data.radiusX=v; onGeomChange(); });
     this.numRow('Radius Z', data.radiusZ, 5, APOTHEM, 1, v=>{ data.radiusZ=v; onGeomChange(); });
-    this.numRow('Depth',    data.depth,   1, OCTAGON_BASE.height, 0.5, v=>{ data.depth=v; onGeomChange(); });
+    this.numRow('Depth',    data.depth,   1, baseHeight, 0.5, v=>{ data.depth=v; onGeomChange(); });
 
     this.section('SURFACE');
     this.colorRow('Color', data.color, v=>{ data.color=v; onColorChange(); });
@@ -132,25 +121,6 @@ export class PropertiesPanel {
       this.numRow('Inner frac', pit.starInner, 0.1,0.95,0.05, v=>{ pit.starInner=v; onGeomChange(); });
     }
 
-    this.section('MOAT');
-    this.toggleRow('Ring/Moat', pit.isMoat, v=>{ pit.isMoat=v; onFullChange(); });
-    if (pit.isMoat) {
-      this.numRow('Inner R X',    pit.innerRadiusX, 2, pit.radiusX-2, 1, v=>{ pit.innerRadiusX=v; onGeomChange(); });
-      this.numRow('Inner R Z',    pit.innerRadiusZ, 2, pit.radiusZ-2, 1, v=>{ pit.innerRadiusZ=v; onGeomChange(); });
-      this.numRow('Inner Y offset', pit.innerRimOffset, -(pit.depth-1), 100, 1, v=>{ pit.innerRimOffset=v; onGeomChange(); });
-      this.section('INNER SHAPE');
-      this.innerShapeGrid(pit, onFullChange);
-      this.section('OUTER WALL');
-      this.profileRow(pit, 'wallProfile', onFullChange);
-      this.section('INNER WALL');
-      this.innerProfileRow(pit, onFullChange);
-    }
-
-    if (!pit.isMoat) {
-      this.section('WALL PROFILE');
-      this.profileRow(pit, 'wallProfile', onFullChange);
-    }
-
     this.section('DIMENSIONS');
     const arenaMinR_pit = Math.min(arena.radiusX, arena.radiusZ);
     this.numRow('Radius X', pit.radiusX, 2, Math.max(2, arenaMinR_pit - pit.posR), 1, v=>{ pit.radiusX=v; onGeomChange(); });
@@ -171,7 +141,7 @@ export class PropertiesPanel {
   showZone(
     zone: ZoneData, arena: ArenaData,
     onGeomChange: () => void, onFullChange: () => void,
-    onRename: (name: string) => void, onSurfaceChange: () => void,
+    onRename: (name: string) => void,
   ): void {
     this.content.innerHTML = '';
     this.section('NAME');
@@ -208,10 +178,6 @@ export class PropertiesPanel {
 
     this.section('FILL');
     this.fillGrid(zone, onGeomChange);
-
-    this.section('BOWL SURFACE');
-    this.colorRow('Color', zone.color, v=>{ zone.color=v; onGeomChange(); });
-    this.surfaceRow(zone, onSurfaceChange);
 
     this.section('POSITION (arena-local)');
     const maxChildR_zone = Math.max(zone.radiusX, zone.radiusZ);
@@ -376,41 +342,4 @@ export class PropertiesPanel {
     row.appendChild(lbl);row.appendChild(inp);this.content.appendChild(row);
   }
 
-  private toggleRow(label: string, value: boolean, onChange: (v: boolean) => void): void {
-    const row=document.createElement('div');row.className='prop-row';
-    const lbl=document.createElement('span');lbl.className='prop-label';lbl.textContent=label;
-    const btn=document.createElement('button');
-    btn.className='prop-profile-btn'+(value?' active':'');
-    btn.textContent=value?'✦ On':'◌ Off';
-    btn.addEventListener('click',()=>{
-      const next=!(btn.classList.contains('active'));
-      btn.classList.toggle('active',next);btn.textContent=next?'✦ On':'◌ Off';onChange(next);
-    });
-    row.appendChild(lbl);row.appendChild(btn);this.content.appendChild(row);
-  }
-
-  private section(title: string): void {
-    const el=document.createElement('div');el.className='prop-section-title';el.textContent=title;this.content.appendChild(el);
-  }
-  private readRow(label: string, value: string): void {
-    const row=document.createElement('div');row.className='prop-row';
-    row.innerHTML=`<span class="prop-label">${label}</span><span class="prop-value-read">${value}</span>`;
-    this.content.appendChild(row);
-  }
-  numRow(label: string, value: number, min: number, max: number, step: number, onChange: (v: number) => void): void {
-    const row=document.createElement('div');row.className='prop-row';
-    const lbl=document.createElement('span');lbl.className='prop-label';lbl.textContent=label;
-    const inp=document.createElement('input');inp.className='prop-input';inp.type='number';
-    inp.value=String(parseFloat(value.toFixed(2)));inp.min=String(min);inp.max=String(max);inp.step=String(step);
-    inp.addEventListener('input',()=>onChange(parseFloat(inp.value)||0));
-    row.appendChild(lbl);row.appendChild(inp);this.content.appendChild(row);
-  }
-  colorRow(label: string, value: number, onChange: (v: number) => void): void {
-    const row=document.createElement('div');row.className='prop-row';
-    const lbl=document.createElement('span');lbl.className='prop-label';lbl.textContent=label;
-    const inp=document.createElement('input');inp.type='color';inp.className='prop-color-input';
-    inp.value='#'+value.toString(16).padStart(6,'0');
-    inp.addEventListener('input',()=>onChange(parseInt(inp.value.slice(1),16)));
-    row.appendChild(lbl);row.appendChild(inp);this.content.appendChild(row);
-  }
 }

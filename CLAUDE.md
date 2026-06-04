@@ -117,15 +117,40 @@ All proportional scene values (axis lengths, label distances, sprite sizes, ligh
 ## File structure
 ```
 src/
-  main.ts               — App class, screen router, global controls (+/−/○ scale, ⛶ fullscreen)
+  main.ts                       — App class, screen router, global controls (+/−/○ scale, ⛶ fullscreen)
   styles/
-    global.css          — vmin scale system, reset, shared components
+    global.css                  — vmin scale system, reset, shared components + beyblade bottom bar
   screens/
-    LandingScreen.ts    — Title + sandbox nav buttons (Back button is disabled placeholder)
-    Sandbox.ts          — Reusable Three.js XYZ viewport (accepts SandboxOptions)
-    ArenaSandbox.ts     — Full arena builder: arenas, pits, zones, moats, properties panel
+    LandingScreen.ts            — Title + sandbox nav buttons
+    Sandbox.ts                  — Reusable Three.js XYZ viewport (SandboxOptions); provides onTick() hook
+    ArenaSandbox.ts             — Full arena builder: arenas, pits, zones, moats, properties panel
+    BeybladeSandbox.ts          — Beyblade part builder (extends Sandbox); thin orchestrator/Facade
+  types/
+    arenaTypes.ts               — Arena data model interfaces
+    beybladeTypes.ts            — Beyblade data model: AxisData, PartData, SectorData, GroupData, BeybladeBuildConfig
+  stores/
+    BeybladeStore.ts            — Pure data store (no Three.js); getters/setters/serialize/deserialize
+  commands/
+    ICommand.ts                 — ICommand interface + CommandHistory (undo/redo stack, max 50)
+    beybladeCommands.ts         — All concrete commands: AddPartCmd, DeletePartCmd, UpdatePartCmd,
+                                  CutSectorsCmd, UpdateSectorCmd, DeleteSectorCmd, AddGroupCmd,
+                                  DeleteGroupCmd, UpdateGroupCmd, MoveNodeCmd
+  geometry/
+    sectorBuilders.ts           — ISectorGeometryBuilder + SolidSectorBuilder + HollowSectorBuilder + getSectorBuilder()
+    [arena geometry files...]
+  renderers/
+    BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
+                                  view mode toggle (hitbox/both/present); STL presentation mesh loading
+  animation/
+    BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
-    dialog.ts           — gameConfirm() modal utility
+    AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow helpers
+    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel)
+    BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
+    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes)
+    dialog.ts                   — gameConfirm() modal utility
+  config/
+    arenaConstants.ts           — Arena world constants
 ```
 
 ## Running
@@ -143,27 +168,28 @@ npm run build   # TypeScript check + Vite build
 | Level | World Y | Notes |
 |-------|---------|-------|
 | Scene origin | 0 | Grid floor, AxesHelper base |
-| Octagon Base top face | 30 cm (`OCTAGON_BASE.height`) | Everything arena-related is anchored here |
-| Arena rim | 30 + posY | `posY` lifts an arena above the base |
-| Arena bowl center | 30 + posY − depth | Bottom of the parabola |
-| Moat island top | 30 + posY + innerRimOffset | Elevated platform; child arenas sit at this Y |
+| Octagon Base top face | `DEFAULT_BASE_HEIGHT` cm (`arenaConstants.ts`) | Everything arena-related is anchored here |
+| Arena rim | `DEFAULT_BASE_HEIGHT` + posY | `posY` lifts an arena above the base |
+| Arena bowl center | `DEFAULT_BASE_HEIGHT` + posY − depth | Bottom of the parabola |
+| Moat island top | `DEFAULT_BASE_HEIGHT` + posY + innerRimOffset | Elevated platform; child arenas sit at this Y |
 
-`mesh.position.set(posX, posY, posZ)` applies the Y offset. Geometry is always built with `baseY = OCTAGON_BASE.height` (30); the mesh position adds `posY` on top. **Never bake `posY` into vertex Y — it will double-count.**
+`mesh.position.set(posX, posY, posZ)` applies the Y offset. Geometry is always built with `baseY = baseConfig.height`; the mesh position adds `posY` on top. **Never bake `posY` into vertex Y — it will double-count.**
 
 ---
 
 ### Octagon Base (immutable platform)
 
 ```typescript
+// src/config/arenaConstants.ts — frozen, mutation is a TypeScript compile error
 export const OCTAGON_BASE = {
-  radius: APOTHEM / Math.cos(Math.PI / 8),  // ≈108.24 cm — centre to vertex
-  height: 30,   // cm — top face Y
-  sides:  8,
-  align:  Math.PI / 8,  // flat sides face ±X, ±Z
-};
+  radius: APOTHEM / Math.cos(Math.PI / DEFAULT_BASE_SIDES),  // ≈108.24 cm — centre to vertex
+  height: DEFAULT_BASE_HEIGHT,  // cm — top face Y (default 30)
+  sides:  DEFAULT_BASE_SIDES,   // default 8
+  align:  Math.PI / DEFAULT_BASE_SIDES,  // flat sides face ±X, ±Z
+} as const;
 ```
 
-Never change these unless the user explicitly asks. All arena geometry sits ON or IN the octagon base.
+The user adjusts the base height/sides interactively via the properties panel; these write into `ArenaSandbox.baseConfig`, **not** into `OCTAGON_BASE`. All arena geometry derives from `baseConfig` at runtime. Never write to `OCTAGON_BASE.*`.
 
 ---
 
@@ -270,6 +296,114 @@ Schema version **3** (bump when adding new fields to ArenaData/PitData/ZoneData)
 
 ---
 
+## Beyblade Builder — Architecture & Rules
+
+### Design principles
+
+The Beyblade Builder follows **SOLID principles** — unlike ArenaSandbox (which is one large class), each concern is isolated:
+
+| Class | Single responsibility |
+|-------|-----------------------|
+| `BeybladeStore` | Pure data: no Three.js imports |
+| `CommandHistory` + commands | Undo/redo via Command pattern |
+| `BeybladeRenderer` | Three.js mesh creation/disposal; view mode |
+| `BeybladeAnimator` | Per-frame spin + tilt animation |
+| `BeybladePropertiesPanel` | Properties form UI only |
+| `BeybladeSandbox` | Thin orchestrator (Facade) — wires the above together |
+
+**Never** merge responsibilities back into `BeybladeSandbox`. It must remain a thin orchestrator.
+
+---
+
+### Spin axis rules
+
+- The axis is **always a straight rigid line**. Its shape never changes.
+- `axisRoot` (Three.js Group) is positioned at `y = pivotOffset` and rotated by `tiltAngle` around the X axis.
+- All parts and the axis rod live inside `axisRoot` — they tilt together as one body.
+- `pivotOffset` (cm) determines which point on the axis stays fixed on the ground plane during tilt.
+- `spinGroup` (child of axisRoot) rotates each frame for non-free-spin parts; `freeSpinGroup` (sibling) stays fixed.
+
+```
+axisRoot  (positioned at y=pivotOffset, rotated by tiltAngle)
+  ├─ axisLine    (LineSegments — straight rod)
+  ├─ pivotMarker (Mesh sphere at local y=0)
+  ├─ groundDisc  (Mesh disc at local y=-pivotOffset)
+  ├─ spinGroup   (.rotation.y incremented each frame for non-freeSpin parts)
+  └─ freeSpinGroup (.rotation.y stays 0)
+```
+
+---
+
+### Sector geometry rules
+
+A **sector** = a pie-slice frustum with independent top/bottom elliptic radii (allowing tapering). Built via `ISectorGeometryBuilder`:
+
+```typescript
+// Open/Closed: add new shapes by implementing this; never modify existing builders
+interface ISectorGeometryBuilder {
+  buildMeshGeometry(s: SectorData): THREE.BufferGeometry;
+  buildEdgeGeometry(s: SectorData): THREE.BufferGeometry;
+}
+// Factory for Dependency Inversion:
+getSectorBuilder(isHollow: boolean): ISectorGeometryBuilder
+```
+
+- `SolidSectorBuilder` — outer wall + top/bottom cap fans (triangle fan from centre) + side faces at start/end angles if arc < 360°
+- `HollowSectorBuilder` — outer wall + inner wall (inverted normals) + annular top/bottom caps + flat annular side faces
+- Arc < 360° always adds two flat side faces at `startAngle` and `endAngle`
+- N segments = `max(8, ceil(arcDeg / 5))` — never hardcode
+
+When `part.sectorIds` is empty, the renderer treats the part as a full 360° frustum using `partAsSector(part)`.
+
+---
+
+### Command pattern rules
+
+- **All mutations** go through a `Command` passed to `CommandHistory.execute()`. Never mutate the store directly from UI handlers.
+- Each command takes `BeybladeCommandCtx` (injected), which contains the store + render/tree callback functions.
+- Commands store their own before/after snapshots — undo reverses the mutation and fires the same callbacks.
+- `CommandHistory` max = 50 entries. Cleared on `_resetBuilder()`.
+
+---
+
+### View modes
+
+| Mode | Hitbox visible | Presentation visible |
+|------|---------------|---------------------|
+| `hitbox` | ✓ | ✗ |
+| `both` | ✓ | ✓ |
+| `present` | ✗ | ✓ |
+
+Presentation meshes come from imported STL files (one per part). If no STL is loaded, `presentMesh = null` and switching to `present` mode just hides the hitbox.
+
+---
+
+### Persistence (Beyblade Builder)
+
+- localStorage key: `bey_beyblade_builder`
+- Schema version: `1` (in `BeybladeBuildConfig.version`). Discard and reset if version mismatch.
+- Saved on every `CommandHistory.execute()` call and on axis property changes.
+- **Reset Builder** (`✕ Reset` button): stops animation, disposes all meshes, calls `store.reset()`, clears history, clears localStorage.
+- Camera view key (from Sandbox base): `bey_view_beyblade_builder` (reset via `↺ View` button).
+
+---
+
+### Weight constraint (sectors)
+
+When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is distributed evenly. The properties panel shows the running total vs parent weight. The total **must** equal `parent.weight` — the UI warns but does not hard-block (user must resolve before the build is physically accurate).
+
+---
+
+### Beyblade Builder pitfalls (do not re-introduce)
+
+- **Naming collision**: `BeybladeSandbox` has a `private beyRenderer` (not `renderer`) because `Sandbox` already has a `private renderer: THREE.WebGLRenderer`. Always use `beyRenderer` for the `BeybladeRenderer` instance.
+- **Baking axisOffsetY into vertex Y**: Part mesh geometry uses local Y from 0. `mesh.position.y = part.axisOffsetY` applies the offset. Never add `axisOffsetY` to vertex coordinates.
+- **Direct store mutations from UI**: Always go through a Command. The `_selectAxis()` handler is the only exception (axis tilt/pivot updates skip the command history since they are live pose parameters, not structural mutations).
+- **buildCustom() called once**: `BeybladeRenderer`, `BeybladeAnimator`, `SceneTree`, and `BeybladePropertiesPanel` are all created inside `buildCustom()` which runs once. Never recreate them on subsequent `setVisible(true)` calls.
+- **onTick hook**: `Sandbox.loop()` now passes `dtMs` to `protected onTick(dtMs)`. `BeybladeSandbox` overrides this to call `animator.tick()`. The base implementation is a no-op — do not remove it.
+
+---
+
 ## Known pitfalls (do not re-introduce)
 
 - **Fog**: removed — causes black screens against dark background at all normal distances.
@@ -281,4 +415,52 @@ Schema version **3** (bump when adding new fields to ArenaData/PitData/ZoneData)
 - **Island cap covering child arena**: When a second arena is placed on a moat island (`posY = innerRimOffset`), its bowl rim is at the same world Y as the island cap. Without `buildIslandCapGeo(arena, holes)` the island cap is a solid disc that occludes the child bowl. Always call `updateAllMoatIslandCaps()` after any arena add/remove/property-change.
 - **Zone fill at bowl bottom**: Fill Y must be near the rim (`surfY - 1.0`), not the floor (`surfY - depth + 0.1`). The floor value places the fill plane under the bowl surface and makes it invisible.
 - **Pit/zone outside arena bounds**: Slider max for `posR` must subtract the child radius (`arenaMinR - childMaxR`); radius sliders must subtract `posR`. Without this, children extend outside the parent arena.
-- **AxesHelper inside bowl**: Default `AxesHelper` at Y=0..axisLen pokes into arena bowls. Use `axisYOffset: OCTAGON_BASE.height` in `SandboxOptions` to lift axes to the octagon surface level.
+- **AxesHelper inside bowl**: Default `AxesHelper` at Y=0..axisLen pokes into arena bowls. Use `axisYOffset: baseConfig.height` in `SandboxOptions` to lift axes to the octagon surface level.
+
+---
+
+## Architecture rules — coupling prevention
+
+### File responsibility (single reason to change)
+| File | Changes when... |
+|------|----------------|
+| `src/config/arenaConstants.ts` | A world constant or tuning number changes |
+| `src/types/arenaTypes.ts` | A data model field is added/removed |
+| `src/geometry/primitives.ts` | The core ring/edge generation algorithm changes |
+| `src/geometry/surfaceUtils.ts` | The arena surface math or coordinate helpers change |
+| `src/geometry/bowlBuilders.ts` | Bowl mesh algorithm changes (not the ring math — that's primitives.ts) |
+| `src/geometry/scoopBuilders.ts` | Pit/zone scoop algorithm changes |
+| `src/geometry/platformBuilders.ts` | Top face or floor algorithm changes |
+| `src/geometry/materialBuilders.ts` | A surface texture type is added or changed |
+| `src/geometry/fillBuilders.ts` | A zone fill type or shader changes |
+| `src/geometry/arenaObjectBuilders.ts` | The Three.js object assembly pattern changes |
+
+### Allowed import direction (never reverse)
+```
+arenaConstants + arenaTypes  ←  primitives.ts
+                             ←  surfaceUtils.ts
+                             ←  bowlBuilders / scoopBuilders / platformBuilders / materialBuilders / fillBuilders
+                             ←  arenaObjectBuilders.ts
+                             ←  ArenaSandbox.ts
+                             ←  PropertiesPanel.ts (imports arenaTypes + arenaConstants ONLY — no geometry)
+```
+
+### Banned patterns — never introduce
+- Writing to `OCTAGON_BASE.*` anywhere — it is `as const`, TypeScript will error.
+- Hardcoding `30`, `0.5`, `-1.0`, `0.02` outside `arenaConstants.ts`. Use `DEFAULT_BASE_HEIGHT`, `ARENA_ELEVATED_THRESHOLD`, `ZONE_FILL_OFFSET`, `RIM_EPS`.
+- Importing geometry builders or `OCTAGON_BASE` in `PropertiesPanel.ts` — it receives values as parameters.
+- Importing from `screens/` inside any `geometry/` file.
+- Putting geometry builder functions in `ArenaSandbox.ts`.
+- Implementing the parabolic Y formula `baseY - depth*(1-t²)` inline — call `buildParabolicRingGeo` from `primitives.ts`.
+- Implementing `posR*cos(angle*DEG2RAD)` inline — call `polarToLocalXZ` from `surfaceUtils.ts`.
+- Implementing `{cx,cz,rotY}` extraction for pits/zones inline — call `extractChildTransform` from `surfaceUtils.ts`.
+- Implementing a rim edge loop inline — call `buildRimEdges` from `primitives.ts`.
+
+### When you add a new constant
+Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.
+
+### When you add a new geometry builder
+- If it generates concentric rings: call `buildParabolicRingGeo` from `primitives.ts`.
+- If it positions a pit/zone child: call `extractChildTransform` from `surfaceUtils.ts`.
+- If it builds edges: call `buildRimEdges` / `buildFloorAndPillarEdges` from `primitives.ts`.
+- If it assembles a Three.js Mesh + edges: it belongs in `arenaObjectBuilders.ts`.

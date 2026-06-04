@@ -1,4 +1,4 @@
-import { OpeningShape, WallProfile, SurfaceType, ZoneFill, ArenaData, PitData, ZoneData } from './arenaGeometry';
+import { OpeningShape, WallProfile, SurfaceType, ZoneFill, ArenaData, PitData, ZoneData } from '../types/arenaTypes';
 
 export interface ArenaSave {
   id: string; name: string;
@@ -15,13 +15,10 @@ export interface ArenaSave {
 export interface PitSave {
   id: string; name: string;
   parentPitId: string | null; parentZoneId: string | null;
-  openingShape: OpeningShape; wallProfile: WallProfile;
+  openingShape: OpeningShape;
   radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   posR: number; posAngle: number; rotY: number;
-  isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
-  innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
-  innerWallProfile: WallProfile; innerRimOffset: number;
   pits: PitSave[]; zones: ZoneSave[];
 }
 
@@ -39,7 +36,7 @@ export interface ZoneSave {
 }
 
 export interface ArenaConfig {
-  version: 3;
+  version: 4;
   baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
 }
@@ -47,13 +44,10 @@ export interface ArenaConfig {
 export function pitToSave(p: PitData, pits: Map<string, PitData>, zones: Map<string, ZoneData>): PitSave {
   return {
     id:p.id,name:p.name,parentPitId:p.parentPitId,parentZoneId:p.parentZoneId,
-    openingShape:p.openingShape,wallProfile:p.wallProfile,
+    openingShape:p.openingShape,
     radiusX:p.radiusX,radiusZ:p.radiusZ,depth:p.depth,sides:p.sides,starInner:p.starInner,
     color:p.color,surface:p.surface,customTileData:p.customTileData,tileScale:p.tileScale,
     posR:p.posR,posAngle:p.posAngle,rotY:p.rotY,
-    isMoat:p.isMoat,innerRadiusX:p.innerRadiusX,innerRadiusZ:p.innerRadiusZ,
-    innerOpeningShape:p.innerOpeningShape,innerSides:p.innerSides,innerStarInner:p.innerStarInner,
-    innerWallProfile:p.innerWallProfile,innerRimOffset:p.innerRimOffset,
     pits:p.pitIds.map(id=>{ const c=pits.get(id); return c?pitToSave(c,pits,zones):null!; }).filter(Boolean),
     zones:p.zoneIds.map(id=>{ const c=zones.get(id); return c?zoneToSave(c,pits,zones):null!; }).filter(Boolean),
   };

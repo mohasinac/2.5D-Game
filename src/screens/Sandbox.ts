@@ -144,6 +144,7 @@ export class Sandbox {
     };
 
     this.loadView();
+    this.lastFrameTime = 0;
   }
 
   private unmountRenderer(): void {
@@ -267,9 +268,16 @@ export class Sandbox {
     this.camera.updateProjectionMatrix();
   }
 
+  /** Per-frame hook for subclasses (e.g. animation). Called before render. */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected onTick(_dtMs: number): void {}
+
   /* ── Render loop — self-heals canvas size every frame ───────── */
-  private loop = (): void => {
+  private lastFrameTime = 0;
+  private loop = (now: number): void => {
     this.rafId = requestAnimationFrame(this.loop);
+    const dt = this.lastFrameTime ? now - this.lastFrameTime : 0;
+    this.lastFrameTime = now;
     const w = this.canvasWrap.clientWidth;
     const h = this.canvasWrap.clientHeight;
     if (w === 0 || h === 0) return;
@@ -279,6 +287,7 @@ export class Sandbox {
       this.camera!.aspect = w / h;
       this.camera!.updateProjectionMatrix();
     }
+    this.onTick(dt);
     this.controls!.update();
     this.renderer!.render(this.scene!, this.camera!);
   };

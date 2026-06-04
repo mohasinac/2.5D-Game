@@ -1082,3 +1082,107 @@ body {
   color:        #fff;
   box-shadow:   0 0 calc(8 * var(--mm)) rgba(255, 180, 40, 0.25);
 }
+
+/* ── Beyblade Builder ──────────────────────────────────────────────────────── */
+
+/* Bottom controls bar */
+.beyblade-bottom-bar {
+  position:        absolute;
+  bottom:          0;
+  left:            0;
+  right:           0;
+  background:      rgba(8, 8, 16, 0.92);
+  border-top:      calc(1 * var(--mm)) solid var(--border);
+  padding:         calc(6 * var(--mm)) calc(12 * var(--mm));
+  pointer-events:  auto;
+  z-index:         20;
+}
+.bey-bar-row {
+  display:     flex;
+  align-items: center;
+  gap:         calc(6 * var(--mm));
+  flex-wrap:   wrap;
+}
+.bey-bar-label {
+  font-family:    'Orbitron', sans-serif;
+  font-size:      calc(9 * var(--mm));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color:          rgba(221, 232, 255, 0.7);
+}
+.bey-bar-input {
+  width:       calc(55 * var(--mm));
+  height:      calc(32 * var(--mm));
+  background:  rgba(0, 229, 255, 0.05);
+  border:      calc(1 * var(--mm)) solid rgba(0, 229, 255, 0.25);
+  color:       var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size:   calc(11 * var(--mm));
+  font-weight: 600;
+  text-align:  center;
+  border-radius: calc(3 * var(--mm));
+  outline:     none;
+}
+.bey-bar-input:focus {
+  border-color: rgba(0, 229, 255, 0.6);
+  background:   rgba(0, 229, 255, 0.10);
+}
+.bey-bar-unit {
+  font-size:   calc(9 * var(--mm));
+  color:       rgba(221, 232, 255, 0.5);
+  margin-left: calc(-3 * var(--mm));
+}
+.bey-bar-sep { width: calc(8 * var(--mm)); }
+
+.bey-spin-btn,
+.bey-view-btn {
+  font-size:   calc(10 * var(--mm));
+  padding:     calc(4 * var(--mm)) calc(10 * var(--mm));
+}
+.bey-spin-btn.active,
+.bey-view-btn.active {
+  background:  rgba(0, 229, 255, 0.18);
+  border-color: rgba(0, 229, 255, 0.7);
+  color:       #fff;
+  box-shadow:  0 0 calc(8 * var(--mm)) rgba(0, 229, 255, 0.25);
+}
+
+/* Add-root row below the tree */
+.tree-add-root-row {
+  display:     flex;
+  gap:         calc(6 * var(--mm));
+  padding:     calc(8 * var(--mm)) calc(10 * var(--mm));
+  border-top:  calc(1 * var(--mm)) solid var(--border);
+}
+.tree-add-root-btn {
+  flex: 1;
+  font-size:   calc(10 * var(--mm));
+  padding:     calc(4 * var(--mm)) calc(8 * var(--mm));
+}
+
+/* Property panel extras */
+.prop-select {
+  background:  rgba(0, 229, 255, 0.05);
+  border:      calc(1 * var(--mm)) solid rgba(0, 229, 255, 0.22);
+  color:       var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size:   calc(11 * var(--mm));
+  font-weight: 600;
+  padding:     calc(3 * var(--mm)) calc(6 * var(--mm));
+  border-radius: calc(3 * var(--mm));
+  outline:     none;
+  cursor:      pointer;
+}
+.prop-select:focus {
+  border-color: rgba(0, 229, 255, 0.6);
+}
+.prop-action-btn {
+  font-size:  calc(10 * var(--mm));
+  padding:    calc(4 * var(--mm)) calc(8 * var(--mm));
+}
+.prop-weight-hint {
+  font-size:   calc(9 * var(--mm));
+  color:       rgba(221, 232, 255, 0.5);
+  margin-left: calc(4 * var(--mm));
+  white-space: nowrap;
+}
