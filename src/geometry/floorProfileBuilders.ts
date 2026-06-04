@@ -207,7 +207,7 @@ export function buildSpiralLedgeMesh(
   geo.setIndex(idx);
   geo.computeVertexNormals();
 
-  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02] } as const;
+  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02], rubber: [0.95, 0.00] } as const;
   const [roughness, metalness] = baseMaterial ? PBR[baseMaterial] : [0.65, 0.08];
   const mat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.3),

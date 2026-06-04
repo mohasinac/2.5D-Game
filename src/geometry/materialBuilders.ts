@@ -66,7 +66,7 @@ export function buildSurfaceMaterial(opts: SurfaceMaterialOpts): THREE.MeshStand
       _texCache.set(tk, { tex, refs: 1 }); map = tex;
     }
   }
-  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02] } as const;
+  const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02], rubber: [0.95, 0.00] } as const;
   const [roughness, metalness] = opts.baseMaterial
     ? PBR[opts.baseMaterial]
     : [opts.surface==='metal'?0.25:opts.surface==='ice'?0.10:0.65,

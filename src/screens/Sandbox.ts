@@ -93,6 +93,13 @@ export class Sandbox {
   /** Returns the active scene, or null if not yet mounted. */
   protected getScene(): THREE.Scene | null { return this.scene; }
 
+  /** Returns the active camera, or null if not yet mounted. */
+  public getCamera(): THREE.PerspectiveCamera | null { return this.camera; }
+  /** Returns the active OrbitControls, or null if not yet mounted. */
+  public getControls(): OrbitControls | null { return this.controls; }
+  /** Returns the renderer canvas element, or null if not yet mounted. */
+  public getRendererCanvas(): HTMLCanvasElement | null { return this.renderer?.domElement ?? null; }
+
   /** Add / remove objects from the live scene. Safe to call before scene is ready (no-op). */
   protected addToScene(...objects: THREE.Object3D[]): void {
     objects.forEach(o => this.scene?.add(o));

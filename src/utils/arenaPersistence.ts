@@ -1,21 +1,31 @@
-import { OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill, ArenaData, PitData, ZoneData } from '../types/arenaTypes';
+import {
+  OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill,
+  ArenaData, PitData, ZoneData, SpeedLineData,
+  SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
+  SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
+  WallTopProfile, WallHoleData, WallData,
+  BridgeCrossSection, BridgeSegmentType, BridgeEndpointType, BridgeSection,
+  BridgeSegmentData, BridgeData, BridgeEndpointRef,
+} from '../types/arenaTypes';
 
-export interface ArenaSave {
+export interface SpeedLineSave {
   id: string; name: string;
-  openingShape: OpeningShape; wallProfile: WallProfile;
-  radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
-  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
-  baseMaterial: ArenaMaterial;
-  posX: number; posZ: number; posY: number; rotY: number;
-  isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
-  innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
-  innerWallProfile: WallProfile; innerRimOffset: number;
-  stepApplyToAll: boolean; stepEdgeProfiles: WallProfile[]; stepArcDivisions: 1|2|4|8;
-  stepCount: number; stepStartDepth: number; stepRiserProfile: 'parabolic'|'straight';
-  rampMode: RampMode; rampAngle: number; rampWidth: number;
-  spiralTurns: number; spiralClockwise: boolean; spiralCount: number;
-  spiralLedgeWidth: number; spiralLedgeHeight: number; spiralRadiusFrac: number;
-  pits: PitSave[]; zones: ZoneSave[];
+  parentArenaId: string; parentZoneId: string | null;
+  startR: number; startAngle: number; startDir: number;
+  segments: SpeedLineSegment[];
+  surfaceFollow: boolean;
+  targetType: SpeedLineTargetType; targetTag: string;
+  activationMode: SpeedLineActivationMode;
+  triggerEvent: string; endEvent: string;
+  activeDuration: number; period: number; activeDuty: number;
+  activationRadius: number; fadeIn: number; fadeOut: number;
+  oscillate: boolean; oscAxis: SpeedLineOscAxis;
+  oscAmplitude: number; oscFrequency: number; oscPhase: number;
+  width: number; color: number; opacity: number; glowColor: number | null;
+  speedMultiplier: number; entryCondition: SpeedLineEntryCondition;
+  direction: SpeedLineDirection; exitBehavior: SpeedLineExitBehavior;
+  launchForce: number; specialMoveName: string;
+  allowMidAirEntry: boolean; overridePhysics: boolean; swapPriority: number;
 }
 
 export interface PitSave {
@@ -39,10 +49,106 @@ export interface ZoneSave {
   pits: PitSave[]; zones: ZoneSave[];
 }
 
+/* ── Wall / bridge save interfaces ──────────────────────────────────────── */
+
+export interface WallHoleSave {
+  id: string; shape: WallHoleData['shape'];
+  posAlong: number; posHeight: number; radiusU: number; radiusV: number;
+}
+
+export interface WallSave {
+  id: string; name: string; parentId: string; parentType: WallData['parentType'];
+  fullPerimeter: boolean; arcStart: number; arcEnd: number;
+  basePosX: number; basePosZ: number; baseRotY: number; baseLength: number;
+  height: number; tilt: number;
+  hasGaps: boolean; gapWidth: number; panelWidth: number;
+  topProfile: WallTopProfile; topAmplitude: number; topFrequency: number;
+  isDouble: boolean; peakHeight: number; peakTilt: number;
+  holes: WallHoleSave[];
+  color: number; surface: SurfaceType; material: ArenaMaterial;
+}
+
+export interface BridgeSectionSave {
+  width: number; crossSection: BridgeCrossSection; depth: number;
+  hasLeftWall: boolean; hasRightWall: boolean; sideWallHeight: number;
+  material: ArenaMaterial;
+}
+
+export interface BridgeSegmentSave {
+  id: string; name: string; orderIndex: number; type: BridgeSegmentType;
+  length: number; rampAngle: number;
+  curveRadius: number; curveAngle: number; curveDirection: 'left'|'right'; bankAngle: number;
+  cp1X: number; cp1Y: number; cp1Z: number;
+  cp2X: number; cp2Y: number; cp2Z: number;
+  endX: number; endY: number; endZ: number;
+  loopRadius: number;
+  corkscrewLength: number; corkscrewTurns: number;
+  color: number | null; surface: SurfaceType | null;
+}
+
+export interface BridgeEndpointRefSave {
+  type: BridgeEndpointType; id: string; angle: number; wallHeight: number;
+  freePosX: number; freePosY: number; freePosZ: number; freeDirDeg: number;
+}
+
+export interface BridgeSave {
+  id: string; name: string;
+  startRef: BridgeEndpointRefSave | null;
+  segments: BridgeSegmentSave[];
+  section: BridgeSectionSave;
+  color: number; surface: SurfaceType;
+  walls: WallSave[];
+}
+
+export interface ArenaSave {
+  id: string; name: string;
+  openingShape: OpeningShape; wallProfile: WallProfile;
+  radiusX: number; radiusZ: number; depth: number; sides: number; starInner: number;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  baseMaterial: ArenaMaterial;
+  posX: number; posZ: number; posY: number; rotY: number;
+  isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
+  innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
+  innerWallProfile: WallProfile; innerRimOffset: number;
+  stepApplyToAll: boolean; stepEdgeProfiles: WallProfile[]; stepArcDivisions: 1|2|4|8;
+  stepCount: number; stepStartDepth: number; stepRiserProfile: 'parabolic'|'straight';
+  rampMode: RampMode; rampAngle: number; rampWidth: number;
+  spiralTurns: number; spiralClockwise: boolean; spiralCount: number;
+  spiralLedgeWidth: number; spiralLedgeHeight: number; spiralRadiusFrac: number;
+  pits: PitSave[]; zones: ZoneSave[];
+  walls: WallSave[];   // rim walls attached to this arena
+  speedLines: SpeedLineSave[];
+}
+
 export interface ArenaConfig {
-  version: number;
   baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
+  baseWalls: WallSave[];   // free-standing walls on octagon base
+  bridges: BridgeSave[];
+  wallSeq: number; bridgeSeq: number; segmentSeq: number;
+  speedLineSeq: number;
+  speedLines: SpeedLineSave[];
+}
+
+export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
+  return {
+    id:sl.id, name:sl.name, parentArenaId:sl.parentArenaId, parentZoneId:sl.parentZoneId,
+    startR:sl.startR, startAngle:sl.startAngle, startDir:sl.startDir,
+    segments:sl.segments.map(s=>({...s})),
+    surfaceFollow:sl.surfaceFollow,
+    targetType:sl.targetType, targetTag:sl.targetTag,
+    activationMode:sl.activationMode, triggerEvent:sl.triggerEvent, endEvent:sl.endEvent,
+    activeDuration:sl.activeDuration, period:sl.period, activeDuty:sl.activeDuty,
+    activationRadius:sl.activationRadius, fadeIn:sl.fadeIn, fadeOut:sl.fadeOut,
+    oscillate:sl.oscillate, oscAxis:sl.oscAxis,
+    oscAmplitude:sl.oscAmplitude, oscFrequency:sl.oscFrequency, oscPhase:sl.oscPhase,
+    width:sl.width, color:sl.color, opacity:sl.opacity, glowColor:sl.glowColor,
+    speedMultiplier:sl.speedMultiplier, entryCondition:sl.entryCondition,
+    direction:sl.direction, exitBehavior:sl.exitBehavior,
+    launchForce:sl.launchForce, specialMoveName:sl.specialMoveName,
+    allowMidAirEntry:sl.allowMidAirEntry, overridePhysics:sl.overridePhysics,
+    swapPriority:sl.swapPriority,
+  };
 }
 
 export function pitToSave(p: PitData): PitSave {
@@ -93,5 +199,64 @@ export function arenaToSave(
     spiralLedgeWidth:a.spiralLedgeWidth,spiralLedgeHeight:a.spiralLedgeHeight,spiralRadiusFrac:a.spiralRadiusFrac,
     pits:a.pitIds.map(pid=>pitToSave(pits.get(pid)!)).filter(Boolean),
     zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
+    walls:[],       // populated by ArenaSandbox
+    speedLines:[],  // populated by ArenaSandbox
+  };
+}
+
+export function wallToSave(w: WallData): WallSave {
+  return {
+    id:w.id, name:w.name, parentId:w.parentId, parentType:w.parentType,
+    fullPerimeter:w.fullPerimeter, arcStart:w.arcStart, arcEnd:w.arcEnd,
+    basePosX:w.basePosX, basePosZ:w.basePosZ, baseRotY:w.baseRotY, baseLength:w.baseLength,
+    height:w.height, tilt:w.tilt,
+    hasGaps:w.hasGaps, gapWidth:w.gapWidth, panelWidth:w.panelWidth,
+    topProfile:w.topProfile, topAmplitude:w.topAmplitude, topFrequency:w.topFrequency,
+    isDouble:w.isDouble, peakHeight:w.peakHeight, peakTilt:w.peakTilt,
+    holes:w.holes.map(h=>({
+      id:h.id, shape:h.shape, posAlong:h.posAlong, posHeight:h.posHeight,
+      radiusU:h.radiusU, radiusV:h.radiusV,
+    })),
+    color:w.color, surface:w.surface, material:w.material,
+  };
+}
+
+export function endpointRefToSave(r: BridgeEndpointRef): BridgeEndpointRefSave {
+  return { type:r.type, id:r.id, angle:r.angle, wallHeight:r.wallHeight,
+           freePosX:r.freePosX, freePosY:r.freePosY, freePosZ:r.freePosZ, freeDirDeg:r.freeDirDeg };
+}
+
+export function segmentToSave(s: BridgeSegmentData): BridgeSegmentSave {
+  return {
+    id:s.id, name:s.name, orderIndex:s.orderIndex, type:s.type,
+    length:s.length, rampAngle:s.rampAngle,
+    curveRadius:s.curveRadius, curveAngle:s.curveAngle,
+    curveDirection:s.curveDirection, bankAngle:s.bankAngle,
+    cp1X:s.cp1X, cp1Y:s.cp1Y, cp1Z:s.cp1Z,
+    cp2X:s.cp2X, cp2Y:s.cp2Y, cp2Z:s.cp2Z,
+    endX:s.endX, endY:s.endY, endZ:s.endZ,
+    loopRadius:s.loopRadius,
+    corkscrewLength:s.corkscrewLength, corkscrewTurns:s.corkscrewTurns,
+    color:s.color, surface:s.surface,
+  };
+}
+
+export function bridgeToSave(
+  b: BridgeData,
+  segments: Map<string, BridgeSegmentData>,
+  walls: Map<string, WallData>,
+): BridgeSave {
+  const sec = b.section;
+  return {
+    id:b.id, name:b.name,
+    startRef: b.startRef ? endpointRefToSave(b.startRef) : null,
+    segments: b.segmentIds.map(id=>{ const s=segments.get(id); return s?segmentToSave(s):null!; }).filter(Boolean),
+    section: {
+      width:sec.width, crossSection:sec.crossSection, depth:sec.depth,
+      hasLeftWall:sec.hasLeftWall, hasRightWall:sec.hasRightWall,
+      sideWallHeight:sec.sideWallHeight, material:sec.material,
+    },
+    color:b.color, surface:b.surface,
+    walls: b.wallIds.map(id=>{ const w=walls.get(id); return w?wallToSave(w):null!; }).filter(Boolean),
   };
 }

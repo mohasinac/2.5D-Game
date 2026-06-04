@@ -1,9 +1,16 @@
 import * as THREE from 'three';
-import { APOTHEM } from '../config/arenaConstants';
+import { APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL } from '../config/arenaConstants';
 import {
-  ArenaData, PitData, ZoneData,
+  ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment,
   OpeningShape, WallProfile, RampMode, ZoneFill, SurfaceType, ArenaMaterial, ShapeParams,
+  WallData, WallTopProfile, WallHoleData,
+  BridgeData, BridgeSection, BridgeSegmentData, BridgeSegmentType, BridgeCrossSection,
+  BridgeEndpointRef, BridgeEndpointType,
 } from '../types/arenaTypes';
+import {
+  templateStraight, templateCircle, templateSpiral, templateZigzag, templateWave,
+  templateClimb, templateLoop, templateCorkscrew, templateLaunchRamp,
+} from '../geometry/speedLineBuilders';
 import { _paintCanvas } from '../geometry/materialBuilders';
 import { FILL_PRESET, FILL_LABEL } from '../geometry/surfaceUtils';
 import { AbstractPropertiesPanel } from './AbstractPropertiesPanel';
@@ -525,6 +532,565 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     inp.value='#'+(zone.fillColor??0xffffff).toString(16).padStart(6,'0');
     inp.addEventListener('input',()=>{zone.fillColor=parseInt(inp.value.slice(1),16);onChange();});
     row.appendChild(lbl);row.appendChild(inp);this.content.appendChild(row);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     WALL PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showWall(
+    wall: WallData,
+    onGeomChange: () => void,
+    onRename: (name: string) => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = wall.name;
+    nameInp.addEventListener('input', () => { wall.name = nameInp.value; onRename(wall.name); });
+    this.content.appendChild(nameInp);
+
+    // ── Attachment ────────────────────────────────────────────────────────
+    this.section('ATTACHMENT');
+    if (wall.parentType === 'base') {
+      this.numRow('X (cm)',     wall.basePosX, -200, 200, 1, v => { wall.basePosX = v; onGeomChange(); });
+      this.numRow('Z (cm)',     wall.basePosZ, -200, 200, 1, v => { wall.basePosZ = v; onGeomChange(); });
+      this.numRow('Rot Y°',    wall.baseRotY,  0, 360,   1, v => { wall.baseRotY = v; onGeomChange(); });
+      this.numRow('Length (cm)', wall.baseLength, 10, 500, 1, v => { wall.baseLength = v; onGeomChange(); });
+    } else {
+      this.toggleRow('Full Perimeter', wall.fullPerimeter, v => {
+        wall.fullPerimeter = v;
+        if (v && !wall.hasGaps) wall.tilt = 0;
+        onGeomChange();
+      });
+      if (!wall.fullPerimeter) {
+        this.numRow('Arc Start°', wall.arcStart, 0, 360, 1, v => { wall.arcStart = v; onGeomChange(); });
+        this.numRow('Arc End°',   wall.arcEnd,   0, 360, 1, v => { wall.arcEnd = v;   onGeomChange(); });
+      }
+    }
+
+    // ── Profile ───────────────────────────────────────────────────────────
+    this.section('PROFILE');
+    this.numRow('Height (cm)', wall.height, MIN_WALL_HEIGHT, 100, 1, v => { wall.height = v; onGeomChange(); });
+
+    const tiltDisabled = wall.fullPerimeter && !wall.hasGaps;
+    const tiltWrap = this.numRow('Tilt°', wall.tilt, -90, 30, 1, v => {
+      if (tiltDisabled) return;
+      wall.tilt = v; onGeomChange();
+    });
+    if (tiltDisabled) {
+      const hint = document.createElement('div'); hint.className = 'prop-hint';
+      hint.textContent = 'Use partial arc or gaps to enable tilt';
+      tiltWrap?.appendChild(hint);
+    }
+
+    this.section('TOP PROFILE');
+    this._wallTopProfileRow(wall, onGeomChange);
+    if (wall.topProfile !== 'flat') {
+      this.numRow('Amplitude (cm)', wall.topAmplitude, 0, 10, 0.5, v => { wall.topAmplitude = v; onGeomChange(); });
+      this.numRow('Frequency', wall.topFrequency, 0.1, 5, 0.1, v => { wall.topFrequency = v; onGeomChange(); });
+    }
+
+    // ── Gaps ──────────────────────────────────────────────────────────────
+    this.section('GAPS');
+    this.toggleRow('Has Gaps', wall.hasGaps, v => {
+      wall.hasGaps = v;
+      if (!v && wall.fullPerimeter) wall.tilt = 0;
+      onGeomChange();
+    });
+    if (wall.hasGaps) {
+      this.numRow('Panel Width (cm)', wall.panelWidth, MIN_WALL_GAP, 500, 1, v => { wall.panelWidth = v; onGeomChange(); });
+      this.numRow('Gap Width (cm)',   wall.gapWidth,   MIN_WALL_GAP, 500, 1, v => { wall.gapWidth = v;   onGeomChange(); });
+    }
+
+    // ── Double wall ───────────────────────────────────────────────────────
+    this.section('DOUBLE WALL (/\\)');
+    this.toggleRow('Enable', wall.isDouble, v => { wall.isDouble = v; onGeomChange(); });
+    if (wall.isDouble) {
+      this.numRow('Peak Height (cm)', wall.peakHeight, 1, wall.height, 1, v => { wall.peakHeight = v; onGeomChange(); });
+      this.numRow('Peak Tilt°',       wall.peakTilt,   0, 60, 1,         v => { wall.peakTilt = v;   onGeomChange(); });
+    }
+
+    // ── Physics material ──────────────────────────────────────────────────
+    this.section('PHYSICS MATERIAL');
+    this._wallMaterialRow(wall, ['rubber','stone','abs','metal'], onGeomChange);
+
+    // ── Appearance ────────────────────────────────────────────────────────
+    this.section('APPEARANCE');
+    this.colorRow('Color', wall.color, v => { wall.color = v; onGeomChange(); });
+    this.surfaceRow(
+      { surface: wall.surface, customTileData: null, tileScale: 20, color: wall.color },
+      () => onGeomChange(),
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     BRIDGE PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showBridge(
+    bridge: BridgeData,
+    arenaNames: Map<string, string>,    // id → name
+    wallNames: Map<string, string>,
+    onGeomChange: () => void,
+    onRename: (name: string) => void,
+    onAddSegment: (type: BridgeSegmentType) => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = bridge.name;
+    nameInp.addEventListener('input', () => { bridge.name = nameInp.value; onRename(bridge.name); });
+    this.content.appendChild(nameInp);
+
+    // ── Start anchor ─────────────────────────────────────────────────────
+    this.section('START ANCHOR');
+    const ref = bridge.startRef;
+    const types: [BridgeEndpointType | 'none', string][] = [
+      ['none', 'Floating'], ['arena', 'Arena'], ['wall', 'Wall'], ['freepoint', 'Free pt'],
+    ];
+    const typeRow = document.createElement('div'); typeRow.className = 'prop-profile-row';
+    const curType = ref?.type ?? 'none';
+    for (const [t, label] of types) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (curType === t ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        if (t === 'none') { bridge.startRef = null; }
+        else {
+          bridge.startRef = bridge.startRef ?? {
+            type: t as BridgeEndpointType, id: '', angle: 0, wallHeight: 0,
+            freePosX: 0, freePosY: 31, freePosZ: 0, freeDirDeg: 0,
+          };
+          bridge.startRef.type = t as BridgeEndpointType;
+        }
+        onGeomChange();
+      });
+      typeRow.appendChild(btn);
+    }
+    this.content.appendChild(typeRow);
+
+    if (ref?.type === 'arena') {
+      this._selectRow('Arena', [...arenaNames.entries()], ref.id, v => { ref.id = v; onGeomChange(); });
+      this.numRow('Angle°', ref.angle, 0, 360, 1, v => { ref.angle = v; onGeomChange(); });
+    } else if (ref?.type === 'wall') {
+      this._selectRow('Wall', [...wallNames.entries()], ref.id, v => { ref.id = v; onGeomChange(); });
+      this.numRow('Angle°', ref.angle, 0, 360, 1, v => { ref.angle = v; onGeomChange(); });
+      this.numRow('Height t', ref.wallHeight, 0, 1, 0.05, v => { ref.wallHeight = v; onGeomChange(); });
+    } else if (ref?.type === 'freepoint') {
+      this.numRow('X (cm)',    ref.freePosX,  -500, 500, 1,  v => { ref.freePosX = v;  onGeomChange(); });
+      this.numRow('Y (cm)',    ref.freePosY,     0, 500, 1,  v => { ref.freePosY = v;  onGeomChange(); });
+      this.numRow('Z (cm)',    ref.freePosZ,  -500, 500, 1,  v => { ref.freePosZ = v;  onGeomChange(); });
+      this.numRow('Heading°', ref.freeDirDeg, 0, 360, 1, v => { ref.freeDirDeg = v; onGeomChange(); });
+    }
+
+    // ── Track cross-section ───────────────────────────────────────────────
+    this.section('TRACK CROSS-SECTION');
+    const sec = bridge.section;
+    this.numRow('Width (cm)', sec.width, 5, 100, 1, v => { sec.width = v; onGeomChange(); });
+    const csRow = document.createElement('div'); csRow.className = 'prop-profile-row';
+    for (const [cs, label] of [['flat','━ Flat'],['u_channel','⌣ U-Channel']] as [BridgeCrossSection, string][]) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (sec.crossSection === cs ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { sec.crossSection = cs; onGeomChange(); });
+      csRow.appendChild(btn);
+    }
+    this.content.appendChild(csRow);
+    if (sec.crossSection === 'u_channel') {
+      this.numRow('Depth (cm)', sec.depth, 1, 20, 0.5, v => { sec.depth = v; onGeomChange(); });
+    }
+    this.toggleRow('Left Rail Wall',  sec.hasLeftWall,  v => { sec.hasLeftWall = v;  onGeomChange(); });
+    this.toggleRow('Right Rail Wall', sec.hasRightWall, v => { sec.hasRightWall = v; onGeomChange(); });
+    if (sec.hasLeftWall || sec.hasRightWall) {
+      this.numRow('Rail Wall Height (cm)', sec.sideWallHeight, 2, 30, 1, v => { sec.sideWallHeight = v; onGeomChange(); });
+    }
+    this.section('BRIDGE MATERIAL');
+    this._wallMaterialRow(sec, ['stone','abs','metal'], onGeomChange);
+
+    // ── Appearance ────────────────────────────────────────────────────────
+    this.section('APPEARANCE');
+    this.colorRow('Color', bridge.color, v => { bridge.color = v; onGeomChange(); });
+    this.surfaceRow(
+      { surface: bridge.surface, customTileData: null, tileScale: 20, color: bridge.color },
+      () => onGeomChange(),
+    );
+
+    // ── Add segment ───────────────────────────────────────────────────────
+    this.section('SEGMENTS');
+    const addHint = document.createElement('div'); addHint.className = 'prop-hint';
+    addHint.textContent = 'Track shape does not change when you add segments — only path does.';
+    this.content.appendChild(addHint);
+    this._addSegmentButtons(onAddSegment);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     BRIDGE SEGMENT PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showBridgeSegment(
+    seg: BridgeSegmentData,
+    onGeomChange: () => void,
+    onRename: (name: string) => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = seg.name;
+    nameInp.addEventListener('input', () => { seg.name = nameInp.value; onRename(seg.name); });
+    this.content.appendChild(nameInp);
+
+    // ── Type ──────────────────────────────────────────────────────────────
+    this.section('SEGMENT TYPE');
+    this._addSegmentButtons(type => { seg.type = type; onGeomChange(); }, seg.type);
+
+    // ── Shape params (per type) ───────────────────────────────────────────
+    this.section('SHAPE');
+    switch (seg.type) {
+      case 'straight':
+        this.numRow('Length (cm)', seg.length, 5, 500, 1, v => { seg.length = v; onGeomChange(); });
+        break;
+      case 'ramp':
+        this.numRow('Length (cm)', seg.length, 5, 500, 1, v => { seg.length = v; onGeomChange(); });
+        this.numRow('Ramp Angle°', seg.rampAngle, -45, 45, 1, v => { seg.rampAngle = v; onGeomChange(); });
+        break;
+      case 'curve':
+        this.numRow('Radius (cm)', seg.curveRadius, 5, 200, 1, v => { seg.curveRadius = v; onGeomChange(); });
+        this.numRow('Angle°',      seg.curveAngle,  10, 360, 5, v => { seg.curveAngle = v; onGeomChange(); });
+        this._dirRow(seg, onGeomChange);
+        this.numRow('Bank°',       seg.bankAngle, 0, 60, 1, v => { seg.bankAngle = v; onGeomChange(); });
+        break;
+      case 'hairpin':
+        this.numRow('Radius (cm)', seg.curveRadius, 5, 100, 1, v => { seg.curveRadius = v; onGeomChange(); });
+        this._dirRow(seg, onGeomChange);
+        break;
+      case 'loop':
+        this.numRow('Loop Radius (cm)', seg.loopRadius, 5, 100, 1, v => { seg.loopRadius = v; onGeomChange(); });
+        break;
+      case 'corkscrew':
+        this.numRow('Length (cm)', seg.corkscrewLength, 10, 300, 1, v => { seg.corkscrewLength = v; onGeomChange(); });
+        this.numRow('Turns',       seg.corkscrewTurns,  0.5, 5, 0.5, v => { seg.corkscrewTurns = v; onGeomChange(); });
+        break;
+      case 'chicane':
+        this.numRow('Radius (cm)',    seg.curveRadius, 5, 100, 1,  v => { seg.curveRadius = v; onGeomChange(); });
+        this.numRow('Half Angle°',    seg.curveAngle / 2, 10, 90, 5, v => { seg.curveAngle = v * 2; onGeomChange(); });
+        this._dirRow(seg, onGeomChange);
+        break;
+      case 'bezier':
+        this.numRow('CP1 X', seg.cp1X, -200, 200, 1, v => { seg.cp1X = v; onGeomChange(); });
+        this.numRow('CP1 Y', seg.cp1Y, -100, 200, 1, v => { seg.cp1Y = v; onGeomChange(); });
+        this.numRow('CP1 Z', seg.cp1Z, -200, 200, 1, v => { seg.cp1Z = v; onGeomChange(); });
+        this.numRow('CP2 X', seg.cp2X, -200, 200, 1, v => { seg.cp2X = v; onGeomChange(); });
+        this.numRow('CP2 Y', seg.cp2Y, -100, 200, 1, v => { seg.cp2Y = v; onGeomChange(); });
+        this.numRow('CP2 Z', seg.cp2Z, -200, 200, 1, v => { seg.cp2Z = v; onGeomChange(); });
+        this.numRow('End X', seg.endX, -200, 200, 1, v => { seg.endX = v; onGeomChange(); });
+        this.numRow('End Y', seg.endY, -100, 200, 1, v => { seg.endY = v; onGeomChange(); });
+        this.numRow('End Z', seg.endZ, -200, 200, 1, v => { seg.endZ = v; onGeomChange(); });
+        break;
+    }
+
+    // ── Appearance (optional override) ────────────────────────────────────
+    this.section('APPEARANCE');
+    const inheritHint = document.createElement('div'); inheritHint.className = 'prop-hint';
+    inheritHint.textContent = 'Cross-section (width/depth/physics) is always set on the parent bridge.';
+    this.content.appendChild(inheritHint);
+  }
+
+  /* ── Wall / bridge private helpers ─────────────────────────────────── */
+
+  private _wallTopProfileRow(wall: WallData, onChange: () => void): void {
+    const defs: [WallTopProfile, string][] = [
+      ['flat','━ Flat'], ['triangles','▲ Triangles'], ['waves','∿ Waves'],
+      ['serrated','⟋ Serrated'], ['crenellated','⊓ Crenellated'],
+    ];
+    const row = document.createElement('div'); row.className = 'prop-profile-row';
+    const btns: HTMLButtonElement[] = [];
+    for (const [p, label] of defs) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (wall.topProfile === p ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        wall.topProfile = p;
+        btns.forEach((b, i) => b.classList.toggle('active', defs[i][0] === p));
+        onChange();
+      });
+      btns.push(btn); row.appendChild(btn);
+    }
+    this.content.appendChild(row);
+  }
+
+  private _wallMaterialRow(
+    target: { material: ArenaMaterial },
+    allowed: ArenaMaterial[],
+    onChange: () => void,
+  ): void {
+    const LABELS: Record<ArenaMaterial, string> = { rubber:'🔴 Rubber', stone:'◈ Stone', abs:'▣ ABS', metal:'⬡ Metal' };
+    const row = document.createElement('div'); row.className = 'prop-profile-row';
+    const btns: HTMLButtonElement[] = [];
+    for (const mat of allowed) {
+      const preset = ARENA_MATERIAL_PRESETS[mat];
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (target.material === mat ? ' active' : '');
+      btn.textContent = LABELS[mat];
+      btn.title = `Restitution ${preset.restitution} · Spin-loss ${preset.spinLossFactor} · Damage ×${preset.damageFactor}`;
+      btn.addEventListener('click', () => {
+        target.material = mat;
+        btns.forEach((b, i) => b.classList.toggle('active', allowed[i] === mat));
+        onChange();
+      });
+      btns.push(btn); row.appendChild(btn);
+    }
+    this.content.appendChild(row);
+  }
+
+  private _addSegmentButtons(onAdd: (type: BridgeSegmentType) => void, active?: BridgeSegmentType): void {
+    const defs: [BridgeSegmentType, string, string][] = [
+      ['straight',  '━',  'Straight'],
+      ['ramp',      '↗',  'Ramp'],
+      ['curve',     '↩',  'Curve'],
+      ['hairpin',   '↺',  'Hairpin'],
+      ['loop',      '⭕', 'Loop'],
+      ['corkscrew', '🌀', 'Corkscrew'],
+      ['chicane',   '⟨⟩', 'Chicane'],
+      ['bezier',    '〜', 'Bezier'],
+    ];
+    const grid = document.createElement('div'); grid.className = 'prop-shape-grid';
+    for (const [type, icon, label] of defs) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-shape-btn' + (active === type ? ' active' : '');
+      btn.innerHTML = `<span class="prop-shape-icon">${icon}</span><span>${label}</span>`;
+      btn.addEventListener('click', () => onAdd(type));
+      grid.appendChild(btn);
+    }
+    this.content.appendChild(grid);
+  }
+
+  private _dirRow(seg: BridgeSegmentData, onChange: () => void): void {
+    const row = document.createElement('div'); row.className = 'prop-profile-row';
+    const lbl = document.createElement('span'); lbl.className = 'prop-row-label'; lbl.textContent = 'Direction';
+    row.appendChild(lbl);
+    for (const [d, label] of [['left','↰ Left'],['right','↱ Right']] as ['left'|'right', string][]) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (seg.curveDirection === d ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { seg.curveDirection = d; onChange(); });
+      row.appendChild(btn);
+    }
+    this.content.appendChild(row);
+  }
+
+  private _selectRow(label: string, options: [string, string][], value: string, onChange: (v: string) => void): void {
+    const row = document.createElement('div'); row.className = 'prop-row';
+    const lbl = document.createElement('span'); lbl.className = 'prop-label'; lbl.textContent = label;
+    const sel = document.createElement('select'); sel.className = 'prop-input';
+    for (const [id, name] of options) {
+      const opt = document.createElement('option'); opt.value = id; opt.textContent = name;
+      if (id === value) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    sel.addEventListener('change', () => onChange(sel.value));
+    row.appendChild(lbl); row.appendChild(sel); this.content.appendChild(row);
+  }
+
+  /* ── Speed Line ─────────────────────────────────────────────────────────── */
+
+  showSpeedLine(
+    sl: SpeedLineData,
+    arena: ArenaData,
+    onGeomChange: () => void,
+    onSegmentChange: (k: number) => void,
+    onRename: (name: string) => void,
+    onColorChange: () => void,
+    onAddSegment: (segs: SpeedLineSegment[]) => void,
+    onRemoveSegment: (k: number) => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('NAME');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = sl.name;
+    nameInp.addEventListener('input', () => { sl.name = nameInp.value; onRename(sl.name); });
+    this.content.appendChild(nameInp);
+
+    this.section('START');
+    const arenaMaxR = Math.min(arena.radiusX, arena.radiusZ);
+    this.numRow('Start Dist',  sl.startR,     0, arenaMaxR, 0.5, v => { sl.startR = v;     onGeomChange(); });
+    this.numRow('Start Angle', sl.startAngle, 0, 360,       1,   v => { sl.startAngle = v; onGeomChange(); });
+    this.numRow('Start Dir °', sl.startDir,   -180, 180,    1,   v => { sl.startDir = v;   onGeomChange(); });
+
+    this.section('SEGMENTS');
+
+    // Template dropdown
+    const tmplRow = document.createElement('div');
+    tmplRow.className = 'prop-row';
+    const tmplLbl = document.createElement('span');
+    tmplLbl.className = 'prop-label'; tmplLbl.textContent = 'Add from template';
+    const tmplSel = document.createElement('select');
+    tmplSel.className = 'prop-select';
+    for (const [v, lbl] of [
+      ['blank','Blank'],['straight','Straight'],['circle','Circle'],
+      ['spiral','Spiral'],['zigzag','Zigzag'],['wave','Wave'],
+      ['climb','Climb'],['loop','Loop (aerial)'],['corkscrew','Corkscrew'],
+      ['ramp','Launch Ramp'],
+    ]) {
+      const o = document.createElement('option'); o.value = v; o.textContent = lbl; tmplSel.appendChild(o);
+    }
+    const tmplBtn = document.createElement('button');
+    tmplBtn.className = 'game-btn'; tmplBtn.style.marginLeft = '4px'; tmplBtn.textContent = '+ Add';
+    tmplBtn.addEventListener('click', () => {
+      let segs: SpeedLineSegment[] = [];
+      switch (tmplSel.value) {
+        case 'blank':      segs = [{ id:'', length: SL.DEFAULT_SEG_LENGTH, rotX:0, rotY:0, rotZ:0, speedMult:0, objRotX:0, objRotY:0, objRotZ:0 }]; break;
+        case 'straight':   segs = templateStraight(40, 5); break;
+        case 'circle':     segs = templateCircle(20, 36); if (!sl.surfaceFollow) { /* keep */ } break;
+        case 'spiral':     segs = templateSpiral(20, 1, 18); break;
+        case 'zigzag':     segs = templateZigzag(8, 8, 8); break;
+        case 'wave':       segs = templateWave(5, 8, 8); break;
+        case 'climb':      segs = templateClimb(15, 6, 8); break;
+        case 'loop':       segs = templateLoop(12, 12); sl.surfaceFollow = false; sl.overridePhysics = true; break;
+        case 'corkscrew':  segs = templateCorkscrew(10, 1, 12); sl.surfaceFollow = false; break;
+        case 'ramp':       segs = templateLaunchRamp(45, 3, 6, 8); sl.surfaceFollow = false; break;
+      }
+      onAddSegment(segs);
+    });
+    tmplRow.appendChild(tmplLbl); tmplRow.appendChild(tmplSel); tmplRow.appendChild(tmplBtn);
+    this.content.appendChild(tmplRow);
+
+    // Per-segment collapsible rows
+    for (let k = 0; k < sl.segments.length; k++) {
+      const seg = sl.segments[k];
+      const segHeader = document.createElement('div');
+      segHeader.className = 'prop-row';
+      segHeader.style.cursor = 'pointer';
+      const segTitle = document.createElement('span');
+      segTitle.className = 'prop-label'; segTitle.textContent = `▶ Segment ${k + 1}`;
+      const delBtn = document.createElement('button');
+      delBtn.className = 'game-btn'; delBtn.textContent = '✕';
+      delBtn.style.marginLeft = 'auto'; delBtn.style.fontSize = '0.75em';
+      delBtn.addEventListener('click', e => { e.stopPropagation(); onRemoveSegment(k); });
+      segHeader.appendChild(segTitle); segHeader.appendChild(delBtn);
+      this.content.appendChild(segHeader);
+
+      const segBody = document.createElement('div');
+      segBody.style.display = 'none'; segBody.style.paddingLeft = '12px';
+      segHeader.addEventListener('click', () => {
+        const open = segBody.style.display !== 'none';
+        segBody.style.display = open ? 'none' : 'block';
+        segTitle.textContent = (open ? '▶' : '▼') + ` Segment ${k + 1}`;
+      });
+
+      const addSegNum = (lbl: string, val: number, min: number, max: number, step: number, set: (v: number) => void) => {
+        const r = document.createElement('div'); r.className = 'prop-row';
+        const lb = document.createElement('span'); lb.className = 'prop-label'; lb.textContent = lbl;
+        const inp = document.createElement('input'); inp.type = 'number'; inp.className = 'prop-input';
+        inp.value = String(val); inp.min = String(min); inp.max = String(max); inp.step = String(step);
+        inp.addEventListener('input', () => { set(parseFloat(inp.value) || 0); onSegmentChange(k); });
+        r.appendChild(lb); r.appendChild(inp); segBody.appendChild(r);
+      };
+
+      addSegNum('Length cm', seg.length, 0.5, 100, 0.5, v => { seg.length = v; });
+      addSegNum('Rot X °',   seg.rotX,   -180, 180, 1,   v => { seg.rotX = v; });
+      addSegNum('Rot Y °',   seg.rotY,   -180, 180, 1,   v => { seg.rotY = v; });
+      addSegNum('Rot Z °',   seg.rotZ,   -180, 180, 1,   v => { seg.rotZ = v; });
+      addSegNum('Speed ×',   seg.speedMult, 0, SL.SPEED_MULT_MAX, 0.1, v => { seg.speedMult = v; });
+      addSegNum('Obj Rot X°/cm', seg.objRotX, -45, 45, 0.5, v => { seg.objRotX = v; });
+      addSegNum('Obj Rot Y°/cm', seg.objRotY, -45, 45, 0.5, v => { seg.objRotY = v; });
+      addSegNum('Obj Rot Z°/cm', seg.objRotZ, -45, 45, 0.5, v => { seg.objRotZ = v; });
+
+      this.content.appendChild(segBody);
+    }
+
+    // Add blank segment button
+    const addBtn = document.createElement('button');
+    addBtn.className = 'game-btn'; addBtn.textContent = '+ Add segment';
+    addBtn.style.width = '100%'; addBtn.style.margin = '4px 0';
+    addBtn.addEventListener('click', () => onAddSegment([{
+      id: '', length: SL.DEFAULT_SEG_LENGTH, rotX: 0, rotY: 0, rotZ: 0,
+      speedMult: 0, objRotX: 0, objRotY: 0, objRotZ: 0,
+    }]));
+    this.content.appendChild(addBtn);
+
+    this.toggleRow('Surface Follow', sl.surfaceFollow, v => { sl.surfaceFollow = v; onGeomChange(); });
+
+    this.section('RIBBON');
+    this.numRow('Width cm', sl.width, SL.WIDTH_MIN, SL.WIDTH_MAX, 0.1, v => { sl.width = v; onColorChange(); });
+    this.colorRow('Color', sl.color, v => { sl.color = v; onColorChange(); });
+    this.numRow('Opacity', sl.opacity, 0, 1, 0.05, v => { sl.opacity = v; onColorChange(); });
+    this.toggleRow('Glow', sl.glowColor !== null, v => {
+      sl.glowColor = v ? sl.color : null; onColorChange();
+    });
+
+    this.section('TARGET & ACTIVATION');
+    this.selectRow('Target', [
+      {value:'beyblade',label:'Beyblade'},{value:'water',label:'Water'},
+      {value:'obstacle',label:'Obstacle'},{value:'item',label:'Item'},
+      {value:'any',label:'Any'},{value:'custom',label:'Custom'},
+    ], sl.targetType, v => { sl.targetType = v as SpeedLineData['targetType']; onGeomChange(); });
+    if (sl.targetType === 'custom') {
+      this.textRow('Target Tag', sl.targetTag, v => { sl.targetTag = v; });
+    }
+    this.selectRow('Activation', [
+      {value:'always',label:'Always'},{value:'event',label:'Event'},
+      {value:'periodic',label:'Periodic'},{value:'proximity',label:'Proximity'},
+    ], sl.activationMode, v => { sl.activationMode = v as SpeedLineData['activationMode']; onGeomChange(); });
+    if (sl.activationMode === 'event') {
+      this.textRow('Trigger Event', sl.triggerEvent, v => { sl.triggerEvent = v; });
+      this.textRow('End Event', sl.endEvent, v => { sl.endEvent = v; });
+      this.numRow('Active ms', sl.activeDuration, 0, 60000, 100, v => { sl.activeDuration = v; });
+      this.numRow('Fade In ms', sl.fadeIn, 0, 5000, 50, v => { sl.fadeIn = v; });
+      this.numRow('Fade Out ms', sl.fadeOut, 0, 5000, 50, v => { sl.fadeOut = v; });
+    } else if (sl.activationMode === 'periodic') {
+      this.numRow('Period ms', sl.period, 100, 10000, 100, v => { sl.period = v; });
+      this.numRow('Duty 0–1',  sl.activeDuty, 0, 1, 0.05, v => { sl.activeDuty = v; });
+      this.numRow('Fade In ms', sl.fadeIn, 0, 5000, 50, v => { sl.fadeIn = v; });
+      this.numRow('Fade Out ms', sl.fadeOut, 0, 5000, 50, v => { sl.fadeOut = v; });
+    } else if (sl.activationMode === 'proximity') {
+      this.numRow('Radius cm', sl.activationRadius, 1, 100, 1, v => { sl.activationRadius = v; onGeomChange(); });
+    }
+
+    this.section('OSCILLATION');
+    this.toggleRow('Oscillate', sl.oscillate, v => { sl.oscillate = v; });
+    if (sl.oscillate) {
+      this.selectRow('Axis', [
+        {value:'path',label:'Path'},{value:'lateral',label:'Lateral'},
+        {value:'normal',label:'Normal'},{value:'all',label:'All'},
+      ], sl.oscAxis, v => { sl.oscAxis = v as SpeedLineData['oscAxis']; });
+      this.numRow('Amplitude cm', sl.oscAmplitude, 0, 20, 0.5, v => { sl.oscAmplitude = v; });
+      this.numRow('Frequency Hz', sl.oscFrequency, 0.1, 10, 0.1, v => { sl.oscFrequency = v; });
+      this.numRow('Phase °', sl.oscPhase, 0, 360, 5, v => { sl.oscPhase = v; });
+    }
+
+    this.section('GAMEPLAY');
+    this.numRow('Speed ×', sl.speedMultiplier, SL.SPEED_MULT_MIN, SL.SPEED_MULT_MAX, 0.1, v => { sl.speedMultiplier = v; });
+    this.selectRow('Entry', [
+      {value:'always',label:'Always'},{value:'moving_only',label:'Moving only'},
+      {value:'fast_only',label:'Fast only'},{value:'slow_only',label:'Slow only'},
+    ], sl.entryCondition, v => { sl.entryCondition = v as SpeedLineData['entryCondition']; });
+    this.selectRow('Direction', [
+      {value:'forward',label:'Forward'},{value:'reverse',label:'Reverse'},
+      {value:'bidirectional',label:'Both'},
+    ], sl.direction, v => { sl.direction = v as SpeedLineData['direction']; });
+    this.selectRow('Exit', [
+      {value:'normal',label:'Normal'},{value:'launch',label:'Launch'},
+      {value:'loop',label:'Loop (repeat)'},{value:'special_move',label:'Special Move'},
+    ], sl.exitBehavior, v => { sl.exitBehavior = v as SpeedLineData['exitBehavior']; onGeomChange(); });
+    if (sl.exitBehavior === 'launch') {
+      this.numRow('Launch ×', sl.launchForce, SL.LAUNCH_FORCE_MIN, SL.LAUNCH_FORCE_MAX, 0.1, v => { sl.launchForce = v; });
+    }
+    if (sl.exitBehavior === 'special_move') {
+      this.textRow('Move Name', sl.specialMoveName, v => { sl.specialMoveName = v; });
+    }
+    this.toggleRow('Mid-Air Entry', sl.allowMidAirEntry, v => { sl.allowMidAirEntry = v; });
+    this.toggleRow('Override Physics', sl.overridePhysics, v => { sl.overridePhysics = v; });
+    this.numRow('Swap Priority', sl.swapPriority, SL.SWAP_PRIORITY_MIN, SL.SWAP_PRIORITY_MAX, 1, v => { sl.swapPriority = Math.round(v); });
+
+    this.section('INFO');
+    this.readRow('Total Length', `${sl.totalLength.toFixed(1)} cm`);
+    this.readRow('Segments', String(sl.segments.length));
+    this.readRow('Overlaps', String(sl.overlapMarkers.length));
   }
 
 }

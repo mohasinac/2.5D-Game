@@ -22,6 +22,38 @@ export const ARENA_SAVE_VERSION = 6;
 /* ── Arena physical material default ────────────────────────────────────── */
 export const DEFAULT_ARENA_MATERIAL = 'abs' as const;
 
+/* ── Physics material presets ───────────────────────────────────────────── */
+import type { ArenaMaterial, ArenaMaterialProps } from '../types/arenaTypes';
+
+export const ARENA_MATERIAL_PRESETS: Record<ArenaMaterial, ArenaMaterialProps> = {
+  // Walls: rubber|stone|abs|metal  Bridges: stone|abs|metal
+  rubber: { restitution: 0.15, spinLossFactor: 0.05, damageFactor: 0.20 },
+  stone:  { restitution: 0.40, spinLossFactor: 0.12, damageFactor: 0.55 },
+  abs:    { restitution: 0.65, spinLossFactor: 0.15, damageFactor: 0.70 },
+  metal:  { restitution: 0.90, spinLossFactor: 0.20, damageFactor: 1.00 },
+} as const;
+
+/* ── Wall constants ──────────────────────────────────────────────────────── */
+export const MIN_WALL_HEIGHT       = 10;  // cm
+export const DEFAULT_WALL_HEIGHT   = 10;  // cm
+export const MIN_WALL_GAP          = 10;  // cm — minimum gap and panel width
+export const DEFAULT_WALL_PANEL_W  = 20;  // cm
+export const DEFAULT_WALL_GAP_W    = 10;  // cm
+export const WALL_ARC_STEP_DEG     = 5;   // degrees — rim sampling resolution for walls
+
+/* ── Bridge / segment constants ─────────────────────────────────────────── */
+export const DEFAULT_BRIDGE_WIDTH      = 10;  // cm
+export const DEFAULT_BRIDGE_DEPTH      = 5;   // cm (u_channel default depth)
+export const DEFAULT_SEGMENT_LENGTH    = 30;  // cm
+export const DEFAULT_CURVE_RADIUS      = 20;  // cm
+export const DEFAULT_CURVE_ANGLE       = 90;  // degrees
+export const DEFAULT_LOOP_RADIUS       = 15;  // cm
+export const DEFAULT_HAIRPIN_RADIUS    = 10;  // cm
+export const DEFAULT_CORKSCREW_LENGTH  = 30;  // cm
+export const BRIDGE_SEGMENT_SAMPLES    = 64;  // path sample points per segment
+export const BRIDGE_LOOP_SEGMENTS      = 48;  // facets around loop circle
+export const BRIDGE_CROSS_COLS         = 8;   // tessellation columns across bridge width
+
 /* ── Step / spiral wall profile defaults ────────────────────────────────── */
 export const DEFAULT_STEP_COUNT         = 3;
 export const DEFAULT_STEP_START_DEPTH   = 0;
@@ -47,6 +79,50 @@ export const TESS = {
   SCOOP_WALLS:    6,
   MOAT_HALF:      20,   // rings per moat section (outer or inner)
   FILL_DISC:      64,
+} as const;
+
+/* ── Speed line constants ────────────────────────────────────────────────── */
+export const SL = {
+  SURFACE_LIFT:       0.05,
+  SUB_STEPS_PER_SEG:  8,
+  ARROW_SPACING:      12,
+  ARROW_HALF_W:       0.8,
+  ARROW_LEN:          2.0,
+  MARKER_SIZE:        1.5,
+  OVERLAP_THRESHOLD:  1.5,
+  OVERLAP_SPHERE_R:   1.2,
+  OVERLAP_SAMPLE_N:   100,
+  WIDTH_MIN: 0.5,   WIDTH_MAX: 5.0,
+  SPEED_MULT_MIN: 0.5, SPEED_MULT_MAX: 5.0,
+  LAUNCH_FORCE_MIN: 0.0, LAUNCH_FORCE_MAX: 5.0,
+  SWAP_PRIORITY_MIN: 0, SWAP_PRIORITY_MAX: 10,
+
+  HANDLE_RADIUS:       1.2,
+  HANDLE_COLOR:        0x00aaff,
+  HANDLE_HOVER_COLOR:  0x00ffff,
+  HANDLE_ACTIVE_COLOR: 0xffffff,
+
+  INACTIVE_OPACITY_MULT: 0.4,
+
+  DEFAULT_SEG_LENGTH:      8.0,
+  DEFAULT_WIDTH:           1.5,
+  DEFAULT_COLOR:           0xffdd00,
+  DEFAULT_OPACITY:         0.85,
+  DEFAULT_SPEED_MULT:      1.5,
+  DEFAULT_DIRECTION:       'forward'   as const,
+  DEFAULT_EXIT:            'normal'    as const,
+  DEFAULT_LAUNCH_FORCE:    1.0,
+  DEFAULT_SWAP_PRIORITY:   5,
+  DEFAULT_TARGET:          'beyblade'  as const,
+  DEFAULT_ACTIVATION:      'always'    as const,
+  DEFAULT_PERIOD_MS:       2000,
+  DEFAULT_DUTY:            0.5,
+  DEFAULT_FADE_MS:         300,
+  DEFAULT_PROX_RADIUS:     10,
+  DEFAULT_OSC_AMP:         2.0,
+  DEFAULT_OSC_FREQ:        0.5,
+  DEFAULT_OSC_PHASE:       0,
+  DEFAULT_OSC_AXIS:        'lateral'   as const,
 } as const;
 
 /* ── Octagon base — frozen default, never mutate ─────────────────────────

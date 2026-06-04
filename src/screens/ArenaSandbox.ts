@@ -4,7 +4,7 @@ import { gameConfirm } from '../utils/dialog';
 import {
   APOTHEM, DEG2RAD,
   DEFAULT_BASE_HEIGHT, DEFAULT_BASE_SIDES, DEFAULT_BASE_COLOR, DEFAULT_BASE_TILE,
-  ARENA_ELEVATED_THRESHOLD, ARENA_SAVE_VERSION,
+  ARENA_ELEVATED_THRESHOLD, SL,
   DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER,
   DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS,
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
@@ -13,7 +13,8 @@ import {
 } from '../config/arenaConstants';
 import {
   OpeningShape, WallProfile, SurfaceType, ChildHole, IslandHole,
-  ArenaData, PitData, ZoneData,
+  ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment, SpeedLineHandleType,
+  WallData, BridgeData, BridgeSegmentData, BridgeSegmentType,
 } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from '../geometry/materialBuilders';
 import {
@@ -27,10 +28,22 @@ import {
   buildPitObjects, applyPit,
   buildZoneObjects, applyZone,
   defaultArena, defaultPit, defaultZone,
+  defaultSegment as defaultSlSegment, defaultSpeedLine, buildSpeedLineObjects, applySpeedLine,
 } from '../geometry/arenaObjectBuilders';
+import { samplePathForOverlap, buildOverlapSphere } from '../geometry/speedLineBuilders';
 import { SceneTree } from '../utils/SceneTree';
 import { PropertiesPanel } from '../utils/PropertiesPanel';
-import { ArenaSave, PitSave, ZoneSave, ArenaConfig, pitToSave, zoneToSave, arenaToSave } from '../utils/arenaPersistence';
+import {
+  PitSave, ZoneSave, WallSave, BridgeSave, SpeedLineSave, ArenaConfig,
+  pitToSave, zoneToSave, arenaToSave, wallToSave, bridgeToSave, speedLineToSave,
+} from '../utils/arenaPersistence';
+import { buildWallGeometry, buildWallEdgeGeometry, defaultWallData } from '../geometry/wallBuilders';
+import {
+  SegmentPose, DEFAULT_START_POSE,
+  resolveStartPose, computeSegmentEndPose,
+  buildSegmentDeckGeometry, buildSegmentEdgeGeometry,
+  defaultBridgeSection, defaultSegment,
+} from '../geometry/bridgeSegmentBuilders';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
@@ -56,6 +69,27 @@ export class ArenaSandbox extends Sandbox {
   private pitSeq        = 0;
   private zones         = new Map<string, ZoneData>();
   private zoneSeq       = 0;
+  private walls         = new Map<string, WallData>();
+  private wallSeq       = 0;
+  private bridges       = new Map<string, BridgeData>();
+  private bridgeSeq     = 0;
+  private segments      = new Map<string, BridgeSegmentData>();
+  private segmentSeq    = 0;
+  private bridgesByArena = new Map<string, Set<string>>();
+  private speedLines    = new Map<string, SpeedLineData>();
+  private speedlineSeq  = 0;
+  private slSegSeq      = 0;
+  private selectedSlId: string | null = null;
+  private slDrag: {
+    slId: string;
+    handleType: SpeedLineHandleType;
+    handleIndex: number;
+    dragPlane: THREE.Plane;
+  } | null = null;
+  private slRaycaster = new THREE.Raycaster();
+  private _onPointerDown: (e: PointerEvent) => void;
+  private _onPointerMove: (e: PointerEvent) => void;
+  private _onPointerUp:   (e: PointerEvent) => void;
   private props:        PropertiesPanel;
   private selectedId:   string | null = null;
 
@@ -95,13 +129,31 @@ export class ArenaSandbox extends Sandbox {
       collapseBtn.title=collapsed?'Expand panel':'Collapse panel';
     });
 
-    this.sceneTree.add('octagon-base', 'Octagon Base', '⬡', null, { onAddChild: ()=>this.addArena() });
+    this.sceneTree.add('octagon-base', 'Octagon Base', '⬡', null, {
+      onAddChild: ()=>this.addArena(),
+      addChildButtons: [
+        {label:'A+',   title:'Add arena',  className:'',        onClick:()=>this.addArena()},
+        {label:'B+',   title:'Add bridge', className:'zone-btn',onClick:()=>this.addBridge()},
+        {label:'W+',   title:'Add base wall', className:'pit-btn',onClick:()=>this.addWall('octagon-base','base')},
+      ],
+    });
 
     const rightPanel = this.addOverlayPanel('sandbox-right-panel');
     this.props = new PropertiesPanel(rightPanel);
     this.props.onClose = ()=>{ this.selectedId=null; this.sceneTree.clearSel(); this.props.showEmpty(); };
 
-    this.sceneTree.onSelect = (ids)=>{ this.selectedId=ids.length===1?ids[0]:null; this.renderProps(); };
+    this.sceneTree.onSelect = (ids)=>{
+      // Hide handles of previously selected speed line
+      if(this.selectedSlId){ const prev=this.speedLines.get(this.selectedSlId); if(prev) this._hideSlHandles(prev); }
+      this.selectedSlId = null;
+      this.selectedId = ids.length===1 ? ids[0] : null;
+      // Show handles of newly selected speed line
+      if(this.selectedId && this.speedLines.has(this.selectedId)){
+        this.selectedSlId = this.selectedId;
+        this._showSlHandles(this.speedLines.get(this.selectedId)!);
+      }
+      this.renderProps();
+    };
 
     this.sceneTree.onVisibilityToggle = (id, visible)=>{
       (this.sceneObjects.get(id)??[]).forEach(o=>{ o.visible=visible; });
@@ -135,6 +187,10 @@ export class ArenaSandbox extends Sandbox {
           if(parentArena){ this.updateArenaFloor(parentArena); this.updateArenaBowlHoles(parentArena,zone.parentArenaId); }
           continue;
         }
+        if(this.speedLines.has(id)){ this.captureUndo(); this._removeSpeedLine(id); continue; }
+        if(this.walls.has(id)){ this.removeWall(id); continue; }
+        if(this.segments.has(id)){ this.removeSegment(id); continue; }
+        if(this.bridges.has(id)){ this.removeBridge(id); continue; }
         const objs=this.sceneObjects.get(id);
         if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
       }
@@ -156,16 +212,36 @@ export class ArenaSandbox extends Sandbox {
     });
 
     this.updateUndoRedoUI();
+
+    // Bind speed line pointer handlers (wired to canvas in mountRenderer override)
+    this._onPointerDown = (e: PointerEvent) => this._slPointerDown(e);
+    this._onPointerMove = (e: PointerEvent) => this._slPointerMove(e);
+    this._onPointerUp   = (e: PointerEvent) => this._slPointerUp(e);
   }
 
   /* ── Undo / Redo ──────────────────────────────────────────────────────── */
 
   private serializeConfig(): string {
     const config: ArenaConfig = {
-      version: ARENA_SAVE_VERSION,
       baseConfig: { ...this.baseConfig },
       arenaSeq: this.arenaSeq, pitSeq: this.pitSeq, zoneSeq: this.zoneSeq,
-      arenas: [...this.arenas.entries()].map(([id,a]) => arenaToSave(id,a,this.pits,this.zones)),
+      arenas: [...this.arenas.entries()].map(([id,a]) => {
+        const s = arenaToSave(id,a,this.pits,this.zones);
+        s.walls = [...this.walls.values()]
+          .filter(w => w.parentType==='arena' && w.parentId===id)
+          .map(wallToSave);
+        s.speedLines = [...this.speedLines.values()]
+          .filter(sl => sl.parentArenaId===id && sl.parentZoneId===null)
+          .map(speedLineToSave);
+        return s;
+      }),
+      baseWalls: [...this.walls.values()].filter(w=>w.parentType==='base').map(wallToSave),
+      bridges: [...this.bridges.values()].map(b=>bridgeToSave(b,this.segments,this.walls)),
+      wallSeq: this.wallSeq, bridgeSeq: this.bridgeSeq, segmentSeq: this.segmentSeq,
+      speedLineSeq: this.speedlineSeq,
+      speedLines: [...this.speedLines.values()]
+        .filter(sl => sl.parentZoneId !== null)
+        .map(speedLineToSave),
     };
     return JSON.stringify(config);
   }
@@ -219,8 +295,11 @@ export class ArenaSandbox extends Sandbox {
     this.redoBtn.style.opacity = this.redoStack.length === 0 ? '0.4' : '';
   }
 
-  /** Clear all arenas/pits/zones from scene without touching base. */
+  /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
+    for(const sl of this.speedLines.values()) this._disposeSpeedLine(sl);
+    this.speedLines.clear();
+    this.speedlineSeq = 0; this.slSegSeq = 0;
     for(const [id,] of this.arenas.entries()) this.sceneTree.remove(id);
     for(const pit of this.pits.values()){
       this.disposePit(pit);
@@ -235,9 +314,14 @@ export class ArenaSandbox extends Sandbox {
     for(const arena of this.arenas.values()){
       this.disposeArena(arena); this.removeFromScene(arena.mesh, arena.edges);
     }
+    for(const wall of this.walls.values()) this._disposeWall(wall);
+    for(const bridge of this.bridges.values()) this._disposeBridge(bridge);
     this.pits.clear(); this.zones.clear(); this.arenas.clear();
+    this.walls.clear(); this.bridges.clear(); this.segments.clear();
+    this.bridgesByArena.clear();
     this.sceneObjects.clear();
     this.arenaSeq = 0; this.pitSeq = 0; this.zoneSeq = 0;
+    this.wallSeq = 0; this.bridgeSeq = 0; this.segmentSeq = 0;
   }
 
   /** Rebuild the scene from an ArenaConfig (used by undo/redo). */
@@ -246,6 +330,8 @@ export class ArenaSandbox extends Sandbox {
     this.baseConfig = { ...this.baseConfig, ...cfg.baseConfig };
     this.rebuildBase();
     this.arenaSeq = cfg.arenaSeq; this.pitSeq = cfg.pitSeq; this.zoneSeq = cfg.zoneSeq;
+    this.wallSeq = cfg.wallSeq ?? 0; this.bridgeSeq = cfg.bridgeSeq ?? 0; this.segmentSeq = cfg.segmentSeq ?? 0;
+    this.speedlineSeq = cfg.speedLineSeq ?? 0;
     this._loadArenasFromConfig(cfg);
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
@@ -275,6 +361,471 @@ export class ArenaSandbox extends Sandbox {
     zone.mesh.geometry.dispose();(zone.mesh.material as THREE.Material).dispose();
     zone.edges.geometry.dispose();(zone.edges.material as THREE.Material).dispose();
     if(zone.seamMesh){ zone.seamMesh.geometry.dispose();(zone.seamMesh.material as THREE.Material).dispose(); }
+  }
+
+  /* ── Speed line helpers ───────────────────────────────────────────────── */
+
+  private _disposeSpeedLine(sl: SpeedLineData): void {
+    if(sl.mesh){ this.removeFromScene(sl.mesh); sl.mesh.geometry.dispose();(sl.mesh.material as THREE.Material).dispose(); }
+    if(sl.edges){ this.removeFromScene(sl.edges); sl.edges.geometry.dispose();(sl.edges.material as THREE.Material).dispose(); }
+    for(const m of sl.markerMeshes){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
+    for(const m of sl.handleMeshes){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
+    for(const m of sl.overlapMarkers){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
+    sl.markerMeshes=[]; sl.handleMeshes=[]; sl.overlapMarkers=[];
+    this.sceneObjects.delete(sl.id);
+    this.sceneTree.remove(sl.id);
+  }
+
+  private _addSpeedLine(arenaId: string, parentZoneId: string | null = null): void {
+    this.captureUndo();
+    const id   = `sl-${++this.speedlineSeq}`;
+    const name = `Speed Line ${this.speedlineSeq}`;
+    const arena = this.arenas.get(arenaId); if(!arena) return;
+    const sl = defaultSpeedLine(name, arenaId, id, parentZoneId);
+    sl.segments[0].id = `${id}-seg-${++this.slSegSeq}`;
+    this.speedLines.set(id, sl);
+    arena.speedLineIds.push(id);
+
+    const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
+    sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
+    this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
+    this.sceneObjects.set(id, [mesh, edges]);
+
+    const treeParentId = parentZoneId ?? arenaId;
+    this.sceneTree.add(id, name, '↝', treeParentId);
+    this._checkSpeedLineOverlaps(arenaId);
+    this.saveArena();
+  }
+
+  private _removeSpeedLine(id: string): void {
+    const sl = this.speedLines.get(id); if(!sl) return;
+    this._disposeSpeedLine(sl);
+    const arena = this.arenas.get(sl.parentArenaId);
+    if(arena) arena.speedLineIds = arena.speedLineIds.filter(x=>x!==id);
+    if(sl.parentZoneId){ const z=this.zones.get(sl.parentZoneId); if(z) z.speedLineIds=z.speedLineIds.filter(x=>x!==id); }
+    this.speedLines.delete(id);
+    if(this.selectedSlId===id){ this.selectedSlId=null; }
+    this._checkSpeedLineOverlaps(sl.parentArenaId);
+    this.saveArena();
+  }
+
+  private _updateSpeedLine(sl: SpeedLineData): void {
+    const arena = this.arenas.get(sl.parentArenaId); if(!arena) return;
+    applySpeedLine(sl, arena, this.zones, this.getScene(), (...o)=>this.addToScene(...o), (...o)=>this.removeFromScene(...o));
+    this.sceneObjects.set(sl.id, [sl.mesh, sl.edges]);
+  }
+
+  private _addSegmentsToLine(slId: string, segs: SpeedLineSegment[]): void {
+    const sl = this.speedLines.get(slId); if(!sl) return;
+    for(const seg of segs){ seg.id = `${slId}-seg-${++this.slSegSeq}`; }
+    sl.segments.push(...segs);
+    this._updateSpeedLine(sl);
+    this.saveArena();
+  }
+
+  private _removeSegmentFromLine(slId: string, k: number): void {
+    const sl = this.speedLines.get(slId); if(!sl) return;
+    if(sl.segments.length<=1) return;
+    sl.segments.splice(k, 1);
+    this._updateSpeedLine(sl);
+    this.saveArena();
+  }
+
+  private _showSlHandles(sl: SpeedLineData): void { sl.handleMeshes.forEach(h=>{ h.visible=true; }); }
+  private _hideSlHandles(sl: SpeedLineData): void { sl.handleMeshes.forEach(h=>{ h.visible=false; }); }
+
+  private _checkSpeedLineOverlaps(arenaId: string): void {
+    const arena = this.arenas.get(arenaId); if(!arena) return;
+    const arenaLines = [...this.speedLines.values()].filter(sl=>sl.parentArenaId===arenaId);
+
+    // Clear old overlap markers
+    for(const sl of arenaLines){
+      for(const m of sl.overlapMarkers){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
+      sl.overlapMarkers=[];
+    }
+    if(arenaLines.length < 2) return;
+
+    for(let i=0; i<arenaLines.length; i++){
+      for(let j=i+1; j<arenaLines.length; j++){
+        const slA=arenaLines[i]; const slB=arenaLines[j];
+        const surfFnA = makeSurfFn({ parentZoneId: slA.parentZoneId }, arena, this.zones);
+        const surfFnB = makeSurfFn({ parentZoneId: slB.parentZoneId }, arena, this.zones);
+        const ptsA = samplePathForOverlap(slA, surfFnA);
+        const ptsB = samplePathForOverlap(slB, surfFnB);
+        outer: for(const ptA of ptsA){
+          for(const ptB of ptsB){
+            if(ptA.distanceTo(ptB) < SL.OVERLAP_THRESHOLD){
+              const mid = ptA.clone().add(ptB).multiplyScalar(0.5);
+              const sphere = buildOverlapSphere(mid);
+              slA.overlapMarkers.push(sphere);
+              this.addToScene(sphere);
+              break outer;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private _restoreSpeedLineSave(sls: SpeedLineSave[], arenaId: string): void {
+    const arena = this.arenas.get(arenaId); if(!arena) return;
+    for(const sls_ of sls){
+      const sl: SpeedLineData = {
+        ...sls_,
+        totalLength: 0,
+        mesh: null as unknown as THREE.Mesh,
+        edges: null as unknown as THREE.LineSegments,
+        markerMeshes: [], handleMeshes: [], overlapMarkers: [],
+      };
+      this.speedLines.set(sl.id, sl);
+      arena.speedLineIds.push(sl.id);
+      if(sl.parentZoneId){ const z=this.zones.get(sl.parentZoneId); if(z && !z.speedLineIds.includes(sl.id)) z.speedLineIds.push(sl.id); }
+
+      const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
+      sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
+      this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
+      this.sceneObjects.set(sl.id, [mesh, edges]);
+
+      const treeParentId = sl.parentZoneId ?? arenaId;
+      this.sceneTree.add(sl.id, sl.name, '↝', treeParentId);
+    }
+  }
+
+  /* ── Speed line drag interaction ─────────────────────────────────────── */
+
+  private _slPointerDown(e: PointerEvent): void {
+    const sl = this.selectedSlId ? this.speedLines.get(this.selectedSlId) : null;
+    if(!sl) return;
+    const canvas = this.getRendererCanvas(); if(!canvas) return;
+    const cam = this.getCamera(); if(!cam) return;
+    const rect = canvas.getBoundingClientRect();
+    const nx = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+    const ny = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+    this.slRaycaster.setFromCamera(new THREE.Vector2(nx, ny), cam);
+    const hits = this.slRaycaster.intersectObjects(sl.handleMeshes, false);
+    if(!hits.length) return;
+    const hit = hits[0].object as THREE.Mesh;
+    const { handleType, handleIndex } = hit.userData as { handleType: SpeedLineHandleType; handleIndex: number };
+    const arena = this.arenas.get(sl.parentArenaId); if(!arena) return;
+    const planeY = -(this.baseConfig.height + arena.posY);
+    const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), planeY);
+    this.slDrag = { slId: sl.id, handleType, handleIndex, dragPlane };
+    const ctrl = this.getControls(); if(ctrl) ctrl.enabled = false;
+    canvas.setPointerCapture(e.pointerId);
+  }
+
+  private _slPointerMove(e: PointerEvent): void {
+    const canvas = this.getRendererCanvas(); if(!canvas) return;
+    const cam = this.getCamera(); if(!cam) return;
+    const rect = canvas.getBoundingClientRect();
+    const nx = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+    const ny = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+    this.slRaycaster.setFromCamera(new THREE.Vector2(nx, ny), cam);
+
+    if(!this.slDrag) {
+      // Hover highlight
+      const sl = this.selectedSlId ? this.speedLines.get(this.selectedSlId) : null;
+      if(sl) {
+        const hits = this.slRaycaster.intersectObjects(sl.handleMeshes, false);
+        for(const h of sl.handleMeshes) (h.material as THREE.MeshBasicMaterial).color.setHex(SL.HANDLE_COLOR);
+        if(hits.length) ((hits[0].object as THREE.Mesh).material as THREE.MeshBasicMaterial).color.setHex(SL.HANDLE_HOVER_COLOR);
+      }
+      return;
+    }
+
+    const { slId, handleType, handleIndex, dragPlane } = this.slDrag;
+    const sl = this.speedLines.get(slId); if(!sl) return;
+    const arena = this.arenas.get(sl.parentArenaId); if(!arena) return;
+
+    const worldPt = new THREE.Vector3();
+    if(!this.slRaycaster.ray.intersectPlane(dragPlane, worldPt)) return;
+    const { alx, alz } = worldToArenaLocal(worldPt.x, worldPt.z, arena);
+
+    if(handleType === 'start') {
+      sl.startR     = Math.hypot(alx, alz);
+      sl.startAngle = Math.atan2(alz, alx) * (180 / Math.PI);
+    } else {
+      const k = handleIndex - 1; // joint_k means seg[k-1] end / seg[k] start
+      if(k >= 0 && k < sl.segments.length) {
+        // Simple: update rotY of segment k to aim toward drag point
+        sl.segments[k].rotY = (Math.atan2(alx, alz) * (180 / Math.PI)) % 180;
+      }
+    }
+    this._updateSpeedLine(sl);
+    if(this.selectedId === slId) this.renderProps();
+  }
+
+  private _slPointerUp(e: PointerEvent): void {
+    if(!this.slDrag) return;
+    const canvas = this.getRendererCanvas(); if(canvas) canvas.releasePointerCapture(e.pointerId);
+    const ctrl = this.getControls(); if(ctrl) ctrl.enabled = true;
+    this.slDrag = null;
+    this.captureUndo();
+    this.saveArena();
+    this._flushUndoPending();
+  }
+
+  private _disposeWall(wall: WallData): void {
+    if(wall.mesh){ wall.mesh.geometry.dispose();(wall.mesh.material as THREE.Material).dispose(); this.removeFromScene(wall.mesh); wall.mesh=null; }
+    if(wall.edges){ wall.edges.geometry.dispose();(wall.edges.material as THREE.Material).dispose(); this.removeFromScene(wall.edges); wall.edges=null; }
+    this.sceneObjects.delete(wall.id);
+    this.sceneTree.remove(wall.id);
+  }
+
+  private _disposeBridge(bridge: BridgeData): void {
+    for(const sid of bridge.segmentIds){
+      const seg=this.segments.get(sid);
+      if(seg){
+        if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose(); this.removeFromScene(seg.mesh); seg.mesh=null; }
+        if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose(); this.removeFromScene(seg.edges); seg.edges=null; }
+        this.sceneObjects.delete(sid);
+        this.sceneTree.remove(sid);
+        this.segments.delete(sid);
+      }
+    }
+    for(const wid of bridge.wallIds){
+      const w=this.walls.get(wid);
+      if(w){ this._disposeWall(w); this.walls.delete(wid); }
+    }
+    if(bridge.group) this.removeFromScene(bridge.group);
+    this.sceneObjects.delete(bridge.id);
+    this.sceneTree.remove(bridge.id);
+  }
+
+  /* ── Wall helpers ─────────────────────────────────────────────────────── */
+
+  private _getArenaRimPts(arenaId: string): THREE.Vector2[] {
+    const arena = this.arenas.get(arenaId);
+    if(!arena) return [];
+    return shapePoints(arena);
+  }
+
+  private _arenaRimY(arenaId: string): number {
+    const arena = this.arenas.get(arenaId);
+    if(!arena) return this.baseConfig.height;
+    return this.baseConfig.height + arena.posY;
+  }
+
+  /** Rebuild mesh+edges for a wall and add/replace in scene. */
+  private applyWall(wall: WallData): void {
+    let rimPts: THREE.Vector2[];
+    let rimY: number;
+    let cx = 0; let cz = 0;
+
+    if(wall.parentType==='arena'){
+      const arena=this.arenas.get(wall.parentId);
+      if(!arena) return;
+      rimPts = shapePoints(arena);
+      rimY   = this.baseConfig.height + arena.posY;
+      cx     = arena.posX; cz = arena.posZ;
+    } else if(wall.parentType==='base'){
+      rimPts = [];  // base walls use basePosX/Z/rotY directly — buildWallGeometry handles it
+      rimY   = this.baseConfig.height;
+    } else {
+      // bridge walls — not wired through applyWall (handled by applyBridgeFromSegment)
+      return;
+    }
+
+    const scene = this.getScene();
+    if(!scene) return;
+
+    const geo  = buildWallGeometry(wall, rimPts, rimY, cx, cz);
+    const eGeo = buildWallEdgeGeometry(wall, rimPts, rimY, cx, cz);
+
+    if(wall.mesh){
+      wall.mesh.geometry.dispose();
+      wall.mesh.geometry = geo;
+    } else {
+      const mat = buildSurfaceMaterial({ color:wall.color, surface:wall.surface, customTileData:null, tileScale:20 });
+      wall.mesh = new THREE.Mesh(geo, mat);
+      scene.add(wall.mesh);
+    }
+    if(wall.edges){
+      wall.edges.geometry.dispose();
+      wall.edges.geometry = eGeo;
+    } else {
+      const edgeCol = new THREE.Color(wall.color).lerp(new THREE.Color(0xffffff), 0.5);
+      wall.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
+      scene.add(wall.edges);
+    }
+    this.sceneObjects.set(wall.id, [wall.mesh, wall.edges]);
+  }
+
+  private addWall(parentId: string, parentType: WallData['parentType']): void {
+    this.captureUndo();
+    const id   = `wall-${++this.wallSeq}`;
+    const name = `Wall ${this.wallSeq}`;
+    const wall = defaultWallData(id, name, parentId, parentType);
+    this.walls.set(id, wall);
+    this.applyWall(wall);
+
+    const parentTreeId = parentType==='base' ? 'octagon-base' : parentId;
+    this.sceneTree.add(id, name, '🧱', parentTreeId);
+    this.saveArena();
+  }
+
+  private removeWall(id: string): void {
+    const wall = this.walls.get(id); if(!wall) return;
+    this._disposeWall(wall);
+    this.walls.delete(id);
+    if(wall.parentType==='arena'){
+      const arena=this.arenas.get(wall.parentId);
+      if(arena) arena.wallIds=arena.wallIds.filter(x=>x!==id);
+    }
+    if(wall.parentType==='bridge'){
+      const bridge=[...this.bridges.values()].find(b=>b.wallIds.includes(id));
+      if(bridge) bridge.wallIds=bridge.wallIds.filter(x=>x!==id);
+    }
+    this.saveArena();
+  }
+
+  /** Rebuild all walls attached to an arena, then rebuild dependent bridges. */
+  private rebuildDependentsOf(arenaId: string): void {
+    for(const wall of this.walls.values()){
+      if(wall.parentType==='arena' && wall.parentId===arenaId) this.applyWall(wall);
+    }
+    const depBridges=this.bridgesByArena.get(arenaId);
+    if(depBridges){
+      for(const bid of depBridges){
+        const bridge=this.bridges.get(bid);
+        if(bridge && bridge.segmentIds.length>0) this.applyBridgeFromSegment(bridge.segmentIds[0]);
+      }
+    }
+  }
+
+  /* ── Bridge helpers ───────────────────────────────────────────────────── */
+
+  private _segmentStartPose(seg: BridgeSegmentData): SegmentPose {
+    const bridge = this.bridges.get(seg.bridgeId);
+    if(!bridge) return { ...DEFAULT_START_POSE, pos: DEFAULT_START_POSE.pos.clone(), dir: DEFAULT_START_POSE.dir.clone(), up: DEFAULT_START_POSE.up.clone() };
+    let pose: SegmentPose = bridge.startRef
+      ? resolveStartPose(bridge.startRef, this.arenas, this.walls, this.baseConfig.height)
+      : { pos: DEFAULT_START_POSE.pos.clone(), dir: DEFAULT_START_POSE.dir.clone(), up: DEFAULT_START_POSE.up.clone() };
+    for(const sid of bridge.segmentIds){
+      if(sid===seg.id) break;
+      const prev=this.segments.get(sid);
+      if(prev) pose=computeSegmentEndPose(prev, pose);
+    }
+    return pose;
+  }
+
+  private applySegment(seg: BridgeSegmentData): void {
+    const bridge=this.bridges.get(seg.bridgeId); if(!bridge) return;
+    const scene=this.getScene(); if(!scene) return;
+    const startPose=this._segmentStartPose(seg);
+
+    const color  = seg.color   ?? bridge.color;
+    const surface: SurfaceType = (seg.surface ?? bridge.surface) as SurfaceType;
+
+    const geo  = buildSegmentDeckGeometry(seg, startPose, bridge.section);
+    const eGeo = buildSegmentEdgeGeometry(seg, startPose, bridge.section);
+
+    if(seg.mesh){
+      seg.mesh.geometry.dispose();
+      (seg.mesh.material as THREE.Material).dispose();
+      seg.mesh.geometry = geo;
+      (seg.mesh.material as THREE.Material) = buildSurfaceMaterial({ color, surface, customTileData:null, tileScale:20 });
+    } else {
+      seg.mesh = new THREE.Mesh(geo, buildSurfaceMaterial({ color, surface, customTileData:null, tileScale:20 }));
+      bridge.group.add(seg.mesh);
+      scene.add(bridge.group);
+    }
+    if(seg.edges){
+      seg.edges.geometry.dispose();
+      seg.edges.geometry = eGeo;
+    } else {
+      const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
+      seg.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
+      bridge.group.add(seg.edges);
+    }
+    this.sceneObjects.set(seg.id, [seg.mesh, seg.edges]);
+  }
+
+  /** Reapply segId and every subsequent segment in the same bridge. */
+  private applyBridgeFromSegment(segId: string): void {
+    const seg=this.segments.get(segId); if(!seg) return;
+    const bridge=this.bridges.get(seg.bridgeId); if(!bridge) return;
+    const startIdx=bridge.segmentIds.indexOf(segId);
+    if(startIdx<0) return;
+    for(let i=startIdx; i<bridge.segmentIds.length; i++){
+      const s=this.segments.get(bridge.segmentIds[i]);
+      if(s) this.applySegment(s);
+    }
+  }
+
+  private addBridge(): void {
+    this.captureUndo();
+    const bid  = `bridge-${++this.bridgeSeq}`;
+    const name = `Bridge ${this.bridgeSeq}`;
+    const group = new THREE.Group();
+    const bridge: BridgeData = {
+      id: bid, name,
+      startRef: null,
+      segmentIds: [],
+      section: defaultBridgeSection(),
+      color: 0xaaaacc,
+      surface: 'metal' as SurfaceType,
+      wallIds: [],
+      group,
+    };
+    this.bridges.set(bid, bridge);
+    const scene=this.getScene(); if(scene) scene.add(group);
+    this.sceneTree.add(bid, name, '🌉', 'octagon-base', {
+      addChildButtons:[
+        {label:'Seg+',title:'Add segment',className:'zone-btn',onClick:()=>this.addSegment(bid,'straight')},
+        {label:'W+',  title:'Add wall',  className:'pit-btn', onClick:()=>this.addWall(bid,'bridge')},
+      ],
+    });
+    // Add a default straight segment
+    this.addSegment(bid, 'straight');
+    this.saveArena();
+  }
+
+  private removeBridge(id: string): void {
+    const bridge=this.bridges.get(id); if(!bridge) return;
+    this._disposeBridge(bridge);
+    this.bridges.delete(id);
+    // Remove from dependency index
+    if(bridge.startRef?.type==='arena'){
+      const set=this.bridgesByArena.get(bridge.startRef.id);
+      if(set){ set.delete(id); if(!set.size) this.bridgesByArena.delete(bridge.startRef.id); }
+    }
+    this.saveArena();
+  }
+
+  private addSegment(bridgeId: string, type: BridgeSegmentType): void {
+    const bridge=this.bridges.get(bridgeId); if(!bridge) return;
+    this.captureUndo();
+    const sid  = `seg-${++this.segmentSeq}`;
+    const name = `Seg ${this.segmentSeq}`;
+    const seg  = defaultSegment(sid, name, bridgeId, bridge.segmentIds.length, type);
+    this.segments.set(sid, seg);
+    bridge.segmentIds.push(sid);
+    this.applySegment(seg);
+
+    const icon = segmentIcon(type);
+    this.sceneTree.add(sid, name, icon, bridgeId);
+    this.saveArena();
+  }
+
+  private removeSegment(id: string): void {
+    const seg=this.segments.get(id); if(!seg) return;
+    const bridge=this.bridges.get(seg.bridgeId); if(!bridge) return;
+    const idx=bridge.segmentIds.indexOf(id);
+    if(idx<0) return;
+    this.captureUndo();
+    if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose();this.removeFromScene(seg.mesh);seg.mesh=null; }
+    if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose();this.removeFromScene(seg.edges);seg.edges=null; }
+    this.sceneObjects.delete(id);
+    this.sceneTree.remove(id);
+    bridge.segmentIds.splice(idx,1);
+    this.segments.delete(id);
+    // Update orderIndex for subsequent segments and rebuild
+    for(let i=idx; i<bridge.segmentIds.length; i++){
+      const s=this.segments.get(bridge.segmentIds[i]);
+      if(s){ s.orderIndex=i; this.applySegment(s); }
+    }
+    this.saveArena();
   }
 
   protected override buildCustom(scene: THREE.Scene): void {
@@ -448,7 +999,7 @@ export class ArenaSandbox extends Sandbox {
     return '';
   }
 
-  /** Re-conform all pits and zones to the current arena surface after any arena geometry change. */
+  /** Re-conform all pits, zones, and speed lines to the current arena surface after any arena geometry change. */
   private updateArenaChildren(arena: ArenaData): void {
     for (const pid of arena.pitIds) {
       const pit = this.pits.get(pid); if (!pit) continue;
@@ -458,6 +1009,10 @@ export class ArenaSandbox extends Sandbox {
       const zone = this.zones.get(zid); if (!zone) continue;
       applyZone(zone, arena, this.getScene(), this.pits, this.zones);
       this._updateZoneChildren(zone, arena);
+    }
+    for (const slId of arena.speedLineIds) {
+      const sl = this.speedLines.get(slId); if (!sl) continue;
+      this._updateSpeedLine(sl);
     }
   }
   private _updateZoneChildren(parentZone: ZoneData, arena: ArenaData): void {
@@ -469,6 +1024,10 @@ export class ArenaSandbox extends Sandbox {
       const zone = this.zones.get(zid); if (!zone) continue;
       applyZone(zone, arena, this.getScene(), this.pits, this.zones);
       this._updateZoneChildren(zone, arena);
+    }
+    for (const slId of parentZone.speedLineIds ?? []) {
+      const sl = this.speedLines.get(slId); if (!sl) continue;
+      this._updateSpeedLine(sl);
     }
   }
 
@@ -500,8 +1059,8 @@ export class ArenaSandbox extends Sandbox {
       this.props.showArena(
         arena,
         this.baseConfig.height,
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.renderProps(); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.rebuildDependentsOf(id); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.rebuildDependentsOf(id); this.renderProps(); this.saveArena(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
@@ -530,6 +1089,54 @@ export class ArenaSandbox extends Sandbox {
         zone, parentArena,
         ()=>{ this.captureUndo(); applyZone(zone,parentArena,this.getScene(),this.pits,this.zones); this.updateArenaBowlHoles(parentArena,zone.parentArenaId); this.updateArenaFloor(parentArena); this.checkSiblingConflicts(this.directParentId(zone),this.directParentType(zone)); this.saveArena(); },
         ()=>{ this.captureUndo(); applyZone(zone,parentArena,this.getScene(),this.pits,this.zones); this.updateArenaBowlHoles(parentArena,zone.parentArenaId); this.updateArenaFloor(parentArena); this.checkSiblingConflicts(this.directParentId(zone),this.directParentType(zone)); this.renderProps(); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+      );
+      return;
+    }
+
+    const sl=this.speedLines.get(id);
+    if(sl){
+      const slArena=this.arenas.get(sl.parentArenaId)!;
+      this.props.showSpeedLine(
+        sl, slArena,
+        ()=>{ this.captureUndo(); this._updateSpeedLine(sl); this._checkSpeedLineOverlaps(sl.parentArenaId); this.saveArena(); },
+        (_k)=>{ this.captureUndo(); this._updateSpeedLine(sl); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._updateSpeedLine(sl); this.saveArena(); },
+        (segs)=>{ this.captureUndo(); this._addSegmentsToLine(id, segs); this.renderProps(); },
+        (k)=>{ this.captureUndo(); this._removeSegmentFromLine(id, k); this.renderProps(); },
+      );
+      return;
+    }
+
+    const wall=this.walls.get(id);
+    if(wall){
+      this.props.showWall(
+        wall,
+        ()=>{ this.captureUndo(); this.applyWall(wall); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+      );
+      return;
+    }
+
+    const bridge=this.bridges.get(id);
+    if(bridge){
+      const arenaNames = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
+      const wallNames  = new Map([...this.walls.entries()].map(([wid,w])=>[wid,w.name]));
+      this.props.showBridge(
+        bridge, arenaNames, wallNames,
+        ()=>{ this.captureUndo(); if(bridge.segmentIds.length>0) this.applyBridgeFromSegment(bridge.segmentIds[0]); this.saveArena(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+        (type)=>{ this.addSegment(id, type as BridgeSegmentType); },
+      );
+      return;
+    }
+
+    const seg=this.segments.get(id);
+    if(seg){
+      this.props.showBridgeSegment(
+        seg,
+        ()=>{ this.captureUndo(); this.applyBridgeFromSegment(seg.id); this.saveArena(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
       );
       return;
@@ -574,8 +1181,10 @@ export class ArenaSandbox extends Sandbox {
     this.arenas.set(id,data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
       addChildButtons:[
-        {label:'P+',title:'Add pit',className:'pit-btn',  onClick:()=>this.addPit(id)},
-        {label:'Z+',title:'Add zone',className:'zone-btn',onClick:()=>this.addZone(id)},
+        {label:'P+',  title:'Add pit',        className:'pit-btn',  onClick:()=>this.addPit(id)},
+        {label:'Z+',  title:'Add zone',       className:'zone-btn', onClick:()=>this.addZone(id)},
+        {label:'W+',  title:'Add wall',       className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
+        {label:'SL+', title:'Add speed line', className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
       ],
     });
     this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
@@ -887,7 +1496,7 @@ export class ArenaSandbox extends Sandbox {
       isMoat:zs.isMoat,innerRadiusX:zs.innerRadiusX,innerRadiusZ:zs.innerRadiusZ,
       innerOpeningShape:zs.innerOpeningShape,innerSides:zs.innerSides,innerStarInner:zs.innerStarInner,
       innerWallProfile:zs.innerWallProfile,innerRimOffset:zs.innerRimOffset,
-      pitIds:[],zoneIds:[],
+      pitIds:[],zoneIds:[],speedLineIds:[],
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
     };
@@ -935,7 +1544,7 @@ export class ArenaSandbox extends Sandbox {
         spiralLedgeHeight:as.spiralLedgeHeight?? DEFAULT_SPIRAL_LEDGE_H,
         spiralRadiusFrac: as.spiralRadiusFrac ?? DEFAULT_SPIRAL_RADIUS_FRAC,
         spiralMeshes:     [],
-        pitIds:[],zoneIds:[],
+        pitIds:[],zoneIds:[],wallIds:[],speedLineIds:[],
         mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
         floorMesh:null,islandMesh:null,rimSeamMesh:null,
       };
@@ -944,8 +1553,10 @@ export class ArenaSandbox extends Sandbox {
       // Arena node must exist in the tree before children are added as its descendants
       this.sceneTree.add(as.id,data.name,'⏺','octagon-base',{
         addChildButtons:[
-          {label:'P+',title:'Add pit',className:'pit-btn',  onClick:()=>this.addPit(as.id)},
-          {label:'Z+',title:'Add zone',className:'zone-btn',onClick:()=>this.addZone(as.id)},
+          {label:'P+',  title:'Add pit',        className:'pit-btn',  onClick:()=>this.addPit(as.id)},
+          {label:'Z+',  title:'Add zone',       className:'zone-btn', onClick:()=>this.addZone(as.id)},
+          {label:'W+',  title:'Add wall',       className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
+          {label:'SL+', title:'Add speed line', className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
         ],
       });
 
@@ -981,40 +1592,177 @@ export class ArenaSandbox extends Sandbox {
       }
 
       this.sceneObjects.set(as.id,objs);
+
+      // Restore walls attached to this arena
+      for(const ws of (as.walls??[])) this._restoreWallSave(ws);
     }
     this.updateTopFace();
+
+    // Restore base walls
+    for(const ws of (cfg.baseWalls??[])) this._restoreWallSave(ws);
+
+    // Restore bridges
+    for(const bs of (cfg.bridges??[])) this._restoreBridgeSave(bs);
+
+    // Restore arena-level speed lines (stored inside each ArenaSave)
+    for(const as of cfg.arenas){
+      if(as.speedLines) this._restoreSpeedLineSave(as.speedLines, as.id);
+    }
+
+    // Restore zone-parented speed lines (stored at top level)
+    if(cfg.speedLines){
+      for(const sls of cfg.speedLines){
+        const arena = this.arenas.get(sls.parentArenaId); if(!arena) continue;
+        this._restoreSpeedLineSave([sls], sls.parentArenaId);
+      }
+    }
+
+    // Check overlaps for each arena
+    for(const arenaId of this.arenas.keys()) this._checkSpeedLineOverlaps(arenaId);
+  }
+
+  private _restoreWallSave(ws: WallSave): void {
+    const wall: WallData = {
+      id:ws.id, name:ws.name, parentId:ws.parentId, parentType:ws.parentType,
+      fullPerimeter:ws.fullPerimeter, arcStart:ws.arcStart, arcEnd:ws.arcEnd,
+      basePosX:ws.basePosX, basePosZ:ws.basePosZ, baseRotY:ws.baseRotY, baseLength:ws.baseLength,
+      height:ws.height, tilt:ws.tilt,
+      hasGaps:ws.hasGaps, gapWidth:ws.gapWidth, panelWidth:ws.panelWidth,
+      topProfile:ws.topProfile, topAmplitude:ws.topAmplitude, topFrequency:ws.topFrequency,
+      isDouble:ws.isDouble, peakHeight:ws.peakHeight, peakTilt:ws.peakTilt,
+      holes:ws.holes.map(h=>({...h})),
+      color:ws.color, surface:ws.surface, material:ws.material,
+      mesh:null, edges:null,
+    };
+    this.walls.set(ws.id, wall);
+    this.applyWall(wall);
+    const parentTreeId = ws.parentType==='base' ? 'octagon-base' : ws.parentId;
+    this.sceneTree.add(ws.id, wall.name, '🧱', parentTreeId);
+    if(ws.parentType==='arena'){
+      const arena=this.arenas.get(ws.parentId);
+      if(arena && !arena.wallIds.includes(ws.id)) arena.wallIds.push(ws.id);
+    }
+  }
+
+  private _restoreBridgeSave(bs: BridgeSave): void {
+    const group = new THREE.Group();
+    const bridge: BridgeData = {
+      id:bs.id, name:bs.name,
+      startRef: bs.startRef ?? null,
+      segmentIds:[],
+      section:{ ...bs.section },
+      color:bs.color, surface:bs.surface as SurfaceType,
+      wallIds:[],
+      group,
+    };
+    this.bridges.set(bs.id, bridge);
+    const scene=this.getScene(); if(scene) scene.add(group);
+    this.sceneTree.add(bs.id, bridge.name, '🌉', 'octagon-base', {
+      addChildButtons:[
+        {label:'Seg+',title:'Add segment',className:'zone-btn',onClick:()=>this.addSegment(bs.id,'straight')},
+        {label:'W+',  title:'Add wall',  className:'pit-btn', onClick:()=>this.addWall(bs.id,'bridge')},
+      ],
+    });
+    if(bridge.startRef?.type==='arena'){
+      if(!this.bridgesByArena.has(bridge.startRef.id)) this.bridgesByArena.set(bridge.startRef.id, new Set());
+      this.bridgesByArena.get(bridge.startRef.id)!.add(bs.id);
+    }
+    for(const ss of bs.segments){
+      const seg: BridgeSegmentData = {
+        id:ss.id, name:ss.name, bridgeId:bs.id, orderIndex:ss.orderIndex, type:ss.type,
+        length:ss.length, rampAngle:ss.rampAngle,
+        curveRadius:ss.curveRadius, curveAngle:ss.curveAngle, curveDirection:ss.curveDirection, bankAngle:ss.bankAngle,
+        cp1X:ss.cp1X, cp1Y:ss.cp1Y, cp1Z:ss.cp1Z,
+        cp2X:ss.cp2X, cp2Y:ss.cp2Y, cp2Z:ss.cp2Z,
+        endX:ss.endX, endY:ss.endY, endZ:ss.endZ,
+        loopRadius:ss.loopRadius,
+        corkscrewLength:ss.corkscrewLength, corkscrewTurns:ss.corkscrewTurns,
+        color:ss.color, surface:ss.surface,
+        mesh:null, edges:null,
+      };
+      this.segments.set(ss.id, seg);
+      bridge.segmentIds.push(ss.id);
+      const icon=segmentIcon(seg.type);
+      this.sceneTree.add(ss.id, seg.name, icon, bs.id);
+    }
+    if(bridge.segmentIds.length>0) this.applyBridgeFromSegment(bridge.segmentIds[0]);
+    for(const ws of bs.walls) this._restoreWallSave(ws);
   }
 
   private loadArena(): void {
     try {
       const raw=localStorage.getItem(this.arenaStorageKey); if(!raw) return;
       const cfg=JSON.parse(raw) as ArenaConfig;
-      if(cfg.version !== ARENA_SAVE_VERSION){ localStorage.removeItem(this.arenaStorageKey); return; }
       this.baseConfig={...this.baseConfig,...cfg.baseConfig};
       this.rebuildBase();
       this.arenaSeq=cfg.arenaSeq; this.pitSeq=cfg.pitSeq; this.zoneSeq=cfg.zoneSeq;
+      this.wallSeq=cfg.wallSeq??0; this.bridgeSeq=cfg.bridgeSeq??0; this.segmentSeq=cfg.segmentSeq??0;
+      this.speedlineSeq=cfg.speedLineSeq??0;
       this._loadArenasFromConfig(cfg);
     } catch { localStorage.removeItem(this.arenaStorageKey); }
   }
 
+  /* ── Renderer visibility override — wire speed line pointer events ──── */
+  override setVisible(v: boolean): void {
+    super.setVisible(v);
+    const canvas = this.getRendererCanvas();
+    if(v && canvas){
+      canvas.addEventListener('pointerdown', this._onPointerDown);
+      canvas.addEventListener('pointermove', this._onPointerMove);
+      canvas.addEventListener('pointerup',   this._onPointerUp);
+    } else if(!v && canvas){
+      canvas.removeEventListener('pointerdown', this._onPointerDown);
+      canvas.removeEventListener('pointermove', this._onPointerMove);
+      canvas.removeEventListener('pointerup',   this._onPointerUp);
+    }
+  }
+
   /* ── Reset ── */
   private async resetArena(): Promise<void> {
-    const ok=await gameConfirm('Reset arena?\nAll arenas, pits, zones and base settings will be cleared.','Reset','Cancel');
+    const ok=await gameConfirm('Reset arena?\nAll arenas, pits, zones, walls and bridges will be cleared.','Reset','Cancel');
     if(!ok) return;
     this.captureUndo();
+    for(const sl of this.speedLines.values()) this._disposeSpeedLine(sl);
+    this.speedLines.clear(); this.speedlineSeq=0; this.slSegSeq=0;
     for(const[id,arena] of this.arenas.entries()){
       for(const pid of arena.pitIds){const p=this.pits.get(pid);if(p){this.disposePit(p);this.removeFromScene(p.mesh,p.edges);if(p.seamMesh)this.removeFromScene(p.seamMesh);}this.pits.delete(pid);this.sceneObjects.delete(pid);}
       for(const zid of arena.zoneIds){const z=this.zones.get(zid);if(z){this.disposeZone(z);this.removeFromScene(z.mesh,z.edges);if(z.seamMesh)this.removeFromScene(z.seamMesh);}this.zones.delete(zid);this.sceneObjects.delete(zid);}
       this.disposeArena(arena); this.removeFromScene(arena.mesh,arena.edges);
       this.sceneObjects.delete(id); this.sceneTree.remove(id);
     }
+    for(const wall of this.walls.values()) this._disposeWall(wall);
+    for(const bridge of this.bridges.values()) this._disposeBridge(bridge);
     this.arenas.clear(); this.arenaSeq=0;
     this.pits.clear();   this.pitSeq=0;
     this.zones.clear();  this.zoneSeq=0;
+    this.walls.clear();    this.wallSeq=0;
+    this.bridges.clear();  this.bridgeSeq=0;
+    this.segments.clear(); this.segmentSeq=0;
+    this.bridgesByArena.clear();
     this.baseConfig={height:DEFAULT_BASE_HEIGHT,sides:DEFAULT_BASE_SIDES,color:DEFAULT_BASE_COLOR,surface:'plain',customTileData:null,tileScale:DEFAULT_BASE_TILE};
     this.rebuildBase(); this.updateTopFace();
     this.selectedId=null; this.sceneTree.clearSel(); this.props.showEmpty();
     localStorage.removeItem(this.arenaStorageKey);
     this._flushUndoPending();
+  }
+}
+
+function worldToArenaLocal(wx: number, wz: number, arena: ArenaData): { alx: number; alz: number } {
+  const dx = wx - arena.posX; const dz = wz - arena.posZ;
+  const c = Math.cos(-arena.rotY * DEG2RAD); const s = Math.sin(-arena.rotY * DEG2RAD);
+  return { alx: dx * c - dz * s, alz: dx * s + dz * c };
+}
+
+function segmentIcon(type: BridgeSegmentType): string {
+  switch(type){
+    case 'straight':   return '━';
+    case 'curve':      return '↩';
+    case 'ramp':       return '↗';
+    case 'loop':       return '⭕';
+    case 'hairpin':    return '↺';
+    case 'corkscrew':  return '🌀';
+    case 'chicane':    return '⟨⟩';
+    case 'bezier':     return '〜';
+    default:           return '━';
   }
 }

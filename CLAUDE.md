@@ -122,11 +122,14 @@ src/
     global.css                  — vmin scale system, reset, shared components + beyblade bottom bar
   screens/
     LandingScreen.ts            — Title + sandbox nav buttons
-    Sandbox.ts                  — Reusable Three.js XYZ viewport (SandboxOptions); provides onTick() hook
-    ArenaSandbox.ts             — Full arena builder: arenas, pits, zones, moats, properties panel
+    Sandbox.ts                  — Reusable Three.js XYZ viewport (SandboxOptions); provides onTick() hook;
+                                  public getCamera() / getControls() / getRendererCanvas() accessors
+    ArenaSandbox.ts             — Full arena builder: arenas, pits, zones, moats, walls, bridges, speed lines, properties panel
     BeybladeSandbox.ts          — Beyblade part builder (extends Sandbox); thin orchestrator/Facade
   types/
-    arenaTypes.ts               — Arena data model interfaces
+    arenaTypes.ts               — Arena data model interfaces (ArenaData, PitData, ZoneData, WallData,
+                                  BridgeData, BridgeSegmentData, SpeedLineData, SpeedLineSegment,
+                                  ArenaMaterial, BridgeSection, and all related enums)
     beybladeTypes.ts            — Beyblade data model: AxisData, PartData, SectorData, GroupData, BeybladeBuildConfig
   stores/
     BeybladeStore.ts            — Pure data store (no Three.js); getters/setters/serialize/deserialize
@@ -137,6 +140,9 @@ src/
                                   DeleteGroupCmd, UpdateGroupCmd, MoveNodeCmd
   geometry/
     sectorBuilders.ts           — ISectorGeometryBuilder + SolidSectorBuilder + HollowSectorBuilder + getSectorBuilder()
+    wallBuilders.ts             — Wall mesh/edge builders; arcFilterPts; defaultWallData
+    bridgeSegmentBuilders.ts    — Bridge segment path samplers; cross-section sweep; SegmentPose; defaultSegment
+    speedLineBuilders.ts        — Speed line path computation; ribbon mesh; arrow/handle/marker builders; overlap detection
     [arena geometry files...]
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
@@ -145,12 +151,13 @@ src/
     BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
     AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow helpers
-    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel)
+    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment
     BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
     SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes)
     dialog.ts                   — gameConfirm() modal utility
+    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge save interfaces (version 6)
   config/
-    arenaConstants.ts           — Arena world constants
+    arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + wall/bridge defaults
 ```
 
 ## Running
@@ -196,12 +203,12 @@ The user adjusts the base height/sides interactively via the properties panel; t
 ### Objects in the scene
 
 #### ArenaData
-- `wallProfile`: `'parabolic'` | `'straight'` — shape of the bowl walls
+- `wallProfile`: `'parabolic'` | `'straight'` | `'step'` | `'spiral'` — shape of the bowl walls
 - `openingShape`: `'circle'` | `'ellipse'` | `'rectangle'` | `'hexagon'` | `'triangle'` | `'star'`
 - `radiusX`, `radiusZ`, `depth` — bowl dimensions in cm
 - `posX`, `posZ`, `posY`, `rotY` — world position; posY lifts arena above base
 - `isMoat`: when true the arena is a ring (outer bowl + inner island); adds `innerRadiusX/Z`, `innerWallProfile`, `innerRimOffset`, `innerOpeningShape`
-- `pitIds[]`, `zoneIds[]` — owned children
+- `pitIds[]`, `zoneIds[]`, `wallIds[]`, `speedLineIds[]` — owned children
 
 #### PitData
 - A straight-walled hole cut INTO the arena surface (like arenas cut into the octagon base)
@@ -212,6 +219,7 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `pitIds[]`, `zoneIds[]` — pits can have nested child pits/zones
 
 #### ZoneData
+- Also has `speedLineIds: string[]` — speed lines parented to this zone
 - A filled area (water, lava, swamp, poison, sand, ice, void, custom) — a hole that is filled, not open
 - **Always parabolic bowl** — no `wallProfile` field; bowl and lid use the fill-type color
 - Same positioning as PitData
@@ -220,6 +228,70 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `seamMesh` — thin ring mesh (fill color) bridging arena surface to scoop rim
 - `fill`, `fillColor`, `fillOpacity`, `fillGlow` — preset or custom appearance
 - Supports moat (`isMoat`) and nested children (`pitIds[]`, `zoneIds[]`)
+
+#### WallData
+- Rim-mounted barrier extruded from a parent attachment surface (arena rim, bridge deck, or octagon base)
+- `parentType`: `'arena'` | `'bridge'` | `'base'`
+  - `'arena'`: attaches to the arena rim at `rimY = baseConfig.height + arena.posY`; arc controlled by `fullPerimeter` / `arcStart` / `arcEnd`
+  - `'base'`: free-standing on the octagon base; position/rotation set via `basePosX`, `basePosZ`, `baseRotY`, `baseLength`
+  - `'bridge'`: attaches to a bridge deck edge (rebuilt alongside bridge segments)
+- **Tilt convention**: 0° = vertical (perpendicular to rim). Negative = inward (top sweeps toward arena centre; at −90° the wall is horizontal — a full lid/overhang). Positive = outward (top swings away, like a door hinge opening outward). Range: [−90°, +30°]. Base edge is always fixed at the rim.
+- **Full-perimeter tilt rule**: if `fullPerimeter=true AND !hasGaps`, tilt is forced to 0° — a closed ring has no free edge to hinge from. Enabling partial arc OR gaps allows tilt.
+- **Gap pattern**: `hasGaps=true` splits the arc into alternating solid panels and open gaps. Both `gapWidth` and `panelWidth` minimum = `MIN_WALL_GAP` (10 cm). Pattern is arc-length based, starting with a panel at `arcStart`.
+- **Minimum height**: `MIN_WALL_HEIGHT` = 10 cm. Enforced in geometry builder and UI.
+- `topProfile`: `'flat'` | `'triangles'` | `'waves'` | `'serrated'` | `'crenellated'` — shape modulation applied to the top edge
+- `isDouble`: /\ cross-section — two halves meeting at `peakHeight`, each leaning outward by `peakTilt`
+- `holes[]`: punched openings (circle, rectangle, hexagon, triangle, star) at UV positions along the wall face
+- `material: ArenaMaterial` — physics material (rubber | stone | abs | metal); defaults to `'abs'`
+- `mesh`, `edges` — nullable Three.js objects; built by `buildWallGeometry` / `buildWallEdgeGeometry` in `wallBuilders.ts`
+
+#### BridgeData
+- Logical container for a chain of segments; holds **no geometry of its own**
+- `startRef: BridgeEndpointRef | null` — null = floating bridge (valid); non-null = anchored to arena rim or freepoint
+- `segmentIds[]` — ordered chain; each segment's start pose is the end pose of the previous one
+- `section: BridgeSection` — bridge-level cross-section shared by ALL segments: `width`, `crossSection` (`'flat'` | `'u_channel'`), `depth` (U-channel only), side walls, `material`
+- **Cross-section invariant**: gutter shape never changes when adding/removing segments. Only path shape changes. Never give a segment its own cross-section override.
+- `wallIds[]` — child walls mounted on the bridge deck
+- `group: THREE.Group` — Three.js container for all segment meshes; added to scene once on bridge creation
+
+#### BridgeSegmentData
+- One path piece in a bridge chain; owns path shape only, not cross-section
+- `type: BridgeSegmentType`: `'straight'` | `'curve'` | `'ramp'` | `'bezier'` | `'loop'` | `'hairpin'` | `'corkscrew'` | `'chicane'`
+- `orderIndex` — position in chain (0-based); updated automatically when segments are removed
+- Start pose is computed by chaining `computeSegmentEndPose` from the bridge's `startRef` through all prior segments
+- `mesh`, `edges` — nullable; rebuilt by `applySegment()` whenever any earlier segment or bridge section changes
+- Changing any segment triggers `applyBridgeFromSegment(segId)` which rebuilds that segment and all subsequent ones
+
+#### SpeedLineData
+- A guided path painted onto the arena bowl surface that exerts physics forces on beyblades that touch it
+- Composed of **`SpeedLineSegment[]`** — each segment is a forward-marching block with `length`, `rotX/Y/Z` (pivot angles), `speedMult`, and `objRotX/Y/Z` (object spin rates). Segments are chained: start direction + per-segment yaw/pitch/roll = full path
+- `startR`, `startAngle`, `startDir` — polar start position + initial heading on the arena surface
+- `surfaceFollow: boolean` — when true the ribbon is projected onto the bowl surface (Y from `surfFn`); false = flat XZ plane
+- **Target**: `targetType` (`beyblade | water | obstacle | item | any | custom`) + `targetTag`
+- **Activation modes**: `always` | `event` (trigger/end event names) | `periodic` (period + duty) | `proximity` (activationRadius + fade in/out)
+- **Physics**: `speedMultiplier` (global scale), per-segment `speedMult`; `entryCondition` (`always | moving_only | fast_only | slow_only`); `exitBehavior` (`normal | launch | loop | special_move`); `launchForce`; `overridePhysics`
+- **Oscillation**: `oscillate` flag; `oscAxis` (`path | lateral | normal | all`); `oscAmplitude`, `oscFrequency`, `oscPhase`
+- **Direction**: `forward | reverse | bidirectional`; `swapPriority` for bidirectional conflict resolution
+- **Appearance**: `width`, `color`, `opacity`, `glowColor`
+- `mesh` — ribbon `THREE.Mesh` (surface-projected, `DoubleSide`, transparent)
+- `edges` — centerline `THREE.LineSegments`
+- `markerMeshes[]` — start/end arrows, direction arrows, activation radius ring
+- `handleMeshes[]` — interactive drag handles (one per joint + start); hidden unless selected
+- `overlapMarkers[]` — sphere meshes shown where paths cross (rebuilt on any change)
+- `totalLength` — computed arc length in cm
+- **All Speed Line meshes** are positioned in world space with `position.set(arena.posX, 0, arena.posZ)` + `rotation.y = arena.rotY` — geometry bakes arena-local coordinates directly
+
+#### ArenaMaterial (physics material)
+Independent of `SurfaceType` (visual texture). Controls restitution, spin loss, and damage on impact.
+
+| Material | Restitution | Spin Loss | Damage | Available on |
+|----------|-------------|-----------|--------|-------------|
+| `rubber` | 0.15 | 0.05 | 0.20 | Walls only |
+| `stone`  | 0.40 | 0.12 | 0.55 | Walls + Bridges |
+| `abs`    | 0.65 | 0.15 | 0.70 | Walls + Bridges |
+| `metal`  | 0.90 | 0.20 | 1.00 | Walls + Bridges |
+
+Presets are in `ARENA_MATERIAL_PRESETS` in `arenaConstants.ts`. The PBR lookup tables in `materialBuilders.ts` and `floorProfileBuilders.ts` include all four materials — add `rubber` entry whenever a new PBR table is introduced.
 
 ---
 
@@ -242,6 +314,30 @@ Geometry lives in `src/geometry/` — never in `ArenaSandbox.ts`.
 | `buildZoneFillGeo(zone)` | `fillBuilders.ts` | Tessellated disc/ring for wave-shader liquid surface |
 | `buildFillBowlMaterial(fc)` | `materialBuilders.ts` | Fill-colored MeshStandardMaterial for zone bowl walls and seam |
 | `buildFillLidMaterial(fc, opacity, stencilRef)` | `materialBuilders.ts` | Fill-colored lid material: visible + stencil-write for fill-wave clipping |
+| `buildWallGeometry(wall, rimPts, rimY, cx, cz)` | `wallBuilders.ts` | Wall mesh — handles tilt, gaps, double wall, top profile |
+| `buildWallEdgeGeometry(wall, rimPts, rimY, cx, cz)` | `wallBuilders.ts` | Wall wireframe edges |
+| `arcFilterPts(rimPts, arcStart, arcEnd)` | `wallBuilders.ts` | Interpolated sub-arc of rim polygon for partial-perimeter walls |
+| `defaultWallData(id, name, parentId, parentType)` | `wallBuilders.ts` | Default WallData factory |
+| `buildSegmentDeckGeometry(seg, startPose, section)` | `bridgeSegmentBuilders.ts` | Bridge segment deck mesh — sweeps cross-section along sampled path |
+| `buildSegmentEdgeGeometry(seg, startPose, section)` | `bridgeSegmentBuilders.ts` | Bridge segment wireframe |
+| `sampleSegmentPath(seg, startPose)` | `bridgeSegmentBuilders.ts` | Returns `BRIDGE_SEGMENT_SAMPLES` poses along the segment path |
+| `computeSegmentEndPose(seg, startPose)` | `bridgeSegmentBuilders.ts` | End pose of segment — used to chain subsequent segments |
+| `resolveStartPose(ref, arenas, walls, baseHeight)` | `bridgeSegmentBuilders.ts` | Convert arena rim angle / freepoint ref → world SegmentPose |
+| `defaultBridgeSection()` | `bridgeSegmentBuilders.ts` | Default BridgeSection factory |
+| `defaultSegment(id, name, bridgeId, orderIndex, type)` | `bridgeSegmentBuilders.ts` | Default BridgeSegmentData factory |
+| `computeSegmentPath(sl, surfFn)` | `speedLineBuilders.ts` | Walks all segments, accumulates positions → `THREE.Vector3[]` |
+| `computeJoints(pts)` | `speedLineBuilders.ts` | Extract joint positions (one per segment boundary + start) for handle placement |
+| `buildRibbon3D(pts, normals, width)` | `speedLineBuilders.ts` | Flat ribbon `BufferGeometry` perpendicular to path, projected by normals |
+| `buildStartMarker / buildEndMarker` | `speedLineBuilders.ts` | Colored sphere meshes at path endpoints |
+| `buildArrowMeshes(pts, color, dir)` | `speedLineBuilders.ts` | Evenly spaced direction arrows along path |
+| `buildHandleMeshes(joints, sl)` | `speedLineBuilders.ts` | Interactive sphere handles (one per joint) returned with handle-type metadata |
+| `buildActivationRadiusMarker(pt, r, color)` | `speedLineBuilders.ts` | Ring mesh showing proximity activation radius |
+| `samplePathForOverlap(sl, surfFn)` | `speedLineBuilders.ts` | Uniform sample for cross-path overlap detection |
+| `buildOverlapSphere(pos, color)` | `speedLineBuilders.ts` | Small sphere marking a detected path overlap |
+| `pathSurfaceNormal(pt, arena, sl)` | `speedLineBuilders.ts` | Per-point surface normal (bowl gradient or world-up) for ribbon orientation |
+| `defaultSpeedLine(name, arenaId, id, zoneId?)` | `arenaObjectBuilders.ts` | Default SpeedLineData factory |
+| `buildSpeedLineObjects(sl, arena, zones)` | `arenaObjectBuilders.ts` | Assembles all Three.js objects for a speed line (ribbon, edges, markers, handles) |
+| `applySpeedLine(sl, arena, zones, scene, add, remove)` | `arenaObjectBuilders.ts` | Dispose + rebuild all speed line objects in-place |
 
 #### `arenaSurfaceYAtArenaLocal(arena, alx, alz)`
 Returns the world Y of the arena bowl surface at any arena-local XZ position:
@@ -302,9 +398,35 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 
 ---
 
+### ArenaSandbox internal structure
+
+```
+Maps:          arenas, pits, zones, walls, bridges, segments, speedLines
+Seq counters:  arenaSeq, pitSeq, zoneSeq, wallSeq, bridgeSeq, segmentSeq, speedlineSeq, slSegSeq
+Dep index:     bridgesByArena  — arenaId → Set<bridgeId> (rebuilt on anchor change)
+Raycaster:     slRaycaster — used for speed line handle hit-testing on mouse move
+Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set on mouse-down, cleared on mouse-up
+```
+
+**Speed Line drag-editing**: handles are shown only when the speed line is selected (`_showSlHandles` / `_hideSlHandles`). Mouse-move raycasts against visible handles; mouse-down sets `slDrag`; mouse-move with `slDrag` set repositions the dragged segment joint and rebuilds; mouse-up clears `slDrag`. All done in `ArenaSandbox` mouse event handlers — not in `PropertiesPanel`.
+
+**Dependency rebuild chain**: whenever an arena's geometry changes, call `rebuildDependentsOf(arenaId)`. This reapplies all rim walls attached to that arena, then reapplies all bridges in `bridgesByArena[arenaId]` starting from their first segment.
+
+**Bridge rebuild propagation**: `applyBridgeFromSegment(segId)` reapplies `segId` and every subsequent segment in the chain. Earlier segments are unaffected. Always call this after changing any segment property or the bridge's `startRef` / `section`.
+
+**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`.
+
+**Octagon base tree buttons**: `A+` (add arena), `B+` (add bridge), `W+` (add base wall). Arena nodes have `W+` (add rim wall) and `SL+` (add speed line). Zone nodes have `SL+` (add speed line parented to zone).
+
 ### Save / load (localStorage)
 
-Key: `bey_arena_arena_sandbox`. Corrupted/unparseable data is discarded on load. `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
+Key: `bey_arena_arena_sandbox`. Save version: **6** (`ARENA_SAVE_VERSION`). Corrupted/version-mismatched data is discarded. `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
+
+`ArenaConfig` (top-level save):
+- `arenas[]` — each `ArenaSave` includes `walls: WallSave[]` (rim walls) and `speedLines: SpeedLineSave[]`
+- `baseWalls: WallSave[]` — free-standing walls on the octagon base
+- `bridges: BridgeSave[]` — each includes `segments: BridgeSegmentSave[]` and `walls: WallSave[]`
+- `wallSeq`, `bridgeSeq`, `segmentSeq`, `speedLineSeq` — sequence counters
 
 ---
 
@@ -427,6 +549,15 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **Zone fill at bowl bottom**: Fill Y must be near the rim (`surfY - 1.0`), not the floor (`surfY - depth + 0.1`). The floor value places the fill plane under the bowl surface and makes it invisible.
 - **Pit/zone outside arena bounds**: Slider max for `posR` must subtract the child radius (`arenaMinR - childMaxR`); radius sliders must subtract `posR`. Without this, children extend outside the parent arena.
 - **AxesHelper inside bowl**: Default `AxesHelper` at Y=0..axisLen pokes into arena bowls. Use `axisYOffset: baseConfig.height` in `SandboxOptions` to lift axes to the octagon surface level.
+- **Wall tilt on closed ring**: A full-perimeter wall with no gaps cannot tilt — the geometry builder forces tilt to 0 automatically. The UI must also disable the tilt slider in this state (full perimeter + no gaps). Enabling partial arc OR gaps re-enables tilt.
+- **Bridge cross-section per segment**: Never add cross-section fields to `BridgeSegmentData`. All segments inherit `bridge.section`. Changing the section must trigger `applyBridgeFromSegment(segmentIds[0])` to rebuild all segments.
+- **Segment start pose**: The start pose of segment N is the end pose of segment N−1 (or `startRef` for segment 0). Never cache poses — always recompute the chain from the bridge start when any earlier segment changes.
+- **ArenaMaterial + PBR tables**: `ArenaMaterial` now includes `'rubber'`. Any `PBR = { abs, metal, stone }` lookup table is a compile error. Always include `rubber: [0.95, 0.00]` (high roughness, non-metallic) in every PBR table in `materialBuilders.ts` and `floorProfileBuilders.ts`.
+- **Bridge group double-add**: `bridge.group` is added to the scene once on creation. Never re-add it on segment rebuild — segments are `bridge.group.add(seg.mesh)` children, not direct scene children.
+- **Missing wallIds on defaultArena**: `defaultArena()` in `arenaObjectBuilders.ts` must include `wallIds: []` and `speedLineIds: []`. Similarly `defaultZone()` must include `speedLineIds: []`. Omitting any required field causes TypeScript strict errors.
+- **Speed line `exitBehavior` vs `direction`**: `'loop'` is a valid `SpeedLineExitBehavior`, not a `SpeedLineDirection` (`'forward'|'reverse'|'bidirectional'`). Use `sl.exitBehavior !== 'loop'` to gate end-marker placement, never `sl.direction !== 'loop'`.
+- **Speed line handles on wrong object type**: `handleMeshes` contain `THREE.Mesh` objects; hit-testing returns `THREE.Object3D`. Always cast to `THREE.Mesh` before accessing `.material`. Use `(hits[0].object as THREE.Mesh).material`.
+- **`SL` constants namespace**: All speed line tuning values live in the `SL` object in `arenaConstants.ts`. Never inline magic numbers for speed line geometry (e.g. `SL.ARROW_SPACING`, `SL.SURFACE_LIFT`, `SL.HANDLE_RADIUS`).
 
 ---
 
@@ -435,23 +566,29 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 ### File responsibility (single reason to change)
 | File | Changes when... |
 |------|----------------|
-| `src/config/arenaConstants.ts` | A world constant or tuning number changes |
+| `src/config/arenaConstants.ts` | A world constant, tuning number, or material preset changes |
 | `src/types/arenaTypes.ts` | A data model field is added/removed |
 | `src/geometry/primitives.ts` | The core ring/edge generation algorithm changes |
 | `src/geometry/surfaceUtils.ts` | The arena surface math or coordinate helpers change |
 | `src/geometry/bowlBuilders.ts` | Bowl mesh algorithm changes (not the ring math — that's primitives.ts) |
 | `src/geometry/scoopBuilders.ts` | Pit/zone scoop algorithm changes |
 | `src/geometry/platformBuilders.ts` | Top face or floor algorithm changes |
-| `src/geometry/materialBuilders.ts` | A surface texture type is added or changed |
+| `src/geometry/materialBuilders.ts` | A surface texture type or PBR preset is added or changed |
 | `src/geometry/fillBuilders.ts` | A zone fill type or shader changes |
 | `src/geometry/arenaObjectBuilders.ts` | The Three.js object assembly pattern changes |
+| `src/geometry/wallBuilders.ts` | Wall mesh/edge algorithm changes (tilt, gaps, top profile, holes) |
+| `src/geometry/bridgeSegmentBuilders.ts` | Bridge path sampling, cross-section sweep, or pose chaining changes |
+| `src/geometry/speedLineBuilders.ts` | Speed line path computation, ribbon, handles, arrows, overlap detection changes |
 
 ### Allowed import direction (never reverse)
 ```
 arenaConstants + arenaTypes  ←  primitives.ts
                              ←  surfaceUtils.ts
                              ←  bowlBuilders / scoopBuilders / platformBuilders / materialBuilders / fillBuilders
-                             ←  arenaObjectBuilders.ts
+                             ←  wallBuilders.ts
+                             ←  bridgeSegmentBuilders.ts
+                             ←  speedLineBuilders.ts
+                             ←  arenaObjectBuilders.ts  (also imports speedLineBuilders)
                              ←  ArenaSandbox.ts
                              ←  PropertiesPanel.ts (imports arenaTypes + arenaConstants ONLY — no geometry)
 ```
@@ -466,6 +603,10 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - Implementing `posR*cos(angle*DEG2RAD)` inline — call `polarToLocalXZ` from `surfaceUtils.ts`.
 - Implementing `{cx,cz,rotY}` extraction for pits/zones inline — call `extractChildTransform` from `surfaceUtils.ts`.
 - Implementing a rim edge loop inline — call `buildRimEdges` from `primitives.ts`.
+- Giving bridge segments their own cross-section — cross-section is always `bridge.section`. Segments own path shape only.
+- Adding PBR material lookup tables that omit `rubber` — the `ArenaMaterial` type includes `'rubber'` and all tables must handle it.
+- Calling `applyWall` for bridge-type walls from outside `applyBridgeFromSegment` — bridge walls rebuild with their parent bridge.
+- Skipping `rebuildDependentsOf(arenaId)` after an arena geometry change — omitting it leaves rim walls and anchored bridges stale.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.
@@ -474,4 +615,5 @@ Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers
 - If it generates concentric rings: call `buildParabolicRingGeo` from `primitives.ts`.
 - If it positions a pit/zone child: call `extractChildTransform` from `surfaceUtils.ts`.
 - If it builds edges: call `buildRimEdges` / `buildFloorAndPillarEdges` from `primitives.ts`.
-- If it assembles a Three.js Mesh + edges: it belongs in `arenaObjectBuilders.ts`.
+- If it assembles a Three.js Mesh + edges for arenas/pits/zones: it belongs in `arenaObjectBuilders.ts`.
+- Wall geometry → `wallBuilders.ts`. Bridge path/sweep geometry → `bridgeSegmentBuilders.ts`. Speed line ribbon/path → `speedLineBuilders.ts`.
