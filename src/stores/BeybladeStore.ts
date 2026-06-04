@@ -26,6 +26,12 @@ export class BeybladeStore {
   }
   getAllParts(): PartData[] { return [...this.parts.values()]; }
   hasPart(id: string): boolean { return this.parts.has(id); }
+  findPartOfSector(sectorId: string): string | null {
+    for (const [pid, part] of this.parts) {
+      if (part.sectorIds.includes(sectorId)) return pid;
+    }
+    return null;
+  }
   addPart(data: PartData): void { this.parts.set(data.id, data); }
   updatePart(id: string, data: Partial<PartData>): void {
     const p = this.getPart(id);

@@ -204,33 +204,44 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `pitIds[]`, `zoneIds[]` — owned children
 
 #### PitData
-- A depression cut INTO the arena surface — like a dent on a car, not a separate object
+- A straight-walled hole cut INTO the arena surface (like arenas cut into the octagon base)
+- **Always straight walls** — no `wallProfile` field, no moat support
 - `posR`, `posAngle` — polar position within the parent arena (not world coords)
 - `rotY` — self-rotation
-- `wallProfile`: parabolic or straight
-- Also supports `isMoat` (ring pit)
+- `seamMesh` — thin ring mesh bridging the gap between arena surface and scoop rim
+- `pitIds[]`, `zoneIds[]` — pits can have nested child pits/zones
 
 #### ZoneData
-- A liquid-fill area (water, lava, swamp, poison, sand, ice, void, custom)
+- A filled area (water, lava, swamp, poison, sand, ice, void, custom) — a hole that is filled, not open
+- **Always parabolic bowl** — no `wallProfile` field; bowl and lid use the fill-type color
 - Same positioning as PitData
-- Has a `fillMesh` driven by `WAVE_VERT`/`WAVE_FRAG` vertex-displacement shader for animated liquid surfaces
+- `lidMesh` — curved surface conforming exactly to the parent arena bowl curvature, sitting at the rim. Writes stencil so the fill wave is clipped to the lid shape. Supports opacity/phasing via `fillOpacity`.
+- `fillMesh` driven by `WAVE_VERT`/`WAVE_FRAG` vertex-displacement shader for animated liquid surfaces; stencil-clipped by lid
+- `seamMesh` — thin ring mesh (fill color) bridging arena surface to scoop rim
 - `fill`, `fillColor`, `fillOpacity`, `fillGlow` — preset or custom appearance
+- Supports moat (`isMoat`) and nested children (`pitIds[]`, `zoneIds[]`)
 
 ---
 
-### Key geometry functions (all in ArenaSandbox.ts)
+### Key geometry functions
 
-| Function | Purpose |
-|----------|---------|
-| `buildParabolicBowl(pts, depth, baseY, holes?)` | Main arena bowl mesh; skips triangles in `holes` (for pit/zone openings) |
-| `buildStraightCut(pts, depth, baseY)` | Straight-wall arena variant |
-| `buildMoatGeometry(outerPts, innerPts, ...)` | Ring moat bowl with inner rise |
-| `buildScoopGeometry(pts, depth, profile, pitCX, pitCZ, pitRotY, arena)` | **Pit/zone bowl** — every vertex Y follows the arena surface curvature (ice-cream-scoop dent). RIM_EPS=0.15 cm lifts rim above arena surface to prevent z-fighting |
-| `buildScoopEdgeLines(...)` | Surface-conforming edge wires for pits/zones |
-| `buildIslandCapGeo(arena, holes?)` | Flat disc at inner island top; `holes` are cut for child arenas sitting on the island |
-| `buildArenaFloorGeo(arena, pits, zones)` | Flat floor for straight-wall arenas with pit/zone cutouts |
-| `buildTopFaceGeo(...)` | Octagon top face with arena-opening holes |
-| `buildZoneFillGeo(zone)` | Tessellated disc/ring for wave-shader liquid surface |
+Geometry lives in `src/geometry/` — never in `ArenaSandbox.ts`.
+
+| Function | File | Purpose |
+|----------|------|---------|
+| `buildParabolicBowl(pts, depth, baseY, holes?)` | `bowlBuilders.ts` | Main arena bowl mesh; skips triangles in `holes` |
+| `buildStraightCut(pts, depth, baseY)` | `bowlBuilders.ts` | Straight-wall arena variant |
+| `buildMoatGeometry(outerPts, innerPts, ...)` | `bowlBuilders.ts` | Ring moat bowl with inner rise |
+| `buildScoopGeometry(pts, depth, profile, cx, cz, rotY, surfFn)` | `scoopBuilders.ts` | Surface-conforming bowl for pits/zones — vertex Y follows arena curvature; `RIM_EPS` lifts rim above surface |
+| `buildScoopEdgeLines(...)` | `scoopBuilders.ts` | Surface-conforming edge wires |
+| `buildScoopLidGeo(pts, cx, cz, rotY, surfFn)` | `scoopBuilders.ts` | Zone lid — calls `buildScoopGeometry(depth=0, parabolic)` so the lid conforms exactly to the parent arena bowl curvature |
+| `buildScoopSeam(pts, cx, cz, rotY, surfFn)` | `scoopBuilders.ts` | Thin N-quad ring bridging arena surface to scoop rim; eliminates jagged-triangle artifacts at the cut boundary |
+| `buildIslandCapGeo(arena, holes?)` | `platformBuilders.ts` | Flat disc at inner island top; `holes` cut for child arenas |
+| `buildArenaFloorGeo(arena, pits, zones)` | `platformBuilders.ts` | Flat floor for straight-wall arenas with cutouts |
+| `buildTopFaceGeo(...)` | `platformBuilders.ts` | Octagon top face with arena-opening holes |
+| `buildZoneFillGeo(zone)` | `fillBuilders.ts` | Tessellated disc/ring for wave-shader liquid surface |
+| `buildFillBowlMaterial(fc)` | `materialBuilders.ts` | Fill-colored MeshStandardMaterial for zone bowl walls and seam |
+| `buildFillLidMaterial(fc, opacity, stencilRef)` | `materialBuilders.ts` | Fill-colored lid material: visible + stencil-write for fill-wave clipping |
 
 #### `arenaSurfaceYAtArenaLocal(arena, alx, alz)`
 Returns the world Y of the arena bowl surface at any arena-local XZ position:
@@ -274,6 +285,7 @@ Pits/zones added to the child arena automatically conform to the child arena's e
 
 Fill presets (`water`, `lava`, `swamp`, `poison`, `sand`, `ice`, `void`, `custom`) each drive a `THREE.ShaderMaterial` with `WAVE_VERT`/`WAVE_FRAG` vertex-displacement shaders.  
 Fill Y = `arenaSurfaceYAtArenaLocal(arena, zoneCX, zoneCZ) - 1.0` — 1 cm below the zone rim, looks like liquid pooling at the surface.  
+The fill wave uses `EqualStencilFunc` against the lid's `stencilRef` so the wave is clipped precisely to the zone opening. The lid (`lidMesh`) writes stencil with `stencilWrite: true` — one mesh, two duties (visible + clip mask).  
 Future fill types (whirlpool, lava flow, tsunami) should be implemented as additional shader presets in `FILL_PRESET` / `FILL_WAVE`, **not** as CPU particle systems.
 
 ---
@@ -292,7 +304,7 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 
 ### Save / load (localStorage)
 
-Schema version **3** (bump when adding new fields to ArenaData/PitData/ZoneData). Old versions are discarded on load. Key: `bey_arena_arena_sandbox`. All `posY`, `innerRimOffset`, `innerOpeningShape`, `innerSides`, `innerStarInner` fields are serialized.
+Schema version **4** (bump when adding/removing fields in ArenaData/PitData/ZoneData). Old versions are discarded on load. Key: `bey_arena_arena_sandbox`. `PitSave` no longer has `wallProfile`, `isMoat`, or inner moat fields (removed in v4). `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
 
 ---
 
