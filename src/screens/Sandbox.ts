@@ -90,6 +90,9 @@ export class Sandbox {
     return btn;
   }
 
+  /** Returns the active scene, or null if not yet mounted. */
+  protected getScene(): THREE.Scene | null { return this.scene; }
+
   /** Add / remove objects from the live scene. Safe to call before scene is ready (no-op). */
   protected addToScene(...objects: THREE.Object3D[]): void {
     objects.forEach(o => this.scene?.add(o));

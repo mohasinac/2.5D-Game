@@ -87,7 +87,6 @@ export class BeybladeStore {
   // ── Serialization ─────────────────────────────────────────────────────────
   serialize(): BeybladeBuildConfig {
     return {
-      version: 1,
       axis: { ...this.axis },
       rootChildIds: [...this.rootChildIds],
       groups: [...this.groups.values()].map(g => ({ ...g, childIds: [...g.childIds] })),

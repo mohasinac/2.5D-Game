@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { TWO_PI, DEG2RAD } from '../config/arenaConstants';
+import { TWO_PI, DEG2RAD, STEP_SLOPE_FRAC } from '../config/arenaConstants';
 import {
   OpeningShape, ShapeParams, ArenaData, PitData, ZoneData, ZoneFill,
-  ChildHole, FillPreset, WaveParams,
+  ChildHole, FillPreset, WaveParams, WallProfile, RampMode,
 } from '../types/arenaTypes';
 import { inChildHole } from './primitives';
 
@@ -100,14 +100,115 @@ export function resamplePts(pts: THREE.Vector2[], N: number): THREE.Vector2[] {
   return out;
 }
 
+/* ── Step/spiral profile helpers ────────────────────────────────────────── */
+
+/** Determine the effective wall profile at an arena-local XZ point. */
+export function effectiveProfile(arena: ArenaData, alx: number, alz: number): WallProfile {
+  if (arena.stepApplyToAll) return arena.wallProfile;
+  const θ = Math.atan2(alz, alx);
+  const idx = edgeSectorIndex(θ, arena);
+  return arena.stepEdgeProfiles[idx] ?? arena.wallProfile;
+}
+
+/** Sector index (0-based) for angle θ (radians) based on shape and arc divisions. */
+export function edgeSectorIndex(θ: number, arena: ArenaData): number {
+  const shape = arena.openingShape;
+  // Normalise θ to [0, TWO_PI)
+  const a = ((θ % TWO_PI) + TWO_PI) % TWO_PI;
+  if (shape === 'circle' || shape === 'ellipse') {
+    const n = arena.stepArcDivisions;
+    return Math.floor(a / (TWO_PI / n)) % n;
+  }
+  if (shape === 'rectangle') {
+    // 4 sides: N(top), W(left), S(bottom), E(right) — clockwise from top
+    const deg = a * 180 / Math.PI;
+    if (deg < 45 || deg >= 315) return 1;   // E
+    if (deg < 135) return 2;                // S
+    if (deg < 225) return 3;               // W
+    return 0;                               // N
+  }
+  if (shape === 'hexagon') {
+    return Math.floor(((a + Math.PI / 6) % TWO_PI) / (TWO_PI / 6)) % 6;
+  }
+  if (shape === 'triangle') {
+    return Math.floor(((a + Math.PI / 2) % TWO_PI) / (TWO_PI / 3)) % 3;
+  }
+  if (shape === 'star') {
+    const n = Math.max(3, Math.min(12, Math.round(arena.sides)));
+    return Math.floor(((a + Math.PI / 2) % TWO_PI) / (TWO_PI / n)) % n;
+  }
+  return 0;
+}
+
+/**
+ * Returns true when a gentle traversal ramp exists at angle θ for step ring stepIndex.
+ * - 'full': ramp everywhere (360°)
+ * - 'one-side': ramp within [rampAngle, rampAngle+rampWidth]
+ * - 'zigzag': ramp at base angle for even rings, base+180° for odd rings
+ * - 'none': no ramp
+ */
+export function rampExistsAt(
+  θ: number, stepIndex: number,
+  mode: RampMode, baseAngle: number, width: number,
+): boolean {
+  if (mode === 'full') return true;
+  if (mode === 'none') return false;
+  const base = (mode === 'zigzag' && stepIndex % 2 === 1)
+    ? ((baseAngle + 180) % 360)
+    : baseAngle;
+  const start = base * DEG2RAD;
+  const end   = start + width * DEG2RAD;
+  const a     = ((θ % TWO_PI) + TWO_PI) % TWO_PI;
+  const s     = ((start % TWO_PI) + TWO_PI) % TWO_PI;
+  const e     = s + width * DEG2RAD;
+  // Check if a is within [s, e] (allow wrap-around past 2π)
+  if (e <= TWO_PI) return a >= s && a <= e;
+  return a >= s || a <= e - TWO_PI;
+}
+
 /* ── Arena surface Y functions ───────────────────────────────────────────── */
 
 /** World-space Y of the arena bowl surface at a given arena-local XZ position. */
 export function arenaSurfaceYAtArenaLocal(arena: ArenaData, alx: number, alz: number): number {
   const H = arena.posY;
-  if (arena.wallProfile === 'straight') return H - arena.depth;
+  const depth = arena.depth;
+  const profile = effectiveProfile(arena, alx, alz);
+
+  if (profile === 'step') {
+    const t = Math.min(Math.sqrt((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2), 1);
+    const tStepStart = Math.sqrt(Math.max(0, 1 - arena.stepStartDepth / depth));
+    // Outer smooth zone: between rim (t=1) and tStepStart
+    if (t > tStepStart) {
+      // Use base riser profile for this outer zone
+      if (arena.stepRiserProfile === 'straight') return H - depth;
+      return H - depth * (1 - t * t);
+    }
+    // Step zone: remap t into [0,1] within step zone
+    const tStep = tStepStart > 0 ? t / tStepStart : 0;
+    const n = arena.stepCount;
+    const stepZoneD = depth - arena.stepStartDepth;
+    const yFloor = H - depth;
+    const yAt = (i: number) => yFloor + i * stepZoneD / n;
+    const stepIndex = Math.min(Math.floor(tStep * n), n - 1);
+    const stepT = (tStep * n) - Math.floor(tStep * n);
+    const flatFrac = 1 - STEP_SLOPE_FRAC;
+    if (stepT < flatFrac) return yAt(stepIndex);
+    const rampT = (stepT - flatFrac) / STEP_SLOPE_FRAC;
+    const θ = Math.atan2(alz, alx);
+    if (rampExistsAt(θ, stepIndex, arena.rampMode, arena.rampAngle, arena.rampWidth)) {
+      return yAt(stepIndex) + rampT * (yAt(stepIndex + 1) - yAt(stepIndex));
+    }
+    if (arena.stepRiserProfile === 'straight') {
+      return yAt(stepIndex) + rampT * (yAt(stepIndex + 1) - yAt(stepIndex));
+    }
+    // Parabolic curved riser — use original t
+    return H - depth * (1 - t * t);
+  }
+
+  if (profile === 'straight') return H - depth;
+  // 'parabolic' and 'spiral' (spiral doesn't change surface Y)
   const t = Math.min(Math.sqrt((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2), 1);
-  return H - arena.depth * (1 - t * t);
+  return H - depth * (1 - t * t);
 }
 
 /** Approximate arena surface Y at a radial distance (used for moat child placement). */

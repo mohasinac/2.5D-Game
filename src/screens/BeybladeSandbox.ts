@@ -13,12 +13,11 @@ import {
   BeybladeCommandCtx,
 } from '../commands/beybladeCommands';
 import {
-  PartData, SectorData, GroupData, ViewMode, BeyMaterial,
+  PartData, SectorData, GroupData, ViewMode, BeyMaterial, BeybladeBuildConfig,
 } from '../types/beybladeTypes';
 import { gameConfirm } from '../utils/dialog';
 
 const STORAGE_KEY = 'bey_beyblade_builder';
-const SCHEMA_VER  = 1;
 
 export class BeybladeSandbox extends Sandbox {
   private store        = new BeybladeStore();
@@ -648,8 +647,7 @@ export class BeybladeSandbox extends Sandbox {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      const cfg = JSON.parse(raw);
-      if (cfg.version !== SCHEMA_VER) return;
+      const cfg = JSON.parse(raw) as BeybladeBuildConfig;
       this.store.deserialize(cfg);
       // Restore axis pose
       const axis = this.store.getAxis();

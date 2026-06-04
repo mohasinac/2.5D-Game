@@ -16,6 +16,26 @@ export const RIM_EPS                  = 0.02; // cm — rim lift above parent su
 export const SEAM_TRANSITION_WIDTH    = 2.0;  // cm — seam collar outward width; must exceed arena ring spacing to cover jagged cuts
 export const SEAM_RINGS               = 6;    // ring count in seam transition strip
 
+/* ── Save schema version ─────────────────────────────────────────────────── */
+export const ARENA_SAVE_VERSION = 5;
+
+/* ── Step / spiral wall profile defaults ────────────────────────────────── */
+export const DEFAULT_STEP_COUNT         = 3;
+export const DEFAULT_STEP_START_DEPTH   = 0;
+export const DEFAULT_STEP_RISER         = 'parabolic' as const;
+export const DEFAULT_RAMP_ANGLE         = 0;
+export const DEFAULT_RAMP_WIDTH         = 60;
+export const DEFAULT_STEP_ARC_DIVISIONS = 4 as const;
+export const MIN_STEP_WIDTH_CM          = 2;
+export const STEP_SLOPE_FRAC            = 0.4;   // fraction of each step's radial width that is the riser
+export const DEFAULT_SPIRAL_TURNS       = 1;
+export const DEFAULT_SPIRAL_COUNT       = 1;
+export const DEFAULT_SPIRAL_LEDGE_W     = 3;
+export const DEFAULT_SPIRAL_LEDGE_H     = 1;
+export const DEFAULT_SPIRAL_RADIUS_FRAC = 0.85;
+export const STEP_RING_SEGS             = 96;
+export const SPIRAL_SEGS_PER_TURN       = 96;
+
 /* ── Tessellation quality ────────────────────────────────────────────────── */
 export const TESS = {
   PARABOLIC_BOWL: 64,   // ring count; doubles to 128 when pit/zone holes present

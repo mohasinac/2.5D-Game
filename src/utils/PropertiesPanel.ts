@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { APOTHEM } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData,
-  OpeningShape, WallProfile, ZoneFill, SurfaceType, ShapeParams,
+  OpeningShape, WallProfile, RampMode, ZoneFill, SurfaceType, ShapeParams,
 } from '../types/arenaTypes';
 import { _paintCanvas } from '../geometry/materialBuilders';
 import { FILL_PRESET, FILL_LABEL } from '../geometry/surfaceUtils';
@@ -82,13 +82,13 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
     if (!data.isMoat) {
       this.section('WALL PROFILE');
-      this.profileRow(data, 'wallProfile', onFullChange);
+      this.wallProfileSection(data, onFullChange, onGeomChange);
     }
 
     this.section('DIMENSIONS');
-    this.numRow('Radius X', data.radiusX, 5, APOTHEM, 1, v=>{ data.radiusX=v; onGeomChange(); });
+    this.numRow('Radius X', data.radiusX, 5, APOTHEM, 1, v=>{ data.radiusX=v; onGeomChange(); this._refreshStepCountMax(data); });
     this.numRow('Radius Z', data.radiusZ, 5, APOTHEM, 1, v=>{ data.radiusZ=v; onGeomChange(); });
-    this.numRow('Depth',    data.depth,   1, baseHeight, 0.5, v=>{ data.depth=v; onGeomChange(); });
+    this.numRow('Depth',    data.depth,   1, baseHeight, 0.5, v=>{ data.depth=v; this._refreshStepCountMax(data); onGeomChange(); });
 
     this.section('SURFACE');
     this.colorRow('Color', data.color, v=>{ data.color=v; onColorChange(); });
@@ -215,28 +215,197 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     }
   }
 
+  private _stepCountSlider: HTMLInputElement | null = null;
+
+  private _refreshStepCountMax(data: ArenaData): void {
+    if (!this._stepCountSlider) return;
+    const maxSteps = Math.max(1, Math.floor((data.depth - data.stepStartDepth) / 10));
+    this._stepCountSlider.max = String(maxSteps);
+    if (data.stepCount > maxSteps) data.stepCount = maxSteps;
+    this._stepCountSlider.value = String(data.stepCount);
+  }
+
   private profileRow(data: { wallProfile: WallProfile }, _field: 'wallProfile', onChange: () => void): void {
     const row=document.createElement('div'); row.className='prop-profile-row';
-    (['parabolic','straight'] as WallProfile[]).forEach(p=>{
+    const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral']];
+    for (const [p, label] of defs) {
       const btn=document.createElement('button');
       btn.className='prop-profile-btn'+(data.wallProfile===p?' active':'');
-      btn.textContent=p==='parabolic'?'⌣ Bowl':'▮ Straight';
+      btn.textContent=label;
       btn.addEventListener('click',()=>{ data.wallProfile=p; onChange(); });
       row.appendChild(btn);
-    });
+    }
     this.content.appendChild(row);
   }
 
   private innerProfileRow(data: { innerWallProfile: WallProfile }, onChange: () => void): void {
     const row=document.createElement('div'); row.className='prop-profile-row';
-    (['parabolic','straight'] as WallProfile[]).forEach(p=>{
+    const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step']];
+    for (const [p, label] of defs) {
       const btn=document.createElement('button');
       btn.className='prop-profile-btn'+(data.innerWallProfile===p?' active':'');
-      btn.textContent=p==='parabolic'?'⌣ Bowl':'▮ Straight';
+      btn.textContent=label;
       btn.addEventListener('click',()=>{ data.innerWallProfile=p; onChange(); });
       row.appendChild(btn);
-    });
+    }
     this.content.appendChild(row);
+  }
+
+  private wallProfileSection(data: ArenaData, onFullChange: () => void, onGeomChange: () => void): void {
+    const isCircleOrEllipse = data.openingShape === 'circle' || data.openingShape === 'ellipse';
+
+    // Apply to all edges checkbox
+    this.toggleRow('Apply to all edges', data.stepApplyToAll, v => {
+      data.stepApplyToAll = v;
+      if (v && data.wallProfile === 'step') {
+        // reset per-edge profiles
+        data.stepEdgeProfiles = [];
+      }
+      onFullChange();
+    });
+
+    if (data.stepApplyToAll) {
+      // 4-button all-edges row
+      const row = document.createElement('div'); row.className = 'prop-profile-row';
+      const defs: [WallProfile, string][] = [
+        ['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral'],
+      ];
+      for (const [p, label] of defs) {
+        const btn = document.createElement('button');
+        btn.className = 'prop-profile-btn' + (data.wallProfile === p ? ' active' : '');
+        btn.textContent = label;
+        btn.addEventListener('click', () => { data.wallProfile = p; onFullChange(); });
+        row.appendChild(btn);
+      }
+      this.content.appendChild(row);
+    } else {
+      // Arc divisions (circle/ellipse only)
+      if (isCircleOrEllipse) {
+        const divRow = document.createElement('div'); divRow.className = 'prop-profile-row';
+        const divLabel = document.createElement('span'); divLabel.className = 'prop-row-label';
+        divLabel.textContent = 'Arc Divs'; divRow.appendChild(divLabel);
+        for (const n of [1, 2, 4, 8] as const) {
+          const btn = document.createElement('button');
+          btn.className = 'prop-profile-btn' + (data.stepArcDivisions === n ? ' active' : '');
+          btn.textContent = String(n);
+          btn.addEventListener('click', () => { data.stepArcDivisions = n; onFullChange(); });
+          divRow.appendChild(btn);
+        }
+        this.content.appendChild(divRow);
+      }
+
+      // Per-edge selectors
+      const edgeCount = this._edgeCount(data);
+      const edgeLabels = this._edgeLabels(data, edgeCount);
+      if (data.stepEdgeProfiles.length !== edgeCount) {
+        data.stepEdgeProfiles = Array.from({ length: edgeCount }, (_, i) => data.stepEdgeProfiles[i] ?? data.wallProfile ?? 'parabolic');
+      }
+      for (let i = 0; i < edgeCount; i++) {
+        const lbl = document.createElement('div'); lbl.className = 'prop-edge-label';
+        lbl.textContent = edgeLabels[i];
+        this.content.appendChild(lbl);
+        const row = document.createElement('div'); row.className = 'prop-profile-row';
+        const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step']];
+        for (const [p, label] of defs) {
+          const btn = document.createElement('button');
+          const idx = i;
+          btn.className = 'prop-profile-btn' + (data.stepEdgeProfiles[idx] === p ? ' active' : '');
+          btn.textContent = label;
+          btn.addEventListener('click', () => { data.stepEdgeProfiles[idx] = p; onFullChange(); });
+          row.appendChild(btn);
+        }
+        this.content.appendChild(row);
+      }
+    }
+
+    // Determine if any edge uses step
+    const anyStep = data.stepApplyToAll
+      ? data.wallProfile === 'step'
+      : data.stepEdgeProfiles.some(p => p === 'step');
+
+    // Step sub-section
+    if (anyStep) {
+      const maxSteps = Math.max(1, Math.floor((data.depth - data.stepStartDepth) / 10));
+      if (data.stepCount > maxSteps) data.stepCount = maxSteps;
+
+      const subHead = document.createElement('div'); subHead.className = 'prop-sub-section';
+      subHead.textContent = '— Step Options —'; this.content.appendChild(subHead);
+
+      this.numRow('Step Start (cm)', data.stepStartDepth, 0, Math.max(0, data.depth - 10), 1, v => {
+        data.stepStartDepth = v; this._refreshStepCountMax(data); onGeomChange();
+      });
+
+      // Step Count with dynamic max — store slider ref for _refreshStepCountMax
+      this._stepCountSlider = null;
+      this.numRow('Step Count', data.stepCount, 1, maxSteps, 1, v => {
+        data.stepCount = Math.round(v); onGeomChange();
+      });
+      // Capture slider after numRow appends it
+      const sliders = this.content.querySelectorAll<HTMLInputElement>('input[type=range]');
+      this._stepCountSlider = sliders[sliders.length - 1] ?? null;
+
+      // Riser shape
+      const riserRow = document.createElement('div'); riserRow.className = 'prop-profile-row';
+      const riserLabel = document.createElement('span'); riserLabel.className = 'prop-row-label';
+      riserLabel.textContent = 'Riser'; riserRow.appendChild(riserLabel);
+      for (const [val, label] of [['parabolic','⌣ Parabolic'],['straight','╱ Straight']] as [string,string][]) {
+        const btn = document.createElement('button');
+        btn.className = 'prop-profile-btn' + (data.stepRiserProfile === val ? ' active' : '');
+        btn.textContent = label;
+        btn.addEventListener('click', () => { data.stepRiserProfile = val as 'parabolic'|'straight'; onGeomChange(); });
+        riserRow.appendChild(btn);
+      }
+      this.content.appendChild(riserRow);
+
+      // Ramp mode
+      const rampRow = document.createElement('div'); rampRow.className = 'prop-profile-row';
+      const rampLabel = document.createElement('span'); rampLabel.className = 'prop-row-label';
+      rampLabel.textContent = 'Ramp'; rampRow.appendChild(rampLabel);
+      const rampModes: [RampMode, string][] = [['full','Full'],['one-side','1-Side'],['zigzag','Zigzag'],['none','None']];
+      for (const [m, label] of rampModes) {
+        const btn = document.createElement('button');
+        btn.className = 'prop-profile-btn' + (data.rampMode === m ? ' active' : '');
+        btn.textContent = label;
+        btn.addEventListener('click', () => { data.rampMode = m; onGeomChange(); });
+        rampRow.appendChild(btn);
+      }
+      this.content.appendChild(rampRow);
+
+      if (data.rampMode !== 'full' && data.rampMode !== 'none') {
+        this.numRow('Ramp Angle°', data.rampAngle, 0, 359, 1, v => { data.rampAngle = v; onGeomChange(); });
+        this.numRow('Ramp Width°', data.rampWidth, 10, 180, 1, v => { data.rampWidth = v; onGeomChange(); });
+      }
+    }
+
+    // Spiral sub-section
+    if (data.stepApplyToAll && data.wallProfile === 'spiral') {
+      const subHead = document.createElement('div'); subHead.className = 'prop-sub-section';
+      subHead.textContent = '— Spiral Options —'; this.content.appendChild(subHead);
+
+      this.numRow('Turns', data.spiralTurns, 0.5, 4, 0.5, v => { data.spiralTurns = v; onFullChange(); });
+      this.numRow('Helices', data.spiralCount, 1, 4, 1, v => { data.spiralCount = Math.round(v); onFullChange(); });
+      this.toggleRow('Clockwise', data.spiralClockwise, v => { data.spiralClockwise = v; onFullChange(); });
+      this.numRow('Ledge Width cm', data.spiralLedgeWidth, 1, 8, 0.5, v => { data.spiralLedgeWidth = v; onFullChange(); });
+      this.numRow('Ledge Height cm', data.spiralLedgeHeight, 0.3, 3, 0.1, v => { data.spiralLedgeHeight = v; onFullChange(); });
+      this.numRow('Wall Radius', data.spiralRadiusFrac, 0.3, 1, 0.05, v => { data.spiralRadiusFrac = v; onFullChange(); });
+    }
+  }
+
+  private _edgeCount(data: ArenaData): number {
+    const s = data.openingShape;
+    if (s === 'circle' || s === 'ellipse') return data.stepArcDivisions;
+    if (s === 'rectangle') return 4;
+    if (s === 'hexagon') return 6;
+    if (s === 'triangle') return 3;
+    if (s === 'star') return Math.max(3, Math.min(12, Math.round(data.sides)));
+    return 4;
+  }
+
+  private _edgeLabels(data: ArenaData, count: number): string[] {
+    const s = data.openingShape;
+    if (s === 'rectangle') return ['N side','E side','S side','W side'];
+    if (s === 'circle' || s === 'ellipse') return Array.from({length: count}, (_,i) => `Arc ${i+1}`);
+    return Array.from({length: count}, (_,i) => `Side ${i+1}`);
   }
 
   private surfaceRow(

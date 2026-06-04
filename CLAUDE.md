@@ -304,7 +304,7 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 
 ### Save / load (localStorage)
 
-Schema version **4** (bump when adding/removing fields in ArenaData/PitData/ZoneData). Old versions are discarded on load. Key: `bey_arena_arena_sandbox`. `PitSave` no longer has `wallProfile`, `isMoat`, or inner moat fields (removed in v4). `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
+Key: `bey_arena_arena_sandbox`. Corrupted/unparseable data is discarded on load. `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
 
 ---
 
@@ -393,7 +393,6 @@ Presentation meshes come from imported STL files (one per part). If no STL is lo
 ### Persistence (Beyblade Builder)
 
 - localStorage key: `bey_beyblade_builder`
-- Schema version: `1` (in `BeybladeBuildConfig.version`). Discard and reset if version mismatch.
 - Saved on every `CommandHistory.execute()` call and on axis property changes.
 - **Reset Builder** (`✕ Reset` button): stops animation, disposes all meshes, calls `store.reset()`, clears history, clears localStorage.
 - Camera view key (from Sandbox base): `bey_view_beyblade_builder` (reset via `↺ View` button).

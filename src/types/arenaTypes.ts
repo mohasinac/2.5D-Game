@@ -2,7 +2,8 @@ import * as THREE from 'three';
 
 /* ── Opening shape / wall profile types ─────────────────────────────────── */
 export type OpeningShape = 'circle' | 'ellipse' | 'rectangle' | 'hexagon' | 'triangle' | 'star';
-export type WallProfile  = 'parabolic' | 'straight';
+export type WallProfile  = 'parabolic' | 'straight' | 'step' | 'spiral';
+export type RampMode     = 'full' | 'one-side' | 'zigzag' | 'none';
 
 /* ── Surface material types ──────────────────────────────────────────────── */
 export type SurfaceType =
@@ -64,6 +65,25 @@ export interface ArenaData {
   innerSides:         number; innerStarInner: number;
   innerWallProfile:   WallProfile;
   innerRimOffset:     number;
+  /* Per-edge step/spiral config */
+  stepApplyToAll:     boolean;
+  stepEdgeProfiles:   WallProfile[];
+  stepArcDivisions:   1 | 2 | 4 | 8;
+  /* Step sub-options */
+  stepCount:          number;
+  stepStartDepth:     number;
+  stepRiserProfile:   'parabolic' | 'straight';
+  rampMode:           RampMode;
+  rampAngle:          number;
+  rampWidth:          number;
+  /* Spiral sub-options */
+  spiralTurns:        number;
+  spiralClockwise:    boolean;
+  spiralCount:        number;
+  spiralLedgeWidth:   number;
+  spiralLedgeHeight:  number;
+  spiralRadiusFrac:   number;
+  spiralMeshes:       THREE.Mesh[];
   /* Children */
   pitIds: string[]; zoneIds: string[];
   /* Three.js */

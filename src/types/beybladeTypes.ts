@@ -60,7 +60,6 @@ export interface GroupData {
 }
 
 export interface BeybladeBuildConfig {
-  version: 1;
   axis: AxisData;
   rootChildIds: string[];
   groups: GroupData[];

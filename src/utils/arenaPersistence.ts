@@ -1,4 +1,4 @@
-import { OpeningShape, WallProfile, SurfaceType, ZoneFill, ArenaData, PitData, ZoneData } from '../types/arenaTypes';
+import { OpeningShape, WallProfile, RampMode, SurfaceType, ZoneFill, ArenaData, PitData, ZoneData } from '../types/arenaTypes';
 
 export interface ArenaSave {
   id: string; name: string;
@@ -9,6 +9,11 @@ export interface ArenaSave {
   isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
   innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
   innerWallProfile: WallProfile; innerRimOffset: number;
+  stepApplyToAll: boolean; stepEdgeProfiles: WallProfile[]; stepArcDivisions: 1|2|4|8;
+  stepCount: number; stepStartDepth: number; stepRiserProfile: 'parabolic'|'straight';
+  rampMode: RampMode; rampAngle: number; rampWidth: number;
+  spiralTurns: number; spiralClockwise: boolean; spiralCount: number;
+  spiralLedgeWidth: number; spiralLedgeHeight: number; spiralRadiusFrac: number;
   pits: PitSave[]; zones: ZoneSave[];
 }
 
@@ -34,7 +39,7 @@ export interface ZoneSave {
 }
 
 export interface ArenaConfig {
-  version: 4;
+  version: number;
   baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
 }
@@ -79,6 +84,11 @@ export function arenaToSave(
     isMoat:a.isMoat,innerRadiusX:a.innerRadiusX,innerRadiusZ:a.innerRadiusZ,
     innerOpeningShape:a.innerOpeningShape,innerSides:a.innerSides,innerStarInner:a.innerStarInner,
     innerWallProfile:a.innerWallProfile,innerRimOffset:a.innerRimOffset,
+    stepApplyToAll:a.stepApplyToAll,stepEdgeProfiles:a.stepEdgeProfiles,stepArcDivisions:a.stepArcDivisions,
+    stepCount:a.stepCount,stepStartDepth:a.stepStartDepth,stepRiserProfile:a.stepRiserProfile,
+    rampMode:a.rampMode,rampAngle:a.rampAngle,rampWidth:a.rampWidth,
+    spiralTurns:a.spiralTurns,spiralClockwise:a.spiralClockwise,spiralCount:a.spiralCount,
+    spiralLedgeWidth:a.spiralLedgeWidth,spiralLedgeHeight:a.spiralLedgeHeight,spiralRadiusFrac:a.spiralRadiusFrac,
     pits:a.pitIds.map(pid=>pitToSave(pits.get(pid)!)).filter(Boolean),
     zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
   };

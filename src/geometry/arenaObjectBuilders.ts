@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { ARENA_ELEVATED_THRESHOLD } from '../config/arenaConstants';
+import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType,
 } from '../types/arenaTypes';
@@ -13,6 +13,7 @@ import {
 import { buildScoopPair, buildScoopSeam } from './scoopBuilders';
 import { buildSurfaceMaterial, buildFillBowlMaterial, releaseMaterial } from './materialBuilders';
 import { zoneFillConfig } from './fillBuilders';
+import { buildSteppedBowl, buildSpiralLedgeMesh } from './floorProfileBuilders';
 
 /* ══════════════════════════════════════════════════════════════════════════
    Arena object builders — Facade layer.
@@ -28,26 +29,79 @@ function edgeColor(color: number): THREE.Color {
 }
 
 /* ── Arena ───────────────────────────────────────────────────────────────── */
-export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = []): [THREE.Mesh, THREE.LineSegments] {
+
+function usesStepProfile(data: ArenaData): boolean {
+  if (data.isMoat || data.posY > ARENA_ELEVATED_THRESHOLD) return false;
+  return data.stepApplyToAll
+    ? data.wallProfile === 'step'
+    : data.stepEdgeProfiles.some(p => p === 'step');
+}
+
+function usesSpiralProfile(data: ArenaData): boolean {
+  return !data.isMoat && data.stepApplyToAll && data.wallProfile === 'spiral';
+}
+
+function resolvedWallProfile(data: ArenaData): 'parabolic' | 'straight' {
+  const p = data.wallProfile;
+  if (p === 'parabolic' || p === 'spiral') return 'parabolic';
+  if (p === 'step') return data.stepRiserProfile === 'straight' ? 'straight' : 'parabolic';
+  return 'straight';
+}
+
+function buildArenaBowlGeo(data: ArenaData, pts: THREE.Vector2[], baseY: number, holes: ChildHole[]): [THREE.BufferGeometry, THREE.BufferGeometry] {
+  if (data.isMoat) {
+    const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
+    return [
+      buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY),
+      buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY),
+    ];
+  }
+  if (data.posY > ARENA_ELEVATED_THRESHOLD) {
+    return [
+      buildFreeArenaMesh(pts, data.depth, data.wallProfile, baseY, holes),
+      buildFreeArenaEdges(pts, data.depth, baseY),
+    ];
+  }
+  if (usesStepProfile(data)) {
+    const { geo, edgeGeo } = buildSteppedBowl(data, baseY, holes);
+    return [geo, edgeGeo];
+  }
+  const wp = resolvedWallProfile(data);
+  const meshGeo = wp === 'parabolic'
+    ? buildParabolicBowl(pts, data.depth, baseY, holes)
+    : buildStraightCut(pts, data.depth, baseY);
+  const egeo = buildEdgeLines(pts, data.depth, wp, baseY);
+  return [meshGeo, egeo];
+}
+
+function buildSpiralMeshes(data: ArenaData, scene: THREE.Scene): THREE.Mesh[] {
+  const meshes: THREE.Mesh[] = [];
+  if (!usesSpiralProfile(data)) return meshes;
+  for (let hi = 0; hi < data.spiralCount; hi++) {
+    const m = buildSpiralLedgeMesh(data, 0, hi, data.spiralCount);
+    m.position.set(data.posX, data.posY, data.posZ);
+    m.rotation.y = data.rotY;
+    scene.add(m);
+    meshes.push(m);
+  }
+  return meshes;
+}
+
+function disposeSpiralMeshes(data: ArenaData, scene: THREE.Scene | null): void {
+  for (const m of data.spiralMeshes) {
+    if (scene) scene.remove(m);
+    m.geometry.dispose();
+    (m.material as THREE.Material).dispose();
+  }
+  data.spiralMeshes = [];
+}
+
+export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = [], scene?: THREE.Scene): [THREE.Mesh, THREE.LineSegments] {
   const pts = shapePoints(data);
   const mat = buildSurfaceMaterial({ color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale });
   const baseY = 0;
 
-  let meshGeo: THREE.BufferGeometry;
-  let edgeGeo: THREE.BufferGeometry;
-  if (data.isMoat) {
-    const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
-    meshGeo = buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY);
-    edgeGeo = buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY);
-  } else if (data.posY > ARENA_ELEVATED_THRESHOLD) {
-    meshGeo = buildFreeArenaMesh(pts, data.depth, data.wallProfile, baseY, holes);
-    edgeGeo = buildFreeArenaEdges(pts, data.depth, baseY);
-  } else {
-    meshGeo = data.wallProfile === 'parabolic'
-      ? buildParabolicBowl(pts, data.depth, baseY, holes)
-      : buildStraightCut(pts, data.depth, baseY);
-    edgeGeo = buildEdgeLines(pts, data.depth, data.wallProfile, baseY);
-  }
+  const [meshGeo, edgeGeo] = buildArenaBowlGeo(data, pts, baseY, holes);
 
   const mesh = new THREE.Mesh(meshGeo, mat);
   mesh.position.set(data.posX, data.posY, data.posZ);
@@ -55,27 +109,28 @@ export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = []): [TH
   const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: edgeColor(data.color) }));
   edges.position.set(data.posX, data.posY, data.posZ);
   edges.rotation.y = data.rotY;
+
+  if (scene) data.spiralMeshes = buildSpiralMeshes(data, scene);
+
   return [mesh, edges];
 }
 
-export function applyArena(data: ArenaData, holes: ChildHole[] = []): void {
+export function applyArena(data: ArenaData, holes: ChildHole[] = [], scene?: THREE.Scene): void {
   const pts = shapePoints(data);
   data.mesh.geometry.dispose(); data.edges.geometry.dispose();
   const baseY = 0;
-  if (data.isMoat) {
-    const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
-    data.mesh.geometry  = buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY);
-    data.edges.geometry = buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY);
-  } else if (data.posY > ARENA_ELEVATED_THRESHOLD) {
-    data.mesh.geometry  = buildFreeArenaMesh(pts, data.depth, data.wallProfile, baseY, holes);
-    data.edges.geometry = buildFreeArenaEdges(pts, data.depth, baseY);
-  } else {
-    data.mesh.geometry  = data.wallProfile === 'parabolic'
-      ? buildParabolicBowl(pts, data.depth, baseY, holes)
-      : buildStraightCut(pts, data.depth, baseY);
-    data.edges.geometry = buildEdgeLines(pts, data.depth, data.wallProfile, baseY);
-  }
+
+  const [meshGeo, edgeGeo] = buildArenaBowlGeo(data, pts, baseY, holes);
+  data.mesh.geometry  = meshGeo;
+  data.edges.geometry = edgeGeo;
+
   for (const obj of [data.mesh, data.edges]) { obj.position.set(data.posX, data.posY, data.posZ); obj.rotation.y = data.rotY; }
+
+  // Spiral meshes lifecycle
+  if (scene) {
+    disposeSpiralMeshes(data, scene);
+    data.spiralMeshes = buildSpiralMeshes(data, scene);
+  }
 }
 
 /**
@@ -224,6 +279,14 @@ export function defaultArena(name: string): ArenaData {
     isMoat: false, innerRadiusX: 25, innerRadiusZ: 25,
     innerOpeningShape: 'circle', innerSides: 5, innerStarInner: 0.5,
     innerWallProfile: 'parabolic', innerRimOffset: 0,
+    stepApplyToAll: true, stepEdgeProfiles: [], stepArcDivisions: DEFAULT_STEP_ARC_DIVISIONS,
+    stepCount: DEFAULT_STEP_COUNT, stepStartDepth: DEFAULT_STEP_START_DEPTH,
+    stepRiserProfile: DEFAULT_STEP_RISER,
+    rampMode: 'full', rampAngle: DEFAULT_RAMP_ANGLE, rampWidth: DEFAULT_RAMP_WIDTH,
+    spiralTurns: DEFAULT_SPIRAL_TURNS, spiralClockwise: true,
+    spiralCount: DEFAULT_SPIRAL_COUNT, spiralLedgeWidth: DEFAULT_SPIRAL_LEDGE_W,
+    spiralLedgeHeight: DEFAULT_SPIRAL_LEDGE_H, spiralRadiusFrac: DEFAULT_SPIRAL_RADIUS_FRAC,
+    spiralMeshes: [],
     pitIds: [], zoneIds: [],
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,

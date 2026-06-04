@@ -4,7 +4,11 @@ import { gameConfirm } from '../utils/dialog';
 import {
   APOTHEM, DEG2RAD,
   DEFAULT_BASE_HEIGHT, DEFAULT_BASE_SIDES, DEFAULT_BASE_COLOR, DEFAULT_BASE_TILE,
-  ARENA_ELEVATED_THRESHOLD,
+  ARENA_ELEVATED_THRESHOLD, ARENA_SAVE_VERSION,
+  DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER,
+  DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS,
+  DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
+  DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
 } from '../config/arenaConstants';
 import {
   OpeningShape, WallProfile, SurfaceType, ChildHole, IslandHole,
@@ -157,7 +161,7 @@ export class ArenaSandbox extends Sandbox {
 
   private serializeConfig(): string {
     const config: ArenaConfig = {
-      version: 4,
+      version: ARENA_SAVE_VERSION,
       baseConfig: { ...this.baseConfig },
       arenaSeq: this.arenaSeq, pitSeq: this.pitSeq, zoneSeq: this.zoneSeq,
       arenas: [...this.arenas.entries()].map(([id,a]) => arenaToSave(id,a,this.pits,this.zones)),
@@ -247,6 +251,12 @@ export class ArenaSandbox extends Sandbox {
 
   /* ── Dispose helpers ── */
   private disposeArena(arena: ArenaData): void {
+    for(const m of arena.spiralMeshes ?? []){
+      this.removeFromScene(m);
+      m.geometry.dispose();
+      (m.material as THREE.Material).dispose();
+    }
+    arena.spiralMeshes = [];
     arena.mesh.geometry.dispose();
     (arena.mesh.material as THREE.Material).dispose();
     arena.edges.geometry.dispose();
@@ -306,7 +316,7 @@ export class ArenaSandbox extends Sandbox {
     this.baseEdges.rotation.y=align; this.baseEdges.position.y=-H/2; fullGeo.dispose();
     const newTopMat=buildSurfaceMaterial({color:this.baseConfig.color,surface:this.baseConfig.surface,customTileData:this.baseConfig.customTileData,tileScale:this.baseConfig.tileScale});
     (this.topFaceMesh.material as THREE.Material).dispose(); this.topFaceMesh.material=newTopMat;
-    for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena)); this.updateArenaChildren(arena); this.updateArenaRimSeam(arena); }
+    for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaRimSeam(arena); }
   }
 
   private updateTopFace(): void {
@@ -320,7 +330,7 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private getArenaHoles(arena: ArenaData): ChildHole[] {
-    if (arena.isMoat || arena.wallProfile !== 'parabolic') return [];
+    if (arena.isMoat || arena.wallProfile === 'straight' || arena.wallProfile === 'spiral') return [];
     const holes: ChildHole[] = [];
     for (const pid of arena.pitIds) {
       const p = this.pits.get(pid); if (!p) continue;
@@ -489,8 +499,8 @@ export class ArenaSandbox extends Sandbox {
       this.props.showArena(
         arena,
         this.baseConfig.height,
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena)); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena)); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.renderProps(); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.renderProps(); this.saveArena(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
@@ -527,10 +537,6 @@ export class ArenaSandbox extends Sandbox {
     this.props.showEmpty();
   }
 
-  private getScene(): THREE.Scene | null {
-    return (this as unknown as { scene: THREE.Scene | null }).scene;
-  }
-
   private toggleMode(): void {
     this.solidMode=!this.solidMode;
     this.modeBtn.textContent=this.solidMode?'● Solid':'○ Mesh';
@@ -541,6 +547,7 @@ export class ArenaSandbox extends Sandbox {
       if(arena.floorMesh) arena.floorMesh.visible=this.solidMode;
       if(arena.islandMesh) arena.islandMesh.visible=this.solidMode;
       if(arena.rimSeamMesh) arena.rimSeamMesh.visible=this.solidMode;
+      for(const m of arena.spiralMeshes??[]) m.visible=this.solidMode;
     }
     for(const pit of this.pits.values()){
       pit.mesh.visible=this.solidMode;
@@ -557,11 +564,11 @@ export class ArenaSandbox extends Sandbox {
     this.captureUndo();
     const id=`arena-${++this.arenaSeq}`;
     const data=defaultArena(`Arena ${this.arenaSeq}`);
-    const[mesh,edges]=buildArenaObjects(data,[]);
+    const[mesh,edges]=buildArenaObjects(data,[],this.getScene()??undefined);
     data.mesh=mesh; data.edges=edges;
     const rim=buildArenaRimSeam(data,this.baseConfig.color,this.baseConfig.surface,this.baseConfig.customTileData,this.baseConfig.tileScale);
     data.rimSeamMesh=rim;
-    this.addToScene(mesh,edges,rim);
+    this.addToScene(mesh,edges,rim,...(data.spiralMeshes??[]));
     this.sceneObjects.set(id,[mesh,edges,rim]);
     this.arenas.set(id,data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
@@ -870,15 +877,15 @@ export class ArenaSandbox extends Sandbox {
   private restoreZoneSave(zs: ZoneSave, arenaId: string, parentId: string, data: ArenaData): void {
     const zone:ZoneData={
       id:zs.id,name:zs.name,parentArenaId:arenaId,
-      parentZoneId:zs.parentZoneId??null,
+      parentZoneId:zs.parentZoneId,
       openingShape:zs.openingShape,
       radiusX:zs.radiusX,radiusZ:zs.radiusZ,depth:zs.depth,sides:zs.sides,starInner:zs.starInner,
       color:zs.color,surface:zs.surface,customTileData:zs.customTileData,tileScale:zs.tileScale,
       fill:zs.fill,fillColor:zs.fillColor,fillOpacity:zs.fillOpacity,
       posR:zs.posR,posAngle:zs.posAngle,rotY:zs.rotY,
       isMoat:zs.isMoat,innerRadiusX:zs.innerRadiusX,innerRadiusZ:zs.innerRadiusZ,
-      innerOpeningShape:zs.innerOpeningShape??zs.openingShape,innerSides:zs.innerSides??zs.sides,innerStarInner:zs.innerStarInner??zs.starInner,
-      innerWallProfile:zs.innerWallProfile??'parabolic',innerRimOffset:zs.innerRimOffset??0,
+      innerOpeningShape:zs.innerOpeningShape,innerSides:zs.innerSides,innerStarInner:zs.innerStarInner,
+      innerWallProfile:zs.innerWallProfile,innerRimOffset:zs.innerRimOffset,
       pitIds:[],zoneIds:[],
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
@@ -895,8 +902,8 @@ export class ArenaSandbox extends Sandbox {
         {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(zs.id,'zone')},
       ],
     });
-    for(const cps of (zs.pits??[]))  this.restorePitSave(cps,arenaId,zs.id,data);
-    for(const czs of (zs.zones??[])) this.restoreZoneSave(czs,arenaId,zs.id,data);
+    for(const cps of zs.pits)  this.restorePitSave(cps,arenaId,zs.id,data);
+    for(const czs of zs.zones) this.restoreZoneSave(czs,arenaId,zs.id,data);
   }
 
   /** Core load — restore arenas from a config object (shared by loadArena and undo/redo). */
@@ -906,10 +913,26 @@ export class ArenaSandbox extends Sandbox {
         name:as.name,openingShape:as.openingShape,wallProfile:as.wallProfile,
         radiusX:as.radiusX,radiusZ:as.radiusZ,depth:as.depth,sides:as.sides,starInner:as.starInner,
         color:as.color,surface:as.surface,customTileData:as.customTileData,tileScale:as.tileScale,
-        posX:as.posX,posZ:as.posZ,posY:as.posY??0,rotY:as.rotY,
+        posX:as.posX,posZ:as.posZ,posY:as.posY,rotY:as.rotY,
         isMoat:as.isMoat,innerRadiusX:as.innerRadiusX,innerRadiusZ:as.innerRadiusZ,
-        innerOpeningShape:as.innerOpeningShape??as.openingShape,innerSides:as.innerSides??as.sides,innerStarInner:as.innerStarInner??as.starInner,
-        innerWallProfile:as.innerWallProfile??'parabolic',innerRimOffset:as.innerRimOffset??0,
+        innerOpeningShape:as.innerOpeningShape,innerSides:as.innerSides,innerStarInner:as.innerStarInner,
+        innerWallProfile:as.innerWallProfile,innerRimOffset:as.innerRimOffset,
+        stepApplyToAll:   as.stepApplyToAll   ?? true,
+        stepEdgeProfiles: as.stepEdgeProfiles ?? [],
+        stepArcDivisions: as.stepArcDivisions ?? DEFAULT_STEP_ARC_DIVISIONS,
+        stepCount:        as.stepCount        ?? DEFAULT_STEP_COUNT,
+        stepStartDepth:   as.stepStartDepth   ?? DEFAULT_STEP_START_DEPTH,
+        stepRiserProfile: as.stepRiserProfile ?? DEFAULT_STEP_RISER,
+        rampMode:         as.rampMode         ?? 'full',
+        rampAngle:        as.rampAngle        ?? DEFAULT_RAMP_ANGLE,
+        rampWidth:        as.rampWidth        ?? DEFAULT_RAMP_WIDTH,
+        spiralTurns:      as.spiralTurns      ?? DEFAULT_SPIRAL_TURNS,
+        spiralClockwise:  as.spiralClockwise  ?? true,
+        spiralCount:      as.spiralCount      ?? DEFAULT_SPIRAL_COUNT,
+        spiralLedgeWidth: as.spiralLedgeWidth ?? DEFAULT_SPIRAL_LEDGE_W,
+        spiralLedgeHeight:as.spiralLedgeHeight?? DEFAULT_SPIRAL_LEDGE_H,
+        spiralRadiusFrac: as.spiralRadiusFrac ?? DEFAULT_SPIRAL_RADIUS_FRAC,
+        spiralMeshes:     [],
         pitIds:[],zoneIds:[],
         mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
         floorMesh:null,islandMesh:null,rimSeamMesh:null,
@@ -928,12 +951,12 @@ export class ArenaSandbox extends Sandbox {
       for(const zs of as.zones) this.restoreZoneSave(zs, as.id, as.id, data);
 
       const holes=this.getArenaHoles(data);
-      const[mesh,edges]=buildArenaObjects(data,holes);
+      const[mesh,edges]=buildArenaObjects(data,holes,this.getScene()??undefined);
       data.mesh=mesh; data.edges=edges;
       const rim=buildArenaRimSeam(data,this.baseConfig.color,this.baseConfig.surface,this.baseConfig.customTileData,this.baseConfig.tileScale);
       data.rimSeamMesh=rim;
-      this.addToScene(mesh,edges,rim);
-      const objs:THREE.Object3D[]=[mesh,edges,rim];
+      this.addToScene(mesh,edges,rim,...(data.spiralMeshes??[]));
+      const objs:THREE.Object3D[]=[mesh,edges,rim,...(data.spiralMeshes??[])];
 
       if(data.isMoat){
         const islandGeo=buildIslandCapGeo(data);
@@ -964,7 +987,7 @@ export class ArenaSandbox extends Sandbox {
     try {
       const raw=localStorage.getItem(this.arenaStorageKey); if(!raw) return;
       const cfg=JSON.parse(raw) as ArenaConfig;
-      if(cfg.version!==4){ localStorage.removeItem(this.arenaStorageKey); return; }
+      if(cfg.version !== ARENA_SAVE_VERSION){ localStorage.removeItem(this.arenaStorageKey); return; }
       this.baseConfig={...this.baseConfig,...cfg.baseConfig};
       this.rebuildBase();
       this.arenaSeq=cfg.arenaSeq; this.pitSeq=cfg.pitSeq; this.zoneSeq=cfg.zoneSeq;
