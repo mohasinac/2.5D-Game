@@ -4,6 +4,18 @@
 Phaser (2D RPG layer) + Three.js (3D battle/sandbox rendering) game.
 Stack: Vite + TypeScript + Three.js + Phaser (Phaser added when RPG scenes begin).
 
+## Feature audit — MUST read before any Arena Sandbox work
+
+Many Arena Sandbox features are not working as expected. **Before starting any task that touches Arena Sandbox, first verify the relevant feature works end-to-end.** Fix broken behavior before building on top of it.
+
+Known confirmed bugs fixed (2026-06-05):
+- Wall `rimY` was `baseConfig.height + arena.posY` instead of `arena.posY` — walls floated 30 cm above rim
+- Bridge `resolveStartPose` was passed `baseConfig.height` as `baseHeight` — bridge start Y was 30 cm too high
+
+Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
+
+---
+
 ## Style rules — MUST follow every time
 
 ### Scaling system (non-negotiable)
