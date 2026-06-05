@@ -828,8 +828,8 @@ export class ArenaSandbox extends Sandbox {
 
   private _arenaRimY(arenaId: string): number {
     const arena = this.arenas.get(arenaId);
-    if(!arena) return this.baseConfig.height;
-    return this.baseConfig.height + arena.posY;
+    if(!arena) return 0;
+    return arena.posY;
   }
 
   /** Rebuild mesh+edges for a wall and add/replace in scene. */
@@ -842,11 +842,11 @@ export class ArenaSandbox extends Sandbox {
       const arena=this.arenas.get(wall.parentId);
       if(!arena) return;
       rimPts = shapePoints(arena);
-      rimY   = this.baseConfig.height + arena.posY;
+      rimY   = arena.posY;
       cx     = arena.posX; cz = arena.posZ;
     } else if(wall.parentType==='base'){
       rimPts = [];  // base walls use basePosX/Z/rotY directly — buildWallGeometry handles it
-      rimY   = this.baseConfig.height;
+      rimY   = 0;
     } else {
       // bridge walls — not wired through applyWall (handled by applyBridgeFromSegment)
       return;
@@ -1166,7 +1166,7 @@ export class ArenaSandbox extends Sandbox {
     const bridge = this.bridges.get(seg.bridgeId);
     if(!bridge) return { ...DEFAULT_START_POSE, pos: DEFAULT_START_POSE.pos.clone(), dir: DEFAULT_START_POSE.dir.clone(), up: DEFAULT_START_POSE.up.clone() };
     let pose: SegmentPose = bridge.startRef
-      ? resolveStartPose(bridge.startRef, this.arenas, this.walls, this.baseConfig.height)
+      ? resolveStartPose(bridge.startRef, this.arenas, this.walls, 0)
       : { pos: DEFAULT_START_POSE.pos.clone(), dir: DEFAULT_START_POSE.dir.clone(), up: DEFAULT_START_POSE.up.clone() };
     for(const sid of bridge.segmentIds){
       if(sid===seg.id) break;
