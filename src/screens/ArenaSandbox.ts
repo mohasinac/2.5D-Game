@@ -43,6 +43,7 @@ import {
   pitToSave, zoneToSave, arenaToSave, wallToSave, bridgeToSave, speedLineToSave,
   obstacleToSave, trapToSave, portalToSave, rotationToSave,
 } from '../utils/arenaPersistence';
+import { DEMO_ARENA_CONFIG } from '../config/demoArenaConfig';
 import { buildObstacleObjects, applyObstacle, defaultObstacle } from '../geometry/obstacleBuilders';
 import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY } from '../geometry/trapBuilders';
 import { buildPortalObjects, applyPortal, defaultPortal, portalSurfY } from '../geometry/portalBuilders';
@@ -132,6 +133,15 @@ export class ArenaSandbox extends Sandbox {
     const resetArenaBtn = this.addTopBarButton('Reset Arena', 'Reset arena configuration');
     resetArenaBtn.className += ' reset-arena-btn';
     resetArenaBtn.addEventListener('click', ()=>{ void this.resetArena(); });
+
+    const demoBtn = this.addTopBarButton('★ Demo', 'Load sample demo arena');
+    demoBtn.className += ' load-demo-btn';
+    demoBtn.addEventListener('click', async () => {
+      const ok = await gameConfirm('Load demo arena? Current work will be replaced.');
+      if (!ok) return;
+      this._applyConfigToScene(DEMO_ARENA_CONFIG);
+      this.saveArena();
+    });
 
     this.undoBtn = this.addTopBarButton('↩ Undo', 'Undo (Ctrl+Z)');
     this.undoBtn.addEventListener('click', ()=>this.undo());
