@@ -340,7 +340,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
   bridges: [
     {
       id: 'bridge-1', name: 'Loop Bridge',
-      startRef: null,
+      startRef: { type: 'arena', id: 'arena-1', angle: 0, wallHeight: 0, freePosX: 0, freePosY: 0, freePosZ: 0, freeDirDeg: 0 },
       section: {
         width: 12, crossSection: 'flat', depth: 4,
         hasLeftWall: true, hasRightWall: false, sideWallHeight: 12,
@@ -398,7 +398,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
     },
     {
       id: 'bridge-2', name: 'Hairpin Bridge',
-      startRef: null,
+      startRef: { type: 'freepoint', id: '', angle: 0, wallHeight: 0, freePosX: 0, freePosY: 30, freePosZ: -40, freeDirDeg: 90 },
       section: {
         width: 10, crossSection: 'u_channel', depth: 5,
         hasLeftWall: false, hasRightWall: false, sideWallHeight: 10,
@@ -411,7 +411,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
       segments: [
         {
           id: 'seg-4', name: 'Ramp', orderIndex: 0, type: 'ramp',
-          length: 60, rampAngle: 15,
+          length: 60, rampAngle: 20,
           curveRadius: 30, curveAngle: 90, curveDirection: 'right', bankAngle: 0,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 60, endY: 16, endZ: 0,
@@ -495,7 +495,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
       parentId: 'arena-1', parentType: 'arena',
       shape: 'circle', variant: 'trampoline', effect: 'launch',
       dimX: 20, dimZ: 20, rotY: 0,
-      posR: 30, posAngle: 135, basePosX: 0, basePosZ: 0,
+      posR: 36, posAngle: 135, basePosX: 0, basePosZ: 0,
       forceX: 0, forceY: 80, forceZ: 0,
       damageFactor: 1, healFactor: 1, freezeDuration: 2,
       buffSurface: null,
@@ -514,7 +514,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
       parentId: 'arena-1', parentType: 'arena',
       shape: 'rectangle', variant: 'buff', effect: 'buff_zone',
       dimX: 24, dimZ: 24, rotY: 0,
-      posR: 50, posAngle: 315, basePosX: 0, basePosZ: 0,
+      posR: 46, posAngle: 315, basePosX: 0, basePosZ: 0,
       forceX: 0, forceY: 0, forceZ: 0,
       damageFactor: 1, healFactor: 1, freezeDuration: 2,
       buffSurface: 'sand',
