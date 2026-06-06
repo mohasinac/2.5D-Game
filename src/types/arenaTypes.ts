@@ -1,19 +1,15 @@
 import * as THREE from 'three';
+export type {
+  PresentConfig, ParticlePreset, ParticleConfig, ParticleSystem,
+  WeatherPreset, WeatherSystem,
+} from './sharedTypes';
+export { defaultPresentConfig, defaultParticleConfig } from './sharedTypes';
+import type { ParticlePreset, ParticleSystem, WeatherPreset, WeatherSystem } from './sharedTypes';
 
 /* ── Opening shape / wall profile types ─────────────────────────────────── */
 export type OpeningShape = 'circle' | 'ellipse' | 'rectangle' | 'hexagon' | 'triangle' | 'star';
 export type WallProfile  = 'parabolic' | 'straight' | 'step' | 'spiral';
 export type RampMode     = 'full' | 'one-side' | 'zigzag' | 'none';
-
-/* ── Particle VFX preset ─────────────────────────────────────────────────── */
-export type ParticlePreset = 'none' | 'embers' | 'snow' | 'sparks' | 'dust' | 'bubbles' | 'void_motes';
-
-/** Runtime particle system — returned by particleBuilders.ts, stored on ArenaData/ZoneData. Not saved. */
-export interface ParticleSystem {
-  points: THREE.Points;
-  tick(dt: number): void;
-  dispose(): void;
-}
 
 /* ── Surface material types ──────────────────────────────────────────────── */
 export type SurfaceType =
@@ -94,13 +90,20 @@ export interface ArenaData {
   stepApplyToAll:     boolean;
   stepEdgeProfiles:   WallProfile[];
   stepArcDivisions:   1 | 2 | 4 | 8;
-  /* Step sub-options */
+  /* Step sub-options (outer bowl / non-moat) */
   stepCount:          number;
   stepStartDepth:     number;
   stepRiserProfile:   'parabolic' | 'straight';
   rampMode:           RampMode;
   rampAngle:          number;
   rampWidth:          number;
+  /* Moat inner-wall step sub-options (separate from outer; max = (depth+innerRimOffset)/10) */
+  innerStepCount:         number;
+  innerStepStartDepth:    number;
+  innerStepRiserProfile:  'parabolic' | 'straight';
+  innerRampMode:          RampMode;
+  innerRampAngle:         number;
+  innerRampWidth:         number;
   /* Spiral sub-options */
   spiralTurns:        number;
   spiralClockwise:    boolean;
@@ -109,6 +112,13 @@ export interface ArenaData {
   spiralLedgeHeight:  number;
   spiralRadiusFrac:   number;
   spiralMeshes:       THREE.Mesh[];
+  /* Moat inner-wall spiral sub-options */
+  innerSpiralTurns:        number;
+  innerSpiralClockwise:    boolean;
+  innerSpiralCount:        number;
+  innerSpiralLedgeWidth:   number;
+  innerSpiralLedgeHeight:  number;
+  innerSpiralRadiusFrac:   number;
   /* Steps / spiral appearance overrides */
   stepsColor: number | null;
   stepsSurface: SurfaceType | null;
@@ -123,6 +133,13 @@ export interface ArenaData {
   lightRange: number;
   /* Particle VFX */
   particlePreset: ParticlePreset;
+  /* Weather system */
+  weatherPreset:    WeatherPreset;
+  windEnabled:      boolean;
+  windDirectionDeg: number;
+  windStrengthCms:  number;
+  windGustInterval: number;
+  windGustMult:     number;
   /* Presentation STL overlay */
   presentStlb64: string | null;
   presentColor: number;
@@ -135,6 +152,7 @@ export interface ArenaData {
   rimSeamMesh: THREE.Mesh | null;
   light: THREE.PointLight | null;
   particleSystem: ParticleSystem | null;
+  weatherSystem:  WeatherSystem | null;
 }
 
 export interface PitData {
@@ -168,6 +186,13 @@ export interface ZoneData {
   innerSides: number; innerStarInner: number;
   innerWallProfile: WallProfile;
   innerRimOffset: number;
+  /* Moat inner-wall step sub-options */
+  innerStepCount: number; innerStepStartDepth: number;
+  innerStepRiserProfile: 'parabolic' | 'straight';
+  innerRampMode: RampMode; innerRampAngle: number; innerRampWidth: number;
+  /* Moat inner-wall spiral sub-options */
+  innerSpiralTurns: number; innerSpiralClockwise: boolean; innerSpiralCount: number;
+  innerSpiralLedgeWidth: number; innerSpiralLedgeHeight: number; innerSpiralRadiusFrac: number;
   pitIds: string[]; zoneIds: string[]; speedLineIds: string[];
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   seamMesh: THREE.Mesh;
@@ -663,8 +688,8 @@ export interface ObstacleData {
    ══════════════════════════════════════════════════════════════════════════ */
 
 export type TrapShape   = 'rectangle' | 'circle' | 'ellipse' | 'hexagon';
-export type TrapEffect  = 'damage' | 'heal' | 'launch' | 'reverse_controls' | 'freeze' | 'buff_zone' | 'hidden_pit' | 'chomper';
-export type TrapVariant = 'generic' | 'spike' | 'trampoline' | 'hammer' | 'saw' | 'buff' | 'chomper' | 'hidden_pit';
+export type TrapEffect  = 'damage' | 'heal' | 'launch' | 'reverse_controls' | 'freeze' | 'buff_zone' | 'hidden_pit' | 'chomper' | 'gravity_pull';
+export type TrapVariant = 'generic' | 'spike' | 'trampoline' | 'hammer' | 'saw' | 'buff' | 'chomper' | 'hidden_pit' | 'gravity_pull';
 
 export type TrapTierEffect =
   | 'friction'
@@ -707,6 +732,12 @@ export interface TrapData {
   activationLimit: number;
   speedPathId: string | null;
   durationTiers: TrapDurationTier[];
+  /* Gravity pull effect parameters */
+  gravityRange:         number;
+  gravityStrength:      number;
+  gravityMode:          'continuous' | 'pulse' | 'conditional';
+  gravityPulseInterval: number;
+  gravityPulseWidth:    number;
   baseMaterial: ArenaMaterial;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number;
@@ -715,6 +746,8 @@ export interface TrapData {
   presentColor: number;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   variantMesh: THREE.Mesh | null;
+  /** Runtime-only pulse timer — not saved. */
+  _gravityTimer?: number;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

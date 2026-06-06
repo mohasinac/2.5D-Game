@@ -1,6 +1,6 @@
 import {
   OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill,
-  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset,
+  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset, WeatherPreset,
   SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
   SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
   SpeedLinePresetType, SpeedLinePresetParams, SpeedLineRamp,
@@ -74,6 +74,10 @@ export interface ZoneSave {
   isMoat: boolean; innerRadiusX: number; innerRadiusZ: number;
   innerOpeningShape: OpeningShape; innerSides: number; innerStarInner: number;
   innerWallProfile: WallProfile; innerRimOffset: number;
+  innerStepCount?: number; innerStepStartDepth?: number; innerStepRiserProfile?: 'parabolic'|'straight';
+  innerRampMode?: RampMode; innerRampAngle?: number; innerRampWidth?: number;
+  innerSpiralTurns?: number; innerSpiralClockwise?: boolean; innerSpiralCount?: number;
+  innerSpiralLedgeWidth?: number; innerSpiralLedgeHeight?: number; innerSpiralRadiusFrac?: number;
   pits: PitSave[]; zones: ZoneSave[];
 }
 
@@ -156,12 +160,18 @@ export interface ArenaSave {
   stepApplyToAll: boolean; stepEdgeProfiles: WallProfile[]; stepArcDivisions: 1|2|4|8;
   stepCount: number; stepStartDepth: number; stepRiserProfile: 'parabolic'|'straight';
   rampMode: RampMode; rampAngle: number; rampWidth: number;
+  innerStepCount?: number; innerStepStartDepth?: number; innerStepRiserProfile?: 'parabolic'|'straight';
+  innerRampMode?: RampMode; innerRampAngle?: number; innerRampWidth?: number;
   spiralTurns: number; spiralClockwise: boolean; spiralCount: number;
   spiralLedgeWidth: number; spiralLedgeHeight: number; spiralRadiusFrac: number;
+  innerSpiralTurns?: number; innerSpiralClockwise?: boolean; innerSpiralCount?: number;
+  innerSpiralLedgeWidth?: number; innerSpiralLedgeHeight?: number; innerSpiralRadiusFrac?: number;
   stepsColor: number | null; stepsSurface: SurfaceType | null; stepsCustomTileData: string | null;
   spiralColor: number | null; spiralSurface: SurfaceType | null; spiralCustomTileData: string | null;
   lightColor: number; lightIntensity: number; lightPosY: number; lightRange: number;
   particlePreset: ParticlePreset;
+  weatherPreset?: WeatherPreset; windEnabled?: boolean; windDirectionDeg?: number;
+  windStrengthCms?: number; windGustInterval?: number; windGustMult?: number;
   presentStlb64: string | null; presentColor: number;
   pits: PitSave[]; zones: ZoneSave[];
   walls: WallSave[];   // rim walls attached to this arena
@@ -199,6 +209,9 @@ export interface TrapSave {
   isPeriodic: boolean; safeInterval: number; unsafeInterval: number;
   activationLimit: number; speedPathId: string | null;
   durationTiers: TrapDurationTierSave[];
+  gravityRange?: number; gravityStrength?: number;
+  gravityMode?: 'continuous' | 'pulse' | 'conditional';
+  gravityPulseInterval?: number; gravityPulseWidth?: number;
   baseMaterial: ArenaMaterial;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number;
@@ -315,6 +328,10 @@ export function zoneToSave(z: ZoneData, pits: Map<string, PitData>, zones: Map<s
     isMoat:z.isMoat,innerRadiusX:z.innerRadiusX,innerRadiusZ:z.innerRadiusZ,
     innerOpeningShape:z.innerOpeningShape,innerSides:z.innerSides,innerStarInner:z.innerStarInner,
     innerWallProfile:z.innerWallProfile,innerRimOffset:z.innerRimOffset,
+    innerStepCount:z.innerStepCount,innerStepStartDepth:z.innerStepStartDepth,innerStepRiserProfile:z.innerStepRiserProfile,
+    innerRampMode:z.innerRampMode,innerRampAngle:z.innerRampAngle,innerRampWidth:z.innerRampWidth,
+    innerSpiralTurns:z.innerSpiralTurns,innerSpiralClockwise:z.innerSpiralClockwise,innerSpiralCount:z.innerSpiralCount,
+    innerSpiralLedgeWidth:z.innerSpiralLedgeWidth,innerSpiralLedgeHeight:z.innerSpiralLedgeHeight,innerSpiralRadiusFrac:z.innerSpiralRadiusFrac,
     pits:z.pitIds.map(id=>{ const c=pits.get(id); return c?pitToSave(c):null!; }).filter(Boolean),
     zones:z.zoneIds.map(id=>{ const c=zones.get(id); return c?zoneToSave(c,pits,zones):null!; }).filter(Boolean),
   };
@@ -338,12 +355,18 @@ export function arenaToSave(
     stepApplyToAll:a.stepApplyToAll,stepEdgeProfiles:a.stepEdgeProfiles,stepArcDivisions:a.stepArcDivisions,
     stepCount:a.stepCount,stepStartDepth:a.stepStartDepth,stepRiserProfile:a.stepRiserProfile,
     rampMode:a.rampMode,rampAngle:a.rampAngle,rampWidth:a.rampWidth,
+    innerStepCount:a.innerStepCount,innerStepStartDepth:a.innerStepStartDepth,innerStepRiserProfile:a.innerStepRiserProfile,
+    innerRampMode:a.innerRampMode,innerRampAngle:a.innerRampAngle,innerRampWidth:a.innerRampWidth,
     spiralTurns:a.spiralTurns,spiralClockwise:a.spiralClockwise,spiralCount:a.spiralCount,
     spiralLedgeWidth:a.spiralLedgeWidth,spiralLedgeHeight:a.spiralLedgeHeight,spiralRadiusFrac:a.spiralRadiusFrac,
+    innerSpiralTurns:a.innerSpiralTurns,innerSpiralClockwise:a.innerSpiralClockwise,innerSpiralCount:a.innerSpiralCount,
+    innerSpiralLedgeWidth:a.innerSpiralLedgeWidth,innerSpiralLedgeHeight:a.innerSpiralLedgeHeight,innerSpiralRadiusFrac:a.innerSpiralRadiusFrac,
     stepsColor:a.stepsColor,stepsSurface:a.stepsSurface,stepsCustomTileData:a.stepsCustomTileData,
     spiralColor:a.spiralColor,spiralSurface:a.spiralSurface,spiralCustomTileData:a.spiralCustomTileData,
     lightColor:a.lightColor,lightIntensity:a.lightIntensity,lightPosY:a.lightPosY,lightRange:a.lightRange,
     particlePreset:a.particlePreset,
+    weatherPreset:a.weatherPreset,windEnabled:a.windEnabled,windDirectionDeg:a.windDirectionDeg,
+    windStrengthCms:a.windStrengthCms,windGustInterval:a.windGustInterval,windGustMult:a.windGustMult,
     presentStlb64:a.presentStlb64,presentColor:a.presentColor,
     pits:a.pitIds.map(pid=>pitToSave(pits.get(pid)!)).filter(Boolean),
     zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
@@ -459,6 +482,8 @@ export function trapToSave(t: TrapData): TrapSave {
       thresholdSeconds:d.thresholdSeconds, tierEffect:d.tierEffect,
       rpmLossFactor:d.rpmLossFactor, speedFactor:d.speedFactor, notes:d.notes,
     })),
+    gravityRange:t.gravityRange, gravityStrength:t.gravityStrength,
+    gravityMode:t.gravityMode, gravityPulseInterval:t.gravityPulseInterval, gravityPulseWidth:t.gravityPulseWidth,
     baseMaterial:t.baseMaterial,
     color:t.color, surface:t.surface, customTileData:t.customTileData, tileScale:t.tileScale,
     emissiveColor:t.emissiveColor, emissiveIntensity:t.emissiveIntensity,

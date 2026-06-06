@@ -17,7 +17,7 @@ export const SEAM_TRANSITION_WIDTH    = 2.0;  // cm — seam collar outward widt
 export const SEAM_RINGS               = 6;    // ring count in seam transition strip
 
 /* ── Save schema version ─────────────────────────────────────────────────── */
-export const ARENA_SAVE_VERSION = 8;
+export const ARENA_SAVE_VERSION = 9;
 
 /* ── Arena physical material default ────────────────────────────────────── */
 export const DEFAULT_ARENA_MATERIAL = 'abs' as const;

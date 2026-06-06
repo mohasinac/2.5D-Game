@@ -66,8 +66,11 @@ export abstract class AbstractPropertiesPanel {
     num.step = String(step);
     num.value = initVal;
 
-    // Slider: live — dragging is intentional; sync number field
+    // Slider: sync number display while dragging; commit only on release
     slider.addEventListener('input', () => {
+      num.value = String(parseFloat(slider.value) || 0);
+    });
+    slider.addEventListener('change', () => {
       const v = parseFloat(slider.value) || 0;
       num.value = String(v);
       onChange(v);

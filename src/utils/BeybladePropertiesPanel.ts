@@ -1,5 +1,6 @@
 import { AbstractPropertiesPanel } from './AbstractPropertiesPanel';
 import { AxisData, PartData, SectorData, GroupData, BeyMaterial } from '../types/beybladeTypes';
+import { PresentConfig, ParticleConfig, ParticlePreset } from '../types/sharedTypes';
 
 const MATERIALS: { value: BeyMaterial; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
@@ -45,7 +46,6 @@ export class BeybladePropertiesPanel extends AbstractPropertiesPanel {
     part: PartData,
     onChange: (changes: Partial<PartData>) => void,
     onCut: (count: number) => void,
-    onImportSTL: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -105,9 +105,81 @@ export class BeybladePropertiesPanel extends AbstractPropertiesPanel {
       this.readRow('Sectors', String(part.sectorIds.length));
     }
 
-    this.section('PRESENTATION');
-    this.colorRow('Present color', part.presentationColor, v => onChange({ presentationColor: v }));
-    this.buttonRow('STL model', part.presentationSTLb64 ? '✓ Replace STL' : 'Import STL…', () => onImportSTL());
+  }
+
+  // ── Presentation sub-node ─────────────────────────────────────────────────
+
+  showPresentation(
+    data: PresentConfig,
+    onChange: () => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('STL MODEL');
+    this.buttonRow('', data.stlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { data.stlb64 = b64; onChange(); });
+    });
+    if (data.stlb64) {
+      this.buttonRow('', 'Clear STL', () => { data.stlb64 = null; onStlClear?.(); onChange(); });
+    }
+
+    this.section('APPEARANCE');
+    this.colorRow('Tint Color', data.color, v => { data.color = v; onChange(); });
+
+    this.section('SCALE');
+    this.numRow('Scale X', data.scaleX, 0.01, 10, 0.01, v => { data.scaleX = v; onChange(); });
+    this.numRow('Scale Y', data.scaleY, 0.01, 10, 0.01, v => { data.scaleY = v; onChange(); });
+    this.numRow('Scale Z', data.scaleZ, 0.01, 10, 0.01, v => { data.scaleZ = v; onChange(); });
+
+    this.section('ROTATION (°)');
+    this.numRow('Rot X', data.rotX, -180, 180, 1, v => { data.rotX = v; onChange(); });
+    this.numRow('Rot Y', data.rotY, -180, 180, 1, v => { data.rotY = v; onChange(); });
+    this.numRow('Rot Z', data.rotZ, -180, 180, 1, v => { data.rotZ = v; onChange(); });
+
+    this.section('OFFSET (cm)');
+    this.numRow('Off X', data.offX, -50, 50, 0.1, v => { data.offX = v; onChange(); });
+    this.numRow('Off Y', data.offY, -50, 50, 0.1, v => { data.offY = v; onChange(); });
+    this.numRow('Off Z', data.offZ, -50, 50, 0.1, v => { data.offZ = v; onChange(); });
+  }
+
+  // ── Particle sub-node ─────────────────────────────────────────────────────
+
+  showParticle(
+    data: ParticleConfig,
+    onChange: () => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('PRESET');
+    const PRESETS: ParticlePreset[] = [
+      'none','embers','snow','sparks','dust','bubbles','void_motes',
+      'rain','fog','ash','leaves','fireflies','steam',
+    ];
+    const grid = document.createElement('div'); grid.className = 'prop-shape-grid';
+    for (const p of PRESETS) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-shape-btn' + (data.preset === p ? ' active' : '');
+      btn.textContent = p === 'none' ? '⊘ None' : p;
+      btn.addEventListener('click', () => { data.preset = p; onChange(); });
+      grid.appendChild(btn);
+    }
+    this.content.appendChild(grid);
+
+    this.section('MODE');
+    const modeRow = document.createElement('div'); modeRow.className = 'prop-profile-row';
+    for (const [m, lbl] of [['surface','Surface'],['volume','Volume']] as ['surface'|'volume', string][]) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (data.mode === m ? ' active' : '');
+      btn.textContent = lbl;
+      btn.addEventListener('click', () => { data.mode = m; onChange(); });
+      modeRow.appendChild(btn);
+    }
+    this.content.appendChild(modeRow);
+
+    this.section('DENSITY');
+    this.numRow('ppcm² / ppcm³', data.density, 0.01, 10, 0.01, v => { data.density = v; onChange(); });
   }
 
   // ── Sector ────────────────────────────────────────────────────────────────

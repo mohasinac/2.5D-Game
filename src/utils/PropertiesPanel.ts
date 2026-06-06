@@ -15,7 +15,8 @@ import {
   PortalData, PortalDestType,
   RotationData, BridgeSnapRule,
   ParticlePreset,
-  BaseFootingData,
+  BaseFootingData, WeatherPreset,
+  PresentConfig, ParticleConfig,
   SpeedLinePresetType, SpeedLineSection, SpeedLineStatModifiers, SpeedLineRampProfile,
   SpeedLineModType, SpeedLineModWaveform, SpeedLinePresetParams,
 } from '../types/arenaTypes';
@@ -99,14 +100,12 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.innerShapeGrid(data, onFullChange);
       this.section('OUTER WALL');
       this.profileRow(data, 'wallProfile', onFullChange);
-      if (data.wallProfile === 'step') {
-        this._moatStepSubOptions(data, onGeomChange);
-      }
+      if (data.wallProfile === 'step')   this._moatOuterStepSubOptions(data, onGeomChange, onFullChange);
+      if (data.wallProfile === 'spiral') this._spiralSubOptions(data, onFullChange);
       this.section('INNER WALL');
       this.innerProfileRow(data, onFullChange);
-      if (data.innerWallProfile === 'step') {
-        this._moatStepSubOptions(data, onGeomChange);
-      }
+      if (data.innerWallProfile === 'step')   this._moatInnerStepSubOptions(data, onGeomChange, onFullChange);
+      if (data.innerWallProfile === 'spiral') this._innerSpiralSubOptions(data, onFullChange);
     }
 
     if (!data.isMoat) {
@@ -131,7 +130,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Rot Y °',  THREE.MathUtils.radToDeg(data.rotY), -180, 180, 1,
       v=>{ data.rotY=THREE.MathUtils.degToRad(v); onGeomChange(); });
 
-    if (data.wallProfile === 'step' && !data.isMoat) {
+    if (data.wallProfile === 'step') {
       this.section('STEPS APPEARANCE');
       this.colorRow('Steps Color', data.stepsColor ?? data.color, v => { data.stepsColor = v; onFullChange(); });
       const stepsProxy = {
@@ -147,7 +146,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       });
     }
 
-    if (data.wallProfile === 'spiral' && !data.isMoat && data.spiralCount > 0) {
+    if (data.wallProfile === 'spiral' && data.spiralCount > 0) {
       this.section('SPIRAL APPEARANCE');
       this.colorRow('Spiral Color', data.spiralColor ?? data.color, v => { data.spiralColor = v; onFullChange(); });
       const spiralProxy = {
@@ -270,6 +269,8 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.innerShapeGrid(zone, onFullChange);
       this.section('INNER WALL');
       this.innerProfileRow(zone, onFullChange);
+      if (zone.innerWallProfile === 'step')   this._moatInnerStepSubOptions(zone as unknown as ArenaData, onGeomChange, onFullChange);
+      if (zone.innerWallProfile === 'spiral') this._innerSpiralSubOptions(zone, onFullChange);
     }
 
     this.section('DIMENSIONS');
@@ -330,15 +331,101 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
   private _stepCountSlider: HTMLInputElement | null = null;
 
-  /** Step count sub-row shown under moat outer/inner wall profile when 'step' is selected. */
-  private _moatStepSubOptions(data: ArenaData, onGeomChange: () => void): void {
-    const maxSteps = Math.max(1, Math.floor(data.depth / 10));
-    const clampedCount = Math.min(data.stepCount, maxSteps);
-    if (data.stepCount !== clampedCount) data.stepCount = clampedCount;
+  /** Full step sub-options for the moat OUTER wall. Uses stepCount/stepStartDepth/rampMode etc.
+   *  Max steps = floor(depth / 10). */
+  private _moatOuterStepSubOptions(data: ArenaData, onGeomChange: () => void, onFullChange: () => void): void {
+    const maxSteps = Math.max(1, Math.floor((data.depth - Math.max(0, data.stepStartDepth)) / 10));
+    data.stepCount = Math.min(data.stepCount, maxSteps);
+
+    this.numRow('Step Start (cm)', data.stepStartDepth, 0, Math.max(0, data.depth - 10), 1, v => {
+      data.stepStartDepth = v;
+      data.stepCount = Math.min(data.stepCount, Math.max(1, Math.floor((data.depth - v) / 10)));
+      onGeomChange();
+    });
     this.numRow('Step Count', data.stepCount, 1, maxSteps, 1, v => {
       data.stepCount = Math.round(Math.max(1, Math.min(v, maxSteps)));
       onGeomChange();
     });
+
+    // Riser shape
+    const riserRow = document.createElement('div'); riserRow.className = 'prop-profile-row';
+    const riserLabel = document.createElement('span'); riserLabel.className = 'prop-row-label';
+    riserLabel.textContent = 'Riser'; riserRow.appendChild(riserLabel);
+    for (const [val, label] of [['parabolic','⌣ Parabolic'],['straight','╱ Straight']] as [string, string][]) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (data.stepRiserProfile === val ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { data.stepRiserProfile = val as 'parabolic' | 'straight'; onGeomChange(); });
+      riserRow.appendChild(btn);
+    }
+    this.content.appendChild(riserRow);
+
+    // Ramp mode
+    const rampRow = document.createElement('div'); rampRow.className = 'prop-profile-row';
+    const rampLabel = document.createElement('span'); rampLabel.className = 'prop-row-label';
+    rampLabel.textContent = 'Ramp'; rampRow.appendChild(rampLabel);
+    const rampModes: [RampMode, string][] = [['full','Full'],['one-side','1-Side'],['zigzag','Zigzag'],['none','None']];
+    for (const [m, label] of rampModes) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (data.rampMode === m ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { data.rampMode = m; onFullChange(); });
+      rampRow.appendChild(btn);
+    }
+    this.content.appendChild(rampRow);
+    if (data.rampMode !== 'full' && data.rampMode !== 'none') {
+      this.numRow('Ramp Angle°', data.rampAngle, 0, 359, 1, v => { data.rampAngle = v; onGeomChange(); });
+      this.numRow('Ramp Width°', data.rampWidth, 10, 180, 1, v => { data.rampWidth = v; onGeomChange(); });
+    }
+  }
+
+  /** Full step sub-options for the moat INNER wall. Uses innerStepCount/innerStepStartDepth/innerRampMode etc.
+   *  Max steps = floor((depth + innerRimOffset) / 10). */
+  private _moatInnerStepSubOptions(data: ArenaData, onGeomChange: () => void, onFullChange: () => void): void {
+    const innerHeight = data.depth + data.innerRimOffset;
+    const maxSteps = Math.max(1, Math.floor((innerHeight - Math.max(0, data.innerStepStartDepth)) / 10));
+    data.innerStepCount = Math.min(data.innerStepCount, maxSteps);
+
+    this.numRow('Step Start (cm)', data.innerStepStartDepth, 0, Math.max(0, innerHeight - 10), 1, v => {
+      data.innerStepStartDepth = v;
+      data.innerStepCount = Math.min(data.innerStepCount, Math.max(1, Math.floor((innerHeight - v) / 10)));
+      onGeomChange();
+    });
+    this.numRow('Step Count', data.innerStepCount, 1, maxSteps, 1, v => {
+      data.innerStepCount = Math.round(Math.max(1, Math.min(v, maxSteps)));
+      onGeomChange();
+    });
+
+    // Riser shape
+    const riserRow = document.createElement('div'); riserRow.className = 'prop-profile-row';
+    const riserLabel = document.createElement('span'); riserLabel.className = 'prop-row-label';
+    riserLabel.textContent = 'Riser'; riserRow.appendChild(riserLabel);
+    for (const [val, label] of [['parabolic','⌣ Parabolic'],['straight','╱ Straight']] as [string, string][]) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (data.innerStepRiserProfile === val ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { data.innerStepRiserProfile = val as 'parabolic' | 'straight'; onGeomChange(); });
+      riserRow.appendChild(btn);
+    }
+    this.content.appendChild(riserRow);
+
+    // Ramp mode
+    const rampRow = document.createElement('div'); rampRow.className = 'prop-profile-row';
+    const rampLabel = document.createElement('span'); rampLabel.className = 'prop-row-label';
+    rampLabel.textContent = 'Ramp'; rampRow.appendChild(rampLabel);
+    const rampModes: [RampMode, string][] = [['full','Full'],['one-side','1-Side'],['zigzag','Zigzag'],['none','None']];
+    for (const [m, label] of rampModes) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (data.innerRampMode === m ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => { data.innerRampMode = m; onFullChange(); });
+      rampRow.appendChild(btn);
+    }
+    this.content.appendChild(rampRow);
+    if (data.innerRampMode !== 'full' && data.innerRampMode !== 'none') {
+      this.numRow('Ramp Angle°', data.innerRampAngle, 0, 359, 1, v => { data.innerRampAngle = v; onGeomChange(); });
+      this.numRow('Ramp Width°', data.innerRampWidth, 10, 180, 1, v => { data.innerRampWidth = v; onGeomChange(); });
+    }
   }
 
   private _refreshStepCountMax(data: ArenaData): void {
@@ -366,7 +453,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
   private innerProfileRow(data: { innerWallProfile: WallProfile }, onChange: () => void): void {
     const row=document.createElement('div'); row.className='prop-profile-row';
-    const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step']];
+    const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral']];
     for (const [p, label] of defs) {
       const btn=document.createElement('button');
       btn.className='prop-profile-btn'+(data.innerWallProfile===p?' active':'');
@@ -375,6 +462,30 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       row.appendChild(btn);
     }
     this.content.appendChild(row);
+  }
+
+  private _spiralSubOptions(data: {
+    spiralTurns: number; spiralCount: number; spiralClockwise: boolean;
+    spiralLedgeWidth: number; spiralLedgeHeight: number; spiralRadiusFrac: number;
+  }, onFullChange: () => void): void {
+    this.numRow('Turns',        data.spiralTurns,       0.5, 4,   0.5, v => { data.spiralTurns      = v; onFullChange(); });
+    this.numRow('Helices',      data.spiralCount,       1,   4,   1,   v => { data.spiralCount      = Math.round(v); onFullChange(); });
+    this.toggleRow('Clockwise', data.spiralClockwise,            v => { data.spiralClockwise = v; onFullChange(); });
+    this.numRow('Ledge Width cm',  data.spiralLedgeWidth,  1, 8,   0.5, v => { data.spiralLedgeWidth  = v; onFullChange(); });
+    this.numRow('Ledge Height cm', data.spiralLedgeHeight, 0.3, 3, 0.1, v => { data.spiralLedgeHeight = v; onFullChange(); });
+    this.numRow('Wall Radius',     data.spiralRadiusFrac,  0.3, 1, 0.05,v => { data.spiralRadiusFrac  = v; onFullChange(); });
+  }
+
+  private _innerSpiralSubOptions(data: {
+    innerSpiralTurns: number; innerSpiralCount: number; innerSpiralClockwise: boolean;
+    innerSpiralLedgeWidth: number; innerSpiralLedgeHeight: number; innerSpiralRadiusFrac: number;
+  }, onFullChange: () => void): void {
+    this.numRow('Turns',        data.innerSpiralTurns,       0.5, 4,   0.5, v => { data.innerSpiralTurns      = v; onFullChange(); });
+    this.numRow('Helices',      data.innerSpiralCount,       1,   4,   1,   v => { data.innerSpiralCount      = Math.round(v); onFullChange(); });
+    this.toggleRow('Clockwise', data.innerSpiralClockwise,            v => { data.innerSpiralClockwise = v; onFullChange(); });
+    this.numRow('Ledge Width cm',  data.innerSpiralLedgeWidth,  1, 8,   0.5, v => { data.innerSpiralLedgeWidth  = v; onFullChange(); });
+    this.numRow('Ledge Height cm', data.innerSpiralLedgeHeight, 0.3, 3, 0.1, v => { data.innerSpiralLedgeHeight = v; onFullChange(); });
+    this.numRow('Wall Radius',     data.innerSpiralRadiusFrac,  0.3, 1, 0.05,v => { data.innerSpiralRadiusFrac  = v; onFullChange(); });
   }
 
   private wallProfileSection(data: ArenaData, onFullChange: () => void, onGeomChange: () => void): void {
@@ -507,13 +618,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     if (data.stepApplyToAll && data.wallProfile === 'spiral') {
       const subHead = document.createElement('div'); subHead.className = 'prop-sub-section';
       subHead.textContent = '— Spiral Options —'; this.content.appendChild(subHead);
-
-      this.numRow('Turns', data.spiralTurns, 0.5, 4, 0.5, v => { data.spiralTurns = v; onFullChange(); });
-      this.numRow('Helices', data.spiralCount, 1, 4, 1, v => { data.spiralCount = Math.round(v); onFullChange(); });
-      this.toggleRow('Clockwise', data.spiralClockwise, v => { data.spiralClockwise = v; onFullChange(); });
-      this.numRow('Ledge Width cm', data.spiralLedgeWidth, 1, 8, 0.5, v => { data.spiralLedgeWidth = v; onFullChange(); });
-      this.numRow('Ledge Height cm', data.spiralLedgeHeight, 0.3, 3, 0.1, v => { data.spiralLedgeHeight = v; onFullChange(); });
-      this.numRow('Wall Radius', data.spiralRadiusFrac, 0.3, 1, 0.05, v => { data.spiralRadiusFrac = v; onFullChange(); });
+      this._spiralSubOptions(data, onFullChange);
     }
   }
 
@@ -1996,11 +2101,31 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Rot Y°', data.rotY, -180, 180, 1, v => { data.rotY = v; onGeomChange(); });
 
     this.section('EFFECT');
-    const EFFECTS: TrapEffect[] = ['damage','heal','launch','reverse_controls','freeze','buff_zone','hidden_pit','chomper'];
+    const EFFECTS: TrapEffect[] = ['damage','heal','launch','reverse_controls','freeze','buff_zone','hidden_pit','chomper','gravity_pull'];
     this.selectRow('Effect', EFFECTS.map(e => ({ value: e, label: e })), data.effect, v => {
       data.effect = v as TrapEffect; onFullChange();
     });
     this._trapEffectRows(data, onGeomChange);
+
+    if (data.effect === 'gravity_pull') {
+      this.section('GRAVITY PULL');
+      this.numRow('Range (cm)',       data.gravityRange,         5,   200, 1,   v => { data.gravityRange    = v; onGeomChange(); });
+      this.numRow('Strength (cm/s²)', data.gravityStrength,      1,   500, 1,   v => { data.gravityStrength = v; onGeomChange(); });
+      const gRow = document.createElement('div'); gRow.className = 'prop-profile-row';
+      const gLabel = document.createElement('span'); gLabel.className = 'prop-row-label'; gLabel.textContent = 'Mode'; gRow.appendChild(gLabel);
+      for (const [m, lbl] of [['continuous','Continuous'],['pulse','Pulse'],['conditional','Conditional']] as ['continuous'|'pulse'|'conditional', string][]) {
+        const btn = document.createElement('button');
+        btn.className = 'prop-profile-btn' + (data.gravityMode === m ? ' active' : '');
+        btn.textContent = lbl;
+        btn.addEventListener('click', () => { data.gravityMode = m; onFullChange(); });
+        gRow.appendChild(btn);
+      }
+      this.content.appendChild(gRow);
+      if (data.gravityMode === 'pulse') {
+        this.numRow('Interval (s)', data.gravityPulseInterval, 0.1, 30, 0.1, v => { data.gravityPulseInterval = v; onGeomChange(); });
+        this.numRow('Width (s)',    data.gravityPulseWidth,    0.1, 10, 0.1, v => { data.gravityPulseWidth    = v; onGeomChange(); });
+      }
+    }
 
     this.section('TIMING');
     this.toggleRow('Periodic', data.isPeriodic, v => { data.isPeriodic = v; onFullChange(); });
@@ -2433,6 +2558,130 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     if (data.presentStlb64) {
       this.colorRow('Present Color', data.presentColor, v => { data.presentColor = v; onGeomChange(); });
       this.buttonRow('', 'Clear STL', () => { data.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PRESENTATION PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showPresentation(
+    data: PresentConfig,
+    onChange: () => void,
+    onStlImport?: (cb: (b64: string) => void) => void,
+    onStlClear?: () => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('STL MODEL');
+    this.buttonRow('', data.stlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
+      onStlImport?.((b64) => { data.stlb64 = b64; onChange(); });
+    });
+    if (data.stlb64) {
+      this.buttonRow('', 'Clear STL', () => { data.stlb64 = null; onStlClear?.(); onChange(); });
+    }
+
+    this.section('APPEARANCE');
+    this.colorRow('Tint Color', data.color, v => { data.color = v; onChange(); });
+
+    this.section('SCALE');
+    this.numRow('Scale X', data.scaleX, 0.01, 10, 0.01, v => { data.scaleX = v; onChange(); });
+    this.numRow('Scale Y', data.scaleY, 0.01, 10, 0.01, v => { data.scaleY = v; onChange(); });
+    this.numRow('Scale Z', data.scaleZ, 0.01, 10, 0.01, v => { data.scaleZ = v; onChange(); });
+
+    this.section('ROTATION (°)');
+    this.numRow('Rot X', data.rotX, -180, 180, 1, v => { data.rotX = v; onChange(); });
+    this.numRow('Rot Y', data.rotY, -180, 180, 1, v => { data.rotY = v; onChange(); });
+    this.numRow('Rot Z', data.rotZ, -180, 180, 1, v => { data.rotZ = v; onChange(); });
+
+    this.section('OFFSET (cm)');
+    this.numRow('Off X', data.offX, -200, 200, 0.5, v => { data.offX = v; onChange(); });
+    this.numRow('Off Y', data.offY, -200, 200, 0.5, v => { data.offY = v; onChange(); });
+    this.numRow('Off Z', data.offZ, -200, 200, 0.5, v => { data.offZ = v; onChange(); });
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PARTICLE EFFECT PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showParticle(
+    data: ParticleConfig,
+    onChange: () => void,
+    showGlow?: boolean,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('PRESET');
+    const PRESETS: ParticlePreset[] = [
+      'none','embers','snow','sparks','dust','bubbles','void_motes',
+      'rain','fog','ash','leaves','fireflies','steam',
+    ];
+    const grid = document.createElement('div'); grid.className = 'prop-shape-grid';
+    for (const p of PRESETS) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-shape-btn' + (data.preset === p ? ' active' : '');
+      btn.textContent = p === 'none' ? '⊘ None' : p;
+      btn.addEventListener('click', () => { data.preset = p; onChange(); });
+      grid.appendChild(btn);
+    }
+    this.content.appendChild(grid);
+
+    this.section('MODE');
+    const modeRow = document.createElement('div'); modeRow.className = 'prop-profile-row';
+    for (const [m, lbl] of [['surface','Surface'],['volume','Volume']] as ['surface'|'volume', string][]) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (data.mode === m ? ' active' : '');
+      btn.textContent = lbl;
+      btn.addEventListener('click', () => { data.mode = m; onChange(); });
+      modeRow.appendChild(btn);
+    }
+    this.content.appendChild(modeRow);
+
+    this.section('DENSITY');
+    this.numRow('ppcm² / ppcm³', data.density, 0.01, 10, 0.01, v => { data.density = v; onChange(); });
+
+    if (showGlow) {
+      this.section('GLOW (Speed Line)');
+      this.toggleRow('Glow on Entry', data.glowOnActivation, v => { data.glowOnActivation = v; onChange(); });
+      if (data.glowOnActivation) {
+        this.colorRow('Glow Color', data.glowColor, v => { data.glowColor = v; onChange(); });
+      }
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     WEATHER PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showWeather(
+    data: {
+      weatherPreset: WeatherPreset; windEnabled: boolean; windDirectionDeg: number;
+      windStrengthCms: number; windGustInterval: number; windGustMult: number;
+    },
+    onChange: () => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    this.section('WEATHER PRESET');
+    const PRESETS: WeatherPreset[] = ['none','rain','snow','fog','sandstorm','ash','mist'];
+    const grid = document.createElement('div'); grid.className = 'prop-shape-grid';
+    for (const p of PRESETS) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-shape-btn' + (data.weatherPreset === p ? ' active' : '');
+      btn.textContent = p === 'none' ? '⊘ None' : p;
+      btn.addEventListener('click', () => { data.weatherPreset = p; onChange(); });
+      grid.appendChild(btn);
+    }
+    this.content.appendChild(grid);
+
+    this.section('WIND');
+    this.toggleRow('Enable Wind', data.windEnabled, v => { data.windEnabled = v; onChange(); });
+    if (data.windEnabled) {
+      this.numRow('Direction °', data.windDirectionDeg, 0, 360, 1,  v => { data.windDirectionDeg = v; onChange(); });
+      this.numRow('Strength cm/s²', data.windStrengthCms, 0, 200, 1, v => { data.windStrengthCms = v; onChange(); });
+      this.section('GUSTS');
+      this.numRow('Interval (s)', data.windGustInterval, 1, 30, 0.5, v => { data.windGustInterval = v; onChange(); });
+      this.numRow('Multiplier',   data.windGustMult,     1, 10, 0.1, v => { data.windGustMult    = v; onChange(); });
     }
   }
 

@@ -1,5 +1,6 @@
 import {
   AxisData, PartData, SectorData, GroupData, BeybladeBuildConfig,
+  defaultPresentConfig, defaultParticleConfig,
 } from '../types/beybladeTypes';
 
 const DEFAULT_AXIS: AxisData = { tiltAngle: 0, pivotOffset: 0, spinDir: 'right' };
@@ -103,7 +104,12 @@ export class BeybladeStore {
     this.parts.clear();
     this.sectors.clear();
     this.groups.clear();
-    for (const p of cfg.parts) this.parts.set(p.id, { ...p, sectorIds: [...p.sectorIds] });
+    for (const p of cfg.parts) {
+      const part: PartData = { ...p, sectorIds: [...p.sectorIds] };
+      if (!part.present) part.present = defaultPresentConfig();
+      if (!part.particleConfig) part.particleConfig = defaultParticleConfig();
+      this.parts.set(p.id, part);
+    }
     for (const s of cfg.sectors) this.sectors.set(s.id, { ...s });
     for (const g of cfg.groups) this.groups.set(g.id, { ...g, childIds: [...g.childIds] });
     this.rootChildIds = [...cfg.rootChildIds];

@@ -65,7 +65,9 @@ export function buildEdgeLines(pts: THREE.Vector2[], depth: number, profile: Wal
  * outerProfile controls outer wall, innerProfile controls inner wall.
  * 'step' builds terraced steps; 'spiral'/'parabolic' builds a curved bowl;
  * 'straight' builds a vertical cylinder.
- * stepCount is used when either profile is 'step'.
+ * outerStepCount/outerStepStart control the outer stepped wall;
+ * innerStepCount/innerStepStart control the inner stepped wall independently.
+ * stepStart is the depth at which stepping begins (smooth section above it).
  */
 export function buildMoatGeometry(
   outerPts: THREE.Vector2[], _innerPts: THREE.Vector2[],
@@ -73,7 +75,10 @@ export function buildMoatGeometry(
   outerProfile: WallProfile, innerProfile: WallProfile,
   innerRimOffset: number,
   baseY = 0,
-  stepCount = 3,
+  outerStepCount = 3,
+  outerStepStart = 0,
+  innerStepCount = 3,
+  innerStepStart = 0,
 ): THREE.BufferGeometry {
   const N = outerPts.length;
   const innerPts = resamplePts(_innerPts, N);
@@ -112,15 +117,27 @@ export function buildMoatGeometry(
 
   // ── Outer section: outer rim → valley ──────────────────────────────────────
   if (outerIsStep) {
-    const sN = Math.max(1, stepCount);
+    const sN = Math.max(1, outerStepCount);
+    const smoothDepth = Math.max(0, Math.min(outerStepStart, depth - sN));
+    const stepDepth = depth - smoothDepth;
+    const smoothFrac = smoothDepth / depth;
     allRings.push(makeRing(outerPts, midPts, 0, baseY));  // rim ring
+    // Smooth initial section before steps begin
+    if (smoothFrac > 0) {
+      const SMOOTH = 4;
+      for (let r = 1; r <= SMOOTH; r++) {
+        const t = r / SMOOTH;
+        allRings.push(makeRing(outerPts, midPts, t * smoothFrac, baseY - smoothDepth * t));
+      }
+    }
+    // Stepped section
     for (let k = 0; k < sN; k++) {
-      const b1 = k / sN + flatFrac / sN;         // tread end (inward)
-      const b2 = (k + 1) / sN;                   // riser end
-      const Y0 = baseY - k * depth / sN;          // tread height
-      const Y2 = baseY - (k + 1) * depth / sN;   // riser end height
-      allRings.push(makeRing(outerPts, midPts, b1, Y0));  // tread end (same Y)
-      allRings.push(makeRing(outerPts, midPts, b2, Y2));  // riser end (lower Y)
+      const b1 = smoothFrac + (k / sN + flatFrac / sN) * (1 - smoothFrac);
+      const b2 = smoothFrac + ((k + 1) / sN) * (1 - smoothFrac);
+      const Y0 = baseY - smoothDepth - k * stepDepth / sN;
+      const Y2 = baseY - smoothDepth - (k + 1) * stepDepth / sN;
+      allRings.push(makeRing(outerPts, midPts, b1, Y0));
+      allRings.push(makeRing(outerPts, midPts, b2, Y2));
     }
   } else {
     // Smooth outer: parabolic (incl. spiral), straight
@@ -143,14 +160,26 @@ export function buildMoatGeometry(
 
   // ── Inner section: valley → inner rim ────────────────────────────────────
   if (innerIsStep) {
-    const sN = Math.max(1, stepCount);
+    const sN = Math.max(1, innerStepCount);
+    const smoothHeight = Math.max(0, Math.min(innerStepStart, innerRise - sN));
+    const stepHeight = innerRise - smoothHeight;
+    const smoothFrac = smoothHeight / innerRise;
+    // Smooth initial section at valley bottom before steps begin
+    if (smoothFrac > 0) {
+      const SMOOTH = 4;
+      for (let r = 0; r < SMOOTH; r++) {
+        const t = r / SMOOTH;
+        allRings.push(makeRing(innerStartXZ, innerPts, t * smoothFrac, valleyY + smoothHeight * t));
+      }
+    }
+    // Stepped section
     for (let k = 0; k < sN; k++) {
-      const b1 = k / sN + flatFrac / sN;              // tread end
-      const b2 = (k + 1) / sN;                        // riser end
-      const Y0 = valleyY + k * innerRise / sN;         // tread height
-      const Y2 = valleyY + (k + 1) * innerRise / sN;  // riser end height
-      allRings.push(makeRing(innerStartXZ, innerPts, b1, Y0));  // tread end
-      allRings.push(makeRing(innerStartXZ, innerPts, b2, Y2));  // riser end (higher)
+      const b1 = smoothFrac + (k / sN + flatFrac / sN) * (1 - smoothFrac);
+      const b2 = smoothFrac + ((k + 1) / sN) * (1 - smoothFrac);
+      const Y0 = valleyY + smoothHeight + k * stepHeight / sN;
+      const Y2 = valleyY + smoothHeight + (k + 1) * stepHeight / sN;
+      allRings.push(makeRing(innerStartXZ, innerPts, b1, Y0));
+      allRings.push(makeRing(innerStartXZ, innerPts, b2, Y2));
     }
   } else if (needsFloor) {
     // Inner section after floor strip
@@ -190,7 +219,10 @@ export function buildMoatEdgeLines(
   depth: number, innerRimOffset: number, baseY = 0,
   outerProfile: WallProfile = 'parabolic',
   innerProfile: WallProfile = 'parabolic',
-  stepCount = 3,
+  outerStepCount = 3,
+  outerStepStart = 0,
+  innerStepCount = 3,
+  innerStepStart = 0,
 ): THREE.BufferGeometry {
   const N = outerPts.length;
   const innerPts = resamplePts(_innerPts, N);
@@ -214,10 +246,13 @@ export function buildMoatEdgeLines(
   }
   // Outer step terrace edges
   if (outerProfile === 'step') {
-    const sN = Math.max(1, stepCount);
+    const sN = Math.max(1, outerStepCount);
+    const smoothDepth = Math.max(0, Math.min(outerStepStart, depth - sN));
+    const stepDepth = depth - smoothDepth;
+    const smoothFrac = smoothDepth / depth;
     for (let k = 1; k < sN; k++) {
-      const b = k / sN;
-      const y = baseY - k * depth / sN;
+      const b = smoothFrac + (k / sN) * (1 - smoothFrac);
+      const y = baseY - smoothDepth - k * stepDepth / sN;
       for (let i = 0; i < N; i++) {
         const j = (i + 1) % N;
         v.push(
@@ -229,10 +264,13 @@ export function buildMoatEdgeLines(
   }
   // Inner step terrace edges
   if (innerProfile === 'step') {
-    const sN = Math.max(1, stepCount);
+    const sN = Math.max(1, innerStepCount);
+    const smoothHeight = Math.max(0, Math.min(innerStepStart, innerRise - sN));
+    const stepHeight = innerRise - smoothHeight;
+    const smoothFrac = smoothHeight / innerRise;
     for (let k = 1; k < sN; k++) {
-      const b = k / sN;
-      const y = valleyY + k * innerRise / sN;
+      const b = smoothFrac + (k / sN) * (1 - smoothFrac);
+      const y = valleyY + smoothHeight + k * stepHeight / sN;
       for (let i = 0; i < N; i++) {
         const j = (i + 1) % N;
         v.push(

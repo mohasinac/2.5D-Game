@@ -40,6 +40,22 @@ Known confirmed features added (2026-06-09 — expanded wall system + depth cons
 - **Zone depth min 1 mm**: `MIN_ZONE_DEPTH = 0.1` cm constant. Zone depth slider min is `MIN_ZONE_DEPTH` (was 1).
 - **New save fields** (all required — no backward-compat): `WallSave` adds `thickness`, `isDestructible`, `hitPoints`, `autoJoin`, `moatRing`, `rotateOnArena`, `arenaRotateMode`, `arenaRotateSpeed`, `arenaRotateStepDeg`, `arenaRotateStepInterval`, `arenaRotateOscAmp`, `arenaRotateOscFreq`. `TrapSave` adds `walls: WallSave[]`. `ArenaConfig` adds `baseWalls: WallSave[]`. The demo arena config (`demoArenaConfig.ts`) has been updated with all new fields.
 
+Known confirmed features added (2026-06-10 — sub-node system, PresentConfig, particle/weather/gravity):
+- **`src/types/sharedTypes.ts`** (new): `PresentConfig`, `defaultPresentConfig()`, `ParticleConfig`, `defaultParticleConfig()`, `ParticlePreset`, `ParticleSystem`, `WeatherSystem` — shared across arena and beyblade types.
+- **Arena `ARENA_SAVE_VERSION = 9`**: Bumped from 8; old saves discarded. New fields on `ArenaData`/`ZoneSave`/etc.: `particleConfig: ParticleConfig` (replaces bare `particlePreset`), `weatherPreset/windEnabled/windDirectionDeg/windStrengthCms/windGustInterval/windGustMult` on `ArenaData`, `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` on `ArenaData`/`ZoneData`.
+- **Beyblade `BEY_SAVE_VERSION = 2`**: Bumped from 1; old saves discarded. `PartData` now has `present: PresentConfig` + `particleConfig: ParticleConfig` (replaces `presentationSTLb64`/`presentationColor`).
+- **Sub-feature tree nodes** (both sandboxes): On-demand optional child nodes added via `+` button on feature nodes. IDs: `present-{featureId}`, `particle-{featureId}`, `weather-{arenaId}`. Not reparentable (silently ignored in `_onReparent`). Selection routed by ID prefix in `onSelect`.
+- **`PresentationManager`** (`src/features/managers/PresentationManager.ts`): Centralized STL present-mesh logic. `load(nodeId, config, worldPos)`, `dispose(nodeId)`, `disposeAll()`, `applyViewMode(mode, hitboxMap)`, `tick(dt)`.
+- **BeybladeRenderer**: `applyPresentTransform(partId)` applies PresentConfig scale/rotation/offset to existing present mesh. `clearPresentMesh(partId)` removes it. `loadPresentationSTL` now applies all PresentConfig transforms.
+- **Duplicate support** (`SceneTree.onDuplicate`): Right-click context menu "Duplicate" fires `onDuplicate(id)`. Both `BeybladeSandbox._duplicateNode` (parts+sectors, groups) and `ArenaSandbox._duplicateNode` (arenas, obstacles, footings, traps, portals, walls, pits, zones) are implemented. Bridges, speed lines, rotations, sub-nodes are skipped silently.
+- **`AbstractPropertiesPanel.numRow()`**: Slider now uses `input` event for display-only update + `change` event (mouseup/touchend) for `onChange`. Number input blur/Enter unchanged. Eliminates 60fps geometry rebuilds on slider drag.
+- **Moat spiral parity**: Inner wall profile row now includes `↺ Spiral` option. `_spiralSubOptions` / `_innerSpiralSubOptions` helper methods extracted and reused for both moat outer/inner wall sections. Step/Spiral Appearance sections no longer blocked by `!data.isMoat`.
+- **Step color in arenaObjectBuilders**: `applyArenaColor` is moat-aware — uses `data.stepsColor`/`stepsSurface` when wall profile is `step` even for moat arenas. `buildArenaObjects` and `applyArena` also apply step color.
+- **WallManager.fromSave()**: Now restores `topAmplitude` and `topFrequency` fields.
+- **Weather system** (`src/geometry/weatherBuilders.ts`): `buildWeatherSystem(preset, windEnabled, windDeg, windStrength, gustInterval, gustMult, arenaRadius, baseY)` → `WeatherSystem`. Presets: rain, snow, fog, sandstorm, ash, mist. `tick(dt)` animates particles + gusts. `windForce` applied to beyblades each tick.
+- **Gravity pull trap**: `TrapEffect` and `TrapVariant` include `'gravity_pull'`. `TrapData` has `gravityRange/Strength/Mode/PulseInterval/PulseWidth` + runtime `_gravityTimer`. PropertiesPanel `showTrap` renders GRAVITY PULL section when `data.effect === 'gravity_pull'`.
+- **RPG layer** (`src/rpg/`, `src/screens/RPGScreen.ts`, `src/screens/admin/AdminHubScreen.ts`, sub-screen stubs): Phaser-based RPG world with dialogue, cutscenes, minigames, inventory, shop, map editor, save system. Admin Hub has 7 sub-tool stubs (Sprite/Tile/Map/Sound/Dialogue/Cutscene/MiniGame).
+
 Known confirmed bugs fixed (2026-06-07 — bridge track + arena bowl session):
 - **Bridge segment connection gaps**: `_segmentStartPose` called `computeSegmentEndPose(prev, pose)` without `bridge.section`; loop segments need section width for helix lateral offset. Fixed: `computeSegmentEndPose(prev, pose, bridge.section)`.
 - **Bridge delete not updating 3D render**: Segment meshes are children of `bridge.group`, not scene root — `scene.remove(seg.mesh)` was a no-op. Fixed: use `bridge.group.remove(seg.mesh/edges)` in both `removeSegment` and `_disposeBridge`.
@@ -172,17 +188,36 @@ src/
   styles/
     global.css                  — vmin scale system, reset, shared components + beyblade bottom bar
   screens/
-    LandingScreen.ts            — Title + sandbox nav buttons
+    LandingScreen.ts            — Title + sandbox nav buttons (onBeyblade, onArena, onRpg, onAdmin)
     Sandbox.ts                  — Reusable Three.js XYZ viewport (SandboxOptions); provides onTick() hook;
                                   public getCamera() / getControls() / getRendererCanvas() accessors
-    ArenaSandbox.ts             — Full arena builder: arenas, pits, zones, moats, walls, bridges, speed lines, properties panel
-    BeybladeSandbox.ts          — Beyblade part builder (extends Sandbox); thin orchestrator/Facade
+    ArenaSandbox.ts             — Full arena builder: arenas, pits, zones, moats, walls, bridges, speed lines,
+                                  traps, portals, obstacles, footings, rotations, weather; _duplicateNode; sub-nodes
+    BeybladeSandbox.ts          — Beyblade part builder (extends Sandbox); thin orchestrator/Facade;
+                                  _duplicateNode; present/particle sub-nodes; BEY_SAVE_VERSION=2
+    RPGScreen.ts                — Phaser-based RPG world screen (GameScene, WorldScene, UIScene, etc.)
+    admin/
+      AdminHubScreen.ts         — Admin content studio hub (7 sub-tool buttons)
+      SpriteAdminScreen.ts      — Sprite/SVG admin tool
+      TileAdminScreen.ts        — Tileset admin (stub)
+      MapAdminScreen.ts         — Map editor (stub)
+      SoundAdminScreen.ts       — Sound/BGM admin (stub)
+      DialogueAdminScreen.ts    — Dialogue node graph editor (stub)
+      CutsceneAdminScreen.ts    — Cutscene timeline editor (stub)
+      MiniGameAdminScreen.ts    — Mini-game level editor (stub)
   types/
     arenaTypes.ts               — Arena data model interfaces (ArenaData, PitData, ZoneData, WallData,
                                   BridgeData, BridgeSegmentData, SpeedLineData, SpeedLineSegment,
                                   RotationData, BridgeSnapRule, RotationMode, RotationNodeType,
-                                  ArenaMaterial, BridgeSection, and all related enums)
-    beybladeTypes.ts            — Beyblade data model: AxisData, PartData, SectorData, GroupData, BeybladeBuildConfig
+                                  ArenaMaterial, BridgeSection, and all related enums);
+                                  re-exports PresentConfig/ParticleConfig from sharedTypes
+    beybladeTypes.ts            — Beyblade data model: AxisData, PartData (with present+particleConfig),
+                                  SectorData, GroupData, BeybladeBuildConfig (v?: number);
+                                  re-exports PresentConfig/ParticleConfig from sharedTypes
+    sharedTypes.ts              — PresentConfig, defaultPresentConfig(), ParticleConfig, defaultParticleConfig(),
+                                  ParticlePreset, ParticleSystem, WeatherSystem — shared across arena+beyblade
+    rpgTypes.ts                 — RPG data model: NPCData, DialogueTree, ItemDef, QuestDef, ShopItem,
+                                  MiniGameLevel, MapData, TileData, CutsceneData, SaveSlot, EventBusEvents
   stores/
     BeybladeStore.ts            — Pure data store (no Three.js); getters/setters/serialize/deserialize
   commands/
@@ -201,6 +236,7 @@ src/
     portalBuilders.ts           — Portal pad + torus ring; buildPortalObjects; portalSurfY; defaultPortal (incl. surface/customTileData/presentStlb64)
     footingBuilders.ts          — Base footing 6-shape geometry (decoupled copy of obstacle shapes); buildFootingObjects(data, baseHeight); applyFooting(data, baseHeight); defaultFooting(name, id, baseHeight)
     particleBuilders.ts         — ParticleSystem interface; buildParticleSystem(preset, cx, cz, radius, baseY); 6 presets: embers/snow/sparks/dust/bubbles/void_motes
+    weatherBuilders.ts          — buildWeatherSystem(preset, windEnabled, windDeg, windStrength, gustInterval, gustMult, arenaRadius, baseY) → WeatherSystem; 6 weather presets; tick+windForce
     [arena geometry files...]
   features/
     IArenaFeature.ts            — SceneContext, ITickableManager, IArenaFeature, ISceneFeature interfaces
@@ -215,16 +251,18 @@ src/
       BridgeManager.ts          — Bridge + segment chain; owns segments Map + segSeq; getArenas/getWalls injected
       SpeedLineManager.ts       — Surface projector injected as callback; showHandles/hideHandles for drag interaction
       RotationManager.ts        — ITickableManager; detachAll() before clear; afterApply() for group-local correction
+      PresentationManager.ts    — Centralized STL present-mesh + opening decal logic; load/dispose/applyViewMode/tick
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
-                                  view mode toggle (hitbox/both/present); STL presentation mesh loading
+                                  view mode toggle (hitbox/both/present); STL presentation mesh loading;
+                                  applyPresentTransform(partId) applies PresentConfig transforms; clearPresentMesh(partId)
   animation/
     BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
     AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow/themeRow helpers; themeRow renders 7-button VisualTheme quick-pick grid with transient active highlight
     PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal/showFooting; showWall/showObstacle/showTrap/showPortal/showFooting each take (onGeomChange, onFullChange) — see two-callback pattern; all accept optional onStlImport/onStlClear callbacks
-    BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
-    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click; onReparent(nodeId, newParentId, beforeId) fires on drag-drop
+    BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel); showPart/showGroup/showSector/showPresentation/showParticle; showPresentation replaces old inline PRESENTATION section in showPart
+    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click; onReparent(nodeId, newParentId, beforeId) fires on drag-drop; onDuplicate(id) fires on context-menu "Duplicate"
     dialog.ts                   — gameConfirm() modal utility
     arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal/footing save interfaces; footingToSave()
   config/
@@ -616,7 +654,7 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 ### Save / load (localStorage)
 
-Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 7`. On any parse error `localStorage.removeItem(key)` and return (no migration). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead.
+Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 9`. On any parse error `localStorage.removeItem(key)` and return (no migration). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead. `ArenaSave` now has `weatherPreset`, `windEnabled/Direction/Strength/GustInterval/GustMult`, `particleConfig`. `ZoneSave` has `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` (optional `?`). All present/particle fields are `particleConfig: ParticleConfig` (not bare `particlePreset`).
 
 `ArenaConfig` (top-level save):
 - `arenas[]` — each `ArenaSave` includes `walls: WallSave[]` (rim walls) and `speedLines: SpeedLineSave[]`
@@ -716,6 +754,7 @@ Presentation meshes come from imported STL files (one per part). If no STL is lo
 ### Persistence (Beyblade Builder)
 
 - localStorage key: `bey_beyblade_builder`
+- **`BEY_SAVE_VERSION = 2`**: Saved with `{ ...cfg, v: BEY_SAVE_VERSION }`. On load: if `parsed.v !== BEY_SAVE_VERSION`, discard. No migration. `PartData.present` and `particleConfig` use `defaultPresentConfig()`/`defaultParticleConfig()` as defaults when fields are missing.
 - Saved on every `CommandHistory.execute()` call and on axis property changes.
 - **Reset Builder** (`✕ Reset` button): stops animation, disposes all meshes, calls `store.reset()`, clears history, clears localStorage.
 - Camera view key (from Sandbox base): `bey_view_beyblade_builder` (reset via `↺ View` button).
@@ -887,6 +926,17 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **`showWall` parentArena must be passed for moat ring selector**: The 7th optional argument to `PropertiesPanel.showWall` is `parentArena?: ArenaData`. Without it, the moat ring selector (`Outer rim` / `Inner rim`) never renders for moat arenas. In `ArenaSandbox` the caller resolves: `const parentArena = wall.parentType==='arena' ? this.arenas.get(wall.parentId) : undefined`.
 - **Wall `_rotatePivot` and `_arenaRotateTimer` are runtime-only — never serialize**: These fields exist on `WallData` but must be stripped from `WallSave`. `wallToSave()` must not include them. They are re-created by `applyWall` when `rotateOnArena` is true.
 - **Trap wall child cleanup on trap delete**: `_disposeTrap` must iterate `this.walls` and dispose + remove any wall where `wall.parentType==='trap' && wall.parentId===trap.id` before removing the trap itself. Skipping this leaks GPU geometry.
+- **`sharedTypes.ts` is the single source of `PresentConfig` / `ParticleConfig`**: Both `arenaTypes.ts` and `beybladeTypes.ts` import from `src/types/sharedTypes.ts`. Never define these interfaces inline in either file. `arenaTypes.ts` and `beybladeTypes.ts` re-export them for backward compat.
+- **`BEY_SAVE_VERSION = 2`**: Beyblade saves now include `v: 2`. On parse in `_loadFromStorage`, if `parsed.v !== BEY_SAVE_VERSION`, discard and return. No migration. `BeybladeStore.deserialize` spreads defaults then overwrites: `const part = { ...p }; if (!part.present) part.present = defaultPresentConfig(); if (!part.particleConfig) part.particleConfig = defaultParticleConfig();`. Do NOT write `{ present: defaultPresentConfig(), ...p }` — TS reports TS2783 duplicate key error.
+- **`ARENA_SAVE_VERSION = 9`**: Arena saves from version 8 are discarded silently on parse error. New fields in `ArenaSave`/`ZoneSave` for inner spiral and weather are optional (`?`) so partial saves load without crash.
+- **Sub-nodes are not reparentable**: In `ArenaSandbox._onReparent` and `BeybladeSandbox` tree wiring, any `nodeId` starting with `present-`, `particle-`, or `weather-` must return immediately without doing anything. Similarly in `_duplicateNode` — skip sub-node IDs.
+- **`_subNodesAdded` set tracks present/particle/weather IDs**: In both sandboxes, `_subNodesAdded: Set<string>` prevents adding the same sub-node twice. `_addSubNodePresent(featureId)` checks `_subNodesAdded.has('present-'+featureId)` before adding. When a feature is deleted, remove its sub-node IDs from `_subNodesAdded`.
+- **`show()` closure pattern for sub-node panels**: `_selectPresentNode(partId)` wraps `panel.showPresentation(...)` in a `show()` closure called on import/clear callbacks to refresh button labels (e.g. "Import STL…" → "✓ Replace STL…" after import). Without this the panel shows stale button text.
+- **`_addPartToTree(id)` helper in BeybladeSandbox**: Both `_onPartAdded` and `_rebuildTree` must call this helper (not inline `tree.add(...)`) to ensure `addChildButtons` (S+, ✦+, ✧+) are wired correctly after undo/redo.
+- **Slider `onChange` debounce**: `AbstractPropertiesPanel.numRow()` now uses `input` event for display-only (no `onChange`) and `change` event for `onChange` (fires on mouseup/touchend). Do NOT revert to calling `onChange` on `input` — it causes 60fps geometry rebuilds while dragging.
+- **`_duplicateNode` in ArenaSandbox skips bridges, speed lines, rotations**: These are complex graph structures that cannot be shallow-cloned. Silently return without error for these IDs. Pits, zones, arenas, walls, traps, portals, obstacles, footings are all safe to duplicate.
+- **Weather system disposal**: `arena.weatherSystem?.dispose()` removes `points` from scene. Weather system `tick(dt)` called in `onTick` for all arenas. Building a new weather system replaces the old one — always dispose before rebuild.
+- **Gravity pull trap `_gravityTimer` is runtime-only**: Never serialize it. Initialized to `0` in `defaultTrap`. `applyTrap` does not reset it — only `onTick` advances it.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.

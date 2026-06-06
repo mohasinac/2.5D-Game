@@ -335,6 +335,8 @@ export class WallManager
       tilt:                  save.tilt,
       thickness:             save.thickness,
       topProfile:            save.topProfile,
+      topAmplitude:          save.topAmplitude,
+      topFrequency:          save.topFrequency,
       isDouble:              save.isDouble,
       peakHeight:            save.peakHeight,
       peakTilt:              save.peakTilt,

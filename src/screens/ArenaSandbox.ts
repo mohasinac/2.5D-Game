@@ -12,6 +12,7 @@ import {
   DEFAULT_ARENA_MATERIAL, MIN_ZONE_DEPTH, PIT_FIXED_DEPTH, ARENA_SAVE_VERSION,
 } from '../config/arenaConstants';
 import { buildParticleSystem } from '../geometry/particleBuilders';
+import { buildWeatherSystem } from '../geometry/weatherBuilders';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import {
   OpeningShape, WallProfile, SurfaceType, ChildHole, IslandHole,
@@ -20,6 +21,8 @@ import {
   ObstacleData, TrapData, PortalData,
   RotationData, RotationNodeType,
   BaseFootingData,
+  PresentConfig, ParticleConfig,
+  defaultPresentConfig, defaultParticleConfig,
 } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from '../geometry/materialBuilders';
 import {
@@ -119,6 +122,12 @@ export class ArenaSandbox extends Sandbox {
   private _presentMeshes = new Map<string, THREE.Mesh>();
   private _arenaViewMode: 'hitbox' | 'both' | 'present' = 'both';
   private _viewBtns: HTMLButtonElement[] = [];
+  /** Per-feature PresentConfig for the Presentation sub-node system. */
+  private _presentConfigs = new Map<string, PresentConfig>();
+  /** Per-feature ParticleConfig for the Particle Effect sub-node system. */
+  private _particleConfigs = new Map<string, ParticleConfig>();
+  /** Tracks which sub-node IDs (present-X, particle-X, weather-X) are in the tree. */
+  private _subNodesAdded = new Set<string>();
 
   /* ── Undo / Redo ── */
   private undoStack: string[] = [];
@@ -215,6 +224,31 @@ export class ArenaSandbox extends Sandbox {
     this.sceneTree.onDelete = (ids)=>{
       this.captureUndo();
       for (const id of ids) {
+        // Sub-node deletion: clean up config and track set; don't touch feature data
+        if (id.startsWith('present-')) {
+          const fid = id.slice(8);
+          this._presentConfigs.delete(fid);
+          this._disposePresentMesh(fid);
+          this._subNodesAdded.delete(id);
+          this._applyViewMode();
+          continue;
+        }
+        if (id.startsWith('particle-')) {
+          this._particleConfigs.delete(id.slice(9));
+          this._subNodesAdded.delete(id);
+          continue;
+        }
+        if (id.startsWith('weather-')) {
+          const fid = id.slice(8);
+          const arena = this.arenas.get(fid);
+          if (arena?.weatherSystem) {
+            this.removeFromScene(arena.weatherSystem.points);
+            arena.weatherSystem.dispose();
+            arena.weatherSystem = null;
+          }
+          this._subNodesAdded.delete(id);
+          continue;
+        }
         const arena=this.arenas.get(id);
         if(arena){
           const allPitIds=[...arena.pitIds]; const allZoneIds=[...arena.zoneIds];
@@ -289,6 +323,8 @@ export class ArenaSandbox extends Sandbox {
     this.sceneTree.onReparent = (nodeId: string, newParentId: string | null) => {
       this._onReparent(nodeId, newParentId);
     };
+
+    this.sceneTree.onDuplicate = (id: string) => { this._duplicateNode(id); };
 
     /* Keyboard shortcuts: Ctrl+Z = undo, Ctrl+Y / Ctrl+Shift+Z = redo */
     document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -507,6 +543,181 @@ export class ArenaSandbox extends Sandbox {
     const ps = buildParticleSystem(zone.particlePreset, wx, wz, Math.max(zone.radiusX, zone.radiusZ), baseY, zone.depth);
     this.addToScene(ps.points);
     zone.particleSystem = ps;
+  }
+
+  /* ── Weather system helpers ──────────────────────────────────────────── */
+  private _createArenaWeather(arena: ArenaData): void {
+    if (arena.weatherSystem) {
+      this.removeFromScene(arena.weatherSystem.points);
+      arena.weatherSystem.dispose();
+      arena.weatherSystem = null;
+    }
+    if (arena.weatherPreset === 'none') return;
+    const ws = buildWeatherSystem(
+      arena.weatherPreset,
+      arena.windEnabled, arena.windDirectionDeg, arena.windStrengthCms,
+      arena.windGustInterval, arena.windGustMult,
+      Math.max(arena.radiusX, arena.radiusZ),
+      this.baseConfig.height + arena.posY,
+    );
+    this.addToScene(ws.points);
+    arena.weatherSystem = ws;
+  }
+
+  /* ── Sub-node helpers ────────────────────────────────────────────────── */
+
+  private _addSubNodePresent(featureId: string): void {
+    const subId = `present-${featureId}`;
+    if (this._subNodesAdded.has(subId)) return;
+    this._subNodesAdded.add(subId);
+    this.sceneTree.add(subId, 'Presentation', '✦', featureId);
+  }
+
+  private _addSubNodeParticle(featureId: string): void {
+    const subId = `particle-${featureId}`;
+    if (this._subNodesAdded.has(subId)) return;
+    this._subNodesAdded.add(subId);
+    this.sceneTree.add(subId, 'Particle Effect', '✧', featureId);
+  }
+
+  private _addSubNodeWeather(arenaId: string): void {
+    const subId = `weather-${arenaId}`;
+    if (this._subNodesAdded.has(subId)) return;
+    this._subNodesAdded.add(subId);
+    this.sceneTree.add(subId, 'Weather', '🌤', arenaId);
+  }
+
+  /** Get existing presentStlb64 + presentColor from any feature that has them. */
+  private _getFeaturePresent(featureId: string): { stlb64: string | null; color: number } {
+    const arena = this.arenas.get(featureId);
+    if (arena) return { stlb64: arena.presentStlb64, color: arena.presentColor };
+    const wall = this.walls.get(featureId);
+    if (wall) return { stlb64: wall.presentStlb64, color: wall.presentColor };
+    const bridge = this.bridges.get(featureId);
+    if (bridge) return { stlb64: bridge.presentStlb64, color: bridge.presentColor };
+    const obs = this.obstacles.get(featureId);
+    if (obs) return { stlb64: obs.presentStlb64, color: obs.presentColor };
+    const trap = this.traps.get(featureId);
+    if (trap) return { stlb64: trap.presentStlb64, color: trap.presentColor };
+    const portal = this.portals.get(featureId);
+    if (portal) return { stlb64: portal.presentStlb64, color: portal.presentColor };
+    const footing = this.footings.get(featureId);
+    if (footing) return { stlb64: footing.presentStlb64, color: footing.presentColor };
+    return { stlb64: null, color: 0xaaaaaa };
+  }
+
+  /** Load STL from PresentConfig and apply all transforms. */
+  private _loadPresentStlWithConfig(featureId: string, cfg: PresentConfig): void {
+    if (!cfg.stlb64) return;
+    this._disposePresentMesh(featureId);
+    const bin = Uint8Array.from(atob(cfg.stlb64), c => c.charCodeAt(0));
+    const loader = new STLLoader();
+    const geo = loader.parse(bin.buffer);
+    const mat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.6, metalness: 0.1 });
+    const mesh = new THREE.Mesh(geo, mat);
+    const hitbox = this._getHitboxMesh(featureId);
+    const bx = hitbox?.position.x ?? 0;
+    const by = hitbox?.position.y ?? 0;
+    const bz = hitbox?.position.z ?? 0;
+    mesh.position.set(bx + cfg.offX, by + cfg.offY, bz + cfg.offZ);
+    mesh.rotation.set(
+      THREE.MathUtils.degToRad(cfg.rotX),
+      THREE.MathUtils.degToRad(cfg.rotY),
+      THREE.MathUtils.degToRad(cfg.rotZ),
+    );
+    mesh.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
+    this.addToScene(mesh);
+    this._presentMeshes.set(featureId, mesh);
+    this._applyViewMode();
+  }
+
+  /** Apply PresentConfig to an existing or new present mesh. */
+  private _applyPresentConfig(featureId: string, cfg: PresentConfig): void {
+    if (!cfg.stlb64) { this._disposePresentMesh(featureId); this._applyViewMode(); return; }
+    const pm = this._presentMeshes.get(featureId);
+    if (!pm) {
+      this._loadPresentStlWithConfig(featureId, cfg);
+    } else {
+      const hitbox = this._getHitboxMesh(featureId);
+      const bx = hitbox?.position.x ?? 0;
+      const by = hitbox?.position.y ?? 0;
+      const bz = hitbox?.position.z ?? 0;
+      pm.position.set(bx + cfg.offX, by + cfg.offY, bz + cfg.offZ);
+      pm.rotation.set(
+        THREE.MathUtils.degToRad(cfg.rotX),
+        THREE.MathUtils.degToRad(cfg.rotY),
+        THREE.MathUtils.degToRad(cfg.rotZ),
+      );
+      pm.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
+      (pm.material as THREE.MeshStandardMaterial).color.setHex(cfg.color);
+    }
+  }
+
+  private _showPresentNode(featureId: string): void {
+    if (!this._presentConfigs.has(featureId)) {
+      const { stlb64, color } = this._getFeaturePresent(featureId);
+      const cfg = defaultPresentConfig();
+      cfg.stlb64 = stlb64;
+      cfg.color  = color;
+      this._presentConfigs.set(featureId, cfg);
+      if (stlb64) this._loadPresentStlWithConfig(featureId, cfg);
+    }
+    const cfg = this._presentConfigs.get(featureId)!;
+    this.props.showPresentation(
+      cfg,
+      () => { this._applyPresentConfig(featureId, cfg); this.saveArena(); },
+      (loadCb) => {
+        const inp = document.createElement('input');
+        inp.type = 'file'; inp.accept = '.stl';
+        inp.onchange = () => {
+          const file = inp.files?.[0]; if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            const b64 = btoa(String.fromCharCode(...new Uint8Array(reader.result as ArrayBuffer)));
+            loadCb(b64);
+          };
+          reader.readAsArrayBuffer(file);
+        };
+        inp.click();
+      },
+      () => { cfg.stlb64 = null; this._disposePresentMesh(featureId); this._applyViewMode(); this.saveArena(); },
+    );
+  }
+
+  private _showParticleNode(featureId: string): void {
+    if (!this._particleConfigs.has(featureId)) {
+      const cfg = defaultParticleConfig();
+      // Bootstrap from existing particlePreset if available
+      const arena = this.arenas.get(featureId);
+      if (arena) cfg.preset = arena.particlePreset;
+      const zone = this.zones.get(featureId);
+      if (zone) cfg.preset = zone.particlePreset;
+      this._particleConfigs.set(featureId, cfg);
+    }
+    const cfg = this._particleConfigs.get(featureId)!;
+    const isSpeedLine = this.speedLines.has(featureId);
+    this.props.showParticle(
+      cfg,
+      () => {
+        // Sync back to ArenaData.particlePreset / ZoneData.particlePreset for save compat
+        const arena = this.arenas.get(featureId);
+        if (arena) { arena.particlePreset = cfg.preset; this._createArenaParticles(featureId, arena); }
+        const zone = this.zones.get(featureId);
+        if (zone) { zone.particlePreset = cfg.preset; this._createZoneParticles(zone); }
+        this.saveArena();
+      },
+      isSpeedLine,
+    );
+  }
+
+  private _showWeatherNode(arenaId: string): void {
+    const arena = this.arenas.get(arenaId);
+    if (!arena) { this.props.showEmpty(); return; }
+    this.props.showWeather(arena, () => {
+      this.captureUndo();
+      this._createArenaWeather(arena);
+      this.saveArena();
+    });
   }
 
   /* ── View mode ────────────────────────────────────────────────────────── */
@@ -1044,7 +1255,8 @@ export class ArenaSandbox extends Sandbox {
     const parentTreeId = parentType==='base' ? 'octagon-base' : parentId;
     this.sceneTree.add(id, name, '🧱', parentTreeId, {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'wall'); this.addRotation([id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'wall'); this.addRotation([id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
       ],
     });
     this.saveArena();
@@ -1078,7 +1290,8 @@ export class ArenaSandbox extends Sandbox {
     this.obstacles.set(id, data);
     this.sceneTree.add(id, data.name, '⬛', 'octagon-base', {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'obstacle'); this.addRotation([id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'obstacle'); this.addRotation([id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
       ],
     });
     this.saveArena();
@@ -1126,7 +1339,8 @@ export class ArenaSandbox extends Sandbox {
     if (data.presentStlb64) this._loadPresentStl(os.id, data.presentStlb64, data.presentColor);
     this.sceneTree.add(os.id, data.name, '⬛', 'octagon-base', {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(os.id) },
       ],
     });
   }
@@ -1142,7 +1356,11 @@ export class ArenaSandbox extends Sandbox {
     this.addToScene(mesh, edges);
     this.sceneObjects.set(id, [mesh, edges]);
     this.footings.set(id, data);
-    this.sceneTree.add(id, data.name, '⬢', 'octagon-base');
+    this.sceneTree.add(id, data.name, '⬢', 'octagon-base', {
+      addChildButtons: [
+        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(id) },
+      ],
+    });
     this._applyViewMode();
     this.saveArena();
   }
@@ -1182,7 +1400,11 @@ export class ArenaSandbox extends Sandbox {
     this.sceneObjects.set(fs.id, [mesh, edges]);
     this.footings.set(fs.id, data);
     if (data.presentStlb64) this._loadPresentStl(fs.id, data.presentStlb64, data.presentColor);
-    this.sceneTree.add(fs.id, data.name, '⬢', 'octagon-base');
+    this.sceneTree.add(fs.id, data.name, '⬢', 'octagon-base', {
+      addChildButtons: [
+        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(fs.id) },
+      ],
+    });
   }
 
   /* ── Trap methods ────────────────────────────────────────────────────── */
@@ -1202,8 +1424,10 @@ export class ArenaSandbox extends Sandbox {
     const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
     this.sceneTree.add(id, data.name, '⚡', parentTreeId, {
       addChildButtons: [
-        { label:'🧱+', title:'Add wall', onClick:()=>this.addWall(id, 'trap') },
-        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'trap'); this.addRotation([id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'🧱+', title:'Add wall',          onClick:()=>this.addWall(id, 'trap') },
+        { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'trap'); this.addRotation([id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
+        { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(id) },
       ],
     });
     this.saveArena();
@@ -1275,8 +1499,10 @@ export class ArenaSandbox extends Sandbox {
     const parentTreeId = ts.parentType === 'base' ? 'octagon-base' : ts.parentId;
     this.sceneTree.add(ts.id, data.name, '⚡', parentTreeId, {
       addChildButtons: [
-        { label:'🧱+', title:'Add wall', onClick:()=>this.addWall(ts.id, 'trap') },
-        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'🧱+', title:'Add wall',           onClick:()=>this.addWall(ts.id, 'trap') },
+        { label:'↻+',  title:'Add rotation',    className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+',  title:'Add presentation', className:'pit-btn',  onClick:()=>this._addSubNodePresent(ts.id) },
+        { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(ts.id) },
       ],
     });
     // Restore trap-parented walls
@@ -1298,7 +1524,11 @@ export class ArenaSandbox extends Sandbox {
     this.sceneObjects.set(id, objs);
     this.portals.set(id, data);
     const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
-    this.sceneTree.add(id, data.name, '◉', parentTreeId);
+    this.sceneTree.add(id, data.name, '◉', parentTreeId, {
+      addChildButtons: [
+        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(id) },
+      ],
+    });
     this.saveArena();
   }
 
@@ -1352,7 +1582,11 @@ export class ArenaSandbox extends Sandbox {
     this.portals.set(ps.id, data);
     if (data.presentStlb64) this._loadPresentStl(ps.id, data.presentStlb64, data.presentColor);
     const parentTreeId = ps.parentType === 'base' ? 'octagon-base' : ps.parentId;
-    this.sceneTree.add(ps.id, data.name, '◉', parentTreeId);
+    this.sceneTree.add(ps.id, data.name, '◉', parentTreeId, {
+      addChildButtons: [
+        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(ps.id) },
+      ],
+    });
   }
 
   /** Returns Map<id, name> of all speed lines — used to populate speed path dropdowns. */
@@ -1463,8 +1697,9 @@ export class ArenaSandbox extends Sandbox {
     const scene=this.getScene(); if(scene) scene.add(group);
     this.sceneTree.add(bid, name, '🌉', 'octagon-base', {
       addChildButtons:[
-        {label:'Seg+',title:'Add segment',className:'zone-btn',onClick:()=>this.addSegment(bid,'straight')},
-        {label:'W+',  title:'Add wall',  className:'pit-btn', onClick:()=>this.addWall(bid,'bridge')},
+        {label:'Seg+',title:'Add segment',      className:'zone-btn',onClick:()=>this.addSegment(bid,'straight')},
+        {label:'W+',  title:'Add wall',         className:'pit-btn', onClick:()=>this.addWall(bid,'bridge')},
+        {label:'✦+',  title:'Add presentation', className:'sl-btn',  onClick:()=>this._addSubNodePresent(bid)},
       ],
     });
     // Add a default straight segment
@@ -1525,6 +1760,7 @@ export class ArenaSandbox extends Sandbox {
     const dt = dtMs / 1000;
     for (const arena of this.arenas.values()) {
       if (arena.particleSystem) arena.particleSystem.tick(dt);
+      if (arena.weatherSystem)  arena.weatherSystem.tick(dt);
     }
     for (const zone of this.zones.values()) {
       if (zone.particleSystem) zone.particleSystem.tick(dt);
@@ -1988,6 +2224,11 @@ export class ArenaSandbox extends Sandbox {
     const id=this.selectedId;
     if(!id){ this.props.showEmpty(); return; }
 
+    // Sub-node routing
+    if (id.startsWith('present-'))  { this._showPresentNode(id.slice(8));  return; }
+    if (id.startsWith('particle-')) { this._showParticleNode(id.slice(9)); return; }
+    if (id.startsWith('weather-'))  { this._showWeatherNode(id.slice(8));  return; }
+
     if(id==='octagon-base'){
       this.props.showBase(
         this.baseConfig,
@@ -2250,12 +2491,15 @@ export class ArenaSandbox extends Sandbox {
     this._createArenaLight(data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
       addChildButtons:[
-        {label:'P+',   title:'Add pit',         className:'pit-btn',  onClick:()=>this.addPit(id)},
-        {label:'Z+',   title:'Add zone',        className:'zone-btn', onClick:()=>this.addZone(id)},
-        {label:'W+',   title:'Add wall',        className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
-        {label:'SL+',  title:'Add speed line',  className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
-        {label:'Trap+',title:'Add arena trap',  className:'pit-btn',  onClick:()=>this.addTrap(id,'arena')},
-        {label:'⬡+',   title:'Add arena portal',className:'zone-btn', onClick:()=>this.addPortal(id,'arena')},
+        {label:'P+',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(id)},
+        {label:'Z+',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(id)},
+        {label:'W+',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
+        {label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
+        {label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(id,'arena')},
+        {label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(id,'arena')},
+        {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(id)},
+        {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(id)},
+        {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(id)},
       ],
     });
     this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
@@ -2432,6 +2676,7 @@ export class ArenaSandbox extends Sandbox {
           {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone')},
           {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone')},
           {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
+          {label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(newId)},
         ],
       });
     }
@@ -2525,6 +2770,7 @@ export class ArenaSandbox extends Sandbox {
         {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(id,'zone')},
         {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(id,'zone')},
         {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(id,'zone'); this.addRotation([id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
+        {label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(id)},
       ],
     });
     this.updateArenaBowlHoles(arena, arenaId);
@@ -2583,6 +2829,18 @@ export class ArenaSandbox extends Sandbox {
       isMoat:zs.isMoat,innerRadiusX:zs.innerRadiusX,innerRadiusZ:zs.innerRadiusZ,
       innerOpeningShape:zs.innerOpeningShape,innerSides:zs.innerSides,innerStarInner:zs.innerStarInner,
       innerWallProfile:zs.innerWallProfile,innerRimOffset:zs.innerRimOffset,
+      innerStepCount:        zs.innerStepCount        ?? DEFAULT_STEP_COUNT,
+      innerStepStartDepth:   zs.innerStepStartDepth   ?? DEFAULT_STEP_START_DEPTH,
+      innerStepRiserProfile: zs.innerStepRiserProfile ?? DEFAULT_STEP_RISER,
+      innerRampMode:         zs.innerRampMode         ?? 'full',
+      innerRampAngle:        zs.innerRampAngle        ?? DEFAULT_RAMP_ANGLE,
+      innerRampWidth:        zs.innerRampWidth        ?? DEFAULT_RAMP_WIDTH,
+      innerSpiralTurns:      zs.innerSpiralTurns      ?? DEFAULT_SPIRAL_TURNS,
+      innerSpiralClockwise:  zs.innerSpiralClockwise  ?? true,
+      innerSpiralCount:      zs.innerSpiralCount      ?? DEFAULT_SPIRAL_COUNT,
+      innerSpiralLedgeWidth: zs.innerSpiralLedgeWidth ?? DEFAULT_SPIRAL_LEDGE_W,
+      innerSpiralLedgeHeight:zs.innerSpiralLedgeHeight?? DEFAULT_SPIRAL_LEDGE_H,
+      innerSpiralRadiusFrac: zs.innerSpiralRadiusFrac ?? DEFAULT_SPIRAL_RADIUS_FRAC,
       pitIds:[],zoneIds:[],speedLineIds:[],
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
@@ -2599,6 +2857,7 @@ export class ArenaSandbox extends Sandbox {
         {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(zs.id,'zone')},
         {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(zs.id,'zone')},
         {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(zs.id,'zone'); this.addRotation([zs.id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
+        {label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(zs.id)},
       ],
     });
     for(const cps of zs.pits)  this.restorePitSave(cps,arenaId,zs.id,data);
@@ -2627,6 +2886,12 @@ export class ArenaSandbox extends Sandbox {
         rampMode:         as.rampMode         ?? 'full',
         rampAngle:        as.rampAngle        ?? DEFAULT_RAMP_ANGLE,
         rampWidth:        as.rampWidth        ?? DEFAULT_RAMP_WIDTH,
+        innerStepCount:        as.innerStepCount        ?? DEFAULT_STEP_COUNT,
+        innerStepStartDepth:   as.innerStepStartDepth   ?? DEFAULT_STEP_START_DEPTH,
+        innerStepRiserProfile: as.innerStepRiserProfile ?? DEFAULT_STEP_RISER,
+        innerRampMode:         as.innerRampMode         ?? 'full',
+        innerRampAngle:        as.innerRampAngle        ?? DEFAULT_RAMP_ANGLE,
+        innerRampWidth:        as.innerRampWidth        ?? DEFAULT_RAMP_WIDTH,
         spiralTurns:      as.spiralTurns      ?? DEFAULT_SPIRAL_TURNS,
         spiralClockwise:  as.spiralClockwise  ?? true,
         spiralCount:      as.spiralCount      ?? DEFAULT_SPIRAL_COUNT,
@@ -2634,6 +2899,12 @@ export class ArenaSandbox extends Sandbox {
         spiralLedgeHeight:as.spiralLedgeHeight?? DEFAULT_SPIRAL_LEDGE_H,
         spiralRadiusFrac: as.spiralRadiusFrac ?? DEFAULT_SPIRAL_RADIUS_FRAC,
         spiralMeshes:     [],
+        innerSpiralTurns:      as.innerSpiralTurns      ?? DEFAULT_SPIRAL_TURNS,
+        innerSpiralClockwise:  as.innerSpiralClockwise  ?? true,
+        innerSpiralCount:      as.innerSpiralCount      ?? DEFAULT_SPIRAL_COUNT,
+        innerSpiralLedgeWidth: as.innerSpiralLedgeWidth ?? DEFAULT_SPIRAL_LEDGE_W,
+        innerSpiralLedgeHeight:as.innerSpiralLedgeHeight?? DEFAULT_SPIRAL_LEDGE_H,
+        innerSpiralRadiusFrac: as.innerSpiralRadiusFrac ?? DEFAULT_SPIRAL_RADIUS_FRAC,
         stepsColor:         as.stepsColor         ?? null,
         stepsSurface:       as.stepsSurface        ?? null,
         stepsCustomTileData:as.stepsCustomTileData ?? null,
@@ -2645,9 +2916,15 @@ export class ArenaSandbox extends Sandbox {
         lightPosY:      as.lightPosY      ?? 40,
         lightRange:     as.lightRange     ?? 200,
         particlePreset: as.particlePreset ?? 'none',
+        weatherPreset:    as.weatherPreset    ?? 'none',
+        windEnabled:      as.windEnabled      ?? false,
+        windDirectionDeg: as.windDirectionDeg ?? 0,
+        windStrengthCms:  as.windStrengthCms  ?? 0,
+        windGustInterval: as.windGustInterval ?? 4,
+        windGustMult:     as.windGustMult     ?? 2,
         presentStlb64:  as.presentStlb64  ?? null,
         presentColor:   as.presentColor   ?? 0xaaaaaa,
-        light: null, particleSystem: null,
+        light: null, particleSystem: null, weatherSystem: null,
         pitIds:[],zoneIds:[],wallIds:[],speedLineIds:[],
         mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
         floorMesh:null,islandMesh:null,rimSeamMesh:null,
@@ -2657,12 +2934,15 @@ export class ArenaSandbox extends Sandbox {
       // Arena node must exist in the tree before children are added as its descendants
       this.sceneTree.add(as.id,data.name,'⏺','octagon-base',{
         addChildButtons:[
-          {label:'P+',   title:'Add pit',          className:'pit-btn',  onClick:()=>this.addPit(as.id)},
-          {label:'Z+',   title:'Add zone',         className:'zone-btn', onClick:()=>this.addZone(as.id)},
-          {label:'W+',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
-          {label:'SL+',  title:'Add speed line',   className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
-          {label:'Trap+',title:'Add arena trap',   className:'pit-btn',  onClick:()=>this.addTrap(as.id,'arena')},
-          {label:'⬡+',   title:'Add arena portal', className:'zone-btn', onClick:()=>this.addPortal(as.id,'arena')},
+          {label:'P+',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(as.id)},
+          {label:'Z+',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(as.id)},
+          {label:'W+',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
+          {label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
+          {label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(as.id,'arena')},
+          {label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(as.id,'arena')},
+          {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(as.id)},
+          {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(as.id)},
+          {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(as.id)},
         ],
       });
 
@@ -2776,7 +3056,8 @@ export class ArenaSandbox extends Sandbox {
     const parentTreeId = ws.parentType==='base' ? 'octagon-base' : ws.parentId;
     this.sceneTree.add(ws.id, wall.name, '🧱', parentTreeId, {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(ws.id,'wall'); this.addRotation([ws.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(ws.id,'wall'); this.addRotation([ws.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(ws.id) },
       ],
     });
     if(ws.parentType==='arena'){
@@ -2801,8 +3082,9 @@ export class ArenaSandbox extends Sandbox {
     const scene=this.getScene(); if(scene) scene.add(group);
     this.sceneTree.add(bs.id, bridge.name, '🌉', 'octagon-base', {
       addChildButtons:[
-        {label:'Seg+',title:'Add segment',className:'zone-btn',onClick:()=>this.addSegment(bs.id,'straight')},
-        {label:'W+',  title:'Add wall',  className:'pit-btn', onClick:()=>this.addWall(bs.id,'bridge')},
+        {label:'Seg+',title:'Add segment',      className:'zone-btn',onClick:()=>this.addSegment(bs.id,'straight')},
+        {label:'W+',  title:'Add wall',         className:'pit-btn', onClick:()=>this.addWall(bs.id,'bridge')},
+        {label:'✦+',  title:'Add presentation', className:'sl-btn',  onClick:()=>this._addSubNodePresent(bs.id)},
       ],
     });
     if(bridge.startRef?.type==='arena'){
@@ -2897,6 +3179,8 @@ export class ArenaSandbox extends Sandbox {
 
   private _onReparent(nodeId: string, newParentId: string | null): void {
     if (!newParentId) return;
+    // Sub-nodes are not reparentable
+    if (nodeId.startsWith('present-') || nodeId.startsWith('particle-') || nodeId.startsWith('weather-')) return;
 
     // ── Bridge segment: reorder within same bridge OR move to another bridge ──
     const seg = this.segments.get(nodeId);
@@ -3040,6 +3324,228 @@ export class ArenaSandbox extends Sandbox {
     }
 
     // All other node types (arena, obstacle, footing, bridge, rotation) → no-op
+  }
+
+  /* ── Duplicate ───────────────────────────────────────────────────────── */
+
+  private _duplicateNode(id: string): void {
+    // Sub-nodes, bridges, speed lines, rotations are not duplicatable
+    if (id.startsWith('present-') || id.startsWith('particle-') || id.startsWith('weather-')) return;
+    if (this.bridges.has(id) || this.speedLines.has(id) || this.rotations.has(id)) return;
+    if (this.segments.has(id)) return;
+
+    this.captureUndo();
+
+    // ── Arena ──────────────────────────────────────────────────────────────
+    const arena = this.arenas.get(id);
+    if (arena) {
+      const newId = `arena-${++this.arenaSeq}`;
+      const clone = { ...arena, id: newId, name: `Arena ${this.arenaSeq}`,
+        posX: arena.posX + 10,
+        pitIds: [] as string[], zoneIds: [] as string[], wallIds: [] as string[], speedLineIds: [] as string[],
+        spiralMeshes: [], particleSystem: null, weatherSystem: null, light: null,
+        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
+        rimSeamMesh: null as unknown as THREE.Mesh,
+      };
+      const [mesh, edges] = buildArenaObjects(clone, [], this.getScene() ?? undefined);
+      clone.mesh = mesh; clone.edges = edges;
+      const rim = buildArenaRimSeam(clone, this.baseConfig.color, this.baseConfig.surface,
+        this.baseConfig.customTileData, this.baseConfig.tileScale);
+      clone.rimSeamMesh = rim;
+      this.addToScene(mesh, edges, rim, ...(clone.spiralMeshes ?? []));
+      this.sceneObjects.set(newId, [mesh, edges, rim]);
+      this.arenas.set(newId, clone);
+      this._createArenaLight(clone);
+      this.sceneTree.add(newId, clone.name, '⏺', 'octagon-base', {
+        addChildButtons: [
+          { label:'P+',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(newId) },
+          { label:'Z+',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(newId) },
+          { label:'W+',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(newId,'arena') },
+          { label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(newId) },
+          { label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(newId,'arena') },
+          { label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(newId,'arena') },
+          { label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(newId) },
+          { label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(newId) },
+          { label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(newId) },
+        ],
+      });
+      this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
+      return;
+    }
+
+    // ── Obstacle ───────────────────────────────────────────────────────────
+    const obs = this.obstacles.get(id);
+    if (obs) {
+      const newId = `obstacle-${++this.obstacleSeq}`;
+      const clone = { ...obs, id: newId, name: `Obstacle ${this.obstacleSeq}`,
+        posX: obs.posX + 10,
+        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
+      };
+      const [mesh, edges] = buildObstacleObjects(clone);
+      clone.mesh = mesh; clone.edges = edges;
+      this.addToScene(mesh, edges);
+      this.sceneObjects.set(newId, [mesh, edges]);
+      this.obstacles.set(newId, clone);
+      this.sceneTree.add(newId, clone.name, '⬛', 'octagon-base', {
+        addChildButtons: [
+          { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'obstacle'); this.addRotation([newId],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+        ],
+      });
+      this.saveArena(); return;
+    }
+
+    // ── Footing ────────────────────────────────────────────────────────────
+    const footing = this.footings.get(id);
+    if (footing) {
+      const newId = `footing-${++this.footingSeq}`;
+      const clone = { ...footing, id: newId, name: `Footing ${this.footingSeq}`,
+        basePosX: footing.basePosX + 10,
+        mesh: null as unknown as THREE.Mesh | null, edges: null as unknown as THREE.LineSegments | null,
+      };
+      const [mesh, edges] = buildFootingObjects(clone, this.baseConfig.height);
+      clone.mesh = mesh; clone.edges = edges;
+      this.addToScene(mesh, edges);
+      this.sceneObjects.set(newId, [mesh, edges]);
+      this.footings.set(newId, clone);
+      this.sceneTree.add(newId, clone.name, '⬢', 'octagon-base', {
+        addChildButtons: [
+          { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
+        ],
+      });
+      this._applyViewMode(); this.saveArena(); return;
+    }
+
+    // ── Trap ───────────────────────────────────────────────────────────────
+    const trap = this.traps.get(id);
+    if (trap) {
+      const newId = `trap-${++this.trapSeq}`;
+      const clone = { ...trap, id: newId, name: `Trap ${this.trapSeq}`,
+        posAngle: trap.posAngle + 10,
+        durationTiers: trap.durationTiers.map(t => ({ ...t })),
+        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
+        variantMesh: null as THREE.Mesh | null,
+      };
+      const surfY = this._getTrapSurfY(clone);
+      const [mesh, edges, variantMesh] = buildTrapObjects(clone, surfY);
+      clone.mesh = mesh; clone.edges = edges; clone.variantMesh = variantMesh;
+      const objs: THREE.Object3D[] = [mesh, edges];
+      if (variantMesh) objs.push(variantMesh);
+      this.addToScene(...objs);
+      this.sceneObjects.set(newId, objs);
+      this.traps.set(newId, clone);
+      const parentTreeId = clone.parentType === 'base' ? 'octagon-base' : clone.parentId;
+      this.sceneTree.add(newId, clone.name, '⚡', parentTreeId, {
+        addChildButtons: [
+          { label:'🧱+', title:'Add wall',            onClick:()=>this.addWall(newId, 'trap') },
+          { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'trap'); this.addRotation([newId],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(newId) },
+        ],
+      });
+      this.saveArena(); return;
+    }
+
+    // ── Portal ─────────────────────────────────────────────────────────────
+    const portal = this.portals.get(id);
+    if (portal) {
+      const newId = `portal-${++this.portalSeq}`;
+      const clone = { ...portal, id: newId, name: `Portal ${this.portalSeq}`,
+        posAngle: portal.posAngle + 10,
+        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
+        ringMesh: null as THREE.Mesh | null,
+      };
+      const surfY = this._getPortalSurfY(clone);
+      const [mesh, edges, ringMesh] = buildPortalObjects(clone, surfY);
+      clone.mesh = mesh; clone.edges = edges; clone.ringMesh = ringMesh;
+      const objs: THREE.Object3D[] = [mesh, edges];
+      if (ringMesh) objs.push(ringMesh);
+      this.addToScene(...objs);
+      this.sceneObjects.set(newId, objs);
+      this.portals.set(newId, clone);
+      const parentTreeId = clone.parentType === 'base' ? 'octagon-base' : clone.parentId;
+      this.sceneTree.add(newId, clone.name, '◉', parentTreeId, {
+        addChildButtons: [
+          { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
+        ],
+      });
+      this.saveArena(); return;
+    }
+
+    // ── Wall ───────────────────────────────────────────────────────────────
+    const wall = this.walls.get(id);
+    if (wall) {
+      const newId = `wall-${++this.wallSeq}`;
+      const clone = { ...wall, id: newId, name: `Wall ${this.wallSeq}`,
+        holes: wall.holes.map(h => ({ ...h })),
+        mesh: null as THREE.Mesh | null, edges: null as THREE.LineSegments | null,
+        _rotatePivot: undefined, _arenaRotateTimer: undefined,
+      };
+      this.walls.set(newId, clone);
+      this.applyWall(clone);
+      const parentTreeId = clone.parentType === 'base' ? 'octagon-base' : clone.parentId;
+      this.sceneTree.add(newId, clone.name, '🧱', parentTreeId, {
+        addChildButtons: [
+          { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'wall'); this.addRotation([newId],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+        ],
+      });
+      this.saveArena(); return;
+    }
+
+    // ── Pit ────────────────────────────────────────────────────────────────
+    const pit = this.pits.get(id);
+    if (pit) {
+      const arena = this.arenas.get(pit.parentArenaId); if (!arena) return;
+      const newId = `pit-${++this.pitSeq}`;
+      const clone: PitData = { ...pit, id: newId, name: `Pit ${this.pitSeq}`,
+        posAngle: pit.posAngle + 15,
+        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
+        seamMesh: null as unknown as THREE.Mesh,
+      };
+      const [mesh, edges, seamMesh] = buildPitObjects(clone, arena, this.pits, this.zones);
+      clone.mesh = mesh; clone.edges = edges; clone.seamMesh = seamMesh;
+      this.addToScene(mesh, edges, seamMesh);
+      this.sceneObjects.set(newId, [mesh, edges, seamMesh]);
+      this.pits.set(newId, clone);
+      arena.pitIds.push(newId);
+      this.sceneTree.add(newId, clone.name, '▼', pit.parentArenaId);
+      this.updateArenaBowlHoles(arena, pit.parentArenaId);
+      this.updateArenaFloor(arena);
+      this.saveArena(); return;
+    }
+
+    // ── Zone ───────────────────────────────────────────────────────────────
+    const zone = this.zones.get(id);
+    if (zone) {
+      const arena = this.arenas.get(zone.parentArenaId); if (!arena) return;
+      const newId = `zone-${++this.zoneSeq}`;
+      const clone: ZoneData = { ...zone, id: newId, name: `Zone ${this.zoneSeq}`,
+        posAngle: zone.posAngle + 15,
+        pitIds: [] as string[], zoneIds: [] as string[], speedLineIds: [] as string[],
+        particleSystem: null,
+        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
+        seamMesh: null as unknown as THREE.Mesh,
+      };
+      const [mesh, edges, seamMesh] = buildZoneObjects(clone, arena, this.pits, this.zones);
+      clone.mesh = mesh; clone.edges = edges; clone.seamMesh = seamMesh;
+      this.addToScene(mesh, edges, seamMesh);
+      this.sceneObjects.set(newId, [mesh, edges, seamMesh]);
+      this.zones.set(newId, clone);
+      arena.zoneIds.push(newId);
+      const parentId = zone.parentZoneId ?? zone.parentArenaId;
+      this.sceneTree.add(newId, clone.name, '◈', parentId, {
+        addChildButtons: [
+          { label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone') },
+          { label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone') },
+          { label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(newId) },
+        ],
+      });
+      this.updateArenaBowlHoles(arena, zone.parentArenaId);
+      this.updateArenaFloor(arena);
+      this.saveArena(); return;
+    }
   }
 
   /* ── Reset ── */

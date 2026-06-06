@@ -1,6 +1,8 @@
 export interface LandingOptions {
   onBeyblade: () => void;
-  onArena: () => void;
+  onArena:    () => void;
+  onRpg:      () => void;
+  onAdmin:    () => void;
 }
 
 export class LandingScreen {
@@ -25,9 +27,13 @@ export class LandingScreen {
             <span class="btn-icon">◎</span>
             Arena Sandbox
           </button>
-          <button class="game-btn" id="btn-back" disabled>
-            <span class="btn-icon">←</span>
-            Back
+          <button class="game-btn game-btn--rpg" id="btn-rpg">
+            <span class="btn-icon">▶</span>
+            Play RPG
+          </button>
+          <button class="game-btn game-btn--admin" id="btn-admin">
+            <span class="btn-icon">⚙</span>
+            Admin Studio
           </button>
         </div>
       </div>
@@ -35,7 +41,9 @@ export class LandingScreen {
     container.appendChild(this.el);
 
     this.el.querySelector('#btn-beyblade')!.addEventListener('click', opts.onBeyblade);
-    this.el.querySelector('#btn-arena')!.addEventListener('click', opts.onArena);
+    this.el.querySelector('#btn-arena')!.addEventListener('click',    opts.onArena);
+    this.el.querySelector('#btn-rpg')!.addEventListener('click',      opts.onRpg);
+    this.el.querySelector('#btn-admin')!.addEventListener('click',    opts.onAdmin);
   }
 
   setVisible(v: boolean): void {

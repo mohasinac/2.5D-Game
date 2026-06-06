@@ -1,3 +1,7 @@
+import { PresentConfig, defaultPresentConfig, ParticleConfig, defaultParticleConfig } from './sharedTypes';
+export type { PresentConfig, ParticleConfig };
+export { defaultPresentConfig, defaultParticleConfig };
+
 export type BeyMaterial = 'plastic' | 'metal' | 'rubber' | 'resin' | 'custom';
 export type SpinDir = 'left' | 'right';
 export type ViewMode = 'hitbox' | 'both' | 'present';
@@ -49,8 +53,8 @@ export interface PartData {
   material: BeyMaterial;
   weight: number;           // grams
   color: number;
-  presentationSTLb64?: string;
-  presentationColor: number;
+  present: PresentConfig;
+  particleConfig: ParticleConfig;
 }
 
 export interface GroupData {
@@ -60,6 +64,7 @@ export interface GroupData {
 }
 
 export interface BeybladeBuildConfig {
+  v?: number;
   axis: AxisData;
   rootChildIds: string[];
   groups: GroupData[];

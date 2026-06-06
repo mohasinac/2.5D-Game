@@ -22,6 +22,7 @@ export class SceneTree {
   private nodeActions = new Map<string, CtxItem[]>();
 
   onDelete:           (ids: string[]) => void = () => {};
+  onDuplicate:        (id: string) => void = () => {};
   onGroup:            (newGroupId: string, childIds: string[]) => void = () => {};
   onCombine:          (ids: string[]) => void = () => {};
   onReparent:         (nodeId: string, newParentId: string | null, beforeId: string | null) => void = () => {};
@@ -130,6 +131,7 @@ export class SceneTree {
     const ids = [...this.sel];
     const customItems = this.nodeActions.get(id) ?? [];
     const stdItems: CtxItem[] = [
+      { label:'Duplicate', action:()=>{ this.onDuplicate(id); this.hideCtx(); } },
       { label:'Delete', action:()=>this.deleteSelected() },
       { label:'Group',  action:()=>this.groupSelected(),   disabled:ids.length < 1 },
       { label:'Combine',action:()=>this.combineSelected(), disabled:ids.length < 2 },

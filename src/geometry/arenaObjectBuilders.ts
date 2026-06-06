@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, DEG2RAD, PIT_FIXED_DEPTH } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
-  SpeedLineData, SpeedLineSegment,
+  SpeedLineData, SpeedLineSegment, RampMode,
 } from '../types/arenaTypes';
 import { SceneSurfaceProjector } from './sceneSurfaceProjector';
 import { shapePoints, childArenaBaseY, childWorldPos, makeSurfFn, polarToLocalXZ } from './surfaceUtils';
@@ -58,8 +58,8 @@ function buildArenaBowlGeo(data: ArenaData, pts: THREE.Vector2[], baseY: number,
   if (data.isMoat) {
     const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
     return [
-      buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY, data.stepCount),
-      buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY, data.wallProfile, data.innerWallProfile, data.stepCount),
+      buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY, data.stepCount, data.stepStartDepth, data.innerStepCount, data.innerStepStartDepth),
+      buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY, data.wallProfile, data.innerWallProfile, data.stepCount, data.stepStartDepth, data.innerStepCount, data.innerStepStartDepth),
     ];
   }
   if (data.posY > ARENA_ELEVATED_THRESHOLD) {
@@ -108,7 +108,12 @@ function disposeSpiralMeshes(data: ArenaData, scene: THREE.Scene | null): void {
 
 export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = [], scene?: THREE.Scene): [THREE.Mesh, THREE.LineSegments] {
   const pts = shapePoints(data);
-  const mat = buildSurfaceMaterial({ color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale, baseMaterial:data.baseMaterial });
+  const hasStep   = data.isMoat ? data.wallProfile === 'step' : usesStepProfile(data);
+  const stepActive = hasStep && data.stepsColor !== null;
+  const matColor    = stepActive ? data.stepsColor!                              : data.color;
+  const matSurface  = stepActive ? (data.stepsSurface        ?? data.surface)   : data.surface;
+  const matTileData = stepActive ? (data.stepsCustomTileData ?? data.customTileData) : data.customTileData;
+  const mat = buildSurfaceMaterial({ color:matColor, surface:matSurface, customTileData:matTileData, tileScale:data.tileScale, baseMaterial:data.baseMaterial });
   const baseY = 0;
 
   const [meshGeo, edgeGeo] = buildArenaBowlGeo(data, pts, baseY, holes);
@@ -116,7 +121,7 @@ export function buildArenaObjects(data: ArenaData, holes: ChildHole[] = [], scen
   const mesh = new THREE.Mesh(meshGeo, mat);
   mesh.position.set(data.posX, data.posY, data.posZ);
   mesh.rotation.y = data.rotY;
-  const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: edgeColor(data.color) }));
+  const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: edgeColor(matColor) }));
   edges.position.set(data.posX, data.posY, data.posZ);
   edges.rotation.y = data.rotY;
 
@@ -141,6 +146,8 @@ export function applyArena(data: ArenaData, holes: ChildHole[] = [], scene?: THR
     disposeSpiralMeshes(data, scene);
     data.spiralMeshes = buildSpiralMeshes(data, scene);
   }
+
+  applyArenaColor(data);
 }
 
 /**
@@ -163,10 +170,17 @@ export function buildArenaRimSeam(
 }
 
 export function applyArenaColor(data: ArenaData): void {
-  const opts: SurfaceMaterialOpts = { color:data.color, surface:data.surface, customTileData:data.customTileData, tileScale:data.tileScale, baseMaterial:data.baseMaterial };
+  const hasStep   = data.isMoat ? data.wallProfile === 'step' : usesStepProfile(data);
+  const stepActive = hasStep && data.stepsColor !== null;
+  const opts: SurfaceMaterialOpts = {
+    color:          stepActive ? data.stepsColor!                              : data.color,
+    surface:        stepActive ? (data.stepsSurface        ?? data.surface)   : data.surface,
+    customTileData: stepActive ? (data.stepsCustomTileData ?? data.customTileData) : data.customTileData,
+    tileScale: data.tileScale, baseMaterial: data.baseMaterial,
+  };
   releaseMaterial(opts);
   data.mesh.material = buildSurfaceMaterial(opts);
-  (data.edges.material as THREE.LineBasicMaterial).color.copy(edgeColor(data.color));
+  (data.edges.material as THREE.LineBasicMaterial).color.copy(edgeColor(stepActive ? data.stepsColor! : data.color));
 }
 
 /* ── Pit ─────────────────────────────────────────────────────────────────── */
@@ -483,20 +497,28 @@ export function defaultArena(name: string): ArenaData {
     stepCount: DEFAULT_STEP_COUNT, stepStartDepth: DEFAULT_STEP_START_DEPTH,
     stepRiserProfile: DEFAULT_STEP_RISER,
     rampMode: 'full', rampAngle: DEFAULT_RAMP_ANGLE, rampWidth: DEFAULT_RAMP_WIDTH,
+    innerStepCount: DEFAULT_STEP_COUNT, innerStepStartDepth: DEFAULT_STEP_START_DEPTH,
+    innerStepRiserProfile: DEFAULT_STEP_RISER,
+    innerRampMode: 'full', innerRampAngle: DEFAULT_RAMP_ANGLE, innerRampWidth: DEFAULT_RAMP_WIDTH,
     spiralTurns: DEFAULT_SPIRAL_TURNS, spiralClockwise: true,
     spiralCount: DEFAULT_SPIRAL_COUNT, spiralLedgeWidth: DEFAULT_SPIRAL_LEDGE_W,
     spiralLedgeHeight: DEFAULT_SPIRAL_LEDGE_H, spiralRadiusFrac: DEFAULT_SPIRAL_RADIUS_FRAC,
     spiralMeshes: [],
+    innerSpiralTurns: DEFAULT_SPIRAL_TURNS, innerSpiralClockwise: true,
+    innerSpiralCount: DEFAULT_SPIRAL_COUNT, innerSpiralLedgeWidth: DEFAULT_SPIRAL_LEDGE_W,
+    innerSpiralLedgeHeight: DEFAULT_SPIRAL_LEDGE_H, innerSpiralRadiusFrac: DEFAULT_SPIRAL_RADIUS_FRAC,
     stepsColor: null, stepsSurface: null, stepsCustomTileData: null,
     spiralColor: null, spiralSurface: null, spiralCustomTileData: null,
     lightColor: 0xffffff, lightIntensity: 0, lightPosY: 40, lightRange: 200,
     particlePreset: 'none',
+    weatherPreset: 'none', windEnabled: false, windDirectionDeg: 0,
+    windStrengthCms: 0, windGustInterval: 4, windGustMult: 2,
     presentStlb64: null, presentColor: 0xaaaaaa,
     pitIds: [], zoneIds: [], wallIds: [], speedLineIds: [],
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,
     floorMesh: null, islandMesh: null, rimSeamMesh: null,
-    light: null, particleSystem: null,
+    light: null, particleSystem: null, weatherSystem: null,
   };
 }
 
@@ -533,6 +555,12 @@ export function defaultZone(
     isMoat: false, innerRadiusX: 8, innerRadiusZ: 8,
     innerOpeningShape: 'circle', innerSides: 5, innerStarInner: 0.5,
     innerWallProfile: 'parabolic', innerRimOffset: 0,
+    innerStepCount: DEFAULT_STEP_COUNT, innerStepStartDepth: DEFAULT_STEP_START_DEPTH,
+    innerStepRiserProfile: DEFAULT_STEP_RISER,
+    innerRampMode: 'full' as RampMode, innerRampAngle: DEFAULT_RAMP_ANGLE, innerRampWidth: DEFAULT_RAMP_WIDTH,
+    innerSpiralTurns: DEFAULT_SPIRAL_TURNS, innerSpiralClockwise: true,
+    innerSpiralCount: DEFAULT_SPIRAL_COUNT, innerSpiralLedgeWidth: DEFAULT_SPIRAL_LEDGE_W,
+    innerSpiralLedgeHeight: DEFAULT_SPIRAL_LEDGE_H, innerSpiralRadiusFrac: DEFAULT_SPIRAL_RADIUS_FRAC,
     pitIds: [], zoneIds: [], speedLineIds: [],
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,

@@ -14,10 +14,13 @@ import {
 } from '../commands/beybladeCommands';
 import {
   PartData, SectorData, GroupData, ViewMode, BeyMaterial, BeybladeBuildConfig,
+  defaultPresentConfig, defaultParticleConfig,
 } from '../types/beybladeTypes';
+import { PresentConfig, ParticleConfig } from '../types/sharedTypes';
 import { gameConfirm } from '../utils/dialog';
 
 const STORAGE_KEY = 'bey_beyblade_builder';
+const BEY_SAVE_VERSION = 2;
 
 export class BeybladeSandbox extends Sandbox {
   private store        = new BeybladeStore();
@@ -39,6 +42,8 @@ export class BeybladeSandbox extends Sandbox {
   private spinLeftBtn!:  HTMLButtonElement;
   private spinRightBtn!: HTMLButtonElement;
   private viewBtns: Record<ViewMode, HTMLButtonElement> = {} as Record<ViewMode, HTMLButtonElement>;
+
+  private _subNodesAdded = new Set<string>();
 
   constructor(container: HTMLElement, onBack: () => void) {
     const opts: SandboxOptions = {
@@ -263,6 +268,8 @@ export class BeybladeSandbox extends Sandbox {
       if (ids.length === 0) { this.panel.showEmpty(); return; }
       const id = ids[0];
       if (id === 'axis') { this._selectAxis(); return; }
+      if (id.startsWith('present-'))  { this._selectPresentNode(id.slice(8));  return; }
+      if (id.startsWith('particle-')) { this._selectParticleNode(id.slice(9)); return; }
       if (this.store.hasPart(id)) {
         this._selectPart(id);
       } else if (this.store.hasSector(id)) {
@@ -276,6 +283,10 @@ export class BeybladeSandbox extends Sandbox {
     this.tree.onDelete = (ids) => {
       for (const id of ids) {
         if (id === 'axis') continue;
+        if (id.startsWith('present-') || id.startsWith('particle-')) {
+          this._subNodesAdded.delete(id);
+          continue;
+        }
         if (this.store.hasPart(id)) {
           this.history.execute(new DeletePartCmd(this._ctx(), id));
         } else if (this.store.hasSector(id)) {
@@ -287,6 +298,8 @@ export class BeybladeSandbox extends Sandbox {
       }
       this.panel.showEmpty();
     };
+
+    this.tree.onDuplicate = (id) => this._duplicateNode(id);
 
     this.tree.onVisibilityToggle = (id, visible) => {
       if (this.store.hasPart(id)) this.beyRenderer.setPartVisible(id, visible);
@@ -323,7 +336,41 @@ export class BeybladeSandbox extends Sandbox {
         this.history.execute(new UpdatePartCmd(this._ctx(), id, changes));
       },
       (count) => this._cutPart(id, count),
-      () => this._importSTL(id),
+    );
+  }
+
+  private _selectPresentNode(partId: string): void {
+    if (!this.store.hasPart(partId)) return;
+    this.rightPanelEl.style.display = '';
+    const cfg = { ...this.store.getPart(partId).present };
+    const show = () => this.panel.showPresentation(
+      cfg,
+      () => {
+        this.store.updatePart(partId, { present: { ...cfg } });
+        this.beyRenderer.applyPresentTransform(partId);
+        this._saveToStorage();
+      },
+      (cb) => this._importSTL(partId, (b64) => { cb(b64); show(); }),
+      () => {
+        this.beyRenderer.clearPresentMesh(partId);
+        this.store.updatePart(partId, { present: { ...this.store.getPart(partId).present, stlb64: null } });
+        this._saveToStorage();
+        show();
+      },
+    );
+    show();
+  }
+
+  private _selectParticleNode(partId: string): void {
+    if (!this.store.hasPart(partId)) return;
+    this.rightPanelEl.style.display = '';
+    const cfg = { ...this.store.getPart(partId).particleConfig };
+    this.panel.showParticle(
+      cfg,
+      () => {
+        this.store.updatePart(partId, { particleConfig: { ...cfg } });
+        this._saveToStorage();
+      },
     );
   }
 
@@ -356,7 +403,8 @@ export class BeybladeSandbox extends Sandbox {
       height: 1, topRadiusX: 2, topRadiusZ: 2, bottomRadiusX: 2, bottomRadiusZ: 2,
       innerTopRadiusX: 0, innerTopRadiusZ: 0, innerBottomRadiusX: 0, innerBottomRadiusZ: 0,
       sectorIds: [], material: 'plastic' as BeyMaterial, weight: 1, color: 0x00e5ff,
-      presentationColor: 0xaaaaaa,
+      present: defaultPresentConfig(),
+      particleConfig: defaultParticleConfig(),
     };
     this.history.execute(new AddPartCmd(this._ctx(), data));
   }
@@ -393,7 +441,7 @@ export class BeybladeSandbox extends Sandbox {
     this.history.execute(new CutSectorsCmd(this._ctx(), partId, sectors));
   }
 
-  private _importSTL(partId: string): void {
+  private _importSTL(partId: string, onLoaded: (b64: string) => void): void {
     const input = document.createElement('input');
     input.type = 'file'; input.accept = '.stl';
     input.addEventListener('change', () => {
@@ -403,9 +451,9 @@ export class BeybladeSandbox extends Sandbox {
       reader.onload = () => {
         const loader = new STLLoader();
         const geo = loader.parse(reader.result as ArrayBuffer);
-        this.beyRenderer.loadPresentationSTL(partId, geo);
         const b64 = btoa(String.fromCharCode(...new Uint8Array(reader.result as ArrayBuffer)));
-        this.store.updatePart(partId, { presentationSTLb64: b64 });
+        onLoaded(b64);
+        this.beyRenderer.loadPresentationSTL(partId, geo);
         this._saveToStorage();
       };
       reader.readAsArrayBuffer(file);
@@ -435,15 +483,16 @@ export class BeybladeSandbox extends Sandbox {
 
   // ── Command event handlers ────────────────────────────────────────────────
 
-  private _onPartAdded(id: string): void {
+  private _addPartToTree(id: string): void {
     const part = this.store.getPart(id);
-    this.beyRenderer.rebuildPart(id);
     this.tree.add(id, part.name, part.isHollow ? '◯' : '⬡', null, {
       addChildButtons: [
         { label: 'S+', title: 'Cut into sectors', onClick: () => {
           const n = parseInt(prompt('Number of sectors (2–12):', '3') ?? '3', 10) || 3;
           this._cutPart(id, Math.max(2, Math.min(12, n)));
         }},
+        { label: '✦+', title: 'Add Presentation', onClick: () => this._addSubNodePresent(id) },
+        { label: '✧+', title: 'Add Particle Effect', onClick: () => this._addSubNodeParticle(id) },
       ],
     });
     this.tree.setNodeActions(id, [
@@ -451,13 +500,68 @@ export class BeybladeSandbox extends Sandbox {
         this.history.execute(new UpdatePartCmd(this._ctx(), id, { freeSpin: !this.store.getPart(id).freeSpin }));
       }},
     ]);
+  }
+
+  private _onPartAdded(id: string): void {
+    this.beyRenderer.rebuildPart(id);
+    this._addPartToTree(id);
     this._saveToStorage();
   }
 
   private _onPartRemoved(id: string): void {
+    this._subNodesAdded.delete(`present-${id}`);
+    this._subNodesAdded.delete(`particle-${id}`);
     this.beyRenderer.removePart(id);
     this.tree.remove(id);
     this._saveToStorage();
+  }
+
+  private _duplicateNode(id: string): void {
+    if (id === 'axis') return;
+    if (id.startsWith('present-') || id.startsWith('particle-')) return;
+    if (this.store.hasPart(id)) this._duplicatePart(id);
+    else if (this.store.hasGroup(id)) {
+      const src = this.store.getGroup(id);
+      const newId = this.store.nextGroupId();
+      const data: GroupData = { id: newId, name: src.name + ' copy', childIds: [] };
+      this.history.execute(new AddGroupCmd(this._ctx(), data));
+    }
+  }
+
+  private _duplicatePart(srcId: string): void {
+    const src = this.store.getPart(srcId);
+    const newPartId = this.store.nextPartId();
+    const newSectors: SectorData[] = src.sectorIds.map(sid => ({
+      ...this.store.getSector(sid),
+      id: this.store.nextSectorId(),
+    }));
+    const newPart: PartData = {
+      ...src, id: newPartId, name: src.name + ' copy',
+      sectorIds: newSectors.map(s => s.id),
+      present: { ...src.present, stlb64: null },
+      particleConfig: { ...src.particleConfig },
+    };
+    this.store.addPart(newPart);
+    this.store.addToRoot(newPartId);
+    for (const s of newSectors) this.store.addSector(s);
+    this.beyRenderer.rebuildPart(newPartId);
+    this._addPartToTree(newPartId);
+    for (const s of newSectors) this.tree.add(s.id, s.name, '◔', newPartId);
+    this._saveToStorage();
+  }
+
+  private _addSubNodePresent(partId: string): void {
+    const subId = `present-${partId}`;
+    if (this._subNodesAdded.has(subId)) return;
+    this._subNodesAdded.add(subId);
+    this.tree.add(subId, '✦ Presentation', '✦', partId);
+  }
+
+  private _addSubNodeParticle(partId: string): void {
+    const subId = `particle-${partId}`;
+    if (this._subNodesAdded.has(subId)) return;
+    this._subNodesAdded.add(subId);
+    this.tree.add(subId, '✧ Particle Effect', '✧', partId);
   }
 
   private _onPartUpdated(id: string): void {
@@ -531,6 +635,7 @@ export class BeybladeSandbox extends Sandbox {
   private _rebuildTree(): void {
     // Full tree rebuild from store (used after undo/redo)
     // Remove all non-axis nodes
+    this._subNodesAdded.clear();
     const nodeMap = (this.tree as unknown as { nodes: Map<string, { id: string }> })['nodes'];
     for (const [id] of nodeMap) {
       if (id !== 'axis') this.tree.remove(id);
@@ -543,7 +648,7 @@ export class BeybladeSandbox extends Sandbox {
     for (const id of this.store.getRootChildIds()) {
       if (this.store.hasPart(id)) {
         const part = this.store.getPart(id);
-        this.tree.add(id, part.name, part.isHollow ? '◯' : '⬡', null);
+        this._addPartToTree(id);
         for (const sid of part.sectorIds) {
           const sector = this.store.getSector(sid);
           this.tree.add(sid, sector.name, '◔', id);
@@ -639,7 +744,7 @@ export class BeybladeSandbox extends Sandbox {
   private _saveToStorage(): void {
     try {
       const cfg = this.store.serialize();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...cfg, v: BEY_SAVE_VERSION }));
     } catch { /* quota exceeded — ignore */ }
   }
 
@@ -647,8 +752,12 @@ export class BeybladeSandbox extends Sandbox {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      const cfg = JSON.parse(raw) as BeybladeBuildConfig;
-      this.store.deserialize(cfg);
+      const parsed = JSON.parse(raw) as BeybladeBuildConfig & { v?: number };
+      if (parsed.v !== BEY_SAVE_VERSION) {
+        localStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+      this.store.deserialize(parsed);
       // Restore axis pose
       const axis = this.store.getAxis();
       this.tiltInput.value  = String(axis.tiltAngle);
@@ -662,9 +771,9 @@ export class BeybladeSandbox extends Sandbox {
       this._rebuildTree();
       // Restore STL blobs
       for (const part of this.store.getAllParts()) {
-        if (part.presentationSTLb64) {
+        if (part.present?.stlb64) {
           const loader = new STLLoader();
-          const binary = Uint8Array.from(atob(part.presentationSTLb64), c => c.charCodeAt(0)).buffer;
+          const binary = Uint8Array.from(atob(part.present.stlb64), c => c.charCodeAt(0)).buffer;
           const geo = loader.parse(binary);
           this.beyRenderer.loadPresentationSTL(part.id, geo);
         }

@@ -220,15 +220,47 @@ export class BeybladeRenderer {
       fromGroup.remove(objs.presentMesh);
       this._disposeMeshObj(objs.presentMesh);
     }
+    const cfg = part.present;
     const mat = new THREE.MeshStandardMaterial({
-      color: part.presentationColor, side: THREE.DoubleSide,
+      color: cfg.color, side: THREE.DoubleSide,
       roughness: 0.5, metalness: 0.1,
     });
     const mesh = new THREE.Mesh(geometry, mat);
-    mesh.position.y = part.axisOffsetY;
+    mesh.position.set(cfg.offX, part.axisOffsetY + cfg.offY, cfg.offZ);
+    mesh.rotation.set(
+      THREE.MathUtils.degToRad(cfg.rotX),
+      THREE.MathUtils.degToRad(cfg.rotY),
+      THREE.MathUtils.degToRad(cfg.rotZ),
+    );
+    mesh.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
     const group = objs.owner === 'free' ? this.freeSpinGroup : this.spinGroup;
     group.add(mesh);
     objs.presentMesh = mesh;
+    this._applyViewMode(id);
+  }
+
+  applyPresentTransform(id: string): void {
+    const part = this.store.getPart(id);
+    const objs = this.partObjects.get(id);
+    if (!objs?.presentMesh) return;
+    const cfg = part.present;
+    objs.presentMesh.position.set(cfg.offX, part.axisOffsetY + cfg.offY, cfg.offZ);
+    objs.presentMesh.rotation.set(
+      THREE.MathUtils.degToRad(cfg.rotX),
+      THREE.MathUtils.degToRad(cfg.rotY),
+      THREE.MathUtils.degToRad(cfg.rotZ),
+    );
+    objs.presentMesh.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
+    ((objs.presentMesh as THREE.Mesh).material as THREE.MeshStandardMaterial).color.setHex(cfg.color);
+  }
+
+  clearPresentMesh(id: string): void {
+    const objs = this.partObjects.get(id);
+    if (!objs?.presentMesh) return;
+    const group = objs.owner === 'free' ? this.freeSpinGroup : this.spinGroup;
+    group.remove(objs.presentMesh);
+    this._disposeMeshObj(objs.presentMesh);
+    objs.presentMesh = null;
     this._applyViewMode(id);
   }
 
