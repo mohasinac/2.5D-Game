@@ -10,7 +10,7 @@ import {
   polarToLocalXZ, makeSurfFn,
 } from '../../geometry/surfaceUtils';
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
-import { DEG2RAD } from '../../config/arenaConstants';
+import { DEG2RAD, DEFAULT_BASE_HEIGHT } from '../../config/arenaConstants';
 
 // ── Spinning-top geometry ────────────────────────────────────────────────────
 // Physics: BALL_RADIUS for XZ (wall/SL/trap contact), tip point for floor
@@ -309,11 +309,11 @@ export class SpawnManager {
       if (surfY > bestSurfY) { bestSurfY = surfY; bestMat = arena.baseMaterial; }
     }
 
-    // Octagon base fallback (world Y = 0 for default base height, approximately)
+    // Octagon base fallback — top face is at DEFAULT_BASE_HEIGHT (30 cm)
     if (bestSurfY === -Infinity &&
         Math.abs(this.pos.x) <= BASE_APOTHEM &&
         Math.abs(this.pos.z) <= BASE_APOTHEM) {
-      bestSurfY = 0;
+      bestSurfY = DEFAULT_BASE_HEIGHT;
     }
 
     if (bestSurfY === -Infinity) return;
@@ -336,7 +336,7 @@ export class SpawnManager {
       const arena = this.getArenas().get(wall.parentId);
       if (!arena) continue;
 
-      const rimY = arena.posY;
+      const rimY = DEFAULT_BASE_HEIGHT + arena.posY;
       if (this.pos.y - BALL_RADIUS > rimY + wall.height) continue;
 
       const { alx, alz } = worldToArenaLocal(this.pos.x, this.pos.z, arena);
@@ -356,7 +356,12 @@ export class SpawnManager {
       const cosA = Math.cos(angle); const sinA = Math.sin(angle);
       const rimDist = 1 / Math.sqrt((cosA * cosA) / (rX * rX) + (sinA * sinA) / (rZ * rZ));
       const ballDist = Math.sqrt(alx * alx + alz * alz);
-      const gap = (rimDist - wall.thickness) - (ballDist + BALL_RADIUS);
+      // Outward walls: inner collision surface IS the rim (default).
+      // Inward walls: inner collision surface is rim − thickness (wall protrudes inward).
+      const innerSurf = wall.thicknessDirection === 'inward'
+        ? rimDist - wall.thickness
+        : rimDist;
+      const gap = innerSurf - (ballDist + BALL_RADIUS);
 
       if (gap > WALL_CONTACT_EPS) continue;
 
@@ -440,6 +445,7 @@ export class SpawnManager {
 
   private _applySpeedLines(dt: number): void {
     for (const [slId, sl] of this.getSpeedLines()) {
+      if (sl.enabled === false) { this.slOnRibbon.set(slId, false); continue; }
       const pts = this._getSlWorldPath(sl);
       if (pts.length < 2) continue;
 
@@ -657,9 +663,10 @@ export class SpawnManager {
       if (d2 < nearestTrapDist2) { nearestTrapDist2 = d2; nearestTrap = trap; }
     }
 
-    // Find nearest speed line
+    // Find nearest speed line (skip disabled ribbons)
     let nearestSl: SpeedLineData | null = null; let nearestSlDist2 = Infinity;
     for (const sl of this.getSpeedLines().values()) {
+      if (sl.enabled === false) continue;
       const pts = this._getSlWorldPath(sl); if (pts.length < 2) continue;
       for (const p of pts) {
         const d2 = (this.pos.x - p.x) ** 2 + (this.pos.z - p.z) ** 2;
@@ -701,7 +708,7 @@ export class SpawnManager {
 
   private _applySelfRotation(dt: number): void {
     if (!this.topGroup) return;
-    if (this.rpm > 0) this.topGroup.rotation.y += (this.rpm / 60) * Math.PI * 2 * dt;
+    if (this.selfRotate && this.rpm > 0) this.topGroup.rotation.y += (this.rpm / 60) * Math.PI * 2 * dt;
     this.topGroup.rotation.z = this.tiltDeg * DEG2RAD;
   }
 

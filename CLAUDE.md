@@ -104,6 +104,42 @@ Known confirmed bugs fixed (2026-06-07 — env system ID bug, missing restore fi
 - **`ArenaEnvironmentManager` used `arena.id`**: `ArenaData` has no `id` field (ID is the Map key). Fixed: `for (const [arenaId, arena] of this.getArenas().entries())` and `_fireEntry(arenaId, arena, entry)`.
 - **`_loadArenasFromConfig` missing new env fields**: Arena construction in restore path was missing all `gravityScale/tilt/weightTilt/fogDensity/scoreMultiplier/pointsPerSecond/weatherSurfaceMap/envSchedule` fields. Fixed: all added with `?? ENV.DEFAULT_*` fallbacks.
 - **Bridge `_animTimer` not reset on toggle off**: When `animEnabled` toggled off in PropertiesPanel, `_animTimer` kept accumulating. Re-enabling caused mid-cycle jump. Fixed: `if (!v) seg._animTimer = 0` in the toggleRow callback.
+- **SpawnManager octagon base fallback at Y=0**: `_resolveSurface` used `bestSurfY = 0` as the octagon fallback — but the octagon top face is at `DEFAULT_BASE_HEIGHT` (30 cm). Fixed: `bestSurfY = DEFAULT_BASE_HEIGHT`. Also added `DEFAULT_BASE_HEIGHT` to the import from `arenaConstants`.
+- **SpawnManager wall rim Y missing base height**: `_resolveWalls` computed `const rimY = arena.posY` — world rim Y = `DEFAULT_BASE_HEIGHT + arena.posY`, not just `arena.posY`. Wall height culling was off by 30 cm (octagon base thickness), causing all arena walls to pass the cull test incorrectly. Fixed: `const rimY = DEFAULT_BASE_HEIGHT + arena.posY`.
+
+Known confirmed features added (2026-06-07 — SpawnManager physics test top):
+- **`src/geometry/surfaceUtils.ts`** — `worldToArenaLocal(wx, wz, arena)` export added (inverse rotation of arena.rotY; companion to `polarToLocalXZ`). Used by SpawnManager and available to all managers.
+- **`src/features/managers/SpawnManager.ts`** (new): Physics probe — a pyriform spinning-top entity that can be spawned into the Arena Sandbox to interactively test geometry, speed lines, traps, zones, and wall collisions.
+  - **Pyriform geometry**: `THREE.Group` of 4 sub-meshes — cap (dark blue, narrow), disc plate (red-orange, `BALL_RADIUS = 5 cm`), ribbed cone body (tan, `CylinderGeometry(topR, bottomR)` — NOT `ConeGeometry` which has backwards orientation), silver tip. Total height 13.5 cm.
+  - **Group origin = disc CENTRE (y=0)**; tip is at `BALL_TIP_OFFSET = -10 cm` below origin. Floor contact uses tip: `pos.y + BALL_TIP_OFFSET <= surfY`.
+  - **Physics pipeline per tick**: auto-move → WASD input (camera-relative) → gravity → integrate → bowl surface resolve → wall resolve → speed line forces → trap effects → zone effects → T-key trigger → respawn check → self-rotation → camera follow → sync group position → HUD update.
+  - **Bowl surface resolution** (`_resolveSurface`): iterates all arenas via `worldToArenaLocal` + `arenaSurfaceYAtArenaLocal`; tip-contact (not sphere); `MAT_RESTITUTION` per `arena.baseMaterial`; octagon base fallback at world Y=0.
+  - **Wall collision** (`_resolveWalls`): ellipse outward-normal in arena-local space, rotated to world via `arena.rotY`; gap respects `thicknessDirection` — outward walls (default) collide at `rimDist`, inward walls at `rimDist − thickness`; arc coverage check (`arcStart/arcEnd/fullPerimeter`); `MAT_RESTITUTION` per `wall.material`; records `_lastCollisionTime`.
+  - **Speed line ribbon physics** (`_applySpeedLines`): uses `computeSegmentPath` (same function as the ribbon mesh builder — future-proof for all 24+ preset types). 500ms path cache. Checks `sl.enabled` (skips disabled ribbons). Activation mode (`always/proximity/periodic/event`), entry condition, segment/section `speedMult`, direction (`forward/reverse/bidirectional`), exit behavior (`launch` applies impulse + upward kick). Post-collision 300ms window expands contact range ×1.30 (normal) or ×1.20 (sticky).
+  - **Trap effects** (`_applyTraps`): shape-precise footprint (circle/ellipse/rectangle/hexagon); vertical proximity check via tip Y; applies `damage/heal/launch/gravity_pull/freeze`. `_applyTrapEffect` is shared with T-key trigger.
+  - **Zone fill effects** (`_applyZones`): ice (near-zero friction), lava (HP drain 15/s), water (strong drag), sand (medium drag), poison/swamp (slow HP drain + drag), void (heavy HP drain).
+  - **T-key trigger** (`_applyTrigger`): finds nearest trap or speed line by world XZ distance; prefers closer item; applies trap effect at `dt=1/20` one-shot, or SL force burst for 1 s equivalent. Skips `sl.enabled === false` speed lines.
+  - **HUD**: bottom-centre overlay, `display: none/flex` via JS. Live HP bar (color-coded: cyan >50%, orange >25%, red ≤25%), Vx/Vy/Vz/|V| telemetry, GROUNDED/AIRBORNE status. Editable inputs: Spawn XYZ, Force XYZ (initial velocity), Tilt°, RPM. Checkboxes: Follow Cam (OrbitControls target lerps to ball), Self-Rotate (enables RPM-driven Y spin), Auto-Move (40cm circle walk). All saved to `localStorage` key `bey_spawn_manager_settings`.
+  - **Manager pattern**: `SceneContext` + injected `getCamera/getControls/getArenas/getTraps/getSpeedLines/getZones/getWalls` callbacks. No imports from `src/screens/`.
+- **`src/screens/ArenaSandbox.ts`** integration: `import { SpawnManager }` + `import type { SceneContext }`; `_spawnMgr` + `_spawnMgrBtn` private fields; inline `SceneContext` construction + `SpawnManager` instantiation at end of `buildCustom()`; "⚽ Spawn" top-bar button toggles spawn/despawn; `_spawnMgr?.tick(dtMs)` at end of `onTick()`; `despawn()` + button deactivation in `setVisible(false)`.
+- **`src/styles/global.css`** — `.spawn-manager-hud` + all `.tb-*` element styles appended (bottom-centre, z-index 30, orange accent border, `Orbitron`/`Rajdhani` fonts, `vmin`-based sizing).
+- **Bug fixes in SpawnManager (found during audit)**:
+  - `_applySpeedLines`: added `sl.enabled === false` guard (skip disabled ribbons — field `SpeedLineData.enabled: boolean`)
+  - `_applyTrigger`: added `sl.enabled === false` guard for T-key speed line search
+  - `_applySelfRotation`: `selfRotate` checkbox was connected in HUD but NOT checked in code — fixed to `if (this.selfRotate && this.rpm > 0)` so the checkbox actually controls spinning
+  - `_resolveWalls` gap formula: was `(rimDist - wall.thickness) - (ballDist + BALL_RADIUS)` which always subtracted thickness even for outward walls. Fixed: outward walls (default `thicknessDirection = 'outward'`) collide at `rimDist`; inward walls at `rimDist - thickness`.
+
+Known confirmed pitfalls for SpawnManager (do not re-introduce):
+- **`ConeGeometry` gives backwards pyriform**: apex is at TOP — wrong for a spinning top. Always use `CylinderGeometry(topR, bottomR, height)` for the cone and tip sub-meshes.
+- **`getCamera()` and `getControls()` are NOT on `SceneContext`**: they are on the `Sandbox` base class. Must be injected as separate `() => T | null` callbacks to `SpawnManager` constructor.
+- **`_makeSceneContext()` does NOT exist on ArenaSandbox**: construct `SceneContext` inline in `buildCustom()` using `{ scene, sceneTree, getBaseHeight: () => this.baseConfig.height, trackObjects: () => {}, untrackObjects: () => {} }`.
+- **`computeSegmentPath` returns arena-LOCAL coordinates**: must rotate to world via `arena.rotY` before use. World transform: `wx = arena.posX + lx*cos(rotY) - lz*sin(rotY)`.
+- **`arenaSurfaceYAtArenaLocal` returns world Y relative to the octagon base**: the octagon top face is at `DEFAULT_BASE_HEIGHT` (30 cm) and arenas sit on top of it. `bestSurfY` fallback must be `DEFAULT_BASE_HEIGHT`, NOT 0. Using 0 causes the ball to clip 30 cm through the floor when off-arena.
+- **`worldToArenaLocal` is a new export**: added to `surfaceUtils.ts` after `polarToLocalXZ`. Both `DEG2RAD` and `ArenaData` are already imported there — no new imports needed.
+- **`makeSurfFn` takes `Map<string, ZoneData>`** (not `ReadonlyMap`): cast with `as Map<string, ZoneData>`.
+- **`sl.enabled === false`**: always guard `_applySpeedLines` and T-key trigger searches — disabled ribbons have physics inactive.
+- **`selfRotate` field must be checked in `_applySelfRotation`**: the checkbox exists in the HUD but must also be checked in code: `if (this.selfRotate && this.rpm > 0)`.
+- **Wall `thicknessDirection` must be respected in gap formula**: default `'outward'` → collision surface at `rimDist`; `'inward'` → at `rimDist - thickness`. Using `rimDist - thickness` for all walls is wrong and lets the ball clip 2cm into default walls.
 
 Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
 
@@ -297,6 +333,7 @@ src/
       SpeedLineManager.ts       — Surface projector injected as callback; showHandles/hideHandles for drag interaction
       RotationManager.ts        — ITickableManager; detachAll() before clear; afterApply() for group-local correction
       PresentationManager.ts    — Centralized STL present-mesh + opening decal logic; load/dispose/applyViewMode/tick
+      SpawnManager.ts           — Physics test spinning-top probe; pyriform 4-part Group (cap+disc+cone+tip); tip-contact floor resolution (BALL_TIP_OFFSET=-10cm); wall/trap/zone/speed-line physics; WASD+jump+T-key trigger; HUD with localStorage persistence; injected getCamera/getControls/getArenas/getTraps/getSpeedLines/getZones/getWalls callbacks; ITickableManager
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
                                   view mode toggle (hitbox/both/present); STL presentation mesh loading;
@@ -940,6 +977,7 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/features/managers/PortalManager.ts` | Portal lifecycle or ringMesh disposal changes |
 | `src/features/managers/FootingManager.ts` | Footing lifecycle or buildAndShow restore path changes |
 | `src/features/managers/ArenaEnvironmentManager.ts` | Arena environment schedule (gravity/tilt/fog/score), keyframe apply, or trigger-event dispatch changes |
+| `src/features/managers/SpawnManager.ts` | Physics test-ball spawn/despawn, pyriform geometry, floor/wall/trap/SL/zone physics tick, HUD, or localStorage settings changes |
 
 ### Allowed import direction (never reverse)
 ```

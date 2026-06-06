@@ -789,6 +789,108 @@ export class ArenaSandbox extends Sandbox {
     });
   }
 
+  private _addSubNodeEnv(arenaId: string): void {
+    const subId = `env-${arenaId}`;
+    if (this._subNodesAdded.has(subId)) return;
+    this._subNodesAdded.add(subId);
+    this.sceneTree.add(subId, 'Environment', '🌍', arenaId);
+  }
+
+  private _onEnvChange(arenaId: string, changedProps: import('../types/arenaTypes').EnvProperty[]): void {
+    const arena = this.arenas.get(arenaId); if (!arena) return;
+    const weatherProps = ['weatherPreset','windEnabled','windDirectionDeg','windStrengthCms','windGustInterval','windGustMult'];
+    if (changedProps.some(p => weatherProps.includes(p))) {
+      this._createArenaWeather(arena);
+      const mapped = arena.weatherSurfaceMap[arena.weatherPreset];
+      if (mapped) {
+        arena.surface = mapped;
+        applyArena(arena, this.getArenaHoles(arena), this.getScene() ?? undefined);
+      }
+    }
+    if (changedProps.includes('fogDensity')) this._createArenaFog(arena);
+    if (changedProps.includes('tiltX') || changedProps.includes('tiltZ')) this._applyArenaTilt(arena);
+    this.saveArena();
+    if (this.selectedId === `env-${arenaId}`) this.renderProps();
+  }
+
+  private _createArenaFog(arena: ArenaData): void {
+    if (arena.fogSystem) {
+      this.removeFromScene(arena.fogSystem.points);
+      arena.fogSystem.dispose();
+      arena.fogSystem = null;
+    }
+    if (arena.fogDensity <= 0) return;
+    const cfg = { ...defaultParticleConfig(), preset: 'dust' as import('../types/sharedTypes').ParticlePreset };
+    const ps = buildParticleSystem(cfg, arena.posX, arena.posZ, Math.max(arena.radiusX, arena.radiusZ), this.baseConfig.height + arena.posY, arena.depth);
+    this.addToScene(ps.points);
+    arena.fogSystem = ps;
+  }
+
+  private _applyArenaTilt(arena: ArenaData): void {
+    if (!arena.mesh) return;
+    const rx = arena.tiltX * DEG2RAD;
+    const rz = arena.tiltZ * DEG2RAD;
+    arena.mesh.rotation.x = rx;
+    arena.mesh.rotation.z = rz;
+    if (arena.edges)      { arena.edges.rotation.x = rx; arena.edges.rotation.z = rz; }
+    if (arena.floorMesh)  { arena.floorMesh.rotation.x = rx; arena.floorMesh.rotation.z = rz; }
+    if (arena.islandMesh) { arena.islandMesh.rotation.x = rx; arena.islandMesh.rotation.z = rz; }
+    if (arena.rimSeamMesh){ arena.rimSeamMesh.rotation.x = rx; arena.rimSeamMesh.rotation.z = rz; }
+  }
+
+  private _showEnvNode(arenaId: string): void {
+    const arena = this.arenas.get(arenaId);
+    if (!arena) { this.props.showEmpty(); return; }
+    const show = () => this.props.showEnvironment(arena, {
+      onPhysicsChange: () => {
+        this.captureUndo();
+        this._envMgr.setGravity(arenaId, arena.gravityScale, arena.gravityDirectionX, arena.gravityDirectionZ);
+        this.saveArena();
+        show();
+      },
+      onTiltChange: () => {
+        this.captureUndo();
+        this._onEnvChange(arenaId, ['tiltX', 'tiltZ']);
+        show();
+      },
+      onFogChange: () => {
+        this.captureUndo();
+        this._createArenaFog(arena);
+        this.saveArena();
+        show();
+      },
+      onScoreChange: () => {
+        this.captureUndo();
+        this.saveArena();
+        show();
+      },
+      onWeatherSurfaceChange: () => {
+        this.captureUndo();
+        this.saveArena();
+        show();
+      },
+      addEntry: (e) => {
+        this.captureUndo();
+        this._envMgr.addEntry(arenaId, e);
+        this.saveArena();
+        show();
+      },
+      removeEntry: (entryId) => {
+        this.captureUndo();
+        this._envMgr.removeEntry(arenaId, entryId);
+        this.saveArena();
+        show();
+      },
+      updateEntry: (e) => {
+        this.captureUndo();
+        this._envMgr.updateEntry(arenaId, e);
+        this.saveArena();
+        show();
+      },
+    });
+    show();
+  }
+
   /* ── View mode ────────────────────────────────────────────────────────── */
   private _setViewMode(mode: 'hitbox' | 'both' | 'present'): void {
     this._arenaViewMode = mode;
@@ -1713,6 +1815,8 @@ export class ArenaSandbox extends Sandbox {
       projPulseMode:     (ts.projPulseMode    ?? 'triggered') as TrapData['projPulseMode'],
       projPulseIntervalMs:ts.projPulseIntervalMs?? 3000,
       projPlateSpin:     ts.projPlateSpin     ?? 0,
+      envTriggerEvent:   ts.envTriggerEvent   ?? '',
+      envTargetArenaId:  ts.envTargetArenaId  ?? '',
     });
     const surfY = this._getTrapSurfY(data);
     const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
@@ -2143,7 +2247,23 @@ export class ArenaSandbox extends Sandbox {
     for (const arena of this.arenas.values()) {
       if (arena.particleSystem) arena.particleSystem.tick(dt);
       if (arena.weatherSystem)  arena.weatherSystem.tick(dt);
+      if (arena.fogSystem)      arena.fogSystem.tick(dt);
     }
+    this._envMgr?.tick(dt);
+
+    // Score HUD
+    if (this._scoreHudEl) {
+      let showHud = false; let lines = '';
+      for (const arena of this.arenas.values()) {
+        if (arena.pointsPerSecond > 0 || arena.scoreMultiplier !== 1) {
+          showHud = true;
+          lines += `${arena.name}: ${arena._score.toFixed(0)} pts\n`;
+        }
+      }
+      this._scoreHudEl.style.display = showHud ? '' : 'none';
+      this._scoreHudEl.textContent = lines.trim();
+    }
+
     for (const zone of this.zones.values()) {
       if (zone.particleSystem) zone.particleSystem.tick(dt);
     }
@@ -2258,6 +2378,10 @@ export class ArenaSandbox extends Sandbox {
       }
     }
     trap._eqPhase = 'rising'; trap._eqTimer = 0;
+    if (trap.envTriggerEvent) {
+      const targetId = trap.envTargetArenaId || trap.parentId;
+      this._envMgr.triggerEvent(targetId, trap.envTriggerEvent);
+    }
   }
 
   private _eqLerp(trap: TrapData, t: number): void {
@@ -2270,8 +2394,16 @@ export class ArenaSandbox extends Sandbox {
   private _tickRPMTrap(trap: TrapData, dt: number): void {
     if (!trap.variantMesh) return;
     const omega = (trap.rpmSpeed ?? 0) * (Math.PI / 180);
-    trap._rpmCurrentAngle = ((trap._rpmCurrentAngle ?? 0) + omega * dt) % (Math.PI * 2);
+    const prevAngle = trap._rpmCurrentAngle ?? 0;
+    trap._rpmCurrentAngle = (prevAngle + omega * dt) % (Math.PI * 2);
     trap.variantMesh.rotation.y = trap._rpmCurrentAngle;
+    if (trap.envTriggerEvent && omega !== 0) {
+      const wrapped = prevAngle + omega * dt;
+      if (Math.floor(wrapped / (Math.PI * 2)) > Math.floor(prevAngle / (Math.PI * 2))) {
+        const targetId = trap.envTargetArenaId || trap.parentId;
+        this._envMgr.triggerEvent(targetId, trap.envTriggerEvent);
+      }
+    }
     const mat = trap.variantMesh.material as THREE.MeshStandardMaterial;
     if (mat && 'emissiveIntensity' in mat) {
       mat.emissiveIntensity = Math.min(1, Math.abs(trap.rpmSpeed ?? 0) / 360);
@@ -2732,6 +2864,7 @@ export class ArenaSandbox extends Sandbox {
     if (id.startsWith('present-'))  { this._showPresentNode(id.slice(8));  return; }
     if (id.startsWith('particle-')) { this._showParticleNode(id.slice(9)); return; }
     if (id.startsWith('weather-'))  { this._showWeatherNode(id.slice(8));  return; }
+    if (id.startsWith('env-'))      { this._showEnvNode(id.slice(4));      return; }
 
     if(id==='octagon-base'){
       this.props.showBase(
@@ -3028,6 +3161,7 @@ export class ArenaSandbox extends Sandbox {
         {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(id)},
         {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(id)},
         {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(id)},
+        {label:'🌍+',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(id)},
       ],
     });
     this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
@@ -3488,6 +3622,7 @@ export class ArenaSandbox extends Sandbox {
           {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(as.id)},
           {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(as.id)},
           {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(as.id)},
+          {label:'🌍+',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(as.id)},
         ],
       });
 
@@ -3524,9 +3659,12 @@ export class ArenaSandbox extends Sandbox {
 
       this.sceneObjects.set(as.id,objs);
 
-      // Create PointLight and particle system
+      // Create PointLight, particle/weather/fog systems, and apply tilt
       this._createArenaLight(data);
       this._createArenaParticles(as.id, data);
+      if (data.weatherPreset && data.weatherPreset !== 'none') this._createArenaWeather(data);
+      if (data.fogDensity > 0) this._createArenaFog(data);
+      if (data.tiltX !== 0 || data.tiltZ !== 0) this._applyArenaTilt(data);
       // Restore present STL if saved
       if(data.presentStlb64) this._loadPresentStl(as.id, data.presentStlb64, data.presentColor);
 
