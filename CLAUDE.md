@@ -57,7 +57,7 @@ Known confirmed features added (2026-06-10 — Preset Library System):
 - **New routes**: `/arena-library` (ArenaLibraryScreen), `/bey-library` (BeyLibraryScreen), `/preset-editor` (second ArenaSandbox, presetEditorMode).
 - **Landing buttons**: Two new `game-btn--lib` buttons: "Arena Library" and "Bey Library".
 
-Known confirmed bugs fixed (2026-06-07 — env manager wiring, tilt/fog/sub-node cleanup):
+Known confirmed bugs fixed (2026-06-07 — env manager wiring, tilt/fog/sub-node cleanup, SpawnManager gravity scale):
 - **`_clearArenas` missing `_subNodesAdded.clear()`**: After undo/redo/demo-load, `_subNodesAdded` still contained all old `present-/particle-/weather-/env-` IDs, preventing sub-nodes from being re-added to the tree. Fixed: `this._subNodesAdded.clear()` added at start of `_clearArenas()` after `_envMgr.clear()`.
 - **`_createArenaFog` used `'dust'` preset and ignored `fogDensity` for scaling**: Built a dust particle system regardless of fog intent; density was always the `defaultParticleConfig()` default. Fixed: uses `'fog'` preset and sets `density: arena.fogDensity`.
 - **`_applyArenaTilt` missing `spiralMeshes`**: Spiral arenas would visually split — bowl tilted but spiral ledge meshes remained upright. Fixed: `for (const m of arena.spiralMeshes ?? []) { m.rotation.x = rx; m.rotation.z = rz; }` added.
@@ -67,6 +67,12 @@ Known confirmed bugs fixed (2026-06-07 — env manager wiring, tilt/fog/sub-node
 - **RPM wrap detection failed for negative omega**: `Math.floor(wrapped/2π) > Math.floor(prevAngle/2π)` only detects forward wraps; negative speed never triggers. Fixed: `!==` comparison catches both CW and CCW full-revolution wraps.
 - **Arena delete left sub-node IDs in `_subNodesAdded`**: After deleting an arena, its `present-/particle-/weather-/env-` entries remained in `_subNodesAdded`, blocking re-use of those IDs on new arenas with the same IDs. Fixed: four explicit `_subNodesAdded.delete(...)` calls added in the arena-delete block.
 - **`EnvProperty` inline import in `_onEnvChange`**: Method signature used `import('../types/arenaTypes').EnvProperty[]` inline type. Fixed: `EnvProperty` added to the top-level named import from `'../types/arenaTypes'`.
+- **`_envMgr` instantiated after `loadArena()` in `buildCustom()`**: Any code path that called `this._envMgr.method()` without `?.` during the load phase (e.g. trap RPM/earthquake env-trigger dispatch) would crash because `_envMgr` was `undefined`. Fixed: moved `new ArenaEnvironmentManager(...)` to before `this.loadArena()`.
+- **`ArenaEnvironmentManager.addEntry()` timer not clamped**: `entry.intervalSec - entry.delaySec` was negative when `delaySec > intervalSec`, causing the entry to fire on the very next tick. The `tick()` path had the `Math.max` fix but `addEntry()` did not. Fixed: `Math.max(0, entry.intervalSec - entry.delaySec)` in `addEntry()`.
+- **Redundant `saveArena()` in `onPhysicsChange`**: `setGravity()` calls `_onEnvChange()` which already calls `saveArena()`. The `onPhysicsChange` callback also called `saveArena()` — double-debounce, second write was a no-op but wasteful. Fixed: removed the redundant `saveArena()` from the callback.
+- **Score HUD showed stale `0 pts` for arenas with `scoreMultiplier !== 1` but zero `pointsPerSecond`**: The HUD condition `pointsPerSecond > 0 || scoreMultiplier !== 1` showed a score row that never incremented. Fixed: condition is now `pointsPerSecond > 0` only.
+- **`_onEnvChange` weather surface-map path missing `updateArenaChildren()` + `rebuildDependentsOf()`**: When a weather keyframe changed the arena surface, `applyArena()` rebuilt the mesh but rim walls and anchored bridges referencing the arena rim were not rebuilt. Fixed: `updateArenaChildren(arena)` and `rebuildDependentsOf(arenaId)` added after `applyArena()` + `_applyArenaTilt()`.
+- **SpawnManager ignored `arena.gravityScale`**: Physics test ball always fell at the hardcoded `GRAVITY` constant regardless of the env-panel gravity scale slider. Fixed: `_resolveSurface()` now tracks `_currentGravityScale` from the best-matching arena; `_applyGravity()` multiplies `GRAVITY` by `_currentGravityScale`.
 
 Known confirmed features added (2026-06-10 — sub-node system, PresentConfig, particle/weather/gravity):
 - **`src/types/sharedTypes.ts`** (new): `PresentConfig`, `defaultPresentConfig()`, `ParticleConfig`, `defaultParticleConfig()`, `ParticlePreset`, `ParticleSystem`, `WeatherSystem` — shared across arena and beyblade types.
@@ -118,13 +124,20 @@ Known confirmed bugs fixed (2026-06-07 — env system ID bug, missing restore fi
 - **SpawnManager octagon base fallback at Y=0**: `_resolveSurface` used `bestSurfY = 0` as the octagon fallback — but the octagon top face is at `DEFAULT_BASE_HEIGHT` (30 cm). Fixed: `bestSurfY = DEFAULT_BASE_HEIGHT`. Also added `DEFAULT_BASE_HEIGHT` to the import from `arenaConstants`.
 - **SpawnManager wall rim Y missing base height**: `_resolveWalls` computed `const rimY = arena.posY` — world rim Y = `DEFAULT_BASE_HEIGHT + arena.posY`, not just `arena.posY`. Wall height culling was off by 30 cm (octagon base thickness), causing all arena walls to pass the cull test incorrectly. Fixed: `const rimY = DEFAULT_BASE_HEIGHT + arena.posY`.
 
+Known confirmed bugs fixed (2026-06-07 — deep audit session):
+- **`_mergeConfigIntoScene` missing `jumpLinkSeq`**: When merging a preset into the scene, all sequence counters were updated except `jumpLinkSeq`. After merging, new jump links created by the user would start at seq=0 and collide with existing IDs. Fixed: `this.jumpLinkSeq = Math.max(this.jumpLinkSeq, remapped.jumpLinkSeq ?? 0)` added in `_mergeConfigIntoScene`.
+- **`showBridgeSegment` animation sub-rows missing `onGeomChange()`**: All 9 animation parameter rows (`animOffsetX/Y/Z`, `animRotX/Y/Z`, `animStartMs`, `animIntervalMs`, `animHoldMs`) were silently mutating data without calling `onGeomChange()`. Changes were applied visually in the running tick but lost on page reload. Fixed: all 9 callbacks now call `onGeomChange()`.
+- **`showObstacle` theme and speed path selectRows missing `onGeomChange()`**: `data.theme` and `data.speedPathId` mutations had no callback — changes were lost on reload. Fixed: both selectRows now call `onGeomChange()`.
+- **`showTrap` speed path selectRow missing `onGeomChange()`**: `data.speedPathId` mutation had no callback — same issue as obstacle. Fixed: now calls `onGeomChange()`.
+- **`WallManager.fromSave()` missing `thicknessDirection` restoration**: `thicknessDirection` was absent from the `Object.assign()` block in `fromSave()`. On every save/load round-trip, all walls reverted to the default `'outward'` regardless of what was saved. Fixed: `thicknessDirection: save.thicknessDirection ?? 'outward'` added to the assign block.
+
 Known confirmed features added (2026-06-07 — SpawnManager physics test top):
 - **`src/geometry/surfaceUtils.ts`** — `worldToArenaLocal(wx, wz, arena)` export added (inverse rotation of arena.rotY; companion to `polarToLocalXZ`). Used by SpawnManager and available to all managers.
 - **`src/features/managers/SpawnManager.ts`** (new): Physics probe — a pyriform spinning-top entity that can be spawned into the Arena Sandbox to interactively test geometry, speed lines, traps, zones, and wall collisions.
   - **Pyriform geometry**: `THREE.Group` of 4 sub-meshes — cap (dark blue, narrow), disc plate (red-orange, `BALL_RADIUS = 5 cm`), ribbed cone body (tan, `CylinderGeometry(topR, bottomR)` — NOT `ConeGeometry` which has backwards orientation), silver tip. Total height 13.5 cm.
   - **Group origin = disc CENTRE (y=0)**; tip is at `BALL_TIP_OFFSET = -10 cm` below origin. Floor contact uses tip: `pos.y + BALL_TIP_OFFSET <= surfY`.
   - **Physics pipeline per tick**: auto-move → WASD input (camera-relative) → gravity → integrate → bowl surface resolve → wall resolve → speed line forces → trap effects → zone effects → T-key trigger → respawn check → self-rotation → camera follow → sync group position → HUD update.
-  - **Bowl surface resolution** (`_resolveSurface`): iterates all arenas via `worldToArenaLocal` + `arenaSurfaceYAtArenaLocal`; tip-contact (not sphere); `MAT_RESTITUTION` per `arena.baseMaterial`; octagon base fallback at world Y=0.
+  - **Bowl surface resolution** (`_resolveSurface`): iterates all arenas via `worldToArenaLocal` + `arenaSurfaceYAtArenaLocal`; tip-contact (not sphere); `MAT_RESTITUTION` per `arena.baseMaterial`; octagon base fallback at `DEFAULT_BASE_HEIGHT` (30 cm).
   - **Wall collision** (`_resolveWalls`): ellipse outward-normal in arena-local space, rotated to world via `arena.rotY`; gap respects `thicknessDirection` — outward walls (default) collide at `rimDist`, inward walls at `rimDist − thickness`; arc coverage check (`arcStart/arcEnd/fullPerimeter`); `MAT_RESTITUTION` per `wall.material`; records `_lastCollisionTime`.
   - **Speed line ribbon physics** (`_applySpeedLines`): uses `computeSegmentPath` (same function as the ribbon mesh builder — future-proof for all 24+ preset types). 500ms path cache. Checks `sl.enabled` (skips disabled ribbons). Activation mode (`always/proximity/periodic/event`), entry condition, segment/section `speedMult`, direction (`forward/reverse/bidirectional`), exit behavior (`launch` applies impulse + upward kick). Post-collision 300ms window expands contact range ×1.30 (normal) or ×1.20 (sticky).
   - **Trap effects** (`_applyTraps`): shape-precise footprint (circle/ellipse/rectangle/hexagon); vertical proximity check via tip Y; applies `damage/heal/launch/gravity_pull/freeze`. `_applyTrapEffect` is shared with T-key trigger.
@@ -163,6 +176,8 @@ Known confirmed bugs fixed (2026-06-07 — jump link system):
 - **`buildArcArrows` cone orientation used `lookAt` + `rotateX`**: `mesh.lookAt(next); mesh.rotateX(Math.PI / 2)` gimbal-locks for near-vertical arcs. Fixed with quaternion: `mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir)` where `dir = next.sub(pos).normalize()`.
 - **`showJumpLink` ARC SHAPE `selectRow` routed to `onGeomChange`**: `arcProfile` is a structural mode change (type selector), must call `onFullChange(); refresh()` — same pattern as all other mode selectors. Fixed.
 - **`showJumpLink` 15+ `numRow`/`toggleRow` callbacks missing `onGeomChange()`**: LAUNCH PHYSICS, LANDING, IN-FLIGHT SPIN, IN-FLIGHT STATS, VISUAL TRAIL (width, fade), FLASH (launch, land, color) callbacks mutated data in-memory but never triggered `saveArena()`. Fixed by adding `onGeomChange()` to every callback in those sections.
+- **`showSpeedLine` `jump_link` exitBehavior used unusable `textRow` for jumpLinkId**: Required user to manually type an internal ID (e.g. "jl-1"). Fixed: added `getJumpLinks?: () => JumpLinkData[]` optional parameter to `showSpeedLine`; the 'jump_link' section now uses `selectRow` populated from the live jump link list; ArenaSandbox passes `() => [...this.jumpLinks.values()]`.
+- **`_removeJumpLink` left stale `jumpLinkId` on speed lines**: When a jump link was deleted, speed lines that had `sl.jumpLinkId === deletedId` retained the stale reference. Fixed: `_removeJumpLink` now clears `sl.jumpLinkId = null` on all matching speed lines before disposal.
 
 Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
 
@@ -342,9 +357,11 @@ src/
     weatherBuilders.ts          — buildWeatherSystem(preset, windEnabled, windDeg, windStrength, gustInterval, gustMult, arenaRadius, baseY) → WeatherSystem; 6 weather presets; tick+windForce
     [arena geometry files...]
   features/
-    IArenaFeature.ts            — SceneContext, ITickableManager, IArenaFeature, ISceneFeature interfaces
-    FeatureManager.ts           — Abstract base (Template Method): _insert/remove/clear/restoreData/serializeAll
-    ParentedFeatureManager.ts   — Extension: resolveSurfaceY/resolveWorldXZ/resolveTreeParent for arena/base parents
+    IArenaFeature.ts            — SceneContext (getFallbackY replaces old getBaseHeight), ITickableManager, IArenaFeature, ISceneFeature interfaces; setVisible in FeatureManager base
+    ISurfaceProvider.ts         — ISurfaceProvider interface (SurfaceHit, getSurfaceAt, getCenter, polarToWorld); decouples ParentedFeatureManager from ArenaData
+    surfaceProviders.ts         — ArenaSurfaceProvider (wraps arena parabola math), FlatSurfaceProvider (constant Y), MeshSurfaceProvider (downward raycast)
+    FeatureManager.ts           — Abstract base (Template Method): _insert/remove/clear/restoreData/serializeAll; setVisible(id, visible) sets mesh/edges visibility
+    ParentedFeatureManager.ts   — Extension: resolveSurfaceY/resolveWorldXZ/resolveTreeParent via ISurfaceProvider (getSurface callback replaces getArenas)
     managers/
       ObstacleManager.ts        — Free-floating 3D obstacle shapes
       FootingManager.ts         — Base-mounted decorative shapes (intentionally decoupled from obstacleBuilders)
@@ -357,6 +374,10 @@ src/
       RotationManager.ts        — ITickableManager; detachAll() before clear; afterApply() for group-local correction
       PresentationManager.ts    — Centralized STL present-mesh + opening decal logic; load/dispose/applyViewMode/tick
       SpawnManager.ts           — Physics test spinning-top probe; pyriform 4-part Group (cap+disc+cone+tip); tip-contact floor resolution (BALL_TIP_OFFSET=-10cm); wall/trap/zone/speed-line physics; WASD+jump+T-key trigger; HUD with localStorage persistence; injected getCamera/getControls/getArenas/getTraps/getSpeedLines/getZones/getWalls callbacks; ITickableManager
+      ProjectileManager.ts      — Sandbox-agnostic bullet/projectile manager; ITickableManager only (no FeatureManager); launch(BulletLaunchRequest) spawns bullets from any source; orbit (circular) + boomerang (linear+return) motion modes; auto-remove expired/returned bullets; expireAll() cleanup; injected scene+getSpeedLines only
+      TranslationManager.ts     — Path-animation manager; extends FeatureManager; ITickableManager; moves member objects along waypoints (world-space); loopModes: once/loop/pingpong; easing: linear/ease_in/ease_out/smooth; no pivot group (positions directly); serialized in ArenaConfig.translations; tree icon ↔
+      TargetManager.ts          — Runtime target-tracking; ITickableManager only (no FeatureManager — not serialized); bind(sourceId, targetId, behavior) creates bindings; behaviors: follow/orbit/flee/lock_on/face; injected getPosition+setPosition callbacks; sandbox-agnostic
+      TriggerZoneManager.ts     — Generic spatial event system; ITickableManager only; register(TriggerZone) + trackObject(nodeId); cylinder overlap test per tick; fires onEnter/onExit/onStay callbacks; injected getPosition; no tree nodes, no serialization
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
                                   view mode toggle (hitbox/both/present); STL presentation mesh loading;
@@ -1001,6 +1022,12 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/features/managers/FootingManager.ts` | Footing lifecycle or buildAndShow restore path changes |
 | `src/features/managers/ArenaEnvironmentManager.ts` | Arena environment schedule (gravity/tilt/fog/score), keyframe apply, or trigger-event dispatch changes |
 | `src/features/managers/SpawnManager.ts` | Physics test-ball spawn/despawn, pyriform geometry, floor/wall/trap/SL/zone physics tick, HUD, or localStorage settings changes |
+| `src/features/managers/ProjectileManager.ts` | Bullet lifecycle, orbit/boomerang motion, or spawn/expire logic changes |
+| `src/features/managers/TranslationManager.ts` | Path-animation lifecycle, easing, loop modes, or waypoint interpolation changes |
+| `src/features/managers/TargetManager.ts` | Target-binding lifecycle, behavior modes (follow/orbit/flee), or position-injection interface changes |
+| `src/features/managers/TriggerZoneManager.ts` | Zone registration, overlap detection algorithm, or enter/exit/stay callback dispatch changes |
+| `src/features/ISurfaceProvider.ts` | Surface abstraction interface or SurfaceHit type changes |
+| `src/features/surfaceProviders.ts` | ArenaSurfaceProvider, FlatSurfaceProvider, or MeshSurfaceProvider implementation changes |
 
 ### Allowed import direction (never reverse)
 ```
@@ -1100,6 +1127,27 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **`resolveEndpointWorld` base-parented trap must include `basePosX/Z`**: When `ep.parentType === 'trap'` and `trap.parentType === 'base'`, the trap's world position is `(trap.basePosX, _, trap.basePosZ)`. The endpoint offset `ep.localX/Z` is relative to this — compute `wx = trap.basePosX + ep.localX; wz = trap.basePosZ + ep.localZ`. Using just `ep.localX/Z` silently places the endpoint at the origin.
 - **`buildArcArrows` cone orientation must use quaternion, NOT `lookAt` + `rotateX`**: `ConeGeometry` tip is at Y+. To point it along an arbitrary 3D direction use `mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir)`. The `mesh.lookAt(next); mesh.rotateX(Math.PI / 2)` pattern gimbal-locks for near-vertical arcs (the arc apex), producing randomly-flipped cones.
 - **`showJumpLink` physics-only `numRow` callbacks must still call `onGeomChange()`**: Even when a property doesn't affect arc geometry (e.g., `f.arcDuration`, `f.launchForce`, stat modifiers), the callback MUST call `onGeomChange()` so `saveArena()` is triggered. Without it, slider changes are lost on page reload. The pattern: `v => { f.someField = v; onGeomChange(); }` for every numRow and colorRow in the panel.
+- **`showSpeedLine` `jump_link` exitBehavior must use `selectRow` with `getJumpLinks` callback, NOT `textRow`**: `textRow` requires the user to type internal IDs like "jl-1" — unusable in practice. The correct pattern: add `getJumpLinks?: () => JumpLinkData[]` as the last optional parameter to `showSpeedLine`, and pass `() => [...this.jumpLinks.values()]` from ArenaSandbox. The 'jump_link' section then uses `selectRow` with `jlList.map(jl => ({ value: jl.id, label: jl.name }))`. The `refresh` closure inside `showSpeedLine` must forward `getJumpLinks` so the list stays current after navigation.
+- **`_removeJumpLink` must clear stale `jumpLinkId` references on speed lines**: When a jump link is deleted, any speed line that has `sl.jumpLinkId === deletedId` will silently point to a non-existent link. Always iterate `this.speedLines` and set `sl.jumpLinkId = null` for matching entries BEFORE disposing the jump link.
+
+- **`ArenaEnvironmentManager.clear()` resets timers, not schedule entries**: `clear()` only zeroes `_timer/_revertTimer/_prevValues` on existing entries. Call `clearSchedule(arenaId)` to actually remove entries for an arena. Never confuse these two methods.
+- **`triggerEvent()` only fires `'event'`-type entries**: `'interval'` and `'once'` entries are unaffected by `triggerEvent()` calls — they only advance via `tick()`.
+- **`_score` is runtime-only**: `ArenaData._score` accumulates in `ArenaEnvironmentManager.tick()`. Always starts at 0 on load. Never serialize it. Display in HUD only.
+- **`envSchedule` save strips runtime timer fields**: `EnvScheduleSave = Omit<EnvScheduleEntry, '_timer' | '_revertTimer' | '_prevValues'>`. When restoring, set all three to `undefined`.
+- **`jumpLinkId` in SpeedLineData is a reverse reference**: Only meaningful when `exitBehavior === 'jump_link'`. Does not trigger any geometry rebuild. Set to `null` when exitBehavior is anything else.
+- **`envTriggerEvent`/`envTargetArenaId` require ArenaEnvironmentManager wiring**: These TrapData fields are data-only — they have no effect unless `ArenaSandbox._onTrapActivation` calls `this._envMgr.triggerEvent(...)`. They do nothing in a sandbox without `ArenaEnvironmentManager`.
+- **`tiltGroup` on ArenaData is runtime-only**: Created by `_applyArenaTilt()` in ArenaSandbox; never serialized. Re-created on load when arena has non-zero tilt.
+- **`ISurfaceProvider` world coordinates, not arena-local**: `getSurfaceAt(worldX, worldZ)` takes WORLD XZ — convert from arena-local to world before calling. `polarToWorld(r, angleDeg)` returns WORLD XZ directly. Never pass arena-local coordinates to `getSurfaceAt`.
+- **`ParentedFeatureManager` uses `getSurface` callback, not `getArenas`**: After ISurfaceProvider refactor, the constructor no longer accepts `getArenas: () => ReadonlyMap<string, ArenaData>`. It accepts `getSurface: (surfaceId: string) => ISurfaceProvider | undefined`. ArenaSandbox registers one `ArenaSurfaceProvider` per arena by arena ID. `'octagon-base'` maps to a `FlatSurfaceProvider(DEFAULT_BASE_HEIGHT, 0, 0)`.
+- **`visible` on data types is serialized as optional `?`**: Old saves without the field default to `true`. `setVisible(id, false)` on a feature hides the mesh but leaves all physics/trigger behavior active — a hidden trap still fires in SpawnManager, a hidden obstacle still blocks wall collision.
+- **`TranslationManager` moves objects directly, no pivot group**: Unlike `RotationManager`, translations apply `.position.set()` directly to member meshes each tick. `detachAll()` is a no-op. Members stay as scene children throughout.
+- **`TargetManager` bindings are NOT serialized**: Bindings exist only at runtime. They must be re-established after load if persistence is needed (e.g., call `bind()` in `_applyConfigToScene`). Serializing bindings is outside the current scope.
+- **`TRANS` constants namespace**: All translation tuning values live in the `TRANS` object in `arenaConstants.ts` (`DEFAULT_DURATION_MS`, `DEFAULT_EASING`, `DEFAULT_LOOP`). Never inline magic numbers for TranslationManager defaults.
+- **`ProjectileManager` is not a FeatureManager**: No scene tree, no serialization, no `add/remove` CRUD. Only `launch(req)`, `tick(dt)`, `expireAll()`. Do not attempt to extend `FeatureManager` for it.
+- **`_mergeConfigIntoScene` must restore ALL sequence counters including `jumpLinkSeq`**: When loading a preset via merge mode, every seq counter must be `Math.max(current, incoming)`. `jumpLinkSeq` was missing — new jump links created after a merge would start at seq=1 and collide with existing IDs. Pattern: `this.jumpLinkSeq = Math.max(this.jumpLinkSeq, remapped.jumpLinkSeq ?? 0)`.
+- **`showBridgeSegment` animation parameter rows MUST call `onGeomChange()`**: All 9 rows (`animOffsetX/Y/Z`, `animRotX/Y/Z`, `animStartMs`, `animIntervalMs`, `animHoldMs`) write to data but must call `onGeomChange()` to trigger `saveArena()`. Without it, the values are lost on page reload. These are timing/offset params — no geometry rebuild needed — but `onGeomChange()` is still required for persistence.
+- **`showObstacle` and `showTrap` SPEED PATH and THEME rows must call `onGeomChange()`**: `speedPathId` (obstacle + trap) and `theme` (obstacle) selectRows must call `onGeomChange()` or changes are silently lost on reload. These are pure data fields with no geometry side-effect, but `onGeomChange()` is still needed to trigger `saveArena()`.
+- **`WallManager.fromSave()` must restore `thicknessDirection`**: It was absent from the `Object.assign()` block. Every save/load round-trip reset all walls to `'outward'` regardless of what was saved. Always include `thicknessDirection: save.thicknessDirection ?? 'outward'` in the assign block alongside `thickness`.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.

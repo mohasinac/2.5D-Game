@@ -813,6 +813,8 @@ export class ArenaSandbox extends Sandbox {
         arena.surface = mapped;
         applyArena(arena, this.getArenaHoles(arena), this.getScene() ?? undefined);
         this._applyArenaTilt(arena);
+        this.updateArenaChildren(arena);
+        this.rebuildDependentsOf(arenaId);
       }
     }
     if (changedProps.includes('fogDensity')) this._createArenaFog(arena);
@@ -853,8 +855,8 @@ export class ArenaSandbox extends Sandbox {
     const show = () => this.props.showEnvironment(arena, {
       onPhysicsChange: () => {
         this.captureUndo();
+        // setGravity → _onEnvChange → saveArena(); no need to call saveArena() again
         this._envMgr.setGravity(arenaId, arena.gravityScale, arena.gravityDirectionX, arena.gravityDirectionZ);
-        this.saveArena();
         show();
       },
       onTiltChange: () => {
@@ -1987,6 +1989,10 @@ export class ArenaSandbox extends Sandbox {
 
   private _removeJumpLink(id: string): void {
     const jl = this.jumpLinks.get(id); if (!jl) return;
+    // Clear stale jumpLinkId references on speed lines
+    for (const sl of this.speedLines.values()) {
+      if (sl.jumpLinkId === id) sl.jumpLinkId = null;
+    }
     this._disposeJumpLink(jl);
     this.jumpLinks.delete(id);
     this.sceneTree.remove(id);
@@ -2265,7 +2271,7 @@ export class ArenaSandbox extends Sandbox {
     if (this._scoreHudEl) {
       let showHud = false; let lines = '';
       for (const arena of this.arenas.values()) {
-        if (arena.pointsPerSecond > 0 || arena.scoreMultiplier !== 1) {
+        if (arena.pointsPerSecond > 0) {
           showHud = true;
           lines += `${arena.name}: ${arena._score.toFixed(0)} pts\n`;
         }
@@ -2649,13 +2655,15 @@ export class ArenaSandbox extends Sandbox {
     scene.add(this.topFaceMesh);
 
     this.sceneObjects.set('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
-    this.loadArena();
 
+    // Instantiate before loadArena() so any tick/triggerEvent calls during restore are safe
     this._envMgr = new ArenaEnvironmentManager(
       () => this.arenas,
       (arenaId, props) => this._onEnvChange(arenaId, props),
       (_arenaId, ev) => console.log('[sound]', _arenaId, ev),
     );
+
+    this.loadArena();
 
     const scoreHud = this.addOverlayPanel('arena-score-hud') as HTMLDivElement;
     scoreHud.style.cssText = 'position:absolute;right:calc(8*var(--mm));bottom:calc(6*var(--cm));background:rgba(0,0,0,0.75);color:#00e5ff;font-family:Orbitron,sans-serif;font-size:calc(1.4*var(--cm));padding:calc(4*var(--mm)) calc(8*var(--mm));border:1px solid rgba(0,229,255,0.4);white-space:pre;display:none;pointer-events:none;';
@@ -2968,6 +2976,7 @@ export class ArenaSandbox extends Sandbox {
         undefined,
         () => [...this.bridges.values()],
         () => [...this.traps.values()],
+        () => [...this.jumpLinks.values()],
       );
       return;
     }
@@ -3919,6 +3928,7 @@ export class ArenaSandbox extends Sandbox {
     this.portalSeq    = Math.max(this.portalSeq,     remapped.portalSeq ?? 0);
     this.footingSeq   = Math.max(this.footingSeq,    remapped.footingSeq ?? 0);
     this.rotationSeq  = Math.max(this.rotationSeq,   remapped.rotationSeq ?? 0);
+    this.jumpLinkSeq  = Math.max(this.jumpLinkSeq,   remapped.jumpLinkSeq ?? 0);
     this._loadArenasFromConfig(remapped);
   }
 

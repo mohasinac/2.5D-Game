@@ -1150,15 +1150,15 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('SEGMENT ANIMATION');
     this.toggleRow('Enable', seg.animEnabled, v => { seg.animEnabled = v; if (!v) seg._animTimer = 0; refresh(); });
     if (seg.animEnabled) {
-      this.numRow('Offset X (cm)', seg.animOffsetX, -200, 200, 0.5, v => { seg.animOffsetX = v; });
-      this.numRow('Offset Y (cm)', seg.animOffsetY, -50, 50, 0.5, v => { seg.animOffsetY = v; });
-      this.numRow('Offset Z (cm)', seg.animOffsetZ, -200, 200, 0.5, v => { seg.animOffsetZ = v; });
-      this.numRow('Rotate X°', seg.animRotX, -180, 180, 1, v => { seg.animRotX = v; });
-      this.numRow('Rotate Y°', seg.animRotY, -180, 180, 1, v => { seg.animRotY = v; });
-      this.numRow('Rotate Z°', seg.animRotZ, -180, 180, 1, v => { seg.animRotZ = v; });
-      this.numRow('Start delay (ms)', seg.animStartMs, 0, 10000, 100, v => { seg.animStartMs = v; });
-      this.numRow('Interval (ms)', seg.animIntervalMs, 100, 10000, 100, v => { seg.animIntervalMs = v; });
-      this.numRow('Hold (ms)', seg.animHoldMs, 50, 10000, 50, v => { seg.animHoldMs = v; });
+      this.numRow('Offset X (cm)', seg.animOffsetX, -200, 200, 0.5, v => { seg.animOffsetX = v; onGeomChange(); });
+      this.numRow('Offset Y (cm)', seg.animOffsetY, -50, 50, 0.5, v => { seg.animOffsetY = v; onGeomChange(); });
+      this.numRow('Offset Z (cm)', seg.animOffsetZ, -200, 200, 0.5, v => { seg.animOffsetZ = v; onGeomChange(); });
+      this.numRow('Rotate X°', seg.animRotX, -180, 180, 1, v => { seg.animRotX = v; onGeomChange(); });
+      this.numRow('Rotate Y°', seg.animRotY, -180, 180, 1, v => { seg.animRotY = v; onGeomChange(); });
+      this.numRow('Rotate Z°', seg.animRotZ, -180, 180, 1, v => { seg.animRotZ = v; onGeomChange(); });
+      this.numRow('Start delay (ms)', seg.animStartMs, 0, 10000, 100, v => { seg.animStartMs = v; onGeomChange(); });
+      this.numRow('Interval (ms)', seg.animIntervalMs, 100, 10000, 100, v => { seg.animIntervalMs = v; onGeomChange(); });
+      this.numRow('Hold (ms)', seg.animHoldMs, 50, 10000, 50, v => { seg.animHoldMs = v; onGeomChange(); });
     }
   }
 
@@ -1276,10 +1276,11 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onStlClear?: () => void,
     getBridges?: () => BridgeData[],
     getTraps?:   () => TrapData[],
+    getJumpLinks?: () => JumpLinkData[],
   ): void {
     this.content.innerHTML = '';
 
-    const refresh = () => this.showSpeedLine(sl, arena, onGeomChange, onSegmentChange, onRename, onColorChange, onAddSegment, onRemoveSegment, onPresetChange, onStlImport, onStlClear, getBridges, getTraps);
+    const refresh = () => this.showSpeedLine(sl, arena, onGeomChange, onSegmentChange, onRename, onColorChange, onAddSegment, onRemoveSegment, onPresetChange, onStlImport, onStlClear, getBridges, getTraps, getJumpLinks);
 
     this.section('NAME');
     const nameInp = document.createElement('input');
@@ -1738,7 +1739,14 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.textRow('Move Name', sl.specialMoveName, v => { sl.specialMoveName = v; });
     }
     if (sl.exitBehavior === 'jump_link') {
-      this.textRow('Jump Link ID', sl.jumpLinkId ?? '', v => { sl.jumpLinkId = v || null; onGeomChange(); });
+      const jlList = getJumpLinks?.() ?? [];
+      if (jlList.length > 0) {
+        const jlOpts = jlList.map(jl => ({ value: jl.id, label: jl.name }));
+        this.selectRow('Jump Link', jlOpts, sl.jumpLinkId ?? jlOpts[0].value,
+          v => { sl.jumpLinkId = v; onGeomChange(); });
+      } else {
+        this.readRow('Jump Link', 'No jump links defined — add a ⤻ jump link first.');
+      }
       this.readRow('Note', 'Speed line triggers jump at exit. In-flight bey is not on this speed line.');
     }
     this.toggleRow('Mid-Air Entry',   sl.allowMidAirEntry, v => { sl.allowMidAirEntry = v; });
@@ -2128,13 +2136,13 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('THEME');
     const THEMES: ObstacleTheme[] = ['default','rock','boat','aircraft','bird','cloud'];
     this.selectRow('Theme', THEMES.map(t => ({ value: t, label: t })), data.theme, v => {
-      data.theme = v as ObstacleTheme;
+      data.theme = v as ObstacleTheme; onGeomChange();
     });
 
     this.section('SPEED PATH');
     const slOpts = [{ value: '', label: '— None —' }, ...[...speedLineNames.entries()].map(([id,name]) => ({ value: id, label: name }))];
     this.selectRow('Speed Path', slOpts, data.speedPathId ?? '', v => {
-      data.speedPathId = v || null;
+      data.speedPathId = v || null; onGeomChange();
     });
 
     this.section('PRESENTATION STL');
@@ -2427,7 +2435,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
     this.section('SPEED PATH');
     const slOpts = [{ value: '', label: '— None —' }, ...[...speedLineNames.entries()].map(([id,name]) => ({ value: id, label: name }))];
-    this.selectRow('Speed Path', slOpts, data.speedPathId ?? '', v => { data.speedPathId = v || null; });
+    this.selectRow('Speed Path', slOpts, data.speedPathId ?? '', v => { data.speedPathId = v || null; onGeomChange(); });
 
     if (data.effect === 'buff_zone') {
       this._trapDurationTiersSection(data, onGeomChange);
