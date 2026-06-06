@@ -9,7 +9,7 @@ import {
   DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS,
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
   DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
-  DEFAULT_ARENA_MATERIAL, MIN_ZONE_DEPTH, PIT_FIXED_DEPTH,
+  DEFAULT_ARENA_MATERIAL, MIN_ZONE_DEPTH, PIT_FIXED_DEPTH, ARENA_SAVE_VERSION,
 } from '../config/arenaConstants';
 import { buildParticleSystem } from '../geometry/particleBuilders';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
@@ -352,7 +352,7 @@ export class ArenaSandbox extends Sandbox {
       footings: [...this.footings.values()].map(footingToSave),
       footingSeq: this.footingSeq,
     };
-    return JSON.stringify(config);
+    return JSON.stringify({ v: ARENA_SAVE_VERSION, c: config });
   }
 
   /** Capture state BEFORE a change. Debounced — only the first call in a gesture pushes to undo. */
@@ -381,7 +381,7 @@ export class ArenaSandbox extends Sandbox {
     this._flushUndoPending();
     if (!this.undoStack.length) return;
     this.redoStack.push(this.serializeConfig());
-    const cfg = JSON.parse(this.undoStack.pop()!) as ArenaConfig;
+    const cfg = (JSON.parse(this.undoStack.pop()!) as { v: number; c: ArenaConfig }).c;
     this._applyConfigToScene(cfg);
     this.saveArena();
     this.updateUndoRedoUI();
@@ -391,7 +391,7 @@ export class ArenaSandbox extends Sandbox {
     this._flushUndoPending();
     if (!this.redoStack.length) return;
     this.undoStack.push(this.serializeConfig());
-    const cfg = JSON.parse(this.redoStack.pop()!) as ArenaConfig;
+    const cfg = (JSON.parse(this.redoStack.pop()!) as { v: number; c: ArenaConfig }).c;
     this._applyConfigToScene(cfg);
     this.saveArena();
     this.updateUndoRedoUI();
@@ -456,13 +456,13 @@ export class ArenaSandbox extends Sandbox {
     this.baseConfig = { ...this.baseConfig, ...cfg.baseConfig };
     this.rebuildBase();
     this.arenaSeq = cfg.arenaSeq; this.pitSeq = cfg.pitSeq; this.zoneSeq = cfg.zoneSeq;
-    this.wallSeq = cfg.wallSeq ?? 0; this.bridgeSeq = cfg.bridgeSeq ?? 0; this.segmentSeq = cfg.segmentSeq ?? 0;
-    this.speedlineSeq = cfg.speedLineSeq ?? 0;
-    this.obstacleSeq = cfg.obstacleSeq ?? 0;
-    this.trapSeq = cfg.trapSeq ?? 0;
-    this.portalSeq = cfg.portalSeq ?? 0;
-    this.rotationSeq = cfg.rotationSeq ?? 0;
-    this.footingSeq = cfg.footingSeq ?? 0;
+    this.wallSeq = cfg.wallSeq; this.bridgeSeq = cfg.bridgeSeq; this.segmentSeq = cfg.segmentSeq;
+    this.speedlineSeq = cfg.speedLineSeq;
+    this.obstacleSeq = cfg.obstacleSeq;
+    this.trapSeq = cfg.trapSeq;
+    this.portalSeq = cfg.portalSeq;
+    this.rotationSeq = cfg.rotationSeq;
+    this.footingSeq = cfg.footingSeq;
     this._loadArenasFromConfig(cfg);
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
@@ -723,21 +723,20 @@ export class ArenaSandbox extends Sandbox {
     for(const sls_ of sls){
       const sl: SpeedLineData = {
         ...sls_,
-        // Provide defaults for new fields that may be missing from old saves
-        presetType:               sls_.presetType ?? 'custom',
-        presetParams:             sls_.presetParams ?? defaultSpeedLine('', arenaId, '').presetParams,
-        speedRamp:                sls_.speedRamp ?? { profile: 'constant', speedMin: SL.DEFAULT_SPEED_MULT, speedMax: SL.DEFAULT_SPEED_MULT, entrySteps: 0, exitSteps: 0 },
-        surfaceOffset:            sls_.surfaceOffset ?? SL.DEFAULT_SURFACE_OFFSET,
-        surfaceOrientObject:      sls_.surfaceOrientObject ?? true,
-        airNormalMode:            sls_.airNormalMode ?? 'lean_center',
-        airNormalTiltDeg:         sls_.airNormalTiltDeg ?? 10,
+        presetType:               sls_.presetType,
+        presetParams:             sls_.presetParams,
+        speedRamp:                sls_.speedRamp,
+        surfaceOffset:            sls_.surfaceOffset,
+        surfaceOrientObject:      sls_.surfaceOrientObject,
+        airNormalMode:            sls_.airNormalMode,
+        airNormalTiltDeg:         sls_.airNormalTiltDeg,
         pointNormals:             [],
-        baseCondition:            sls_.baseCondition ?? 'none',
-        conditionPhase:           (sls_.conditionPhase ?? 'any') as SpeedLineData['conditionPhase'],
-        ejectBehavior:            sls_.ejectBehavior ?? 'toward_center',
-        targetSelectionMode:      sls_.targetSelectionMode ?? 'at_entrance',
-        conditionCheckIntervalMs: sls_.conditionCheckIntervalMs ?? SL.DEFAULT_CONDITION_CHECK_MS,
-        statModifiers:            sls_.statModifiers ?? { spinRateMult:1, staminaMult:1, attackMult:1, defenseMult:1, weightMult:1, burstResistMult:1 },
+        baseCondition:            sls_.baseCondition,
+        conditionPhase:           sls_.conditionPhase as SpeedLineData['conditionPhase'],
+        ejectBehavior:            sls_.ejectBehavior,
+        targetSelectionMode:      sls_.targetSelectionMode,
+        conditionCheckIntervalMs: sls_.conditionCheckIntervalMs,
+        statModifiers:            sls_.statModifiers,
         totalLength: 0,
         mesh: null as unknown as THREE.Mesh,
         edges: null as unknown as THREE.LineSegments,
@@ -1112,12 +1111,12 @@ export class ArenaSandbox extends Sandbox {
       contactForceX: os.contactForceX, contactForceY: os.contactForceY, contactForceZ: os.contactForceZ,
       color: os.color, surface: os.surface, tileScale: os.tileScale,
       material: os.material, speedPathId: os.speedPathId,
-      customTileData:    os.customTileData    ?? null,
-      emissiveColor:     os.emissiveColor     ?? 0x000000,
-      emissiveIntensity: os.emissiveIntensity ?? 0,
-      opacity:           os.opacity           ?? 1,
-      presentStlb64:     os.presentStlb64     ?? null,
-      presentColor:      os.presentColor      ?? 0xaaaaaa,
+      customTileData:    os.customTileData,
+      emissiveColor:     os.emissiveColor,
+      emissiveIntensity: os.emissiveIntensity,
+      opacity:           os.opacity,
+      presentStlb64:     os.presentStlb64,
+      presentColor:      os.presentColor,
     });
     const [mesh, edges] = buildObstacleObjects(data);
     data.mesh = mesh; data.edges = edges;
@@ -1169,13 +1168,13 @@ export class ArenaSandbox extends Sandbox {
       dimX: fs.dimX, dimY: fs.dimY, dimZ: fs.dimZ,
       basePosX: fs.basePosX, basePosZ: fs.basePosZ, baseRotY: fs.baseRotY, posY: fs.posY,
       color: fs.color, surface: fs.surface,
-      customTileData:    fs.customTileData    ?? null,
-      tileScale:         fs.tileScale         ?? 1,
-      emissiveColor:     fs.emissiveColor     ?? 0x000000,
-      emissiveIntensity: fs.emissiveIntensity ?? 0,
-      opacity:           fs.opacity           ?? 1,
-      presentStlb64:     fs.presentStlb64     ?? null,
-      presentColor:      fs.presentColor      ?? 0xaaaaaa,
+      customTileData:    fs.customTileData,
+      tileScale:         fs.tileScale,
+      emissiveColor:     fs.emissiveColor,
+      emissiveIntensity: fs.emissiveIntensity,
+      opacity:           fs.opacity,
+      presentStlb64:     fs.presentStlb64,
+      presentColor:      fs.presentColor,
     });
     const [mesh, edges] = buildFootingObjects(data, this.baseConfig.height);
     data.mesh = mesh; data.edges = edges;
@@ -1257,12 +1256,12 @@ export class ArenaSandbox extends Sandbox {
       activationLimit: ts.activationLimit, speedPathId: ts.speedPathId,
       durationTiers: ts.durationTiers.map(d=>({...d})),
       color: ts.color, surface: ts.surface, tileScale: ts.tileScale,
-      baseMaterial:      ts.baseMaterial      ?? 'abs',
-      customTileData:    ts.customTileData    ?? null,
-      emissiveColor:     ts.emissiveColor     ?? 0x000000,
-      emissiveIntensity: ts.emissiveIntensity ?? 0,
-      presentStlb64:     ts.presentStlb64     ?? null,
-      presentColor:      ts.presentColor      ?? 0xaaaaaa,
+      baseMaterial:      ts.baseMaterial,
+      customTileData:    ts.customTileData,
+      emissiveColor:     ts.emissiveColor,
+      emissiveIntensity: ts.emissiveIntensity,
+      presentStlb64:     ts.presentStlb64,
+      presentColor:      ts.presentColor,
     });
     const surfY = this._getTrapSurfY(data);
     const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
@@ -1337,11 +1336,11 @@ export class ArenaSandbox extends Sandbox {
       destPosX: ps.destPosX, destPosY: ps.destPosY, destPosZ: ps.destPosZ,
       exitVelScale: ps.exitVelScale, exitRotY: ps.exitRotY, isBidirectional: ps.isBidirectional,
       color: ps.color, glowColor: ps.glowColor,
-      surface:       ps.surface       ?? 'plain',
-      customTileData:ps.customTileData?? null,
-      tileScale:     ps.tileScale     ?? 1,
-      presentStlb64: ps.presentStlb64 ?? null,
-      presentColor:  ps.presentColor  ?? 0xaaaaaa,
+      surface:       ps.surface,
+      customTileData:ps.customTileData,
+      tileScale:     ps.tileScale,
+      presentStlb64: ps.presentStlb64,
+      presentColor:  ps.presentColor,
     });
     const surfY = this._getPortalSurfY(data);
     const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
@@ -2554,8 +2553,8 @@ export class ArenaSandbox extends Sandbox {
       openingShape:ps.openingShape,
       radiusX:ps.radiusX,radiusZ:ps.radiusZ,depth:ps.depth,sides:ps.sides,starInner:ps.starInner,
       color:ps.color,surface:ps.surface,customTileData:ps.customTileData,tileScale:ps.tileScale,
-      rimGlowColor:     ps.rimGlowColor     ?? 0x000000,
-      rimGlowIntensity: ps.rimGlowIntensity ?? 0,
+      rimGlowColor:     ps.rimGlowColor,
+      rimGlowIntensity: ps.rimGlowIntensity,
       posR:ps.posR,posAngle:ps.posAngle,rotY:ps.rotY,
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
@@ -2734,19 +2733,19 @@ export class ArenaSandbox extends Sandbox {
     for(const ws of cfg.baseWalls) this._restoreWallSave(ws);
 
     // Restore obstacles
-    for(const os of (cfg.obstacles??[])) this._restoreObstacleSave(os);
+    for(const os of cfg.obstacles) this._restoreObstacleSave(os);
 
     // Restore traps (trap-parented walls are restored inside _restoreTrapSave)
-    for(const ts of (cfg.traps??[])) this._restoreTrapSave(ts);
+    for(const ts of cfg.traps) this._restoreTrapSave(ts);
 
     // Restore portals
-    for(const ps of (cfg.portals??[])) this._restorePortalSave(ps);
+    for(const ps of cfg.portals) this._restorePortalSave(ps);
 
     // Restore footings
-    for(const fs of (cfg.footings??[])) this._restoreFootingSave(fs);
+    for(const fs of cfg.footings) this._restoreFootingSave(fs);
 
     // Restore rotations after all nodes are loaded
-    for(const rs of (cfg.rotations??[])) this._restoreRotationSave(rs);
+    for(const rs of cfg.rotations) this._restoreRotationSave(rs);
   }
 
   private _restoreWallSave(ws: WallSave): void {
@@ -2865,14 +2864,16 @@ export class ArenaSandbox extends Sandbox {
   private loadArena(): void {
     try {
       const raw=localStorage.getItem(this.arenaStorageKey); if(!raw) return;
-      const cfg=JSON.parse(raw) as ArenaConfig;
+      const saved=JSON.parse(raw) as { v: number; c: ArenaConfig };
+      if(saved.v !== ARENA_SAVE_VERSION){ localStorage.removeItem(this.arenaStorageKey); return; }
+      const cfg=saved.c;
       this.baseConfig={...this.baseConfig,...cfg.baseConfig};
       this.rebuildBase();
       this.arenaSeq=cfg.arenaSeq; this.pitSeq=cfg.pitSeq; this.zoneSeq=cfg.zoneSeq;
-      this.wallSeq=cfg.wallSeq??0; this.bridgeSeq=cfg.bridgeSeq??0; this.segmentSeq=cfg.segmentSeq??0;
-      this.speedlineSeq=cfg.speedLineSeq??0;
-      this.obstacleSeq=cfg.obstacleSeq??0; this.trapSeq=cfg.trapSeq??0; this.portalSeq=cfg.portalSeq??0;
-      this.rotationSeq=cfg.rotationSeq??0; this.footingSeq=cfg.footingSeq??0;
+      this.wallSeq=cfg.wallSeq; this.bridgeSeq=cfg.bridgeSeq; this.segmentSeq=cfg.segmentSeq;
+      this.speedlineSeq=cfg.speedLineSeq;
+      this.obstacleSeq=cfg.obstacleSeq; this.trapSeq=cfg.trapSeq; this.portalSeq=cfg.portalSeq;
+      this.rotationSeq=cfg.rotationSeq; this.footingSeq=cfg.footingSeq;
       this._loadArenasFromConfig(cfg);
     } catch { localStorage.removeItem(this.arenaStorageKey); }
   }

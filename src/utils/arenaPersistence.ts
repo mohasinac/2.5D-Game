@@ -36,23 +36,19 @@ export interface SpeedLineSave {
   direction: SpeedLineDirection; exitBehavior: SpeedLineExitBehavior;
   launchForce: number; specialMoveName: string;
   allowMidAirEntry: boolean; overridePhysics: boolean; swapPriority: number;
-  // ── Preset system (optional for backward-compat with older saves) ─────────
-  presetType?:               SpeedLinePresetType;
-  presetParams?:             SpeedLinePresetParams;
-  speedRamp?:                SpeedLineRamp;
-  // ── Surface projection ────────────────────────────────────────────────────
-  surfaceOffset?:            number;
-  surfaceOrientObject?:      boolean;
-  airNormalMode?:            'upright' | 'lean_center' | 'lean_curvature';
-  airNormalTiltDeg?:         number;
-  // ── Conditions / ejection / targeting ────────────────────────────────────
-  baseCondition?:            SpeedLineBaseCondition;
-  conditionPhase?:           string;
-  ejectBehavior?:            SpeedLineEjectBehavior;
-  targetSelectionMode?:      SpeedLineTargetSelectionMode;
-  conditionCheckIntervalMs?: number;
-  // ── Stat modifiers ────────────────────────────────────────────────────────
-  statModifiers?:            SpeedLineStatModifiers;
+  presetType:               SpeedLinePresetType;
+  presetParams:             SpeedLinePresetParams;
+  speedRamp:                SpeedLineRamp;
+  surfaceOffset:            number;
+  surfaceOrientObject:      boolean;
+  airNormalMode:            'upright' | 'lean_center' | 'lean_curvature';
+  airNormalTiltDeg:         number;
+  baseCondition:            SpeedLineBaseCondition;
+  conditionPhase:           string;
+  ejectBehavior:            SpeedLineEjectBehavior;
+  targetSelectionMode:      SpeedLineTargetSelectionMode;
+  conditionCheckIntervalMs: number;
+  statModifiers:            SpeedLineStatModifiers;
   // SpeedLineSegment.maxStayDuration + statModifiers + sectionIndex serialised via segments[]
   // SpeedLinePresetParams.sections (SpeedLineSection[]) serialised via presetParams
 }
