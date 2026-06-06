@@ -31,7 +31,7 @@ export class ArenaEnvironmentManager implements ITickableManager {
         }
 
         if (entry.triggerType === 'interval') {
-          if (entry._timer === undefined) entry._timer = entry.intervalSec - entry.delaySec;
+          if (entry._timer === undefined) entry._timer = Math.max(0, entry.intervalSec - entry.delaySec);
           entry._timer -= dt;
           if (entry._timer <= 0) {
             this._fireEntry(arenaId, arena, entry);
@@ -164,9 +164,11 @@ export class ArenaEnvironmentManager implements ITickableManager {
 
   // ── Private helpers ───────────────────────────────────────────────────────
   private _fireEntry(arenaId: string, arena: ArenaData, entry: EnvScheduleEntry): void {
-    if (entry.revertSec > 0 && !entry._prevValues) {
-      const snap = arena as unknown as Record<string, number | string | boolean>;
-      entry._prevValues  = entry.keyframes.map(k => ({ property: k.property, value: snap[k.property] }));
+    if (entry.revertSec > 0) {
+      if (!entry._prevValues) {
+        const snap = arena as unknown as Record<string, number | string | boolean>;
+        entry._prevValues = entry.keyframes.map(k => ({ property: k.property, value: snap[k.property] }));
+      }
       entry._revertTimer = 0;
     }
     this._applyKeyframes(arena, entry.keyframes);

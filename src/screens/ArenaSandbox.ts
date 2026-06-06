@@ -24,6 +24,7 @@ import {
   BaseFootingData,
   PresentConfig, ParticleConfig,
   defaultPresentConfig, defaultParticleConfig,
+  EnvProperty,
 } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from '../geometry/materialBuilders';
 import {
@@ -301,6 +302,11 @@ export class ArenaSandbox extends Sandbox {
           if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
           this.disposeArena(arena);
           this.arenas.delete(id); this.updateTopFace(); this.updateAllMoatIslandCaps();
+          // Clean up all sub-node tracking entries for this arena
+          this._subNodesAdded.delete(`present-${id}`);
+          this._subNodesAdded.delete(`particle-${id}`);
+          this._subNodesAdded.delete(`weather-${id}`);
+          this._subNodesAdded.delete(`env-${id}`);
           continue;
         }
         if(this.pits.has(id)){
@@ -489,6 +495,7 @@ export class ArenaSandbox extends Sandbox {
   /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
     this._envMgr?.clear();
+    this._subNodesAdded.clear();
     // Remove rotations first to return objects to scene root before clearing
     for(const rot of this.rotations.values()){
       const scene=this.getScene();
@@ -796,7 +803,7 @@ export class ArenaSandbox extends Sandbox {
     this.sceneTree.add(subId, 'Environment', '🌍', arenaId);
   }
 
-  private _onEnvChange(arenaId: string, changedProps: import('../types/arenaTypes').EnvProperty[]): void {
+  private _onEnvChange(arenaId: string, changedProps: EnvProperty[]): void {
     const arena = this.arenas.get(arenaId); if (!arena) return;
     const weatherProps = ['weatherPreset','windEnabled','windDirectionDeg','windStrengthCms','windGustInterval','windGustMult'];
     if (changedProps.some(p => weatherProps.includes(p))) {
@@ -805,6 +812,7 @@ export class ArenaSandbox extends Sandbox {
       if (mapped) {
         arena.surface = mapped;
         applyArena(arena, this.getArenaHoles(arena), this.getScene() ?? undefined);
+        this._applyArenaTilt(arena);
       }
     }
     if (changedProps.includes('fogDensity')) this._createArenaFog(arena);
@@ -820,7 +828,7 @@ export class ArenaSandbox extends Sandbox {
       arena.fogSystem = null;
     }
     if (arena.fogDensity <= 0) return;
-    const cfg = { ...defaultParticleConfig(), preset: 'dust' as import('../types/sharedTypes').ParticlePreset };
+    const cfg = { ...defaultParticleConfig(), preset: 'fog' as import('../types/sharedTypes').ParticlePreset, density: arena.fogDensity };
     const ps = buildParticleSystem(cfg, arena.posX, arena.posZ, Math.max(arena.radiusX, arena.radiusZ), this.baseConfig.height + arena.posY, arena.depth);
     this.addToScene(ps.points);
     arena.fogSystem = ps;
@@ -836,6 +844,7 @@ export class ArenaSandbox extends Sandbox {
     if (arena.floorMesh)  { arena.floorMesh.rotation.x = rx; arena.floorMesh.rotation.z = rz; }
     if (arena.islandMesh) { arena.islandMesh.rotation.x = rx; arena.islandMesh.rotation.z = rz; }
     if (arena.rimSeamMesh){ arena.rimSeamMesh.rotation.x = rx; arena.rimSeamMesh.rotation.z = rz; }
+    for (const m of arena.spiralMeshes ?? []) { m.rotation.x = rx; m.rotation.z = rz; }
   }
 
   private _showEnvNode(arenaId: string): void {
@@ -2400,7 +2409,7 @@ export class ArenaSandbox extends Sandbox {
     trap.variantMesh.rotation.y = trap._rpmCurrentAngle;
     if (trap.envTriggerEvent && omega !== 0) {
       const wrapped = prevAngle + omega * dt;
-      if (Math.floor(wrapped / (Math.PI * 2)) > Math.floor(prevAngle / (Math.PI * 2))) {
+      if (Math.floor(wrapped / (Math.PI * 2)) !== Math.floor(prevAngle / (Math.PI * 2))) {
         const targetId = trap.envTargetArenaId || trap.parentId;
         this._envMgr.triggerEvent(targetId, trap.envTriggerEvent);
       }
@@ -2695,7 +2704,7 @@ export class ArenaSandbox extends Sandbox {
     this.baseEdges.rotation.y=align; this.baseEdges.position.y=-H/2; fullGeo.dispose();
     const newTopMat=buildSurfaceMaterial({color:this.baseConfig.color,surface:this.baseConfig.surface,customTileData:this.baseConfig.customTileData,tileScale:this.baseConfig.tileScale,polygonOffset:true});
     (this.topFaceMesh.material as THREE.Material).dispose(); this.topFaceMesh.material=newTopMat;
-    for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaRimSeam(arena); }
+    for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this._applyArenaTilt(arena); this.updateArenaChildren(arena); this.updateArenaRimSeam(arena); }
   }
 
   private updateTopFace(): void {
@@ -2890,8 +2899,8 @@ export class ArenaSandbox extends Sandbox {
       this.props.showArena(
         arena,
         this.baseConfig.height,
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.rebuildDependentsOf(id); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.rebuildDependentsOf(id); this.renderProps(); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this._applyArenaTilt(arena); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.rebuildDependentsOf(id); this.saveArena(); },
+        ()=>{ this.captureUndo(); applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this._applyArenaTilt(arena); this.updateArenaChildren(arena); this.updateArenaFloor(arena); this.updateIslandCap(arena,id); this.updateArenaRimSeam(arena); this.updateAllMoatIslandCaps(); this.updateTopFace(); this.rebuildDependentsOf(id); this.renderProps(); this.saveArena(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
         ()=>{ this.captureUndo(); applyArenaColor(arena); this.saveArena(); },
