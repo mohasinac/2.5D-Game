@@ -18,7 +18,5 @@ export class EventZone {
     scene.physics.add.existing(this.zone, true);
   }
 
-  get triggerId(): string { return (this.zone as unknown as { _triggerId: string })._triggerId; }
-
   destroy(): void { this.zone.destroy(); }
 }

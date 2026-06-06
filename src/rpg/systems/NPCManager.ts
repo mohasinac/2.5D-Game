@@ -18,9 +18,55 @@ export class NPCManager {
     for (const p of placements) {
       const def = svgAssetStore.getNPC(p.npcId);
       if (!def) continue;
+      this.setupNPCAnimations(def.spriteId);
       const npc = new NPC(this.scene, p, def, this.tileSize);
       this.npcs.set(p.id, npc);
     }
+  }
+
+  private setupNPCAnimations(spriteId: string): void {
+    const sprDef = svgAssetStore.getSprite(spriteId);
+    if (!sprDef) return;
+
+    const texture = this.scene.textures.get(spriteId);
+    if (!texture || texture.key === '__MISSING') return;
+
+    const cols = sprDef.cols;
+    const rows = sprDef.rows || 1;
+    const totalFrames = cols * rows;
+    const scale = 2;
+    const fw = sprDef.frameWidth * scale;
+    const fh = sprDef.frameHeight * scale;
+
+    for (let i = 0; i < totalFrames; i++) {
+      if (!texture.has(String(i))) {
+        texture.add(String(i), 0, (i % cols) * fw, Math.floor(i / cols) * fh, fw, fh);
+      }
+    }
+
+    const dirs = ['down', 'up', 'left', 'right'];
+    dirs.forEach((dir, di) => {
+      const idleKey = `${spriteId}_idle_${dir}`;
+      const walkKey = `${spriteId}_walk_${dir}`;
+      if (!this.scene.anims.exists(idleKey)) {
+        this.scene.anims.create({
+          key: idleKey,
+          frames: [{ key: spriteId, frame: String(di * cols) }],
+          frameRate: 1,
+          repeat: 0,
+        });
+      }
+      if (!this.scene.anims.exists(walkKey)) {
+        const walkFrames = Array.from({ length: Math.min(cols, 4) }, (_, i) =>
+          ({ key: spriteId, frame: String(di * cols + i) }));
+        this.scene.anims.create({
+          key: walkKey,
+          frames: walkFrames,
+          frameRate: 8,
+          repeat: -1,
+        });
+      }
+    });
   }
 
   getAll(): NPC[] { return [...this.npcs.values()]; }

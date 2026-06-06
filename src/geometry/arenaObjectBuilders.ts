@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, DEG2RAD, PIT_FIXED_DEPTH } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
-  SpeedLineData, SpeedLineSegment, RampMode,
+  SpeedLineData, SpeedLineSegment, RampMode, defaultParticleConfig,
 } from '../types/arenaTypes';
 import { SceneSurfaceProjector } from './sceneSurfaceProjector';
 import { shapePoints, childArenaBaseY, childWorldPos, makeSurfFn, polarToLocalXZ } from './surfaceUtils';
@@ -533,9 +533,11 @@ export function defaultPit(
     surface: 'plain', customTileData: null, tileScale: 10,
     rimGlowColor: 0x000000, rimGlowIntensity: 0,
     posR: 0, posAngle: 0, rotY: 0,
+    particleConfig: defaultParticleConfig(),
     mesh: null as unknown as THREE.Mesh,
     edges: null as unknown as THREE.LineSegments,
     seamMesh: null as unknown as THREE.Mesh,
+    particleSystem: null,
   };
 }
 

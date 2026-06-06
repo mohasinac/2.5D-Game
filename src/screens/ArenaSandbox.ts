@@ -60,10 +60,19 @@ import {
   buildSegmentDeckGeometry, buildSegmentEdgeGeometry,
   defaultBridgeSection, defaultSegment,
 } from '../geometry/bridgeSegmentBuilders';
+import {
+  listArenaPresets, saveArenaPreset, newPresetId,
+  generateArenaThumb, remapArenaConfigIds, extractArenaConfig,
+} from '../utils/presetStore';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
    ══════════════════════════════════════════════════════════════════════════ */
+export interface ArenaSandboxOptions extends SandboxOptions {
+  onLibrary?: () => void;
+  presetEditorMode?: boolean;
+}
+
 export class ArenaSandbox extends Sandbox {
   private baseMesh:    THREE.Mesh | null = null;
   private baseEdges:   THREE.LineSegments | null = null;
@@ -137,8 +146,11 @@ export class ArenaSandbox extends Sandbox {
   private undoBtn!: HTMLButtonElement;
   private redoBtn!: HTMLButtonElement;
 
-  constructor(container: HTMLElement, opts: SandboxOptions) {
+  private _arenaOpts: ArenaSandboxOptions;
+
+  constructor(container: HTMLElement, opts: ArenaSandboxOptions) {
     super(container, opts);
+    this._arenaOpts = opts;
     this.arenaStorageKey = `bey_arena_${opts.title.toLowerCase().replace(/\s+/g,'_')}`;
 
     this.modeBtn = this.addTopBarButton('● Solid', 'Toggle solid / mesh view');
@@ -148,14 +160,22 @@ export class ArenaSandbox extends Sandbox {
     resetArenaBtn.className += ' reset-arena-btn';
     resetArenaBtn.addEventListener('click', ()=>{ void this.resetArena(); });
 
-    const demoBtn = this.addTopBarButton('★ Demo', 'Load sample demo arena');
-    demoBtn.className += ' load-demo-btn';
-    demoBtn.addEventListener('click', async () => {
-      const ok = await gameConfirm('Load demo arena? Current work will be replaced.');
-      if (!ok) return;
-      this._applyConfigToScene(DEMO_ARENA_CONFIG);
-      this._flushSave();
-    });
+    if (!opts.presetEditorMode) {
+      const demoBtn = this.addTopBarButton('★ Demo', 'Load sample demo arena');
+      demoBtn.className += ' load-demo-btn';
+      demoBtn.addEventListener('click', async () => {
+        const ok = await gameConfirm('Load demo arena? Current work will be replaced.');
+        if (!ok) return;
+        this._applyConfigToScene(DEMO_ARENA_CONFIG);
+        this._flushSave();
+      });
+    }
+
+    const savePresetBtn = this.addTopBarButton('💾 Preset', 'Save checked nodes as a named preset');
+    savePresetBtn.addEventListener('click', () => this._showSavePresetModal());
+
+    const libraryBtn = this.addTopBarButton('📚 Library', 'Browse arena presets');
+    libraryBtn.addEventListener('click', () => this._arenaOpts.onLibrary?.());
 
     this.undoBtn = this.addTopBarButton('↩ Undo', 'Undo (Ctrl+Z)');
     this.undoBtn.addEventListener('click', ()=>this.undo());
@@ -527,10 +547,10 @@ export class ArenaSandbox extends Sandbox {
   private _createArenaParticles(arenaId: string, arena: ArenaData): void {
     if (arena.particleSystem) { this.removeFromScene(arena.particleSystem.points); arena.particleSystem.dispose(); arena.particleSystem = null; }
     if (arena.particlePreset === 'none') return;
-    const ps = buildParticleSystem(arena.particlePreset, arena.posX, arena.posZ, Math.max(arena.radiusX, arena.radiusZ), this.baseConfig.height + arena.posY, arena.depth);
+    const cfg = this._particleConfigs.get(arenaId) ?? { ...defaultParticleConfig(), preset: arena.particlePreset };
+    const ps = buildParticleSystem(cfg, arena.posX, arena.posZ, Math.max(arena.radiusX, arena.radiusZ), this.baseConfig.height + arena.posY, arena.depth);
     this.addToScene(ps.points);
     arena.particleSystem = ps;
-    void arenaId;
   }
   private _createZoneParticles(zone: ZoneData): void {
     if (zone.particleSystem) { this.removeFromScene(zone.particleSystem.points); zone.particleSystem.dispose(); zone.particleSystem = null; }
@@ -540,9 +560,24 @@ export class ArenaSandbox extends Sandbox {
     const { lx: cx, lz: cz } = polarToLocalXZ(zone.posR, zone.posAngle);
     const wx = arena ? arena.posX + cx : cx;
     const wz = arena ? arena.posZ + cz : cz;
-    const ps = buildParticleSystem(zone.particlePreset, wx, wz, Math.max(zone.radiusX, zone.radiusZ), baseY, zone.depth);
+    const cfg = this._particleConfigs.get(zone.id) ?? { ...defaultParticleConfig(), preset: zone.particlePreset };
+    const ps = buildParticleSystem(cfg, wx, wz, Math.max(zone.radiusX, zone.radiusZ), baseY, zone.depth);
     this.addToScene(ps.points);
     zone.particleSystem = ps;
+  }
+  private _createPitParticles(pitId: string, pit: PitData): void {
+    if (pit.particleSystem) { this.removeFromScene(pit.particleSystem.points); pit.particleSystem.dispose(); pit.particleSystem = null; }
+    const cfg = this._particleConfigs.get(pitId) ?? pit.particleConfig;
+    if (cfg.preset === 'none') return;
+    const arena = this.arenas.get(pit.parentArenaId);
+    if (!arena) return;
+    const { lx: cx, lz: cz } = polarToLocalXZ(pit.posR, pit.posAngle);
+    const wx = arena.posX + cx; const wz = arena.posZ + cz;
+    const t = pit.posR / Math.max(arena.radiusX, arena.radiusZ);
+    const rimY = this.baseConfig.height + arena.posY - arena.depth * (1 - t * t);
+    const ps = buildParticleSystem(cfg, wx, wz, Math.max(pit.radiusX, pit.radiusZ), rimY, pit.depth);
+    this.addToScene(ps.points);
+    pit.particleSystem = ps;
   }
 
   /* ── Weather system helpers ──────────────────────────────────────────── */
@@ -692,6 +727,8 @@ export class ArenaSandbox extends Sandbox {
       if (arena) cfg.preset = arena.particlePreset;
       const zone = this.zones.get(featureId);
       if (zone) cfg.preset = zone.particlePreset;
+      const pit = this.pits.get(featureId);
+      if (pit) cfg.preset = pit.particleConfig.preset;
       this._particleConfigs.set(featureId, cfg);
     }
     const cfg = this._particleConfigs.get(featureId)!;
@@ -704,6 +741,8 @@ export class ArenaSandbox extends Sandbox {
         if (arena) { arena.particlePreset = cfg.preset; this._createArenaParticles(featureId, arena); }
         const zone = this.zones.get(featureId);
         if (zone) { zone.particlePreset = cfg.preset; this._createZoneParticles(zone); }
+        const pit = this.pits.get(featureId);
+        if (pit) { pit.particleConfig = { ...cfg }; this._createPitParticles(featureId, pit); }
         this.saveArena();
       },
       isSpeedLine,
@@ -1765,6 +1804,9 @@ export class ArenaSandbox extends Sandbox {
     for (const zone of this.zones.values()) {
       if (zone.particleSystem) zone.particleSystem.tick(dt);
     }
+    for (const pit of this.pits.values()) {
+      if (pit.particleSystem) pit.particleSystem.tick(dt);
+    }
     for (const rot of this.rotations.values()) {
       if (!rot.enabled || !rot.pivotGroup) continue;
       if (rot.mode === 'continuous') {
@@ -2802,8 +2844,10 @@ export class ArenaSandbox extends Sandbox {
       rimGlowColor:     ps.rimGlowColor,
       rimGlowIntensity: ps.rimGlowIntensity,
       posR:ps.posR,posAngle:ps.posAngle,rotY:ps.rotY,
+      particleConfig: ps.particleConfig ?? defaultParticleConfig(),
       mesh:null as unknown as THREE.Mesh,edges:null as unknown as THREE.LineSegments,
       seamMesh:null as unknown as THREE.Mesh,
+      particleSystem: null,
     };
     this.pits.set(ps.id,pit);
     data.pitIds.push(ps.id);
@@ -3168,11 +3212,135 @@ export class ArenaSandbox extends Sandbox {
       canvas.addEventListener('pointerdown', this._onPointerDown);
       canvas.addEventListener('pointermove', this._onPointerMove);
       canvas.addEventListener('pointerup',   this._onPointerUp);
+      this._checkPendingLoad();
     } else if(!v && canvas){
       canvas.removeEventListener('pointerdown', this._onPointerDown);
       canvas.removeEventListener('pointermove', this._onPointerMove);
       canvas.removeEventListener('pointerup',   this._onPointerUp);
     }
+  }
+
+  private _checkPendingLoad(): void {
+    const raw = localStorage.getItem('bey_pending_arena_load');
+    if (!raw) return;
+    localStorage.removeItem('bey_pending_arena_load');
+    try {
+      const { config, mode } = JSON.parse(raw) as { config: ArenaConfig; mode: 'replace' | 'merge' };
+      if (mode === 'replace') {
+        this._applyConfigToScene(config);
+      } else {
+        this._mergeConfigIntoScene(config);
+      }
+      this._flushSave();
+    } catch { /* malformed pending load — discard */ }
+  }
+
+  private _mergeConfigIntoScene(cfg: ArenaConfig): void {
+    const batchTag = Date.now().toString(36);
+    const remapped = remapArenaConfigIds(cfg, batchTag);
+    this.arenaSeq     = Math.max(this.arenaSeq,     remapped.arenaSeq);
+    this.pitSeq       = Math.max(this.pitSeq,       remapped.pitSeq);
+    this.zoneSeq      = Math.max(this.zoneSeq,      remapped.zoneSeq);
+    this.wallSeq      = Math.max(this.wallSeq,       remapped.wallSeq);
+    this.bridgeSeq    = Math.max(this.bridgeSeq,     remapped.bridgeSeq);
+    this.segmentSeq   = Math.max(this.segmentSeq,    remapped.segmentSeq);
+    this.speedlineSeq = Math.max(this.speedlineSeq,  remapped.speedLineSeq);
+    this.obstacleSeq  = Math.max(this.obstacleSeq,   remapped.obstacleSeq ?? 0);
+    this.trapSeq      = Math.max(this.trapSeq,       remapped.trapSeq ?? 0);
+    this.portalSeq    = Math.max(this.portalSeq,     remapped.portalSeq ?? 0);
+    this.footingSeq   = Math.max(this.footingSeq,    remapped.footingSeq ?? 0);
+    this.rotationSeq  = Math.max(this.rotationSeq,   remapped.rotationSeq ?? 0);
+    this._loadArenasFromConfig(remapped);
+  }
+
+  private _showSavePresetModal(): void {
+    const checkedIds = this.sceneTree.getCheckedIds();
+    const isFull = checkedIds.length === 0;
+    let config: ArenaConfig;
+    if (isFull) {
+      config = (JSON.parse(this.serializeConfig()) as { v: number; c: ArenaConfig }).c;
+    } else {
+      config = extractArenaConfig(checkedIds, {
+        arenas: this.arenas, pits: this.pits, zones: this.zones,
+        walls: this.walls, bridges: this.bridges, segments: this.segments,
+        speedLines: this.speedLines, obstacles: this.obstacles,
+        traps: this.traps, portals: this.portals,
+        footings: this.footings, rotations: this.rotations,
+      }, this.baseConfig);
+    }
+
+    const existingGroups = [...new Set(listArenaPresets().map(p => p.group).filter(Boolean))];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'preset-modal';
+    overlay.innerHTML = `
+      <div class="preset-modal__box">
+        <div class="preset-modal__title">💾 Save Arena Preset</div>
+        <div class="preset-modal__subtitle">${isFull ? 'Saving full scene' : `Saving ${checkedIds.length} selected item(s)`}</div>
+        <div class="preset-modal__field">
+          <label>Name *</label>
+          <input id="pm-name" type="text" placeholder="e.g. Ramp Track Bridge" autocomplete="off"/>
+        </div>
+        <div class="preset-modal__field">
+          <label>Group</label>
+          <input id="pm-group" type="text" placeholder="e.g. Bridge Setups" list="pm-groups-list" autocomplete="off"/>
+          <datalist id="pm-groups-list">${existingGroups.map(g=>`<option value="${g}">`).join('')}</datalist>
+        </div>
+        <div class="preset-modal__field">
+          <label>Description</label>
+          <textarea id="pm-desc" placeholder="Optional description…"></textarea>
+        </div>
+        <div class="preset-modal__field">
+          <label>Tags (comma-separated)</label>
+          <input id="pm-tags" type="text" placeholder="bridge, race, ramp"/>
+        </div>
+        <div class="preset-modal__actions">
+          <button class="game-btn" id="pm-cancel">Cancel</button>
+          <button class="game-btn" id="pm-save">Save</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const nameInput  = overlay.querySelector<HTMLInputElement>('#pm-name')!;
+    const groupInput = overlay.querySelector<HTMLInputElement>('#pm-group')!;
+    const descInput  = overlay.querySelector<HTMLTextAreaElement>('#pm-desc')!;
+    const tagsInput  = overlay.querySelector<HTMLInputElement>('#pm-tags')!;
+    nameInput.focus();
+
+    const close = () => overlay.remove();
+    overlay.querySelector('#pm-cancel')!.addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+    overlay.querySelector('#pm-save')!.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+      const thumbnail = generateArenaThumb(config);
+      const tags = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+      saveArenaPreset({
+        id: newPresetId(),
+        name,
+        group: groupInput.value.trim() || 'Uncategorized',
+        description: descInput.value.trim(),
+        tags,
+        thumbnail,
+        config,
+        isFull,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      close();
+      this._showToast('✓ Saved to Library');
+      this.sceneTree.clearChecks();
+    });
+  }
+
+  private _showToast(msg: string, durationMs = 2500): void {
+    const t = document.createElement('div');
+    t.className = 'preset-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), durationMs);
   }
 
   /* ── Reparent / reorder ──────────────────────────────────────────────── */
@@ -3500,6 +3668,7 @@ export class ArenaSandbox extends Sandbox {
       const newId = `pit-${++this.pitSeq}`;
       const clone: PitData = { ...pit, id: newId, name: `Pit ${this.pitSeq}`,
         posAngle: pit.posAngle + 15,
+        particleConfig: { ...pit.particleConfig }, particleSystem: null,
         mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
         seamMesh: null as unknown as THREE.Mesh,
       };

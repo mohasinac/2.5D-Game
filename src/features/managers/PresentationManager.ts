@@ -97,6 +97,9 @@ export class PresentationManager {
     return this.entries.get(nodeId);
   }
 
+  /** Advance animated decal timers (no-op until opening decal animation is implemented). */
+  tick(_dt: number): void {}
+
   private _applyTransform(mesh: THREE.Mesh, cfg: PresentConfig, worldPos: THREE.Vector3): void {
     mesh.position.set(
       worldPos.x + cfg.offX,

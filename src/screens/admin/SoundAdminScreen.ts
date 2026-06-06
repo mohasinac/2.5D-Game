@@ -114,7 +114,12 @@ export class SoundAdminScreen {
       fi.addEventListener('change', () => {
         const f = fi.files?.[0]; if (!f) return;
         const reader = new FileReader();
-        reader.onload = () => { a.fileBase64 = (reader.result as string).split(',')[1] ?? ''; saveAllRPGAssets(); playerEl.style.display = 'flex'; };
+        reader.onload = () => {
+          const dataUrl = reader.result as string;
+          a.fileBase64 = dataUrl.split(',')[1] ?? '';
+          a.fileMime = f.type || 'audio/mpeg';
+          saveAllRPGAssets(); playerEl.style.display = 'flex';
+        };
         reader.readAsDataURL(f);
       }); fi.click();
     });
@@ -124,7 +129,9 @@ export class SoundAdminScreen {
   private playAudio(): void {
     if (!this.selected?.fileBase64) return;
     this.stopAudio();
-    this.audioEl = new Audio(`data:audio/ogg;base64,${this.selected.fileBase64}`);
+    // Detect MIME type from the stored base64 prefix or fall back to generic audio
+    const mime = this.selected.fileMime || 'audio/mpeg';
+    this.audioEl = new Audio(`data:${mime};base64,${this.selected.fileBase64}`);
     this.audioEl.volume = this.selected.volume;
     this.audioEl.loop   = this.selected.loop;
     void this.audioEl.play().catch(() => {});

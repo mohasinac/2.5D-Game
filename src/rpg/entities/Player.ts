@@ -38,21 +38,28 @@ export class Player {
   private setupAnimations(spriteDef: ReturnType<typeof svgAssetStore.getSprite>, scene: Phaser.Scene): void {
     if (!spriteDef) return;
     const anims = scene.anims;
-    const scale = 2; // SVG was loaded at scale 2
-    const fw = spriteDef.frameWidth * scale;
-    const fh = spriteDef.frameHeight * scale;
     const cols = spriteDef.cols;
+    const rows = spriteDef.rows || 1;
+    const totalFrames = cols * rows;
+
+    // Ensure the texture has a frame atlas entry for each grid cell
+    const texture = scene.textures.get(spriteDef.id);
+    for (let i = 0; i < totalFrames; i++) {
+      if (!texture.has(String(i))) {
+        const scale = 2; // SVG loaded at scale 2
+        const fw = spriteDef.frameWidth * scale;
+        const fh = spriteDef.frameHeight * scale;
+        texture.add(String(i), 0,
+          (i % cols) * fw, Math.floor(i / cols) * fh, fw, fh);
+      }
+    }
 
     spriteDef.animations.forEach(animDef => {
       const key = `tyson_${animDef.name.replace('-', '_')}`;
       if (anims.exists(key)) return;
       anims.create({
         key,
-        frames: animDef.frames.map(f => ({
-          frame: 0,
-          key: spriteDef.id,
-          textureFrame: { x: (f % cols) * fw, y: Math.floor(f / cols) * fh, w: fw, h: fh } as unknown as string | number,
-        })),
+        frames: animDef.frames.map(f => ({ key: spriteDef.id, frame: String(f) })),
         frameRate: animDef.fps,
         repeat: animDef.loop ? -1 : 0,
       });

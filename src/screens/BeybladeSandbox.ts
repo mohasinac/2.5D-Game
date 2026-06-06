@@ -16,11 +16,20 @@ import {
   PartData, SectorData, GroupData, ViewMode, BeyMaterial, BeybladeBuildConfig,
   defaultPresentConfig, defaultParticleConfig,
 } from '../types/beybladeTypes';
-import { PresentConfig, ParticleConfig } from '../types/sharedTypes';
+import { PresentConfig, ParticleConfig, ParticleSystem } from '../types/sharedTypes';
+import { buildParticleSystem } from '../geometry/particleBuilders';
 import { gameConfirm } from '../utils/dialog';
+import {
+  listBeyPresets, saveBeyPreset, newPresetId, generateBeyThumb, remapBeyConfigIds,
+} from '../utils/presetStore';
 
 const STORAGE_KEY = 'bey_beyblade_builder';
 const BEY_SAVE_VERSION = 2;
+
+export interface BeybladeSandboxOptions {
+  onBack: () => void;
+  onLibrary?: () => void;
+}
 
 export class BeybladeSandbox extends Sandbox {
   private store        = new BeybladeStore();
@@ -29,6 +38,7 @@ export class BeybladeSandbox extends Sandbox {
   private animator!:    BeybladeAnimator;
   private tree!:     SceneTree;
   private panel!:    BeybladePropertiesPanel;
+  private _partParticleSystems = new Map<string, ParticleSystem>();
 
   private rightPanelEl!: HTMLDivElement;
   private leftPanelEl!:  HTMLDivElement;
@@ -44,12 +54,13 @@ export class BeybladeSandbox extends Sandbox {
   private viewBtns: Record<ViewMode, HTMLButtonElement> = {} as Record<ViewMode, HTMLButtonElement>;
 
   private _subNodesAdded = new Set<string>();
+  private _beyOpts: BeybladeSandboxOptions;
 
-  constructor(container: HTMLElement, onBack: () => void) {
-    const opts: SandboxOptions = {
+  constructor(container: HTMLElement, opts: BeybladeSandboxOptions) {
+    const sandboxOpts: SandboxOptions = {
       title:      'Beyblade Builder',
       accentHex:  0x00e5ff,
-      onBack,
+      onBack:     opts.onBack,
       gridSize:   15,
       gridDivs:   15,
       tickEvery:  5,
@@ -59,7 +70,8 @@ export class BeybladeSandbox extends Sandbox {
       minZoom:    0.5,
       maxZoom:    50,
     };
-    super(container, opts);
+    super(container, sandboxOpts);
+    this._beyOpts = opts;
 
     this.undoBtn = this.addTopBarButton('↩ Undo', 'Undo (Ctrl+Z)');
     this.redoBtn = this.addTopBarButton('↪ Redo', 'Redo (Ctrl+Y)');
@@ -76,8 +88,147 @@ export class BeybladeSandbox extends Sandbox {
 
   override setVisible(v: boolean): void {
     super.setVisible(v);
-    if (v) document.addEventListener('keydown', this._onKey);
-    else   document.removeEventListener('keydown', this._onKey);
+    if (v) {
+      document.addEventListener('keydown', this._onKey);
+      this._checkPendingLoad();
+    } else {
+      document.removeEventListener('keydown', this._onKey);
+    }
+  }
+
+  private _checkPendingLoad(): void {
+    const raw = localStorage.getItem('bey_pending_bey_load');
+    if (!raw) return;
+    localStorage.removeItem('bey_pending_bey_load');
+    try {
+      const { config, mode } = JSON.parse(raw) as { config: BeybladeBuildConfig; mode: 'replace' | 'merge' };
+      const batchTag = Date.now().toString(36);
+      const remapped = remapBeyConfigIds(config, batchTag);
+      if (mode === 'replace') {
+        this.store.deserialize(remapped);
+      } else {
+        this.store.mergeDeserialize(remapped);
+      }
+      this._applyAxisPose();
+      this._rebuildTree();
+    } catch { /* malformed pending load — discard */ }
+  }
+
+  private _showBeyPresetModal(): void {
+    const checkedIds = this.tree.getCheckedIds();
+    const isFull = checkedIds.length === 0;
+
+    let config: BeybladeBuildConfig;
+    if (isFull) {
+      config = this.store.serialize();
+    } else {
+      const partIds = checkedIds.filter(id => this.store.hasPart(id));
+      const sectorIds: string[] = [];
+      for (const pid of partIds) {
+        const part = this.store.getPart(pid);
+        sectorIds.push(...part.sectorIds);
+      }
+      config = {
+        axis: { ...this.store.getAxis() },
+        parts: partIds.map(id => {
+          const p = this.store.getPart(id);
+          return { ...p, sectorIds: [...p.sectorIds] };
+        }),
+        sectors: sectorIds.map(id => ({ ...this.store.getSector(id) })),
+        groups: [],
+        rootChildIds: partIds,
+        partSeq: this.store.serialize().partSeq,
+        sectorSeq: this.store.serialize().sectorSeq,
+        groupSeq: this.store.serialize().groupSeq,
+      };
+    }
+
+    const existingGroups = [...new Set(listBeyPresets().map(p => p.group).filter(Boolean))];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'preset-modal';
+    overlay.innerHTML = `
+      <div class="preset-modal__box">
+        <div class="preset-modal__title">💾 Save Bey Preset</div>
+        <div class="preset-modal__subtitle">${isFull ? 'Saving full build' : `Saving ${checkedIds.length} selected part(s)`}</div>
+        <div class="preset-modal__field">
+          <label>Name *</label>
+          <input id="bpm-name" type="text" placeholder="e.g. Attack Layer" autocomplete="off"/>
+        </div>
+        <div class="preset-modal__field">
+          <label>Group</label>
+          <input id="bpm-group" type="text" placeholder="e.g. Attack Parts" list="bpm-groups-list" autocomplete="off"/>
+          <datalist id="bpm-groups-list">${existingGroups.map(g=>`<option value="${g}">`).join('')}</datalist>
+        </div>
+        <div class="preset-modal__field">
+          <label>Part Type</label>
+          <select id="bpm-type">
+            <option value="full_build">Full Build</option>
+            <option value="layer">Layer</option>
+            <option value="disc">Disc</option>
+            <option value="driver">Driver</option>
+            <option value="frame">Frame</option>
+            <option value="chip">Chip</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="preset-modal__field">
+          <label>Description</label>
+          <textarea id="bpm-desc" placeholder="Optional description…"></textarea>
+        </div>
+        <div class="preset-modal__field">
+          <label>Tags (comma-separated)</label>
+          <input id="bpm-tags" type="text" placeholder="attack, stamina"/>
+        </div>
+        <div class="preset-modal__actions">
+          <button class="game-btn" id="bpm-cancel">Cancel</button>
+          <button class="game-btn" id="bpm-save">Save</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const nameInput  = overlay.querySelector<HTMLInputElement>('#bpm-name')!;
+    const groupInput = overlay.querySelector<HTMLInputElement>('#bpm-group')!;
+    const typeSelect = overlay.querySelector<HTMLSelectElement>('#bpm-type')!;
+    const descInput  = overlay.querySelector<HTMLTextAreaElement>('#bpm-desc')!;
+    const tagsInput  = overlay.querySelector<HTMLInputElement>('#bpm-tags')!;
+    if (isFull) typeSelect.value = 'full_build';
+    nameInput.focus();
+
+    const close = () => overlay.remove();
+    overlay.querySelector('#bpm-cancel')!.addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+    overlay.querySelector('#bpm-save')!.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+      const thumbnail = generateBeyThumb(config);
+      const tags = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+      saveBeyPreset({
+        id: newPresetId(),
+        name,
+        group: groupInput.value.trim() || 'Uncategorized',
+        description: descInput.value.trim(),
+        partType: typeSelect.value as import('../types/presetTypes').BeyPartType,
+        tags,
+        thumbnail,
+        config,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      close();
+      this._showToast('✓ Saved to Library');
+      this.tree.clearChecks();
+    });
+  }
+
+  private _showToast(msg: string, durationMs = 2500): void {
+    const t = document.createElement('div');
+    t.className = 'preset-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), durationMs);
   }
 
   // ── Scene setup ───────────────────────────────────────────────────────────
@@ -150,6 +301,10 @@ export class BeybladeSandbox extends Sandbox {
 
   protected override onTick(dtMs: number): void {
     this.animator.tick(dtMs, this.store.getAxis().spinDir);
+    const dt = dtMs / 1000;
+    for (const ps of this._partParticleSystems.values()) {
+      ps.tick(dt);
+    }
   }
 
   // ── Bottom controls bar ───────────────────────────────────────────────────
@@ -192,6 +347,9 @@ export class BeybladeSandbox extends Sandbox {
           <button class="game-btn bey-view-btn active" id="bey-view-hitbox"  title="Hitbox only">HITBOX</button>
           <button class="game-btn bey-view-btn" id="bey-view-both"    title="Hitbox + presentation">BOTH</button>
           <button class="game-btn bey-view-btn" id="bey-view-present" title="Presentation only">PRESENT</button>
+          <span class="bey-bar-sep"></span>
+          <button class="game-btn bey-lib-btn" id="bey-save-preset" title="Save checked parts as preset">💾 Preset</button>
+          <button class="game-btn bey-lib-btn" id="bey-library" title="Beyblade preset library">📚 Library</button>
         </div>
       </div>
     `;
@@ -245,6 +403,9 @@ export class BeybladeSandbox extends Sandbox {
     (Object.entries(this.viewBtns) as [ViewMode, HTMLButtonElement][]).forEach(([mode, btn]) => {
       btn.addEventListener('click', () => this._setViewMode(mode));
     });
+
+    bar.querySelector('#bey-save-preset')!.addEventListener('click', () => this._showBeyPresetModal());
+    bar.querySelector('#bey-library')!.addEventListener('click', () => this._beyOpts.onLibrary?.());
   }
 
   private _applyAxisPose(): void {
@@ -369,9 +530,21 @@ export class BeybladeSandbox extends Sandbox {
       cfg,
       () => {
         this.store.updatePart(partId, { particleConfig: { ...cfg } });
+        this._rebuildPartParticles(partId, cfg);
         this._saveToStorage();
       },
     );
+  }
+
+  private _rebuildPartParticles(partId: string, cfg: ParticleConfig): void {
+    const scene = this.getScene();
+    const old = this._partParticleSystems.get(partId);
+    if (old) { scene?.remove(old.points); old.dispose(); this._partParticleSystems.delete(partId); }
+    if (cfg.preset === 'none' || !scene) return;
+    const part = this.store.getPart(partId);
+    const ps = buildParticleSystem(cfg, 0, 0, Math.max(part.topRadiusX, part.topRadiusZ, part.bottomRadiusX, part.bottomRadiusZ), part.axisOffsetY + part.height, part.height);
+    scene.add(ps.points);
+    this._partParticleSystems.set(partId, ps);
   }
 
   private _selectSector(sectorId: string, partId: string): void {
@@ -681,6 +854,14 @@ export class BeybladeSandbox extends Sandbox {
     this.animator.resetAngle();
     this.playBtn.classList.remove('active');
     this.stopBtn.classList.remove('active');
+
+    // Dispose all part particle systems
+    const scene = this.getScene();
+    for (const [, ps] of this._partParticleSystems) {
+      scene?.remove(ps.points);
+      ps.dispose();
+    }
+    this._partParticleSystems.clear();
 
     // Dispose all part meshes
     for (const part of this.store.getAllParts()) {

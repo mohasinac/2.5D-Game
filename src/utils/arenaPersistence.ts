@@ -1,6 +1,6 @@
 import {
   OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill,
-  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset, WeatherPreset,
+  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset, ParticleConfig, WeatherPreset,
   SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
   SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
   SpeedLinePresetType, SpeedLinePresetParams, SpeedLineRamp,
@@ -60,6 +60,7 @@ export interface PitSave {
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   rimGlowColor: number; rimGlowIntensity: number;
   posR: number; posAngle: number; rotY: number;
+  particleConfig?: ParticleConfig;
 }
 
 export interface ZoneSave {
@@ -312,6 +313,7 @@ export function pitToSave(p: PitData): PitSave {
     color:p.color,surface:p.surface,customTileData:p.customTileData,tileScale:p.tileScale,
     rimGlowColor:p.rimGlowColor,rimGlowIntensity:p.rimGlowIntensity,
     posR:p.posR,posAngle:p.posAngle,rotY:p.rotY,
+    particleConfig:{...p.particleConfig},
   };
 }
 

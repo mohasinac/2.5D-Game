@@ -89,9 +89,18 @@ export class WorldScene extends Phaser.Scene {
 
     this.eventSystem = new EventSystem(this);
     for (const ev of mapData.events) {
-      const zone = new EventZone(this, ev, TILE_SIZE);
-      this.eventSystem.register(zone.zone, ev.triggerId);
-      this.eventZones.push(zone);
+      const trigger = svgAssetStore.getTrigger(ev.triggerId);
+      // Build chest objects directly from chest-type triggers
+      if (trigger?.type === 'chest' && trigger.targetId) {
+        const chest = new ChestObject(
+          this, ev.id, ev.tileX, ev.tileY, TILE_SIZE, trigger.targetId,
+        );
+        this.chests.push(chest);
+      } else {
+        const zone = new EventZone(this, ev, TILE_SIZE);
+        this.eventSystem.register(zone.zone, ev.triggerId);
+        this.eventZones.push(zone);
+      }
     }
 
     this.physics.add.collider(this.player.sprite, this.npcManager.getSprites());
@@ -106,9 +115,15 @@ export class WorldScene extends Phaser.Scene {
     const tileset = svgAssetStore.getTileset(mapData.tilesetId);
     if (!tileset) return;
 
+    // SVG was loaded at scale=2 by SVGAssetLoader, so actual texture dimensions are doubled
+    const SVG_SCALE = 2;
     const tileW = tileset.tileWidth;
     const tileH = tileset.tileHeight;
-    const tsScale = TILE_SIZE / tileW;
+    // Columns derived from the tileset's SVG grid
+    const sheetCols = Math.max(1, Math.floor(512 / tileW)); // estimate; 512px assumed SVG width
+    // Crop coordinates must match the scaled texture
+    const cropW = tileW * SVG_SCALE;
+    const cropH = tileH * SVG_SCALE;
 
     for (const layer of mapData.layers) {
       if (!layer.visible) continue;
@@ -123,13 +138,13 @@ export class WorldScene extends Phaser.Scene {
           const x = col * TILE_SIZE;
           const y = row * TILE_SIZE;
           const fi = tileData.frameIndex;
-          const cols = Math.floor(tileset.svgBase64.length > 0 ? 8 : 8);
-          const fx = (fi % cols) * tileW;
-          const fy = Math.floor(fi / cols) * tileH;
+          const fx = (fi % sheetCols) * cropW;
+          const fy = Math.floor(fi / sheetCols) * cropH;
 
           const img = this.add.image(x + TILE_SIZE / 2, y + TILE_SIZE / 2, tileset.id);
-          img.setScale(tsScale);
-          img.setCrop(fx, fy, tileW, tileH);
+          // Scale down from the 2x SVG to the desired TILE_SIZE
+          img.setScale(TILE_SIZE / cropW);
+          img.setCrop(fx, fy, cropW, cropH);
           this.tileImages.set(`${layer.id}:${col}:${row}`, img);
 
           const key = `${col}:${row}`;

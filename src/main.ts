@@ -1,38 +1,49 @@
 import './styles/global.css';
-import { LandingScreen }   from './screens/LandingScreen';
-import { BeybladeSandbox } from './screens/BeybladeSandbox';
-import { ArenaSandbox }    from './screens/ArenaSandbox';
-import { RPGScreen }       from './screens/RPGScreen';
-import { AdminHubScreen }  from './screens/admin/AdminHubScreen';
-import { gameConfirm }     from './utils/dialog';
+import { LandingScreen }      from './screens/LandingScreen';
+import { BeybladeSandbox }    from './screens/BeybladeSandbox';
+import { ArenaSandbox }       from './screens/ArenaSandbox';
+import { RPGScreen }          from './screens/RPGScreen';
+import { AdminHubScreen }     from './screens/admin/AdminHubScreen';
+import { ArenaLibraryScreen } from './screens/ArenaLibraryScreen';
+import { BeyLibraryScreen }   from './screens/BeyLibraryScreen';
+import { gameConfirm }        from './utils/dialog';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
-type ScreenId = 'landing' | 'beyblade' | 'arena' | 'rpg' | 'admin';
+type ScreenId = 'landing' | 'beyblade' | 'arena' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor';
 
 class App {
   private current: ScreenId = 'landing';
-  private landing:  LandingScreen;
-  private beyblade: BeybladeSandbox;
-  private arena:    ArenaSandbox;
-  private rpg:      RPGScreen;
-  private admin:    AdminHubScreen;
+  private landing:       LandingScreen;
+  private beyblade:      BeybladeSandbox;
+  private arena:         ArenaSandbox;
+  private presetEditor:  ArenaSandbox;
+  private rpg:           RPGScreen;
+  private admin:         AdminHubScreen;
+  private arenaLibrary:  ArenaLibraryScreen;
+  private beyLibrary:    BeyLibraryScreen;
 
   constructor() {
     const root = document.getElementById('app')!;
 
     this.landing = new LandingScreen(root, {
-      onBeyblade: () => this.go('beyblade'),
-      onArena:    () => this.go('arena'),
-      onRpg:      () => this.go('rpg'),
-      onAdmin:    () => this.go('admin'),
+      onBeyblade:     () => this.go('beyblade'),
+      onArena:        () => this.go('arena'),
+      onRpg:          () => this.go('rpg'),
+      onAdmin:        () => this.go('admin'),
+      onArenaLibrary: () => this.go('arena-library'),
+      onBeyLibrary:   () => this.go('bey-library'),
     });
 
-    this.beyblade = new BeybladeSandbox(root, () => { void this.confirmLeave(); });
+    this.beyblade = new BeybladeSandbox(root, {
+      onBack:     () => { void this.confirmLeave(); },
+      onLibrary:  () => this.go('bey-library'),
+    });
 
     this.arena = new ArenaSandbox(root, {
       title:      'Arena Sandbox',
       accentHex:  0xff6b35,
       onBack:     () => { void this.confirmLeave(); },
+      onLibrary:  () => this.go('arena-library'),
       gridSize:   200,
       gridDivs:   20,
       tickEvery:  20,
@@ -44,6 +55,23 @@ class App {
       axisYOffset: 0,
     });
 
+    this.presetEditor = new ArenaSandbox(root, {
+      title:           'Preset Editor',
+      accentHex:       0xff6b35,
+      onBack:          () => this.go('arena-library'),
+      onLibrary:       () => this.go('arena-library'),
+      presetEditorMode: true,
+      gridSize:        200,
+      gridDivs:        20,
+      tickEvery:       20,
+      tickRange:       100,
+      defaultCam:      { x: 150, y: 100, z: 175 },
+      camFar:          2000,
+      minZoom:         5,
+      maxZoom:         1500,
+      axisYOffset:     0,
+    });
+
     this.rpg = new RPGScreen(root, {
       onBack:   () => { void this.confirmLeave(); },
       onBattle: (_npcId: string) => {
@@ -53,6 +81,17 @@ class App {
 
     this.admin = new AdminHubScreen(root, {
       onBack: () => this.go('landing'),
+    });
+
+    this.arenaLibrary = new ArenaLibraryScreen(root, {
+      onBack:       () => this.go('landing'),
+      onLoadArena:  () => this.go('arena'),
+      onEditPreset: () => this.go('preset-editor'),
+    });
+
+    this.beyLibrary = new BeyLibraryScreen(root, {
+      onBack:      () => this.go('landing'),
+      onLoadBuild: () => this.go('beyblade'),
     });
 
     this.mountGlobalControls(root);
@@ -86,16 +125,22 @@ class App {
     this.landing.setVisible(id === 'landing');
     this.beyblade.setVisible(id === 'beyblade');
     this.arena.setVisible(id === 'arena');
+    this.presetEditor.setVisible(id === 'preset-editor');
     this.rpg.setVisible(id === 'rpg');
     this.admin.setVisible(id === 'admin');
+    this.arenaLibrary.setVisible(id === 'arena-library');
+    this.beyLibrary.setVisible(id === 'bey-library');
   }
 
   private pathToScreen(): ScreenId {
     const p = location.pathname;
-    if (p === '/beyblade') return 'beyblade';
-    if (p === '/arena')    return 'arena';
-    if (p === '/rpg')      return 'rpg';
-    if (p === '/admin')    return 'admin';
+    if (p === '/beyblade')      return 'beyblade';
+    if (p === '/arena')         return 'arena';
+    if (p === '/preset-editor') return 'preset-editor';
+    if (p === '/rpg')           return 'rpg';
+    if (p === '/admin')         return 'admin';
+    if (p === '/arena-library') return 'arena-library';
+    if (p === '/bey-library')   return 'bey-library';
     return 'landing';
   }
 

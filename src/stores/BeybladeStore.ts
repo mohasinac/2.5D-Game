@@ -118,6 +118,23 @@ export class BeybladeStore {
     this._groupSeq = cfg.groupSeq;
   }
 
+  mergeDeserialize(cfg: BeybladeBuildConfig): void {
+    for (const p of cfg.parts) {
+      const part: PartData = { ...p, sectorIds: [...p.sectorIds] };
+      if (!part.present) part.present = defaultPresentConfig();
+      if (!part.particleConfig) part.particleConfig = defaultParticleConfig();
+      this.parts.set(p.id, part);
+    }
+    for (const s of cfg.sectors) this.sectors.set(s.id, { ...s });
+    for (const g of cfg.groups) this.groups.set(g.id, { ...g, childIds: [...g.childIds] });
+    for (const id of cfg.rootChildIds) {
+      if (!this.rootChildIds.includes(id)) this.rootChildIds.push(id);
+    }
+    this._partSeq   = Math.max(this._partSeq,   cfg.partSeq);
+    this._sectorSeq = Math.max(this._sectorSeq, cfg.sectorSeq);
+    this._groupSeq  = Math.max(this._groupSeq,  cfg.groupSeq);
+  }
+
   reset(): void {
     this.axis = { ...DEFAULT_AXIS };
     this.parts.clear();

@@ -14,7 +14,7 @@ export class DialogueScene extends Phaser.Scene {
   private box!: Phaser.GameObjects.Rectangle;
   private nameText!: Phaser.GameObjects.Text;
   private bodyText!: Phaser.GameObjects.Text;
-  private portrait!: Phaser.GameObjects.Image | null;
+  private portrait: Phaser.GameObjects.Image | null = null;
   private choiceBtns: Phaser.GameObjects.Text[] = [];
   private advanceKey!: Phaser.Input.Keyboard.Key;
   private currentLine: DialogueLine | null = null;
@@ -25,7 +25,8 @@ export class DialogueScene extends Phaser.Scene {
 
   constructor() { super({ key: 'DialogueScene' }); }
 
-  create(data: DialogueSceneData): void {
+  create(data?: DialogueSceneData): void {
+    if (!data?.treeId) { this.scene.stop(); return; }
     const { width, height } = this.scale;
     const boxH = 140;
     const boxY = height - boxH - 12;

@@ -28,6 +28,6 @@ export class PreloadScene extends Phaser.Scene {
   create(): void {
     this.scene.start('WorldScene');
     this.scene.launch('UIScene');
-    this.scene.launch('DialogueScene');
+    // DialogueScene is launched on-demand by WorldScene when triggered — never unconditionally
   }
 }

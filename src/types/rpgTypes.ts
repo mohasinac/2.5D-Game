@@ -240,6 +240,7 @@ export interface AudioAssetData {
   name:          string;
   category:      AudioCategory;
   fileBase64:    string;
+  fileMime?:     string;
   volume:        number;
   loop:          boolean;
   spatial:       boolean;

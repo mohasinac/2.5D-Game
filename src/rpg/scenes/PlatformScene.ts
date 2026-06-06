@@ -24,6 +24,7 @@ export class PlatformScene extends Phaser.Scene {
   private timerEvent!: Phaser.Time.TimerEvent;
   private ended = false;
   private spikes: Phaser.GameObjects.Rectangle[] = [];
+  private springTiles: Phaser.GameObjects.Rectangle[] = [];
   private crumbleTiles = new Map<string, { rect: Phaser.GameObjects.Rectangle; triggered: boolean }>();
 
   constructor() { super({ key: 'PlatformScene' }); }
@@ -148,7 +149,8 @@ export class PlatformScene extends Phaser.Scene {
         rect.name = `${t.col}:${t.row}`;
         this.platforms.add(rect);
 
-        if (t.type === 'spike') this.spikes.push(rect);
+        if (t.type === 'spike')   this.spikes.push(rect);
+        if (t.type === 'spring')  this.springTiles.push(rect);
         if (t.type === 'crumble') {
           this.crumbleTiles.set(rect.name, { rect, triggered: false });
         }
@@ -196,13 +198,21 @@ export class PlatformScene extends Phaser.Scene {
       body.setVelocityY(PLATFORM_JUMP_VELOCITY);
     }
 
-    // Spring tiles
     if (onGround) {
+      // Spike death check
       for (const spike of this.spikes) {
         if (Phaser.Geom.Intersects.RectangleToRectangle(
           this.runner.getBounds(), spike.getBounds())) {
           this.endGame(false);
           return;
+        }
+      }
+      // Spring bounce — apply upward impulse when runner touches a spring tile
+      for (const springRect of this.springTiles) {
+        if (Phaser.Geom.Intersects.RectangleToRectangle(
+          this.runner.getBounds(), springRect.getBounds())) {
+          body.setVelocityY(PLATFORM_SPRING_VELOCITY);
+          break;
         }
       }
     }
@@ -211,12 +221,6 @@ export class PlatformScene extends Phaser.Scene {
     if (Phaser.Geom.Intersects.RectangleToRectangle(
       this.runner.getBounds(), this.exitZone.getBounds())) {
       this.endGame(true);
-      return;
-    }
-
-    // Spring bounce
-    for (const [, { rect }] of this.crumbleTiles) {
-      if (!rect.active) continue;
     }
   }
 

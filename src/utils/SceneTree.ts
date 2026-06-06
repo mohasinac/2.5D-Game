@@ -21,6 +21,8 @@ export class SceneTree {
   private idSeq   = 0;
   private nodeActions = new Map<string, CtxItem[]>();
 
+  private checked = new Set<string>();
+
   onDelete:           (ids: string[]) => void = () => {};
   onDuplicate:        (id: string) => void = () => {};
   onGroup:            (newGroupId: string, childIds: string[]) => void = () => {};
@@ -28,6 +30,7 @@ export class SceneTree {
   onReparent:         (nodeId: string, newParentId: string | null, beforeId: string | null) => void = () => {};
   onSelect:           (ids: string[]) => void = () => {};
   onVisibilityToggle: (id: string, visible: boolean) => void = () => {};
+  onCheck:            (ids: string[]) => void = () => {};
 
   get header(): HTMLElement { return this.headerEl; }
 
@@ -60,10 +63,16 @@ export class SceneTree {
     const rowEl = document.createElement('div');
     rowEl.className = 'tree-node-row'; rowEl.draggable = true;
     rowEl.style.setProperty('--depth', String(this.depthOf(parentId)));
+    const chkEl  = document.createElement('input'); chkEl.type = 'checkbox'; chkEl.className = 'tree-chk';
+    chkEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (chkEl.checked) this.checked.add(id); else this.checked.delete(id);
+      this.onCheck(this.getCheckedIds());
+    });
     const caret  = document.createElement('span'); caret.className = 'tree-caret';
     const iconEl = document.createElement('span'); iconEl.className = 'tree-node-icon'; iconEl.textContent = icon;
     const labelEl = document.createElement('span'); labelEl.className = 'tree-node-label'; labelEl.textContent = label;
-    rowEl.appendChild(caret); rowEl.appendChild(iconEl); rowEl.appendChild(labelEl);
+    rowEl.appendChild(chkEl); rowEl.appendChild(caret); rowEl.appendChild(iconEl); rowEl.appendChild(labelEl);
     const buttons: AddChildBtn[] = [];
     if (opts?.onAddChild) buttons.push({ label: '+', title: 'Add child', onClick: opts.onAddChild });
     if (opts?.addChildButtons) buttons.push(...opts.addChildButtons);
@@ -96,7 +105,7 @@ export class SceneTree {
     const node = this.nodes.get(id); if (!node) return;
     [...node.childIds].forEach(cid => this.remove(cid));
     if (node.parentId) { const p = this.nodes.get(node.parentId); if (p) { p.childIds = p.childIds.filter(c=>c!==id); this.refreshCaret(p); } }
-    node.nodeEl.remove(); this.nodes.delete(id); this.sel.delete(id); this.nodeActions.delete(id);
+    node.nodeEl.remove(); this.nodes.delete(id); this.sel.delete(id); this.checked.delete(id); this.nodeActions.delete(id);
   }
 
   setLabel(id: string, label: string): void {
@@ -178,7 +187,7 @@ export class SceneTree {
     rowEl.addEventListener('click', (e) => {
       const t=e.target as HTMLElement;
       if(t.classList.contains('tree-caret')) this.toggleExpand(id);
-      else if(!t.classList.contains('tree-vis-btn')&&!t.classList.contains('tree-add-btn'))
+      else if(!t.classList.contains('tree-vis-btn')&&!t.classList.contains('tree-add-btn')&&!t.classList.contains('tree-chk'))
         this.select(id, e.ctrlKey||e.metaKey);
     });
     let visible = true;
@@ -260,6 +269,16 @@ export class SceneTree {
     this.addMenu.style.top  = `${top}px`;
   }
   private hideAddMenu(): void { this.addMenu.classList.add('hidden'); }
+
+  getCheckedIds(): string[] { return [...this.checked]; }
+  clearChecks(): void {
+    this.checked.clear();
+    for (const node of this.nodes.values()) {
+      const chk = node.rowEl.querySelector<HTMLInputElement>('.tree-chk');
+      if (chk) chk.checked = false;
+    }
+    this.onCheck([]);
+  }
 
   dispose(): void { this.ctxMenu.remove(); this.addMenu.remove(); }
 }

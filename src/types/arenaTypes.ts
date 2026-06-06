@@ -4,7 +4,7 @@ export type {
   WeatherPreset, WeatherSystem,
 } from './sharedTypes';
 export { defaultPresentConfig, defaultParticleConfig } from './sharedTypes';
-import type { ParticlePreset, ParticleSystem, WeatherPreset, WeatherSystem } from './sharedTypes';
+import type { ParticlePreset, ParticleConfig, ParticleSystem, WeatherPreset, WeatherSystem } from './sharedTypes';
 
 /* ── Opening shape / wall profile types ─────────────────────────────────── */
 export type OpeningShape = 'circle' | 'ellipse' | 'rectangle' | 'hexagon' | 'triangle' | 'star';
@@ -164,8 +164,10 @@ export interface PitData {
   rimGlowColor: number;
   rimGlowIntensity: number;
   posR: number; posAngle: number; rotY: number;
+  particleConfig: ParticleConfig;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   seamMesh: THREE.Mesh;
+  particleSystem: ParticleSystem | null;
 }
 
 export interface ZoneData {
