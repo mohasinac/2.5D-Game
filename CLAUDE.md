@@ -29,6 +29,17 @@ Known confirmed features added (2026-06-08 — speed line preset system):
 - **New target types**: `nearest_opponent`, `nearest_obstacle`, `on_path_obstacle` + `targetSelectionMode`.
 - **Width up to 30 cm**: `SL.WIDTH_MAX_OVERRIDE = 30.0` (was 5 cm).
 
+Known confirmed features added (2026-06-09 — expanded wall system + depth constraints):
+- **Wall thickness**: `WallData.thickness` (cm, min 0.1, default 2). Geometry builder generates outer face + inner face (reversed winding) + top face + end-cap faces. `buildWallGeometry` and `buildWallEdgeGeometry` both accept `joinStart/joinEnd` booleans to suppress end-cap faces where adjacent walls share an arc boundary.
+- **Wall destructibility**: `WallData.isDestructible: boolean` + `WallData.hitPoints: number`. PropertiesPanel shows PHYSICS section with toggle + conditional HP slider.
+- **Wall auto-join**: `WallData.autoJoin: boolean` (default true). In `applyWall`, sibling walls on the same arena whose `arcEnd` aligns with this wall's `arcStart` (within 1°) suppress the shared end-cap — seamless closed ring when all arc sections are covered. Sibling walls are rebuilt after every `applyWall` call via a `_rebuildingSiblings: Set<string>` guard to prevent infinite recursion.
+- **Walls on trap surfaces**: `parentType: 'trap'`. `trapRimPoints(trap)` returns trap-LOCAL XZ perimeter (centered 0,0); translated to world space in `applyWall` before passing to geometry builders. `trapWorldCenter(trap, arenas)` returns world XZ of the trap center. Add button `🧱+` on trap tree nodes. Trap deletion cascades to child trap walls. Trap walls are serialised inside `TrapSave.walls: WallSave[]`.
+- **Moat inner rim walls**: `WallData.moatRing: 'outer' | 'inner'` (default `'outer'`). When parent arena is a moat and `moatRing === 'inner'`, `applyWall` uses inner radius/shape + `posY + innerRimOffset` as the rim Y. PropertiesPanel shows a Ring selector only for moat parent arenas (parentArena must be passed as 7th arg to `showWall`).
+- **Wall auto-rotation**: `WallData.rotateOnArena: boolean` + `arenaRotateMode: 'continuous' | 'step' | 'oscillate'`. A `THREE.Group` pivot (`_rotatePivot`) is created at the arena centre; wall mesh/edges are reparented into it. `onTick` advances the pivot's `rotation.y` each frame. Runtime fields `_rotatePivot` and `_arenaRotateTimer` are NOT serialised.
+- **Pit depth fixed at 10 cm**: `PIT_FIXED_DEPTH = 10` constant in `arenaConstants.ts`. `defaultPit()` uses it; `addPit` enforces it; PropertiesPanel shows a read-only "10 cm (fixed)" label (no slider).
+- **Zone depth min 1 mm**: `MIN_ZONE_DEPTH = 0.1` cm constant. Zone depth slider min is `MIN_ZONE_DEPTH` (was 1).
+- **New save fields** (all required — no backward-compat): `WallSave` adds `thickness`, `isDestructible`, `hitPoints`, `autoJoin`, `moatRing`, `rotateOnArena`, `arenaRotateMode`, `arenaRotateSpeed`, `arenaRotateStepDeg`, `arenaRotateStepInterval`, `arenaRotateOscAmp`, `arenaRotateOscFreq`. `TrapSave` adds `walls: WallSave[]`. `ArenaConfig` adds `baseWalls: WallSave[]`. The demo arena config (`demoArenaConfig.ts`) has been updated with all new fields.
+
 Known confirmed bugs fixed (2026-06-07 — bridge track + arena bowl session):
 - **Bridge segment connection gaps**: `_segmentStartPose` called `computeSegmentEndPose(prev, pose)` without `bridge.section`; loop segments need section width for helix lateral offset. Fixed: `computeSegmentEndPose(prev, pose, bridge.section)`.
 - **Bridge delete not updating 3D render**: Segment meshes are children of `bridge.group`, not scene root — `scene.remove(seg.mesh)` was a no-op. Fixed: use `bridge.group.remove(seg.mesh/edges)` in both `removeSegment` and `_disposeBridge`.
@@ -277,15 +288,21 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - Supports moat (`isMoat`) and nested children (`pitIds[]`, `zoneIds[]`)
 
 #### WallData
-- Rim-mounted barrier extruded from a parent attachment surface (arena rim, bridge deck, or octagon base)
-- `parentType`: `'arena'` | `'bridge'` | `'base'`
-  - `'arena'`: attaches to the arena rim at `rimY = baseConfig.height + arena.posY`; arc controlled by `fullPerimeter` / `arcStart` / `arcEnd`
+- Rim-mounted barrier extruded from a parent attachment surface (arena rim, trap top-surface, bridge deck, or octagon base)
+- `parentType`: `'arena'` | `'bridge'` | `'base'` | `'trap'`
+  - `'arena'`: attaches to the arena rim at `rimY = arena.posY`; arc controlled by `fullPerimeter` / `arcStart` / `arcEnd`
   - `'base'`: free-standing on the octagon base; position/rotation set via `basePosX`, `basePosZ`, `baseRotY`, `baseLength`
   - `'bridge'`: attaches to a bridge deck edge (rebuilt alongside bridge segments)
-- **Tilt convention**: 0° = vertical (perpendicular to rim). Negative = inward (top sweeps toward arena centre; at −90° the wall is horizontal — a full lid/overhang). Positive = outward (top swings away, like a door hinge opening outward). Range: [−90°, +30°]. Base edge is always fixed at the rim.
-- **Full-perimeter tilt rule**: if `fullPerimeter=true AND !hasGaps`, tilt is forced to 0° — a closed ring has no free edge to hinge from. Enabling partial arc OR gaps allows tilt.
+  - `'trap'`: attaches to the top surface of a trap plate at `rimY = trapSurfY + TRAP_PLATE_HEIGHT`; rim shape is `trapRimPoints(trap)` translated to world space
+- **Tilt convention**: 0° = vertical (perpendicular to rim). Negative = inward (top sweeps toward parent centre). Positive = outward. Range: [−90°, +30°].
+- **Full-perimeter tilt rule**: if `fullPerimeter=true AND !hasGaps`, tilt is forced to 0° — a closed ring has no free edge. Enabling partial arc OR gaps allows tilt.
 - **Gap pattern**: `hasGaps=true` splits the arc into alternating solid panels and open gaps. Both `gapWidth` and `panelWidth` minimum = `MIN_WALL_GAP` (10 cm). Pattern is arc-length based, starting with a panel at `arcStart`.
 - **Minimum height**: `MIN_WALL_HEIGHT` = 10 cm. Enforced in geometry builder and UI.
+- **Thickness**: `thickness: number` (cm, min 0.1, default 2). Wall cross-section is solid: outer face + inner face (reversed normals) + top face + optional end-cap faces. The inner surface is offset inward by `thickness` from the outer rim.
+- **Auto-join**: `autoJoin: boolean` (default true). When two adjacent arena walls share an arc boundary (within 1°), the shared end-cap faces are suppressed, creating a seamless join. Both walls must have `autoJoin=true` for the join to be seamless on both sides.
+- **Destructibility**: `isDestructible: boolean` (default false) + `hitPoints: number` (default 100). Editor flags for future simulation; do not affect geometry.
+- **Moat ring**: `moatRing: 'outer' | 'inner'` (default `'outer'`). Only meaningful when `parentType='arena'` and `arena.isMoat=true`. `'inner'` attaches to the elevated inner island rim at `posY + innerRimOffset`.
+- **Auto-rotation**: `rotateOnArena: boolean` + `arenaRotateMode: 'continuous' | 'step' | 'oscillate'` + speed/step/oscillate params. Creates a `THREE.Group` pivot at the arena centre (`_rotatePivot`); wall mesh/edges are reparented into it. `onTick` rotates the pivot each frame. `_rotatePivot` and `_arenaRotateTimer` are runtime-only and NOT saved.
 - `topProfile`: `'flat'` | `'triangles'` | `'waves'` | `'serrated'` | `'crenellated'` — shape modulation applied to the top edge
 - `isDouble`: /\ cross-section — two halves meeting at `peakHeight`, each leaning outward by `peakTilt`
 - `holes[]`: punched openings (circle, rectangle, hexagon, triangle, star) at UV positions along the wall face
@@ -827,6 +844,13 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **`buildSteppedBowl` boundary blending**: Step segments adjacent to non-step segments blend their boundary-side vertex Y values toward `parabY(t)` via `bY(rawY, t, isA0side)`. Do not remove this — without it there is a hard visual seam at every step/smooth arc boundary. The blend only affects the single-segment-wide boundary, not the interior of either zone.
 - **Bridge segment meshes are in `bridge.group`, not scene root**: `scene.remove(seg.mesh)` is a no-op for segment meshes. Always call `bridge.group.remove(seg.mesh)` and `bridge.group.remove(seg.edges)`. Applies in `removeSegment`, `_disposeBridge`, and any other disposal path.
 - **Bridge `computeSegmentEndPose` needs `section`**: For loop-type segments (`return_loop`, `exit_loop`, `loop`, `corkscrew`) the lateral offset in the end pose depends on `section.width` (track width). Always pass `bridge.section` as the third argument: `computeSegmentEndPose(seg, pose, bridge.section)`. Omitting it causes segment chains to gap at loop junctions.
+- **Trap wall rim points must be world-space**: `trapRimPoints(trap)` returns trap-LOCAL XZ coordinates (centered at 0,0). Before passing to `buildWallGeometry`/`buildWallEdgeGeometry`, translate to world space: `rimPts = trapRimPoints(trap).map(p => new THREE.Vector2(p.x + c.x, p.y + c.z))`. Then pass `cx = c.x, cz = c.z` (world center). Passing local points with a world-space center causes the inward-direction calculation to be wildly wrong.
+- **Arena wall rim points are local; inward direction uses local-space center**: `shapePoints(arena)` returns arena-LOCAL XZ (centered 0,0). The geometry builder's `inwardDir` computes `(centreX - p.x, centreZ - p.y)`. For arenas at posX=posZ=0 this equals `(0 - localPt.x, 0 - localPt.y)` — correct. For off-centre arenas the inwardDir would be skewed, but in practice arenas are always at origin. Do NOT move arenas to non-zero posX/posZ without also translating rimPts to world space.
+- **Pit depth is fixed — never add a depth slider**: `PIT_FIXED_DEPTH = 10` cm. Use `readRow('Depth', '10 cm (fixed)')` (no callback) to display it. Using `textRow` creates an editable input; using `numRow` creates a slider — both are wrong for a fixed read-only value.
+- **Wall auto-join sibling rebuild guard**: `applyWall(wall, _rebuildingSiblings)` — when rebuilding sibling walls after an `autoJoin` change, pass the `sibs: Set<string>` as the second argument. The guard check is `if(!_rebuildingSiblings && wall.autoJoin && ...)`. Without it, sibling-A rebuilds → sibling-B → sibling-A → infinite recursion.
+- **`showWall` parentArena must be passed for moat ring selector**: The 7th optional argument to `PropertiesPanel.showWall` is `parentArena?: ArenaData`. Without it, the moat ring selector (`Outer rim` / `Inner rim`) never renders for moat arenas. In `ArenaSandbox` the caller resolves: `const parentArena = wall.parentType==='arena' ? this.arenas.get(wall.parentId) : undefined`.
+- **Wall `_rotatePivot` and `_arenaRotateTimer` are runtime-only — never serialize**: These fields exist on `WallData` but must be stripped from `WallSave`. `wallToSave()` must not include them. They are re-created by `applyWall` when `rotateOnArena` is true.
+- **Trap wall child cleanup on trap delete**: `_disposeTrap` must iterate `this.walls` and dispose + remove any wall where `wall.parentType==='trap' && wall.parentId===trap.id` before removing the trap itself. Skipping this leaks GPU geometry.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.

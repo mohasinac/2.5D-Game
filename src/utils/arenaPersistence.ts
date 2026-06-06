@@ -92,11 +92,18 @@ export interface WallSave {
   id: string; name: string; parentId: string; parentType: WallData['parentType'];
   fullPerimeter: boolean; arcStart: number; arcEnd: number;
   basePosX: number; basePosZ: number; baseRotY: number; baseLength: number;
-  height: number; tilt: number;
+  height: number; tilt: number; thickness: number;
   hasGaps: boolean; gapWidth: number; panelWidth: number;
   topProfile: WallTopProfile; topAmplitude: number; topFrequency: number;
   isDouble: boolean; peakHeight: number; peakTilt: number;
   holes: WallHoleSave[];
+  isDestructible: boolean; hitPoints: number;
+  autoJoin: boolean;
+  moatRing: 'outer' | 'inner';
+  rotateOnArena: boolean;
+  arenaRotateMode: 'continuous' | 'step' | 'oscillate';
+  arenaRotateSpeed: number; arenaRotateStepDeg: number; arenaRotateStepInterval: number;
+  arenaRotateOscAmp: number; arenaRotateOscFreq: number;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   material: ArenaMaterial;
@@ -200,6 +207,7 @@ export interface TrapSave {
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number;
   presentStlb64: string | null; presentColor: number;
+  walls: WallSave[];
 }
 
 export interface PortalSave {
@@ -243,6 +251,7 @@ export interface ArenaConfig {
   wallSeq: number; bridgeSeq: number; segmentSeq: number;
   speedLineSeq: number;
   speedLines: SpeedLineSave[];
+  baseWalls: WallSave[];   // free-standing walls on the octagon base
   obstacles: ObstacleSave[]; obstacleSeq: number;
   traps: TrapSave[];        trapSeq: number;
   portals: PortalSave[];    portalSeq: number;
@@ -352,7 +361,7 @@ export function wallToSave(w: WallData): WallSave {
     id:w.id, name:w.name, parentId:w.parentId, parentType:w.parentType,
     fullPerimeter:w.fullPerimeter, arcStart:w.arcStart, arcEnd:w.arcEnd,
     basePosX:w.basePosX, basePosZ:w.basePosZ, baseRotY:w.baseRotY, baseLength:w.baseLength,
-    height:w.height, tilt:w.tilt,
+    height:w.height, tilt:w.tilt, thickness:w.thickness,
     hasGaps:w.hasGaps, gapWidth:w.gapWidth, panelWidth:w.panelWidth,
     topProfile:w.topProfile, topAmplitude:w.topAmplitude, topFrequency:w.topFrequency,
     isDouble:w.isDouble, peakHeight:w.peakHeight, peakTilt:w.peakTilt,
@@ -360,6 +369,16 @@ export function wallToSave(w: WallData): WallSave {
       id:h.id, shape:h.shape, posAlong:h.posAlong, posHeight:h.posHeight,
       radiusU:h.radiusU, radiusV:h.radiusV,
     })),
+    isDestructible:w.isDestructible, hitPoints:w.hitPoints,
+    autoJoin:w.autoJoin,
+    moatRing:w.moatRing,
+    rotateOnArena:w.rotateOnArena,
+    arenaRotateMode:w.arenaRotateMode,
+    arenaRotateSpeed:w.arenaRotateSpeed,
+    arenaRotateStepDeg:w.arenaRotateStepDeg,
+    arenaRotateStepInterval:w.arenaRotateStepInterval,
+    arenaRotateOscAmp:w.arenaRotateOscAmp,
+    arenaRotateOscFreq:w.arenaRotateOscFreq,
     color:w.color, surface:w.surface, customTileData:w.customTileData, tileScale:w.tileScale,
     emissiveColor:w.emissiveColor, emissiveIntensity:w.emissiveIntensity, opacity:w.opacity,
     material:w.material,
@@ -448,6 +467,7 @@ export function trapToSave(t: TrapData): TrapSave {
     color:t.color, surface:t.surface, customTileData:t.customTileData, tileScale:t.tileScale,
     emissiveColor:t.emissiveColor, emissiveIntensity:t.emissiveIntensity,
     presentStlb64:t.presentStlb64, presentColor:t.presentColor,
+    walls: [],   // caller overwrites with actual trap walls
   };
 }
 

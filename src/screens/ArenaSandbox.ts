@@ -9,7 +9,7 @@ import {
   DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS,
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
   DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
-  DEFAULT_ARENA_MATERIAL,
+  DEFAULT_ARENA_MATERIAL, MIN_ZONE_DEPTH, PIT_FIXED_DEPTH,
 } from '../config/arenaConstants';
 import { buildParticleSystem } from '../geometry/particleBuilders';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
@@ -50,7 +50,7 @@ import { buildObstacleObjects, applyObstacle, defaultObstacle } from '../geometr
 import { buildFootingObjects, applyFooting, defaultFooting } from '../geometry/footingBuilders';
 import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY } from '../geometry/trapBuilders';
 import { buildPortalObjects, applyPortal, defaultPortal, portalSurfY } from '../geometry/portalBuilders';
-import { buildWallGeometry, buildWallEdgeGeometry, defaultWallData } from '../geometry/wallBuilders';
+import { buildWallGeometry, buildWallEdgeGeometry, defaultWallData, trapRimPoints, trapWorldCenter } from '../geometry/wallBuilders';
 import {
   SegmentPose, DEFAULT_START_POSE,
   resolveStartPose, computeSegmentEndPose,
@@ -332,9 +332,18 @@ export class ArenaSandbox extends Sandbox {
       speedLines: [...this.speedLines.values()]
         .filter(sl => sl.parentZoneId !== null)
         .map(speedLineToSave),
+      baseWalls: [...this.walls.values()]
+        .filter(w => w.parentType==='base')
+        .map(wallToSave),
       obstacles: [...this.obstacles.values()].map(obstacleToSave),
       obstacleSeq: this.obstacleSeq,
-      traps: [...this.traps.values()].map(trapToSave),
+      traps: [...this.traps.values()].map(t => {
+        const ts = trapToSave(t);
+        ts.walls = [...this.walls.values()]
+          .filter(w => w.parentType==='trap' && w.parentId===t.id)
+          .map(wallToSave);
+        return ts;
+      }),
       trapSeq: this.trapSeq,
       portals: [...this.portals.values()].map(portalToSave),
       portalSeq: this.portalSeq,
@@ -847,6 +856,15 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private _disposeWall(wall: WallData): void {
+    // Detach from pivot group first if rotating
+    if(wall._rotatePivot){
+      const scene = this.getScene();
+      if(scene){
+        scene.remove(wall._rotatePivot);
+        wall._rotatePivot.clear();
+      }
+      wall._rotatePivot = undefined;
+    }
     if(wall.mesh){ wall.mesh.geometry.dispose();(wall.mesh.material as THREE.Material).dispose(); this.removeFromScene(wall.mesh); wall.mesh=null; }
     if(wall.edges){ wall.edges.geometry.dispose();(wall.edges.material as THREE.Material).dispose(); this.removeFromScene(wall.edges); wall.edges=null; }
     this.sceneObjects.delete(wall.id);
@@ -888,7 +906,7 @@ export class ArenaSandbox extends Sandbox {
   }
 
   /** Rebuild mesh+edges for a wall and add/replace in scene. */
-  private applyWall(wall: WallData): void {
+  private applyWall(wall: WallData, _rebuildingSiblings?: Set<string>): void {
     let rimPts: THREE.Vector2[];
     let rimY: number;
     let cx = 0; let cz = 0;
@@ -896,19 +914,53 @@ export class ArenaSandbox extends Sandbox {
     if(wall.parentType==='arena'){
       const arena=this.arenas.get(wall.parentId);
       if(!arena) return;
-      rimPts = shapePoints(arena);
-      rimY   = arena.posY;
-      cx     = arena.posX; cz = arena.posZ;
+      if(arena.isMoat && wall.moatRing==='inner'){
+        rimPts = shapePoints({
+          ...arena,
+          radiusX: arena.innerRadiusX, radiusZ: arena.innerRadiusZ,
+          openingShape: arena.innerOpeningShape, sides: arena.innerSides, starInner: arena.innerStarInner,
+        } as typeof arena);
+        rimY = arena.posY + arena.innerRimOffset;
+      } else {
+        rimPts = shapePoints(arena);
+        rimY   = arena.posY;
+      }
+      cx = arena.posX; cz = arena.posZ;
+    } else if(wall.parentType==='base'){
+      rimPts = [];
+      rimY   = this.baseConfig.height;
+      cx     = wall.basePosX; cz = wall.basePosZ;
+    } else if(wall.parentType==='trap'){
+      const trap = this.traps.get(wall.parentId);
+      if(!trap) return;
+      const surfY = this._getTrapSurfY(trap);
+      rimY = surfY + TRAP_PLATE_HEIGHT;
+      const c = trapWorldCenter(trap, this.arenas);
+      // trapRimPoints returns trap-local XZ (centered 0,0); translate to world space
+      // so that inwardDir and inner-offset calculations use consistent coordinates.
+      rimPts = trapRimPoints(trap).map(p => new THREE.Vector2(p.x + c.x, p.y + c.z));
+      cx = c.x; cz = c.z;
     } else {
       // bridge walls — handled by applyBridgeFromSegment, not here
       return;
     }
 
+    // Compute auto-join: detect adjacent walls on the same parent that share an arc boundary
+    let joinStart = false;
+    let joinEnd   = false;
+    if(wall.autoJoin && wall.parentType==='arena'){
+      const siblings = [...this.walls.values()].filter(
+        w => w.id !== wall.id && w.parentId === wall.parentId && w.parentType === 'arena',
+      );
+      joinStart = siblings.some(w => Math.abs((w.arcEnd   % 360 + 360) % 360 - (wall.arcStart % 360 + 360) % 360) < 1);
+      joinEnd   = siblings.some(w => Math.abs((w.arcStart % 360 + 360) % 360 - (wall.arcEnd   % 360 + 360) % 360) < 1);
+    }
+
     const scene = this.getScene();
     if(!scene) return;
 
-    const geo  = buildWallGeometry(wall, rimPts, rimY, cx, cz);
-    const eGeo = buildWallEdgeGeometry(wall, rimPts, rimY, cx, cz);
+    const geo  = buildWallGeometry(wall, rimPts, rimY, cx, cz, joinStart, joinEnd);
+    const eGeo = buildWallEdgeGeometry(wall, rimPts, rimY, cx, cz, joinStart, joinEnd);
 
     const wallMat = buildSurfaceMaterial({
       color: wall.color, surface: wall.surface,
@@ -918,6 +970,14 @@ export class ArenaSandbox extends Sandbox {
     (wallMat as THREE.MeshStandardMaterial).emissive.setHex(wall.emissiveColor);
     (wallMat as THREE.MeshStandardMaterial).emissiveIntensity = wall.emissiveIntensity;
     (wallMat as THREE.MeshStandardMaterial).depthWrite = wall.opacity >= 1;
+
+    // Detach from old pivot before recreating geometry
+    if(wall._rotatePivot && !wall.rotateOnArena){
+      scene.remove(wall._rotatePivot);
+      wall._rotatePivot.clear();
+      wall._rotatePivot = undefined;
+    }
+
     if(wall.mesh){
       wall.mesh.geometry.dispose();
       wall.mesh.geometry = geo;
@@ -936,7 +996,42 @@ export class ArenaSandbox extends Sandbox {
       wall.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
       scene.add(wall.edges);
     }
+
+    // Pivot group for arena auto-rotation
+    if(wall.rotateOnArena && wall.parentType==='arena'){
+      if(!wall._rotatePivot){
+        wall._rotatePivot = new THREE.Group();
+        wall._rotatePivot.position.set(cx, 0, cz);
+        scene.add(wall._rotatePivot);
+        wall._arenaRotateTimer = wall.arenaRotateStepInterval;
+      }
+      // Re-parent mesh and edges into pivot; offset positions by -cx/-cz
+      scene.remove(wall.mesh);
+      scene.remove(wall.edges);
+      wall._rotatePivot.add(wall.mesh);
+      wall._rotatePivot.add(wall.edges);
+      wall.mesh.position.x  = 0;
+      wall.mesh.position.z  = 0;
+      wall.edges.position.x = 0;
+      wall.edges.position.z = 0;
+    }
+
     this.sceneObjects.set(wall.id, [wall.mesh, wall.edges]);
+
+    // Rebuild adjacent walls that share this wall's arc boundary so their join-caps update
+    if(!_rebuildingSiblings && wall.autoJoin && wall.parentType==='arena'){
+      const sibs = new Set<string>([wall.id]);
+      for(const w of this.walls.values()){
+        if(w.id === wall.id || w.parentId !== wall.parentId || w.parentType !== 'arena') continue;
+        const a0 = (wall.arcStart % 360 + 360) % 360;
+        const a1 = (wall.arcEnd   % 360 + 360) % 360;
+        const b0 = (w.arcStart    % 360 + 360) % 360;
+        const b1 = (w.arcEnd      % 360 + 360) % 360;
+        if(Math.abs(b1 - a0) < 1 || Math.abs(b0 - a1) < 1){
+          this.applyWall(w, sibs);
+        }
+      }
+    }
   }
 
   private addWall(parentId: string, parentType: WallData['parentType']): void {
@@ -1108,6 +1203,7 @@ export class ArenaSandbox extends Sandbox {
     const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
     this.sceneTree.add(id, data.name, '⚡', parentTreeId, {
       addChildButtons: [
+        { label:'🧱+', title:'Add wall', onClick:()=>this.addWall(id, 'trap') },
         { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(id,'trap'); this.addRotation([id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
       ],
     });
@@ -1122,6 +1218,13 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private _disposeTrap(trap: TrapData): void {
+    // Clean up any walls parented to this trap
+    for(const wall of [...this.walls.values()]){
+      if(wall.parentType==='trap' && wall.parentId===trap.id){
+        this._disposeWall(wall);
+        this.walls.delete(wall.id);
+      }
+    }
     this.removeFromScene(trap.mesh, trap.edges);
     trap.mesh.geometry.dispose();
     (trap.mesh.material as THREE.Material).dispose();
@@ -1173,9 +1276,12 @@ export class ArenaSandbox extends Sandbox {
     const parentTreeId = ts.parentType === 'base' ? 'octagon-base' : ts.parentId;
     this.sceneTree.add(ts.id, data.name, '⚡', parentTreeId, {
       addChildButtons: [
+        { label:'🧱+', title:'Add wall', onClick:()=>this.addWall(ts.id, 'trap') },
         { label:'↻+', title:'Add rotation', className:'sl-btn', onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
       ],
     });
+    // Restore trap-parented walls
+    for(const ws of ts.walls) this._restoreWallSave(ws);
   }
 
   /* ── Portal methods ──────────────────────────────────────────────────── */
@@ -1442,6 +1548,29 @@ export class ArenaSandbox extends Sandbox {
           const a = ((rot.currentAngle % 360) + 360) % 360;
           bridge.group.visible = a >= rule.minDeg && a <= rule.maxDeg;
         }
+      }
+    }
+
+    // Wall auto-rotation on arena rim
+    const t = performance.now() / 1000;
+    for (const wall of this.walls.values()) {
+      if (!wall.rotateOnArena || !wall._rotatePivot) continue;
+      switch (wall.arenaRotateMode) {
+        case 'continuous':
+          wall._rotatePivot.rotation.y += wall.arenaRotateSpeed * DEG2RAD * dt;
+          break;
+        case 'step':
+          wall._arenaRotateTimer = (wall._arenaRotateTimer ?? wall.arenaRotateStepInterval) - dt;
+          if (wall._arenaRotateTimer <= 0) {
+            wall._rotatePivot.rotation.y += wall.arenaRotateStepDeg * DEG2RAD;
+            wall._arenaRotateTimer = wall.arenaRotateStepInterval;
+          }
+          break;
+        case 'oscillate':
+          wall._rotatePivot.rotation.y =
+            wall.arenaRotateOscAmp * DEG2RAD *
+            Math.sin(TWO_PI * wall.arenaRotateOscFreq * t);
+          break;
       }
     }
   }
@@ -1954,6 +2083,7 @@ export class ArenaSandbox extends Sandbox {
 
     const wall=this.walls.get(id);
     if(wall){
+      const parentArena = wall.parentType==='arena' ? this.arenas.get(wall.parentId) : undefined;
       const showW=()=>this.props.showWall(
         wall,
         ()=>{ this.captureUndo(); this.applyWall(wall); this.saveArena(); },
@@ -1961,6 +2091,7 @@ export class ArenaSandbox extends Sandbox {
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         (cb)=>this._fileInputStl(id,wall.presentColor,cb),
         ()=>{ wall.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
+        parentArena,
       );
       showW();
       return;
@@ -2351,7 +2482,7 @@ export class ArenaSandbox extends Sandbox {
     this.captureUndo();
     const id = `pit-${++this.pitSeq}`;
     const pit = defaultPit(`Pit ${this.pitSeq}`, arenaId, id);
-    pit.depth = Math.min(pit.depth, arena.depth);
+    pit.depth = PIT_FIXED_DEPTH; // always fixed
     pit.radiusX = Math.min(pit.radiusX, arena.radiusX * 0.4);
     pit.radiusZ = Math.min(pit.radiusZ, arena.radiusZ * 0.4);
 
@@ -2379,7 +2510,7 @@ export class ArenaSandbox extends Sandbox {
     const id = `zone-${++this.zoneSeq}`;
     const parentZoneId = parentType === 'zone' ? parentId : null;
     const zone = defaultZone(`Zone ${this.zoneSeq}`, arenaId, id, parentZoneId);
-    zone.depth = Math.min(zone.depth, Math.min(15, arena.depth));
+    zone.depth = Math.max(MIN_ZONE_DEPTH, Math.min(zone.depth, Math.min(15, arena.depth)));
     zone.radiusX = Math.min(zone.radiusX, arena.radiusX * 0.3);
     zone.radiusZ = Math.min(zone.radiusZ, arena.radiusZ * 0.3);
 
@@ -2576,7 +2707,7 @@ export class ArenaSandbox extends Sandbox {
       if(data.presentStlb64) this._loadPresentStl(as.id, data.presentStlb64, data.presentColor);
 
       // Restore walls attached to this arena
-      for(const ws of (as.walls??[])) this._restoreWallSave(ws);
+      for(const ws of as.walls) this._restoreWallSave(ws);
     }
     this.updateTopFace();
 
@@ -2599,10 +2730,13 @@ export class ArenaSandbox extends Sandbox {
     // Check overlaps for each arena
     for(const arenaId of this.arenas.keys()) this._checkSpeedLineOverlaps(arenaId);
 
+    // Restore base walls (free-standing on octagon base)
+    for(const ws of cfg.baseWalls) this._restoreWallSave(ws);
+
     // Restore obstacles
     for(const os of (cfg.obstacles??[])) this._restoreObstacleSave(os);
 
-    // Restore traps
+    // Restore traps (trap-parented walls are restored inside _restoreTrapSave)
     for(const ts of (cfg.traps??[])) this._restoreTrapSave(ts);
 
     // Restore portals
@@ -2620,19 +2754,21 @@ export class ArenaSandbox extends Sandbox {
       id:ws.id, name:ws.name, parentId:ws.parentId, parentType:ws.parentType,
       fullPerimeter:ws.fullPerimeter, arcStart:ws.arcStart, arcEnd:ws.arcEnd,
       basePosX:ws.basePosX, basePosZ:ws.basePosZ, baseRotY:ws.baseRotY, baseLength:ws.baseLength,
-      height:ws.height, tilt:ws.tilt,
+      height:ws.height, tilt:ws.tilt, thickness:ws.thickness,
       hasGaps:ws.hasGaps, gapWidth:ws.gapWidth, panelWidth:ws.panelWidth,
       topProfile:ws.topProfile, topAmplitude:ws.topAmplitude, topFrequency:ws.topFrequency,
       isDouble:ws.isDouble, peakHeight:ws.peakHeight, peakTilt:ws.peakTilt,
       holes:ws.holes.map(h=>({...h})),
+      isDestructible:ws.isDestructible, hitPoints:ws.hitPoints,
+      autoJoin:ws.autoJoin, moatRing:ws.moatRing,
+      rotateOnArena:ws.rotateOnArena, arenaRotateMode:ws.arenaRotateMode,
+      arenaRotateSpeed:ws.arenaRotateSpeed, arenaRotateStepDeg:ws.arenaRotateStepDeg,
+      arenaRotateStepInterval:ws.arenaRotateStepInterval,
+      arenaRotateOscAmp:ws.arenaRotateOscAmp, arenaRotateOscFreq:ws.arenaRotateOscFreq,
       color:ws.color, surface:ws.surface, material:ws.material,
-      customTileData:   ws.customTileData   ?? null,
-      tileScale:        ws.tileScale        ?? 20,
-      emissiveColor:    ws.emissiveColor    ?? 0x000000,
-      emissiveIntensity:ws.emissiveIntensity?? 0,
-      opacity:          ws.opacity          ?? 1,
-      presentStlb64:    ws.presentStlb64    ?? null,
-      presentColor:     ws.presentColor     ?? 0xaaaaaa,
+      customTileData:ws.customTileData, tileScale:ws.tileScale,
+      emissiveColor:ws.emissiveColor, emissiveIntensity:ws.emissiveIntensity, opacity:ws.opacity,
+      presentStlb64:ws.presentStlb64, presentColor:ws.presentColor,
       mesh:null, edges:null,
     };
     this.walls.set(ws.id, wall);

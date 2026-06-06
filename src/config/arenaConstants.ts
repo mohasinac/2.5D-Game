@@ -77,6 +77,10 @@ export const BUFF_TIER_PRESETS: Record<'sand' | 'lava' | 'ice' | 'water' | 'oil'
   ],
 };
 
+/* ── Pit / zone depth constraints ───────────────────────────────────────── */
+export const MIN_ZONE_DEPTH  = 0.1;  // cm — 1 mm minimum zone depth
+export const PIT_FIXED_DEPTH = 10;   // cm — pits are always exactly 10 cm deep
+
 /* ── Wall constants ──────────────────────────────────────────────────────── */
 export const MIN_WALL_HEIGHT       = 10;  // cm
 export const DEFAULT_WALL_HEIGHT   = 10;  // cm

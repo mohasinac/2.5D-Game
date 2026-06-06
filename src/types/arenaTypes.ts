@@ -439,9 +439,9 @@ export interface WallHoleData {
 export interface WallData {
   id: string;
   name: string;
-  /** 'arena' → attaches to arena rim  'bridge' → bridge deck edge  'base' → free-standing on octagon base */
+  /** 'arena' → attaches to arena rim  'bridge' → bridge deck edge  'base' → free-standing on octagon base  'trap' → sits on top of a trap plate */
   parentId: string;
-  parentType: 'arena' | 'bridge' | 'base';
+  parentType: 'arena' | 'bridge' | 'base' | 'trap';
 
   // Arc attachment (for arena / bridge parents)
   fullPerimeter: boolean;
@@ -461,6 +461,9 @@ export interface WallData {
    *  Forced to 0 when fullPerimeter=true AND !hasGaps (no free edge to hinge from). */
   tilt: number;
 
+  /** Wall cross-section thickness in cm. Min 0.1. Default 2. Adds inner face + top face. */
+  thickness: number;
+
   // Gap pattern (palisade / fence)
   hasGaps: boolean;
   gapWidth: number;   // cm, min 10
@@ -477,6 +480,25 @@ export interface WallData {
 
   holes: WallHoleData[];
 
+  // Destructibility
+  isDestructible: boolean;
+  hitPoints: number;
+
+  // Adjacent wall auto-join: suppresses end-cap faces at shared arc boundaries
+  autoJoin: boolean;
+
+  // Moat ring selection (arena parentType + isMoat only)
+  moatRing: 'outer' | 'inner';
+
+  // Wall auto-rotation on arena rim
+  rotateOnArena: boolean;
+  arenaRotateMode: 'continuous' | 'step' | 'oscillate';
+  arenaRotateSpeed: number;          // deg/s (continuous)
+  arenaRotateStepDeg: number;        // degrees per step
+  arenaRotateStepInterval: number;   // seconds between steps
+  arenaRotateOscAmp: number;         // half-swing degrees (oscillate)
+  arenaRotateOscFreq: number;        // Hz (oscillate)
+
   color: number;
   surface: SurfaceType;
   customTileData: string | null;
@@ -491,6 +513,10 @@ export interface WallData {
 
   mesh: THREE.Mesh | null;
   edges: THREE.LineSegments | null;
+
+  // Runtime-only: pivot group for arena auto-rotation (not saved)
+  _rotatePivot?: THREE.Group;
+  _arenaRotateTimer?: number;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

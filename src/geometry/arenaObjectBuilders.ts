@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, DEG2RAD } from '../config/arenaConstants';
+import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, DEG2RAD, PIT_FIXED_DEPTH } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
   SpeedLineData, SpeedLineSegment,
@@ -506,7 +506,7 @@ export function defaultPit(
   return {
     id, name, parentArenaId,
     openingShape: 'circle',
-    radiusX: 10, radiusZ: 10, depth: 8,
+    radiusX: 10, radiusZ: 10, depth: PIT_FIXED_DEPTH,
     sides: 5, starInner: 0.5, color: 0x555555,
     surface: 'plain', customTileData: null, tileScale: 10,
     rimGlowColor: 0x000000, rimGlowIntensity: 0,

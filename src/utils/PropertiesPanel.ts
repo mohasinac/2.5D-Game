@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {
   APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL,
   MIN_OBSTACLE_DIM, MIN_TRAP_DIM, BUFF_TIER_PRESETS, ARENA_LIGHT_PRESETS,
+  MIN_ZONE_DEPTH, ROT,
 } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment,
@@ -221,7 +222,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     const arenaMinR_pit = Math.min(arena.radiusX, arena.radiusZ);
     this.numRow('Radius X', pit.radiusX, 2, Math.max(2, arenaMinR_pit - pit.posR), 1, v=>{ pit.radiusX=v; onGeomChange(); });
     this.numRow('Radius Z', pit.radiusZ, 2, Math.max(2, arenaMinR_pit - pit.posR), 1, v=>{ pit.radiusZ=v; onGeomChange(); });
-    this.numRow('Depth',    pit.depth,   1, arena.depth, 0.5, v=>{ pit.depth=v; onGeomChange(); });
+    this.readRow('Depth', '10 cm (fixed)');
 
     this.section('SURFACE');
     this.colorRow('Color', pit.color, v=>{ pit.color=v; onColorChange(); });
@@ -276,7 +277,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     const maxDepth = Math.min(15, arena.depth);
     this.numRow('Radius X', zone.radiusX, 2, Math.max(2, arenaMinR_zone - zone.posR), 1, v=>{ zone.radiusX=v; onGeomChange(); });
     this.numRow('Radius Z', zone.radiusZ, 2, Math.max(2, arenaMinR_zone - zone.posR), 1, v=>{ zone.radiusZ=v; onGeomChange(); });
-    this.numRow('Depth',    zone.depth,   1, maxDepth, 0.5, v=>{ zone.depth=v; onGeomChange(); });
+    this.numRow('Depth',    zone.depth,   MIN_ZONE_DEPTH, maxDepth, 0.5, v=>{ zone.depth=v; onGeomChange(); });
 
     this.section('FILL');
     this.fillGrid(zone, onGeomChange);
@@ -662,6 +663,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onRename: (name: string) => void,
     onStlImport?: (cb: (b64: string) => void) => void,
     onStlClear?: () => void,
+    parentArena?: ArenaData,
   ): void {
     this.content.innerHTML = '';
 
@@ -673,21 +675,32 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
     // ── Attachment ────────────────────────────────────────────────────────
     this.section('ATTACHMENT');
-    this.toggleRow('Full Perimeter', wall.fullPerimeter, v => {
-      wall.fullPerimeter = v;
-      if (v && !wall.hasGaps) wall.tilt = 0;
-      onFullChange();
-    });
-    if (!wall.fullPerimeter) {
-      this.numRow('Arc Start°', wall.arcStart, 0, 360, 1, v => { wall.arcStart = v; onGeomChange(); });
-      this.numRow('Arc End°',   wall.arcEnd,   0, 360, 1, v => { wall.arcEnd = v;   onGeomChange(); });
+    if (wall.parentType === 'arena') {
+      this.toggleRow('Full Perimeter', wall.fullPerimeter, v => {
+        wall.fullPerimeter = v;
+        if (v && !wall.hasGaps) wall.tilt = 0;
+        onFullChange();
+      });
+      if (!wall.fullPerimeter) {
+        this.numRow('Arc Start°', wall.arcStart, 0, 360, 1, v => { wall.arcStart = v; onGeomChange(); });
+        this.numRow('Arc End°',   wall.arcEnd,   0, 360, 1, v => { wall.arcEnd = v;   onGeomChange(); });
+      }
+      this.toggleRow('Auto-join adjacent', wall.autoJoin, v => { wall.autoJoin = v; onFullChange(); });
+      // Moat ring selection
+      if (parentArena?.isMoat) {
+        this.selectRow('Ring', [
+          { value: 'outer', label: 'Outer rim' },
+          { value: 'inner', label: 'Inner rim' },
+        ], wall.moatRing, v => { wall.moatRing = v as 'outer' | 'inner'; onFullChange(); });
+      }
     }
 
     // ── Profile ───────────────────────────────────────────────────────────
     this.section('PROFILE');
-    this.numRow('Height (cm)', wall.height, MIN_WALL_HEIGHT, 100, 1, v => { wall.height = v; onGeomChange(); });
+    this.numRow('Height (cm)',    wall.height,    MIN_WALL_HEIGHT, 100, 1,   v => { wall.height = v;    onGeomChange(); });
+    this.numRow('Thickness (cm)', wall.thickness, 0.1,             30,  0.5, v => { wall.thickness = v; onGeomChange(); });
 
-    const tiltDisabled = wall.fullPerimeter && !wall.hasGaps;
+    const tiltDisabled = wall.parentType === 'arena' && wall.fullPerimeter && !wall.hasGaps;
     const tiltWrap = this.numRow('Tilt°', wall.tilt, -90, 30, 1, v => {
       if (tiltDisabled) return;
       wall.tilt = v; onGeomChange();
@@ -706,15 +719,17 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     }
 
     // ── Gaps ──────────────────────────────────────────────────────────────
-    this.section('GAPS');
-    this.toggleRow('Has Gaps', wall.hasGaps, v => {
-      wall.hasGaps = v;
-      if (!v && wall.fullPerimeter) wall.tilt = 0;
-      onFullChange();
-    });
-    if (wall.hasGaps) {
-      this.numRow('Panel Width (cm)', wall.panelWidth, MIN_WALL_GAP, 500, 1, v => { wall.panelWidth = v; onGeomChange(); });
-      this.numRow('Gap Width (cm)',   wall.gapWidth,   MIN_WALL_GAP, 500, 1, v => { wall.gapWidth = v;   onGeomChange(); });
+    if (wall.parentType === 'arena') {
+      this.section('GAPS');
+      this.toggleRow('Has Gaps', wall.hasGaps, v => {
+        wall.hasGaps = v;
+        if (!v && wall.fullPerimeter) wall.tilt = 0;
+        onFullChange();
+      });
+      if (wall.hasGaps) {
+        this.numRow('Panel Width (cm)', wall.panelWidth, MIN_WALL_GAP, 500, 1, v => { wall.panelWidth = v; onGeomChange(); });
+        this.numRow('Gap Width (cm)',   wall.gapWidth,   MIN_WALL_GAP, 500, 1, v => { wall.gapWidth = v;   onGeomChange(); });
+      }
     }
 
     // ── Double wall ───────────────────────────────────────────────────────
@@ -725,9 +740,41 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.numRow('Peak Tilt°',       wall.peakTilt,   0, 60, 1,         v => { wall.peakTilt = v;   onGeomChange(); });
     }
 
+    // ── Physics ───────────────────────────────────────────────────────────
+    this.section('PHYSICS');
+    this.toggleRow('Destructible', wall.isDestructible, v => { wall.isDestructible = v; onFullChange(); });
+    if (wall.isDestructible) {
+      this.numRow('Hit Points', wall.hitPoints, 1, 1000, 10, v => { wall.hitPoints = v; onGeomChange(); });
+    }
+
     // ── Physics material ──────────────────────────────────────────────────
     this.section('PHYSICS MATERIAL');
     this._wallMaterialRow(wall, ['rubber','stone','abs','metal'], onFullChange);
+
+    // ── Rotation (arena rim walls only) ───────────────────────────────────
+    if (wall.parentType === 'arena') {
+      this.section('ROTATION');
+      this.toggleRow('Rotate on arena', wall.rotateOnArena, v => { wall.rotateOnArena = v; onFullChange(); });
+      if (wall.rotateOnArena) {
+        this.selectRow('Mode', [
+          { value: 'continuous', label: 'Continuous' },
+          { value: 'step',       label: 'Step' },
+          { value: 'oscillate',  label: 'Oscillate' },
+        ], wall.arenaRotateMode, v => {
+          wall.arenaRotateMode = v as 'continuous' | 'step' | 'oscillate';
+          onFullChange();
+        });
+        if (wall.arenaRotateMode === 'continuous') {
+          this.numRow('Speed (°/s)', wall.arenaRotateSpeed, 1, 720, 5, v => { wall.arenaRotateSpeed = v; onGeomChange(); });
+        } else if (wall.arenaRotateMode === 'step') {
+          this.numRow('Step (°)',      wall.arenaRotateStepDeg,      1,   180, 5,   v => { wall.arenaRotateStepDeg = v;      onGeomChange(); });
+          this.numRow('Interval (s)', wall.arenaRotateStepInterval, 0.1, 60,  0.1, v => { wall.arenaRotateStepInterval = v; onGeomChange(); });
+        } else {
+          this.numRow('Amplitude (°)',  wall.arenaRotateOscAmp,  1,   180, 5,   v => { wall.arenaRotateOscAmp = v;  onGeomChange(); });
+          this.numRow('Frequency (Hz)', wall.arenaRotateOscFreq, 0.1, 5,   0.1, v => { wall.arenaRotateOscFreq = v; onGeomChange(); });
+        }
+      }
+    }
 
     // ── Appearance ────────────────────────────────────────────────────────
     this.section('APPEARANCE');

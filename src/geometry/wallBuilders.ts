@@ -1,13 +1,17 @@
 /**
  * wallBuilders.ts
- * Wall geometry: extruded barriers attached to arena rims, bridge deck edges, or the octagon base.
+ * Wall geometry: extruded barriers attached to arena rims, bridge deck edges, the octagon base, or trap surfaces.
  *
  * Tilt convention: 0° = vertical. Negative = inward (toward arena, top swings over bowl).
  * Positive = outward (top swings away from arena, like a door hinge). Range [-90, +30].
+ *
+ * Thickness: walls have a solid cross-section — outer face + inner face + top face.
+ * The inner face is offset from the outer face by `thickness` cm along the inward direction.
+ * Top face connects outer-top to inner-top (horizontal).
  */
 import * as THREE from 'three';
-import { DEG2RAD, OCTAGON_BASE, MIN_WALL_HEIGHT, MIN_WALL_GAP } from '../config/arenaConstants';
-import { WallData, WallTopProfile } from '../types/arenaTypes';
+import { DEG2RAD, OCTAGON_BASE, MIN_WALL_HEIGHT, MIN_WALL_GAP, ROT } from '../config/arenaConstants';
+import { WallData, WallTopProfile, TrapData, ArenaData } from '../types/arenaTypes';
 
 /* ── Arc filter ─────────────────────────────────────────────────────────── */
 
@@ -77,10 +81,6 @@ function angleLerp(a: number, b: number, target: number, _wraps: boolean): numbe
 
 /* ── Top profile modulation ─────────────────────────────────────────────── */
 
-/**
- * Given a normalised arc position `t` [0,1] and the top-profile settings,
- * return an additional Y offset applied to the wall top edge.
- */
 function topProfileOffset(
   t: number,
   profile: WallTopProfile,
@@ -93,7 +93,7 @@ function topProfileOffset(
   switch (profile) {
     case 'triangles':   return amplitude * Math.abs(((t * arcLengthM * frequency) % 1) * 2 - 1);
     case 'waves':       return amplitude * 0.5 * (1 + Math.sin(phase));
-    case 'serrated': {  // right-triangle: fast rise, instant drop
+    case 'serrated': {
       const frac = (t * arcLengthM * frequency) % 1;
       return amplitude * (1 - frac);
     }
@@ -105,39 +105,49 @@ function topProfileOffset(
 
 /* ── Per-panel geometry ─────────────────────────────────────────────────── */
 
+/**
+ * Build vertices + indices for a single wall panel.
+ *
+ * For non-isDouble walls, each rim point generates 4 vertices:
+ *   4i+0 = outerBottom, 4i+1 = outerTop, 4i+2 = innerBottom, 4i+3 = innerTop
+ * Generates outer face + inner face + top face.
+ * End-cap quads are added when addStartCap / addEndCap = true.
+ */
 function buildPanelGeometry(
   panelPts: THREE.Vector2[],
   rimY: number,
   height: number,
-  tilt: number,     // degrees, clamped [-90,+30]; negative=inward
+  tilt: number,
+  thickness: number,
   isDouble: boolean,
   peakHeight: number,
   peakTilt: number,
   topProfile: WallTopProfile,
   topAmplitude: number,
   topFrequency: number,
-  inwardDir: (p: THREE.Vector2) => THREE.Vector2,  // unit vector pointing toward arena centre
+  inwardDir: (p: THREE.Vector2) => THREE.Vector2,
+  addStartCap: boolean,
+  addEndCap: boolean,
 ): { positions: number[]; normals: number[]; indices: number[] } {
   const tiltRad = Math.max(-Math.PI / 2, Math.min(30 * DEG2RAD, tilt * DEG2RAD));
   const clampedHeight = Math.max(MIN_WALL_HEIGHT, height);
+  const thick = Math.max(0.1, thickness);
 
-  // Estimate arc length in metres for topProfile frequency
   let arcLen = 0;
   for (let i = 0; i < panelPts.length - 1; i++) {
     const dx = panelPts[i + 1].x - panelPts[i].x;
     const dy = panelPts[i + 1].y - panelPts[i].y;
     arcLen += Math.sqrt(dx * dx + dy * dy);
   }
-  const arcLenM = arcLen / 100; // cm → m
+  const arcLenM = arcLen / 100;
 
   const positions: number[] = [];
   const normals:   number[] = [];
   const indices:   number[] = [];
-
   const N = panelPts.length;
 
   if (!isDouble) {
-    // Single wall: N bottom verts + N top verts
+    // Build 4 vertices per rim point: outerBottom, outerTop, innerBottom, innerTop
     for (let i = 0; i < N; i++) {
       const t = i / Math.max(N - 1, 1);
       const p = panelPts[i];
@@ -145,46 +155,75 @@ function buildPanelGeometry(
       const profileOff = topProfileOffset(t, topProfile, topAmplitude, topFrequency, arcLenM);
       const topH = clampedHeight + profileOff;
 
-      // Bottom vertex (at rim)
+      // Outer bottom (on the rim surface)
       positions.push(p.x, rimY, p.y);
-      normals.push(0, 0, 1);   // approximate; per-face normals computed below
+      normals.push(0, 0, 1);
 
-      // Top vertex (displaced by tilt)
-      // negative tilt = sin(tiltRad)<0 = displaces inward (inDir direction)
-      const topX = p.x + (-Math.sin(tiltRad)) * topH * inDir.x;
-      const topZ = p.y + (-Math.sin(tiltRad)) * topH * inDir.y;
-      const topY = rimY + Math.cos(tiltRad) * topH;
-      positions.push(topX, topY, topZ);
+      // Outer top (displaced by tilt in inward direction)
+      const otX = p.x + (-Math.sin(tiltRad)) * topH * inDir.x;
+      const otZ = p.y + (-Math.sin(tiltRad)) * topH * inDir.y;
+      const otY = rimY + Math.cos(tiltRad) * topH;
+      positions.push(otX, otY, otZ);
+      normals.push(0, 0, 1);
+
+      // Inner bottom (outer bottom offset inward by thickness)
+      positions.push(p.x + inDir.x * thick, rimY, p.y + inDir.y * thick);
+      normals.push(0, 0, 1);
+
+      // Inner top (outer top offset inward by thickness, same Y height)
+      positions.push(otX + inDir.x * thick, otY, otZ + inDir.y * thick);
       normals.push(0, 0, 1);
     }
-    // Quad faces: i=bottom_i, i+1=top_i, i+2=top_{i+1}, i+3=bottom_{i+1}
+
+    // Helpers: ob(i)=4i, ot(i)=4i+1, ib(i)=4i+2, it(i)=4i+3
+    const ob = (i: number) => 4 * i;
+    const ot = (i: number) => 4 * i + 1;
+    const ib = (i: number) => 4 * i + 2;
+    const it = (i: number) => 4 * i + 3;
+
+    // Outer face quads (normals point outward)
     for (let i = 0; i < N - 1; i++) {
-      const b0 = i * 2;     const t0 = i * 2 + 1;
-      const b1 = (i + 1) * 2; const t1 = (i + 1) * 2 + 1;
-      indices.push(b0, b1, t1, b0, t1, t0);
+      indices.push(ob(i), ob(i+1), ot(i+1), ob(i), ot(i+1), ot(i));
     }
+
+    // Inner face quads (reversed winding → normals point inward)
+    for (let i = 0; i < N - 1; i++) {
+      indices.push(ib(i), it(i+1), ib(i+1), ib(i), it(i), it(i+1));
+    }
+
+    // Top face quads (normals point up)
+    for (let i = 0; i < N - 1; i++) {
+      indices.push(ot(i), it(i), it(i+1), ot(i), it(i+1), ot(i+1));
+    }
+
+    // Start end-cap (closes the cross-section at the wall's start edge)
+    if (addStartCap && N > 0) {
+      indices.push(ob(0), ot(0), it(0), ob(0), it(0), ib(0));
+    }
+
+    // End end-cap (closes the cross-section at the wall's end edge)
+    if (addEndCap && N > 0) {
+      const e = N - 1;
+      indices.push(ob(e), ib(e), it(e), ob(e), it(e), ot(e));
+    }
+
   } else {
-    // Double /\ wall: each segment gets two halves meeting at peak
+    // /\ double-wall cross-section (no thickness applied to double-wall for geometry clarity)
     const peakRad = Math.max(0, Math.min(60 * DEG2RAD, peakTilt * DEG2RAD));
     for (let i = 0; i < N; i++) {
       const p = panelPts[i];
       const inDir = inwardDir(p);
-
-      // Bottom (rim)
       positions.push(p.x, rimY, p.y);
       normals.push(0, 1, 0);
-
-      // Peak (top centre, leaning inward by peakTilt — always at centre of wall thickness)
       const peakX = p.x + (-Math.sin(peakRad)) * peakHeight * inDir.x;
       const peakZ = p.y + (-Math.sin(peakRad)) * peakHeight * inDir.y;
       const peakY = rimY + Math.cos(peakRad) * peakHeight;
       positions.push(peakX, peakY, peakZ);
       normals.push(0, 1, 0);
     }
-    // Same quad strip between consecutive points
     for (let i = 0; i < N - 1; i++) {
-      const b0 = i * 2; const pk0 = i * 2 + 1;
-      const b1 = (i + 1) * 2; const pk1 = (i + 1) * 2 + 1;
+      const b0 = i * 2, pk0 = i * 2 + 1;
+      const b1 = (i + 1) * 2, pk1 = (i + 1) * 2 + 1;
       indices.push(b0, b1, pk1, b0, pk1, pk0);
     }
   }
@@ -196,11 +235,13 @@ function buildPanelGeometry(
 
 /**
  * Build the THREE.BufferGeometry for a wall.
- * @param wall     WallData (fully populated)
- * @param rimPts   Arena rim points in arena-local XZ (THREE.Vector2[])
- * @param rimY     World Y of the attachment surface (rim or base top face)
- * @param arenaCX  Arena centre world X (used for inward direction on arena walls; 0 for base walls)
- * @param arenaCZ  Arena centre world Z
+ * @param wall      WallData (fully populated)
+ * @param rimPts    Arena rim points in arena-local XZ (THREE.Vector2[])
+ * @param rimY      World Y of the attachment surface (rim or base top face)
+ * @param arenaCX   Arena centre world X (used for inward direction; 0 for base/trap walls)
+ * @param arenaCZ   Arena centre world Z
+ * @param joinStart Suppress start end-cap (wall is joined to an adjacent wall at start)
+ * @param joinEnd   Suppress end end-cap (wall is joined to an adjacent wall at end)
  */
 export function buildWallGeometry(
   wall: WallData,
@@ -208,10 +249,11 @@ export function buildWallGeometry(
   rimY: number,
   arenaCX = 0,
   arenaCZ = 0,
+  joinStart = false,
+  joinEnd = false,
 ): THREE.BufferGeometry {
   const effectiveTilt = (wall.fullPerimeter && !wall.hasGaps) ? 0 : wall.tilt;
 
-  // For 'base' walls: rimPts is a 2-point line [(-L/2,0), (L/2,0)] rotated by baseRotY
   let workPts: THREE.Vector2[];
   let centreX: number;
   let centreZ: number;
@@ -238,7 +280,6 @@ export function buildWallGeometry(
 
   if (workPts.length < 2) return new THREE.BufferGeometry();
 
-  // Inward direction function (unit vector from point toward arena centre)
   const inwardDir = (p: THREE.Vector2) => {
     const dx = centreX - p.x;
     const dz = centreZ - p.y;
@@ -250,15 +291,22 @@ export function buildWallGeometry(
   const allIndices:   number[] = [];
   let vertexOffset = 0;
 
-  // Split into panels if gaps enabled
   const panels = buildPanelList(workPts, wall);
 
-  for (const panel of panels) {
+  for (let pi = 0; pi < panels.length; pi++) {
+    const isFirst = pi === 0;
+    const isLast  = pi === panels.length - 1;
+    // First panel inherits joinStart; last panel inherits joinEnd.
+    // Interior gap panels always get both caps (they're standalone pieces).
+    const addStartCap = isFirst ? !joinStart : true;
+    const addEndCap   = isLast  ? !joinEnd   : true;
+
     const { positions, indices } = buildPanelGeometry(
-      panel,
+      panels[pi],
       rimY,
       wall.height,
       effectiveTilt,
+      wall.thickness,
       wall.isDouble,
       wall.peakHeight,
       wall.peakTilt,
@@ -266,6 +314,8 @@ export function buildWallGeometry(
       wall.topAmplitude,
       wall.topFrequency,
       inwardDir,
+      addStartCap,
+      addEndCap,
     );
     allPositions.push(...positions);
     allIndices.push(...indices.map(i => i + vertexOffset));
@@ -293,7 +343,6 @@ function buildPanelList(
   const panW   = Math.max(MIN_WALL_GAP, wall.panelWidth);
   const period = gapW + panW;
 
-  // Accumulate arc lengths
   const arcLens = [0];
   for (let i = 1; i < pts.length; i++) {
     const dx = pts[i].x - pts[i - 1].x;
@@ -303,10 +352,10 @@ function buildPanelList(
   const totalLen = arcLens[arcLens.length - 1];
 
   const panels: THREE.Vector2[][] = [];
-  let s = 0; // current position along arc
+  let s = 0;
 
   while (s < totalLen) {
-    const panelEnd  = Math.min(s + panW, totalLen);
+    const panelEnd = Math.min(s + panW, totalLen);
     const panel = sliceArcByLength(pts, arcLens, s, panelEnd);
     if (panel.length >= 2) panels.push(panel);
     s += period;
@@ -314,7 +363,6 @@ function buildPanelList(
   return panels;
 }
 
-/** Extract a sub-array of pts between arc lengths [lo, hi]. */
 function sliceArcByLength(
   pts: THREE.Vector2[],
   arcLens: number[],
@@ -327,7 +375,6 @@ function sliceArcByLength(
     if (a >= lo && a <= hi) {
       result.push(pts[i].clone());
     } else if (i > 0) {
-      // Check if lo or hi falls between arcLens[i-1] and arcLens[i]
       const prev = arcLens[i - 1];
       for (const target of [lo, hi]) {
         if (target > prev && target < a) {
@@ -340,7 +387,6 @@ function sliceArcByLength(
       }
     }
   }
-  // Deduplicate and sort by arc length
   return result;
 }
 
@@ -352,10 +398,13 @@ export function buildWallEdgeGeometry(
   rimY: number,
   arenaCX = 0,
   arenaCZ = 0,
+  joinStart = false,
+  joinEnd = false,
 ): THREE.BufferGeometry {
   const effectiveTilt = (wall.fullPerimeter && !wall.hasGaps) ? 0 : wall.tilt;
   const tiltRad = Math.max(-Math.PI / 2, Math.min(30 * DEG2RAD, effectiveTilt * DEG2RAD));
   const clampedHeight = Math.max(MIN_WALL_HEIGHT, wall.height);
+  const thick = Math.max(0.1, wall.thickness);
 
   let workPts: THREE.Vector2[];
   let centreX: number;
@@ -382,26 +431,72 @@ export function buildWallEdgeGeometry(
   const verts: number[] = [];
   const panels = buildPanelList(workPts, wall);
 
-  for (const panel of panels) {
+  for (let pi = 0; pi < panels.length; pi++) {
+    const isFirst = pi === 0;
+    const isLast  = pi === panels.length - 1;
+    const showStartCap = isFirst ? !joinStart : true;
+    const showEndCap   = isLast  ? !joinEnd   : true;
+
+    const panel = panels[pi];
     const N = panel.length;
-    // Bottom rim loop
+
+    // Outer bottom loop
     for (let i = 0; i < N - 1; i++) {
       verts.push(panel[i].x, rimY, panel[i].y);
       verts.push(panel[i + 1].x, rimY, panel[i + 1].y);
     }
-    // Top loop
+
+    // Inner bottom loop
     for (let i = 0; i < N - 1; i++) {
-      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ);
-      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ);
+      const [ix0, iz0] = innerPt(panel[i], centreX, centreZ, thick);
+      const [ix1, iz1] = innerPt(panel[i + 1], centreX, centreZ, thick);
+      verts.push(ix0, rimY, iz0, ix1, rimY, iz1);
+    }
+
+    // Outer top loop
+    for (let i = 0; i < N - 1; i++) {
+      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
+      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
       verts.push(tx0, ty0, tz0, tx1, ty1, tz1);
     }
-    // Vertical edges at endpoints
+
+    // Inner top loop
+    for (let i = 0; i < N - 1; i++) {
+      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
+      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
+      verts.push(tx0, ty0, tz0, tx1, ty1, tz1);
+    }
+
+    // Vertical outer + inner edges at endpoints and end-cap lines
     if (N > 0) {
-      const [tx0, ty0, tz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ);
-      verts.push(panel[0].x, rimY, panel[0].y, tx0, ty0, tz0);
+      // Start of panel
+      const [otx0, oty0, otz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
+      const [itx0, ity0, itz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
+      const [ix0, iz0] = innerPt(panel[0], centreX, centreZ, thick);
+
+      if (showStartCap) {
+        // Outer vertical edge
+        verts.push(panel[0].x, rimY, panel[0].y, otx0, oty0, otz0);
+        // Inner vertical edge
+        verts.push(ix0, rimY, iz0, itx0, ity0, itz0);
+        // Top cap edge (outer top → inner top)
+        verts.push(otx0, oty0, otz0, itx0, ity0, itz0);
+        // Bottom cap edge (outer bottom → inner bottom)
+        verts.push(panel[0].x, rimY, panel[0].y, ix0, rimY, iz0);
+      }
+
+      // End of panel
       const last = panel[N - 1];
-      const [tx1, ty1, tz1] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ);
-      verts.push(last.x, rimY, last.y, tx1, ty1, tz1);
+      const [otxE, otyE, otzE] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
+      const [itxE, ityE, itzE] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
+      const [ixE, izE] = innerPt(last, centreX, centreZ, thick);
+
+      if (showEndCap) {
+        verts.push(last.x, rimY, last.y, otxE, otyE, otzE);
+        verts.push(ixE, rimY, izE, itxE, ityE, itzE);
+        verts.push(otxE, otyE, otzE, itxE, ityE, itzE);
+        verts.push(last.x, rimY, last.y, ixE, rimY, izE);
+      }
     }
   }
 
@@ -410,6 +505,22 @@ export function buildWallEdgeGeometry(
   return geo;
 }
 
+/** Returns world XZ of the inner offset point (shifted inward from p by thickness). */
+function innerPt(
+  p: THREE.Vector2,
+  cx: number,
+  cz: number,
+  thick: number,
+): [number, number] {
+  const dx = cx - p.x; const dz = cz - p.y;
+  const len = Math.sqrt(dx * dx + dz * dz) || 1;
+  return [p.x + (dx / len) * thick, p.y + (dz / len) * thick];
+}
+
+/**
+ * Compute the top-edge vertex for a rim point, with optional inward offset for inner face.
+ * @param thicknessOffset 0 = outer edge, thick = inner edge
+ */
 function topVert(
   p: THREE.Vector2,
   rimY: number,
@@ -417,14 +528,82 @@ function topVert(
   tiltRad: number,
   cx: number,
   cz: number,
+  thicknessOffset: number,
 ): [number, number, number] {
   const dx = cx - p.x; const dz = cz - p.y;
   const len = Math.sqrt(dx * dx + dz * dz) || 1;
   const inX = dx / len; const inZ = dz / len;
-  const topX = p.x + (-Math.sin(tiltRad)) * height * inX;
-  const topZ = p.y + (-Math.sin(tiltRad)) * height * inZ;
+  const topX = p.x + (-Math.sin(tiltRad)) * height * inX + inX * thicknessOffset;
+  const topZ = p.y + (-Math.sin(tiltRad)) * height * inZ + inZ * thicknessOffset;
   const topY = rimY + Math.cos(tiltRad) * height;
   return [topX, topY, topZ];
+}
+
+/* ── Trap rim polygon helpers ───────────────────────────────────────────── */
+
+/**
+ * Returns the perimeter polygon of a trap in trap-local XZ (centered at 0,0, rotated by trap.rotY).
+ * Used to position a wall on top of a trap plate.
+ */
+export function trapRimPoints(trap: TrapData): THREE.Vector2[] {
+  const hw = trap.dimX / 2;
+  const hd = trap.dimZ / 2;
+  const rotY = trap.rotY * DEG2RAD;
+  const cosR = Math.cos(rotY);
+  const sinR = Math.sin(rotY);
+
+  const rot = (x: number, z: number): THREE.Vector2 =>
+    new THREE.Vector2(x * cosR - z * sinR, x * sinR + z * cosR);
+
+  switch (trap.shape) {
+    case 'rectangle':
+      return [rot(-hw, -hd), rot(hw, -hd), rot(hw, hd), rot(-hw, hd)];
+
+    case 'circle': {
+      const SEGS = 64;
+      return Array.from({ length: SEGS }, (_, i) => {
+        const a = (i / SEGS) * Math.PI * 2;
+        return new THREE.Vector2(hw * Math.cos(a), hw * Math.sin(a));
+      });
+    }
+
+    case 'ellipse': {
+      const SEGS = 64;
+      return Array.from({ length: SEGS }, (_, i) => {
+        const a = (i / SEGS) * Math.PI * 2;
+        return rot(hw * Math.cos(a), hd * Math.sin(a));
+      });
+    }
+
+    case 'hexagon': {
+      return Array.from({ length: 6 }, (_, i) => {
+        const a = (i / 6) * Math.PI * 2;
+        return rot(hw * Math.cos(a), hd * Math.sin(a));
+      });
+    }
+
+    default: return [];
+  }
+}
+
+/**
+ * Returns the world-space XZ center of a trap.
+ */
+export function trapWorldCenter(
+  trap: TrapData,
+  arenas: Map<string, ArenaData>,
+): { x: number; z: number } {
+  if (trap.parentType === 'base') {
+    return { x: trap.basePosX, z: trap.basePosZ };
+  }
+  // arena-parented: polar position within arena
+  const arena = arenas.get(trap.parentId);
+  const posAngleRad = trap.posAngle * DEG2RAD;
+  const lx = trap.posR * Math.cos(posAngleRad);
+  const lz = trap.posR * Math.sin(posAngleRad);
+  const ax = arena?.posX ?? 0;
+  const az = arena?.posZ ?? 0;
+  return { x: ax + lx, z: az + lz };
 }
 
 /* ── Default WallData factory ───────────────────────────────────────────── */
@@ -442,10 +621,22 @@ export function defaultWallData(
     basePosX: 0, basePosZ: 0, baseRotY: 0, baseLength: 20,
     height: 10,
     tilt: 0,
+    thickness: 2,
     hasGaps: false, gapWidth: 10, panelWidth: 20,
     topProfile: 'flat', topAmplitude: 3, topFrequency: 1,
     isDouble: false, peakHeight: 8, peakTilt: 30,
     holes: [],
+    isDestructible: false,
+    hitPoints: 100,
+    autoJoin: true,
+    moatRing: 'outer',
+    rotateOnArena: false,
+    arenaRotateMode: 'continuous',
+    arenaRotateSpeed: ROT.DEFAULT_SPEED,
+    arenaRotateStepDeg: 30,
+    arenaRotateStepInterval: 1,
+    arenaRotateOscAmp: ROT.DEFAULT_OSC_AMP,
+    arenaRotateOscFreq: ROT.DEFAULT_OSC_FREQ,
     color: 0x88aacc,
     surface: 'plain',
     customTileData: null,
