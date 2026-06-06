@@ -1628,7 +1628,8 @@ export class ArenaSandbox extends Sandbox {
     if (data.presentStlb64) this._loadPresentStl(os.id, data.presentStlb64, data.presentColor);
     this.sceneTree.add(os.id, data.name, '⬛', 'octagon-base', {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(os.id,'obstacle') },
         { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(os.id) },
       ],
     });
@@ -4218,7 +4219,8 @@ export class ArenaSandbox extends Sandbox {
       this.obstacles.set(newId, clone);
       this.sceneTree.add(newId, clone.name, '⬛', 'octagon-base', {
         addChildButtons: [
-          { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'obstacle'); this.addRotation([newId],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'obstacle'); this.addRotation([newId],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'obstacle') },
           { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
       });

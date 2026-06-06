@@ -128,8 +128,8 @@ export function resolveEndpointWorld(
           const trap = traps.get(ep.parentId);
           if (!trap) return { x: ep.localX, y: baseHeight, z: ep.localZ };
           const surfY = trapSurfY(trap, arenas as Map<string, ArenaData>, baseHeight);
-          let wx = ep.localX;
-          let wz = ep.localZ;
+          let wx: number;
+          let wz: number;
           if (trap.parentType === 'arena') {
             const arena = arenas.get(trap.parentId);
             if (arena) {
@@ -140,7 +140,14 @@ export function resolveEndpointWorld(
               const trapWorldZ = arena.posZ + lx * sin + lz * cos;
               wx = trapWorldX + ep.localX;
               wz = trapWorldZ + ep.localZ;
+            } else {
+              wx = ep.localX;
+              wz = ep.localZ;
             }
+          } else {
+            // 'base' parent: trap world position is basePosX/Z
+            wx = trap.basePosX + ep.localX;
+            wz = trap.basePosZ + ep.localZ;
           }
           return { x: wx, y: surfY, z: wz };
         }
@@ -287,8 +294,10 @@ export function buildArcArrows(
     const pos = arcPts[posIdx].clone();
     const next = arcPts[reversed ? Math.max(posIdx - 1, 0) : Math.min(posIdx + 1, total - 1)].clone();
     mesh.position.copy(pos);
-    mesh.lookAt(next);
-    mesh.rotateX(Math.PI / 2);
+    const dir = next.clone().sub(pos).normalize();
+    if (dir.length() > 0.001) {
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    }
     return mesh;
   }
 

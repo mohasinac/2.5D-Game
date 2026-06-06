@@ -123,11 +123,14 @@ Known confirmed features added (2026-06-07 — SpawnManager physics test top):
   - **Manager pattern**: `SceneContext` + injected `getCamera/getControls/getArenas/getTraps/getSpeedLines/getZones/getWalls` callbacks. No imports from `src/screens/`.
 - **`src/screens/ArenaSandbox.ts`** integration: `import { SpawnManager }` + `import type { SceneContext }`; `_spawnMgr` + `_spawnMgrBtn` private fields; inline `SceneContext` construction + `SpawnManager` instantiation at end of `buildCustom()`; "⚽ Spawn" top-bar button toggles spawn/despawn; `_spawnMgr?.tick(dtMs)` at end of `onTick()`; `despawn()` + button deactivation in `setVisible(false)`.
 - **`src/styles/global.css`** — `.spawn-manager-hud` + all `.tb-*` element styles appended (bottom-centre, z-index 30, orange accent border, `Orbitron`/`Rajdhani` fonts, `vmin`-based sizing).
-- **Bug fixes in SpawnManager (found during audit)**:
+- **Bug fixes in SpawnManager (found during audit — session 1)**:
   - `_applySpeedLines`: added `sl.enabled === false` guard (skip disabled ribbons — field `SpeedLineData.enabled: boolean`)
   - `_applyTrigger`: added `sl.enabled === false` guard for T-key speed line search
   - `_applySelfRotation`: `selfRotate` checkbox was connected in HUD but NOT checked in code — fixed to `if (this.selfRotate && this.rpm > 0)` so the checkbox actually controls spinning
   - `_resolveWalls` gap formula: was `(rimDist - wall.thickness) - (ballDist + BALL_RADIUS)` which always subtracted thickness even for outward walls. Fixed: outward walls (default `thicknessDirection = 'outward'`) collide at `rimDist`; inward walls at `rimDist - thickness`.
+- **Bug fixes in SpawnManager (found during audit — session 2)**:
+  - `_applyTraps` base trap `surfY = 0` → should be `surfY = DEFAULT_BASE_HEIGHT` (30 cm). With `surfY = 0`, the vertical proximity check `|(tip_y − 0)| > 4` evaluates to `|30| > 4 = true` for any ball resting on the base — base traps NEVER triggered.
+  - `_resolveWalls` depenetration sign reversed: `this.pos.x -= gap * outWX` pushes ball OUTWARD (further into wall) when `gap < 0`. Correct: `this.pos.x += gap * outWX` (gap is negative → adds in −outW direction = inward toward arena center).
 
 Known confirmed pitfalls for SpawnManager (do not re-introduce):
 - **`ConeGeometry` gives backwards pyriform**: apex is at TOP — wrong for a spinning top. Always use `CylinderGeometry(topR, bottomR, height)` for the cone and tip sub-meshes.
@@ -140,6 +143,15 @@ Known confirmed pitfalls for SpawnManager (do not re-introduce):
 - **`sl.enabled === false`**: always guard `_applySpeedLines` and T-key trigger searches — disabled ribbons have physics inactive.
 - **`selfRotate` field must be checked in `_applySelfRotation`**: the checkbox exists in the HUD but must also be checked in code: `if (this.selfRotate && this.rpm > 0)`.
 - **Wall `thicknessDirection` must be respected in gap formula**: default `'outward'` → collision surface at `rimDist`; `'inward'` → at `rimDist - thickness`. Using `rimDist - thickness` for all walls is wrong and lets the ball clip 2cm into default walls.
+- **Base trap `surfY` must be `DEFAULT_BASE_HEIGHT`**: `_applyTraps` uses `surfY` in the vertical proximity check `|(tipY − surfY)| > 4 cm`. If `surfY = 0` and the base is at 30 cm, the check always fails for any ball on the base — base traps are permanently dead. Use `DEFAULT_BASE_HEIGHT`.
+- **`_resolveWalls` depenetration is `+= gap * outW`, NOT `-= gap * outW`**: `outW` is the OUTWARD normal. `gap < 0` means ball has penetrated. `pos += gap * outW` moves ball inward (correct). `pos -= gap * outW` moves ball outward = further into the wall (wrong).
+
+Known confirmed bugs fixed (2026-06-07 — jump link system):
+- **`_restoreObstacleSave` and `_duplicateNode` obstacle branch missing `⤻+` button**: Both paths that add obstacle tree nodes were missing the jump link child button. Fixed: added `{ label:'⤻+', title:'Add jump link', className:'sl-btn', onClick:()=>this._addJumpLink(os.id,'obstacle') }` between `↻+` and `✦+` in both `_restoreObstacleSave` and the `_duplicateNode` obstacle branch. The pattern: every node type that can serve as a jump link source (arena, obstacle, trap, base) must have `⤻+` in its `addChildButtons`.
+- **`resolveEndpointWorld` base-parented trap world offset**: When `ep.parentType === 'trap'` and `trap.parentType === 'base'`, world XZ was `ep.localX/localZ` — ignoring the trap's `basePosX/basePosZ`. Fixed: else branch sets `wx = trap.basePosX + ep.localX; wz = trap.basePosZ + ep.localZ`.
+- **`buildArcArrows` cone orientation used `lookAt` + `rotateX`**: `mesh.lookAt(next); mesh.rotateX(Math.PI / 2)` gimbal-locks for near-vertical arcs. Fixed with quaternion: `mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir)` where `dir = next.sub(pos).normalize()`.
+- **`showJumpLink` ARC SHAPE `selectRow` routed to `onGeomChange`**: `arcProfile` is a structural mode change (type selector), must call `onFullChange(); refresh()` — same pattern as all other mode selectors. Fixed.
+- **`showJumpLink` 15+ `numRow`/`toggleRow` callbacks missing `onGeomChange()`**: LAUNCH PHYSICS, LANDING, IN-FLIGHT SPIN, IN-FLIGHT STATS, VISUAL TRAIL (width, fade), FLASH (launch, land, color) callbacks mutated data in-memory but never triggered `saveArena()`. Fixed by adding `onGeomChange()` to every callback in those sections.
 
 Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
 

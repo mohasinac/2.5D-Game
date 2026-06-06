@@ -382,8 +382,9 @@ export class SpawnManager {
       this.vel.z -= (1 + r) * radVel * outWZ;
 
       if (gap < 0) {
-        this.pos.x -= gap * outWX;
-        this.pos.z -= gap * outWZ;
+        // gap is negative; adding gap*outW moves ball inward (toward center) by |gap|
+        this.pos.x += gap * outWX;
+        this.pos.z += gap * outWZ;
       }
 
       this._lastCollisionTime     = performance.now();
@@ -539,7 +540,7 @@ export class SpawnManager {
     for (const trap of this.getTraps().values()) {
       let cx: number, cz: number, surfY: number;
       if (trap.parentType === 'base') {
-        cx = trap.basePosX; cz = trap.basePosZ; surfY = 0;
+        cx = trap.basePosX; cz = trap.basePosZ; surfY = DEFAULT_BASE_HEIGHT;
       } else {
         const arena = this.getArenas().get(trap.parentId);
         if (!arena) continue;

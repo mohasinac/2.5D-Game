@@ -3106,46 +3106,46 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       { value: 'parabolic', label: 'Parabolic (natural arc)' },
       { value: 'bezier',    label: 'Bezier (smooth)' },
       { value: 'instant',   label: 'Instant (teleport-like)' },
-    ], data.arcProfile, v => { data.arcProfile = v as JumpArcProfile; onGeomChange(); });
+    ], data.arcProfile, v => { data.arcProfile = v as JumpArcProfile; onFullChange(); refresh(); });
     this.numRow('Arc Height cm', data.arcHeight, 0, 300, 1, v => { data.arcHeight = v; onGeomChange(); });
 
     const f = data.flight;
     this.section('LAUNCH PHYSICS');
-    this.numRow('Arc Duration ms', f.arcDuration,    100, 5000, 50, v => { f.arcDuration    = v; });
-    this.numRow('Launch Angle °',  f.launchAngleDeg, 0,   90,   1,  v => { f.launchAngleDeg = v; });
-    this.numRow('Launch Force cm/s', f.launchForce,  10,  1000, 10, v => { f.launchForce    = v; });
-    this.numRow('Gravity Scale',   f.gravityScale,   0,   5,    0.1, v => { f.gravityScale   = v; });
-    this.numRow('Air Drag',        f.airDrag,        0,   1,    0.01, v => { f.airDrag       = v; });
+    this.numRow('Arc Duration ms', f.arcDuration,    100, 5000, 50, v => { f.arcDuration    = v; onGeomChange(); });
+    this.numRow('Launch Angle °',  f.launchAngleDeg, 0,   90,   1,  v => { f.launchAngleDeg = v; onGeomChange(); });
+    this.numRow('Launch Force cm/s', f.launchForce,  10,  1000, 10, v => { f.launchForce    = v; onGeomChange(); });
+    this.numRow('Gravity Scale',   f.gravityScale,   0,   5,    0.1, v => { f.gravityScale   = v; onGeomChange(); });
+    this.numRow('Air Drag',        f.airDrag,        0,   1,    0.01, v => { f.airDrag       = v; onGeomChange(); });
 
     this.section('LANDING');
-    this.numRow('Impact',  f.landingImpact,  0, 1, 0.05, v => { f.landingImpact  = v; });
-    this.numRow('Bounce',  f.landingBounce,  0, 1, 0.05, v => { f.landingBounce  = v; });
+    this.numRow('Impact',  f.landingImpact,  0, 1, 0.05, v => { f.landingImpact  = v; onGeomChange(); });
+    this.numRow('Bounce',  f.landingBounce,  0, 1, 0.05, v => { f.landingBounce  = v; onGeomChange(); });
 
     this.section('IN-FLIGHT SPIN');
-    this.numRow('Spin Rate ×',    f.spinRateMult,  0.1, 3, 0.05, v => { f.spinRateMult  = v; });
-    this.numRow('Spin Delta RPM', f.spinDeltaRPM, -2000, 2000, 50, v => { f.spinDeltaRPM = v; });
+    this.numRow('Spin Rate ×',    f.spinRateMult,  0.1, 3, 0.05, v => { f.spinRateMult  = v; onGeomChange(); });
+    this.numRow('Spin Delta RPM', f.spinDeltaRPM, -2000, 2000, 50, v => { f.spinDeltaRPM = v; onGeomChange(); });
 
     this.section('IN-FLIGHT STATS');
     const sm = f.statModifiers;
-    this.numRow('Spin Rate ×',     sm.spinRateMult,    0.1, 3, 0.05, v => { sm.spinRateMult    = v; });
-    this.numRow('Stamina ×',       sm.staminaMult,     0.1, 3, 0.05, v => { sm.staminaMult     = v; });
-    this.numRow('Attack ×',        sm.attackMult,      0.1, 3, 0.05, v => { sm.attackMult      = v; });
-    this.numRow('Defense ×',       sm.defenseMult,     0.1, 3, 0.05, v => { sm.defenseMult     = v; });
-    this.numRow('Weight ×',        sm.weightMult,      0.1, 3, 0.05, v => { sm.weightMult      = v; });
-    this.numRow('Burst Resist ×',  sm.burstResistMult, 0.1, 3, 0.05, v => { sm.burstResistMult = v; });
+    this.numRow('Spin Rate ×',     sm.spinRateMult,    0.1, 3, 0.05, v => { sm.spinRateMult    = v; onGeomChange(); });
+    this.numRow('Stamina ×',       sm.staminaMult,     0.1, 3, 0.05, v => { sm.staminaMult     = v; onGeomChange(); });
+    this.numRow('Attack ×',        sm.attackMult,      0.1, 3, 0.05, v => { sm.attackMult      = v; onGeomChange(); });
+    this.numRow('Defense ×',       sm.defenseMult,     0.1, 3, 0.05, v => { sm.defenseMult     = v; onGeomChange(); });
+    this.numRow('Weight ×',        sm.weightMult,      0.1, 3, 0.05, v => { sm.weightMult      = v; onGeomChange(); });
+    this.numRow('Burst Resist ×',  sm.burstResistMult, 0.1, 3, 0.05, v => { sm.burstResistMult = v; onGeomChange(); });
 
     this.section('VISUAL TRAIL');
     this.toggleRow('Trail Enabled', f.trailEnabled, v => { f.trailEnabled = v; onFullChange(); refresh(); });
     if (f.trailEnabled) {
       this.colorRow('Trail Color', f.trailColor ?? data.color, v => { f.trailColor = v; onGeomChange(); });
-      this.numRow('Trail Width cm', f.trailWidth, 0.1, 20, 0.1, v => { f.trailWidth = v; });
-      this.numRow('Trail Fade', f.trailFade, 0, 1, 0.05, v => { f.trailFade = v; });
+      this.numRow('Trail Width cm', f.trailWidth, 0.1, 20, 0.1, v => { f.trailWidth = v; onGeomChange(); });
+      this.numRow('Trail Fade', f.trailFade, 0, 1, 0.05, v => { f.trailFade = v; onGeomChange(); });
     }
 
     this.section('FLASH');
-    this.toggleRow('Launch Flash', f.launchFlash, v => { f.launchFlash = v; });
-    this.toggleRow('Land Flash',   f.landFlash,   v => { f.landFlash   = v; });
-    this.colorRow('Flash Color', f.flashColor, v => { f.flashColor = v; });
+    this.toggleRow('Launch Flash', f.launchFlash, v => { f.launchFlash = v; onGeomChange(); });
+    this.toggleRow('Land Flash',   f.landFlash,   v => { f.landFlash   = v; onGeomChange(); });
+    this.colorRow('Flash Color', f.flashColor, v => { f.flashColor = v; onGeomChange(); });
 
     this.section('APPEARANCE');
     this.colorRow('Color',      data.color,           v => { data.color      = v; onGeomChange(); });
