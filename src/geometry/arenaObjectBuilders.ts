@@ -4,6 +4,7 @@ import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
   SpeedLineData, SpeedLineSegment,
 } from '../types/arenaTypes';
+import { SceneSurfaceProjector } from './sceneSurfaceProjector';
 import { shapePoints, childArenaBaseY, childWorldPos, makeSurfFn, polarToLocalXZ } from './surfaceUtils';
 import {
   computeSegmentPath, computeJoints, buildRibbon3D, buildStartMarker, buildEndMarker,
@@ -57,13 +58,14 @@ function buildArenaBowlGeo(data: ArenaData, pts: THREE.Vector2[], baseY: number,
   if (data.isMoat) {
     const innerPts = shapePoints({ openingShape:data.innerOpeningShape, radiusX:data.innerRadiusX, radiusZ:data.innerRadiusZ, sides:data.innerSides, starInner:data.innerStarInner });
     return [
-      buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY),
-      buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY),
+      buildMoatGeometry(pts, innerPts, data.depth, data.wallProfile, data.innerWallProfile, data.innerRimOffset, baseY, data.stepCount),
+      buildMoatEdgeLines(pts, innerPts, data.depth, data.innerRimOffset, baseY, data.wallProfile, data.innerWallProfile, data.stepCount),
     ];
   }
   if (data.posY > ARENA_ELEVATED_THRESHOLD) {
+    // buildFreeArenaMesh only handles parabolic/straight — resolve step/spiral to their base shape
     return [
-      buildFreeArenaMesh(pts, data.depth, data.wallProfile, baseY, holes),
+      buildFreeArenaMesh(pts, data.depth, resolvedWallProfile(data), baseY, holes),
       buildFreeArenaEdges(pts, data.depth, baseY),
     ];
   }
@@ -71,12 +73,12 @@ function buildArenaBowlGeo(data: ArenaData, pts: THREE.Vector2[], baseY: number,
     const { geo, edgeGeo } = buildSteppedBowl(data, baseY, holes);
     return [geo, edgeGeo];
   }
+  // Non-elevated, non-moat, non-step: use buildFreeArenaMesh so the bowl gets an outer skirt
   const wp = resolvedWallProfile(data);
-  const meshGeo = wp === 'parabolic'
-    ? buildParabolicBowl(pts, data.depth, baseY, holes)
-    : buildStraightCut(pts, data.depth, baseY);
-  const egeo = buildEdgeLines(pts, data.depth, wp, baseY);
-  return [meshGeo, egeo];
+  return [
+    buildFreeArenaMesh(pts, data.depth, wp, baseY, holes),
+    buildFreeArenaEdges(pts, data.depth, baseY),
+  ];
 }
 
 function buildSpiralMeshes(data: ArenaData, scene: THREE.Scene): THREE.Mesh[] {
@@ -295,6 +297,9 @@ export function defaultSegment(id: string, length?: number): SpeedLineSegment {
     rotX: 0, rotY: 0, rotZ: 0,
     speedMult: 0,
     objRotX: 0, objRotY: 0, objRotZ: 0,
+    maxStayDuration: 0,
+    statModifiers: null,
+    sectionIndex: -1,
   };
 }
 
@@ -324,6 +329,37 @@ export function defaultSpeedLine(
     allowMidAirEntry: false, overridePhysics: false,
     swapPriority: SL.DEFAULT_SWAP_PRIORITY,
     totalLength: 0,
+
+    presetType: 'custom',
+    presetParams: {
+      radiusX: SL.PRESET_RADIUS_DEF, radiusZ: SL.PRESET_RADIUS_DEF,
+      sides: 6, petals: 5, turns: 2, steps: SL.PRESET_STEPS_DEF,
+      centerX: 0, centerZ: 0, rotationY: 0, heightDelta: 0,
+      closeLoop: false, innerRadius: 0.4,
+      pitchPerTurn: 0, loopGap: 0, radiusEasing: 'linear',
+      sections: [],
+      centerY: 0, startPosX: 0, startPosZ: 0, startPosY: 0,
+      endPosX: 0, endPosZ: 0, endPosY: 0,
+      arcFraction: 1.0,
+      modulation: { type: 'none', amplitude: 5, periodSteps: 12, waveform: 'triangle', modPhase: 0, pulseWidth: 0.2 },
+    },
+    speedRamp: {
+      profile: 'constant',
+      speedMin: SL.DEFAULT_SPEED_MULT, speedMax: SL.DEFAULT_SPEED_MULT,
+      entrySteps: 0, exitSteps: 0,
+    },
+    surfaceOffset: SL.DEFAULT_SURFACE_OFFSET,
+    surfaceOrientObject: true,
+    airNormalMode: 'lean_center',
+    airNormalTiltDeg: 10,
+    pointNormals: [],
+    baseCondition: 'none',
+    conditionPhase: 'any',
+    ejectBehavior: 'toward_center',
+    targetSelectionMode: 'at_entrance',
+    conditionCheckIntervalMs: SL.DEFAULT_CONDITION_CHECK_MS,
+    statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 },
+
     mesh:           null as unknown as THREE.Mesh,
     edges:          null as unknown as THREE.LineSegments,
     markerMeshes:   [],
@@ -336,9 +372,11 @@ export function buildSpeedLineObjects(
   sl: SpeedLineData,
   arena: ArenaData,
   zones: Map<string, ZoneData>,
+  projector?: SceneSurfaceProjector,
 ): { mesh: THREE.Mesh; edges: THREE.LineSegments; markerMeshes: THREE.Mesh[]; handleMeshes: THREE.Mesh[]; totalLength: number } {
+  sl.pointNormals = [];   // clear before rebuild
   const surfFn = makeSurfFn({ parentZoneId: sl.parentZoneId }, arena, zones);
-  const pts = computeSegmentPath(sl, surfFn);
+  const pts = computeSegmentPath(sl, arena, surfFn, projector);
 
   // Compute per-point normals
   const normals = pts.map(pt => pathSurfaceNormal(pt, arena, sl));
@@ -409,6 +447,7 @@ export function applySpeedLine(
   scene: THREE.Scene | null,
   addFn: (...objs: THREE.Object3D[]) => void,
   removeFn: (...objs: THREE.Object3D[]) => void,
+  projector?: SceneSurfaceProjector,
 ): void {
   // Dispose old
   if (sl.mesh) { removeFn(sl.mesh); sl.mesh.geometry.dispose(); (sl.mesh.material as THREE.Material).dispose(); }
@@ -419,7 +458,7 @@ export function applySpeedLine(
   sl.markerMeshes = []; sl.handleMeshes = []; sl.overlapMarkers = [];
 
   // Rebuild
-  const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, zones);
+  const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, zones, projector);
   sl.mesh = mesh; sl.edges = edges;
   sl.markerMeshes = markerMeshes; sl.handleMeshes = handleMeshes;
   sl.totalLength = totalLength;

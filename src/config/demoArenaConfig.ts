@@ -23,8 +23,9 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
   trapSeq: 4,
   portalSeq: 2,
   rotationSeq: 2,
+  footings: [],
+  footingSeq: 0,
 
-  baseWalls: [],
   speedLines: [], // zone-parented speed lines (none in this demo)
 
   // ════════════════════════════════════════════════════════════════════════
@@ -357,7 +358,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           curveRadius: 40, curveAngle: 90, curveDirection: 'left', bankAngle: 0,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 80, endY: 0, endZ: 0,
-          loopRadius: 25, corkscrewLength: 60, corkscrewTurns: 1,
+          loopRadius: 25, loopOrientation: 'vertical', tiltAngle: 0, corkscrewLength: 60, corkscrewTurns: 1,
           color: null, surface: null,
         },
         {
@@ -366,7 +367,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           curveRadius: 25, curveAngle: 360, curveDirection: 'left', bankAngle: 0,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 0, endY: 0, endZ: 0,
-          loopRadius: 25, corkscrewLength: 60, corkscrewTurns: 1,
+          loopRadius: 25, loopOrientation: 'vertical', tiltAngle: 0, corkscrewLength: 60, corkscrewTurns: 1,
           color: null, surface: null,
         },
         {
@@ -375,7 +376,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           curveRadius: 40, curveAngle: 90, curveDirection: 'left', bankAngle: 10,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 0, endY: 0, endZ: 0,
-          loopRadius: 25, corkscrewLength: 60, corkscrewTurns: 1,
+          loopRadius: 25, loopOrientation: 'vertical', tiltAngle: 0, corkscrewLength: 60, corkscrewTurns: 1,
           color: null, surface: null,
         },
       ],
@@ -415,7 +416,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           curveRadius: 30, curveAngle: 90, curveDirection: 'right', bankAngle: 0,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 60, endY: 16, endZ: 0,
-          loopRadius: 20, corkscrewLength: 50, corkscrewTurns: 1,
+          loopRadius: 20, loopOrientation: 'vertical', tiltAngle: 0, corkscrewLength: 50, corkscrewTurns: 1,
           color: null, surface: null,
         },
         {
@@ -424,7 +425,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           curveRadius: 20, curveAngle: 180, curveDirection: 'right', bankAngle: 20,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 0, endY: 0, endZ: 0,
-          loopRadius: 20, corkscrewLength: 50, corkscrewTurns: 1,
+          loopRadius: 20, loopOrientation: 'vertical', tiltAngle: 0, corkscrewLength: 50, corkscrewTurns: 1,
           color: null, surface: null,
         },
         {
@@ -433,7 +434,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           curveRadius: 15, curveAngle: 45, curveDirection: 'left', bankAngle: 0,
           cp1X: 0, cp1Y: 0, cp1Z: 0, cp2X: 0, cp2Y: 0, cp2Z: 0,
           endX: 0, endY: 0, endZ: 0,
-          loopRadius: 20, corkscrewLength: 50, corkscrewTurns: 1,
+          loopRadius: 20, loopOrientation: 'vertical', tiltAngle: 0, corkscrewLength: 50, corkscrewTurns: 1,
           color: null, surface: null,
         },
       ],

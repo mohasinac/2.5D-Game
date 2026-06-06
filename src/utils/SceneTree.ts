@@ -107,6 +107,12 @@ export class SceneTree {
 
   setNodeActions(id: string, items: CtxItem[]): void { this.nodeActions.set(id, items); }
 
+  /** Returns current child IDs of a node in their displayed (DOM) order. */
+  getChildIds(id: string): string[] {
+    const node = this.nodes.get(id);
+    return node ? [...node.childIds] : [];
+  }
+
   private select(id: string, multi: boolean): void {
     if (!multi) { this.sel.forEach(s=>this.nodes.get(s)?.rowEl.classList.remove('tree-node--selected')); this.sel.clear(); }
     if (this.sel.has(id) && multi) { this.sel.delete(id); this.nodes.get(id)?.rowEl.classList.remove('tree-node--selected'); }

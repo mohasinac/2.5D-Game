@@ -18,7 +18,7 @@ export function _texKey(opts: SurfaceMaterialOpts): string {
   return `${opts.color}_${opts.surface}`;
 }
 export function _matKey(opts: SurfaceMaterialOpts): string {
-  return `${_texKey(opts)}:${opts.transparent ? 't' : 'o'}:${opts.opacity ?? 1}:${opts.side ?? THREE.DoubleSide}:${opts.baseMaterial ?? ''}`;
+  return `${_texKey(opts)}:${opts.transparent ? 't' : 'o'}:${opts.opacity ?? 1}:${opts.side ?? THREE.DoubleSide}:${opts.baseMaterial ?? ''}:${opts.polygonOffset ? 'po' : ''}`;
 }
 
 export function _paintCanvas(color: number, surface: SurfaceType): HTMLCanvasElement {
@@ -76,6 +76,9 @@ export function buildSurfaceMaterial(opts: SurfaceMaterialOpts): THREE.MeshStand
     map: map??undefined, side: opts.side ?? THREE.DoubleSide,
     roughness, metalness,
     transparent: opts.transparent??false, opacity: opts.opacity??1,
+    polygonOffset: opts.polygonOffset ?? false,
+    polygonOffsetFactor: opts.polygonOffset ? 2 : 0,
+    polygonOffsetUnits: opts.polygonOffset ? 2 : 0,
   });
   _matCache.set(mk, { mat, refs: 1 }); return mat;
 }

@@ -13,6 +13,7 @@ import {
   DEG2RAD,
   BRIDGE_SEGMENT_SAMPLES,
   BRIDGE_LOOP_SEGMENTS,
+  BRIDGE_LOOP_OPEN_DEG,
   BRIDGE_CROSS_COLS,
   DEFAULT_SEGMENT_LENGTH,
   DEFAULT_CURVE_RADIUS,
@@ -95,23 +96,34 @@ export function resolveStartPose(
 export function sampleSegmentPath(
   seg: BridgeSegmentData,
   startPose: SegmentPose,
+  section?: BridgeSection,
 ): SegmentPose[] {
+  // Apply tiltAngle: roll the cross-section around the forward direction before sampling.
+  const start: SegmentPose = seg.tiltAngle
+    ? {
+        pos: startPose.pos.clone(),
+        dir: startPose.dir.clone(),
+        up: rotateAroundAxis(startPose.up.clone(), startPose.dir, seg.tiltAngle * DEG2RAD),
+      }
+    : startPose;
   switch (seg.type) {
-    case 'straight': return sampleStraight(startPose, seg.length, BRIDGE_SEGMENT_SAMPLES);
-    case 'ramp':     return sampleRamp(startPose, seg.length, seg.rampAngle, BRIDGE_SEGMENT_SAMPLES);
-    case 'curve':    return sampleCurve(startPose, seg.curveRadius, seg.curveAngle, seg.curveDirection, seg.bankAngle, BRIDGE_SEGMENT_SAMPLES);
-    case 'hairpin':  return sampleCurve(startPose, seg.curveRadius || DEFAULT_HAIRPIN_RADIUS, 180, seg.curveDirection, seg.bankAngle, BRIDGE_SEGMENT_SAMPLES);
-    case 'loop':     return sampleLoop(startPose, seg.loopRadius, BRIDGE_LOOP_SEGMENTS);
-    case 'corkscrew':return sampleCorkscrew(startPose, seg.corkscrewLength, seg.corkscrewTurns, BRIDGE_SEGMENT_SAMPLES);
-    case 'chicane':  return sampleChicane(startPose, seg.curveRadius, seg.curveAngle / 2, seg.curveDirection, BRIDGE_SEGMENT_SAMPLES);
-    case 'bezier':   return sampleBezier(startPose, seg, BRIDGE_SEGMENT_SAMPLES);
-    default:         return sampleStraight(startPose, DEFAULT_SEGMENT_LENGTH, BRIDGE_SEGMENT_SAMPLES);
+    case 'straight': return sampleStraight(start, seg.length, BRIDGE_SEGMENT_SAMPLES);
+    case 'ramp':     return sampleRamp(start, seg.length, seg.rampAngle, BRIDGE_SEGMENT_SAMPLES);
+    case 'curve':    return sampleCurve(start, seg.curveRadius, seg.curveAngle, seg.curveDirection, seg.bankAngle, BRIDGE_SEGMENT_SAMPLES);
+    case 'hairpin':  return sampleCurve(start, seg.curveRadius || DEFAULT_HAIRPIN_RADIUS, 180, seg.curveDirection, seg.bankAngle, BRIDGE_SEGMENT_SAMPLES);
+    case 'loop':        return sampleLoop(start, seg.loopRadius, seg.loopOrientation, section?.width ?? DEFAULT_BRIDGE_WIDTH, BRIDGE_LOOP_SEGMENTS);
+    case 'return_loop': return sampleReturnLoop(start, seg.loopRadius, BRIDGE_LOOP_SEGMENTS);
+    case 'exit_loop':   return sampleExitLoop(start, seg.loopRadius, BRIDGE_LOOP_SEGMENTS);
+    case 'corkscrew':return sampleCorkscrew(start, seg.corkscrewLength, seg.corkscrewTurns, BRIDGE_SEGMENT_SAMPLES);
+    case 'chicane':  return sampleChicane(start, seg.curveRadius, seg.curveAngle / 2, seg.curveDirection, BRIDGE_SEGMENT_SAMPLES);
+    case 'bezier':   return sampleBezier(start, seg, BRIDGE_SEGMENT_SAMPLES);
+    default:         return sampleStraight(start, DEFAULT_SEGMENT_LENGTH, BRIDGE_SEGMENT_SAMPLES);
   }
 }
 
 /** Returns the end pose of the segment (last element of sampleSegmentPath). */
-export function computeSegmentEndPose(seg: BridgeSegmentData, startPose: SegmentPose): SegmentPose {
-  const samples = sampleSegmentPath(seg, startPose);
+export function computeSegmentEndPose(seg: BridgeSegmentData, startPose: SegmentPose, section?: BridgeSection): SegmentPose {
+  const samples = sampleSegmentPath(seg, startPose, section);
   return samples[samples.length - 1];
 }
 
@@ -184,21 +196,88 @@ function sampleCurve(
   return result;
 }
 
-function sampleLoop(start: SegmentPose, radius: number, N: number): SegmentPose[] {
-  // Full 360° vertical loop; centre is above start pos
+function sampleLoop(
+  start: SegmentPose,
+  radius: number,
+  orientation: 'vertical' | 'horizontal',
+  trackWidth: number,
+  N: number,
+): SegmentPose[] {
+  // Helical loop: makes one full 360° revolution while drifting (trackWidth + 2) cm
+  // sideways (in the binormal direction for vertical, or forward direction for horizontal).
+  // This places the exit track clearly beside the entry track — the classic Hot Wheels
+  // crossover where entry and exit run parallel but are visually separated.
+  //
+  // vertical   — rotates around the binormal (right) axis; centre is directly above start.
+  // horizontal — rotates around the up (Y) axis; centre is to the right of start.
+  const lateralStep = trackWidth + 2;   // total lateral drift across one full revolution
   const right = binormal(start);
-  const centre = start.pos.clone().addScaledVector(start.up, radius);
+
+  let axis: THREE.Vector3;
+  let driftDir: THREE.Vector3;   // direction of lateral drift per revolution
+  let centre0: THREE.Vector3;    // loop centre at angle=0
+
+  if (orientation === 'horizontal') {
+    axis     = start.up.clone();
+    driftDir = start.dir.clone();   // horizontal loop drifts forward
+    centre0  = start.pos.clone().addScaledVector(right, radius);
+  } else {
+    axis     = right.clone();
+    driftDir = right.clone();       // vertical loop drifts to the right (binormal)
+    centre0  = start.pos.clone().addScaledVector(start.up, radius);
+  }
+
+  const toStart = start.pos.clone().sub(centre0);
   const result: SegmentPose[] = [];
   for (let i = 0; i < N; i++) {
-    const t = i / (N - 1);
-    const ang = t * Math.PI * 2;
-    // Start at bottom (facing forward), rotate around right axis
-    const toStart = start.pos.clone().sub(centre);
-    const rotated = rotateAroundAxis(toStart, right, -ang);
-    const pos = centre.clone().add(rotated);
-    const tangent = rotateAroundAxis(start.dir.clone(), right, -ang);
-    const up = rotateAroundAxis(start.up.clone(), right, -ang);
+    const ang = (i / (N - 1)) * Math.PI * 2;  // 0 → 2π (full 360°)
+    // Centre drifts linearly in driftDir as angle increases
+    const centre = centre0.clone().addScaledVector(driftDir, lateralStep * ang / (Math.PI * 2));
+    const pos     = centre.clone().add(rotateAroundAxis(toStart.clone(), axis, ang));
+    const tangent = rotateAroundAxis(start.dir.clone(), axis, ang)
+                      .addScaledVector(driftDir, lateralStep / (Math.PI * 2 * radius));
+    const up      = rotateAroundAxis(start.up.clone(), axis, ang);
     result.push({ pos, dir: tangent.normalize(), up: up.normalize() });
+  }
+  return result;
+}
+
+/**
+ * return_loop — 180° vertical arc that reverses travel direction.
+ * Enters going forward, arcs upward and over, exits going backward.
+ */
+function sampleReturnLoop(start: SegmentPose, radius: number, N: number): SegmentPose[] {
+  const right = binormal(start);
+  const axis  = right.clone();
+  const centre = start.pos.clone().addScaledVector(start.up, radius);
+  const toStart = start.pos.clone().sub(centre);
+  const result: SegmentPose[] = [];
+  for (let i = 0; i < N; i++) {
+    const ang = (i / (N - 1)) * Math.PI;   // 0 → 180°
+    const pos = centre.clone().add(rotateAroundAxis(toStart.clone(), axis, ang));
+    const dir = rotateAroundAxis(start.dir.clone(), axis, ang);
+    const up  = rotateAroundAxis(start.up.clone(), axis, ang);
+    result.push({ pos, dir: dir.normalize(), up: up.normalize() });
+  }
+  return result;
+}
+
+/**
+ * exit_loop — 90° vertical arc launching the track straight upward.
+ * Enters going forward, curves up, exits pointing straight up (90° arc).
+ */
+function sampleExitLoop(start: SegmentPose, radius: number, N: number): SegmentPose[] {
+  const right = binormal(start);
+  const axis  = right.clone();
+  const centre = start.pos.clone().addScaledVector(start.up, radius);
+  const toStart = start.pos.clone().sub(centre);
+  const result: SegmentPose[] = [];
+  for (let i = 0; i < N; i++) {
+    const ang = (i / (N - 1)) * Math.PI * 0.5;  // 0 → 90°
+    const pos = centre.clone().add(rotateAroundAxis(toStart.clone(), axis, ang));
+    const dir = rotateAroundAxis(start.dir.clone(), axis, ang);
+    const up  = rotateAroundAxis(start.up.clone(), axis, ang);
+    result.push({ pos, dir: dir.normalize(), up: up.normalize() });
   }
   return result;
 }
@@ -318,7 +397,7 @@ export function buildSegmentDeckGeometry(
   startPose: SegmentPose,
   section: BridgeSection,
 ): THREE.BufferGeometry {
-  const poses = sampleSegmentPath(seg, startPose);
+  const poses = sampleSegmentPath(seg, startPose, section);
   const M = poses.length;     // frames along path
   const K = BRIDGE_CROSS_COLS + 1;  // verts per cross-section (left rail + cols + right rail)
 
@@ -377,22 +456,6 @@ export function buildSegmentDeckGeometry(
     }
   }
 
-  // Start cap
-  const startCs = crossSectionPoints(poses[0], section);
-  const capBase = positions.length / 3;
-  for (const p of startCs) positions.push(p.x, p.y, p.z);
-  for (let i = 0; i < K - 2; i++) {
-    indices.push(capBase, capBase + i + 1, capBase + i + 2);
-  }
-
-  // End cap
-  const endCs = crossSectionPoints(poses[M - 1], section);
-  const capEnd = positions.length / 3;
-  for (const p of endCs) positions.push(p.x, p.y, p.z);
-  for (let i = 0; i < K - 2; i++) {
-    indices.push(capEnd, capEnd + i + 2, capEnd + i + 1);  // reversed winding
-  }
-
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
@@ -407,7 +470,7 @@ export function buildSegmentEdgeGeometry(
   startPose: SegmentPose,
   section: BridgeSection,
 ): THREE.BufferGeometry {
-  const poses = sampleSegmentPath(seg, startPose);
+  const poses = sampleSegmentPath(seg, startPose, section);
   const verts: number[] = [];
   const K = BRIDGE_CROSS_COLS;
 
@@ -467,6 +530,8 @@ export function defaultSegment(
     cp2X: 20, cp2Y: 0, cp2Z: 20,
     endX: 0,  endY: 0, endZ: 30,
     loopRadius: DEFAULT_LOOP_RADIUS,
+    loopOrientation: 'vertical',
+    tiltAngle: 0,
     corkscrewLength: DEFAULT_CORKSCREW_LENGTH,
     corkscrewTurns: 1,
     color: null,

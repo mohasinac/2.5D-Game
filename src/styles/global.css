@@ -860,8 +860,64 @@ body {
   background:   rgba(0, 229, 255, 0.10);
   border-color: rgba(0, 229, 255, 0.55);
 }
+.prop-input option {
+  background: #0d0d1a;
+  color: var(--text);
+}
 .prop-input::-webkit-inner-spin-button,
 .prop-input::-webkit-outer-spin-button { opacity: 0.5; }
+
+/* Slider (range) — game aesthetic */
+.prop-slider {
+  flex:             1;
+  height:           calc(44 * var(--mm));
+  -webkit-appearance: none;
+  appearance:       none;
+  background:       transparent;
+  cursor:           pointer;
+  padding:          0;
+}
+.prop-slider::-webkit-slider-runnable-track {
+  height:           calc(4 * var(--mm));
+  background:       rgba(0, 229, 255, 0.18);
+  border-radius:    calc(2 * var(--mm));
+}
+.prop-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width:            calc(14 * var(--mm));
+  height:           calc(14 * var(--mm));
+  border-radius:    50%;
+  background:       #00e5ff;
+  margin-top:       calc(-5 * var(--mm));
+  cursor:           pointer;
+  box-shadow:       0 0 calc(4 * var(--mm)) rgba(0, 229, 255, 0.55);
+}
+.prop-slider:focus::-webkit-slider-runnable-track {
+  background:       rgba(0, 229, 255, 0.35);
+}
+.prop-slider::-moz-range-track {
+  height:           calc(4 * var(--mm));
+  background:       rgba(0, 229, 255, 0.18);
+  border-radius:    calc(2 * var(--mm));
+  border:           none;
+}
+.prop-slider::-moz-range-thumb {
+  width:            calc(14 * var(--mm));
+  height:           calc(14 * var(--mm));
+  border:           none;
+  border-radius:    50%;
+  background:       #00e5ff;
+  cursor:           pointer;
+  box-shadow:       0 0 calc(4 * var(--mm)) rgba(0, 229, 255, 0.55);
+}
+
+/* Narrow companion number input next to slider */
+.prop-num-input {
+  flex:        0 0 calc(68 * var(--mm));
+  height:      calc(44 * var(--mm));
+  padding:     0 calc(6 * var(--mm));
+  text-align:  center;
+}
 
 .prop-value-read {
   flex:        1;
@@ -1287,6 +1343,10 @@ body {
 }
 .prop-select:focus {
   border-color: rgba(0, 229, 255, 0.6);
+}
+.prop-select option {
+  background: #0d0d1a;
+  color: var(--text);
 }
 .prop-action-btn {
   font-size:  calc(10 * var(--mm));

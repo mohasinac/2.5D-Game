@@ -43,21 +43,58 @@ export abstract class AbstractPropertiesPanel {
   ): HTMLInputElement {
     const row = document.createElement('div');
     row.className = 'prop-row';
+
     const lbl = document.createElement('span');
     lbl.className = 'prop-label';
     lbl.textContent = label;
-    const inp = document.createElement('input');
-    inp.className = 'prop-input';
-    inp.type = 'number';
-    inp.value = String(parseFloat(value.toFixed(3)));
-    inp.min = String(min);
-    inp.max = String(max);
-    inp.step = String(step);
-    inp.addEventListener('input', () => onChange(parseFloat(inp.value) || 0));
+
+    const initVal = String(parseFloat(value.toFixed(3)));
+
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.className = 'prop-slider';
+    slider.min = String(min);
+    slider.max = String(max);
+    slider.step = String(step);
+    slider.value = initVal;
+
+    const num = document.createElement('input');
+    num.type = 'number';
+    num.className = 'prop-input prop-num-input';
+    num.min = String(min);
+    num.max = String(max);
+    num.step = String(step);
+    num.value = initVal;
+
+    // Slider: live — dragging is intentional; sync number field
+    slider.addEventListener('input', () => {
+      const v = parseFloat(slider.value) || 0;
+      num.value = String(v);
+      onChange(v);
+    });
+
+    // Number input: sync slider thumb position while typing (no onChange)
+    num.addEventListener('input', () => {
+      const v = parseFloat(num.value);
+      if (!isNaN(v)) slider.value = String(Math.max(min, Math.min(max, v)));
+    });
+
+    // Commit only on blur or Enter
+    const commit = () => {
+      const raw = parseFloat(num.value);
+      const v = isNaN(raw) ? min : Math.max(min, Math.min(max, raw));
+      num.value = String(parseFloat(v.toFixed(3)));
+      slider.value = String(v);
+      onChange(v);
+    };
+    num.addEventListener('blur', commit);
+    num.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Enter') num.blur(); });
+
     row.appendChild(lbl);
-    row.appendChild(inp);
+    row.appendChild(slider);
+    row.appendChild(num);
     this.content.appendChild(row);
-    return inp;
+    return slider; // range input — _stepCountSlider uses querySelectorAll('input[type=range]')
   }
 
   colorRow(label: string, value: number, onChange: (v: number) => void): HTMLInputElement {
@@ -169,13 +206,19 @@ export abstract class AbstractPropertiesPanel {
     lbl.textContent = 'Theme';
     const grid = document.createElement('div');
     grid.className = 'prop-theme-grid';
+    const themeBtns: HTMLButtonElement[] = [];
     for (const [key, theme] of Object.entries(VISUAL_THEME_PRESETS)) {
       const btn = document.createElement('button');
       btn.className = 'game-btn prop-theme-btn';
       btn.textContent = key.charAt(0).toUpperCase() + key.slice(1);
       btn.title = `Apply ${key} theme`;
       btn.style.borderColor = '#' + theme.color.toString(16).padStart(6, '0');
-      btn.addEventListener('click', () => onApply(theme));
+      btn.addEventListener('click', () => {
+        themeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        onApply(theme);
+      });
+      themeBtns.push(btn);
       grid.appendChild(btn);
     }
     row.appendChild(lbl);

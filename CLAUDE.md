@@ -1,4 +1,4 @@
-# Beyblade Game — Claude Instructions
+﻿# Beyblade Game — Claude Instructions
 
 ## Project overview
 Phaser (2D RPG layer) + Three.js (3D battle/sandbox rendering) game.
@@ -11,6 +11,34 @@ Many Arena Sandbox features are not working as expected. **Before starting any t
 Known confirmed bugs fixed (2026-06-05):
 - Wall `rimY` was `baseConfig.height + arena.posY` instead of `arena.posY` — walls floated 30 cm above rim
 - Bridge `resolveStartPose` was passed `baseConfig.height` as `baseHeight` — bridge start Y was 30 cm too high
+
+Known confirmed bugs fixed (2026-06-06):
+- Properties panel stale UI: button-group rows (surface, profile, material, theme, shape) showed old highlights after a change because `showWall/showObstacle/showTrap/showPortal` used a single `onChange` callback and never re-rendered. Fixed by two-callback split + local closure re-render (see "Properties panel two-callback pattern" below).
+- `saveArena()` was called on every slider drag frame, writing the entire serialized arena to localStorage 60 fps. Fixed with a 300 ms debounce + `_flushSave()` for critical immediate saves.
+
+Known confirmed features added (2026-06-08 — speed line preset system):
+- **Speed line preset system**: 24 shape presets (circle, ellipse, polygon, triangle, star, flower/rose_curve, spiral_in, spiral_out, helix, zigzag, wave, cosine_wave, damped_wave, growing_wave, snake, figure_8, lemniscate, trefoil, cardioid, epicycloid, hypocycloid, astroid, point_zone). `custom` mode unchanged.
+- **Thread-on-surface projection**: `SceneSurfaceProjector` in `sceneSurfaceProjector.ts`; registered wall/obstacle/bridge meshes; D-shape emerges when shapes cross arena wall boundary; passed to `applySpeedLine`/`buildSpeedLineObjects` as 7th argument.
+- **Speed ramp**: profile (constant/accelerate/decelerate/bell/inverse_bell), min/max speed, entry/exit steps.
+- **Section system**: `SpeedLineSection[]` in `presetParams.sections` — arc angle, Y offset, max stay, per-section stat modifiers/conditions/color/speed with null=inherit-global.
+- **Shape modulation**: 3 modulation types × 11 waveforms applied to XZ waypoints before segment conversion.
+- **arcFraction**: half-shapes (0.5 = semicircle, symmetric cut).
+- **Stat modifiers**: `SpeedLineStatModifiers` (spinRate/stamina/attack/defense/weight/burstResist multipliers).
+- **Surface orient object**: `surfaceOrientObject` + `airNormalMode` + `airNormalTiltDeg`.
+- **Base condition**: `baseCondition`/`conditionPhase`/`conditionCheckIntervalMs`/`ejectBehavior`.
+- **New target types**: `nearest_opponent`, `nearest_obstacle`, `on_path_obstacle` + `targetSelectionMode`.
+- **Width up to 30 cm**: `SL.WIDTH_MAX_OVERRIDE = 30.0` (was 5 cm).
+
+Known confirmed bugs fixed (2026-06-07 — bridge track + arena bowl session):
+- **Bridge segment connection gaps**: `_segmentStartPose` called `computeSegmentEndPose(prev, pose)` without `bridge.section`; loop segments need section width for helix lateral offset. Fixed: `computeSegmentEndPose(prev, pose, bridge.section)`.
+- **Bridge delete not updating 3D render**: Segment meshes are children of `bridge.group`, not scene root — `scene.remove(seg.mesh)` was a no-op. Fixed: use `bridge.group.remove(seg.mesh/edges)` in both `removeSegment` and `_disposeBridge`.
+- **New bridge segment types**: `return_loop` (180° vertical reversal arc, icon `↩⭕`) and `exit_loop` (90° upward arc, icon `↑⭕`). `loopRadius` controls arc radius. Added to segment type grid in PropertiesPanel.
+- **Bridge segment drag-and-drop reorder**: `sceneTree.onReparent` in `ArenaSandbox` reads new order from `sceneTree.getChildIds(bridgeId)`, updates `bridge.segmentIds` + per-segment `orderIndex`, then calls `applyBridgeFromSegment(newOrder[0])`. `SceneTree.getChildIds(id)` method added.
+- **Per-segment color override**: `seg.color: number | null` and `seg.surface: SurfaceType | null`; `null` = inherit from `bridge.section`. PropertiesPanel shows toggle + color picker; `applySegment` uses `seg.color ?? sec.color`.
+- **Arena bowl z-fighting / moire flickering**: `topFaceMesh` material now uses `polygonOffset: true` (factor 2, units 2) in all three creation paths. `SurfaceMaterialOpts.polygonOffset?: boolean` added to type; `_matKey` includes `:po` suffix when set; `buildSurfaceMaterial` applies the Three.js polygon-offset flags.
+- **Arena bowl missing outer skirt**: Non-elevated arenas used bare `buildParabolicBowl`/`buildStraightCut` with no outer vertical wall. `buildArenaBowlGeo` now calls `buildFreeArenaMesh` for non-elevated non-step non-moat arenas (outer skirt + bottom cap). `updateArenaBowlHoles` updated to match. `buildFreeArenaMesh` now always uses `TESS.PARABOLIC_BOWL` (64 rings) instead of `TESS.STRAIGHT_BOWL` (48).
+- **Non-smooth arc blends in stepped bowl**: `buildSteppedBowl` pre-computes profiles for all `SEG` angular segments. When a step segment is adjacent to a non-step segment, boundary-side vertices are blended to `parabY(t)` via `bY(rawY, t, isA0side)` — eliminating the hard visual seam. Stepped bowl also gains an outer skirt using `xAt(1,a)/zAt(1,a)` rim positions.
+- **Ramp mode stale properties panel**: Ramp mode buttons called `onGeomChange()`, skipping `renderProps()`. Fixed to `onFullChange()` so angle/width sub-rows appear/hide immediately.
 
 Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
 
@@ -155,11 +183,13 @@ src/
     sectorBuilders.ts           — ISectorGeometryBuilder + SolidSectorBuilder + HollowSectorBuilder + getSectorBuilder()
     wallBuilders.ts             — Wall mesh/edge builders; arcFilterPts; defaultWallData (incl. emissive/opacity/presentStlb64)
     bridgeSegmentBuilders.ts    — Bridge segment path samplers; cross-section sweep; SegmentPose; defaultSegment; defaultBridgeSection (incl. color/surface/emissive/opacity)
-    speedLineBuilders.ts        — Speed line path computation; ribbon mesh; arrow/handle/marker builders; overlap detection
+    speedLineBuilders.ts        — Speed line path computation; ribbon mesh; arrow/handle/marker builders; overlap detection; 22 shape samplers; waypointsToSegments; applySpeedRamp; applyModulation; generatePresetSegments
+    sceneSurfaceProjector.ts    — SceneSurfaceProjector: downward raycast against registered meshes for thread-on-surface D-shape effect; arena-local↔world coord transform
     obstacleBuilders.ts         — 6-shape obstacle geometry; buildObstacleObjects; applyObstacle; defaultObstacle (incl. emissive/opacity/presentStlb64)
     trapBuilders.ts             — Trap plate + variant meshes; buildTrapObjects; trapSurfY; defaultTrap (incl. baseMaterial/emissive/presentStlb64)
     portalBuilders.ts           — Portal pad + torus ring; buildPortalObjects; portalSurfY; defaultPortal (incl. surface/customTileData/presentStlb64)
-    particleBuilders.ts         — NEW: ParticleSystem interface; buildParticleSystem(preset, cx, cz, radius, baseY); 6 presets: embers/snow/sparks/dust/bubbles/void_motes
+    footingBuilders.ts          — Base footing 6-shape geometry (decoupled copy of obstacle shapes); buildFootingObjects(data, baseHeight); applyFooting(data, baseHeight); defaultFooting(name, id, baseHeight)
+    particleBuilders.ts         — ParticleSystem interface; buildParticleSystem(preset, cx, cz, radius, baseY); 6 presets: embers/snow/sparks/dust/bubbles/void_motes
     [arena geometry files...]
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
@@ -167,12 +197,12 @@ src/
   animation/
     BeybladeAnimator.ts         — tick(dt, spinDir) spins spinGroup; setTiltAngle/setPivotOffset tilts axisRoot
   utils/
-    AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow/themeRow helpers; themeRow renders 7-button VisualTheme quick-pick grid
-    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal; all showX() methods accept optional onStlImport/onStlClear callbacks
+    AbstractPropertiesPanel.ts  — Shared base class: section/numRow/colorRow/toggleRow/textRow/selectRow/themeRow helpers; themeRow renders 7-button VisualTheme quick-pick grid with transient active highlight
+    PropertiesPanel.ts          — Arena properties (extends AbstractPropertiesPanel); showWall/showBridge/showBridgeSegment/showSpeedLine/showObstacle/showTrap/showPortal/showFooting; showWall/showObstacle/showTrap/showPortal/showFooting each take (onGeomChange, onFullChange) — see two-callback pattern; all accept optional onStlImport/onStlClear callbacks
     BeybladePropertiesPanel.ts  — Beyblade properties (extends AbstractPropertiesPanel)
-    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click
+    SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click; onReparent(nodeId, newParentId, beforeId) fires on drag-drop
     dialog.ts                   — gameConfirm() modal utility
-    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal save interfaces
+    arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal/footing save interfaces; footingToSave()
   config/
     arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + VISUAL_THEME_PRESETS (7 themes) + ARENA_LIGHT_PRESETS (6 presets) + BUFF_TIER_PRESETS
 ```
@@ -273,30 +303,57 @@ The user adjusts the base height/sides interactively via the properties panel; t
 
 #### BridgeSegmentData
 - One path piece in a bridge chain; owns path shape only, not cross-section
-- `type: BridgeSegmentType`: `'straight'` | `'curve'` | `'ramp'` | `'bezier'` | `'loop'` | `'hairpin'` | `'corkscrew'` | `'chicane'`
+- `type: BridgeSegmentType`: `'straight'` | `'curve'` | `'ramp'` | `'bezier'` | `'loop'` | `'hairpin'` | `'corkscrew'` | `'chicane'` | `'return_loop'` | `'exit_loop'`
 - `orderIndex` — position in chain (0-based); updated automatically when segments are removed
 - Start pose is computed by chaining `computeSegmentEndPose` from the bridge's `startRef` through all prior segments
+- `color: number | null`, `surface: SurfaceType | null` — per-segment appearance override; `null` = inherit from `bridge.section`. `applySegment` resolves via `seg.color ?? sec.color`
 - `mesh`, `edges` — nullable; rebuilt by `applySegment()` whenever any earlier segment or bridge section changes
 - Changing any segment triggers `applyBridgeFromSegment(segId)` which rebuilds that segment and all subsequent ones
 
 #### SpeedLineData
 - A guided path painted onto the arena bowl surface that exerts physics forces on beyblades that touch it
+- **Two modes**: `presetType === 'custom'` → segment-by-segment editing (old behaviour, unchanged); any other `presetType` → auto-generated segments from `presetParams`, segment editor hidden
 - Composed of **`SpeedLineSegment[]`** — each segment is a forward-marching block with `length`, `rotX/Y/Z` (pivot angles), `speedMult`, and `objRotX/Y/Z` (object spin rates). Segments are chained: start direction + per-segment yaw/pitch/roll = full path
 - `startR`, `startAngle`, `startDir` — polar start position + initial heading on the arena surface
-- `surfaceFollow: boolean` — when true the ribbon is projected onto the bowl surface (Y from `surfFn`); false = flat XZ plane
-- **Target**: `targetType` (`beyblade | water | obstacle | item | any | custom`) + `targetTag`
+- `surfaceFollow: boolean` — when true the ribbon is projected onto the bowl surface (Y from `surfFn` / projector); false = flat XZ plane
+- **Target**: `targetType` (`beyblade | water | obstacle | item | any | custom | nearest_opponent | nearest_obstacle | on_path_obstacle`) + `targetTag`; `targetSelectionMode: 'at_entrance' | 'dynamic'`
 - **Activation modes**: `always` | `event` (trigger/end event names) | `periodic` (period + duty) | `proximity` (activationRadius + fade in/out)
 - **Physics**: `speedMultiplier` (global scale), per-segment `speedMult`; `entryCondition` (`always | moving_only | fast_only | slow_only`); `exitBehavior` (`normal | launch | loop | special_move`); `launchForce`; `overridePhysics`
 - **Oscillation**: `oscillate` flag; `oscAxis` (`path | lateral | normal | all`); `oscAmplitude`, `oscFrequency`, `oscPhase`
 - **Direction**: `forward | reverse | bidirectional`; `swapPriority` for bidirectional conflict resolution
-- **Appearance**: `width`, `color`, `opacity`, `glowColor`
+- **Appearance**: `width` (up to 30 cm — `SL.WIDTH_MAX_OVERRIDE`), `color`, `opacity`, `glowColor`; `surfaceOffset` cm above projected surface (default 0.05, was hardcoded `SL.SURFACE_LIFT`)
+- **Surface orientation**: `surfaceOrientObject: boolean` — aligns object's up-axis to surface normal (wall → horizontal spin; bowl → tilted); `airNormalMode: 'upright'|'lean_center'|'lean_curvature'`; `airNormalTiltDeg` (0–45°)
+- **Speed ramp**: `speedRamp: SpeedLineRamp` — profile (`constant|accelerate|decelerate|bell|inverse_bell`), `speedMin/Max`, `entrySteps/exitSteps`
+- **Stat modifiers**: `statModifiers: SpeedLineStatModifiers` — global multipliers for spinRate, stamina, attack, defense, weight, burstResist (all default 1.0); per-segment override via `segment.statModifiers` (null = inherit global)
+- **Sections**: `presetParams.sections: SpeedLineSection[]` — each section is a self-contained arc with its own `angleDeg`, `yOffset`, `maxStayDuration`, `statModifiers`, `surfaceFollow`, `entryCondition`, `exitBehavior`, `color`, `opacity`, `speedMult`, `activationMode`; null on any field = inherit from SpeedLineData global live — change the global and all null sections update automatically
+- **Base condition**: `baseCondition: 'none'|'always'|'game_phase'`; `conditionPhase`; `conditionCheckIntervalMs` (default 100 ms — how often entry/activation conditions are re-checked while object is on path; fail → eject)
+- **Eject**: `ejectBehavior: 'toward_center'|'forward'|'backward'|'launch'`
+- **Preset params**: `SpeedLinePresetParams` — `radiusX/Z`, `sides`, `petals`, `turns`, `steps` (3–120), `centerX/Z`, `rotationY`, `heightDelta`, `closeLoop`, `innerRadius`, `pitchPerTurn`, `loopGap`, `radiusEasing`, `arcFraction` (0.01–1.0), `centerY`, `startPos/endPos XYZ`, `sections[]`, `modulation: SpeedLinePresetModulation`
+- **Preset modulation**: `type: 'none'|'radial_scale'|'angle_drift'|'xyz_shift'`; `waveform` (11 types: sine/cosine/triangle/sawtooth/inverse_sawtooth/square/pulse/exp_rise/exp_decay/damped_sine/growing_sine); `amplitude`, `periodSteps`, `modPhase`, `pulseWidth`
+- **Thread-on-surface D-shape**: `SceneSurfaceProjector` downward-raycasts all registered meshes; circle overlapping the arena wall projects floor part onto bowl (curved), wall part onto wall face (straight) — D shape emerges automatically with no manual work. `_buildSurfaceProjector(arenaId)` registers wall/obstacle/bridge meshes; passed to `applySpeedLine` and `buildSpeedLineObjects` via 7th argument
+- `pointNormals: THREE.Vector3[]` — runtime-only (not serialised); populated by `buildSpeedLineObjects` for object surface orientation per path point
 - `mesh` — ribbon `THREE.Mesh` (surface-projected, `DoubleSide`, transparent)
 - `edges` — centerline `THREE.LineSegments`
 - `markerMeshes[]` — start/end arrows, direction arrows, activation radius ring
-- `handleMeshes[]` — interactive drag handles (one per joint + start); hidden unless selected
+- `handleMeshes[]` — interactive drag handles (one per joint + start); hidden unless selected; only shown for `presetType === 'custom'`
 - `overlapMarkers[]` — sphere meshes shown where paths cross (rebuilt on any change)
 - `totalLength` — computed arc length in cm
 - **All Speed Line meshes** are positioned in world space with `position.set(arena.posX, 0, arena.posZ)` + `rotation.y = arena.rotY` — geometry bakes arena-local coordinates directly
+
+**Preset shape types** (24 total — `SpeedLinePresetType`): `custom`, `circle`, `ellipse`, `polygon` (3–10 sides), `triangle`, `star`, `flower`/`rose_curve`, `spiral_in`, `spiral_out`, `helix`, `zigzag`, `wave`, `cosine_wave`, `damped_wave`, `growing_wave`, `snake`, `figure_8`, `lemniscate`, `trefoil`, `cardioid`, `epicycloid`, `hypocycloid`, `astroid`, `point_zone` (stationary circular trigger disc, no travel, internally tiny closeLoop circle + `exitBehavior='loop'`)
+
+**Preset generation pipeline** (in `speedLineBuilders.ts`):
+1. `sampleXxx(cx, cz, ...params, rotY, N, arcFraction?)` — shape sampler returns N+1 XZ waypoints
+2. `applyModulation(pts, params)` — waveform-based deformation of waypoints in-place
+3. `waypointsToSegments(pts, heightDelta)` — converts N+1 XZ points → N segments using heading convention
+4. Section angle distribution + per-section property assignment (yOffset baked as Y lift per segment)
+5. `applySpeedRamp(segments, ramp)` — sets speedMult per segment based on profile
+6. All called by `generatePresetSegments(preset, params, ramp, slId, getNextSegId)` → `{ segments, startDir, startR, startAngle }`
+
+**Heading convention** (critical — must match `computeSegmentPath`):
+- `fwd = (-sin(startDir_rad), 0, cos(startDir_rad))`
+- `heading[i] = atan2(-(pts[i+1].x-pts[i].x), pts[i+1].z-pts[i].z) * RAD2DEG`
+- `rotY[0] = 0`, `startDir = heading[0]`; `rotY[i] = normalizeAngle180(heading[i] - heading[i-1])` for i > 0
 
 #### ObstacleData
 - A solid 3D shape placed freely in world space (can float above any surface)
@@ -355,6 +412,19 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - **Saved in** `ArenaConfig.rotations: RotationSave[]` + `rotationSeq`; `pivotGroup` and `currentAngle` are stripped on save
 - Tree node: `↻` icon; parent is the common scene-tree parent of all members, or `octagon-base` if mixed
 
+#### BaseFootingData
+- A decorative/structural 3D shape placed on the octagon base — distinct from `ObstacleData` (which floats anywhere in world space)
+- `shape`: same 6 shapes as obstacles (`'cube'` | `'cuboid'` | `'sphere'` | `'cylinder'` | `'pyramid'` | `'frustum'`)
+- `dimX/Y/Z` — same semantics as ObstacleData
+- `basePosX`, `basePosZ`, `baseRotY` — XZ position and Y-rotation on the base surface
+- `posY` — lift above the base top face in cm (default 0 = sitting flush on the base). World Y of footing centre = `baseHeight + posY + dimY/2`
+- `color`, `surface`, `customTileData`, `tileScale`, `emissiveColor`, `emissiveIntensity`, `opacity` — same surface system as all other objects
+- `presentStlb64`, `presentColor` — STL presentation mesh, same pattern as obstacles/walls/traps/portals
+- `mesh`, `edges` — nullable Three.js objects built by `footingBuilders.ts`
+- Tree icon: `⬢`. Parent: `octagon-base`. Add button: `⬢+` on the octagon-base tree node.
+- **Not rotatable** — footings are not members of `RotationData`. Not reparentable via drag-drop.
+- Saved as `BaseFootingSave[]` in `ArenaConfig.footings`; `footingSeq` counter in `ArenaConfig`.
+
 #### ArenaMaterial (physics material)
 Independent of `SurfaceType` (visual texture). Controls restitution, spin loss, and damage on impact.
 
@@ -399,19 +469,25 @@ Geometry lives in `src/geometry/` — never in `ArenaSandbox.ts`.
 | `resolveStartPose(ref, arenas, walls, baseHeight)` | `bridgeSegmentBuilders.ts` | Convert arena rim angle / freepoint ref → world SegmentPose |
 | `defaultBridgeSection()` | `bridgeSegmentBuilders.ts` | Default BridgeSection factory |
 | `defaultSegment(id, name, bridgeId, orderIndex, type)` | `bridgeSegmentBuilders.ts` | Default BridgeSegmentData factory |
-| `computeSegmentPath(sl, surfFn)` | `speedLineBuilders.ts` | Walks all segments, accumulates positions → `THREE.Vector3[]` |
+| `computeSegmentPath(sl, arena, surfFn, projector?)` | `speedLineBuilders.ts` | Walks all segments, accumulates positions → `THREE.Vector3[]`; uses projector for surface-follow when provided |
 | `computeJoints(pts)` | `speedLineBuilders.ts` | Extract joint positions (one per segment boundary + start) for handle placement |
 | `buildRibbon3D(pts, normals, width)` | `speedLineBuilders.ts` | Flat ribbon `BufferGeometry` perpendicular to path, projected by normals |
 | `buildStartMarker / buildEndMarker` | `speedLineBuilders.ts` | Colored sphere meshes at path endpoints |
 | `buildArrowMeshes(pts, color, dir)` | `speedLineBuilders.ts` | Evenly spaced direction arrows along path |
 | `buildHandleMeshes(joints, sl)` | `speedLineBuilders.ts` | Interactive sphere handles (one per joint) returned with handle-type metadata |
 | `buildActivationRadiusMarker(pt, r, color)` | `speedLineBuilders.ts` | Ring mesh showing proximity activation radius |
-| `samplePathForOverlap(sl, surfFn)` | `speedLineBuilders.ts` | Uniform sample for cross-path overlap detection |
+| `samplePathForOverlap(sl, arena, surfFn)` | `speedLineBuilders.ts` | Uniform sample for cross-path overlap detection |
 | `buildOverlapSphere(pos, color)` | `speedLineBuilders.ts` | Small sphere marking a detected path overlap |
 | `pathSurfaceNormal(pt, arena, sl)` | `speedLineBuilders.ts` | Per-point surface normal (bowl gradient or world-up) for ribbon orientation |
-| `defaultSpeedLine(name, arenaId, id, zoneId?)` | `arenaObjectBuilders.ts` | Default SpeedLineData factory |
-| `buildSpeedLineObjects(sl, arena, zones)` | `arenaObjectBuilders.ts` | Assembles all Three.js objects for a speed line (ribbon, edges, markers, handles) |
-| `applySpeedLine(sl, arena, zones, scene, add, remove)` | `arenaObjectBuilders.ts` | Dispose + rebuild all speed line objects in-place |
+| `waypointsToSegments(pts, heightDelta)` | `speedLineBuilders.ts` | Converts N+1 XZ arena-local waypoints → N segments using heading convention |
+| `applySpeedRamp(segs, ramp)` | `speedLineBuilders.ts` | Sets speedMult per segment from profile/entrySteps/exitSteps |
+| `applyModulation(pts, params)` | `speedLineBuilders.ts` | Waveform-based deformation of XZ waypoints in-place (11 waveform types) |
+| `generatePresetSegments(preset, params, ramp, slId, getNextSegId)` | `speedLineBuilders.ts` | Full preset pipeline: sample→modulate→segment→section→ramp→IDs |
+| `sampleCircle / sampleEllipse / samplePolygon / …` | `speedLineBuilders.ts` | 22 shape samplers returning N+1 XZ arena-local waypoints |
+| `defaultSpeedLine(name, arenaId, id, zoneId?)` | `arenaObjectBuilders.ts` | Default SpeedLineData factory (presetType:'custom', all new fields defaulted) |
+| `buildSpeedLineObjects(sl, arena, zones, projector?)` | `arenaObjectBuilders.ts` | Assembles all Three.js objects for a speed line (ribbon, edges, markers, handles) |
+| `applySpeedLine(sl, arena, zones, scene, add, remove, projector?)` | `arenaObjectBuilders.ts` | Dispose + rebuild all speed line objects in-place; projector enables thread-on-surface |
+| `SceneSurfaceProjector(meshes, fallbackSurfFn)` | `sceneSurfaceProjector.ts` | Downward raycast (Y=500) against registered meshes; `project(x, z, offset)` → `{point, normal}`; fallback to arena math Y |
 | `buildObstacleObjects(data)` | `obstacleBuilders.ts` | Mesh + edges for 6 obstacle shapes; positions at posX/Y/Z with rotX/Y/Z |
 | `applyObstacle(data)` | `obstacleBuilders.ts` | Dispose + rebuild obstacle mesh + edges in-place |
 | `defaultObstacle(name, id, baseHeight)` | `obstacleBuilders.ts` | Default 20 cm cube floating 10 cm above base |
@@ -423,6 +499,9 @@ Geometry lives in `src/geometry/` — never in `ArenaSandbox.ts`.
 | `applyPortal(data, surfY)` | `portalBuilders.ts` | Dispose + rebuild portal pad + ring in-place |
 | `portalSurfY(data, arenas, baseHeight)` | `portalBuilders.ts` | Same pattern as trapSurfY |
 | `defaultPortal(name, id, parentId, parentType)` | `portalBuilders.ts` | Default 20 cm circle pad, cyan 0x00e5ff, destType='portal' |
+| `buildFootingObjects(data, baseHeight)` | `footingBuilders.ts` | Mesh + edges; positions at `(basePosX, baseHeight+posY+dimY/2, basePosZ)` with `baseRotY` |
+| `applyFooting(data, baseHeight)` | `footingBuilders.ts` | Dispose + rebuild footing mesh + edges in-place |
+| `defaultFooting(name, id, baseHeight)` | `footingBuilders.ts` | Default 20 cm cube on base surface, colour 0x888888, surface plain |
 
 #### `arenaSurfaceYAtArenaLocal(arena, alx, alz)`
 Returns the world Y of the arena bowl surface at any arena-local XZ position:
@@ -486,9 +565,9 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 ### ArenaSandbox internal structure
 
 ```
-Maps:          arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals, rotations
+Maps:          arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals, rotations, footings
 Seq counters:  arenaSeq, pitSeq, zoneSeq, wallSeq, bridgeSeq, segmentSeq, speedlineSeq, slSegSeq,
-               obstacleSeq, trapSeq, portalSeq, rotationSeq
+               obstacleSeq, trapSeq, portalSeq, rotationSeq, footingSeq
 Dep index:     bridgesByArena   — arenaId → Set<bridgeId> (rebuilt on anchor change)
                nodeRotationId   — nodeId → rotationId (each rotatable node belongs to at most one rotation)
 Raycaster:     slRaycaster — used for speed line handle hit-testing on mouse move
@@ -501,9 +580,9 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 **Bridge rebuild propagation**: `applyBridgeFromSegment(segId)` reapplies `segId` and every subsequent segment in the chain. Earlier segments are unaffected. Always call this after changing any segment property or the bridge's `startRef` / `section`.
 
-**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, speed lines `⚡`, obstacles `⬛`, traps `⚡`, portals `◉`, rotations `↻`.
+**Scene tree icons**: arenas `⏺`, pits `▼`, zones `◈`, walls `🧱`, bridges `🌉`, segments: straight `━`, curve `↩`, ramp `↗`, loop `⭕`, hairpin `↺`, corkscrew `🌀`, chicane `⟨⟩`, bezier `〜`, return_loop `↩⭕`, exit_loop `↑⭕`, speed lines `⚡`, obstacles `⬛`, traps `⚡`, portals `◉`, rotations `↻`.
 
-**Tree node add button**: every node that can have children shows a single `+` button. Clicking it opens a floating add-popup listing all available child types by title (e.g. "Add arena", "Add bridge", "Add base wall"). If a node has exactly one child type the `+` fires it directly with no popup. The popup is a `.tree-ctx-menu.tree-add-menu` element (cyan border) positioned below the anchor button. `addChildButtons` on the octagon-base node offers: Add arena, Add bridge, Add base wall, Add obstacle, Add base trap, Add base portal. Arena nodes offer: Add pit, Add zone, Add wall, Add speed line, Add arena trap, Add arena portal. Bridge nodes offer: Add segment, Add wall. Zone nodes offer: Add speed line, Add rotation (↻+). Trap nodes offer: Add rotation (↻+). Obstacle nodes offer: Add rotation (↻+). Wall nodes offer: Add rotation (↻+). Beyblade part nodes offer: Cut into sectors (single-action, no popup). Multi-select → Group creates a group rotation via `sceneTree.onGroup`.
+**Tree node add button**: every node that can have children shows a single `+` button. Clicking it opens a floating add-popup listing all available child types by title (e.g. "Add arena", "Add bridge", "Add base wall"). If a node has exactly one child type the `+` fires it directly with no popup. The popup is a `.tree-ctx-menu.tree-add-menu` element (cyan border) positioned below the anchor button. `addChildButtons` on the octagon-base node offers: Add arena, Add bridge, Add base wall, Add obstacle, Add base trap, Add base portal, Add footing (⬢+). Arena nodes offer: Add pit, Add zone, Add wall, Add speed line, Add arena trap, Add arena portal. Bridge nodes offer: Add segment, Add wall. Zone nodes offer: Add speed line, Add rotation (↻+). Trap nodes offer: Add rotation (↻+). Obstacle nodes offer: Add rotation (↻+). Wall nodes offer: Add rotation (↻+). Beyblade part nodes offer: Cut into sectors (single-action, no popup). Multi-select → Group creates a group rotation via `sceneTree.onGroup`.
 
 ### Save / load (localStorage)
 
@@ -518,6 +597,7 @@ Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 7`. On any parse error `lo
 - `traps: TrapSave[]`, `trapSeq` — includes `durationTiers: TrapDurationTierSave[]` for buff_zone traps
 - `portals: PortalSave[]`, `portalSeq` — teleport pads with destination config
 - `rotations: RotationSave[]`, `rotationSeq` — pivot-group rotation animations; `pivotGroup` and `currentAngle` are runtime-only and stripped on save
+- `footings: BaseFootingSave[]`, `footingSeq` — base-mounted decorative shapes on the octagon base (distinct from world-positioned obstacles)
 
 ---
 
@@ -649,6 +729,15 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **Speed line `exitBehavior` vs `direction`**: `'loop'` is a valid `SpeedLineExitBehavior`, not a `SpeedLineDirection` (`'forward'|'reverse'|'bidirectional'`). Use `sl.exitBehavior !== 'loop'` to gate end-marker placement, never `sl.direction !== 'loop'`.
 - **Speed line handles on wrong object type**: `handleMeshes` contain `THREE.Mesh` objects; hit-testing returns `THREE.Object3D`. Always cast to `THREE.Mesh` before accessing `.material`. Use `(hits[0].object as THREE.Mesh).material`.
 - **`SL` constants namespace**: All speed line tuning values live in the `SL` object in `arenaConstants.ts`. Never inline magic numbers for speed line geometry (e.g. `SL.ARROW_SPACING`, `SL.SURFACE_LIFT`, `SL.HANDLE_RADIUS`).
+- **Speed line preset: always pass projector to `applySpeedLine`**: `_updateSpeedLine` (ArenaSandbox) must call `this._buildSurfaceProjector(sl.parentArenaId)` and pass it as the 7th argument. Omitting it silently breaks thread-on-surface (D-shape) projection on every UI edit — surface projection only works on initial load if projector is missing from the update path.
+- **Speed line preset mode and segment editor**: When `sl.presetType !== 'custom'`, the START and SEGMENTS sections in PropertiesPanel are hidden — they show only for `'custom'`. The "↺ Regenerate Shape" button calls `onPresetChange()` then `refresh()` so the INFO section (segment count, total length) updates immediately.
+- **`_slSectionsUI` structural changes need `refresh()`**: Add section / delete section / "Sync All to Global" in `_slSectionsUI` must call `refresh()` after `onPresetChange()`. Otherwise the section list shows a stale count (old DOM) while the data model has changed.
+- **`samplePathForOverlap` requires `arena` argument**: Signature is `samplePathForOverlap(sl, arena, surfFn)` — `arena` is needed because `computeSegmentPath` now takes the arena for coordinate transforms. Omitting it is a TypeScript error.
+- **New SpeedLineSave fields are optional (`?`)**: All 13 new fields added to `SpeedLineSave` use `?` so the demo arena config (which predates the preset system) loads without migration. `defaultSpeedLine()` provides the default values when fields are absent.
+- **`SpeedLineSegment.maxStayDuration/statModifiers/sectionIndex` are optional**: These 3 new fields use `?` on the interface so existing segment literals in `demoArenaConfig.ts` remain valid TypeScript without adding those fields.
+- **`sceneSurfaceProjector.ts` must not import from `screens/`**: It is a pure utility — imports only `THREE` and `arenaTypes`. Keep it free of ArenaSandbox dependencies so it can be used from geometry builders.
+- **`SceneSurfaceProjector` world vs arena-local coords**: `project(x, z, offset)` takes **world** XZ coordinates. Convert arena-local → world before calling: `worldX = arena.posX + lx*cos(arena.rotY_rad) - lz*sin(arena.rotY_rad)` etc. The returned `point.y` is already world-space Y; use it directly in `computeSegmentPath`.
+- **`sectionAngles`/`sectionDurations` removed from `SpeedLinePresetParams`**: These were stale parallel arrays replaced by `sections: SpeedLineSection[]`. If you see build errors referencing them, they were removed from the type — use the `sections` array instead.
 - **Obstacle `posY` is manual, trap/portal Y is automatic**: Obstacle position is fully user-controlled — do NOT derive `posY` from the arena surface. Trap and portal Y IS derived from `trapSurfY()`/`portalSurfY()` at creation and rebuild time — do NOT store it explicitly.
 - **Trap `variantMesh` needs separate disposal**: `_disposeTrap` must dispose `trap.variantMesh` independently (like `arena.spiralMeshes`). Never skip it — it leaks GPU memory.
 - **Portal `ringMesh` needs separate disposal**: Same pattern — `_disposePortal` must dispose `portal.ringMesh` explicitly.
@@ -662,6 +751,12 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **SceneTree `onGroup` auto-creates a group node**: `sceneTree.onGroup(autoGroupId, childIds)` is called after the tree already added a `group-N` node. Call `this.sceneTree.remove(autoGroupId)` first, then `addRotation()` which creates its own `rot-N` node with the `↻` icon.
 - **`ROT` constants namespace**: All rotation tuning values live in the `ROT` object in `arenaConstants.ts` (`DEFAULT_SPEED`, `DEFAULT_OSC_AMP`, `DEFAULT_OSC_FREQ`, `MIN_SPEED`, `MAX_SPEED`). Never inline these as magic numbers.
 - **Rotation floor Y correction is per-tick, not per-apply**: Trap/zone members must have their Y corrected every tick via `_applyFloorCorrection()` because the bowl surface Y at their world XZ changes continuously as they orbit. Do not try to bake a fixed Y at attach time.
+- **Properties panel two-callback pattern**: `showWall/showObstacle/showTrap/showPortal/showFooting` each take two callbacks — `onGeomChange` (sliders/colors, no re-render) and `onFullChange` (button-group rows that show/hide sub-sections or change surface/material/shape — triggers `showX()` closure re-render). Never route a button-group row to `onGeomChange` — it will leave conditional sub-rows and sibling button highlights stale. The `showX` closure pattern: `const showX = () => this.props.showX(data, live, () => { ...; showX(); }, ...); showX();`.
+- **`saveArena()` is debounced 300 ms**: Never assume a `saveArena()` call writes immediately. For paths that must write right away (demo load, `_applyConfigToScene`, undo/redo restore), call `this._flushSave()` instead. `_flushSave()` cancels the pending timer and writes synchronously. Never add a direct `localStorage.setItem` call — all persistence goes through `saveArena()`/`_flushSave()`.
+- **Footing sequences in both `_applyConfigToScene` AND `loadArena`**: Both code paths that restore config must set `footingSeq` from `cfg.footingSeq ?? 0`. Missing either one causes ID collisions after load. (Same rule applies to obstacle/trap/portal/rotation sequences — all sequence counters must be restored in both paths.)
+- **`_clearArenas` must dispose footings**: Iterate `this.footings` and call `_disposeFooting(f)` + `this.sceneTree.remove(f.id)` before clearing the map. Also reset `this.footingSeq = 0`. Skipping this leaks GPU geometry when the scene is reset.
+- **`_onReparent` coverage — reparentable vs not**: The `sceneTree.onReparent` handler supports these node types: wall (arena↔base), pit (arena↔arena), zone (arena↔arena), trap (arena↔base), portal (arena↔base), speed line (arena/zone), bridge segment (same-bridge reorder + cross-bridge). These types are **not reparentable** and their drops must be silently ignored: arena, obstacle, footing, bridge (container), rotation. For non-reparentable nodes, do not call `saveArena()` or modify any data model.
+- **`footingBuilders.ts` must not import from `obstacleBuilders.ts`**: Both files implement the same 6-shape geometry switch (cube/cuboid/sphere/cylinder/pyramid/frustum) independently. This is intentional per coupling-prevention rules — base footings and world obstacles are distinct object types. Sharing the geometry function would couple their build/dispose/apply lifecycle.
 
 ---
 
@@ -682,10 +777,12 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/geometry/arenaObjectBuilders.ts` | The Three.js object assembly pattern changes |
 | `src/geometry/wallBuilders.ts` | Wall mesh/edge algorithm changes (tilt, gaps, top profile, holes) |
 | `src/geometry/bridgeSegmentBuilders.ts` | Bridge path sampling, cross-section sweep, or pose chaining changes |
-| `src/geometry/speedLineBuilders.ts` | Speed line path computation, ribbon, handles, arrows, overlap detection changes |
+| `src/geometry/speedLineBuilders.ts` | Speed line path computation, ribbon, handles, arrows, overlap detection, shape samplers, waypointsToSegments, applySpeedRamp, applyModulation, generatePresetSegments changes |
+| `src/geometry/sceneSurfaceProjector.ts` | SceneSurfaceProjector raycast logic or coordinate transform changes |
 | `src/geometry/obstacleBuilders.ts` | Obstacle shape geometry or default factory changes |
 | `src/geometry/trapBuilders.ts` | Trap plate geometry, variant meshes, or surface-Y derivation changes |
 | `src/geometry/portalBuilders.ts` | Portal pad geometry, torus ring, or surface-Y derivation changes |
+| `src/geometry/footingBuilders.ts` | Base footing shape geometry, positioning, or default factory changes |
 
 ### Allowed import direction (never reverse)
 ```
@@ -696,7 +793,7 @@ arenaConstants + arenaTypes  ←  primitives.ts
                              ←  bridgeSegmentBuilders.ts
                              ←  speedLineBuilders.ts
                              ←  arenaObjectBuilders.ts  (also imports speedLineBuilders)
-                             ←  obstacleBuilders.ts / trapBuilders.ts / portalBuilders.ts
+                             ←  obstacleBuilders.ts / trapBuilders.ts / portalBuilders.ts / footingBuilders.ts
                              ←  ArenaSandbox.ts
                              ←  PropertiesPanel.ts (imports arenaTypes + arenaConstants ONLY — no geometry)
 ```
@@ -725,6 +822,11 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **BridgeSection is the source of truth for deck appearance**: `bridge.section.color/surface/customTileData/tileScale/emissiveColor/emissiveIntensity/opacity` drive all deck rendering. The old `bridge.color` and `bridge.surface` legacy fields are unused — do not wire them in new UI or geometry code.
 - **Steps/Spiral appearance overrides**: `ArenaData.stepsColor/stepsSurface/stepsCustomTileData` (null = inherit arena color) and `spiralColor/spiralSurface/spiralCustomTileData` are passed to `buildSteppedBowl` / `buildSpiralLedgeMesh`. When null, the builder falls back to `lightColor(arena.color)`.
 - **Particle builders live in `particleBuilders.ts`**: `buildParticleSystem(preset, cx, cz, radius, baseY)` returns `{ points: THREE.Points, tick(dt): void, dispose(): void }`. Never inline particle creation in ArenaSandbox.
+- **topFaceMesh material must always use `polygonOffset: true`**: The octagon top face is coplanar with the arena bowl rim and rim seam mesh (all at y=0 for non-elevated arenas). Without polygon offset, severe z-fighting flickers across the whole rim area. All three material creation sites in `ArenaSandbox` (`buildCustom`, `rebuildBase`, color-change handler) must pass `polygonOffset: true` to `buildSurfaceMaterial`. The cache key includes `:po` so it stays separate from non-offset materials.
+- **Non-elevated arenas use `buildFreeArenaMesh`, not bare `buildParabolicBowl`**: `buildArenaBowlGeo` and `updateArenaBowlHoles` both call `buildFreeArenaMesh` for non-elevated non-step non-moat arenas. This gives the bowl an outer vertical skirt + bottom cap. Reverting to `buildParabolicBowl` removes the outer wall and shows the hollow interior.
+- **`buildSteppedBowl` boundary blending**: Step segments adjacent to non-step segments blend their boundary-side vertex Y values toward `parabY(t)` via `bY(rawY, t, isA0side)`. Do not remove this — without it there is a hard visual seam at every step/smooth arc boundary. The blend only affects the single-segment-wide boundary, not the interior of either zone.
+- **Bridge segment meshes are in `bridge.group`, not scene root**: `scene.remove(seg.mesh)` is a no-op for segment meshes. Always call `bridge.group.remove(seg.mesh)` and `bridge.group.remove(seg.edges)`. Applies in `removeSegment`, `_disposeBridge`, and any other disposal path.
+- **Bridge `computeSegmentEndPose` needs `section`**: For loop-type segments (`return_loop`, `exit_loop`, `loop`, `corkscrew`) the lateral offset in the end pose depends on `section.width` (track width). Always pass `bridge.section` as the third argument: `computeSegmentEndPose(seg, pose, bridge.section)`. Omitting it causes segment chains to gap at loop junctions.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.
@@ -736,4 +838,5 @@ Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers
 - If it assembles a Three.js Mesh + edges for arenas/pits/zones: it belongs in `arenaObjectBuilders.ts`.
 - Wall geometry → `wallBuilders.ts`. Bridge path/sweep geometry → `bridgeSegmentBuilders.ts`. Speed line ribbon/path → `speedLineBuilders.ts`.
 - Obstacle 3D shapes → `obstacleBuilders.ts`. Trap plate + variants → `trapBuilders.ts`. Portal pad + ring → `portalBuilders.ts`. None of these belong in `arenaObjectBuilders.ts`.
+- Base footing shapes (placed on the octagon base) → `footingBuilders.ts`. Do NOT reuse or import from `obstacleBuilders.ts` — footings are a separate object type with their own lifecycle.
 - Ambient particle VFX → `particleBuilders.ts`. Never create `THREE.Points` in `ArenaSandbox.ts` directly.

@@ -96,6 +96,7 @@ export const DEFAULT_HAIRPIN_RADIUS    = 10;  // cm
 export const DEFAULT_CORKSCREW_LENGTH  = 30;  // cm
 export const BRIDGE_SEGMENT_SAMPLES    = 64;  // path sample points per segment
 export const BRIDGE_LOOP_SEGMENTS      = 48;  // facets around loop circle
+export const BRIDGE_LOOP_OPEN_DEG      = 40;  // degrees kept open at loop entry/exit so the opening is visible
 export const BRIDGE_CROSS_COLS         = 8;   // tessellation columns across bridge width
 
 /* ── Step / spiral wall profile defaults ────────────────────────────────── */
@@ -167,6 +168,25 @@ export const SL = {
   DEFAULT_OSC_FREQ:        0.5,
   DEFAULT_OSC_PHASE:       0,
   DEFAULT_OSC_AXIS:        'lateral'   as const,
+
+  WIDTH_MAX_OVERRIDE:         30.0,
+  POINT_ZONE_DIAMETER_MIN:     0.1,
+  POINT_ZONE_DIAMETER_MAX:    30.0,
+  STAT_MULT_MIN:               0.0,
+  STAT_MULT_MAX:               5.0,
+  PRESET_STEPS_MIN:            3,
+  PRESET_STEPS_MAX:          120,
+  PRESET_SIDES_MIN:            3,
+  PRESET_SIDES_MAX:           10,
+  PRESET_PETALS_MIN:           3,
+  PRESET_PETALS_MAX:           8,
+  PRESET_TURNS_MIN:            0.5,
+  PRESET_TURNS_MAX:           10,
+  PRESET_RADIUS_DEF:          20,
+  PRESET_STEPS_DEF:           36,
+  RAMP_STEPS_MAX:             20,
+  DEFAULT_SURFACE_OFFSET:      0.05,
+  DEFAULT_CONDITION_CHECK_MS: 100,
 } as const;
 
 /* ── Visual theme quick-pick presets ────────────────────────────────────── */

@@ -58,6 +58,12 @@ export function buildSteppedBowl(
     idx.push(v, v+1, v+2, v+1, v+3, v+2);
   }
 
+  // Pre-compute profiles to detect step/smooth boundaries for blending
+  const segProfiles = Array.from({length: SEG}, (_, j) => {
+    const aMid = (j + 0.5) / SEG * TWO_PI;
+    return effectiveProfile(arena, radiusX * 0.5 * Math.cos(aMid), radiusZ * 0.5 * Math.sin(aMid));
+  });
+
   // Rim edge
   for (let j = 0; j < SEG; j++) {
     const a0 = j / SEG * TWO_PI; const a1 = (j + 1) / SEG * TWO_PI;
@@ -70,10 +76,16 @@ export function buildSteppedBowl(
     const a1 = (j + 1) / SEG * TWO_PI;
     const aMid = (a0 + a1) * 0.5;
 
-    const profile = effectiveProfile(arena,
-      radiusX * 0.5 * Math.cos(aMid),
-      radiusZ * 0.5 * Math.sin(aMid),
-    );
+    const profile = segProfiles[j];
+
+    // At step/non-step boundaries, blend step Y toward smooth parabolic Y so
+    // the two profile types connect without a hard visual seam.
+    const blendA0 = profile === 'step' && segProfiles[(j - 1 + SEG) % SEG] !== 'step';
+    const blendA1 = profile === 'step' && segProfiles[(j + 1) % SEG] !== 'step';
+    const bY = (rawY: number, t: number, isA0side: boolean): number => {
+      if (isA0side ? blendA0 : blendA1) return parabY(t);
+      return rawY;
+    };
 
     if (profile !== 'step') {
       // Smooth parabolic or straight column for this angular slice
@@ -95,7 +107,9 @@ export function buildSteppedBowl(
         const tb = tSS + ((r + 1) / OUTER) * (1 - tSS);
         const ya = stepRiserProfile === 'straight' ? floorY : parabY(ta);
         const yb = stepRiserProfile === 'straight' ? floorY : parabY(tb);
-        emitQuad(ta, a0, ta, a1, tb, a0, tb, a1, ya, ya, yb, yb);
+        emitQuad(ta, a0, ta, a1, tb, a0, tb, a1,
+          bY(ya, ta, true), bY(ya, ta, false),
+          bY(yb, tb, true), bY(yb, tb, false));
       }
       // Edge at step zone outer boundary
       epos.push(
@@ -123,11 +137,13 @@ export function buildSteppedBowl(
 
       // Flat terrace: t_inner → t_flat, all at y_inner
       emitQuad(t_inner, a0, t_inner, a1, t_flat, a0, t_flat, a1,
-        y_inner, y_inner, y_inner, y_inner);
+        bY(y_inner, t_inner, true), bY(y_inner, t_inner, false),
+        bY(y_inner, t_flat,  true), bY(y_inner, t_flat,  false));
 
       // Riser: t_flat → t_outer, rising from y_inner to y_riser_end
       emitQuad(t_flat, a0, t_flat, a1, t_outer, a0, t_outer, a1,
-        y_inner, y_inner, y_riser_end, y_riser_end);
+        bY(y_inner,     t_flat,  true), bY(y_inner,     t_flat,  false),
+        bY(y_riser_end, t_outer, true), bY(y_riser_end, t_outer, false));
 
       // Edge: outer rim of this terrace
       epos.push(
@@ -135,6 +151,17 @@ export function buildSteppedBowl(
         xAt(t_outer, a1), y_inner, zAt(t_outer, a1),
       );
     }
+  }
+
+  // Outer skirt: vertical ring from rim (baseY) down to floor (floorY)
+  for (let j = 0; j < SEG; j++) {
+    const a0 = j / SEG * TWO_PI; const a1 = (j + 1) / SEG * TWO_PI;
+    const v = pos.length / 3;
+    pos.push(xAt(1, a0), baseY,  zAt(1, a0));
+    pos.push(xAt(1, a1), baseY,  zAt(1, a1));
+    pos.push(xAt(1, a0), floorY, zAt(1, a0));
+    pos.push(xAt(1, a1), floorY, zAt(1, a1));
+    idx.push(v, v+2, v+1, v+1, v+2, v+3);
   }
 
   const geo = new THREE.BufferGeometry();

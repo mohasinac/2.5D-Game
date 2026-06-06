@@ -3,6 +3,9 @@ import {
   ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset,
   SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
   SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
+  SpeedLinePresetType, SpeedLinePresetParams, SpeedLineRamp,
+  SpeedLineBaseCondition, SpeedLineEjectBehavior, SpeedLineTargetSelectionMode,
+  SpeedLineStatModifiers, SpeedLineSection,
   WallTopProfile, WallHoleData, WallData,
   BridgeCrossSection, BridgeSegmentType, BridgeEndpointType, BridgeSection,
   BridgeSegmentData, BridgeData, BridgeEndpointRef,
@@ -10,6 +13,7 @@ import {
   TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
   PortalData, PortalDestType,
   RotationData, RotationMode, RotationNodeType,
+  BaseFootingData,
 } from '../types/arenaTypes';
 
 export interface SpeedLineSave {
@@ -32,6 +36,25 @@ export interface SpeedLineSave {
   direction: SpeedLineDirection; exitBehavior: SpeedLineExitBehavior;
   launchForce: number; specialMoveName: string;
   allowMidAirEntry: boolean; overridePhysics: boolean; swapPriority: number;
+  // ── Preset system (optional for backward-compat with older saves) ─────────
+  presetType?:               SpeedLinePresetType;
+  presetParams?:             SpeedLinePresetParams;
+  speedRamp?:                SpeedLineRamp;
+  // ── Surface projection ────────────────────────────────────────────────────
+  surfaceOffset?:            number;
+  surfaceOrientObject?:      boolean;
+  airNormalMode?:            'upright' | 'lean_center' | 'lean_curvature';
+  airNormalTiltDeg?:         number;
+  // ── Conditions / ejection / targeting ────────────────────────────────────
+  baseCondition?:            SpeedLineBaseCondition;
+  conditionPhase?:           string;
+  ejectBehavior?:            SpeedLineEjectBehavior;
+  targetSelectionMode?:      SpeedLineTargetSelectionMode;
+  conditionCheckIntervalMs?: number;
+  // ── Stat modifiers ────────────────────────────────────────────────────────
+  statModifiers?:            SpeedLineStatModifiers;
+  // SpeedLineSegment.maxStayDuration + statModifiers + sectionIndex serialised via segments[]
+  // SpeedLinePresetParams.sections (SpeedLineSection[]) serialised via presetParams
 }
 
 export interface PitSave {
@@ -96,6 +119,8 @@ export interface BridgeSegmentSave {
   cp2X: number; cp2Y: number; cp2Z: number;
   endX: number; endY: number; endZ: number;
   loopRadius: number;
+  loopOrientation: 'vertical' | 'horizontal';
+  tiltAngle: number;
   corkscrewLength: number; corkscrewTurns: number;
   color: number | null; surface: SurfaceType | null;
 }
@@ -190,6 +215,15 @@ export interface PortalSave {
   presentStlb64: string | null; presentColor: number;
 }
 
+export interface BaseFootingSave {
+  id: string; name: string; shape: ObstacleShape;
+  dimX: number; dimY: number; dimZ: number;
+  basePosX: number; basePosZ: number; baseRotY: number; posY: number;
+  color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
+  emissiveColor: number; emissiveIntensity: number; opacity: number;
+  presentStlb64: string | null; presentColor: number;
+}
+
 export interface BridgeSnapRuleSave { id: string; bridgeId: string; minDeg: number; maxDeg: number; }
 
 export interface RotationSave {
@@ -205,7 +239,6 @@ export interface RotationSave {
 export interface ArenaConfig {
   baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
-  baseWalls: WallSave[];   // free-standing walls on octagon base
   bridges: BridgeSave[];
   wallSeq: number; bridgeSeq: number; segmentSeq: number;
   speedLineSeq: number;
@@ -214,6 +247,7 @@ export interface ArenaConfig {
   traps: TrapSave[];        trapSeq: number;
   portals: PortalSave[];    portalSeq: number;
   rotations: RotationSave[]; rotationSeq: number;
+  footings: BaseFootingSave[]; footingSeq: number;
 }
 
 export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
@@ -236,6 +270,19 @@ export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
     launchForce:sl.launchForce, specialMoveName:sl.specialMoveName,
     allowMidAirEntry:sl.allowMidAirEntry, overridePhysics:sl.overridePhysics,
     swapPriority:sl.swapPriority,
+    presetType:sl.presetType,
+    presetParams:{ ...sl.presetParams, sections: sl.presetParams.sections.map(s=>({...s, statModifiers: s.statModifiers ? {...s.statModifiers} : null})) },
+    speedRamp:{...sl.speedRamp},
+    surfaceOffset:sl.surfaceOffset,
+    surfaceOrientObject:sl.surfaceOrientObject,
+    airNormalMode:sl.airNormalMode,
+    airNormalTiltDeg:sl.airNormalTiltDeg,
+    baseCondition:sl.baseCondition,
+    conditionPhase:sl.conditionPhase,
+    ejectBehavior:sl.ejectBehavior,
+    targetSelectionMode:sl.targetSelectionMode,
+    conditionCheckIntervalMs:sl.conditionCheckIntervalMs,
+    statModifiers:{...sl.statModifiers},
   };
 }
 
@@ -335,6 +382,8 @@ export function segmentToSave(s: BridgeSegmentData): BridgeSegmentSave {
     cp2X:s.cp2X, cp2Y:s.cp2Y, cp2Z:s.cp2Z,
     endX:s.endX, endY:s.endY, endZ:s.endZ,
     loopRadius:s.loopRadius,
+    loopOrientation:s.loopOrientation,
+    tiltAngle:s.tiltAngle,
     corkscrewLength:s.corkscrewLength, corkscrewTurns:s.corkscrewTurns,
     color:s.color, surface:s.surface,
   };
@@ -425,5 +474,16 @@ export function rotationToSave(r: RotationData): RotationSave {
     oscAmplitude:r.oscAmplitude, oscFrequency:r.oscFrequency, oscPhase:r.oscPhase,
     enabled:r.enabled,
     snapRules:r.snapRules.map(s=>({ id:s.id, bridgeId:s.bridgeId, minDeg:s.minDeg, maxDeg:s.maxDeg })),
+  };
+}
+
+export function footingToSave(f: BaseFootingData): BaseFootingSave {
+  return {
+    id:f.id, name:f.name, shape:f.shape,
+    dimX:f.dimX, dimY:f.dimY, dimZ:f.dimZ,
+    basePosX:f.basePosX, basePosZ:f.basePosZ, baseRotY:f.baseRotY, posY:f.posY,
+    color:f.color, surface:f.surface, customTileData:f.customTileData, tileScale:f.tileScale,
+    emissiveColor:f.emissiveColor, emissiveIntensity:f.emissiveIntensity, opacity:f.opacity,
+    presentStlb64:f.presentStlb64, presentColor:f.presentColor,
   };
 }

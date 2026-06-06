@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TESS } from '../config/arenaConstants';
+import { TESS, STEP_SLOPE_FRAC } from '../config/arenaConstants';
 import { WallProfile, ChildHole } from '../types/arenaTypes';
 import {
   buildParabolicRingGeo,
@@ -63,6 +63,9 @@ export function buildEdgeLines(pts: THREE.Vector2[], depth: number, profile: Wal
 /**
  * Unified moat geometry: outer rim → valley → inner rim.
  * outerProfile controls outer wall, innerProfile controls inner wall.
+ * 'step' builds terraced steps; 'spiral'/'parabolic' builds a curved bowl;
+ * 'straight' builds a vertical cylinder.
+ * stepCount is used when either profile is 'step'.
  */
 export function buildMoatGeometry(
   outerPts: THREE.Vector2[], _innerPts: THREE.Vector2[],
@@ -70,67 +73,98 @@ export function buildMoatGeometry(
   outerProfile: WallProfile, innerProfile: WallProfile,
   innerRimOffset: number,
   baseY = 0,
+  stepCount = 3,
 ): THREE.BufferGeometry {
   const N = outerPts.length;
   const innerPts = resamplePts(_innerPts, N);
   const HALF = TESS.MOAT_HALF;
-  const valleyY   = baseY - depth;
-  const innerRimY = baseY + innerRimOffset;
+  const flatFrac = 1 - STEP_SLOPE_FRAC;  // flat tread fraction per step
+  const valleyY = baseY - depth;
   const innerRise = depth + innerRimOffset;
 
   const midPts = outerPts.map((op, i) => new THREE.Vector2(
     (op.x + innerPts[i].x) / 2, (op.y + innerPts[i].y) / 2,
   ));
 
-  const allRings: [number, number, number][][] = [];
-
-  // Outer section: outer rim → valley
-  const outerEndXZ = outerProfile === 'parabolic' ? midPts : outerPts;
-  for (let r = 0; r <= HALF; r++) {
-    const b = r / HALF;
-    const t = 1 - b;
-    const y = outerProfile === 'parabolic'
-      ? baseY - depth * (1 - t * t)
-      : baseY - depth * b;
-    const row: [number,number,number][] = [];
+  // Build a ring by lerping between two point arrays at fraction b with given Y
+  function makeRing(
+    pA: THREE.Vector2[], pB: THREE.Vector2[], b: number, y: number,
+  ): [number, number, number][] {
+    const row: [number, number, number][] = [];
     for (let i = 0; i < N; i++) {
-      row.push([outerPts[i].x*(1-b) + outerEndXZ[i].x*b, y, outerPts[i].y*(1-b) + outerEndXZ[i].y*b]);
+      row.push([pA[i].x * (1 - b) + pB[i].x * b, y, pA[i].y * (1 - b) + pB[i].y * b]);
     }
-    allRings.push(row);
+    return row;
   }
 
-  // Floor strip (only when at least one wall is straight)
-  if (outerProfile === 'straight' || innerProfile === 'straight') {
-    const innerStartXZ = innerProfile === 'parabolic' ? midPts : innerPts;
+  // For floor-strip decision: 'step' and 'spiral' are treated like 'parabolic'
+  const outerIsStep    = outerProfile === 'step';
+  const innerIsStep    = innerProfile === 'step';
+  const outerIsStraight = outerProfile === 'straight';
+  const innerIsStraight = innerProfile === 'straight';
+  const needsFloor = outerIsStraight || innerIsStraight;
+
+  // Where each wall ends/begins horizontally at valley level
+  const outerEndXZ   = outerIsStraight ? outerPts : midPts;
+  const innerStartXZ = innerIsStraight ? innerPts  : midPts;
+
+  const allRings: [number, number, number][][] = [];
+
+  // ── Outer section: outer rim → valley ──────────────────────────────────────
+  if (outerIsStep) {
+    const sN = Math.max(1, stepCount);
+    allRings.push(makeRing(outerPts, midPts, 0, baseY));  // rim ring
+    for (let k = 0; k < sN; k++) {
+      const b1 = k / sN + flatFrac / sN;         // tread end (inward)
+      const b2 = (k + 1) / sN;                   // riser end
+      const Y0 = baseY - k * depth / sN;          // tread height
+      const Y2 = baseY - (k + 1) * depth / sN;   // riser end height
+      allRings.push(makeRing(outerPts, midPts, b1, Y0));  // tread end (same Y)
+      allRings.push(makeRing(outerPts, midPts, b2, Y2));  // riser end (lower Y)
+    }
+  } else {
+    // Smooth outer: parabolic (incl. spiral), straight
+    for (let r = 0; r <= HALF; r++) {
+      const b = r / HALF;
+      const t = 1 - b;
+      const y = outerIsStraight ? baseY - depth * b : baseY - depth * (1 - t * t);
+      allRings.push(makeRing(outerPts, outerEndXZ, b, y));
+    }
+  }
+
+  // ── Floor strip (only when at least one wall is straight) ────────────────
+  if (needsFloor) {
     const FLOOR = 8;
     for (let r = 1; r <= FLOOR; r++) {
       const b = r / FLOOR;
-      const row: [number,number,number][] = [];
-      for (let i = 0; i < N; i++) {
-        row.push([outerEndXZ[i].x*(1-b) + innerStartXZ[i].x*b, valleyY, outerEndXZ[i].y*(1-b) + innerStartXZ[i].y*b]);
-      }
-      allRings.push(row);
+      allRings.push(makeRing(outerEndXZ, innerStartXZ, b, valleyY));
     }
-    const innerStartRef = innerProfile === 'parabolic' ? midPts : innerPts;
+  }
+
+  // ── Inner section: valley → inner rim ────────────────────────────────────
+  if (innerIsStep) {
+    const sN = Math.max(1, stepCount);
+    for (let k = 0; k < sN; k++) {
+      const b1 = k / sN + flatFrac / sN;              // tread end
+      const b2 = (k + 1) / sN;                        // riser end
+      const Y0 = valleyY + k * innerRise / sN;         // tread height
+      const Y2 = valleyY + (k + 1) * innerRise / sN;  // riser end height
+      allRings.push(makeRing(innerStartXZ, innerPts, b1, Y0));  // tread end
+      allRings.push(makeRing(innerStartXZ, innerPts, b2, Y2));  // riser end (higher)
+    }
+  } else if (needsFloor) {
+    // Inner section after floor strip
     for (let r = 1; r <= HALF; r++) {
       const b = r / HALF;
-      const y = innerProfile === 'parabolic' ? valleyY + innerRise * b * b : valleyY + innerRise * b;
-      const row: [number,number,number][] = [];
-      for (let i = 0; i < N; i++) {
-        row.push([innerStartRef[i].x*(1-b) + innerPts[i].x*b, y, innerStartRef[i].y*(1-b) + innerPts[i].y*b]);
-      }
-      allRings.push(row);
+      const y = innerIsStraight ? valleyY + innerRise * b : valleyY + innerRise * b * b;
+      allRings.push(makeRing(innerStartXZ, innerPts, b, y));
     }
   } else {
-    // Both parabolic: no floor strip
+    // Both non-straight (parabolic/step/spiral) — direct from midPts to innerPts
     for (let r = 1; r <= HALF; r++) {
       const b = r / HALF;
       const y = valleyY + innerRise * b * b;
-      const row: [number,number,number][] = [];
-      for (let i = 0; i < N; i++) {
-        row.push([midPts[i].x*(1-b) + innerPts[i].x*b, y, midPts[i].y*(1-b) + innerPts[i].y*b]);
-      }
-      allRings.push(row);
+      allRings.push(makeRing(midPts, innerPts, b, y));
     }
   }
 
@@ -141,7 +175,7 @@ export function buildMoatGeometry(
   for (let r = 0; r < TOTAL - 1; r++) {
     const b0 = r * N; const b1 = (r + 1) * N;
     for (let i = 0; i < N; i++) {
-      const a0=b0+i, c0=b0+(i+1)%N, a1=b1+i, c1=b1+(i+1)%N;
+      const a0 = b0 + i, c0 = b0 + (i + 1) % N, a1 = b1 + i, c1 = b1 + (i + 1) % N;
       idx.push(a0, c0, a1, c0, c1, a1);
     }
   }
@@ -154,21 +188,59 @@ export function buildMoatGeometry(
 export function buildMoatEdgeLines(
   outerPts: THREE.Vector2[], _innerPts: THREE.Vector2[],
   depth: number, innerRimOffset: number, baseY = 0,
+  outerProfile: WallProfile = 'parabolic',
+  innerProfile: WallProfile = 'parabolic',
+  stepCount = 3,
 ): THREE.BufferGeometry {
   const N = outerPts.length;
   const innerPts = resamplePts(_innerPts, N);
   const innerRimY = baseY + innerRimOffset;
+  const valleyY = baseY - depth;
+  const innerRise = depth + innerRimOffset;
+  const midPts = outerPts.map((op, i) => new THREE.Vector2(
+    (op.x + innerPts[i].x) / 2, (op.y + innerPts[i].y) / 2,
+  ));
   const step = Math.max(1, Math.floor(N / 8));
   const v: number[] = [
     ...buildRimEdges(outerPts, baseY),
     ...buildFloorAndPillarEdges(outerPts, baseY, depth),
   ];
-  // Inner: rim loop + floor loop + pillars (reuse helpers with adjusted Y)
+  // Inner: rim loop + floor loop + pillars
   for (let i = 0; i < N; i++) {
     const a = innerPts[i]; const b = innerPts[(i + 1) % N];
     v.push(a.x, innerRimY, a.y, b.x, innerRimY, b.y);
-    v.push(a.x, baseY - depth, a.y, b.x, baseY - depth, b.y);
-    if (i % step === 0) v.push(a.x, innerRimY, a.y, a.x, baseY - depth, a.y);
+    v.push(a.x, valleyY, a.y, b.x, valleyY, b.y);
+    if (i % step === 0) v.push(a.x, innerRimY, a.y, a.x, valleyY, a.y);
+  }
+  // Outer step terrace edges
+  if (outerProfile === 'step') {
+    const sN = Math.max(1, stepCount);
+    for (let k = 1; k < sN; k++) {
+      const b = k / sN;
+      const y = baseY - k * depth / sN;
+      for (let i = 0; i < N; i++) {
+        const j = (i + 1) % N;
+        v.push(
+          outerPts[i].x * (1 - b) + midPts[i].x * b, y, outerPts[i].y * (1 - b) + midPts[i].y * b,
+          outerPts[j].x * (1 - b) + midPts[j].x * b, y, outerPts[j].y * (1 - b) + midPts[j].y * b,
+        );
+      }
+    }
+  }
+  // Inner step terrace edges
+  if (innerProfile === 'step') {
+    const sN = Math.max(1, stepCount);
+    for (let k = 1; k < sN; k++) {
+      const b = k / sN;
+      const y = valleyY + k * innerRise / sN;
+      for (let i = 0; i < N; i++) {
+        const j = (i + 1) % N;
+        v.push(
+          midPts[i].x * (1 - b) + innerPts[i].x * b, y, midPts[i].y * (1 - b) + innerPts[i].y * b,
+          midPts[j].x * (1 - b) + innerPts[j].x * b, y, midPts[j].y * (1 - b) + innerPts[j].y * b,
+        );
+      }
+    }
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
@@ -188,7 +260,7 @@ export function buildFreeArenaMesh(
 
   // Interior bowl — uses shared appendParabolicBowlSection to avoid duplicating ring math
   if (wallProfile === 'parabolic') {
-    const rings = holes.length > 0 ? TESS.PARABOLIC_BOWL * 2 : TESS.STRAIGHT_BOWL;
+    const rings = holes.length > 0 ? TESS.PARABOLIC_BOWL * 2 : TESS.PARABOLIC_BOWL;
     base = appendParabolicBowlSection(pts, rings, depth, baseY, pos, idx, base, holes);
   } else {
     // Straight interior

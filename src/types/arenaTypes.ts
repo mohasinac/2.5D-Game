@@ -40,6 +40,8 @@ export interface SurfaceMaterialOpts {
   side?:           THREE.Side;
   /** Physical base material — overrides surface-type PBR heuristics. */
   baseMaterial?:   ArenaMaterial;
+  /** Render slightly behind coplanar surfaces (use for top-face to prevent z-fighting with arena rims). */
+  polygonOffset?:  boolean;
 }
 
 /* ── Zone fill types ─────────────────────────────────────────────────────── */
@@ -176,6 +178,127 @@ export interface ZoneData {
    SPEED LINE DATA
    ══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Preset shape types ──────────────────────────────────────────────────── */
+export type SpeedLinePresetType =
+  | 'custom'
+  | 'circle' | 'ellipse'
+  | 'polygon'
+  | 'triangle'
+  | 'star'
+  | 'flower'
+  | 'spiral_in'
+  | 'spiral_out'
+  | 'helix'
+  | 'zigzag'
+  | 'wave'
+  | 'snake'
+  | 'figure_8'
+  | 'lemniscate'
+  | 'trefoil'
+  | 'cardioid'
+  | 'epicycloid'
+  | 'hypocycloid'
+  | 'astroid'
+  | 'rose_curve'
+  | 'damped_wave'
+  | 'growing_wave'
+  | 'cosine_wave'
+  | 'point_zone';
+
+/* ── Modulation waveform ─────────────────────────────────────────────────── */
+export type SpeedLineModWaveform =
+  | 'sine' | 'cosine' | 'triangle' | 'sawtooth' | 'inverse_sawtooth'
+  | 'square' | 'pulse' | 'exp_rise' | 'exp_decay'
+  | 'damped_sine' | 'growing_sine';
+
+export type SpeedLineModType = 'none' | 'radial_scale' | 'angle_drift' | 'xyz_shift';
+
+export interface SpeedLinePresetModulation {
+  type:        SpeedLineModType;
+  amplitude:   number;
+  periodSteps: number;
+  waveform:    SpeedLineModWaveform;
+  modPhase:    number;    // degrees 0–360
+  pulseWidth:  number;    // fraction 0.1–0.9; only used when waveform='pulse'
+}
+
+/* ── Preset parameters ───────────────────────────────────────────────────── */
+export interface SpeedLinePresetParams {
+  radiusX:      number;
+  radiusZ:      number;
+  sides:        number;
+  petals:       number;
+  turns:        number;
+  steps:        number;
+  centerX:      number;
+  centerZ:      number;
+  rotationY:    number;
+  heightDelta:  number;
+  closeLoop:    boolean;
+  innerRadius:  number;
+  pitchPerTurn: number;
+  loopGap:      number;
+  radiusEasing: 'linear' | 'ease_in' | 'ease_out' | 'ease_inout';
+  arcFraction:  number;
+  modulation:   SpeedLinePresetModulation;
+  // ── Section system (replaces parallel arrays) ──────────────────────────
+  sections:     SpeedLineSection[];   // [] = single uniform section
+  // ── 3D shape positioning ───────────────────────────────────────────────
+  centerY:      number;   // cm — base Y above surface projection
+  startPosX:    number;   // 0 = auto from sampler
+  startPosZ:    number;
+  startPosY:    number;   // 0 = surface-project naturally
+  endPosX:      number;
+  endPosZ:      number;
+  endPosY:      number;
+}
+
+/* ── Speed ramp ──────────────────────────────────────────────────────────── */
+export type SpeedLineRampProfile =
+  | 'constant' | 'accelerate' | 'decelerate' | 'bell' | 'inverse_bell';
+
+export interface SpeedLineRamp {
+  profile:    SpeedLineRampProfile;
+  speedMin:   number;
+  speedMax:   number;
+  entrySteps: number;
+  exitSteps:  number;
+}
+
+/* ── Base condition / eject / targeting ──────────────────────────────────── */
+export type SpeedLineBaseCondition = 'none' | 'always' | 'game_phase';
+
+export type SpeedLineEjectBehavior = 'toward_center' | 'forward' | 'backward' | 'launch';
+
+export type SpeedLineTargetSelectionMode = 'at_entrance' | 'dynamic';
+
+/* ── Stat modifiers ──────────────────────────────────────────────────────── */
+export interface SpeedLineStatModifiers {
+  spinRateMult:    number;
+  staminaMult:     number;
+  attackMult:      number;
+  defenseMult:     number;
+  weightMult:      number;
+  burstResistMult: number;
+}
+
+/* ── Section — self-contained arc/side with per-property overrides ─────────
+   null on any property = inherit the global SpeedLineData value live.
+   ──────────────────────────────────────────────────────────────────────── */
+export interface SpeedLineSection {
+  angleDeg:        number;
+  yOffset:         number;
+  maxStayDuration: number;
+  statModifiers:   SpeedLineStatModifiers | null;
+  surfaceFollow:   boolean | null;
+  entryCondition:  SpeedLineEntryCondition | null;
+  exitBehavior:    SpeedLineExitBehavior | null;
+  color:           number | null;
+  opacity:         number | null;
+  speedMult:       number | null;
+  activationMode:  SpeedLineActivationMode | null;
+}
+
 export interface SpeedLineSegment {
   id:     string;
   length: number;   // cm — physical length of this block
@@ -189,6 +312,10 @@ export interface SpeedLineSegment {
   objRotX:    number;   // degrees of object pitch added per cm of travel
   objRotY:    number;   // degrees of object yaw added per cm of travel
   objRotZ:    number;   // degrees of object roll added per cm of travel
+
+  maxStayDuration?: number;   // seconds; 0 = unlimited (undefined treated as 0)
+  statModifiers?:   SpeedLineStatModifiers | null;   // null/undefined = inherit global SpeedLineData.statModifiers
+  sectionIndex?:    number;   // which SpeedLineSection this belongs to (-1 = no section)
 }
 
 export type SpeedLineEntryCondition =
@@ -202,7 +329,8 @@ export type SpeedLineDirection = 'forward' | 'reverse' | 'bidirectional';
 export type SpeedLineHandleType = 'start' | `joint_${number}`;
 
 export type SpeedLineTargetType =
-  | 'beyblade' | 'water' | 'obstacle' | 'item' | 'any' | 'custom';
+  | 'beyblade' | 'water' | 'obstacle' | 'item' | 'any' | 'custom'
+  | 'nearest_opponent' | 'nearest_obstacle' | 'on_path_obstacle';
 
 export type SpeedLineActivationMode =
   | 'always' | 'event' | 'periodic' | 'proximity';
@@ -263,6 +391,28 @@ export interface SpeedLineData {
   swapPriority:     number;
 
   totalLength: number;   // computed, not serialised
+
+  /* ── Preset system ─────────────────────────────────────────────────────── */
+  presetType:   SpeedLinePresetType;
+  presetParams: SpeedLinePresetParams;
+  speedRamp:    SpeedLineRamp;
+
+  /* ── Surface projection ────────────────────────────────────────────────── */
+  surfaceOffset:       number;    // cm above projected surface
+  surfaceOrientObject: boolean;
+  airNormalMode:       'upright' | 'lean_center' | 'lean_curvature';
+  airNormalTiltDeg:    number;
+  pointNormals:        THREE.Vector3[];   // runtime-only; populated by buildSpeedLineObjects
+
+  /* ── Conditions, ejection, targeting ──────────────────────────────────── */
+  baseCondition:            SpeedLineBaseCondition;
+  conditionPhase:           'pre_battle' | 'battle' | 'sudden_death' | 'any';
+  ejectBehavior:            SpeedLineEjectBehavior;
+  targetSelectionMode:      SpeedLineTargetSelectionMode;
+  conditionCheckIntervalMs: number;
+
+  /* ── Stat modifiers ────────────────────────────────────────────────────── */
+  statModifiers: SpeedLineStatModifiers;
 
   mesh:              THREE.Mesh;
   edges:             THREE.LineSegments;
@@ -349,7 +499,8 @@ export interface WallData {
 
 export type BridgeSegmentType =
   | 'straight' | 'curve' | 'ramp' | 'bezier'
-  | 'loop' | 'hairpin' | 'corkscrew' | 'chicane';
+  | 'loop' | 'return_loop' | 'exit_loop'
+  | 'hairpin' | 'corkscrew' | 'chicane';
 
 export type BridgeCrossSection = 'flat' | 'u_channel';
 
@@ -396,7 +547,13 @@ export interface BridgeSegmentData {
   endX: number; endY: number; endZ: number;
 
   // loop
-  loopRadius: number;   // cm
+  loopRadius: number;         // cm
+  loopOrientation: 'vertical' | 'horizontal';  // vertical = Hot Wheels ring; horizontal = flat spiral
+
+  // tilt / roll — applied to all segment types
+  // Rotates the cross-section around the forward direction before the path is sampled.
+  // 0 = upright; 90 = rolled 90° (loop becomes horizontal if it was vertical, etc.)
+  tiltAngle: number;  // degrees
 
   // corkscrew
   corkscrewLength: number; // cm horizontal travel
@@ -605,4 +762,28 @@ export interface PortalData {
   mesh: THREE.Mesh;
   edges: THREE.LineSegments;
   ringMesh: THREE.Mesh | null;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BASE FOOTING — decorative/structural shapes on the octagon base
+   ══════════════════════════════════════════════════════════════════════════ */
+export interface BaseFootingData {
+  id: string; name: string;
+  shape: ObstacleShape;
+  // same dim semantics as ObstacleData
+  dimX: number; dimY: number; dimZ: number;
+  basePosX: number; basePosZ: number;
+  baseRotY: number;   // degrees
+  posY: number;       // cm above base top face (default 0)
+  color: number;
+  surface: SurfaceType;
+  customTileData: string | null;
+  tileScale: number;
+  emissiveColor: number;
+  emissiveIntensity: number;
+  opacity: number;
+  presentStlb64: string | null;
+  presentColor: number;
+  mesh: THREE.Mesh | null;
+  edges: THREE.LineSegments | null;
 }

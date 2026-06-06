@@ -19,26 +19,33 @@ function _randInDisk(radius: number): [number, number] {
   return [Math.cos(angle) * r, Math.sin(angle) * r];
 }
 
-function _spawnParticle(preset: ParticlePreset, cx: number, cz: number, radius: number, baseY: number): Particle {
+function _spawnParticle(preset: ParticlePreset, cx: number, cz: number, radius: number, rimY: number, depth: number): Particle {
+  const floor = rimY - depth;
   const [dx, dz] = _randInDisk(radius);
   switch (preset) {
     case 'embers':
-      return { x: cx + dx, y: baseY, z: cz + dz, vx: _randRange(-0.5, 0.5), vy: _randRange(4, 12), vz: _randRange(-0.5, 0.5), life: 0, maxLife: _randRange(1.5, 3.5) };
+      // Spawn near the bowl floor, drift upward — reset before reaching the rim
+      return { x: cx + dx, y: floor + _randRange(0, depth * 0.2), z: cz + dz, vx: _randRange(-0.5, 0.5), vy: _randRange(2, 6), vz: _randRange(-0.5, 0.5), life: 0, maxLife: _randRange(1.5, 3.5) };
     case 'snow':
-      return { x: cx + dx, y: baseY + _randRange(20, 50), z: cz + dz, vx: _randRange(-0.3, 0.3), vy: _randRange(-3, -1), vz: _randRange(-0.3, 0.3), life: 0, maxLife: _randRange(4, 10) };
+      // Falls from just above the rim down into the bowl
+      return { x: cx + dx, y: rimY + _randRange(5, 20), z: cz + dz, vx: _randRange(-0.3, 0.3), vy: _randRange(-6, -3), vz: _randRange(-0.3, 0.3), life: 0, maxLife: _randRange(3, 7) };
     case 'sparks':
-      return { x: cx + dx * 0.3, y: baseY, z: cz + dz * 0.3, vx: _randRange(-8, 8), vy: _randRange(10, 20), vz: _randRange(-8, 8), life: 0, maxLife: _randRange(0.3, 0.8) };
+      // Burst from near the floor, gravity pulls them back down
+      return { x: cx + dx * 0.4, y: floor + _randRange(0, depth * 0.15), z: cz + dz * 0.4, vx: _randRange(-8, 8), vy: _randRange(8, 18), vz: _randRange(-8, 8), life: 0, maxLife: _randRange(0.3, 0.8) };
     case 'dust':
-      return { x: cx + dx, y: baseY + _randRange(0, 5), z: cz + dz, vx: _randRange(-2, 2), vy: _randRange(-0.2, 0.5), vz: _randRange(-2, 2), life: 0, maxLife: _randRange(3, 7) };
+      // Spread throughout the bowl volume
+      return { x: cx + dx, y: floor + _randRange(0, depth), z: cz + dz, vx: _randRange(-2, 2), vy: _randRange(-0.3, 0.3), vz: _randRange(-2, 2), life: 0, maxLife: _randRange(3, 7) };
     case 'bubbles':
-      return { x: cx + dx, y: baseY + _randRange(0, 10), z: cz + dz, vx: _randRange(-0.3, 0.3), vy: _randRange(1, 4), vz: _randRange(-0.3, 0.3), life: 0, maxLife: _randRange(2, 6) };
+      // Rise from the lower bowl toward the rim
+      return { x: cx + dx, y: floor + _randRange(0, depth * 0.4), z: cz + dz, vx: _randRange(-0.3, 0.3), vy: _randRange(1, 4), vz: _randRange(-0.3, 0.3), life: 0, maxLife: _randRange(2, 6) };
     case 'void_motes': {
+      // Orbit inside the bowl, mid-height
       const angle = Math.random() * Math.PI * 2;
-      const r = _randRange(radius * 0.2, radius);
-      return { x: cx + Math.cos(angle) * r, y: baseY + _randRange(5, 25), z: cz + Math.sin(angle) * r, vx: 0, vy: 0, vz: 0, life: 0, maxLife: _randRange(3, 8) };
+      const r = _randRange(radius * 0.2, radius * 0.9);
+      return { x: cx + Math.cos(angle) * r, y: floor + _randRange(depth * 0.1, depth * 0.85), z: cz + Math.sin(angle) * r, vx: 0, vy: 0, vz: 0, life: 0, maxLife: _randRange(3, 8) };
     }
     default:
-      return { x: cx, y: baseY, z: cz, vx: 0, vy: 1, vz: 0, life: 0, maxLife: 2 };
+      return { x: cx, y: floor, z: cz, vx: 0, vy: 1, vz: 0, life: 0, maxLife: 2 };
   }
 }
 
@@ -59,7 +66,8 @@ export function buildParticleSystem(
   cx: number,
   cz: number,
   radius: number,
-  baseY: number,
+  rimY: number,
+  depth: number,
 ): ParticleSystem {
   const count = MAX_PARTICLES;
   const positions = new Float32Array(count * 3);
@@ -79,7 +87,7 @@ export function buildParticleSystem(
 
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
-    const p = _spawnParticle(preset, cx, cz, radius, baseY);
+    const p = _spawnParticle(preset, cx, cz, radius, rimY, depth);
     p.life = Math.random() * p.maxLife; // stagger initial lifetimes
     particles.push(p);
     positions[i * 3]     = p.x;
@@ -98,7 +106,7 @@ export function buildParticleSystem(
         const p = particles[i];
         p.life += dt;
         if (p.life >= p.maxLife) {
-          const fresh = _spawnParticle(preset, cx, cz, radius, baseY);
+          const fresh = _spawnParticle(preset, cx, cz, radius, rimY, depth);
           particles[i] = fresh;
           positions[i * 3]     = fresh.x;
           positions[i * 3 + 1] = fresh.y;
