@@ -334,6 +334,7 @@ export class WallManager
       height:                save.height,
       tilt:                  save.tilt,
       thickness:             save.thickness,
+      thicknessDirection:    save.thicknessDirection ?? 'outward',
       topProfile:            save.topProfile,
       topAmplitude:          save.topAmplitude,
       topFrequency:          save.topFrequency,
