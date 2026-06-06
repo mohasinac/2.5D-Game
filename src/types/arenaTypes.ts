@@ -70,6 +70,42 @@ export interface ChildHole {
 /* ── Island hole — cutout in moat island cap for nested arenas ───────────── */
 export interface IslandHole { cx: number; cz: number; rx: number; rz: number; }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ARENA ENVIRONMENT — schedule / physics / scoring
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export type EnvProperty =
+  | 'gravityScale' | 'gravityDirectionX' | 'gravityDirectionZ'
+  | 'tiltX' | 'tiltZ'
+  | 'fogDensity'
+  | 'weatherPreset' | 'windEnabled' | 'windDirectionDeg'
+  | 'windStrengthCms' | 'windGustInterval' | 'windGustMult'
+  | 'scoreMultiplier' | 'pointsPerSecond';
+
+export interface EnvKeyframe {
+  property: EnvProperty;
+  value:    number | string | boolean;
+}
+
+export interface EnvScheduleEntry {
+  id:          string;
+  label:       string;
+  triggerType: 'interval' | 'once' | 'event';
+  intervalSec: number;     // seconds between firings (interval) / cooldown (event)
+  delaySec:    number;     // initial delay before first fire
+  eventName:   string;     // event name matched by triggerEvent() (event mode)
+  keyframes:   EnvKeyframe[];
+  revertSec:   number;     // 0 = permanent; >0 = auto-revert after N seconds
+  soundEvent:  string;     // named sound event dispatched on fire ('' = none)
+  enabled:     boolean;
+  // runtime only — stripped from save:
+  _timer?:       number;
+  _revertTimer?: number;
+  _prevValues?:  EnvKeyframe[];
+}
+
+export type EnvScheduleSave = Omit<EnvScheduleEntry, '_timer' | '_revertTimer' | '_prevValues'>;
+
 /* ── Data models ─────────────────────────────────────────────────────────── */
 export interface ArenaData {
   name: string;
@@ -153,6 +189,30 @@ export interface ArenaData {
   light: THREE.PointLight | null;
   particleSystem: ParticleSystem | null;
   weatherSystem:  WeatherSystem | null;
+  /* ── Environment / Physics ──────────────────────────────────────────── */
+  gravityScale:          number;
+  gravityDirectionX:     number;
+  gravityDirectionZ:     number;
+  /* ── Arena tilt ─────────────────────────────────────────────────────── */
+  tiltX:                 number;
+  tiltZ:                 number;
+  weightTiltEnabled:     boolean;
+  weightTiltSensitivity: number;
+  weightTiltDampening:   number;
+  /* ── Atmosphere ─────────────────────────────────────────────────────── */
+  fogDensity:            number;
+  /* ── Scoring ────────────────────────────────────────────────────────── */
+  scoreMultiplier:       number;
+  pointsPerSecond:       number;
+  /* ── Weather → surface change map ───────────────────────────────────── */
+  weatherSurfaceMap:     Partial<Record<WeatherPreset, SurfaceType>>;
+  /* ── Environment schedule ───────────────────────────────────────────── */
+  envSchedule:           EnvScheduleEntry[];
+  /* ── Runtime only (not saved) ───────────────────────────────────────── */
+  tiltGroup?:            THREE.Group;
+  fogSystem?:            ParticleSystem | null;
+  _score:                number;
+  _envTriggerCooldown?:  number;
 }
 
 export interface PitData {
@@ -230,7 +290,8 @@ export type SpeedLinePresetType =
   | 'damped_wave'
   | 'growing_wave'
   | 'cosine_wave'
-  | 'point_zone';
+  | 'point_zone'
+  | 'jump';
 
 /* ── Modulation waveform ─────────────────────────────────────────────────── */
 export type SpeedLineModWaveform =
@@ -278,6 +339,21 @@ export interface SpeedLinePresetParams {
   endPosX:      number;
   endPosZ:      number;
   endPosY:      number;
+  // ── Jump preset fields (only when presetType === 'jump') ───────────────
+  jumpDstMode?:        JumpEndpointMode;
+  jumpDstParentType?:  JumpLinkParentType;
+  jumpDstParentId?:    string;
+  jumpDstLocalX?:      number;
+  jumpDstLocalZ?:      number;
+  jumpDstWorldX?:      number;
+  jumpDstWorldY?:      number;
+  jumpDstWorldZ?:      number;
+  jumpDstSpeedLineId?: string | null;
+  jumpDstAtStart?:     boolean;
+  jumpArcProfile?:     JumpArcProfile;
+  jumpArcHeight?:      number;
+  jumpDiscRadius?:     number;
+  jumpFlight?:         JumpFlightConfig;
 }
 
 /* ── Speed ramp ──────────────────────────────────────────────────────────── */
@@ -307,6 +383,12 @@ export interface SpeedLineStatModifiers {
   defenseMult:     number;
   weightMult:      number;
   burstResistMult: number;
+  /** Tilt applied to the beyblade (degrees). Positive = toward arena center. Default 0. */
+  tiltAngleDeg:      number;
+  /** If true, tilt direction reverses for opposite spin direction. */
+  tiltSpinSensitive: boolean;
+  /** When the tilt is applied relative to path travel. */
+  tiltApplyPhase:    'entry' | 'exit' | 'continuous';
 }
 
 /* ── Section — self-contained arc/side with per-property overrides ─────────
@@ -349,7 +431,7 @@ export type SpeedLineEntryCondition =
   | 'always' | 'moving_only' | 'fast_only' | 'slow_only';
 
 export type SpeedLineExitBehavior =
-  | 'normal' | 'launch' | 'loop' | 'special_move';
+  | 'normal' | 'launch' | 'loop' | 'special_move' | 'jump_link';
 
 export type SpeedLineDirection = 'forward' | 'reverse' | 'bidirectional';
 
@@ -357,7 +439,8 @@ export type SpeedLineHandleType = 'start' | `joint_${number}`;
 
 export type SpeedLineTargetType =
   | 'beyblade' | 'water' | 'obstacle' | 'item' | 'any' | 'custom'
-  | 'nearest_opponent' | 'nearest_obstacle' | 'on_path_obstacle';
+  | 'nearest_opponent' | 'nearest_obstacle' | 'on_path_obstacle'
+  | 'linked_bridge' | 'linked_trap';
 
 export type SpeedLineActivationMode =
   | 'always' | 'event' | 'periodic' | 'proximity';
@@ -370,6 +453,18 @@ export interface SpeedLineData {
   name: string;
   parentArenaId: string;
   parentZoneId:  string | null;
+
+  /** Non-null = this SL is structurally linked to a bridge (created by / associated with). */
+  linkedBridgeId: string | null;
+  /** Non-null = this SL is structurally linked to a trap plate. */
+  linkedTrapId:   string | null;
+  /** false = ribbon hidden and physics inactive. */
+  enabled:        boolean;
+
+  /** Used when targetType = 'linked_bridge': activates when bey is on this bridge. */
+  targetBridgeId: string | null;
+  /** Used when targetType = 'linked_trap': activates when bey is on this trap. */
+  targetTrapId:   string | null;
 
   startR:     number;
   startAngle: number;
@@ -413,6 +508,7 @@ export interface SpeedLineData {
   exitBehavior:     SpeedLineExitBehavior;
   launchForce:      number;
   specialMoveName:  string;
+  jumpLinkId:       string | null;   // used when exitBehavior === 'jump_link'
   allowMidAirEntry: boolean;
   overridePhysics:  boolean;
   swapPriority:     number;
@@ -490,6 +586,8 @@ export interface WallData {
 
   /** Wall cross-section thickness in cm. Min 0.1. Default 2. Adds inner face + top face. */
   thickness: number;
+  /** Which side of the rim the wall mass extends toward. 'outward' = away from arena (default). */
+  thicknessDirection: 'inward' | 'outward';
 
   // Gap pattern (palisade / fence)
   hasGaps: boolean;
@@ -617,6 +715,22 @@ export interface BridgeSegmentData {
   color: number | null;   // null = inherit from bridge
   surface: SurfaceType | null;
 
+  // Tick-based animation — segment jumps to offset then returns
+  animEnabled:    boolean;
+  animOffsetX:    number;   // cm, bridge-group local
+  animOffsetY:    number;
+  animOffsetZ:    number;
+  animRotX:       number;   // degrees, around pivot X
+  animRotY:       number;
+  animRotZ:       number;
+  animStartMs:    number;   // delay before first cycle (ms)
+  animIntervalMs: number;   // full cycle period (ms)
+  animHoldMs:     number;   // time in offset state per cycle (ms)
+  // Runtime-only (not serialized):
+  _animTimer:  number;
+  _animCenter: THREE.Vector3;
+  _animPivot:  THREE.Group | null;
+
   mesh: THREE.Mesh | null;
   edges: THREE.LineSegments | null;
 }
@@ -647,6 +761,8 @@ export interface BridgeData {
   presentColor: number;
   wallIds: string[];      // child wall ids (walls on bridge deck)
   group: THREE.Group;     // Three.js container for all segment meshes
+  /** ID of an existing arena-level SpeedLineData linked to this bridge. */
+  linkedSpeedLineId: string | null;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -690,8 +806,8 @@ export interface ObstacleData {
    ══════════════════════════════════════════════════════════════════════════ */
 
 export type TrapShape   = 'rectangle' | 'circle' | 'ellipse' | 'hexagon';
-export type TrapEffect  = 'damage' | 'heal' | 'launch' | 'reverse_controls' | 'freeze' | 'buff_zone' | 'hidden_pit' | 'chomper' | 'gravity_pull';
-export type TrapVariant = 'generic' | 'spike' | 'trampoline' | 'hammer' | 'saw' | 'buff' | 'chomper' | 'hidden_pit' | 'gravity_pull';
+export type TrapEffect  = 'damage' | 'heal' | 'launch' | 'reverse_controls' | 'freeze' | 'buff_zone' | 'hidden_pit' | 'chomper' | 'gravity_pull' | 'earthquake' | 'rpm' | 'projectile';
+export type TrapVariant = 'generic' | 'spike' | 'trampoline' | 'hammer' | 'saw' | 'buff' | 'chomper' | 'hidden_pit' | 'gravity_pull' | 'earthquake' | 'rpm' | 'projectile';
 
 export type TrapTierEffect =
   | 'friction'
@@ -733,23 +849,173 @@ export interface TrapData {
   unsafeInterval: number;
   activationLimit: number;
   speedPathId: string | null;
+  /** ID of an existing arena-level SpeedLineData linked to this trap. */
+  linkedSpeedLineId: string | null;
   durationTiers: TrapDurationTier[];
-  /* Gravity pull effect parameters */
+
+  /* ── Gravity pull effect parameters ─────────────────────────────────── */
   gravityRange:         number;
   gravityStrength:      number;
   gravityMode:          'continuous' | 'pulse' | 'conditional';
   gravityPulseInterval: number;
   gravityPulseWidth:    number;
+
+  /* ── Earthquake effect parameters ────────────────────────────────────── */
+  eqRingCount:       number;
+  eqSegmentsPerRing: number;
+  eqMaxElevationCm:  number;
+  eqElevationMode:   'random' | 'wave' | 'ripple' | 'checkerboard';
+  eqRingRanges:      number[];  // per-ring amplitude multiplier [0..1], length = eqRingCount
+  eqPermanent:       boolean;   // if true, stays elevated after first trigger
+  eqFadeCycles:      number;    // fade after this many cycles (0 = use eqPermanent)
+  eqPulseMode:       'triggered' | 'continuous' | 'periodic';
+  eqPulseIntervalMs: number;
+  eqPulseWidthMs:    number;
+  // Runtime-only (not saved):
+  _eqTimer?:          number;
+  _eqCycleCount?:     number;
+  _eqTargetHeights?:  number[];
+  _eqCurrentHeights?: number[];
+  _eqPhase?:          'idle' | 'rising' | 'active' | 'fading';
+
+  /* ── RPM effect parameters ────────────────────────────────────────────── */
+  rpmSpeed:          number;   // deg/s; positive = CCW viewed from above
+  rpmEffect:         'carry' | 'tangential' | 'centripetal' | 'centrifugal' | 'spin_boost' | 'spin_drain' | 'gyroscopic' | 'full';
+  rpmRange:          number;   // cm; 0 = use dimX/2
+  rpmMatchSpin:      boolean;  // true = direction matches beyblade spin
+  rpmForceScale:     number;
+  rpmPulseMode:      'triggered' | 'continuous' | 'periodic';
+  rpmPulseIntervalMs: number;
+  rpmPulseWidthMs:    number;
+  // Runtime-only (not saved):
+  _rpmCurrentAngle?: number;
+  _rpmTimer?:        number;
+  _rpmActive?:       boolean;
+
+  /* ── Projectile effect parameters ────────────────────────────────────── */
+  projLaunchMode:      'single' | 'spread' | 'burst' | 'continuous' | 'pattern';
+  projCount:           number;
+  projSpreadAngleDeg:  number;
+  projBurstCount:      number;
+  projBurstDelayMs:    number;
+  projLaunchDelayMs:   number;
+  projLaunchAngleDeg:  number;
+  projRandomizeAngle:  boolean;
+  projPattern:         'ring' | 'spiral' | 'fan' | 'line' | 'random';
+  projPatternCount:    number;
+  projConfig:          ProjectileConfig;
+  projPulseMode:       'triggered' | 'periodic' | 'continuous';
+  projPulseIntervalMs: number;
+  projPlateSpin:       number;   // deg/s — trap plate self-rotation (+ = CCW, 0 = off)
+
   baseMaterial: ArenaMaterial;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number;
   emissiveIntensity: number;
   presentStlb64: string | null;
   presentColor: number;
+  /* ── Environment trigger ────────────────────────────────────────────── */
+  envTriggerEvent:  string;   // event name dispatched on trap activation ('' = none)
+  envTargetArenaId: string;   // target arena ('' = parent arena of the trap)
+
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   variantMesh: THREE.Mesh | null;
   /** Runtime-only pulse timer — not saved. */
   _gravityTimer?: number;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PROJECTILE CONFIG
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export interface ProjectileConfig {
+  shape: 'sphere' | 'cube' | 'cylinder' | 'cone' | 'diamond' | 'custom_stl';
+  dimX: number; dimY: number; dimZ: number;
+  presentStlb64:      string | null;
+  color:              number;
+  emissiveColor:      number;
+  emissiveIntensity:  number;
+  /** Center-of-mass orientation offset (degrees). */
+  rotOffsetX: number; rotOffsetY: number; rotOffsetZ: number;
+  /** In-flight spin rates (deg/s). */
+  spinX: number; spinY: number; spinZ: number;
+  speed:       number;   // cm/s
+  isAirborne:  boolean;
+  arcHeight:   number;   // cm peak height above launch Y (airborne only)
+  lifetimeMs:  number;
+  targetMode: 'random_dir' | 'nearest_beyblade' | 'all_beyblades' | 'nearest_obstacle' | 'follow_speed_line';
+  targetSpeedLineId: string | null;
+  returnToTrap:   boolean;
+  returnAfterMs:  number;
+  hitEffect:    'damage' | 'buff' | 'debuff' | 'push' | 'teleport' | 'stun' | 'custom_event';
+  hitStrength:  number;
+  hitDurationMs: number;
+  hitEventName:  string;
+  hitRadius:     number;   // cm
+  /** Scale */
+  scaleFactor:    number;   // uniform mesh scale multiplier (default 1.0)
+  scaleRandomize: boolean;  // pick a random scale in [scaleMin, scaleMax] per bullet
+  scaleMin:       number;   // minimum random scale (default 0.5)
+  scaleMax:       number;   // maximum random scale (default 2.0)
+  /** Orbit — bullets circle the source center instead of flying away. */
+  orbitSource:    boolean;
+  orbitRadius:    number;   // cm
+  orbitSpeed:     number;   // deg/s, + = CCW from above
+  orbitElevation: number;   // cm above launch Y
+  /** Homing (data flag — not simulated in builder, applied in game simulation). */
+  homingEnabled:  boolean;
+  homingStrength: number;   // 0–10 turn rate
+}
+
+export function defaultProjectileConfig(): ProjectileConfig {
+  return {
+    shape: 'sphere', dimX: 5, dimY: 5, dimZ: 5,
+    presentStlb64: null, color: 0xff4400,
+    emissiveColor: 0xff2200, emissiveIntensity: 0.5,
+    rotOffsetX: 0, rotOffsetY: 0, rotOffsetZ: 0,
+    spinX: 0, spinY: 360, spinZ: 0,
+    speed: 100, isAirborne: false, arcHeight: 10, lifetimeMs: 3000,
+    targetMode: 'nearest_beyblade', targetSpeedLineId: null,
+    returnToTrap: false, returnAfterMs: 1500,
+    hitEffect: 'damage', hitStrength: 1.0, hitDurationMs: 500,
+    hitEventName: '', hitRadius: 8,
+    scaleFactor: 1.0, scaleRandomize: false, scaleMin: 0.5, scaleMax: 2.0,
+    orbitSource: false, orbitRadius: 10, orbitSpeed: 180, orbitElevation: 2,
+    homingEnabled: false, homingStrength: 2.0,
+  };
+}
+
+/**
+ * Generic launch descriptor for `BulletManager.launch()`.
+ * Decoupled from TrapData — any system (trap, beyblade, zone, arena) can launch bullets.
+ */
+export interface BulletLaunchRequest {
+  sourceId:       string;
+  center:         THREE.Vector3;   // world-space origin of the source
+  config:         ProjectileConfig;
+  mode:           'single' | 'spread' | 'burst' | 'pattern' | 'continuous';
+  count:          number;
+  spreadAngleDeg: number;
+  patternCount:   number;
+  dirAngle:       number;          // launch direction in degrees
+}
+
+/** Runtime-only bullet instance — never serialized. */
+export interface ProjectileBullet {
+  id:                   string;
+  sourceId:             string;
+  config:               ProjectileConfig;  // snapshot at spawn time
+  mesh:                 THREE.Mesh;
+  pos:                  THREE.Vector3;
+  vel:                  THREE.Vector3;
+  startPos:             THREE.Vector3;
+  age:                  number;   // ms
+  returning:            boolean;
+  followSpeedLineIndex: number;
+  orbitAngle:           number;   // radians; used when config.orbitSource = true
+  orbitCenterX:         number;
+  orbitCenterZ:         number;
+  orbitBaseY:           number;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -823,6 +1089,91 @@ export interface PortalData {
   mesh: THREE.Mesh;
   edges: THREE.LineSegments;
   ringMesh: THREE.Mesh | null;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   JUMP LINK — two-endpoint arc connector; launches bey from source to dest
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export type JumpLinkParentType = 'arena' | 'obstacle' | 'base' | 'trap';
+export type JumpLinkTrigger    = 'button' | 'automatic' | 'speed_line_exit' | 'proximity';
+export type JumpArcProfile     = 'parabolic' | 'bezier' | 'instant';
+export type JumpEndpointMode   = 'parent_surface' | 'world_point' | 'speed_line_end';
+
+export interface JumpLinkEndpoint {
+  mode:       JumpEndpointMode;
+  // 'parent_surface' fields:
+  parentType: JumpLinkParentType;
+  parentId:   string;    // arena/obstacle/trap id, or 'octagon-base'
+  localX:     number;    // cm offset from parent centre
+  localZ:     number;
+  // 'world_point' fields:
+  worldX: number;
+  worldY: number;
+  worldZ: number;
+  // 'speed_line_end' fields:
+  speedLineId: string | null;
+  atStart:     boolean;  // true = speed line start point, false = end point
+}
+
+export interface JumpFlightStatModifiers {
+  spinRateMult:    number;
+  staminaMult:     number;
+  attackMult:      number;
+  defenseMult:     number;
+  weightMult:      number;
+  burstResistMult: number;
+}
+
+export interface JumpFlightConfig {
+  // Travel time — arc is aimed at predicted dst position at t=arcDuration ms
+  arcDuration:    number;   // ms; default 800
+  // Launch physics
+  launchAngleDeg: number;   // 0 = horizontal, 90 = straight up; default 45
+  launchForce:    number;   // cm/s initial velocity magnitude; default 300
+  gravityScale:   number;   // 1.0 = normal; default 1.0
+  airDrag:        number;   // 0–1 damping per physics tick; default 0.02
+  // Landing (applied on arrival, independent of exact landing spot)
+  landingImpact:  number;   // 0 = soft, 1 = heavy pulse; default 0.3
+  landingBounce:  number;   // restitution (0 = stick, 1 = bounce); default 0.1
+  // Spin during flight (bey is NOT on any speed line while airborne)
+  spinRateMult:   number;   // multiplier on current bey spin (1.0 = unchanged); default 1.0
+  spinDeltaRPM:   number;   // flat RPM change over full arcDuration (+boost / -drain); default 0
+  // Stat modifiers active only while airborne
+  statModifiers:  JumpFlightStatModifiers;
+  // Visual trail
+  trailEnabled:   boolean;
+  trailColor:     number | null;  // null = inherit link color
+  trailWidth:     number;         // cm; default 2
+  trailFade:      number;         // 0–1 opacity at tail; default 0.1
+  // Flash effects
+  launchFlash:    boolean;
+  landFlash:      boolean;
+  flashColor:     number;         // default 0xffffff
+}
+
+export interface JumpLinkData {
+  id:   string;
+  name: string;
+  src:  JumpLinkEndpoint;
+  dst:  JumpLinkEndpoint;
+  isBidirectional:    boolean;
+  trigger:            JumpLinkTrigger;
+  triggerSpeedLineId: string | null;
+  proximityRadius:    number;
+  arcProfile: JumpArcProfile;
+  arcHeight:  number;   // cm — visual editor arc apex height
+  flight:     JumpFlightConfig;
+  // Visual disc + arc appearance
+  color:      number;
+  glowColor:  number | null;
+  opacity:    number;
+  discRadius: number;   // cm
+  // Non-nullable after buildJumpLinkObjects (follow ObstacleData/PortalData pattern)
+  sourceMesh:  THREE.Mesh;
+  destMesh:    THREE.Mesh;
+  arcLine:     THREE.Line;
+  arrowMeshes: THREE.Mesh[];
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

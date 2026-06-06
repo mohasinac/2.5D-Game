@@ -10,6 +10,7 @@ import {
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
   DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
   DEFAULT_ARENA_MATERIAL, MIN_ZONE_DEPTH, PIT_FIXED_DEPTH, ARENA_SAVE_VERSION,
+  ENV,
 } from '../config/arenaConstants';
 import { buildParticleSystem } from '../geometry/particleBuilders';
 import { buildWeatherSystem } from '../geometry/weatherBuilders';
@@ -51,8 +52,15 @@ import {
 import { DEMO_ARENA_CONFIG } from '../config/demoArenaConfig';
 import { buildObstacleObjects, applyObstacle, defaultObstacle } from '../geometry/obstacleBuilders';
 import { buildFootingObjects, applyFooting, defaultFooting } from '../geometry/footingBuilders';
-import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY } from '../geometry/trapBuilders';
+import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY, clampTrapDim, buildEarthquakeMesh, updateEarthquakeMeshHeights, buildRPMMesh } from '../geometry/trapBuilders';
+import { defaultProjectileConfig } from '../types/arenaTypes';
+import { ProjectileManager } from '../features/managers/ProjectileManager';
 import { buildPortalObjects, applyPortal, defaultPortal, portalSurfY } from '../geometry/portalBuilders';
+import {
+  buildJumpLinkObjects, applyJumpLink, defaultJumpLink, jumpLinkFromSave, resolveEndpointWorld,
+} from '../geometry/jumpLinkBuilders';
+import { JumpLinkData, JumpLinkParentType } from '../types/arenaTypes';
+import { jumpLinkToSave, JumpLinkSave } from '../utils/arenaPersistence';
 import { buildWallGeometry, buildWallEdgeGeometry, defaultWallData, trapRimPoints, trapWorldCenter } from '../geometry/wallBuilders';
 import {
   SegmentPose, DEFAULT_START_POSE,
@@ -64,6 +72,9 @@ import {
   listArenaPresets, saveArenaPreset, newPresetId,
   generateArenaThumb, remapArenaConfigIds, extractArenaConfig,
 } from '../utils/presetStore';
+import { SpawnManager } from '../features/managers/SpawnManager';
+import { ArenaEnvironmentManager } from '../features/managers/ArenaEnvironmentManager';
+import type { SceneContext } from '../features/IArenaFeature';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
@@ -115,6 +126,8 @@ export class ArenaSandbox extends Sandbox {
   private nodeRotationId = new Map<string, string>(); // nodeId → rotationId
   private footings      = new Map<string, BaseFootingData>();
   private footingSeq    = 0;
+  private jumpLinks     = new Map<string, JumpLinkData>();
+  private jumpLinkSeq   = 0;
   private selectedSlId: string | null = null;
   private slDrag: {
     slId: string;
@@ -137,6 +150,11 @@ export class ArenaSandbox extends Sandbox {
   private _particleConfigs = new Map<string, ParticleConfig>();
   /** Tracks which sub-node IDs (present-X, particle-X, weather-X) are in the tree. */
   private _subNodesAdded = new Set<string>();
+  private _projectileMgr: ProjectileManager | null = null;
+  private _spawnMgr:    SpawnManager | null = null;
+  private _spawnMgrBtn: HTMLButtonElement | null = null;
+  private _envMgr!: ArenaEnvironmentManager;
+  private _scoreHudEl: HTMLDivElement | null = null;
 
   /* ── Undo / Redo ── */
   private undoStack: string[] = [];
@@ -203,6 +221,7 @@ export class ArenaSandbox extends Sandbox {
         {label:'Trap+',title:'Add base trap',   className:'pit-btn', onClick:()=>this.addTrap('octagon-base','base')},
         {label:'⬡+',   title:'Add base portal', className:'zone-btn',onClick:()=>this.addPortal('octagon-base','base')},
         {label:'⬢+',   title:'Add footing',     className:'pit-btn', onClick:()=>this.addFooting()},
+        {label:'⤻+',   title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink('octagon-base','base')},
       ],
     });
 
@@ -269,6 +288,10 @@ export class ArenaSandbox extends Sandbox {
           this._subNodesAdded.delete(id);
           continue;
         }
+        if (id.startsWith('env-')) {
+          this._subNodesAdded.delete(id);
+          continue;
+        }
         const arena=this.arenas.get(id);
         if(arena){
           const allPitIds=[...arena.pitIds]; const allZoneIds=[...arena.zoneIds];
@@ -311,6 +334,7 @@ export class ArenaSandbox extends Sandbox {
           this.removeTrap(id); continue;
         }
         if(this.portals.has(id)){ this.removePortal(id); continue; }
+        if(this.jumpLinks.has(id)){ this._removeJumpLink(id); continue; }
         if(this.rotations.has(id)){ this.removeRotation(id); continue; }
         if(this.footings.has(id)){ this.removeFooting(id); continue; }
         const objs=this.sceneObjects.get(id);
@@ -407,6 +431,8 @@ export class ArenaSandbox extends Sandbox {
       rotationSeq: this.rotationSeq,
       footings: [...this.footings.values()].map(footingToSave),
       footingSeq: this.footingSeq,
+      jumpLinks: [...this.jumpLinks.values()].map(jumpLinkToSave),
+      jumpLinkSeq: this.jumpLinkSeq,
     };
     return JSON.stringify({ v: ARENA_SAVE_VERSION, c: config });
   }
@@ -462,6 +488,7 @@ export class ArenaSandbox extends Sandbox {
 
   /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
+    this._envMgr?.clear();
     // Remove rotations first to return objects to scene root before clearing
     for(const rot of this.rotations.values()){
       const scene=this.getScene();
@@ -501,6 +528,8 @@ export class ArenaSandbox extends Sandbox {
     this.portals.clear(); this.portalSeq = 0;
     for(const footing of this.footings.values()) this._disposeFooting(footing);
     this.footings.clear(); this.footingSeq = 0;
+    for(const jl of this.jumpLinks.values()) this._disposeJumpLink(jl);
+    this.jumpLinks.clear(); this.jumpLinkSeq = 0;
     this.sceneObjects.clear();
     this.arenaSeq = 0; this.pitSeq = 0; this.zoneSeq = 0;
     this.wallSeq = 0; this.bridgeSeq = 0; this.segmentSeq = 0;
@@ -519,6 +548,7 @@ export class ArenaSandbox extends Sandbox {
     this.portalSeq = cfg.portalSeq;
     this.rotationSeq = cfg.rotationSeq;
     this.footingSeq = cfg.footingSeq;
+    this.jumpLinkSeq = cfg.jumpLinkSeq ?? 0;
     this._loadArenasFromConfig(cfg);
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
@@ -850,6 +880,8 @@ export class ArenaSandbox extends Sandbox {
     if(arena.rimSeamMesh){ arena.rimSeamMesh.geometry.dispose();(arena.rimSeamMesh.material as THREE.Material).dispose();this.removeFromScene(arena.rimSeamMesh); }
     if(arena.light){ this.removeFromScene(arena.light); arena.light.dispose(); arena.light = null; }
     if(arena.particleSystem){ this.removeFromScene(arena.particleSystem.points); arena.particleSystem.dispose(); arena.particleSystem = null; }
+    if(arena.weatherSystem){ this.removeFromScene(arena.weatherSystem.points); arena.weatherSystem.dispose(); arena.weatherSystem = null; }
+    if(arena.fogSystem){ this.removeFromScene(arena.fogSystem.points); arena.fogSystem.dispose(); arena.fogSystem = null; }
   }
   private disposePit(pit: PitData): void {
     pit.mesh.geometry.dispose();(pit.mesh.material as THREE.Material).dispose();
@@ -899,6 +931,15 @@ export class ArenaSandbox extends Sandbox {
 
   private _removeSpeedLine(id: string): void {
     const sl = this.speedLines.get(id); if(!sl) return;
+    // Clear back-refs on bridges/traps that reference this SL
+    if (sl.linkedBridgeId) {
+      const bridge = this.bridges.get(sl.linkedBridgeId);
+      if (bridge) bridge.linkedSpeedLineId = null;
+    }
+    if (sl.linkedTrapId) {
+      const trap = this.traps.get(sl.linkedTrapId);
+      if (trap) trap.linkedSpeedLineId = null;
+    }
     this._disposeSpeedLine(sl);
     const arena = this.arenas.get(sl.parentArenaId);
     if(arena) arena.speedLineIds = arena.speedLineIds.filter(x=>x!==id);
@@ -909,8 +950,107 @@ export class ArenaSandbox extends Sandbox {
     this.saveArena();
   }
 
+  /** Auto-create an arena-level speed line and link it to a bridge. */
+  private _autoLinkSpeedLine(bridgeId: string, segType: BridgeSegmentType, arenaId: string): void {
+    const bridge = this.bridges.get(bridgeId); if (!bridge) return;
+    if (bridge.linkedSpeedLineId) return; // already linked
+    const arena  = this.arenas.get(arenaId); if (!arena) return;
+
+    const id   = `sl-${++this.speedlineSeq}`;
+    const name = `SL for ${bridge.name}`;
+    const sl = defaultSpeedLine(name, arenaId, id, null);
+    sl.segments[0].id = `${id}-seg-${++this.slSegSeq}`;
+    sl.linkedBridgeId  = bridgeId;
+    sl.targetType      = 'linked_bridge';
+    sl.targetBridgeId  = bridgeId;
+
+    // Choose preset based on segment type
+    if (segType === 'loop' || segType === 'return_loop' || segType === 'exit_loop') {
+      sl.presetType = 'circle';
+    } else if (segType === 'corkscrew') {
+      sl.presetType = 'helix';
+    } else if (segType === 'hairpin') {
+      sl.presetType = 'spiral_in';
+    }
+
+    this.speedLines.set(id, sl);
+    arena.speedLineIds.push(id);
+    bridge.linkedSpeedLineId = id;
+
+    const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
+    sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
+    this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
+    this.sceneObjects.set(id, [mesh, edges]);
+    this.sceneTree.add(id, name, '↝', arenaId);
+  }
+
+  /** Auto-create an arena-level speed line and link it to a trap. */
+  private _autoLinkTrapSpeedLine(trapId: string, arenaId: string): void {
+    const trap  = this.traps.get(trapId);   if (!trap)  return;
+    if (trap.linkedSpeedLineId) return;
+    const arena = this.arenas.get(arenaId); if (!arena) return;
+
+    const id   = `sl-${++this.speedlineSeq}`;
+    const name = `SL for ${trap.name}`;
+    const sl = defaultSpeedLine(name, arenaId, id, null);
+    sl.segments[0].id = `${id}-seg-${++this.slSegSeq}`;
+    sl.linkedTrapId  = trapId;
+    sl.targetType    = 'linked_trap';
+    sl.targetTrapId  = trapId;
+
+    // Choose preset based on trap effect
+    switch (trap.effect) {
+      case 'gravity_pull': sl.presetType = 'spiral_in';  break;
+      case 'damage':       sl.presetType = 'star';        break;
+      case 'launch':       sl.presetType = 'spiral_out'; break;
+      case 'buff_zone':
+      case 'heal':         sl.presetType = 'circle';     break;
+      case 'rpm':          sl.presetType = 'circle';     break;
+      case 'earthquake':   sl.presetType = 'polygon';    break;
+      case 'projectile':   sl.presetType = 'polygon';    break;
+      default: return; // no SL for freeze/reverse_controls/hidden_pit
+    }
+
+    this.speedLines.set(id, sl);
+    arena.speedLineIds.push(id);
+    trap.linkedSpeedLineId = id;
+
+    const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
+    sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
+    this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
+    this.sceneObjects.set(id, [mesh, edges]);
+    this.sceneTree.add(id, name, '↝', arenaId);
+  }
+
   private _updateSpeedLine(sl: SpeedLineData): void {
     const arena = this.arenas.get(sl.parentArenaId); if(!arena) return;
+
+    // Pre-resolve jump preset source + destination into arena-local coords
+    if (sl.presetType === 'jump') {
+      const p = sl.presetParams;
+      // Source: arena-local XZ from startR/startAngle, Y from arena surface
+      const srcAL = polarToLocalXZ(sl.startR, sl.startAngle);
+      const srcWY = arenaSurfaceYAtArenaLocal(arena, srcAL.lx, srcAL.lz);
+      p.startPosX = srcAL.lx; p.startPosZ = srcAL.lz; p.startPosY = srcWY;
+
+      // Destination: resolve via endpoint helper then convert to arena-local
+      const ep = {
+        mode: (p.jumpDstMode ?? 'parent_surface') as import('../types/arenaTypes').JumpEndpointMode,
+        parentType: (p.jumpDstParentType ?? 'arena') as import('../types/arenaTypes').JumpLinkParentType,
+        parentId: p.jumpDstParentId ?? sl.parentArenaId,
+        localX: p.jumpDstLocalX ?? 0, localZ: p.jumpDstLocalZ ?? 0,
+        worldX: p.jumpDstWorldX ?? 0, worldY: p.jumpDstWorldY ?? 0, worldZ: p.jumpDstWorldZ ?? 0,
+        speedLineId: p.jumpDstSpeedLineId ?? null, atStart: p.jumpDstAtStart ?? false,
+      };
+      const dstW = resolveEndpointWorld(ep, this.arenas, this.obstacles, this.traps,
+        id => this.speedLines.get(id), this.baseConfig.height);
+      const dx = dstW.x - arena.posX; const dz = dstW.z - arena.posZ;
+      const cosR = Math.cos(-arena.rotY * DEG2RAD); const sinR = Math.sin(-arena.rotY * DEG2RAD);
+      p.endPosX = dx * cosR - dz * sinR;
+      p.endPosZ = dx * sinR + dz * cosR;
+      p.endPosY = dstW.y;
+    }
+
     const projector = this._buildSurfaceProjector(sl.parentArenaId);
     applySpeedLine(sl, arena, this.zones, this.getScene(), (...o)=>this.addToScene(...o), (...o)=>this.removeFromScene(...o), projector);
     this.sceneObjects.set(sl.id, [sl.mesh, sl.edges]);
@@ -987,6 +1127,12 @@ export class ArenaSandbox extends Sandbox {
         targetSelectionMode:      sls_.targetSelectionMode,
         conditionCheckIntervalMs: sls_.conditionCheckIntervalMs,
         statModifiers:            sls_.statModifiers,
+        linkedBridgeId:           sls_.linkedBridgeId ?? null,
+        linkedTrapId:             sls_.linkedTrapId   ?? null,
+        enabled:                  sls_.enabled        ?? true,
+        targetBridgeId:           sls_.targetBridgeId ?? null,
+        targetTrapId:             sls_.targetTrapId   ?? null,
+        jumpLinkId:               sls_.jumpLinkId     ?? null,
         totalLength: 0,
         mesh: null as unknown as THREE.Mesh,
         edges: null as unknown as THREE.LineSegments,
@@ -1124,8 +1270,9 @@ export class ArenaSandbox extends Sandbox {
     for(const sid of bridge.segmentIds){
       const seg=this.segments.get(sid);
       if(seg){
-        if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose(); bridge.group.remove(seg.mesh); seg.mesh=null; }
-        if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose(); bridge.group.remove(seg.edges); seg.edges=null; }
+        if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose(); seg.mesh=null; }
+        if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose(); seg.edges=null; }
+        if(seg._animPivot){ bridge.group.remove(seg._animPivot); seg._animPivot=null; }
         this.sceneObjects.delete(sid);
         this.sceneTree.remove(sid);
         this.segments.delete(sid);
@@ -1330,6 +1477,7 @@ export class ArenaSandbox extends Sandbox {
     this.sceneTree.add(id, data.name, '⬛', 'octagon-base', {
       addChildButtons: [
         { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'obstacle'); this.addRotation([id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'⤻+', title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(id,'obstacle') },
         { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
       ],
     });
@@ -1465,15 +1613,22 @@ export class ArenaSandbox extends Sandbox {
       addChildButtons: [
         { label:'🧱+', title:'Add wall',          onClick:()=>this.addWall(id, 'trap') },
         { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'trap'); this.addRotation([id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'⤻+',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(id,'trap') },
         { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
         { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(id) },
       ],
     });
+    if (parentType === 'arena') this._autoLinkTrapSpeedLine(id, parentId);
     this.saveArena();
   }
 
   private removeTrap(id: string): void {
     const trap = this.traps.get(id); if(!trap) return;
+    // Clear back-ref on the linked SL
+    if (trap.linkedSpeedLineId) {
+      const sl = this.speedLines.get(trap.linkedSpeedLineId);
+      if (sl) sl.linkedTrapId = null;
+    }
     this._disposeTrap(trap);
     this.traps.delete(id);
     this.saveArena();
@@ -1525,6 +1680,39 @@ export class ArenaSandbox extends Sandbox {
       emissiveIntensity: ts.emissiveIntensity,
       presentStlb64:     ts.presentStlb64,
       presentColor:      ts.presentColor,
+      linkedSpeedLineId: ts.linkedSpeedLineId ?? null,
+      eqRingCount:       ts.eqRingCount       ?? 3,
+      eqSegmentsPerRing: ts.eqSegmentsPerRing ?? 6,
+      eqMaxElevationCm:  ts.eqMaxElevationCm  ?? 5,
+      eqElevationMode:   (ts.eqElevationMode  ?? 'random') as TrapData['eqElevationMode'],
+      eqRingRanges:      ts.eqRingRanges      ?? [0.3, 0.7, 1.0],
+      eqPermanent:       ts.eqPermanent       ?? false,
+      eqFadeCycles:      ts.eqFadeCycles      ?? 3,
+      eqPulseMode:       (ts.eqPulseMode      ?? 'triggered') as TrapData['eqPulseMode'],
+      eqPulseIntervalMs: ts.eqPulseIntervalMs ?? 2000,
+      eqPulseWidthMs:    ts.eqPulseWidthMs    ?? 1000,
+      rpmSpeed:          ts.rpmSpeed          ?? 180,
+      rpmEffect:         (ts.rpmEffect        ?? 'tangential') as TrapData['rpmEffect'],
+      rpmRange:          ts.rpmRange          ?? 0,
+      rpmMatchSpin:      ts.rpmMatchSpin      ?? false,
+      rpmForceScale:     ts.rpmForceScale     ?? 1.0,
+      rpmPulseMode:      (ts.rpmPulseMode     ?? 'continuous') as TrapData['rpmPulseMode'],
+      rpmPulseIntervalMs:ts.rpmPulseIntervalMs?? 0,
+      rpmPulseWidthMs:   ts.rpmPulseWidthMs   ?? 0,
+      projLaunchMode:    (ts.projLaunchMode   ?? 'single') as TrapData['projLaunchMode'],
+      projCount:         ts.projCount         ?? 1,
+      projSpreadAngleDeg:ts.projSpreadAngleDeg?? 30,
+      projBurstCount:    ts.projBurstCount    ?? 3,
+      projBurstDelayMs:  ts.projBurstDelayMs  ?? 100,
+      projLaunchDelayMs: ts.projLaunchDelayMs ?? 0,
+      projLaunchAngleDeg:ts.projLaunchAngleDeg?? 0,
+      projRandomizeAngle:ts.projRandomizeAngle?? false,
+      projPattern:       (ts.projPattern      ?? 'ring') as TrapData['projPattern'],
+      projPatternCount:  ts.projPatternCount  ?? 6,
+      projConfig:        ts.projConfig ? { ...defaultProjectileConfig(), ...ts.projConfig } : defaultProjectileConfig(),
+      projPulseMode:     (ts.projPulseMode    ?? 'triggered') as TrapData['projPulseMode'],
+      projPulseIntervalMs:ts.projPulseIntervalMs?? 3000,
+      projPlateSpin:     ts.projPlateSpin     ?? 0,
     });
     const surfY = this._getTrapSurfY(data);
     const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
@@ -1540,6 +1728,7 @@ export class ArenaSandbox extends Sandbox {
       addChildButtons: [
         { label:'🧱+', title:'Add wall',           onClick:()=>this.addWall(ts.id, 'trap') },
         { label:'↻+',  title:'Add rotation',    className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'⤻+',  title:'Add jump link',   className:'sl-btn',   onClick:()=>this._addJumpLink(ts.id,'trap') },
         { label:'✦+',  title:'Add presentation', className:'pit-btn',  onClick:()=>this._addSubNodePresent(ts.id) },
         { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(ts.id) },
       ],
@@ -1628,6 +1817,76 @@ export class ArenaSandbox extends Sandbox {
     });
   }
 
+  /* ── Jump Link methods ───────────────────────────────────────────────── */
+
+  private _addJumpLink(srcParentId: string, srcParentType: JumpLinkParentType): void {
+    this.captureUndo();
+    const id = `jl-${++this.jumpLinkSeq}`;
+    const data = defaultJumpLink(`Jump Link ${this.jumpLinkSeq}`, id, srcParentId, srcParentType);
+    this._buildJumpLinkGeometry(data);
+    this.jumpLinks.set(id, data);
+    const treeParent = srcParentType === 'base' ? 'octagon-base' : srcParentId;
+    this.sceneTree.add(id, data.name, '⤻', treeParent);
+    this.saveArena();
+  }
+
+  private _buildJumpLinkGeometry(data: JumpLinkData): void {
+    const result = buildJumpLinkObjects(
+      data, this.arenas, this.obstacles, this.traps,
+      jlid => this.speedLines.get(jlid), this.baseConfig.height,
+    );
+    data.sourceMesh  = result.sourceMesh;
+    data.destMesh    = result.destMesh;
+    data.arcLine     = result.arcLine;
+    data.arrowMeshes = result.arrowMeshes;
+    const objs: THREE.Object3D[] = [result.sourceMesh, result.destMesh, result.arcLine, ...result.arrowMeshes];
+    this.addToScene(...objs);
+    this.sceneObjects.set(data.id, objs);
+  }
+
+  private _applyJL(jl: JumpLinkData): void {
+    const prev = this.sceneObjects.get(jl.id) ?? [];
+    for (const obj of prev) this.removeFromScene(obj);
+    applyJumpLink(jl, this.arenas, this.obstacles, this.traps,
+      jlid => this.speedLines.get(jlid), this.baseConfig.height);
+    const objs: THREE.Object3D[] = [jl.sourceMesh, jl.destMesh, jl.arcLine, ...jl.arrowMeshes];
+    this.addToScene(...objs);
+    this.sceneObjects.set(jl.id, objs);
+  }
+
+  private _disposeJumpLink(jl: JumpLinkData): void {
+    const objs = this.sceneObjects.get(jl.id) ?? [];
+    for (const obj of objs) this.removeFromScene(obj);
+    jl.sourceMesh.geometry.dispose();
+    (jl.sourceMesh.material as THREE.Material).dispose();
+    jl.destMesh.geometry.dispose();
+    (jl.destMesh.material as THREE.Material).dispose();
+    jl.arcLine.geometry.dispose();
+    (jl.arcLine.material as THREE.Material).dispose();
+    for (const m of jl.arrowMeshes) {
+      m.geometry.dispose();
+      (m.material as THREE.Material).dispose();
+    }
+    jl.arrowMeshes = [];
+    this.sceneObjects.delete(jl.id);
+  }
+
+  private _removeJumpLink(id: string): void {
+    const jl = this.jumpLinks.get(id); if (!jl) return;
+    this._disposeJumpLink(jl);
+    this.jumpLinks.delete(id);
+    this.sceneTree.remove(id);
+    this.saveArena();
+  }
+
+  private _restoreJumpLinkSave(js: JumpLinkSave): void {
+    const data = jumpLinkFromSave(js);
+    this._buildJumpLinkGeometry(data);
+    this.jumpLinks.set(js.id, data);
+    const treeParent = data.src.parentType === 'base' ? 'octagon-base' : data.src.parentId;
+    this.sceneTree.add(js.id, data.name, '⤻', treeParent);
+  }
+
   /** Returns Map<id, name> of all speed lines — used to populate speed path dropdowns. */
   private _getSpeedLineNames(): Map<string, string> {
     return new Map([...this.speedLines.entries()].map(([slId, sl])=>[slId, sl.name]));
@@ -1675,6 +1934,25 @@ export class ArenaSandbox extends Sandbox {
     const geo  = buildSegmentDeckGeometry(seg, startPose, sec);
     const eGeo = buildSegmentEdgeGeometry(seg, startPose, sec);
 
+    // Compute bounding-box center — pivot for tick-based animation
+    geo.computeBoundingBox();
+    const center = new THREE.Vector3();
+    geo.boundingBox!.getCenter(center);
+    seg._animCenter.copy(center);
+    const negCenter = center.clone().negate();
+
+    // Ensure animation pivot group exists
+    if (!seg._animPivot) {
+      seg._animPivot = new THREE.Group();
+      // Reparent any existing mesh/edges from bridge.group into the pivot
+      if (seg.mesh)  { bridge.group.remove(seg.mesh);  seg._animPivot.add(seg.mesh); }
+      if (seg.edges) { bridge.group.remove(seg.edges); seg._animPivot.add(seg.edges); }
+      bridge.group.add(seg._animPivot);
+      scene.add(bridge.group);
+    }
+    seg._animPivot.position.copy(center);
+    if (!seg.animEnabled) seg._animPivot.rotation.set(0, 0, 0);
+
     const segMat = buildSurfaceMaterial({
       color, surface, customTileData: sec.customTileData, tileScale: sec.tileScale,
       transparent: sec.opacity < 1, opacity: sec.opacity,
@@ -1682,24 +1960,28 @@ export class ArenaSandbox extends Sandbox {
     (segMat as THREE.MeshStandardMaterial).emissive.setHex(sec.emissiveColor);
     (segMat as THREE.MeshStandardMaterial).emissiveIntensity = sec.emissiveIntensity;
     (segMat as THREE.MeshStandardMaterial).depthWrite = sec.opacity >= 1;
+
     if(seg.mesh){
       seg.mesh.geometry.dispose();
       (seg.mesh.material as THREE.Material).dispose();
       seg.mesh.geometry = geo;
       seg.mesh.material = segMat;
+      seg.mesh.position.copy(negCenter);
     } else {
       seg.mesh = new THREE.Mesh(geo, segMat);
-      bridge.group.add(seg.mesh);
-      scene.add(bridge.group);
+      seg.mesh.position.copy(negCenter);
+      seg._animPivot.add(seg.mesh);
     }
     const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
     if(seg.edges){
       seg.edges.geometry.dispose();
       seg.edges.geometry = eGeo;
       (seg.edges.material as THREE.LineBasicMaterial).color.copy(edgeCol);
+      seg.edges.position.copy(negCenter);
     } else {
       seg.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
-      bridge.group.add(seg.edges);
+      seg.edges.position.copy(negCenter);
+      seg._animPivot.add(seg.edges);
     }
     this.sceneObjects.set(seg.id, [seg.mesh, seg.edges]);
   }
@@ -1730,6 +2012,7 @@ export class ArenaSandbox extends Sandbox {
       surface: 'metal' as SurfaceType,
       wallIds: [],
       presentStlb64: null, presentColor: 0xaaaaaa,
+      linkedSpeedLineId: null,
       group,
     };
     this.bridges.set(bid, bridge);
@@ -1748,6 +2031,11 @@ export class ArenaSandbox extends Sandbox {
 
   private removeBridge(id: string): void {
     const bridge=this.bridges.get(id); if(!bridge) return;
+    // Clear back-ref on the linked SL
+    if (bridge.linkedSpeedLineId) {
+      const sl = this.speedLines.get(bridge.linkedSpeedLineId);
+      if (sl) sl.linkedBridgeId = null;
+    }
     this._disposeBridge(bridge);
     this.bridges.delete(id);
     // Remove from dependency index
@@ -1770,6 +2058,13 @@ export class ArenaSandbox extends Sandbox {
 
     const icon = segmentIcon(type);
     this.sceneTree.add(sid, name, icon, bridgeId);
+    if (['loop','return_loop','exit_loop','corkscrew','hairpin'].includes(type)) {
+      const b = this.bridges.get(bridgeId);
+      if (b) {
+        const arenaRef = b.startRef?.type === 'arena' ? b.startRef.id : null;
+        if (arenaRef) this._autoLinkSpeedLine(bridgeId, type, arenaRef);
+      }
+    }
     this.saveArena();
   }
 
@@ -1779,8 +2074,9 @@ export class ArenaSandbox extends Sandbox {
     const idx=bridge.segmentIds.indexOf(id);
     if(idx<0) return;
     this.captureUndo();
-    if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose();bridge.group.remove(seg.mesh);seg.mesh=null; }
-    if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose();bridge.group.remove(seg.edges);seg.edges=null; }
+    if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose(); seg.mesh=null; }
+    if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose(); seg.edges=null; }
+    if(seg._animPivot){ bridge.group.remove(seg._animPivot); seg._animPivot=null; }
     this.sceneObjects.delete(id);
     this.sceneTree.remove(id);
     bridge.segmentIds.splice(idx,1);
@@ -1797,6 +2093,53 @@ export class ArenaSandbox extends Sandbox {
 
   protected override onTick(dtMs: number): void {
     const dt = dtMs / 1000;
+
+    // Bridge segment animation ticks (tick-based offset/return)
+    const DEG2RAD_ANIM = Math.PI / 180;
+    for (const seg of this.segments.values()) {
+      if (!seg.animEnabled || !seg._animPivot) continue;
+      seg._animTimer += dtMs;
+      const effectiveTime = seg._animTimer - seg.animStartMs;
+      if (effectiveTime < 0) continue;
+      const interval = Math.max(1, seg.animIntervalMs);
+      const hold = Math.min(seg.animHoldMs, interval);
+      const phase = effectiveTime % interval;
+      if (phase < hold) {
+        seg._animPivot.position.set(
+          seg._animCenter.x + seg.animOffsetX,
+          seg._animCenter.y + seg.animOffsetY,
+          seg._animCenter.z + seg.animOffsetZ,
+        );
+        seg._animPivot.rotation.set(
+          seg.animRotX * DEG2RAD_ANIM,
+          seg.animRotY * DEG2RAD_ANIM,
+          seg.animRotZ * DEG2RAD_ANIM,
+        );
+      } else {
+        seg._animPivot.position.copy(seg._animCenter);
+        seg._animPivot.rotation.set(0, 0, 0);
+      }
+    }
+
+    // Earthquake + RPM + projectile plate spin ticks
+    for (const trap of this.traps.values()) {
+      if (trap.effect === 'earthquake') this._tickEarthquakeTrap(trap, dt);
+      if (trap.effect === 'rpm')        this._tickRPMTrap(trap, dt);
+      if (trap.effect === 'projectile' && trap.projPlateSpin !== 0) {
+        const omega = trap.projPlateSpin * (Math.PI / 180);
+        trap.mesh.rotation.y  += omega * dt;
+        trap.edges.rotation.y  = trap.mesh.rotation.y;
+      }
+    }
+
+    // Projectile bullets
+    if (!this._projectileMgr) {
+      const scene = this.getScene();
+      if (scene) {
+        this._projectileMgr = new ProjectileManager(scene, () => this.speedLines);
+      }
+    }
+    this._projectileMgr?.tick(dt);
     for (const arena of this.arenas.values()) {
       if (arena.particleSystem) arena.particleSystem.tick(dt);
       if (arena.weatherSystem)  arena.weatherSystem.tick(dt);
@@ -1849,6 +2192,89 @@ export class ArenaSandbox extends Sandbox {
             Math.sin(TWO_PI * wall.arenaRotateOscFreq * t);
           break;
       }
+    }
+
+    this._spawnMgr?.tick(dtMs);
+  }
+
+  // ── Trap tick helpers (earthquake / RPM) ───────────────────────────────
+
+  private _tickEarthquakeTrap(trap: TrapData, dt: number): void {
+    if (!trap._eqPhase) {
+      if (trap.eqPulseMode === 'continuous') {
+        this._eqStartPulse(trap);
+      } else if (trap.eqPulseMode === 'periodic') {
+        trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
+        if (trap._eqTimer >= trap.eqPulseIntervalMs) {
+          trap._eqTimer = 0; this._eqStartPulse(trap);
+        }
+      }
+      return;
+    }
+    const wMs = Math.max(100, trap.eqPulseWidthMs);
+    if (trap._eqPhase === 'rising') {
+      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
+      const t = Math.min(1, trap._eqTimer / (wMs * 0.3));
+      this._eqLerp(trap, t);
+      if (t >= 1) { trap._eqPhase = 'active'; trap._eqTimer = 0; }
+    } else if (trap._eqPhase === 'active') {
+      if (trap.eqPermanent) return;
+      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
+      if (trap._eqTimer >= wMs * 0.4) { trap._eqPhase = 'fading'; trap._eqTimer = 0; }
+    } else if (trap._eqPhase === 'fading') {
+      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
+      const t = Math.min(1, trap._eqTimer / (wMs * 0.3));
+      this._eqLerp(trap, 1 - t);
+      if (t >= 1) {
+        trap._eqPhase = undefined; trap._eqTimer = 0;
+        trap._eqCycleCount = (trap._eqCycleCount ?? 0) + 1;
+        if (trap.eqPulseMode === 'continuous' && (trap.eqFadeCycles === 0 || (trap._eqCycleCount ?? 0) < trap.eqFadeCycles)) {
+          this._eqStartPulse(trap);
+        }
+      }
+    }
+    updateEarthquakeMeshHeights(trap);
+  }
+
+  private _eqStartPulse(trap: TrapData): void {
+    const rings = Math.max(1, trap.eqRingCount), segs = Math.max(3, trap.eqSegmentsPerRing);
+    const total = rings * segs;
+    if (!trap._eqTargetHeights || trap._eqTargetHeights.length !== total) {
+      trap._eqTargetHeights  = new Array(total).fill(0);
+      trap._eqCurrentHeights = new Array(total).fill(0);
+    }
+    for (let r = 0; r < rings; r++) {
+      const rm = trap.eqRingRanges[r] ?? 1;
+      for (let s = 0; s < segs; s++) {
+        const idx = r * segs + s;
+        let h = 0;
+        switch (trap.eqElevationMode) {
+          case 'wave':        h = trap.eqMaxElevationCm * rm * Math.sin((s / segs) * Math.PI * 2); break;
+          case 'ripple':      h = trap.eqMaxElevationCm * rm * Math.sin((r / rings) * Math.PI * 4); break;
+          case 'checkerboard': h = trap.eqMaxElevationCm * rm * ((r + s) % 2 === 0 ? 1 : -1); break;
+          default:            h = trap.eqMaxElevationCm * rm * (Math.random() * 2 - 1); break;
+        }
+        trap._eqTargetHeights[idx] = h;
+      }
+    }
+    trap._eqPhase = 'rising'; trap._eqTimer = 0;
+  }
+
+  private _eqLerp(trap: TrapData, t: number): void {
+    if (!trap._eqCurrentHeights || !trap._eqTargetHeights) return;
+    for (let i = 0; i < trap._eqCurrentHeights.length; i++) {
+      trap._eqCurrentHeights[i] = (trap._eqTargetHeights[i] ?? 0) * t;
+    }
+  }
+
+  private _tickRPMTrap(trap: TrapData, dt: number): void {
+    if (!trap.variantMesh) return;
+    const omega = (trap.rpmSpeed ?? 0) * (Math.PI / 180);
+    trap._rpmCurrentAngle = ((trap._rpmCurrentAngle ?? 0) + omega * dt) % (Math.PI * 2);
+    trap.variantMesh.rotation.y = trap._rpmCurrentAngle;
+    const mat = trap.variantMesh.material as THREE.MeshStandardMaterial;
+    if (mat && 'emissiveIntensity' in mat) {
+      mat.emissiveIntensity = Math.min(1, Math.abs(trap.rpmSpeed ?? 0) / 360);
     }
   }
 
@@ -2082,6 +2508,42 @@ export class ArenaSandbox extends Sandbox {
 
     this.sceneObjects.set('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
     this.loadArena();
+
+    this._envMgr = new ArenaEnvironmentManager(
+      () => this.arenas,
+      (arenaId, props) => this._onEnvChange(arenaId, props),
+      (_arenaId, ev) => console.log('[sound]', _arenaId, ev),
+    );
+
+    const scoreHud = this.addOverlayPanel('arena-score-hud') as HTMLDivElement;
+    scoreHud.style.cssText = 'position:absolute;right:calc(8*var(--mm));bottom:calc(6*var(--cm));background:rgba(0,0,0,0.75);color:#00e5ff;font-family:Orbitron,sans-serif;font-size:calc(1.4*var(--cm));padding:calc(4*var(--mm)) calc(8*var(--mm));border:1px solid rgba(0,229,255,0.4);white-space:pre;display:none;pointer-events:none;';
+    this._scoreHudEl = scoreHud;
+
+    const smCtx: SceneContext = {
+      scene:          scene,
+      sceneTree:      this.sceneTree,
+      getBaseHeight:  () => this.baseConfig.height,
+      trackObjects:   () => {},
+      untrackObjects: () => {},
+    };
+    const smHud = this.addOverlayPanel('spawn-manager-hud');
+    this._spawnMgr = new SpawnManager(
+      smCtx,
+      () => this.getCamera(),
+      () => this.getControls(),
+      () => this.arenas,
+      () => this.traps,
+      () => this.speedLines,
+      () => this.zones,
+      () => this.walls,
+      smHud,
+    );
+    this._spawnMgrBtn = this.addTopBarButton('⚽ Spawn', 'Spawn/despawn physics test top');
+    this._spawnMgrBtn.addEventListener('click', () => {
+      if (this._spawnMgr?.isSpawned) this._spawnMgr.despawn();
+      else this._spawnMgr?.spawn();
+      this._spawnMgrBtn!.classList.toggle('active', this._spawnMgr?.isSpawned ?? false);
+    });
   }
 
   private rebuildBase(): void {
@@ -2359,6 +2821,10 @@ export class ArenaSandbox extends Sandbox {
           this._updateSpeedLine(sl);
           this.saveArena();
         },
+        undefined,
+        undefined,
+        () => [...this.bridges.values()],
+        () => [...this.traps.values()],
       );
       return;
     }
@@ -2390,6 +2856,7 @@ export class ArenaSandbox extends Sandbox {
         (type)=>{ this.addSegment(id, type as BridgeSegmentType); },
         (cb)=>this._fileInputStl(id,bridge.presentColor,cb),
         ()=>{ bridge.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
+        () => [...this.speedLines.values()].map(s => ({ id: s.id, name: s.name })),
       );
       showB();
       return;
@@ -2401,6 +2868,7 @@ export class ArenaSandbox extends Sandbox {
         seg,
         ()=>{ this.captureUndo(); this.applyBridgeFromSegment(seg.id); this.saveArena(); showS(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
+        ()=>{ showS(); },
       );
       showS();
       return;
@@ -2431,6 +2899,7 @@ export class ArenaSandbox extends Sandbox {
         this._getSpeedLineNames(),
         (cb)=>this._fileInputStl(id,trap.presentColor,cb),
         ()=>{ trap.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
+        () => [...this.speedLines.values()].map(s => ({ id: s.id, name: s.name })),
       );
       showT();
       return;
@@ -2449,6 +2918,22 @@ export class ArenaSandbox extends Sandbox {
         ()=>{ portal.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
       );
       showPo();
+      return;
+    }
+
+    const jl=this.jumpLinks.get(id);
+    if(jl){
+      const arenaNames    = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
+      const obstacleNames = new Map([...this.obstacles.entries()].map(([oid,o])=>[oid,o.name]));
+      const trapNames     = new Map([...this.traps.entries()].map(([tid,t])=>[tid,t.name]));
+      const slNames       = new Map([...this.speedLines.entries()].map(([slid,sl])=>[slid,sl.name]));
+      const showJL=()=>this.props.showJumpLink(
+        jl, arenaNames, obstacleNames, trapNames, slNames,
+        ()=>{ this.captureUndo(); this._applyJL(jl); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._applyJL(jl); this.saveArena(); showJL(); },
+        (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); jl.name=name; this.saveArena(); },
+      );
+      showJL();
       return;
     }
 
@@ -2539,6 +3024,7 @@ export class ArenaSandbox extends Sandbox {
         {label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
         {label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(id,'arena')},
         {label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(id,'arena')},
+        {label:'⤻+',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(id,'arena')},
         {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(id)},
         {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(id)},
         {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(id)},
@@ -2966,6 +3452,20 @@ export class ArenaSandbox extends Sandbox {
         windStrengthCms:  as.windStrengthCms  ?? 0,
         windGustInterval: as.windGustInterval ?? 4,
         windGustMult:     as.windGustMult     ?? 2,
+        gravityScale:          as.gravityScale          ?? ENV.DEFAULT_GRAVITY_SCALE,
+        gravityDirectionX:     as.gravityDirectionX     ?? 0,
+        gravityDirectionZ:     as.gravityDirectionZ     ?? 0,
+        tiltX:                 as.tiltX                 ?? 0,
+        tiltZ:                 as.tiltZ                 ?? 0,
+        weightTiltEnabled:     as.weightTiltEnabled     ?? false,
+        weightTiltSensitivity: as.weightTiltSensitivity ?? ENV.DEFAULT_WEIGHT_SENSITIVITY,
+        weightTiltDampening:   as.weightTiltDampening   ?? ENV.DEFAULT_WEIGHT_DAMPENING,
+        fogDensity:            as.fogDensity            ?? 0,
+        scoreMultiplier:       as.scoreMultiplier       ?? 1.0,
+        pointsPerSecond:       as.pointsPerSecond       ?? 0,
+        weatherSurfaceMap:     as.weatherSurfaceMap     ?? {},
+        envSchedule: (as.envSchedule ?? []).map(e => ({ ...e, _timer: undefined, _revertTimer: undefined, _prevValues: undefined })),
+        tiltGroup: undefined, fogSystem: null, _score: 0,
         presentStlb64:  as.presentStlb64  ?? null,
         presentColor:   as.presentColor   ?? 0xaaaaaa,
         light: null, particleSystem: null, weatherSystem: null,
@@ -2984,6 +3484,7 @@ export class ArenaSandbox extends Sandbox {
           {label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
           {label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(as.id,'arena')},
           {label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(as.id,'arena')},
+          {label:'⤻+',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(as.id,'arena')},
           {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(as.id)},
           {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(as.id)},
           {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(as.id)},
@@ -3068,6 +3569,9 @@ export class ArenaSandbox extends Sandbox {
     // Restore footings
     for(const fs of cfg.footings) this._restoreFootingSave(fs);
 
+    // Restore jump links
+    for(const js of (cfg.jumpLinks ?? [])) this._restoreJumpLinkSave(js);
+
     // Restore rotations after all nodes are loaded
     for(const rs of cfg.rotations) this._restoreRotationSave(rs);
   }
@@ -3077,7 +3581,7 @@ export class ArenaSandbox extends Sandbox {
       id:ws.id, name:ws.name, parentId:ws.parentId, parentType:ws.parentType,
       fullPerimeter:ws.fullPerimeter, arcStart:ws.arcStart, arcEnd:ws.arcEnd,
       basePosX:ws.basePosX, basePosZ:ws.basePosZ, baseRotY:ws.baseRotY, baseLength:ws.baseLength,
-      height:ws.height, tilt:ws.tilt, thickness:ws.thickness,
+      height:ws.height, tilt:ws.tilt, thickness:ws.thickness, thicknessDirection:ws.thicknessDirection??'outward',
       hasGaps:ws.hasGaps, gapWidth:ws.gapWidth, panelWidth:ws.panelWidth,
       topProfile:ws.topProfile, topAmplitude:ws.topAmplitude, topFrequency:ws.topFrequency,
       isDouble:ws.isDouble, peakHeight:ws.peakHeight, peakTilt:ws.peakTilt,
@@ -3120,6 +3624,7 @@ export class ArenaSandbox extends Sandbox {
       color:bs.color, surface:bs.surface as SurfaceType,
       wallIds:[],
       presentStlb64: bs.presentStlb64 ?? null, presentColor: bs.presentColor ?? 0xaaaaaa,
+      linkedSpeedLineId: bs.linkedSpeedLineId ?? null,
       group,
     };
     this.bridges.set(bs.id, bridge);
@@ -3148,6 +3653,19 @@ export class ArenaSandbox extends Sandbox {
         tiltAngle: ss.tiltAngle ?? 0,
         corkscrewLength:ss.corkscrewLength, corkscrewTurns:ss.corkscrewTurns,
         color:ss.color, surface:ss.surface,
+        animEnabled:    ss.animEnabled    ?? false,
+        animOffsetX:    ss.animOffsetX    ?? 0,
+        animOffsetY:    ss.animOffsetY    ?? 0,
+        animOffsetZ:    ss.animOffsetZ    ?? 0,
+        animRotX:       ss.animRotX      ?? 0,
+        animRotY:       ss.animRotY      ?? 0,
+        animRotZ:       ss.animRotZ      ?? 0,
+        animStartMs:    ss.animStartMs    ?? 0,
+        animIntervalMs: ss.animIntervalMs ?? 2000,
+        animHoldMs:     ss.animHoldMs    ?? 1000,
+        _animTimer: 0,
+        _animCenter: new THREE.Vector3(),
+        _animPivot: null,
         mesh:null, edges:null,
       };
       this.segments.set(ss.id, seg);
@@ -3200,6 +3718,7 @@ export class ArenaSandbox extends Sandbox {
       this.speedlineSeq=cfg.speedLineSeq;
       this.obstacleSeq=cfg.obstacleSeq; this.trapSeq=cfg.trapSeq; this.portalSeq=cfg.portalSeq;
       this.rotationSeq=cfg.rotationSeq; this.footingSeq=cfg.footingSeq;
+      this.jumpLinkSeq=cfg.jumpLinkSeq ?? 0;
       this._loadArenasFromConfig(cfg);
     } catch { localStorage.removeItem(this.arenaStorageKey); }
   }
@@ -3217,6 +3736,8 @@ export class ArenaSandbox extends Sandbox {
       canvas.removeEventListener('pointerdown', this._onPointerDown);
       canvas.removeEventListener('pointermove', this._onPointerMove);
       canvas.removeEventListener('pointerup',   this._onPointerUp);
+      this._spawnMgr?.despawn();
+      this._spawnMgrBtn?.classList.remove('active');
     }
   }
 
@@ -3347,8 +3868,9 @@ export class ArenaSandbox extends Sandbox {
 
   private _onReparent(nodeId: string, newParentId: string | null): void {
     if (!newParentId) return;
-    // Sub-nodes are not reparentable
-    if (nodeId.startsWith('present-') || nodeId.startsWith('particle-') || nodeId.startsWith('weather-')) return;
+    // Sub-nodes and jump links are not reparentable
+    if (nodeId.startsWith('present-') || nodeId.startsWith('particle-') || nodeId.startsWith('weather-') || nodeId.startsWith('env-')) return;
+    if (this.jumpLinks.has(nodeId)) return;
 
     // ── Bridge segment: reorder within same bridge OR move to another bridge ──
     const seg = this.segments.get(nodeId);
@@ -3497,9 +4019,10 @@ export class ArenaSandbox extends Sandbox {
   /* ── Duplicate ───────────────────────────────────────────────────────── */
 
   private _duplicateNode(id: string): void {
-    // Sub-nodes, bridges, speed lines, rotations are not duplicatable
-    if (id.startsWith('present-') || id.startsWith('particle-') || id.startsWith('weather-')) return;
+    // Sub-nodes, bridges, speed lines, rotations, jump links are not duplicatable
+    if (id.startsWith('present-') || id.startsWith('particle-') || id.startsWith('weather-') || id.startsWith('env-')) return;
     if (this.bridges.has(id) || this.speedLines.has(id) || this.rotations.has(id)) return;
+    if (this.jumpLinks.has(id)) return;
     if (this.segments.has(id)) return;
 
     this.captureUndo();
@@ -3532,6 +4055,7 @@ export class ArenaSandbox extends Sandbox {
           { label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(newId) },
           { label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(newId,'arena') },
           { label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(newId,'arena') },
+          { label:'⤻+',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(newId,'arena') },
           { label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(newId) },
           { label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(newId) },
           { label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(newId) },
@@ -3607,6 +4131,7 @@ export class ArenaSandbox extends Sandbox {
         addChildButtons: [
           { label:'🧱+', title:'Add wall',            onClick:()=>this.addWall(newId, 'trap') },
           { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'trap'); this.addRotation([newId],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'⤻+',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'trap') },
           { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
           { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(newId) },
         ],

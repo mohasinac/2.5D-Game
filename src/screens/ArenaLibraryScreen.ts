@@ -119,31 +119,6 @@ export class ArenaLibraryScreen {
     const card = document.createElement('div');
     card.className = 'preset-card';
 
-    const thumb = document.createElement('div');
-    thumb.className = 'preset-card__thumb preset-card__thumb--placeholder';
-    if (preset.thumbnail) {
-      const img = document.createElement('img');
-      img.className = 'preset-card__thumb';
-      img.src = preset.thumbnail;
-      img.alt = preset.name;
-      thumb.replaceWith(img);
-    } else {
-      thumb.textContent = '◎';
-      card.appendChild(thumb);
-    }
-
-    if (preset.thumbnail) {
-      const img = card.querySelector('img');
-      if (!img) {
-        const thumbDiv = document.createElement('div');
-        thumbDiv.className = 'preset-card__thumb preset-card__thumb--placeholder';
-        thumbDiv.textContent = '◎';
-        card.appendChild(thumbDiv);
-      }
-    } else {
-      card.appendChild(thumb);
-    }
-
     const body = document.createElement('div');
     body.className = 'preset-card__body';
 

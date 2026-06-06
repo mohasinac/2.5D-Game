@@ -40,6 +40,23 @@ Known confirmed features added (2026-06-09 — expanded wall system + depth cons
 - **Zone depth min 1 mm**: `MIN_ZONE_DEPTH = 0.1` cm constant. Zone depth slider min is `MIN_ZONE_DEPTH` (was 1).
 - **New save fields** (all required — no backward-compat): `WallSave` adds `thickness`, `isDestructible`, `hitPoints`, `autoJoin`, `moatRing`, `rotateOnArena`, `arenaRotateMode`, `arenaRotateSpeed`, `arenaRotateStepDeg`, `arenaRotateStepInterval`, `arenaRotateOscAmp`, `arenaRotateOscFreq`. `TrapSave` adds `walls: WallSave[]`. `ArenaConfig` adds `baseWalls: WallSave[]`. The demo arena config (`demoArenaConfig.ts`) has been updated with all new fields.
 
+Known confirmed features added (2026-06-10 — Preset Library System):
+- **Arena & Beyblade Preset Library**: Save multi-feature groupings as reusable named presets; load as merge or replace into any sandbox.
+- **SceneTree checkboxes**: Every tree node now has a checkbox (`.tree-chk`) prepended before the caret. Checkboxes are independent of selection — `e.stopPropagation()` prevents triggering row select. `getCheckedIds()` returns `string[]`. `clearChecks()` unchecks all. `onCheck(ids)` callback fires on every change.
+- **Save Preset flow (Arena)**: "💾 Preset" button in ArenaSandbox top bar. 0 checked = full scene. N checked = calls `extractArenaConfig(checkedIds, allMaps, baseConfig)` which auto-expands arenas to include child pits/zones/walls/speedLines, bridges to segments+child walls, traps to trap walls. Rotations excluded if any member not in selection. Save modal: Name, Group (with `<datalist>` of existing groups), Description, Tags. Generates canvas thumbnail; writes to `bey_arena_presets` localStorage key.
+- **Save Preset flow (Beyblade)**: "💾 Preset" bottom bar button in BeybladeSandbox. 0 checked = full build. N checked = those parts + their sectors. Save modal adds partType selector. Writes to `bey_bey_presets`.
+- **ArenaLibraryScreen** (`src/screens/ArenaLibraryScreen.ts`): Grouped preset card browser at `/arena-library`. Cards show thumbnail, name, group badge, tags. Actions: ▶ Load (replace/merge dialog → `bey_pending_arena_load` key → navigate to `/arena`), ✏ Edit (replace mode → `bey_pending_arena_load` → navigate to `/preset-editor`), 🗑 Delete (confirm dialog). Inline rename: double-click name → `contentEditable` → blur/Enter. Group headers collapsible.
+- **BeyLibraryScreen** (`src/screens/BeyLibraryScreen.ts`): Two-tab browser at `/bey-library`. Parts tab: filter chips by `BeyPartType`. Builds tab: preset grid + sticky assembly panel (Layer/Disc/Driver/Frame slots). Assembly: pick from floating picker overlays per slot → "▶ Build & Load" merges all configs (same batchTag, stacked axisOffsetY) → `bey_pending_bey_load` → navigate to `/beyblade`. "💾 Save Assembly" saves merged config as `partType: 'full_build'` preset.
+- **Preset Editor**: Second `ArenaSandbox` instance with `presetEditorMode: true` at `/preset-editor`. Demo button hidden. Back button and Library button both go to `/arena-library`. Storage key is derived from title so it is independent: `bey_arena_preset_editor`.
+- **Pending load pattern**: Library screens write one of two localStorage keys before navigating: `bey_pending_arena_load` or `bey_pending_bey_load`. Format: `{ config, mode: 'replace' | 'merge' }`. The sandbox's `setVisible(true)` calls `_checkPendingLoad()` which reads and immediately deletes the key, then applies the config.
+- **ID remapping**: `remapArenaConfigIds(config, batchTag)` does a 2-pass remap — pass 1 registers all IDs (arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals, footings, rotations), pass 2 rewrites all cross-reference fields (parentId, parentArenaId, parentZoneId, memberIds, destPortalId, snapRules[].bridgeId, speedPathId, etc.). batchTag = `Date.now().toString(36)` per import operation. Old ID `arena-3` → `arena-{batchTag}-3`. `remapBeyConfigIds` remaps part/sector/group IDs and sectorIds/childIds/rootChildIds.
+- **`BeybladeStore.mergeDeserialize(cfg)`**: Appends parts/sectors/groups via `Map.set` without clearing existing data. Appends rootChildIds (dedup). Updates seq counters to max. Counterpart of `deserialize` (which clears first).
+- **`ArenaSandboxOptions`**: New interface extending `SandboxOptions` with `onLibrary?: () => void` and `presetEditorMode?: boolean`.
+- **`BeybladeSandboxOptions`**: New interface `{ onBack: () => void; onLibrary?: () => void }` replacing the old `(container, onBack)` constructor signature.
+- **`presetStore.ts`** utilities: `listArenaPresets`, `saveArenaPreset`, `deleteArenaPreset`, `updateArenaPreset`, `listBeyPresets`, `saveBeyPreset`, `deleteBeyPreset`, `updateBeyPreset`, `newPresetId`, `generateArenaThumb`, `generateBeyThumb`, `remapArenaConfigIds`, `remapBeyConfigIds`, `extractArenaConfig`.
+- **New routes**: `/arena-library` (ArenaLibraryScreen), `/bey-library` (BeyLibraryScreen), `/preset-editor` (second ArenaSandbox, presetEditorMode).
+- **Landing buttons**: Two new `game-btn--lib` buttons: "Arena Library" and "Bey Library".
+
 Known confirmed features added (2026-06-10 — sub-node system, PresentConfig, particle/weather/gravity):
 - **`src/types/sharedTypes.ts`** (new): `PresentConfig`, `defaultPresentConfig()`, `ParticleConfig`, `defaultParticleConfig()`, `ParticlePreset`, `ParticleSystem`, `WeatherSystem` — shared across arena and beyblade types.
 - **Arena `ARENA_SAVE_VERSION = 9`**: Bumped from 8; old saves discarded. New fields on `ArenaData`/`ZoneSave`/etc.: `particleConfig: ParticleConfig` (replaces bare `particlePreset`), `weatherPreset/windEnabled/windDirectionDeg/windStrengthCms/windGustInterval/windGustMult` on `ArenaData`, `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` on `ArenaData`/`ZoneData`.
@@ -66,6 +83,27 @@ Known confirmed bugs fixed (2026-06-07 — bridge track + arena bowl session):
 - **Arena bowl missing outer skirt**: Non-elevated arenas used bare `buildParabolicBowl`/`buildStraightCut` with no outer vertical wall. `buildArenaBowlGeo` now calls `buildFreeArenaMesh` for non-elevated non-step non-moat arenas (outer skirt + bottom cap). `updateArenaBowlHoles` updated to match. `buildFreeArenaMesh` now always uses `TESS.PARABOLIC_BOWL` (64 rings) instead of `TESS.STRAIGHT_BOWL` (48).
 - **Non-smooth arc blends in stepped bowl**: `buildSteppedBowl` pre-computes profiles for all `SEG` angular segments. When a step segment is adjacent to a non-step segment, boundary-side vertices are blended to `parabY(t)` via `bY(rawY, t, isA0side)` — eliminating the hard visual seam. Stepped bowl also gains an outer skirt using `xAt(1,a)/zAt(1,a)` rim positions.
 - **Ramp mode stale properties panel**: Ramp mode buttons called `onGeomChange()`, skipping `renderProps()`. Fixed to `onFullChange()` so angle/width sub-rows appear/hide immediately.
+
+Known confirmed features added (2026-06-07 — bridge animation, env system, earthquake/RPM traps, SL linking, jump links):
+- **`ARENA_SAVE_VERSION = 12`**: Bumped from 9; old saves discarded. New required fields in `BridgeSegmentSave` (anim\*), `ArenaSave` (env/physics), `TrapSave` (eq\*/rpm\*/proj\*), `ArenaConfig` (`jumpLinks`, `jumpLinkSeq`). All are optional `?` in save types to avoid version collisions.
+- **Bridge segment animation**: `BridgeSegmentData` gains `animEnabled`, `animOffsetX/Y/Z`, `animRotX/Y/Z`, `animStartMs`, `animIntervalMs`, `animHoldMs`. Each segment's mesh+edges are parented to `seg._animPivot: THREE.Group` positioned at the segment bounding-box center (`seg._animCenter`). Tick-based square-wave: OFFSET state for `animHoldMs`, HOME state for remainder of `animIntervalMs`, starts after `animStartMs` delay. Runtime fields `_animTimer`, `_animCenter`, `_animPivot` are NOT serialised. PropertiesPanel `showBridgeSegment` now accepts a 4th `onFullChange?: () => void` arg used for the SEGMENT ANIMATION toggle row (shows/hides offset/rotation sub-rows). Toggle off resets `_animTimer = 0` to prevent mid-cycle jump on re-enable.
+- **`ENV` constants** in `arenaConstants.ts`: `DEFAULT_GRAVITY_SCALE`, `MIN/MAX_GRAVITY_SCALE`, `DEFAULT_TILT`, `MAX_TILT`, `DEFAULT_FOG_DENSITY`, `DEFAULT_SCORE_MULTIPLIER`, `DEFAULT_WEIGHT_SENSITIVITY`, `DEFAULT_WEIGHT_DAMPENING`, `DEFAULT_INTERVAL_SEC`, `DEFAULT_REVERT_SEC`.
+- **ArenaData environment/physics fields**: `gravityScale/DirectionX/Z`, `tiltX/Z`, `weightTiltEnabled/Sensitivity/Dampening`, `fogDensity`, `scoreMultiplier`, `pointsPerSecond`, `weatherSurfaceMap: Partial<Record<WeatherPreset, SurfaceType>>`, `envSchedule: EnvScheduleEntry[]`. Runtime-only (not saved): `tiltGroup?: THREE.Group`, `fogSystem?: ParticleSystem | null`, `_score: number`, `_envTriggerCooldown?: number`.
+- **`EnvScheduleEntry` / `EnvKeyframe`** types: `EnvScheduleEntry` has `id`, `label`, `enabled`, `triggerType` (`'interval'|'once'|'event'`), `eventName`, `intervalSec`, `delaySec`, `revertSec`, `keyframes: EnvKeyframe[]`, `soundEvent?`, runtime `_timer/_revertTimer/_prevValues`. `EnvKeyframe` = `{ property: EnvProperty, value: number|string|boolean }`. `EnvProperty` union covers gravity/tilt/fog/score/weather fields.
+- **`ArenaEnvironmentManager`** (`src/features/managers/ArenaEnvironmentManager.ts`): implements `ITickableManager`. `tick(dt)` processes `envSchedule` per-arena (interval/once triggers, revert timers, score accumulation). Public: `setGravity/setWeather/setTilt/setFog/setScoreMultiplier/addScore`, `triggerEvent(arenaId, eventName)`, `addEntry/removeEntry/updateEntry/clearSchedule(arenaId)`, `clear()`.
+- **TrapData new fields**: `envTriggerEvent: string`, `envTargetArenaId: string` (for traps that fire arena env events on activation). Earthquake: `eqRingCount`, `eqSegmentsPerRing`, `eqMaxElevationCm`, `eqElevationMode` (`'random'|'wave'|'ripple'|'checkerboard'`), `eqRingRanges: number[]`, `eqPermanent`, `eqFadeCycles`, `eqPulseMode/IntervalMs/WidthMs`. RPM: `rpmSpeed`, `rpmEffect`, `rpmRange`, `rpmMatchSpin`, `rpmForceScale`, `rpmPulseMode/IntervalMs/WidthMs`. Projectile: `projLaunchMode`, `projCount`, `projSpreadAngleDeg`, `projBurstCount/DelayMs`, `projLaunchDelayMs/AngleDeg`, `projRandomizeAngle`, `projPattern/PatternCount`, `projConfig: ProjectileConfig`, `projPulseMode/IntervalMs`. Runtime-only: `_eqTimer`, `_eqCycleCount`, `_eqTargetHeights`, `_eqCurrentHeights`, `_eqPhase`, `_rpmCurrentAngle`, `_rpmTimer`, `_rpmActive`. New `TrapEffect`/`TrapVariant` values: `'earthquake'`, `'rpm'`, `'projectile'`.
+- **`TrapManager.ts`** now implements `ITickableManager`. `tick(dt)` handles earthquake height animation, RPM disc rotation (`variantMesh.rotation.y`), and plate spin (`projPlateSpin`).
+- **New trap builders**: `buildEarthquakeMesh(data, surfY)` (ring×sector grid, `DYNAMIC_DRAW`), `updateEarthquakeMeshHeights(data)` (mutates position Y), `buildRPMMesh(data)` (alternating-sector rotor disc), `buildProjectileMesh(cfg)` (bullet source visualization).
+- **`SpeedLineData` linking fields**: `linkedBridgeId: string | null`, `linkedTrapId: string | null` (this SL was auto-created for a bridge/trap), `enabled: boolean` (false = mesh hidden, no rebuild), `targetBridgeId: string | null`, `targetTrapId: string | null` (activation condition — SL fires when beyblade is on this bridge/trap). `SpeedLineTargetType` gains `'linked_bridge'` and `'linked_trap'`.
+- **`JumpLinkData`** (new): two-endpoint launch mechanic. Fields: `id`, `name`, `parentArenaId`, `endpoint[A|B]` (`JumpLinkEndpoint`: posR/posAngle/dirDeg/parentType/parentId), `flight: JumpFlightConfig` (launchAngleDeg, launchForce, gravityScale, airDrag, landingImpact, landingBounce), `flightStatModifiers: JumpFlightStatModifiers`. Saved in `ArenaConfig.jumpLinks: JumpLinkSave[]` + `jumpLinkSeq`. `JL` constants in `arenaConstants.ts`. Arena tree node `⤻+` button adds jump links; tree icon `⤻`.
+- **Wall `thicknessDirection`**: `WallData.thicknessDirection: 'inward' | 'outward'` (default `'outward'`). In `wallBuilders.ts`, `dirMult = thicknessDirection==='inward' ? 1 : -1`. Outward wall thickness is clamped to octagon boundary via `computeMaxOutwardDist`. PropertiesPanel shows `Thickness Side` selector after the thickness numRow.
+- **`innerRimShapePoints(arena)`** in `arenaObjectBuilders.ts`: returns inner moat island rim perimeter points for use by WallManager moat-inner walls.
+- **`defaultSpeedLine()` updated**: new fields defaulted — `linkedBridgeId: null`, `linkedTrapId: null`, `enabled: true`, `targetBridgeId: null`, `targetTrapId: null`, `jumpLinkId: null`. `buildSpeedLineObjects` checks `sl.enabled !== false` before showing mesh/edges/markers.
+
+Known confirmed bugs fixed (2026-06-07 — env system ID bug, missing restore fields):
+- **`ArenaEnvironmentManager` used `arena.id`**: `ArenaData` has no `id` field (ID is the Map key). Fixed: `for (const [arenaId, arena] of this.getArenas().entries())` and `_fireEntry(arenaId, arena, entry)`.
+- **`_loadArenasFromConfig` missing new env fields**: Arena construction in restore path was missing all `gravityScale/tilt/weightTilt/fogDensity/scoreMultiplier/pointsPerSecond/weatherSurfaceMap/envSchedule` fields. Fixed: all added with `?? ENV.DEFAULT_*` fallbacks.
+- **Bridge `_animTimer` not reset on toggle off**: When `animEnabled` toggled off in PropertiesPanel, `_animTimer` kept accumulating. Re-enabling caused mid-cycle jump. Fixed: `if (!v) seg._animTimer = 0` in the toggleRow callback.
 
 Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
 
@@ -196,6 +234,10 @@ src/
     BeybladeSandbox.ts          — Beyblade part builder (extends Sandbox); thin orchestrator/Facade;
                                   _duplicateNode; present/particle sub-nodes; BEY_SAVE_VERSION=2
     RPGScreen.ts                — Phaser-based RPG world screen (GameScene, WorldScene, UIScene, etc.)
+    ArenaLibraryScreen.ts       — Arena preset browser (/arena-library); grouped card grid; load (replace/merge dialog
+                                  → bey_pending_arena_load key), edit (→ /preset-editor), delete, inline rename
+    BeyLibraryScreen.ts         — Beyblade preset browser (/bey-library); Parts + Builds tabs; assembly panel
+                                  (4 slots + floating picker overlays); Build & Load merges configs → bey_pending_bey_load
     admin/
       AdminHubScreen.ts         — Admin content studio hub (7 sub-tool buttons)
       SpriteAdminScreen.ts      — Sprite/SVG admin tool
@@ -214,12 +256,14 @@ src/
     beybladeTypes.ts            — Beyblade data model: AxisData, PartData (with present+particleConfig),
                                   SectorData, GroupData, BeybladeBuildConfig (v?: number);
                                   re-exports PresentConfig/ParticleConfig from sharedTypes
+    presetTypes.ts              — ArenaPreset, BeyPreset interfaces; BeyPartType; ArenaConfig imported from
+                                  arenaPersistence (NOT arenaTypes — critical distinction)
     sharedTypes.ts              — PresentConfig, defaultPresentConfig(), ParticleConfig, defaultParticleConfig(),
                                   ParticlePreset, ParticleSystem, WeatherSystem — shared across arena+beyblade
     rpgTypes.ts                 — RPG data model: NPCData, DialogueTree, ItemDef, QuestDef, ShopItem,
                                   MiniGameLevel, MapData, TileData, CutsceneData, SaveSlot, EventBusEvents
   stores/
-    BeybladeStore.ts            — Pure data store (no Three.js); getters/setters/serialize/deserialize
+    BeybladeStore.ts            — Pure data store (no Three.js); getters/setters/serialize/deserialize/mergeDeserialize
   commands/
     ICommand.ts                 — ICommand interface + CommandHistory (undo/redo stack, max 50)
     beybladeCommands.ts         — All concrete commands: AddPartCmd, DeletePartCmd, UpdatePartCmd,
@@ -245,7 +289,8 @@ src/
     managers/
       ObstacleManager.ts        — Free-floating 3D obstacle shapes
       FootingManager.ts         — Base-mounted decorative shapes (intentionally decoupled from obstacleBuilders)
-      TrapManager.ts            — Trigger plates; variantMesh disposed separately; removeWithWalls(id, cb)
+      TrapManager.ts            — Trigger plates; variantMesh disposed separately; removeWithWalls(id, cb); ITickableManager (earthquake/RPM/plateSpin tick)
+      ArenaEnvironmentManager.ts — ITickableManager; envSchedule tick (interval/once/event/revert); setGravity/setWeather/setTilt/setFog/setScore/triggerEvent
       PortalManager.ts          — Teleport pads; ringMesh disposed separately
       WallManager.ts            — 4 parent types; auto-join sibling guard; ITickableManager for pivot rotation
       BridgeManager.ts          — Bridge + segment chain; owns segments Map + segSeq; getArenas/getWalls injected
@@ -265,6 +310,10 @@ src/
     SceneTree.ts                — Reusable hierarchical tree widget (shared by both sandboxes); nodes with addChildButtons render a single "+" that opens a floating add-popup; single-action nodes fire directly on click; onReparent(nodeId, newParentId, beforeId) fires on drag-drop; onDuplicate(id) fires on context-menu "Duplicate"
     dialog.ts                   — gameConfirm() modal utility
     arenaPersistence.ts         — ArenaSave/ArenaConfig serialisation; wall/bridge/speed line/obstacle/trap/portal/footing save interfaces; footingToSave()
+    presetStore.ts              — Arena+Beyblade preset CRUD (listArenaPresets/saveArenaPreset/deleteArenaPreset/updateArenaPreset,
+                                  listBeyPresets/saveBeyPreset/deleteBeyPreset/updateBeyPreset, newPresetId);
+                                  generateArenaThumb/generateBeyThumb (128×128 canvas); remapArenaConfigIds/remapBeyConfigIds
+                                  (2-pass batchTag remap); extractArenaConfig (expand selections to children)
   config/
     arenaConstants.ts           — Arena world constants + ARENA_MATERIAL_PRESETS + VISUAL_THEME_PRESETS (7 themes) + ARENA_LIGHT_PRESETS (6 presets) + BUFF_TIER_PRESETS
 ```
@@ -375,7 +424,8 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `orderIndex` — position in chain (0-based); updated automatically when segments are removed
 - Start pose is computed by chaining `computeSegmentEndPose` from the bridge's `startRef` through all prior segments
 - `color: number | null`, `surface: SurfaceType | null` — per-segment appearance override; `null` = inherit from `bridge.section`. `applySegment` resolves via `seg.color ?? sec.color`
-- `mesh`, `edges` — nullable; rebuilt by `applySegment()` whenever any earlier segment or bridge section changes
+- `mesh`, `edges` — nullable; rebuilt by `applySegment()` whenever any earlier segment or bridge section changes. Mesh+edges are children of `seg._animPivot: THREE.Group` (not direct bridge.group children) so the pivot can offset/rotate independently each tick
+- **Animation**: `animEnabled`, `animOffsetX/Y/Z`, `animRotX/Y/Z`, `animStartMs`, `animIntervalMs`, `animHoldMs` — tick-based square-wave translate+rotate. Runtime: `_animTimer`, `_animCenter`, `_animPivot` (NOT serialised)
 - Changing any segment triggers `applyBridgeFromSegment(segId)` which rebuilds that segment and all subsequent ones
 
 #### SpeedLineData
@@ -384,7 +434,7 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - Composed of **`SpeedLineSegment[]`** — each segment is a forward-marching block with `length`, `rotX/Y/Z` (pivot angles), `speedMult`, and `objRotX/Y/Z` (object spin rates). Segments are chained: start direction + per-segment yaw/pitch/roll = full path
 - `startR`, `startAngle`, `startDir` — polar start position + initial heading on the arena surface
 - `surfaceFollow: boolean` — when true the ribbon is projected onto the bowl surface (Y from `surfFn` / projector); false = flat XZ plane
-- **Target**: `targetType` (`beyblade | water | obstacle | item | any | custom | nearest_opponent | nearest_obstacle | on_path_obstacle`) + `targetTag`; `targetSelectionMode: 'at_entrance' | 'dynamic'`
+- **Target**: `targetType` (`beyblade | water | obstacle | item | any | custom | nearest_opponent | nearest_obstacle | on_path_obstacle | linked_bridge | linked_trap`) + `targetTag`; `targetSelectionMode: 'at_entrance' | 'dynamic'`; `targetBridgeId: string | null`, `targetTrapId: string | null` (used when targetType is `linked_bridge`/`linked_trap`)
 - **Activation modes**: `always` | `event` (trigger/end event names) | `periodic` (period + duty) | `proximity` (activationRadius + fade in/out)
 - **Physics**: `speedMultiplier` (global scale), per-segment `speedMult`; `entryCondition` (`always | moving_only | fast_only | slow_only`); `exitBehavior` (`normal | launch | loop | special_move`); `launchForce`; `overridePhysics`
 - **Oscillation**: `oscillate` flag; `oscAxis` (`path | lateral | normal | all`); `oscAmplitude`, `oscFrequency`, `oscPhase`
@@ -406,6 +456,7 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `handleMeshes[]` — interactive drag handles (one per joint + start); hidden unless selected; only shown for `presetType === 'custom'`
 - `overlapMarkers[]` — sphere meshes shown where paths cross (rebuilt on any change)
 - `totalLength` — computed arc length in cm
+- **Linking fields**: `linkedBridgeId: string | null`, `linkedTrapId: string | null` (structural: this SL was auto-created for this bridge/trap); `enabled: boolean` (false = mesh/edges/markers hidden without geometry rebuild — set `.visible` on all objects); `jumpLinkId: string | null`
 - **All Speed Line meshes** are positioned in world space with `position.set(arena.posX, 0, arena.posZ)` + `rotation.y = arena.rotY` — geometry bakes arena-local coordinates directly
 
 **Preset shape types** (24 total — `SpeedLinePresetType`): `custom`, `circle`, `ellipse`, `polygon` (3–10 sides), `triangle`, `star`, `flower`/`rose_curve`, `spiral_in`, `spiral_out`, `helix`, `zigzag`, `wave`, `cosine_wave`, `damped_wave`, `growing_wave`, `snake`, `figure_8`, `lemniscate`, `trefoil`, `cardioid`, `epicycloid`, `hypocycloid`, `astroid`, `point_zone` (stationary circular trigger disc, no travel, internally tiny closeLoop circle + `exitBehavior='loop'`)
@@ -440,13 +491,19 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - A flat trigger pad on an arena surface or the octagon base
 - `parentType`: `'arena'` | `'base'` — polar placement on arenas (`posR`, `posAngle`), world XZ on base (`basePosX`, `basePosZ`)
 - `shape`: `'rectangle'` | `'circle'` | `'ellipse'` | `'hexagon'`; `dimX/Z` — footprint in cm (min `MIN_TRAP_DIM` = 10 cm)
-- `effect`: `'damage'` | `'heal'` | `'launch'` | `'reverse_controls'` | `'freeze'` | `'buff_zone'` | `'hidden_pit'` | `'chomper'`
-- `variant`: `'generic'` | `'spike'` | `'trampoline'` | `'hammer'` | `'saw'` | `'buff'` | `'chomper'` | `'hidden_pit'` — drives `variantMesh` geometry
+- `effect`: `'damage'` | `'heal'` | `'launch'` | `'reverse_controls'` | `'freeze'` | `'buff_zone'` | `'hidden_pit'` | `'chomper'` | `'gravity_pull'` | `'earthquake'` | `'rpm'` | `'projectile'`
+- `variant`: `'generic'` | `'spike'` | `'trampoline'` | `'hammer'` | `'saw'` | `'buff'` | `'chomper'` | `'hidden_pit'` | `'earthquake'` | `'rpm'` | `'projectile'` — drives `variantMesh` geometry
 - Effect parameters: `forceX/Y/Z`, `damageFactor`, `healFactor`, `freezeDuration`, `buffSurface`, `pitShape/RadiusX/Z/Depth` (hidden_pit, self-contained)
 - `isPeriodic` + `safeInterval` + `unsafeInterval` — periodic safe/unsafe cycling
 - `activationLimit` (0 = infinite)
 - `durationTiers: TrapDurationTier[]` — escalating effects when bey stays on a `buff_zone` trap; each tier has `thresholdSeconds`, `tierEffect`, `rpmLossFactor`, `speedFactor`, `notes`. Only used when `effect='buff_zone'`
 - `BUFF_TIER_PRESETS` in `arenaConstants.ts` seeds sand/lava/ice/water/oil tier templates (↺ Preset button in PropertiesPanel)
+- `envTriggerEvent: string`, `envTargetArenaId: string` — when set, trap fires a named env schedule event on the target arena on activation
+- **Earthquake** fields: `eqRingCount`, `eqSegmentsPerRing`, `eqMaxElevationCm`, `eqElevationMode` (`'random'|'wave'|'ripple'|'checkerboard'`), `eqRingRanges: number[]`, `eqPermanent: boolean`, `eqFadeCycles: number`, `eqPulseMode/IntervalMs/WidthMs`. Runtime: `_eqTimer`, `_eqCycleCount`, `_eqTargetHeights[]`, `_eqCurrentHeights[]`, `_eqPhase`
+- **RPM** fields: `rpmSpeed` (deg/s; + = CCW), `rpmEffect`, `rpmRange`, `rpmMatchSpin`, `rpmForceScale`, `rpmPulseMode/IntervalMs/WidthMs`. Runtime: `_rpmCurrentAngle`, `_rpmTimer`, `_rpmActive`
+- **Projectile** fields: `projLaunchMode`, `projCount`, `projSpreadAngleDeg`, `projBurstCount/DelayMs`, `projLaunchDelayMs/AngleDeg`, `projRandomizeAngle`, `projPattern/PatternCount`, `projPlateSpin`, `projConfig: ProjectileConfig`, `projPulseMode/IntervalMs`
+- **Gravity pull** fields: `gravityRange`, `gravityStrength`, `gravityMode`, `gravityPulseInterval/Width`. Runtime: `_gravityTimer`
+- `linkedSpeedLineId: string | null` — reference to an existing arena SL that is linked to this trap
 - `speedPathId: string | null` — reverse reference to a SpeedLineData
 - `mesh` + `edges` + `variantMesh` — Three.js objects; plate built by `trapBuilders.ts`; `variantMesh` disposed separately (like `arena.spiralMeshes`)
 - Plate world Y is auto-derived from arena surface at placement time via `trapSurfY()` — NOT stored explicitly
@@ -461,6 +518,15 @@ The user adjusts the base height/sides interactively via the properties panel; t
 - `color` (pad fill) + `glowColor` (pad emissive + ring color)
 - `mesh` + `edges` (flat pad) + `ringMesh` (TorusGeometry floating `PORTAL_RING_HEIGHT` cm above pad)
 - Pad world Y derived via `portalSurfY()`, same pattern as `trapSurfY()`
+
+#### JumpLinkData
+- A two-endpoint launch mechanic — a beyblade entering endpoint A is launched along a parabolic arc to endpoint B (and vice-versa if bidirectional)
+- `id`, `name`, `parentArenaId` — arena that owns this jump link
+- `endpointA`, `endpointB: JumpLinkEndpoint` — each endpoint: `posR`, `posAngle`, `dirDeg`, `parentType`, `parentId`
+- `flight: JumpFlightConfig` — `launchAngleDeg`, `launchForce`, `gravityScale`, `airDrag`, `landingImpact`, `landingBounce`
+- `flightStatModifiers: JumpFlightStatModifiers` — multipliers applied during flight (spinRate, stamina, etc.)
+- Saved in `ArenaConfig.jumpLinks: JumpLinkSave[]` + `jumpLinkSeq`. `JL` constants in `arenaConstants.ts`.
+- Tree icon: `⤻`. Add button: `⤻+` on arena tree nodes.
 
 #### RotationData
 - Animate one or more objects spinning around a shared 3D pivot
@@ -654,7 +720,7 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 ### Save / load (localStorage)
 
-Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 9`. On any parse error `localStorage.removeItem(key)` and return (no migration). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead. `ArenaSave` now has `weatherPreset`, `windEnabled/Direction/Strength/GustInterval/GustMult`, `particleConfig`. `ZoneSave` has `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` (optional `?`). All present/particle fields are `particleConfig: ParticleConfig` (not bare `particlePreset`).
+Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 12`. On any parse error `localStorage.removeItem(key)` and return (no migration). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead. `ArenaSave` now has `weatherPreset`, `windEnabled/Direction/Strength/GustInterval/GustMult`, env physics fields (`gravityScale`, `tiltX/Z`, `weightTilt*`, `fogDensity`, `scoreMultiplier`, `pointsPerSecond`, `weatherSurfaceMap`, `envSchedule`), `particleConfig`. `ZoneSave` has `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` (optional `?`). `BridgeSegmentSave` has anim fields (all optional `?`). `TrapSave` has earthquake/RPM/projectile fields (all optional `?`). All env fields in `ArenaSave` are optional `?` to survive partial saves.
 
 `ArenaConfig` (top-level save):
 - `arenas[]` — each `ArenaSave` includes `walls: WallSave[]` (rim walls) and `speedLines: SpeedLineSave[]`
@@ -666,6 +732,7 @@ Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 9`. On any parse error `lo
 - `portals: PortalSave[]`, `portalSeq` — teleport pads with destination config
 - `rotations: RotationSave[]`, `rotationSeq` — pivot-group rotation animations; `pivotGroup` and `currentAngle` are runtime-only and stripped on save
 - `footings: BaseFootingSave[]`, `footingSeq` — base-mounted decorative shapes on the octagon base (distinct from world-positioned obstacles)
+- `jumpLinks: JumpLinkSave[]`, `jumpLinkSeq` — two-endpoint launch mechanics
 
 ---
 
@@ -869,9 +936,10 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/features/managers/SpeedLineManager.ts` | Speed line lifecycle, projector wiring, or handle show/hide changes |
 | `src/features/managers/RotationManager.ts` | Pivot-group animation, detach ordering, or afterApply correction changes |
 | `src/features/managers/ObstacleManager.ts` | Obstacle lifecycle or buildAndShow restore path changes |
-| `src/features/managers/TrapManager.ts` | Trap lifecycle, variantMesh disposal, or wall-cascade callback changes |
+| `src/features/managers/TrapManager.ts` | Trap lifecycle, variantMesh disposal, wall-cascade callback, or earthquake/RPM tick changes |
 | `src/features/managers/PortalManager.ts` | Portal lifecycle or ringMesh disposal changes |
 | `src/features/managers/FootingManager.ts` | Footing lifecycle or buildAndShow restore path changes |
+| `src/features/managers/ArenaEnvironmentManager.ts` | Arena environment schedule (gravity/tilt/fog/score), keyframe apply, or trigger-event dispatch changes |
 
 ### Allowed import direction (never reverse)
 ```
@@ -928,7 +996,7 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **Trap wall child cleanup on trap delete**: `_disposeTrap` must iterate `this.walls` and dispose + remove any wall where `wall.parentType==='trap' && wall.parentId===trap.id` before removing the trap itself. Skipping this leaks GPU geometry.
 - **`sharedTypes.ts` is the single source of `PresentConfig` / `ParticleConfig`**: Both `arenaTypes.ts` and `beybladeTypes.ts` import from `src/types/sharedTypes.ts`. Never define these interfaces inline in either file. `arenaTypes.ts` and `beybladeTypes.ts` re-export them for backward compat.
 - **`BEY_SAVE_VERSION = 2`**: Beyblade saves now include `v: 2`. On parse in `_loadFromStorage`, if `parsed.v !== BEY_SAVE_VERSION`, discard and return. No migration. `BeybladeStore.deserialize` spreads defaults then overwrites: `const part = { ...p }; if (!part.present) part.present = defaultPresentConfig(); if (!part.particleConfig) part.particleConfig = defaultParticleConfig();`. Do NOT write `{ present: defaultPresentConfig(), ...p }` — TS reports TS2783 duplicate key error.
-- **`ARENA_SAVE_VERSION = 9`**: Arena saves from version 8 are discarded silently on parse error. New fields in `ArenaSave`/`ZoneSave` for inner spiral and weather are optional (`?`) so partial saves load without crash.
+- **`ARENA_SAVE_VERSION = 12`**: Arena saves from lower versions are discarded silently on parse error. New fields in `ArenaSave`/`BridgeSegmentSave`/`TrapSave` are optional (`?`) so partial saves load without crash.
 - **Sub-nodes are not reparentable**: In `ArenaSandbox._onReparent` and `BeybladeSandbox` tree wiring, any `nodeId` starting with `present-`, `particle-`, or `weather-` must return immediately without doing anything. Similarly in `_duplicateNode` — skip sub-node IDs.
 - **`_subNodesAdded` set tracks present/particle/weather IDs**: In both sandboxes, `_subNodesAdded: Set<string>` prevents adding the same sub-node twice. `_addSubNodePresent(featureId)` checks `_subNodesAdded.has('present-'+featureId)` before adding. When a feature is deleted, remove its sub-node IDs from `_subNodesAdded`.
 - **`show()` closure pattern for sub-node panels**: `_selectPresentNode(partId)` wraps `panel.showPresentation(...)` in a `show()` closure called on import/clear callbacks to refresh button labels (e.g. "Import STL…" → "✓ Replace STL…" after import). Without this the panel shows stale button text.
@@ -937,6 +1005,28 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **`_duplicateNode` in ArenaSandbox skips bridges, speed lines, rotations**: These are complex graph structures that cannot be shallow-cloned. Silently return without error for these IDs. Pits, zones, arenas, walls, traps, portals, obstacles, footings are all safe to duplicate.
 - **Weather system disposal**: `arena.weatherSystem?.dispose()` removes `points` from scene. Weather system `tick(dt)` called in `onTick` for all arenas. Building a new weather system replaces the old one — always dispose before rebuild.
 - **Gravity pull trap `_gravityTimer` is runtime-only**: Never serialize it. Initialized to `0` in `defaultTrap`. `applyTrap` does not reset it — only `onTick` advances it.
+- **`ArenaConfig` is in `arenaPersistence.ts`, NOT `arenaTypes.ts`**: `presetTypes.ts` and `presetStore.ts` must import `ArenaConfig` from `'../utils/arenaPersistence'` (or `'./arenaPersistence'` within utils). Importing from `arenaTypes.ts` is a compile error — that file only has arena data model types, not the serialization config shape.
+- **`arenaToSave` signature is 4 args, not 5**: Correct: `arenaToSave(id: string, arena: ArenaData, pits: Map, zones: Map): ArenaSave`. It returns `walls: []` and `speedLines: []` (populated by caller). Never pass walls/speedLines as arguments — that function signature does not accept them.
+- **`trapToSave` takes 1 arg**: `trapToSave(trap: TrapData): TrapSave`. Returns `walls: []` — caller must manually set `ts.walls = [...].filter(...).map(wallToSave)`.
+- **`extractArenaConfig` auto-expands IDs**: When a checked ID is an arena, all its pits/zones/walls/speedLines are included automatically. When a checked ID is a bridge, all its segments and child walls are included. When a checked ID is a trap, its child trap walls are included. Rotations are only included if ALL their memberIds are also in the expanded selection set.
+- **`_checkPendingLoad()` runs after `super.setVisible(v)`**: Both `ArenaSandbox` and `BeybladeSandbox` call `_checkPendingLoad()` inside `setVisible(true)` AFTER `super.setVisible(v)`. This guarantees `buildCustom()` has run (on first visit) so the scene tree, store, and maps exist before the pending load is applied. Never call `_checkPendingLoad()` before `super.setVisible(v)`.
+- **Two ArenaSandbox instances do not share state**: `ArenaSandbox` derives its localStorage key from `opts.title` — `"Arena Sandbox"` → `bey_arena_arena_sandbox`; `"Preset Editor"` → `bey_arena_preset_editor`. They are fully independent. When `presetEditorMode: true`, back and library buttons both go to `arena-library`.
+- **Pending load keys are read-once**: `_checkPendingLoad()` immediately calls `localStorage.removeItem(key)` before applying the config. The key is never left in storage after a successful read. On the next `setVisible(true)` call, if no key exists, no load is triggered.
+- **`BeybladeStore.mergeDeserialize` does not call `reset()`**: Unlike `deserialize`, which calls `this.reset()` first, `mergeDeserialize` appends to existing data. Call `mergeDeserialize` for merge mode; call `deserialize` for replace mode.
+- **SceneTree checkbox does not trigger row selection**: The checkbox `click` handler calls `e.stopPropagation()` so it does not bubble to the row's selection handler. Checking a node does NOT select it in the properties panel. This is intentional — checkboxes are for multi-select save operations, not for editing.
+- **`extractArenaConfig` — portals and rotations have conditional inclusion**: Portals are always included if their ID is checked. But `destPortalId` is only set if the destination portal is also in the selection; otherwise set to `null`. Rotations are only included if every ID in `memberIds` is also in the expanded selection set — partial rotations are excluded entirely.
+- **`_makeCard` in ArenaLibraryScreen assembles the card at the end**: `card.innerHTML = ''` clears the card div before the real thumbnail and body are appended (lines 217+). Any DOM manipulation before this line is wasted. Do not add thumbnail code before the `card.innerHTML = ''` line.
+- **Assembly stacking uses accumulated `axisOffsetY`**: In `BeyLibraryScreen._mergeConfigs`, parts from each preset slot are assigned a new `axisOffsetY` equal to the accumulated height of all previous parts. The part's own original `axisOffsetY` within its preset is preserved (relative stacking within the preset); the accumulated offset is added on top. Never bake `axisOffsetY` into vertex Y.
+- **`ArenaEnvironmentManager` uses Map keys, not `arena.id`**: `ArenaData` has no `id` field — the ID is the Map key. Use `for (const [arenaId, arena] of getArenas().entries())` and pass `arenaId` explicitly to all callbacks. Never write `arena.id`.
+- **`_loadArenasFromConfig` must include all new `ArenaData` fields**: Every field added to `ArenaData` (env/physics/scoring) must be added to the arena construction object in `_loadArenasFromConfig` with a `?? default` fallback. Omitting any required field causes a TS2740 type error at the arena construction literal. Use `ENV.*` constants for defaults.
+- **Bridge `_animPivot` mesh children pattern**: `applySegment` places `seg.mesh` and `seg.edges` as children of `seg._animPivot` (not direct children of `bridge.group`). `seg._animPivot` is in `bridge.group`. Disposal must call `bridge.group.remove(seg._animPivot)` — not `bridge.group.remove(seg.mesh)`. The latter is a no-op since mesh is no longer a direct group child.
+- **Bridge anim runtime fields are NOT saved**: `_animTimer`, `_animCenter`, `_animPivot` are never in `BridgeSegmentSave`. They are re-initialized in `_loadArenasFromConfig` and `BridgeManager.restoreSegment` with `_animTimer: 0, _animCenter: new THREE.Vector3(), _animPivot: null`.
+- **`SpeedLineData.enabled` = visibility toggle, not geometry toggle**: When `sl.enabled = false`, set `.visible = false` on `sl.mesh`, `sl.edges`, and each marker/handle mesh. Do NOT rebuild geometry. `buildSpeedLineObjects` checks `sl.enabled !== false` and sets visibility on every mesh it creates.
+- **`jumpLinks` and `jumpLinkSeq` are required in every `ArenaConfig` literal**: Both `serializeConfig()` in `ArenaSandbox.ts` and all `ArenaConfig` construction sites in `presetStore.ts` must include `jumpLinks: [], jumpLinkSeq: 0`. Missing either causes a TS2741 error.
+- **`ARENA_SAVE_VERSION = 12`**: Arena saves from lower versions are discarded silently. All new fields in `ArenaSave`, `BridgeSegmentSave`, `TrapSave` are optional (`?`) so they load cleanly if absent — use `?? default` patterns in restore code.
+- **`TrapManager` now implements `ITickableManager`**: Its `tick(dt)` must be called from `ArenaSandbox.onTick(dtMs)`. The `tick` param is seconds (not ms) — `TrapManager.tick` converts ms internally. Do not call `tick` with ms directly.
+- **Earthquake mesh vertex mutation via `updateEarthquakeMeshHeights`**: Earthquake mesh uses `BufferUsage.DYNAMIC_DRAW`. After calling `updateEarthquakeMeshHeights(data)`, you must set `geo.attributes.position.needsUpdate = true` and call `geo.computeVertexNormals()`. The function handles this internally — never mutate the position buffer directly.
+- **Wall `thicknessDirection` default is `'outward'`**: New walls default to `thicknessDirection: 'outward'`. In `wallBuilders.ts`, `dirMult = -1` for outward. Boundary clamp prevents wall from exceeding octagon edge. Only moat-inner walls should typically use `'inward'`.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.

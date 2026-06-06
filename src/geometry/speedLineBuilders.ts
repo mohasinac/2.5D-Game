@@ -956,6 +956,22 @@ export function generatePresetSegments(
     case 'point_zone':
       pts = sampleCircle(cx, cz, rx, rotY, Math.max(8, N), [], 1.0);
       break;
+    case 'jump': {
+      // Jump preset: straight XZ lerp from source to pre-resolved destination.
+      // ArenaSandbox pre-resolves src into params.startPosX/Z/Y and dst into params.endPosX/Z/Y
+      // before calling generatePresetSegments (src = sl.startR/startAngle converted to arena-local).
+      const srcX = params.startPosX;
+      const srcZ = params.startPosZ;
+      const dstX = params.endPosX;
+      const dstZ = params.endPosZ;
+      const steps = Math.max(4, N);
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        pts.push([srcX + (dstX - srcX) * t, srcZ + (dstZ - srcZ) * t]);
+      }
+      heightDelta = params.endPosY - params.startPosY;
+      break;
+    }
     default:
       return { segments: [], startDir: 0, startR: 0, startAngle: 0 };
   }

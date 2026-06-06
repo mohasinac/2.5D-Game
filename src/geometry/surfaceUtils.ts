@@ -19,6 +19,15 @@ export function polarToLocalXZ(posR: number, posAngle: number): { lx: number; lz
   return { lx: posR * Math.cos(rad), lz: posR * Math.sin(rad) };
 }
 
+/** Convert world XZ to arena-local XZ (inverse rotation of arena.rotY). */
+export function worldToArenaLocal(
+  wx: number, wz: number, arena: ArenaData,
+): { alx: number; alz: number } {
+  const dx = wx - arena.posX; const dz = wz - arena.posZ;
+  const c = Math.cos(-arena.rotY * DEG2RAD); const s = Math.sin(-arena.rotY * DEG2RAD);
+  return { alx: dx * c - dz * s, alz: dx * s + dz * c };
+}
+
 /* ── Child transform extractor ───────────────────────────────────────────
    Replaces 4 identical 3-line blocks in buildPitObjects / applyPit /
    buildZoneObjects / applyZone.

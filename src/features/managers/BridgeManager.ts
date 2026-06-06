@@ -88,15 +88,16 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     const bridge: BridgeData = {
       id,
       name,
-      startRef:      null,
-      segmentIds:    [],
-      section:       defaultBridgeSection(),
-      color:         0xaaaacc,
-      surface:       'metal' as SurfaceType,
-      wallIds:       [],
-      presentStlb64: null,
-      presentColor:  0xaaaaaa,
+      startRef:         null,
+      segmentIds:       [],
+      section:          defaultBridgeSection(),
+      color:            0xaaaacc,
+      surface:          'metal' as SurfaceType,
+      wallIds:          [],
+      presentStlb64:    null,
+      presentColor:     0xaaaaaa,
       group,
+      linkedSpeedLineId: null,
     };
 
     this.items.set(id, bridge);
@@ -168,6 +169,22 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     const geo  = buildSegmentDeckGeometry(seg, startPose, sec);
     const eGeo = buildSegmentEdgeGeometry(seg, startPose, sec);
 
+    // Compute center for animation pivot
+    geo.computeBoundingBox();
+    const center = new THREE.Vector3();
+    geo.boundingBox!.getCenter(center);
+    seg._animCenter.copy(center);
+    const negCenter = center.clone().negate();
+
+    if (!seg._animPivot) {
+      seg._animPivot = new THREE.Group();
+      if (seg.mesh)  { bridge.group.remove(seg.mesh);  seg._animPivot.add(seg.mesh); }
+      if (seg.edges) { bridge.group.remove(seg.edges); seg._animPivot.add(seg.edges); }
+      bridge.group.add(seg._animPivot);
+    }
+    seg._animPivot.position.copy(center);
+    if (!seg.animEnabled) seg._animPivot.rotation.set(0, 0, 0);
+
     const segMat = buildSurfaceMaterial({
       color,
       surface,
@@ -185,9 +202,11 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
       (seg.mesh.material as THREE.Material).dispose();
       seg.mesh.geometry = geo;
       seg.mesh.material = segMat;
+      seg.mesh.position.copy(negCenter);
     } else {
       seg.mesh = new THREE.Mesh(geo, segMat);
-      bridge.group.add(seg.mesh);
+      seg.mesh.position.copy(negCenter);
+      seg._animPivot.add(seg.mesh);
     }
 
     const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
@@ -195,12 +214,14 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
       seg.edges.geometry.dispose();
       seg.edges.geometry = eGeo;
       (seg.edges.material as THREE.LineBasicMaterial).color.copy(edgeCol);
+      seg.edges.position.copy(negCenter);
     } else {
       seg.edges = new THREE.LineSegments(
         eGeo,
         new THREE.LineBasicMaterial({ color: edgeCol }),
       );
-      bridge.group.add(seg.edges);
+      seg.edges.position.copy(negCenter);
+      seg._animPivot.add(seg.edges);
     }
 
     this.ctx.trackObjects(seg.id, [seg.mesh, seg.edges]);
@@ -314,6 +335,16 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
       corkscrewTurns:   save.corkscrewTurns,
       color:            save.color,
       surface:          save.surface,
+      animEnabled:    save.animEnabled    ?? false,
+      animOffsetX:    save.animOffsetX    ?? 0,
+      animOffsetY:    save.animOffsetY    ?? 0,
+      animOffsetZ:    save.animOffsetZ    ?? 0,
+      animRotX:       save.animRotX      ?? 0,
+      animRotY:       save.animRotY      ?? 0,
+      animRotZ:       save.animRotZ      ?? 0,
+      animStartMs:    save.animStartMs    ?? 0,
+      animIntervalMs: save.animIntervalMs ?? 2000,
+      animHoldMs:     save.animHoldMs    ?? 1000,
     });
     const n = parseInt(save.id.split('-')[1] ?? '0', 10);
     if (n > this.segSeq) this.segSeq = n;
@@ -359,17 +390,18 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     this.ctx.scene.add(group);
 
     const bridge: BridgeData = {
-      id:            save.id,
-      name:          save.name,
-      startRef:      save.startRef as BridgeData['startRef'],
-      segmentIds:    [],
-      section:       { ...defaultBridgeSection(), ...save.section },
-      color:         save.color,
-      surface:       save.surface,
-      wallIds:       [],
-      presentStlb64: save.presentStlb64,
-      presentColor:  save.presentColor,
+      id:               save.id,
+      name:             save.name,
+      startRef:         save.startRef as BridgeData['startRef'],
+      segmentIds:       [],
+      section:          { ...defaultBridgeSection(), ...save.section },
+      color:            save.color,
+      surface:          save.surface,
+      wallIds:          [],
+      presentStlb64:    save.presentStlb64,
+      presentColor:     save.presentColor,
       group,
+      linkedSpeedLineId: save.linkedSpeedLineId ?? null,
     };
 
     // Restore segment data objects (no geometry yet)
@@ -410,14 +442,16 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     if (seg.mesh) {
       seg.mesh.geometry.dispose();
       (seg.mesh.material as THREE.Material).dispose();
-      bridge.group.remove(seg.mesh);
       seg.mesh = null;
     }
     if (seg.edges) {
       seg.edges.geometry.dispose();
       (seg.edges.material as THREE.Material).dispose();
-      bridge.group.remove(seg.edges);
       seg.edges = null;
+    }
+    if (seg._animPivot) {
+      bridge.group.remove(seg._animPivot);
+      seg._animPivot = null;
     }
     this.ctx.untrackObjects(seg.id);
   }

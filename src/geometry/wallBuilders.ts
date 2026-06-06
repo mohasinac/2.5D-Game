@@ -128,6 +128,8 @@ function buildPanelGeometry(
   inwardDir: (p: THREE.Vector2) => THREE.Vector2,
   addStartCap: boolean,
   addEndCap: boolean,
+  /** 1 = inward (toward center), -1 = outward (away from center). Default 1 for compat. */
+  dirMult = 1,
 ): { positions: number[]; normals: number[]; indices: number[] } {
   const tiltRad = Math.max(-Math.PI / 2, Math.min(30 * DEG2RAD, tilt * DEG2RAD));
   const clampedHeight = Math.max(MIN_WALL_HEIGHT, height);
@@ -155,23 +157,28 @@ function buildPanelGeometry(
       const profileOff = topProfileOffset(t, topProfile, topAmplitude, topFrequency, arcLenM);
       const topH = clampedHeight + profileOff;
 
+      // Clamp thickness outward so wall never exceeds octagon boundary
+      const effectiveThick = dirMult === -1
+        ? Math.min(thick, computeMaxOutwardDist(p.x, p.y))
+        : thick;
+
       // Outer bottom (on the rim surface)
       positions.push(p.x, rimY, p.y);
       normals.push(0, 0, 1);
 
-      // Outer top (displaced by tilt in inward direction)
-      const otX = p.x + (-Math.sin(tiltRad)) * topH * inDir.x;
-      const otZ = p.y + (-Math.sin(tiltRad)) * topH * inDir.y;
+      // Outer top (displaced by tilt in dirMult*inward direction)
+      const otX = p.x + (-Math.sin(tiltRad)) * topH * inDir.x * dirMult;
+      const otZ = p.y + (-Math.sin(tiltRad)) * topH * inDir.y * dirMult;
       const otY = rimY + Math.cos(tiltRad) * topH;
       positions.push(otX, otY, otZ);
       normals.push(0, 0, 1);
 
-      // Inner bottom (outer bottom offset inward by thickness)
-      positions.push(p.x + inDir.x * thick, rimY, p.y + inDir.y * thick);
+      // Inner bottom (outer bottom offset by dirMult*inward by thickness)
+      positions.push(p.x + inDir.x * effectiveThick * dirMult, rimY, p.y + inDir.y * effectiveThick * dirMult);
       normals.push(0, 0, 1);
 
-      // Inner top (outer top offset inward by thickness, same Y height)
-      positions.push(otX + inDir.x * thick, otY, otZ + inDir.y * thick);
+      // Inner top (outer top offset by dirMult*inward by thickness, same Y height)
+      positions.push(otX + inDir.x * effectiveThick * dirMult, otY, otZ + inDir.y * effectiveThick * dirMult);
       normals.push(0, 0, 1);
     }
 
@@ -287,6 +294,8 @@ export function buildWallGeometry(
     return new THREE.Vector2(dx / len2, dz / len2);
   };
 
+  const dirMult = (wall.thicknessDirection ?? 'outward') === 'inward' ? 1 : -1;
+
   const allPositions: number[] = [];
   const allIndices:   number[] = [];
   let vertexOffset = 0;
@@ -316,6 +325,7 @@ export function buildWallGeometry(
       inwardDir,
       addStartCap,
       addEndCap,
+      dirMult,
     );
     allPositions.push(...positions);
     allIndices.push(...indices.map(i => i + vertexOffset));
@@ -405,6 +415,7 @@ export function buildWallEdgeGeometry(
   const tiltRad = Math.max(-Math.PI / 2, Math.min(30 * DEG2RAD, effectiveTilt * DEG2RAD));
   const clampedHeight = Math.max(MIN_WALL_HEIGHT, wall.height);
   const thick = Math.max(0.1, wall.thickness);
+  const dirMult = (wall.thicknessDirection ?? 'outward') === 'inward' ? 1 : -1;
 
   let workPts: THREE.Vector2[];
   let centreX: number;
@@ -448,31 +459,36 @@ export function buildWallEdgeGeometry(
 
     // Inner bottom loop
     for (let i = 0; i < N - 1; i++) {
-      const [ix0, iz0] = innerPt(panel[i], centreX, centreZ, thick);
-      const [ix1, iz1] = innerPt(panel[i + 1], centreX, centreZ, thick);
+      const effThick0 = dirMult === -1 ? Math.min(thick, computeMaxOutwardDist(panel[i].x, panel[i].y)) : thick;
+      const effThick1 = dirMult === -1 ? Math.min(thick, computeMaxOutwardDist(panel[i+1].x, panel[i+1].y)) : thick;
+      const [ix0, iz0] = innerPt(panel[i], centreX, centreZ, effThick0, dirMult);
+      const [ix1, iz1] = innerPt(panel[i + 1], centreX, centreZ, effThick1, dirMult);
       verts.push(ix0, rimY, iz0, ix1, rimY, iz1);
     }
 
     // Outer top loop
     for (let i = 0; i < N - 1; i++) {
-      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
-      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
+      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ, 0, dirMult);
+      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ, 0, dirMult);
       verts.push(tx0, ty0, tz0, tx1, ty1, tz1);
     }
 
     // Inner top loop
     for (let i = 0; i < N - 1; i++) {
-      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
-      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
+      const effThick0 = dirMult === -1 ? Math.min(thick, computeMaxOutwardDist(panel[i].x, panel[i].y)) : thick;
+      const effThick1 = dirMult === -1 ? Math.min(thick, computeMaxOutwardDist(panel[i+1].x, panel[i+1].y)) : thick;
+      const [tx0, ty0, tz0] = topVert(panel[i],   rimY, clampedHeight, tiltRad, centreX, centreZ, effThick0 * dirMult, dirMult);
+      const [tx1, ty1, tz1] = topVert(panel[i + 1], rimY, clampedHeight, tiltRad, centreX, centreZ, effThick1 * dirMult, dirMult);
       verts.push(tx0, ty0, tz0, tx1, ty1, tz1);
     }
 
     // Vertical outer + inner edges at endpoints and end-cap lines
     if (N > 0) {
       // Start of panel
-      const [otx0, oty0, otz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
-      const [itx0, ity0, itz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
-      const [ix0, iz0] = innerPt(panel[0], centreX, centreZ, thick);
+      const effThickS = dirMult === -1 ? Math.min(thick, computeMaxOutwardDist(panel[0].x, panel[0].y)) : thick;
+      const [otx0, oty0, otz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ, 0, dirMult);
+      const [itx0, ity0, itz0] = topVert(panel[0], rimY, clampedHeight, tiltRad, centreX, centreZ, effThickS * dirMult, dirMult);
+      const [ix0, iz0] = innerPt(panel[0], centreX, centreZ, effThickS, dirMult);
 
       if (showStartCap) {
         // Outer vertical edge
@@ -487,9 +503,10 @@ export function buildWallEdgeGeometry(
 
       // End of panel
       const last = panel[N - 1];
-      const [otxE, otyE, otzE] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ, 0);
-      const [itxE, ityE, itzE] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ, thick);
-      const [ixE, izE] = innerPt(last, centreX, centreZ, thick);
+      const effThickE = dirMult === -1 ? Math.min(thick, computeMaxOutwardDist(last.x, last.y)) : thick;
+      const [otxE, otyE, otzE] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ, 0, dirMult);
+      const [itxE, ityE, itzE] = topVert(last, rimY, clampedHeight, tiltRad, centreX, centreZ, effThickE * dirMult, dirMult);
+      const [ixE, izE] = innerPt(last, centreX, centreZ, effThickE, dirMult);
 
       if (showEndCap) {
         verts.push(last.x, rimY, last.y, otxE, otyE, otzE);
@@ -505,21 +522,32 @@ export function buildWallEdgeGeometry(
   return geo;
 }
 
-/** Returns world XZ of the inner offset point (shifted inward from p by thickness). */
+/**
+ * Maximum distance a wall can extend outward (away from arena center) from point (wx, wz)
+ * before hitting the octagon inscribed circle boundary.
+ * Uses the conservative inscribed-circle approximation: APOTHEM - dist_to_origin.
+ */
+function computeMaxOutwardDist(wx: number, wz: number): number {
+  const r = Math.sqrt(wx * wx + wz * wz);
+  return Math.max(0, OCTAGON_BASE.radius * Math.cos(Math.PI / OCTAGON_BASE.sides) - r);
+}
+
+/** Returns world XZ of the offset point shifted by thick in the direction `dirMult * inward`. */
 function innerPt(
   p: THREE.Vector2,
   cx: number,
   cz: number,
   thick: number,
+  dirMult: number,
 ): [number, number] {
   const dx = cx - p.x; const dz = cz - p.y;
   const len = Math.sqrt(dx * dx + dz * dz) || 1;
-  return [p.x + (dx / len) * thick, p.y + (dz / len) * thick];
+  return [p.x + (dx / len) * thick * dirMult, p.y + (dz / len) * thick * dirMult];
 }
 
 /**
- * Compute the top-edge vertex for a rim point, with optional inward offset for inner face.
- * @param thicknessOffset 0 = outer edge, thick = inner edge
+ * Compute the top-edge vertex for a rim point, with optional offset for inner face.
+ * @param thicknessOffset  0 = outer edge, thick = inner edge  (scaled by dirMult already)
  */
 function topVert(
   p: THREE.Vector2,
@@ -529,12 +557,13 @@ function topVert(
   cx: number,
   cz: number,
   thicknessOffset: number,
+  dirMult: number,
 ): [number, number, number] {
   const dx = cx - p.x; const dz = cz - p.y;
   const len = Math.sqrt(dx * dx + dz * dz) || 1;
   const inX = dx / len; const inZ = dz / len;
-  const topX = p.x + (-Math.sin(tiltRad)) * height * inX + inX * thicknessOffset;
-  const topZ = p.y + (-Math.sin(tiltRad)) * height * inZ + inZ * thicknessOffset;
+  const topX = p.x + (-Math.sin(tiltRad)) * height * inX * dirMult + inX * thicknessOffset;
+  const topZ = p.y + (-Math.sin(tiltRad)) * height * inZ * dirMult + inZ * thicknessOffset;
   const topY = rimY + Math.cos(tiltRad) * height;
   return [topX, topY, topZ];
 }
@@ -622,6 +651,7 @@ export function defaultWallData(
     height: 10,
     tilt: 0,
     thickness: 2,
+    thicknessDirection: 'outward',
     hasGaps: false, gapWidth: 10, panelWidth: 20,
     topProfile: 'flat', topAmplitude: 3, topFrequency: 1,
     isDouble: false, peakHeight: 8, peakTilt: 30,

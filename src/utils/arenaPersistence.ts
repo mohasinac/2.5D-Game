@@ -1,6 +1,6 @@
 import {
   OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill,
-  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset, ParticleConfig, WeatherPreset,
+  ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset, ParticleConfig, WeatherPreset, EnvScheduleSave,
   SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
   SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
   SpeedLinePresetType, SpeedLinePresetParams, SpeedLineRamp,
@@ -10,10 +10,12 @@ import {
   BridgeCrossSection, BridgeSegmentType, BridgeEndpointType, BridgeSection,
   BridgeSegmentData, BridgeData, BridgeEndpointRef,
   ObstacleData, ObstacleShape, ObstacleTheme,
-  TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier,
+  TrapData, TrapShape, TrapEffect, TrapVariant, TrapTierEffect, TrapDurationTier, ProjectileConfig,
   PortalData, PortalDestType,
   RotationData, RotationMode, RotationNodeType,
   BaseFootingData,
+  JumpLinkData, JumpLinkEndpoint, JumpLinkParentType, JumpLinkTrigger,
+  JumpArcProfile, JumpEndpointMode, JumpFlightConfig, JumpFlightStatModifiers,
 } from '../types/arenaTypes';
 
 export interface SpeedLineSave {
@@ -51,6 +53,12 @@ export interface SpeedLineSave {
   statModifiers:            SpeedLineStatModifiers;
   // SpeedLineSegment.maxStayDuration + statModifiers + sectionIndex serialised via segments[]
   // SpeedLinePresetParams.sections (SpeedLineSection[]) serialised via presetParams
+  linkedBridgeId?: string | null;
+  linkedTrapId?:   string | null;
+  enabled?:        boolean;
+  targetBridgeId?: string | null;
+  targetTrapId?:   string | null;
+  jumpLinkId?:     string | null;
 }
 
 export interface PitSave {
@@ -93,7 +101,7 @@ export interface WallSave {
   id: string; name: string; parentId: string; parentType: WallData['parentType'];
   fullPerimeter: boolean; arcStart: number; arcEnd: number;
   basePosX: number; basePosZ: number; baseRotY: number; baseLength: number;
-  height: number; tilt: number; thickness: number;
+  height: number; tilt: number; thickness: number; thicknessDirection?: 'inward' | 'outward';
   hasGaps: boolean; gapWidth: number; panelWidth: number;
   topProfile: WallTopProfile; topAmplitude: number; topFrequency: number;
   isDouble: boolean; peakHeight: number; peakTilt: number;
@@ -131,6 +139,10 @@ export interface BridgeSegmentSave {
   tiltAngle: number;
   corkscrewLength: number; corkscrewTurns: number;
   color: number | null; surface: SurfaceType | null;
+  animEnabled?: boolean;
+  animOffsetX?: number; animOffsetY?: number; animOffsetZ?: number;
+  animRotX?: number; animRotY?: number; animRotZ?: number;
+  animStartMs?: number; animIntervalMs?: number; animHoldMs?: number;
 }
 
 export interface BridgeEndpointRefSave {
@@ -146,6 +158,7 @@ export interface BridgeSave {
   color: number; surface: SurfaceType;
   presentStlb64: string | null; presentColor: number;
   walls: WallSave[];
+  linkedSpeedLineId?: string | null;
 }
 
 export interface ArenaSave {
@@ -173,6 +186,14 @@ export interface ArenaSave {
   particlePreset: ParticlePreset;
   weatherPreset?: WeatherPreset; windEnabled?: boolean; windDirectionDeg?: number;
   windStrengthCms?: number; windGustInterval?: number; windGustMult?: number;
+  /* ── Environment ─────────────────────────────────────────────────────── */
+  gravityScale?: number; gravityDirectionX?: number; gravityDirectionZ?: number;
+  tiltX?: number; tiltZ?: number;
+  weightTiltEnabled?: boolean; weightTiltSensitivity?: number; weightTiltDampening?: number;
+  fogDensity?: number;
+  scoreMultiplier?: number; pointsPerSecond?: number;
+  weatherSurfaceMap?: Partial<Record<WeatherPreset, SurfaceType>>;
+  envSchedule?: EnvScheduleSave[];
   presentStlb64: string | null; presentColor: number;
   pits: PitSave[]; zones: ZoneSave[];
   walls: WallSave[];   // rim walls attached to this arena
@@ -197,6 +218,24 @@ export interface TrapDurationTierSave {
   rpmLossFactor: number; speedFactor: number; notes: string;
 }
 
+export interface ProjectileConfigSave {
+  shape: ProjectileConfig['shape'];
+  dimX: number; dimY: number; dimZ: number;
+  presentStlb64: string | null; color: number;
+  emissiveColor: number; emissiveIntensity: number;
+  rotOffsetX: number; rotOffsetY: number; rotOffsetZ: number;
+  spinX: number; spinY: number; spinZ: number;
+  speed: number; isAirborne: boolean; arcHeight: number; lifetimeMs: number;
+  targetMode: ProjectileConfig['targetMode'];
+  targetSpeedLineId: string | null;
+  returnToTrap: boolean; returnAfterMs: number;
+  hitEffect: ProjectileConfig['hitEffect'];
+  hitStrength: number; hitDurationMs: number; hitEventName: string; hitRadius: number;
+  scaleFactor?: number; scaleRandomize?: boolean; scaleMin?: number; scaleMax?: number;
+  orbitSource?: boolean; orbitRadius?: number; orbitSpeed?: number; orbitElevation?: number;
+  homingEnabled?: boolean; homingStrength?: number;
+}
+
 export interface TrapSave {
   id: string; name: string; parentId: string; parentType: 'arena' | 'base';
   shape: TrapShape; variant: TrapVariant; effect: TrapEffect;
@@ -209,10 +248,34 @@ export interface TrapSave {
   pitDepth: number; pitSides: number; pitStarInner: number;
   isPeriodic: boolean; safeInterval: number; unsafeInterval: number;
   activationLimit: number; speedPathId: string | null;
+  linkedSpeedLineId?: string | null;
   durationTiers: TrapDurationTierSave[];
   gravityRange?: number; gravityStrength?: number;
   gravityMode?: 'continuous' | 'pulse' | 'conditional';
   gravityPulseInterval?: number; gravityPulseWidth?: number;
+  /* Earthquake */
+  eqRingCount?: number; eqSegmentsPerRing?: number; eqMaxElevationCm?: number;
+  eqElevationMode?: TrapData['eqElevationMode'];
+  eqRingRanges?: number[];
+  eqPermanent?: boolean; eqFadeCycles?: number;
+  eqPulseMode?: TrapData['eqPulseMode'];
+  eqPulseIntervalMs?: number; eqPulseWidthMs?: number;
+  /* RPM */
+  rpmSpeed?: number; rpmEffect?: TrapData['rpmEffect'];
+  rpmRange?: number; rpmMatchSpin?: boolean; rpmForceScale?: number;
+  rpmPulseMode?: TrapData['rpmPulseMode'];
+  rpmPulseIntervalMs?: number; rpmPulseWidthMs?: number;
+  /* Projectile */
+  projLaunchMode?: TrapData['projLaunchMode'];
+  projCount?: number; projSpreadAngleDeg?: number;
+  projBurstCount?: number; projBurstDelayMs?: number;
+  projLaunchDelayMs?: number; projLaunchAngleDeg?: number;
+  projRandomizeAngle?: boolean;
+  projPattern?: TrapData['projPattern']; projPatternCount?: number;
+  projConfig?: ProjectileConfigSave;
+  projPulseMode?: TrapData['projPulseMode']; projPulseIntervalMs?: number;
+  projPlateSpin?: number;
+  envTriggerEvent?: string; envTargetArenaId?: string;
   baseMaterial: ArenaMaterial;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number;
@@ -231,6 +294,28 @@ export interface PortalSave {
   color: number; glowColor: number;
   surface: SurfaceType; customTileData: string | null; tileScale: number;
   presentStlb64: string | null; presentColor: number;
+}
+
+export interface JumpLinkEndpointSave {
+  mode:       JumpEndpointMode;
+  parentType: JumpLinkParentType; parentId: string;
+  localX: number; localZ: number;
+  worldX: number; worldY: number; worldZ: number;
+  speedLineId: string | null; atStart: boolean;
+}
+
+export interface JumpLinkSave {
+  id: string; name: string;
+  src: JumpLinkEndpointSave;
+  dst: JumpLinkEndpointSave;
+  isBidirectional: boolean;
+  trigger:            JumpLinkTrigger;
+  triggerSpeedLineId: string | null;
+  proximityRadius:    number;
+  arcProfile: JumpArcProfile;
+  arcHeight:  number;
+  flight:     JumpFlightConfig;
+  color: number; glowColor: number | null; opacity: number; discRadius: number;
 }
 
 export interface BaseFootingSave {
@@ -267,6 +352,7 @@ export interface ArenaConfig {
   portals: PortalSave[];    portalSeq: number;
   rotations: RotationSave[]; rotationSeq: number;
   footings: BaseFootingSave[]; footingSeq: number;
+  jumpLinks: JumpLinkSave[]; jumpLinkSeq: number;
 }
 
 export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
@@ -302,6 +388,12 @@ export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
     targetSelectionMode:sl.targetSelectionMode,
     conditionCheckIntervalMs:sl.conditionCheckIntervalMs,
     statModifiers:{...sl.statModifiers},
+    linkedBridgeId: sl.linkedBridgeId,
+    linkedTrapId:   sl.linkedTrapId,
+    enabled:        sl.enabled,
+    targetBridgeId: sl.targetBridgeId,
+    targetTrapId:   sl.targetTrapId,
+    jumpLinkId:     sl.jumpLinkId,
   };
 }
 
@@ -369,6 +461,17 @@ export function arenaToSave(
     particlePreset:a.particlePreset,
     weatherPreset:a.weatherPreset,windEnabled:a.windEnabled,windDirectionDeg:a.windDirectionDeg,
     windStrengthCms:a.windStrengthCms,windGustInterval:a.windGustInterval,windGustMult:a.windGustMult,
+    gravityScale:a.gravityScale,gravityDirectionX:a.gravityDirectionX,gravityDirectionZ:a.gravityDirectionZ,
+    tiltX:a.tiltX,tiltZ:a.tiltZ,
+    weightTiltEnabled:a.weightTiltEnabled,weightTiltSensitivity:a.weightTiltSensitivity,weightTiltDampening:a.weightTiltDampening,
+    fogDensity:a.fogDensity,
+    scoreMultiplier:a.scoreMultiplier,pointsPerSecond:a.pointsPerSecond,
+    weatherSurfaceMap:{...a.weatherSurfaceMap},
+    envSchedule:a.envSchedule.map(e=>({
+      id:e.id,label:e.label,triggerType:e.triggerType,intervalSec:e.intervalSec,
+      delaySec:e.delaySec,eventName:e.eventName,keyframes:e.keyframes.map(k=>({...k})),
+      revertSec:e.revertSec,soundEvent:e.soundEvent,enabled:e.enabled,
+    })),
     presentStlb64:a.presentStlb64,presentColor:a.presentColor,
     pits:a.pitIds.map(pid=>pitToSave(pits.get(pid)!)).filter(Boolean),
     zones:a.zoneIds.filter(zid=>{ const z=zones.get(zid); return z&&!z.parentZoneId; }).map(zid=>zoneToSave(zones.get(zid)!,pits,zones)),
@@ -382,7 +485,7 @@ export function wallToSave(w: WallData): WallSave {
     id:w.id, name:w.name, parentId:w.parentId, parentType:w.parentType,
     fullPerimeter:w.fullPerimeter, arcStart:w.arcStart, arcEnd:w.arcEnd,
     basePosX:w.basePosX, basePosZ:w.basePosZ, baseRotY:w.baseRotY, baseLength:w.baseLength,
-    height:w.height, tilt:w.tilt, thickness:w.thickness,
+    height:w.height, tilt:w.tilt, thickness:w.thickness, thicknessDirection:w.thicknessDirection,
     hasGaps:w.hasGaps, gapWidth:w.gapWidth, panelWidth:w.panelWidth,
     topProfile:w.topProfile, topAmplitude:w.topAmplitude, topFrequency:w.topFrequency,
     isDouble:w.isDouble, peakHeight:w.peakHeight, peakTilt:w.peakTilt,
@@ -426,6 +529,10 @@ export function segmentToSave(s: BridgeSegmentData): BridgeSegmentSave {
     tiltAngle:s.tiltAngle,
     corkscrewLength:s.corkscrewLength, corkscrewTurns:s.corkscrewTurns,
     color:s.color, surface:s.surface,
+    animEnabled:s.animEnabled,
+    animOffsetX:s.animOffsetX, animOffsetY:s.animOffsetY, animOffsetZ:s.animOffsetZ,
+    animRotX:s.animRotX, animRotY:s.animRotY, animRotZ:s.animRotZ,
+    animStartMs:s.animStartMs, animIntervalMs:s.animIntervalMs, animHoldMs:s.animHoldMs,
   };
 }
 
@@ -449,6 +556,7 @@ export function bridgeToSave(
     color:b.color, surface:b.surface,
     presentStlb64:b.presentStlb64, presentColor:b.presentColor,
     walls: b.wallIds.map(id=>{ const w=walls.get(id); return w?wallToSave(w):null!; }).filter(Boolean),
+    linkedSpeedLineId: b.linkedSpeedLineId,
   };
 }
 
@@ -480,12 +588,30 @@ export function trapToSave(t: TrapData): TrapSave {
     pitDepth:t.pitDepth, pitSides:t.pitSides, pitStarInner:t.pitStarInner,
     isPeriodic:t.isPeriodic, safeInterval:t.safeInterval, unsafeInterval:t.unsafeInterval,
     activationLimit:t.activationLimit, speedPathId:t.speedPathId,
+    linkedSpeedLineId: t.linkedSpeedLineId,
     durationTiers: t.durationTiers.map(d=>({
       thresholdSeconds:d.thresholdSeconds, tierEffect:d.tierEffect,
       rpmLossFactor:d.rpmLossFactor, speedFactor:d.speedFactor, notes:d.notes,
     })),
     gravityRange:t.gravityRange, gravityStrength:t.gravityStrength,
     gravityMode:t.gravityMode, gravityPulseInterval:t.gravityPulseInterval, gravityPulseWidth:t.gravityPulseWidth,
+    eqRingCount:t.eqRingCount, eqSegmentsPerRing:t.eqSegmentsPerRing,
+    eqMaxElevationCm:t.eqMaxElevationCm, eqElevationMode:t.eqElevationMode,
+    eqRingRanges:[...t.eqRingRanges],
+    eqPermanent:t.eqPermanent, eqFadeCycles:t.eqFadeCycles,
+    eqPulseMode:t.eqPulseMode, eqPulseIntervalMs:t.eqPulseIntervalMs, eqPulseWidthMs:t.eqPulseWidthMs,
+    rpmSpeed:t.rpmSpeed, rpmEffect:t.rpmEffect,
+    rpmRange:t.rpmRange, rpmMatchSpin:t.rpmMatchSpin, rpmForceScale:t.rpmForceScale,
+    rpmPulseMode:t.rpmPulseMode, rpmPulseIntervalMs:t.rpmPulseIntervalMs, rpmPulseWidthMs:t.rpmPulseWidthMs,
+    projLaunchMode:t.projLaunchMode, projCount:t.projCount, projSpreadAngleDeg:t.projSpreadAngleDeg,
+    projBurstCount:t.projBurstCount, projBurstDelayMs:t.projBurstDelayMs,
+    projLaunchDelayMs:t.projLaunchDelayMs, projLaunchAngleDeg:t.projLaunchAngleDeg,
+    projRandomizeAngle:t.projRandomizeAngle,
+    projPattern:t.projPattern, projPatternCount:t.projPatternCount,
+    projConfig:{...t.projConfig},
+    projPulseMode:t.projPulseMode, projPulseIntervalMs:t.projPulseIntervalMs,
+    projPlateSpin:t.projPlateSpin,
+    envTriggerEvent:t.envTriggerEvent, envTargetArenaId:t.envTargetArenaId,
     baseMaterial:t.baseMaterial,
     color:t.color, surface:t.surface, customTileData:t.customTileData, tileScale:t.tileScale,
     emissiveColor:t.emissiveColor, emissiveIntensity:t.emissiveIntensity,
@@ -505,6 +631,39 @@ export function portalToSave(p: PortalData): PortalSave {
     color:p.color, glowColor:p.glowColor,
     surface:p.surface, customTileData:p.customTileData, tileScale:p.tileScale,
     presentStlb64:p.presentStlb64, presentColor:p.presentColor,
+  };
+}
+
+function _epToSave(ep: JumpLinkEndpoint): JumpLinkEndpointSave {
+  return {
+    mode: ep.mode, parentType: ep.parentType, parentId: ep.parentId,
+    localX: ep.localX, localZ: ep.localZ,
+    worldX: ep.worldX, worldY: ep.worldY, worldZ: ep.worldZ,
+    speedLineId: ep.speedLineId, atStart: ep.atStart,
+  };
+}
+
+export function jumpLinkToSave(j: JumpLinkData): JumpLinkSave {
+  return {
+    id: j.id, name: j.name,
+    src: _epToSave(j.src), dst: _epToSave(j.dst),
+    isBidirectional: j.isBidirectional,
+    trigger: j.trigger, triggerSpeedLineId: j.triggerSpeedLineId,
+    proximityRadius: j.proximityRadius,
+    arcProfile: j.arcProfile, arcHeight: j.arcHeight,
+    flight: {
+      arcDuration: j.flight.arcDuration,
+      launchAngleDeg: j.flight.launchAngleDeg, launchForce: j.flight.launchForce,
+      gravityScale: j.flight.gravityScale, airDrag: j.flight.airDrag,
+      landingImpact: j.flight.landingImpact, landingBounce: j.flight.landingBounce,
+      spinRateMult: j.flight.spinRateMult, spinDeltaRPM: j.flight.spinDeltaRPM,
+      statModifiers: { ...j.flight.statModifiers },
+      trailEnabled: j.flight.trailEnabled, trailColor: j.flight.trailColor,
+      trailWidth: j.flight.trailWidth, trailFade: j.flight.trailFade,
+      launchFlash: j.flight.launchFlash, landFlash: j.flight.landFlash,
+      flashColor: j.flight.flashColor,
+    },
+    color: j.color, glowColor: j.glowColor, opacity: j.opacity, discRadius: j.discRadius,
   };
 }
 

@@ -203,6 +203,12 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
   fromSave(save: SpeedLineSave): SpeedLineData {
     return {
       ...save,
+      linkedBridgeId: save.linkedBridgeId ?? null,
+      linkedTrapId:   save.linkedTrapId   ?? null,
+      enabled:        save.enabled        ?? true,
+      targetBridgeId: save.targetBridgeId ?? null,
+      targetTrapId:   save.targetTrapId   ?? null,
+      jumpLinkId:     save.jumpLinkId     ?? null,
       pointNormals:  [],
       totalLength:   0,
       mesh:          null as unknown as THREE.Mesh,

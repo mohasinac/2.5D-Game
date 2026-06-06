@@ -536,6 +536,13 @@ export function defaultSegment(
     corkscrewTurns: 1,
     color: null,
     surface: null,
+    animEnabled: false,
+    animOffsetX: 0, animOffsetY: 0, animOffsetZ: 0,
+    animRotX: 0, animRotY: 0, animRotZ: 0,
+    animStartMs: 0, animIntervalMs: 2000, animHoldMs: 1000,
+    _animTimer: 0,
+    _animCenter: new THREE.Vector3(),
+    _animPivot: null,
     mesh: null,
     edges: null,
   };

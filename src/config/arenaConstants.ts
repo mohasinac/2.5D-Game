@@ -17,7 +17,7 @@ export const SEAM_TRANSITION_WIDTH    = 2.0;  // cm — seam collar outward widt
 export const SEAM_RINGS               = 6;    // ring count in seam transition strip
 
 /* ── Save schema version ─────────────────────────────────────────────────── */
-export const ARENA_SAVE_VERSION = 9;
+export const ARENA_SAVE_VERSION = 12;
 
 /* ── Arena physical material default ────────────────────────────────────── */
 export const DEFAULT_ARENA_MATERIAL = 'abs' as const;
@@ -193,6 +193,29 @@ export const SL = {
   DEFAULT_CONDITION_CHECK_MS: 100,
 } as const;
 
+/* ── Jump link constants ─────────────────────────────────────────────────── */
+export const JL = {
+  DEFAULT_COLOR:        0x00ff88,
+  DEFAULT_GLOW:         0x00dd66,
+  DEFAULT_DISC_RADIUS:  8,      // cm
+  DEFAULT_ARC_HEIGHT:   40,     // cm above midpoint apex
+  DEFAULT_OPACITY:      0.85,
+  DISC_HEIGHT:          1.5,    // cm — disc plate thickness
+  ARC_SAMPLES:          32,     // points sampled for trajectory preview
+  ARROW_COUNT:          4,      // direction cones along arc
+  ARROW_HALF_W:         1.2,    // cm
+  ARROW_LEN:            3.0,    // cm
+  GLOW_INTENSITY:       0.8,
+  DEFAULT_LAUNCH_ANGLE: 45,     // degrees above horizontal
+  DEFAULT_LAUNCH_FORCE: 300,    // cm/s initial velocity magnitude
+  DEFAULT_GRAVITY:      1.0,
+  DEFAULT_AIR_DRAG:     0.02,
+  DEFAULT_IMPACT:       0.3,
+  DEFAULT_BOUNCE:       0.1,
+  DEFAULT_PROX_RADIUS:  12,     // cm
+  DEFAULT_ARC_DURATION: 800,    // ms travel time
+} as const;
+
 /* ── Visual theme quick-pick presets ────────────────────────────────────── */
 export interface VisualTheme {
   color: number;
@@ -237,6 +260,21 @@ export const ROT = {
   DEFAULT_OSC_FREQ:  0.5,  // Hz
   MIN_SPEED:          0,
   MAX_SPEED:        720,
+} as const;
+
+/* ── Arena environment constants ─────────────────────────────────────────── */
+export const ENV = {
+  DEFAULT_GRAVITY_SCALE:      1.0,
+  MIN_GRAVITY_SCALE:          0.0,
+  MAX_GRAVITY_SCALE:          5.0,
+  DEFAULT_TILT:               0,
+  MAX_TILT:                   30,
+  DEFAULT_FOG_DENSITY:        0,
+  DEFAULT_SCORE_MULTIPLIER:   1.0,
+  DEFAULT_WEIGHT_SENSITIVITY: 1.0,
+  DEFAULT_WEIGHT_DAMPENING:   0.5,
+  DEFAULT_INTERVAL_SEC:       10,
+  DEFAULT_REVERT_SEC:         0,
 } as const;
 
 /* ── Octagon base — frozen default, never mutate ─────────────────────────

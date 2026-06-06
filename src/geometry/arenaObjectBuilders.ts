@@ -1,9 +1,11 @@
 import * as THREE from 'three';
-import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, DEG2RAD, PIT_FIXED_DEPTH } from '../config/arenaConstants';
+import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, JL, DEG2RAD, PIT_FIXED_DEPTH, ENV } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
   SpeedLineData, SpeedLineSegment, RampMode, defaultParticleConfig,
+  JumpEndpointMode, JumpLinkParentType, JumpArcProfile,
 } from '../types/arenaTypes';
+import { defaultJumpFlightConfig, buildDiscMesh } from './jumpLinkBuilders';
 import { SceneSurfaceProjector } from './sceneSurfaceProjector';
 import { shapePoints, childArenaBaseY, childWorldPos, makeSurfFn, polarToLocalXZ } from './surfaceUtils';
 import {
@@ -317,6 +319,20 @@ export function defaultSegment(id: string, length?: number): SpeedLineSegment {
   };
 }
 
+/**
+ * Returns the inner island rim perimeter of a moat arena as arena-local XZ Vector2 points.
+ * Used for placing walls on the inner island rim (moatRing='inner').
+ */
+export function innerRimShapePoints(arena: ArenaData): THREE.Vector2[] {
+  return shapePoints({
+    openingShape: arena.innerOpeningShape,
+    radiusX:      arena.innerRadiusX,
+    radiusZ:      arena.innerRadiusZ,
+    sides:        arena.innerSides,
+    starInner:    arena.innerStarInner,
+  });
+}
+
 export function defaultSpeedLine(
   name: string, parentArenaId: string, id: string,
   parentZoneId: string | null = null,
@@ -356,6 +372,16 @@ export function defaultSpeedLine(
       endPosX: 0, endPosZ: 0, endPosY: 0,
       arcFraction: 1.0,
       modulation: { type: 'none', amplitude: 5, periodSteps: 12, waveform: 'triangle', modPhase: 0, pulseWidth: 0.2 },
+      jumpDstMode:        'parent_surface' as JumpEndpointMode,
+      jumpDstParentType:  'arena' as JumpLinkParentType,
+      jumpDstParentId:    parentArenaId,
+      jumpDstLocalX:      40, jumpDstLocalZ: 0,
+      jumpDstWorldX:      0,  jumpDstWorldY: 0, jumpDstWorldZ: 0,
+      jumpDstSpeedLineId: null, jumpDstAtStart: false,
+      jumpArcProfile:     'parabolic' as JumpArcProfile,
+      jumpArcHeight:      JL.DEFAULT_ARC_HEIGHT,
+      jumpDiscRadius:     JL.DEFAULT_DISC_RADIUS,
+      jumpFlight:         defaultJumpFlightConfig(),
     },
     speedRamp: {
       profile: 'constant',
@@ -372,7 +398,15 @@ export function defaultSpeedLine(
     ejectBehavior: 'toward_center',
     targetSelectionMode: 'at_entrance',
     conditionCheckIntervalMs: SL.DEFAULT_CONDITION_CHECK_MS,
-    statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 },
+    statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1,
+      tiltAngleDeg: 0, tiltSpinSensitive: false, tiltApplyPhase: 'exit' },
+
+    linkedBridgeId: null,
+    linkedTrapId:   null,
+    enabled:        true,
+    targetBridgeId: null,
+    targetTrapId:   null,
+    jumpLinkId:     null,
 
     mesh:           null as unknown as THREE.Mesh,
     edges:          null as unknown as THREE.LineSegments,
@@ -429,8 +463,19 @@ export function buildSpeedLineObjects(
 
   // Markers
   const markerMeshes: THREE.Mesh[] = [];
-  if (pts.length > 0) markerMeshes.push(buildStartMarker(pts[0], sl.color));
-  if (sl.exitBehavior !== 'loop' && pts.length > 1) markerMeshes.push(buildEndMarker(pts[pts.length-1], sl.color));
+  if (sl.presetType === 'jump' && pts.length >= 2) {
+    // Jump preset: place glowing discs at source and destination
+    const p = sl.presetParams;
+    const discRadius = p.jumpDiscRadius ?? JL.DEFAULT_DISC_RADIUS;
+    const srcDisc = buildDiscMesh(sl.color, sl.glowColor, discRadius, sl.opacity);
+    srcDisc.position.copy(pts[0]).add(new THREE.Vector3(0, JL.DISC_HEIGHT / 2, 0));
+    const dstDisc = buildDiscMesh(sl.color, sl.glowColor, discRadius, sl.opacity);
+    dstDisc.position.copy(pts[pts.length - 1]).add(new THREE.Vector3(0, JL.DISC_HEIGHT / 2, 0));
+    markerMeshes.push(srcDisc, dstDisc);
+  } else {
+    if (pts.length > 0) markerMeshes.push(buildStartMarker(pts[0], sl.color));
+    if (sl.exitBehavior !== 'loop' && pts.length > 1) markerMeshes.push(buildEndMarker(pts[pts.length-1], sl.color));
+  }
   const arrows = buildArrowMeshes(pts, sl.color, sl.direction === 'bidirectional' ? 'bidirectional' : sl.direction === 'reverse' ? 'reverse' : 'forward');
   markerMeshes.push(...arrows);
 
@@ -450,6 +495,11 @@ export function buildSpeedLineObjects(
     obj.position.set(wx, 0, wz);
     obj.rotation.y = wRotY;
   }
+
+  // Apply enabled flag — disabled SLs are hidden but still built (for editing)
+  const vis = sl.enabled !== false;
+  mesh.visible = vis; edges.visible = vis;
+  markerMeshes.forEach(m => { m.visible = vis; });
 
   return { mesh, edges, markerMeshes, handleMeshes, totalLength };
 }
@@ -519,6 +569,15 @@ export function defaultArena(name: string): ArenaData {
     edges: null as unknown as THREE.LineSegments,
     floorMesh: null, islandMesh: null, rimSeamMesh: null,
     light: null, particleSystem: null, weatherSystem: null,
+    gravityScale: ENV.DEFAULT_GRAVITY_SCALE, gravityDirectionX: 0, gravityDirectionZ: 0,
+    tiltX: 0, tiltZ: 0,
+    weightTiltEnabled: false, weightTiltSensitivity: ENV.DEFAULT_WEIGHT_SENSITIVITY,
+    weightTiltDampening: ENV.DEFAULT_WEIGHT_DAMPENING,
+    fogDensity: ENV.DEFAULT_FOG_DENSITY,
+    scoreMultiplier: ENV.DEFAULT_SCORE_MULTIPLIER, pointsPerSecond: 0,
+    weatherSurfaceMap: {},
+    envSchedule: [],
+    tiltGroup: undefined, fogSystem: null, _score: 0,
   };
 }
 

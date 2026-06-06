@@ -25,6 +25,8 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
   rotationSeq: 2,
   footings: [],
   footingSeq: 0,
+  jumpLinks: [],
+  jumpLinkSeq: 0,
 
   baseWalls: [],  // free-standing walls on the octagon base (none in this demo)
   speedLines: [], // zone-parented speed lines (none in this demo)
@@ -191,7 +193,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           surfaceOffset: 0.05, surfaceOrientObject: true, airNormalMode: 'lean_center', airNormalTiltDeg: 10,
           baseCondition: 'none', conditionPhase: 'any', ejectBehavior: 'toward_center',
           targetSelectionMode: 'at_entrance', conditionCheckIntervalMs: 100,
-          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 },
+          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1, tiltAngleDeg: 0, tiltSpinSensitive: false, tiltApplyPhase: 'exit' as const },
         },
         {
           id: 'sl-2', name: 'Flower Pattern',
@@ -226,7 +228,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           surfaceOffset: 0.05, surfaceOrientObject: true, airNormalMode: 'lean_center', airNormalTiltDeg: 10,
           baseCondition: 'none', conditionPhase: 'any', ejectBehavior: 'toward_center',
           targetSelectionMode: 'at_entrance', conditionCheckIntervalMs: 100,
-          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 },
+          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1, tiltAngleDeg: 0, tiltSpinSensitive: false, tiltApplyPhase: 'exit' as const },
         },
         {
           id: 'sl-3', name: 'Wall Climb',
@@ -259,7 +261,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           surfaceOffset: 0.05, surfaceOrientObject: true, airNormalMode: 'lean_center', airNormalTiltDeg: 10,
           baseCondition: 'none', conditionPhase: 'any', ejectBehavior: 'toward_center',
           targetSelectionMode: 'at_entrance', conditionCheckIntervalMs: 100,
-          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 },
+          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1, tiltAngleDeg: 0, tiltSpinSensitive: false, tiltApplyPhase: 'exit' as const },
         },
       ],
     },
@@ -372,7 +374,7 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
           surfaceOffset: 0.05, surfaceOrientObject: true, airNormalMode: 'lean_center', airNormalTiltDeg: 10,
           baseCondition: 'none', conditionPhase: 'any', ejectBehavior: 'toward_center',
           targetSelectionMode: 'at_entrance', conditionCheckIntervalMs: 100,
-          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 },
+          statModifiers: { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1, tiltAngleDeg: 0, tiltSpinSensitive: false, tiltApplyPhase: 'exit' as const },
         },
       ],
     },

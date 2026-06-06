@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import {
-  APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL,
+  APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL, JL,
   MIN_OBSTACLE_DIM, MIN_TRAP_DIM, BUFF_TIER_PRESETS, ARENA_LIGHT_PRESETS,
-  MIN_ZONE_DEPTH, ROT,
+  MIN_ZONE_DEPTH, ROT, ENV,
 } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment,
@@ -19,6 +19,8 @@ import {
   PresentConfig, ParticleConfig,
   SpeedLinePresetType, SpeedLineSection, SpeedLineStatModifiers, SpeedLineRampProfile,
   SpeedLineModType, SpeedLineModWaveform, SpeedLinePresetParams,
+  JumpLinkData, JumpLinkEndpoint, JumpEndpointMode, JumpLinkParentType, JumpArcProfile,
+  EnvProperty, EnvKeyframe, EnvScheduleEntry,
 } from '../types/arenaTypes';
 import {
   templateStraight, templateCircle, templateSpiral, templateZigzag, templateWave,
@@ -804,6 +806,10 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('PROFILE');
     this.numRow('Height (cm)',    wall.height,    MIN_WALL_HEIGHT, 100, 1,   v => { wall.height = v;    onGeomChange(); });
     this.numRow('Thickness (cm)', wall.thickness, 0.1,             30,  0.5, v => { wall.thickness = v; onGeomChange(); });
+    this.selectRow('Thickness Side',
+      [{ value: 'outward (back)', label: 'Outward (back)' }, { value: 'inward (front)', label: 'Inward (front)' }],
+      wall.thicknessDirection === 'inward' ? 'inward (front)' : 'outward (back)',
+      v => { wall.thicknessDirection = v === 'inward (front)' ? 'inward' : 'outward'; onGeomChange(); });
 
     const tiltDisabled = wall.parentType === 'arena' && wall.fullPerimeter && !wall.hasGaps;
     const tiltWrap = this.numRow('Tilt°', wall.tilt, -90, 30, 1, v => {
@@ -919,6 +925,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onAddSegment: (type: BridgeSegmentType) => void,
     onStlImport?: (cb: (b64: string) => void) => void,
     onStlClear?: () => void,
+    getSpeedLines?: () => Array<{id: string; name: string}>,
   ): void {
     this.content.innerHTML = '';
 
@@ -1017,6 +1024,18 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.buttonRow('', 'Clear STL', () => { bridge.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
     }
 
+    // ── Speed Line Link ───────────────────────────────────────────────────
+    if (getSpeedLines) {
+      this.section('SPEED LINE LINK');
+      const sls = getSpeedLines();
+      const slNames = ['None', ...sls.map(s => s.name)];
+      const cur = sls.find(s => s.id === bridge.linkedSpeedLineId)?.name ?? 'None';
+      this.selectRow('Linked Speed Line', slNames.map(n => ({ value: n, label: n })), cur, v => {
+        bridge.linkedSpeedLineId = v === 'None' ? null : (sls.find(s => s.name === v)?.id ?? null);
+        onGeomChange();
+      });
+    }
+
     // ── Add segment ───────────────────────────────────────────────────────
     this.section('SEGMENTS');
     const addHint = document.createElement('div'); addHint.className = 'prop-hint';
@@ -1033,6 +1052,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     seg: BridgeSegmentData,
     onGeomChange: () => void,
     onRename: (name: string) => void,
+    onFullChange?: () => void,
   ): void {
     this.content.innerHTML = '';
 
@@ -1123,6 +1143,22 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     });
     if (seg.color !== null) {
       this.colorRow('Color', seg.color, v => { seg.color = v; onGeomChange(); });
+    }
+
+    // ── Segment Animation ─────────────────────────────────────────────────
+    const refresh = onFullChange ?? onGeomChange;
+    this.section('SEGMENT ANIMATION');
+    this.toggleRow('Enable', seg.animEnabled, v => { seg.animEnabled = v; if (!v) seg._animTimer = 0; refresh(); });
+    if (seg.animEnabled) {
+      this.numRow('Offset X (cm)', seg.animOffsetX, -200, 200, 0.5, v => { seg.animOffsetX = v; });
+      this.numRow('Offset Y (cm)', seg.animOffsetY, -50, 50, 0.5, v => { seg.animOffsetY = v; });
+      this.numRow('Offset Z (cm)', seg.animOffsetZ, -200, 200, 0.5, v => { seg.animOffsetZ = v; });
+      this.numRow('Rotate X°', seg.animRotX, -180, 180, 1, v => { seg.animRotX = v; });
+      this.numRow('Rotate Y°', seg.animRotY, -180, 180, 1, v => { seg.animRotY = v; });
+      this.numRow('Rotate Z°', seg.animRotZ, -180, 180, 1, v => { seg.animRotZ = v; });
+      this.numRow('Start delay (ms)', seg.animStartMs, 0, 10000, 100, v => { seg.animStartMs = v; });
+      this.numRow('Interval (ms)', seg.animIntervalMs, 100, 10000, 100, v => { seg.animIntervalMs = v; });
+      this.numRow('Hold (ms)', seg.animHoldMs, 50, 10000, 50, v => { seg.animHoldMs = v; });
     }
   }
 
@@ -1238,10 +1274,12 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     onPresetChange: () => void,
     onStlImport?: (cb: (b64: string) => void) => void,
     onStlClear?: () => void,
+    getBridges?: () => BridgeData[],
+    getTraps?:   () => TrapData[],
   ): void {
     this.content.innerHTML = '';
 
-    const refresh = () => this.showSpeedLine(sl, arena, onGeomChange, onSegmentChange, onRename, onColorChange, onAddSegment, onRemoveSegment, onPresetChange, onStlImport, onStlClear);
+    const refresh = () => this.showSpeedLine(sl, arena, onGeomChange, onSegmentChange, onRename, onColorChange, onAddSegment, onRemoveSegment, onPresetChange, onStlImport, onStlClear, getBridges, getTraps);
 
     this.section('NAME');
     const nameInp = document.createElement('input');
@@ -1281,14 +1319,68 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       { value: 'epicycloid',   label: '✿ Epicycloid' },
       { value: 'hypocycloid',  label: '⬡ Hypocycloid' },
       { value: 'point_zone',   label: '● Point Zone (trigger disc)' },
+      { value: 'jump',         label: '⤻ Jump Arc (ballistic launch)' },
     ], sl.presetType, v => {
       sl.presetType = v as SpeedLinePresetType;
       onPresetChange();
       refresh();
     });
 
+    const isJump = sl.presetType === 'jump';
+
     if (!isCustom) {
-      if (isPointZone) {
+      if (isJump) {
+        /* ── Jump destination endpoint ────────────────────────────────────── */
+        this.section('JUMP DESTINATION');
+        this._slHint('Bey leaves this speed line and is launched to the destination. In-flight = not on this line.');
+        this.selectRow('Dst Mode', [
+          { value: 'parent_surface', label: 'Parent Surface (local XZ)' },
+          { value: 'world_point',    label: 'World Coordinates' },
+        ], p.jumpDstMode ?? 'parent_surface', v => { p.jumpDstMode = v as JumpEndpointMode; onPresetChange(); refresh(); });
+        if ((p.jumpDstMode ?? 'parent_surface') === 'parent_surface') {
+          this.selectRow('Dst Parent Type', [
+            { value: 'arena',    label: 'Arena' },
+            { value: 'obstacle', label: 'Obstacle' },
+            { value: 'trap',     label: 'Trap' },
+            { value: 'base',     label: 'Octagon Base' },
+          ], p.jumpDstParentType ?? 'arena', v => { p.jumpDstParentType = v as JumpLinkParentType; onPresetChange(); });
+          this.numRow('Dst Local X cm', p.jumpDstLocalX ?? 0, -arenaMaxR, arenaMaxR, 1, v => { p.jumpDstLocalX = v; onPresetChange(); });
+          this.numRow('Dst Local Z cm', p.jumpDstLocalZ ?? 0, -arenaMaxR, arenaMaxR, 1, v => { p.jumpDstLocalZ = v; onPresetChange(); });
+        } else {
+          this.numRow('Dst World X cm', p.jumpDstWorldX ?? 0, -500, 500, 1, v => { p.jumpDstWorldX = v; onPresetChange(); });
+          this.numRow('Dst World Y cm', p.jumpDstWorldY ?? 0, 0, 500, 1,   v => { p.jumpDstWorldY = v; onPresetChange(); });
+          this.numRow('Dst World Z cm', p.jumpDstWorldZ ?? 0, -500, 500, 1, v => { p.jumpDstWorldZ = v; onPresetChange(); });
+        }
+
+        /* ── Arc shape ──────────────────────────────────────────────────── */
+        this.section('ARC SHAPE');
+        this.selectRow('Arc Profile', [
+          { value: 'parabolic', label: 'Parabolic (natural arc)' },
+          { value: 'bezier',    label: 'Bezier (smooth control)' },
+          { value: 'instant',   label: 'Instant (straight line)' },
+        ], p.jumpArcProfile ?? 'parabolic', v => { p.jumpArcProfile = v as JumpArcProfile; onPresetChange(); });
+        this.numRow('Arc Height cm',  p.jumpArcHeight  ?? JL.DEFAULT_ARC_HEIGHT,  0, 200, 1,  v => { p.jumpArcHeight  = v; onPresetChange(); });
+        this.numRow('Disc Radius cm', p.jumpDiscRadius ?? JL.DEFAULT_DISC_RADIUS, 1, 40,  0.5, v => { p.jumpDiscRadius = v; onPresetChange(); });
+
+        /* ── Flight config ──────────────────────────────────────────────── */
+        const fc = p.jumpFlight;
+        if (fc) {
+          this.section('LAUNCH PHYSICS');
+          this._slHint('Travel time = arcDuration ms. Arc is aimed at destination position at that time offset.');
+          this.numRow('Arc Duration ms', fc.arcDuration,    100, 5000, 50, v => { fc.arcDuration    = v; });
+          this.numRow('Launch Angle °',  fc.launchAngleDeg, 0,   90,   1,  v => { fc.launchAngleDeg = v; });
+          this.numRow('Launch Force cm/s', fc.launchForce,  10,  1000, 10, v => { fc.launchForce    = v; });
+          this.numRow('Gravity Scale',   fc.gravityScale,   0,   5,    0.1, v => { fc.gravityScale   = v; });
+          this.numRow('Air Drag',        fc.airDrag,        0,   1,    0.01, v => { fc.airDrag       = v; });
+          this.section('LANDING');
+          this.numRow('Landing Impact',  fc.landingImpact,  0, 1, 0.05, v => { fc.landingImpact  = v; });
+          this.numRow('Landing Bounce',  fc.landingBounce,  0, 1, 0.05, v => { fc.landingBounce  = v; });
+          this.section('IN-FLIGHT SPIN');
+          this.numRow('Spin Rate Mult',  fc.spinRateMult,  0, 3, 0.05, v => { fc.spinRateMult  = v; });
+          this.numRow('Spin Delta RPM',  fc.spinDeltaRPM, -2000, 2000, 50, v => { fc.spinDeltaRPM = v; });
+        }
+
+      } else if (isPointZone) {
         this.numRow('Center X cm', p.centerX, -arenaMaxR, arenaMaxR, 1, v => { p.centerX = v; onPresetChange(); });
         this.numRow('Center Z cm', p.centerZ, -arenaMaxR, arenaMaxR, 1, v => { p.centerZ = v; onPresetChange(); });
         this.numRow('Diameter cm', p.radiusX * 2, SL.POINT_ZONE_DIAMETER_MIN, SL.POINT_ZONE_DIAMETER_MAX, 0.1,
@@ -1542,15 +1634,45 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       { value: 'nearest_opponent',  label: 'Nearest Opponent' },
       { value: 'nearest_obstacle',  label: 'Nearest Obstacle' },
       { value: 'on_path_obstacle',  label: 'On-Path Obstacle' },
+      { value: 'linked_bridge',     label: 'Linked Bridge' },
+      { value: 'linked_trap',       label: 'Linked Trap' },
     ], sl.targetType, v => { sl.targetType = v as SpeedLineData['targetType']; onGeomChange(); refresh(); });
     if (sl.targetType === 'custom') {
       this.textRow('Target Tag', sl.targetTag, v => { sl.targetTag = v; });
+    }
+    if (sl.targetType === 'linked_bridge' && getBridges) {
+      const bridges = getBridges();
+      const names = ['None', ...bridges.map(b => b.name)];
+      const cur = bridges.find(b => b.id === sl.targetBridgeId)?.name ?? 'None';
+      this.selectRow('Bridge', names.map(n => ({ value: n, label: n })), cur, v => {
+        sl.targetBridgeId = v === 'None' ? null : (bridges.find(b => b.name === v)?.id ?? null);
+        onGeomChange();
+      });
+    }
+    if (sl.targetType === 'linked_trap' && getTraps) {
+      const traps = getTraps();
+      const names = ['None', ...traps.map(t => t.name)];
+      const cur = traps.find(t => t.id === sl.targetTrapId)?.name ?? 'None';
+      this.selectRow('Trap', names.map(n => ({ value: n, label: n })), cur, v => {
+        sl.targetTrapId = v === 'None' ? null : (traps.find(t => t.name === v)?.id ?? null);
+        onGeomChange();
+      });
     }
     if (['nearest_opponent', 'nearest_obstacle', 'on_path_obstacle'].includes(sl.targetType)) {
       this.selectRow('Target Selection', [
         { value: 'at_entrance', label: 'At Entrance (lock-on)' },
         { value: 'dynamic',     label: 'Dynamic (track every frame)' },
       ], sl.targetSelectionMode, v => { sl.targetSelectionMode = v as SpeedLineData['targetSelectionMode']; });
+    }
+
+    /* ── LINK ─────────────────────────────────────────────────────────────── */
+    if (sl.linkedBridgeId || sl.linkedTrapId) {
+      this.section('LINK');
+      const linkLabel = sl.linkedBridgeId
+        ? `Bridge: ${getBridges?.()?.find(b => b.id === sl.linkedBridgeId)?.name ?? sl.linkedBridgeId}`
+        : `Trap: ${getTraps?.()?.find(t => t.id === sl.linkedTrapId)?.name ?? sl.linkedTrapId}`;
+      this.readRow('Linked to:', linkLabel);
+      this.toggleRow('Enabled', sl.enabled, v => { sl.enabled = v; onGeomChange(); });
     }
     this.selectRow('Activation', [
       { value: 'always',    label: 'Always' },
@@ -1607,12 +1729,17 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       { value: 'launch',       label: 'Launch' },
       { value: 'loop',         label: 'Loop (repeat)' },
       { value: 'special_move', label: 'Special Move' },
+      { value: 'jump_link',    label: '⤻ Jump Link (activate on exit)' },
     ], sl.exitBehavior, v => { sl.exitBehavior = v as SpeedLineData['exitBehavior']; onGeomChange(); refresh(); });
     if (sl.exitBehavior === 'launch') {
       this.numRow('Launch ×', sl.launchForce, SL.LAUNCH_FORCE_MIN, SL.LAUNCH_FORCE_MAX, 0.1, v => { sl.launchForce = v; });
     }
     if (sl.exitBehavior === 'special_move') {
       this.textRow('Move Name', sl.specialMoveName, v => { sl.specialMoveName = v; });
+    }
+    if (sl.exitBehavior === 'jump_link') {
+      this.textRow('Jump Link ID', sl.jumpLinkId ?? '', v => { sl.jumpLinkId = v || null; onGeomChange(); });
+      this.readRow('Note', 'Speed line triggers jump at exit. In-flight bey is not on this speed line.');
     }
     this.toggleRow('Mid-Air Entry',   sl.allowMidAirEntry, v => { sl.allowMidAirEntry = v; });
     this.toggleRow('Override Physics', sl.overridePhysics, v => { sl.overridePhysics  = v; });
@@ -1692,6 +1819,13 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Defense ×',       mods.defenseMult,     SL.STAT_MULT_MIN, 3.0,              0.05, v => { mods.defenseMult     = v; onChange(); });
     this.numRow('Weight ×',        mods.weightMult,      0.1,              3.0,              0.05, v => { mods.weightMult      = v; onChange(); });
     this.numRow('Burst Resist ×',  mods.burstResistMult, SL.STAT_MULT_MIN, SL.STAT_MULT_MAX, 0.05, v => { mods.burstResistMult = v; onChange(); });
+    this.numRow('Tilt °',          mods.tiltAngleDeg,   -45, 45, 1, v => { mods.tiltAngleDeg = v; onChange(); });
+    if (mods.tiltAngleDeg !== 0) {
+      this.toggleRow('Tilt Spin-Sensitive', mods.tiltSpinSensitive, v => { mods.tiltSpinSensitive = v; onChange(); });
+      this.selectRow('Tilt Apply Phase',
+        [{ value: 'entry', label: 'Entry' }, { value: 'exit', label: 'Exit' }, { value: 'continuous', label: 'Continuous' }],
+        mods.tiltApplyPhase, v => { mods.tiltApplyPhase = v as typeof mods.tiltApplyPhase; onChange(); });
+    }
   }
 
   private _slSectionsUI(sl: SpeedLineData, onPresetChange: () => void, refresh: () => void): void {
@@ -1835,7 +1969,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       };
       statsInhBtn.addEventListener('click', () => {
         if (sec.statModifiers === null) {
-          sec.statModifiers = { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 };
+          sec.statModifiers = { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1, tiltAngleDeg: 0, tiltSpinSensitive: false, tiltApplyPhase: 'exit' };
         } else {
           sec.statModifiers = null;
         }
@@ -1858,6 +1992,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
         addModRow('Defense ×',       mods.defenseMult,     v => { mods.defenseMult     = v; });
         addModRow('Weight ×',        mods.weightMult,      v => { mods.weightMult      = v; });
         addModRow('Burst Resist ×',  mods.burstResistMult, v => { mods.burstResistMult = v; });
+        addModRow('Tilt °',          mods.tiltAngleDeg,    v => { mods.tiltAngleDeg    = v; });
       }
       refreshStats();
       secBody.appendChild(bufsBody);
@@ -2061,6 +2196,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     speedLineNames: Map<string, string>,
     onStlImport?: (cb: (b64: string) => void) => void,
     onStlClear?: () => void,
+    getSpeedLines?: () => Array<{id: string; name: string}>,
   ): void {
     this.content.innerHTML = '';
 
@@ -2101,7 +2237,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Rot Y°', data.rotY, -180, 180, 1, v => { data.rotY = v; onGeomChange(); });
 
     this.section('EFFECT');
-    const EFFECTS: TrapEffect[] = ['damage','heal','launch','reverse_controls','freeze','buff_zone','hidden_pit','chomper','gravity_pull'];
+    const EFFECTS: TrapEffect[] = ['damage','heal','launch','reverse_controls','freeze','buff_zone','hidden_pit','chomper','gravity_pull','earthquake','rpm','projectile'];
     this.selectRow('Effect', EFFECTS.map(e => ({ value: e, label: e })), data.effect, v => {
       data.effect = v as TrapEffect; onFullChange();
     });
@@ -2125,6 +2261,160 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
         this.numRow('Interval (s)', data.gravityPulseInterval, 0.1, 30, 0.1, v => { data.gravityPulseInterval = v; onGeomChange(); });
         this.numRow('Width (s)',    data.gravityPulseWidth,    0.1, 10, 0.1, v => { data.gravityPulseWidth    = v; onGeomChange(); });
       }
+    }
+
+    if (data.effect === 'earthquake') {
+      this.section('EARTHQUAKE');
+      this.numRow('Rings',           data.eqRingCount,       1,  10, 1,  v => { data.eqRingCount      = Math.round(v); onGeomChange(); });
+      this.numRow('Sectors/Ring',    data.eqSegmentsPerRing, 3,  24, 1,  v => { data.eqSegmentsPerRing = Math.round(v); onGeomChange(); });
+      this.numRow('Max Elev (cm)',   data.eqMaxElevationCm,  0.5,50, 0.5,v => { data.eqMaxElevationCm  = v; onGeomChange(); });
+      this.selectRow('Elevation Mode', [
+        { value: 'random', label: 'Random' }, { value: 'wave', label: 'Wave' },
+        { value: 'ripple', label: 'Ripple' }, { value: 'checkerboard', label: 'Checkerboard' },
+      ], data.eqElevationMode, v => {
+        data.eqElevationMode = v as typeof data.eqElevationMode; onFullChange();
+      });
+      this.toggleRow('Permanent', data.eqPermanent, v => { data.eqPermanent = v; onGeomChange(); });
+      if (!data.eqPermanent) {
+        this.numRow('Fade Cycles (0=∞)', data.eqFadeCycles, 0, 20, 1, v => { data.eqFadeCycles = Math.round(v); });
+      }
+      this.selectRow('Pulse Mode', [
+        { value: 'triggered', label: 'Triggered' }, { value: 'continuous', label: 'Continuous' }, { value: 'periodic', label: 'Periodic' },
+      ], data.eqPulseMode, v => {
+        data.eqPulseMode = v as typeof data.eqPulseMode; onFullChange();
+      });
+      if (data.eqPulseMode !== 'triggered') {
+        this.numRow('Interval (ms)', data.eqPulseIntervalMs, 100, 10000, 100, v => { data.eqPulseIntervalMs = v; });
+        this.numRow('Width (ms)',    data.eqPulseWidthMs,    100, 5000,  100, v => { data.eqPulseWidthMs    = v; });
+      }
+    }
+
+    if (data.effect === 'rpm') {
+      this.section('RPM TRAP');
+      this.numRow('Speed (°/s)', data.rpmSpeed, -3600, 3600, 10, v => { data.rpmSpeed = v; onGeomChange(); });
+      this.selectRow('Effect', [
+        { value: 'carry', label: 'Carry' }, { value: 'tangential', label: 'Tangential' },
+        { value: 'centripetal', label: 'Centripetal' }, { value: 'centrifugal', label: 'Centrifugal' },
+        { value: 'spin_boost', label: 'Spin Boost' }, { value: 'spin_drain', label: 'Spin Drain' },
+        { value: 'gyroscopic', label: 'Gyroscopic' }, { value: 'full', label: 'Full' },
+      ], data.rpmEffect, v => { data.rpmEffect = v as typeof data.rpmEffect; onGeomChange(); });
+      this.numRow('Range (cm, 0=auto)', data.rpmRange, 0, 200, 1, v => { data.rpmRange = v; onGeomChange(); });
+      this.numRow('Force Scale', data.rpmForceScale, 0, 5, 0.1, v => { data.rpmForceScale = v; onGeomChange(); });
+      this.toggleRow('Match Spin Dir', data.rpmMatchSpin, v => { data.rpmMatchSpin = v; onGeomChange(); });
+      this.selectRow('Pulse Mode', [
+        { value: 'continuous', label: 'Continuous' }, { value: 'triggered', label: 'Triggered' }, { value: 'periodic', label: 'Periodic' },
+      ], data.rpmPulseMode, v => {
+        data.rpmPulseMode = v as typeof data.rpmPulseMode; onFullChange();
+      });
+      if (data.rpmPulseMode === 'periodic') {
+        this.numRow('Interval (ms)', data.rpmPulseIntervalMs, 100, 10000, 100, v => { data.rpmPulseIntervalMs = v; });
+        this.numRow('Width (ms)',    data.rpmPulseWidthMs,    100, 5000,  100, v => { data.rpmPulseWidthMs    = v; });
+      }
+    }
+
+    if (data.effect === 'projectile') {
+      this.section('LAUNCH');
+      this.selectRow('Mode', [
+        { value: 'single', label: 'Single' }, { value: 'spread', label: 'Spread' },
+        { value: 'burst', label: 'Burst' }, { value: 'continuous', label: 'Continuous' }, { value: 'pattern', label: 'Pattern' },
+      ], data.projLaunchMode, v => {
+        data.projLaunchMode = v as typeof data.projLaunchMode; onFullChange();
+      });
+      this.numRow('Count', data.projCount, 1, 20, 1, v => { data.projCount = Math.round(v); });
+      if (data.projLaunchMode === 'spread') {
+        this.numRow('Spread° ', data.projSpreadAngleDeg, 5, 360, 5, v => { data.projSpreadAngleDeg = v; });
+      }
+      if (data.projLaunchMode === 'burst') {
+        this.numRow('Burst Count', data.projBurstCount, 1, 10, 1, v => { data.projBurstCount = Math.round(v); });
+        this.numRow('Burst Delay (ms)', data.projBurstDelayMs, 50, 2000, 50, v => { data.projBurstDelayMs = v; });
+      }
+      this.numRow('Launch Angle°', data.projLaunchAngleDeg, -180, 180, 5, v => { data.projLaunchAngleDeg = v; });
+      this.numRow('Launch Delay (ms)', data.projLaunchDelayMs, 0, 5000, 100, v => { data.projLaunchDelayMs = v; });
+      this.toggleRow('Randomize Angle', data.projRandomizeAngle, v => { data.projRandomizeAngle = v; });
+      if (data.projLaunchMode === 'pattern') {
+        this.selectRow('Pattern', [
+          { value: 'ring', label: 'Ring' }, { value: 'spiral', label: 'Spiral' },
+          { value: 'fan', label: 'Fan' }, { value: 'line', label: 'Line' }, { value: 'random', label: 'Random' },
+        ], data.projPattern, v => { data.projPattern = v as typeof data.projPattern; onFullChange(); });
+        this.numRow('Pattern Count', data.projPatternCount, 2, 20, 1, v => { data.projPatternCount = Math.round(v); });
+      }
+      this.selectRow('Pulse Mode', [
+        { value: 'triggered', label: 'Triggered' }, { value: 'periodic', label: 'Periodic' }, { value: 'continuous', label: 'Continuous' },
+      ], data.projPulseMode, v => {
+        data.projPulseMode = v as typeof data.projPulseMode; onFullChange();
+      });
+      if (data.projPulseMode === 'periodic') {
+        this.numRow('Interval (ms)', data.projPulseIntervalMs, 100, 10000, 100, v => { data.projPulseIntervalMs = v; });
+      }
+      this.numRow('Plate Spin (°/s)', data.projPlateSpin, -1800, 1800, 10, v => { data.projPlateSpin = v; onGeomChange(); });
+
+      this.section('PROJECTILE SHAPE');
+      const cfg = data.projConfig;
+      this.selectRow('Shape', [
+        { value: 'sphere', label: 'Sphere' }, { value: 'cube', label: 'Cube' },
+        { value: 'cylinder', label: 'Cylinder' }, { value: 'cone', label: 'Cone' }, { value: 'diamond', label: 'Diamond' },
+      ], cfg.shape, v => { cfg.shape = v as typeof cfg.shape; onGeomChange(); });
+      this.numRow('Dim X (cm)', cfg.dimX, 0.5, 50, 0.5, v => { cfg.dimX = v; onGeomChange(); });
+      this.numRow('Dim Y (cm)', cfg.dimY, 0.5, 50, 0.5, v => { cfg.dimY = v; onGeomChange(); });
+      this.numRow('Dim Z (cm)', cfg.dimZ, 0.5, 50, 0.5, v => { cfg.dimZ = v; onGeomChange(); });
+      this.colorRow('Color', cfg.color, v => { cfg.color = v; onGeomChange(); });
+      this.colorRow('Glow', cfg.emissiveColor, v => { cfg.emissiveColor = v; onGeomChange(); });
+      this.numRow('Glow Intensity', cfg.emissiveIntensity, 0, 3, 0.1, v => { cfg.emissiveIntensity = v; onGeomChange(); });
+      this.numRow('Scale Factor', cfg.scaleFactor, 0.1, 5, 0.1, v => { cfg.scaleFactor = v; onGeomChange(); });
+      this.toggleRow('Random Scale', cfg.scaleRandomize, v => { cfg.scaleRandomize = v; onFullChange(); });
+      if (cfg.scaleRandomize) {
+        this.numRow('Scale Min', cfg.scaleMin, 0.1, 5, 0.1, v => { cfg.scaleMin = v; });
+        this.numRow('Scale Max', cfg.scaleMax, 0.1, 5, 0.1, v => { cfg.scaleMax = v; });
+      }
+
+      this.section('FLIGHT');
+      this.numRow('Speed (cm/s)', cfg.speed, 1, 500, 5, v => { cfg.speed = v; });
+      this.toggleRow('Airborne', cfg.isAirborne, v => { cfg.isAirborne = v; onFullChange(); });
+      if (cfg.isAirborne) {
+        this.numRow('Arc Height (cm)', cfg.arcHeight, 0, 200, 5, v => { cfg.arcHeight = v; });
+      }
+      this.numRow('Lifetime (ms)', cfg.lifetimeMs, 100, 10000, 100, v => { cfg.lifetimeMs = v; });
+      this.numRow('Spin X (°/s)', cfg.spinX, -1080, 1080, 10, v => { cfg.spinX = v; });
+      this.numRow('Spin Y (°/s)', cfg.spinY, -1080, 1080, 10, v => { cfg.spinY = v; });
+      this.numRow('Spin Z (°/s)', cfg.spinZ, -1080, 1080, 10, v => { cfg.spinZ = v; });
+      this.toggleRow('Boomerang', cfg.returnToTrap, v => { cfg.returnToTrap = v; onFullChange(); });
+      if (cfg.returnToTrap) {
+        this.numRow('Return After (ms)', cfg.returnAfterMs, 100, 5000, 100, v => { cfg.returnAfterMs = v; });
+      }
+
+      this.section('ORBIT');
+      this.toggleRow('Orbit Source', cfg.orbitSource, v => { cfg.orbitSource = v; onFullChange(); });
+      if (cfg.orbitSource) {
+        this.numRow('Orbit Radius (cm)', cfg.orbitRadius,    1, 200, 1, v => { cfg.orbitRadius    = v; });
+        this.numRow('Orbit Speed (°/s)', cfg.orbitSpeed, -1800, 1800, 10, v => { cfg.orbitSpeed   = v; });
+        this.numRow('Elevation (cm)',    cfg.orbitElevation, 0, 100, 1, v => { cfg.orbitElevation = v; });
+      }
+
+      this.section('HOMING');
+      this.toggleRow('Homing Enabled', cfg.homingEnabled, v => { cfg.homingEnabled = v; onFullChange(); });
+      if (cfg.homingEnabled) {
+        this.numRow('Homing Strength', cfg.homingStrength, 0, 10, 0.5, v => { cfg.homingStrength = v; });
+      }
+
+      this.section('ON-HIT EFFECT');
+      this.selectRow('Hit Effect', [
+        { value: 'damage', label: 'Damage' }, { value: 'buff', label: 'Buff' }, { value: 'debuff', label: 'Debuff' },
+        { value: 'push', label: 'Push' }, { value: 'teleport', label: 'Teleport' }, { value: 'stun', label: 'Stun' }, { value: 'custom_event', label: 'Custom Event' },
+      ], cfg.hitEffect, v => { cfg.hitEffect = v as typeof cfg.hitEffect; });
+      this.numRow('Hit Strength', cfg.hitStrength, 0, 10, 0.1, v => { cfg.hitStrength = v; });
+      this.numRow('Hit Duration (ms)', cfg.hitDurationMs, 0, 5000, 100, v => { cfg.hitDurationMs = v; });
+      this.numRow('Hit Radius (cm)', cfg.hitRadius, 0.5, 50, 0.5, v => { cfg.hitRadius = v; });
+    }
+
+    // ── Speed Line Link ───────────────────────────────────────────────────
+    if (getSpeedLines) {
+      this.section('SPEED LINE LINK');
+      const sls = getSpeedLines();
+      const slOpts = [{ value: '', label: '— None —' }, ...sls.map(s => ({ value: s.id, label: s.name }))];
+      this.selectRow('Linked Speed Line', slOpts, data.linkedSpeedLineId ?? '', v => {
+        data.linkedSpeedLineId = v || null;
+        onGeomChange();
+      });
     }
 
     this.section('TIMING');
@@ -2157,6 +2447,10 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       data.baseMaterial = theme.baseMaterial; data.tileScale = theme.tileScale;
       onFullChange();
     });
+
+    this.section('ENV TRIGGER');
+    this.textRow('Event Name', data.envTriggerEvent, v => { data.envTriggerEvent = v; onGeomChange(); });
+    this.textRow('Target Arena ID', data.envTargetArenaId, v => { data.envTargetArenaId = v; onGeomChange(); });
 
     this.section('PRESENTATION STL');
     this.buttonRow('', data.presentStlb64 ? '✓ Replace STL…' : 'Import STL…', () => {
@@ -2715,6 +3009,413 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
         this.numRow('Height   (cm)', data.dimY, MIN_OBSTACLE_DIM, 500, 1, v => { data.dimY = v; onGeomChange(); });
         break;
     }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     JUMP LINK PANEL
+  ═══════════════════════════════════════════════════════════════════════ */
+
+  showJumpLink(
+    data:          JumpLinkData,
+    arenaNames:    Map<string, string>,
+    obstacleNames: Map<string, string>,
+    trapNames:     Map<string, string>,
+    speedLineNames:Map<string, string>,
+    onGeomChange:  () => void,
+    onFullChange:  () => void,
+    onRename:      (name: string) => void,
+  ): void {
+    this.content.innerHTML = '';
+
+    const refresh = () => this.showJumpLink(data, arenaNames, obstacleNames, trapNames,
+      speedLineNames, onGeomChange, onFullChange, onRename);
+
+    this.section('NAME');
+    this.textRow('Name', data.name, v => { data.name = v; onRename(v); });
+
+    const _endpointSection = (
+      label: string,
+      ep: JumpLinkEndpoint,
+      onChange: () => void,
+    ) => {
+      this.section(label);
+      this.selectRow('Mode', [
+        { value: 'parent_surface', label: 'Parent Surface (local XZ)' },
+        { value: 'world_point',    label: 'World Coordinates' },
+        { value: 'speed_line_end', label: 'Speed Line Endpoint' },
+      ], ep.mode, v => { ep.mode = v as JumpEndpointMode; onChange(); refresh(); });
+
+      if (ep.mode === 'parent_surface') {
+        this.selectRow('Parent Type', [
+          { value: 'arena',    label: 'Arena' },
+          { value: 'obstacle', label: 'Obstacle' },
+          { value: 'trap',     label: 'Trap' },
+          { value: 'base',     label: 'Octagon Base' },
+        ], ep.parentType, v => { ep.parentType = v as JumpLinkParentType; onChange(); refresh(); });
+        const parentMap: Map<string, string> =
+          ep.parentType === 'arena' ? arenaNames :
+          ep.parentType === 'obstacle' ? obstacleNames :
+          ep.parentType === 'trap' ? trapNames : new Map([['octagon-base', 'Octagon Base']]);
+        const opts = [...parentMap.entries()].map(([id, name]) => ({ value: id, label: name }));
+        if (opts.length) {
+          this.selectRow('Parent', opts, ep.parentId, v => { ep.parentId = v; onChange(); });
+        }
+        this.numRow('Local X cm', ep.localX, -500, 500, 0.5, v => { ep.localX = v; onChange(); });
+        this.numRow('Local Z cm', ep.localZ, -500, 500, 0.5, v => { ep.localZ = v; onChange(); });
+      } else if (ep.mode === 'world_point') {
+        this.numRow('World X cm', ep.worldX, -500, 500, 0.5, v => { ep.worldX = v; onChange(); });
+        this.numRow('World Y cm', ep.worldY, 0,    500, 0.5, v => { ep.worldY = v; onChange(); });
+        this.numRow('World Z cm', ep.worldZ, -500, 500, 0.5, v => { ep.worldZ = v; onChange(); });
+      } else {
+        const slOpts = [...speedLineNames.entries()].map(([id, name]) => ({ value: id, label: name }));
+        if (slOpts.length) {
+          this.selectRow('Speed Line', slOpts, ep.speedLineId ?? slOpts[0].value, v => { ep.speedLineId = v; onChange(); });
+        }
+        this.selectRow('At', [
+          { value: 'start', label: 'Start of speed line' },
+          { value: 'end',   label: 'End of speed line' },
+        ], ep.atStart ? 'start' : 'end', v => { ep.atStart = v === 'start'; onChange(); });
+      }
+    };
+
+    _endpointSection('SOURCE', data.src, onGeomChange);
+    _endpointSection('DESTINATION', data.dst, onGeomChange);
+
+    this.section('CONNECTION');
+    this.toggleRow('Bidirectional', data.isBidirectional, v => { data.isBidirectional = v; onGeomChange(); });
+
+    this.section('TRIGGER');
+    this.selectRow('Trigger', [
+      { value: 'button',           label: 'Player button press' },
+      { value: 'automatic',        label: 'Automatic (instant)' },
+      { value: 'speed_line_exit',  label: 'Speed line exit' },
+      { value: 'proximity',        label: 'Proximity' },
+    ], data.trigger, v => { data.trigger = v as JumpLinkData['trigger']; onFullChange(); refresh(); });
+    if (data.trigger === 'speed_line_exit') {
+      const slOpts = [...speedLineNames.entries()].map(([id, name]) => ({ value: id, label: name }));
+      if (slOpts.length) {
+        this.selectRow('Trigger SL', slOpts, data.triggerSpeedLineId ?? slOpts[0].value, v => { data.triggerSpeedLineId = v; onGeomChange(); });
+      }
+    }
+    if (data.trigger === 'proximity') {
+      this.numRow('Proximity Radius cm', data.proximityRadius, 1, 100, 0.5, v => { data.proximityRadius = v; onGeomChange(); });
+    }
+
+    this.section('ARC SHAPE');
+    this.selectRow('Arc Profile', [
+      { value: 'parabolic', label: 'Parabolic (natural arc)' },
+      { value: 'bezier',    label: 'Bezier (smooth)' },
+      { value: 'instant',   label: 'Instant (teleport-like)' },
+    ], data.arcProfile, v => { data.arcProfile = v as JumpArcProfile; onGeomChange(); });
+    this.numRow('Arc Height cm', data.arcHeight, 0, 300, 1, v => { data.arcHeight = v; onGeomChange(); });
+
+    const f = data.flight;
+    this.section('LAUNCH PHYSICS');
+    this.numRow('Arc Duration ms', f.arcDuration,    100, 5000, 50, v => { f.arcDuration    = v; });
+    this.numRow('Launch Angle °',  f.launchAngleDeg, 0,   90,   1,  v => { f.launchAngleDeg = v; });
+    this.numRow('Launch Force cm/s', f.launchForce,  10,  1000, 10, v => { f.launchForce    = v; });
+    this.numRow('Gravity Scale',   f.gravityScale,   0,   5,    0.1, v => { f.gravityScale   = v; });
+    this.numRow('Air Drag',        f.airDrag,        0,   1,    0.01, v => { f.airDrag       = v; });
+
+    this.section('LANDING');
+    this.numRow('Impact',  f.landingImpact,  0, 1, 0.05, v => { f.landingImpact  = v; });
+    this.numRow('Bounce',  f.landingBounce,  0, 1, 0.05, v => { f.landingBounce  = v; });
+
+    this.section('IN-FLIGHT SPIN');
+    this.numRow('Spin Rate ×',    f.spinRateMult,  0.1, 3, 0.05, v => { f.spinRateMult  = v; });
+    this.numRow('Spin Delta RPM', f.spinDeltaRPM, -2000, 2000, 50, v => { f.spinDeltaRPM = v; });
+
+    this.section('IN-FLIGHT STATS');
+    const sm = f.statModifiers;
+    this.numRow('Spin Rate ×',     sm.spinRateMult,    0.1, 3, 0.05, v => { sm.spinRateMult    = v; });
+    this.numRow('Stamina ×',       sm.staminaMult,     0.1, 3, 0.05, v => { sm.staminaMult     = v; });
+    this.numRow('Attack ×',        sm.attackMult,      0.1, 3, 0.05, v => { sm.attackMult      = v; });
+    this.numRow('Defense ×',       sm.defenseMult,     0.1, 3, 0.05, v => { sm.defenseMult     = v; });
+    this.numRow('Weight ×',        sm.weightMult,      0.1, 3, 0.05, v => { sm.weightMult      = v; });
+    this.numRow('Burst Resist ×',  sm.burstResistMult, 0.1, 3, 0.05, v => { sm.burstResistMult = v; });
+
+    this.section('VISUAL TRAIL');
+    this.toggleRow('Trail Enabled', f.trailEnabled, v => { f.trailEnabled = v; onFullChange(); refresh(); });
+    if (f.trailEnabled) {
+      this.colorRow('Trail Color', f.trailColor ?? data.color, v => { f.trailColor = v; onGeomChange(); });
+      this.numRow('Trail Width cm', f.trailWidth, 0.1, 20, 0.1, v => { f.trailWidth = v; });
+      this.numRow('Trail Fade', f.trailFade, 0, 1, 0.05, v => { f.trailFade = v; });
+    }
+
+    this.section('FLASH');
+    this.toggleRow('Launch Flash', f.launchFlash, v => { f.launchFlash = v; });
+    this.toggleRow('Land Flash',   f.landFlash,   v => { f.landFlash   = v; });
+    this.colorRow('Flash Color', f.flashColor, v => { f.flashColor = v; });
+
+    this.section('APPEARANCE');
+    this.colorRow('Color',      data.color,           v => { data.color      = v; onGeomChange(); });
+    this.colorRow('Glow Color', data.glowColor ?? data.color, v => { data.glowColor = v; onGeomChange(); });
+    this.numRow('Opacity',      data.opacity,          0.1, 1, 0.05, v => { data.opacity    = v; onGeomChange(); });
+    this.numRow('Disc Radius cm', data.discRadius,     1,   40, 0.5,  v => { data.discRadius = v; onGeomChange(); });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // showEnvironment — arena-wide environment panel (🌍 sub-node)
+  // ══════════════════════════════════════════════════════════════════════════
+  showEnvironment(
+    arena: ArenaData,
+    cbs: {
+      onPhysicsChange:      () => void;
+      onTiltChange:         () => void;
+      onFogChange:          () => void;
+      onScoreChange:        () => void;
+      onWeatherSurfaceChange: () => void;
+      addEntry:    (e: EnvScheduleEntry) => void;
+      removeEntry: (id: string) => void;
+      updateEntry: (e: EnvScheduleEntry) => void;
+    },
+  ): void {
+    this.content.innerHTML = '';
+
+    // ── GRAVITY ───────────────────────────────────────────────────────────
+    this.section('GRAVITY');
+    this.numRow('Scale',      arena.gravityScale,      ENV.MIN_GRAVITY_SCALE, ENV.MAX_GRAVITY_SCALE, 0.05, v => { arena.gravityScale = v;      cbs.onPhysicsChange(); });
+    this.numRow('Direction X', arena.gravityDirectionX, -1, 1, 0.01, v => { arena.gravityDirectionX = v; cbs.onPhysicsChange(); });
+    this.numRow('Direction Z', arena.gravityDirectionZ, -1, 1, 0.01, v => { arena.gravityDirectionZ = v; cbs.onPhysicsChange(); });
+
+    // ── ARENA TILT ────────────────────────────────────────────────────────
+    this.section('ARENA TILT');
+    this.numRow('Tilt X (°)',  arena.tiltX, -ENV.MAX_TILT, ENV.MAX_TILT, 1, v => { arena.tiltX = v; cbs.onTiltChange(); });
+    this.numRow('Tilt Z (°)',  arena.tiltZ, -ENV.MAX_TILT, ENV.MAX_TILT, 1, v => { arena.tiltZ = v; cbs.onTiltChange(); });
+    this.toggleRow('Weight-Based Tilt', arena.weightTiltEnabled, v => { arena.weightTiltEnabled = v; cbs.onTiltChange(); });
+    if (arena.weightTiltEnabled) {
+      this.numRow('Sensitivity', arena.weightTiltSensitivity, 0.1, 5, 0.1, v => { arena.weightTiltSensitivity = v; cbs.onTiltChange(); });
+      this.numRow('Dampening',   arena.weightTiltDampening,   0,   1, 0.05, v => { arena.weightTiltDampening  = v; cbs.onTiltChange(); });
+    }
+
+    // ── ATMOSPHERE (FOG) ──────────────────────────────────────────────────
+    this.section('ATMOSPHERE (FOG)');
+    this.numRow('Fog Density', arena.fogDensity, 0, 1, 0.01, v => { arena.fogDensity = v; cbs.onFogChange(); });
+
+    // ── SCORING ───────────────────────────────────────────────────────────
+    this.section('SCORING');
+    this.numRow('Score Multiplier', arena.scoreMultiplier, 0, 10, 0.1, v => { arena.scoreMultiplier = v; cbs.onScoreChange(); });
+    this.numRow('Points / Second',  arena.pointsPerSecond, 0, 100, 1,  v => { arena.pointsPerSecond = v; cbs.onScoreChange(); });
+    this.readRow('Live Score', Math.floor(arena._score).toString());
+
+    // ── WEATHER → SURFACE MAP ─────────────────────────────────────────────
+    this.section('WEATHER → SURFACE MAP');
+    const WEATHER_PRESETS: Exclude<WeatherPreset, 'none'>[] = ['rain','snow','fog','sandstorm','ash','mist'];
+    const SURFACE_OPTS: { value: string; label: string }[] = [
+      { value: '', label: '— no change —' },
+      ...(['plain','checker','grid','hex','stripes','dots','concrete','metal','wood','ice','sand','lava_rock'] as SurfaceType[])
+        .map(s => ({ value: s, label: s })),
+    ];
+    for (const wp of WEATHER_PRESETS) {
+      this.selectRow(wp, SURFACE_OPTS, arena.weatherSurfaceMap[wp] ?? '', v => {
+        if (v === '') delete arena.weatherSurfaceMap[wp];
+        else (arena.weatherSurfaceMap as Record<string, string>)[wp] = v;
+        cbs.onWeatherSurfaceChange();
+      });
+    }
+
+    // ── ENVIRONMENT SCHEDULE ──────────────────────────────────────────────
+    this.section('ENVIRONMENT SCHEDULE');
+
+    let expandedId: string | null = null;
+
+    const renderSchedule = () => {
+      // Remove old schedule DOM
+      let el = this.content.querySelector('.env-schedule-list');
+      if (el) el.remove();
+
+      const list = document.createElement('div');
+      list.className = 'env-schedule-list';
+
+      for (const entry of arena.envSchedule) {
+        const row = document.createElement('div');
+        row.className = 'prop-row env-entry-row';
+        row.style.cssText = 'flex-direction:column;align-items:stretch;padding:calc(2*var(--mm)) 0;';
+
+        // ── Header row ────────────────────────────────────────────────────
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'display:flex;align-items:center;gap:calc(2*var(--mm));';
+
+        const chk = document.createElement('input');
+        chk.type = 'checkbox'; chk.checked = entry.enabled;
+        chk.addEventListener('change', () => { entry.enabled = chk.checked; cbs.updateEntry(entry); });
+
+        const lbl = document.createElement('span');
+        lbl.textContent = entry.label || '(unnamed)';
+        lbl.style.cssText = 'flex:1;font-size:0.75em;color:#dde8ff;cursor:pointer;';
+
+        const badge = document.createElement('span');
+        badge.textContent = entry.triggerType;
+        badge.style.cssText = 'font-size:0.65em;padding:1px 4px;background:#00e5ff22;color:#00e5ff;border-radius:2px;';
+
+        const del = document.createElement('button');
+        del.textContent = '✕'; del.className = 'prop-btn';
+        del.style.cssText = 'font-size:0.7em;padding:1px 4px;';
+        del.addEventListener('click', (e) => {
+          e.stopPropagation();
+          cbs.removeEntry(entry.id);
+          expandedId = null;
+          renderSchedule();
+        });
+
+        hdr.appendChild(chk); hdr.appendChild(lbl); hdr.appendChild(badge); hdr.appendChild(del);
+        hdr.addEventListener('click', () => {
+          expandedId = expandedId === entry.id ? null : entry.id;
+          renderSchedule();
+        });
+        row.appendChild(hdr);
+
+        // ── Detail panel (when expanded) ──────────────────────────────────
+        if (expandedId === entry.id) {
+          const detail = document.createElement('div');
+          detail.style.cssText = 'padding:calc(2*var(--mm)) calc(4*var(--mm));background:#0a0a1a;border-left:2px solid #00e5ff44;margin-top:calc(2*var(--mm));';
+
+          const save = () => cbs.updateEntry({ ...entry });
+
+          // Label
+          const labelRow = document.createElement('div'); labelRow.className='prop-row';
+          const labelLbl = document.createElement('span'); labelLbl.className='prop-row-label'; labelLbl.textContent='Label';
+          const labelInp = document.createElement('input'); labelInp.type='text'; labelInp.className='prop-input'; labelInp.value=entry.label;
+          labelInp.addEventListener('change', () => { entry.label = labelInp.value; lbl.textContent = entry.label || '(unnamed)'; save(); });
+          labelRow.appendChild(labelLbl); labelRow.appendChild(labelInp); detail.appendChild(labelRow);
+
+          // Trigger type
+          const typeDiv = document.createElement('div'); typeDiv.className='prop-profile-row';
+          const typeLbl = document.createElement('span'); typeLbl.className='prop-row-label'; typeLbl.textContent='Trigger';
+          typeDiv.appendChild(typeLbl);
+          for (const t of ['interval','once','event'] as EnvScheduleEntry['triggerType'][]) {
+            const btn = document.createElement('button');
+            btn.className = 'prop-profile-btn' + (entry.triggerType === t ? ' active' : '');
+            btn.textContent = t;
+            btn.addEventListener('click', () => { entry.triggerType = t; save(); renderSchedule(); expandedId = entry.id; });
+            typeDiv.appendChild(btn);
+          }
+          detail.appendChild(typeDiv);
+
+          const addNumDetail = (labelTxt: string, val: number, min: number, max: number, step: number, setter: (v: number) => void) => {
+            const r = document.createElement('div'); r.className='prop-row';
+            const l = document.createElement('span'); l.className='prop-row-label'; l.textContent=labelTxt;
+            const inp = document.createElement('input'); inp.type='range';
+            inp.min=String(min); inp.max=String(max); inp.step=String(step); inp.value=String(val);
+            inp.style.flex='1';
+            const disp = document.createElement('span'); disp.style.cssText='min-width:3em;text-align:right;font-size:0.8em;'; disp.textContent=String(val);
+            inp.addEventListener('input', () => { disp.textContent = inp.value; });
+            inp.addEventListener('change', () => { setter(parseFloat(inp.value)); save(); });
+            r.appendChild(l); r.appendChild(inp); r.appendChild(disp); detail.appendChild(r);
+          };
+
+          if (entry.triggerType === 'interval') {
+            addNumDetail('Interval (s)', entry.intervalSec, 0.5, 300, 0.5, v => { entry.intervalSec = v; });
+            addNumDetail('Init Delay (s)', entry.delaySec, 0, 60, 0.5, v => { entry.delaySec = v; });
+          } else if (entry.triggerType === 'once') {
+            addNumDetail('Delay (s)', entry.delaySec, 0, 300, 0.5, v => { entry.delaySec = v; });
+          } else {
+            const evRow = document.createElement('div'); evRow.className='prop-row';
+            const evLbl = document.createElement('span'); evLbl.className='prop-row-label'; evLbl.textContent='Event Name';
+            const evInp = document.createElement('input'); evInp.type='text'; evInp.className='prop-input'; evInp.value=entry.eventName;
+            evInp.addEventListener('change', () => { entry.eventName = evInp.value; save(); });
+            evRow.appendChild(evLbl); evRow.appendChild(evInp); detail.appendChild(evRow);
+          }
+
+          addNumDetail('Revert After (s)', entry.revertSec, 0, 300, 0.5, v => { entry.revertSec = v; });
+
+          // Sound event
+          const snRow = document.createElement('div'); snRow.className='prop-row';
+          const snLbl = document.createElement('span'); snLbl.className='prop-row-label'; snLbl.textContent='Sound Event';
+          const snInp = document.createElement('input'); snInp.type='text'; snInp.className='prop-input'; snInp.value=entry.soundEvent;
+          snInp.addEventListener('change', () => { entry.soundEvent = snInp.value; save(); });
+          snRow.appendChild(snLbl); snRow.appendChild(snInp); detail.appendChild(snRow);
+
+          // Keyframes
+          const kfTitle = document.createElement('div');
+          kfTitle.style.cssText='font-size:0.7em;color:#00e5ff;margin-top:calc(2*var(--mm));margin-bottom:calc(1*var(--mm));';
+          kfTitle.textContent = 'KEYFRAMES';
+          detail.appendChild(kfTitle);
+
+          const ENV_PROPS: EnvProperty[] = [
+            'gravityScale','gravityDirectionX','gravityDirectionZ',
+            'tiltX','tiltZ','fogDensity',
+            'weatherPreset','windEnabled','windDirectionDeg','windStrengthCms','windGustInterval','windGustMult',
+            'scoreMultiplier','pointsPerSecond',
+          ];
+
+          const renderKeyframes = () => {
+            let kfList = detail.querySelector('.kf-list');
+            if (kfList) kfList.remove();
+            const kl = document.createElement('div'); kl.className='kf-list';
+            for (let ki = 0; ki < entry.keyframes.length; ki++) {
+              const kf = entry.keyframes[ki];
+              const krow = document.createElement('div');
+              krow.style.cssText='display:flex;gap:calc(2*var(--mm));align-items:center;margin-bottom:calc(1*var(--mm));';
+
+              const pSel = document.createElement('select'); pSel.style.cssText='flex:1;background:#111;color:#dde8ff;border:1px solid #333;font-size:0.75em;';
+              for (const p of ENV_PROPS) {
+                const opt = document.createElement('option'); opt.value=p; opt.textContent=p;
+                if (p === kf.property) opt.selected=true;
+                pSel.appendChild(opt);
+              }
+              pSel.addEventListener('change', () => { kf.property = pSel.value as EnvProperty; save(); });
+
+              const vInp = document.createElement('input'); vInp.type='text'; vInp.style.cssText='width:5em;background:#111;color:#dde8ff;border:1px solid #333;font-size:0.75em;';
+              vInp.value = String(kf.value);
+              vInp.addEventListener('change', () => {
+                const raw = vInp.value;
+                kf.value = raw === 'true' ? true : raw === 'false' ? false : isNaN(Number(raw)) ? raw : Number(raw);
+                save();
+              });
+
+              const kdel = document.createElement('button'); kdel.textContent='✕'; kdel.className='prop-btn';
+              kdel.style.fontSize='0.65em';
+              kdel.addEventListener('click', () => { entry.keyframes.splice(ki, 1); save(); renderKeyframes(); });
+
+              krow.appendChild(pSel); krow.appendChild(vInp); krow.appendChild(kdel);
+              kl.appendChild(krow);
+            }
+            // Add keyframe button
+            const addKf = document.createElement('button'); addKf.textContent='＋ Add Keyframe'; addKf.className='prop-btn';
+            addKf.style.cssText='font-size:0.7em;margin-top:calc(1*var(--mm));';
+            addKf.addEventListener('click', () => {
+              entry.keyframes.push({ property: 'gravityScale', value: 1 } as EnvKeyframe);
+              save(); renderKeyframes();
+            });
+            kl.appendChild(addKf);
+            detail.appendChild(kl);
+          };
+          renderKeyframes();
+
+          row.appendChild(detail);
+        }
+
+        list.appendChild(row);
+      }
+
+      // Add Entry button
+      const addBtn = document.createElement('button');
+      addBtn.textContent = '＋ Add Entry'; addBtn.className = 'prop-btn';
+      addBtn.style.cssText = 'margin-top:calc(2*var(--mm));width:100%;';
+      addBtn.addEventListener('click', () => {
+        const newEntry: EnvScheduleEntry = {
+          id: `env-entry-${Date.now().toString(36)}`,
+          label: 'New Entry',
+          triggerType: 'interval',
+          intervalSec: ENV.DEFAULT_INTERVAL_SEC,
+          delaySec: 0,
+          eventName: '',
+          keyframes: [],
+          revertSec: ENV.DEFAULT_REVERT_SEC,
+          soundEvent: '',
+          enabled: true,
+        };
+        cbs.addEntry(newEntry);
+        expandedId = newEntry.id;
+        renderSchedule();
+      });
+      list.appendChild(addBtn);
+
+      this.content.appendChild(list);
+    };
+
+    renderSchedule();
   }
 
 }
