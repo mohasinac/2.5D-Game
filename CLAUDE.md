@@ -202,6 +202,19 @@ src/
     footingBuilders.ts          — Base footing 6-shape geometry (decoupled copy of obstacle shapes); buildFootingObjects(data, baseHeight); applyFooting(data, baseHeight); defaultFooting(name, id, baseHeight)
     particleBuilders.ts         — ParticleSystem interface; buildParticleSystem(preset, cx, cz, radius, baseY); 6 presets: embers/snow/sparks/dust/bubbles/void_motes
     [arena geometry files...]
+  features/
+    IArenaFeature.ts            — SceneContext, ITickableManager, IArenaFeature, ISceneFeature interfaces
+    FeatureManager.ts           — Abstract base (Template Method): _insert/remove/clear/restoreData/serializeAll
+    ParentedFeatureManager.ts   — Extension: resolveSurfaceY/resolveWorldXZ/resolveTreeParent for arena/base parents
+    managers/
+      ObstacleManager.ts        — Free-floating 3D obstacle shapes
+      FootingManager.ts         — Base-mounted decorative shapes (intentionally decoupled from obstacleBuilders)
+      TrapManager.ts            — Trigger plates; variantMesh disposed separately; removeWithWalls(id, cb)
+      PortalManager.ts          — Teleport pads; ringMesh disposed separately
+      WallManager.ts            — 4 parent types; auto-join sibling guard; ITickableManager for pivot rotation
+      BridgeManager.ts          — Bridge + segment chain; owns segments Map + segSeq; getArenas/getWalls injected
+      SpeedLineManager.ts       — Surface projector injected as callback; showHandles/hideHandles for drag interaction
+      RotationManager.ts        — ITickableManager; detachAll() before clear; afterApply() for group-local correction
   renderers/
     BeybladeRenderer.ts         — Three.js mesh management; axisRoot/spinGroup/freeSpinGroup hierarchy;
                                   view mode toggle (hitbox/both/present); STL presentation mesh loading
@@ -774,6 +787,15 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **`_clearArenas` must dispose footings**: Iterate `this.footings` and call `_disposeFooting(f)` + `this.sceneTree.remove(f.id)` before clearing the map. Also reset `this.footingSeq = 0`. Skipping this leaks GPU geometry when the scene is reset.
 - **`_onReparent` coverage — reparentable vs not**: The `sceneTree.onReparent` handler supports these node types: wall (arena↔base), pit (arena↔arena), zone (arena↔arena), trap (arena↔base), portal (arena↔base), speed line (arena/zone), bridge segment (same-bridge reorder + cross-bridge). These types are **not reparentable** and their drops must be silently ignored: arena, obstacle, footing, bridge (container), rotation. For non-reparentable nodes, do not call `saveArena()` or modify any data model.
 - **`footingBuilders.ts` must not import from `obstacleBuilders.ts`**: Both files implement the same 6-shape geometry switch (cube/cuboid/sphere/cylinder/pyramid/frustum) independently. This is intentional per coupling-prevention rules — base footings and world obstacles are distinct object types. Sharing the geometry function would couple their build/dispose/apply lifecycle.
+- **`src/features/` managers must not import from `src/screens/`**: Managers are reusable classes independent of ArenaSandbox. They receive everything they need via `SceneContext` and injected getter callbacks. Any import from `screens/` is a violation that couples the manager to the sandbox.
+- **Non-nullable mesh/edges in ObstacleData, TrapData, PortalData**: `data.mesh` and `data.edges` are typed as `THREE.Mesh` (not `THREE.Mesh | null`) on these three types. In `disposeOne()` just call `scene.remove(data.mesh)` and `data.mesh.geometry.dispose()` — do NOT assign `data.mesh = null`, it is a TypeScript type error.
+- **`BridgeSegmentSave` has no `bridgeId` field**: `bridgeId` is not serialized in segment saves. Pass it as a separate parameter: `restoreSegment(save: BridgeSegmentSave, bridgeId: string)`. Using `save.bridgeId` is undefined.
+- **`BridgeSegmentSave` field names must match exactly**: The correct save field names are `curveRadius/curveAngle/curveDirection/bankAngle`, `cp1X/cp1Y/cp1Z/cp2X/cp2Y/cp2Z`, `endX/endY/endZ`, `loopRadius/loopOrientation/tiltAngle`, `corkscrewLength/corkscrewTurns`. There is no `bezierCX`, `corkRotations`, `chicaneWidth`, or `chicaneLength` in the save type.
+- **`trapWorldCenter` needs a live arenas map**: `WallManager` must inject `getArenas: () => ReadonlyMap<string, ArenaData>` and pass `this.getArenas() as Map<string, ArenaData>` to `trapWorldCenter`. Passing `new Map()` means arena-parented trap positions default to cx=0, cz=0 — every trap wall ends up centered on the origin.
+- **`resolveStartPose` needs live arenas and walls maps**: `BridgeManager` must inject both `getArenas` and `getWalls` callbacks and pass them to `resolveStartPose`. Passing empty maps breaks any bridge anchored to an arena rim or a wall endpoint.
+- **`RotationManager.detachAll()` must be called before any other manager's `clear()`**: `detachAll()` returns all member objects from pivot groups back to scene root. If another manager disposes a member object before detachAll, the pivot group's reference becomes dangling and the object disappears without being properly disposed. Call order: `rotationMgr.detachAll()` → then all other `mgr.clear()` → then `rotationMgr.clear()`.
+- **`RotationManager.afterApply(nodeId)` after every rotation-member rebuild**: When any feature's `apply()` method is called for a node that belongs to a rotation, call `rotationMgr.afterApply(nodeId)` afterward. The `apply()` functions set `mesh.position` to natural world coordinates; `afterApply()` corrects to group-local by subtracting `pivotGroup.position`.
+- **`src/features/` managers never import each other directly**: Inter-manager communication uses injected callbacks. TrapManager accepts a `removeTrapWalls: (trapId) => void` callback rather than importing WallManager. BridgeManager accepts a `removeWall: (wallId) => void` callback. This prevents circular dependencies and keeps managers independently testable.
 
 ---
 
@@ -800,6 +822,17 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/geometry/trapBuilders.ts` | Trap plate geometry, variant meshes, or surface-Y derivation changes |
 | `src/geometry/portalBuilders.ts` | Portal pad geometry, torus ring, or surface-Y derivation changes |
 | `src/geometry/footingBuilders.ts` | Base footing shape geometry, positioning, or default factory changes |
+| `src/features/IArenaFeature.ts` | A new context capability or manager interface is added |
+| `src/features/FeatureManager.ts` | The shared CRUD lifecycle (insert/remove/clear/serialize) pattern changes |
+| `src/features/ParentedFeatureManager.ts` | Surface-Y resolution or tree-parent logic for arena/base parents changes |
+| `src/features/managers/WallManager.ts` | Wall lifecycle, auto-join, auto-rotation, or parent-type dispatch changes |
+| `src/features/managers/BridgeManager.ts` | Bridge/segment lifecycle, pose chaining, or wall-cascade callback changes |
+| `src/features/managers/SpeedLineManager.ts` | Speed line lifecycle, projector wiring, or handle show/hide changes |
+| `src/features/managers/RotationManager.ts` | Pivot-group animation, detach ordering, or afterApply correction changes |
+| `src/features/managers/ObstacleManager.ts` | Obstacle lifecycle or buildAndShow restore path changes |
+| `src/features/managers/TrapManager.ts` | Trap lifecycle, variantMesh disposal, or wall-cascade callback changes |
+| `src/features/managers/PortalManager.ts` | Portal lifecycle or ringMesh disposal changes |
+| `src/features/managers/FootingManager.ts` | Footing lifecycle or buildAndShow restore path changes |
 
 ### Allowed import direction (never reverse)
 ```
@@ -811,6 +844,9 @@ arenaConstants + arenaTypes  ←  primitives.ts
                              ←  speedLineBuilders.ts
                              ←  arenaObjectBuilders.ts  (also imports speedLineBuilders)
                              ←  obstacleBuilders.ts / trapBuilders.ts / portalBuilders.ts / footingBuilders.ts
+                             ←  src/features/IArenaFeature.ts  (no project imports — only THREE + SceneTree types)
+                             ←  src/features/FeatureManager.ts / ParentedFeatureManager.ts
+                             ←  src/features/managers/*.ts  (import geometry builders + persistence; never from screens/)
                              ←  ArenaSandbox.ts
                              ←  PropertiesPanel.ts (imports arenaTypes + arenaConstants ONLY — no geometry)
 ```
