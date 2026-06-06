@@ -86,6 +86,7 @@ export class SpawnManager {
   // Collision tracking
   private _lastCollisionTime     = 0;
   private _lastCollisionIsSticky = false;
+  private _currentGravityScale   = 1.0;
 
   // Speed line tracking
   private slPathCache   = new Map<string, { pts: THREE.Vector3[]; ts: number }>();
@@ -288,7 +289,7 @@ export class SpawnManager {
   }
 
   private _applyGravity(dt: number): void {
-    if (!this.grounded) this.vel.y += GRAVITY * dt;
+    if (!this.grounded) this.vel.y += GRAVITY * this._currentGravityScale * dt;
   }
 
   private _integrate(dt: number): void {
@@ -306,7 +307,11 @@ export class SpawnManager {
       const { alx, alz } = worldToArenaLocal(this.pos.x, this.pos.z, arena);
       if ((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2 > 1.0) continue;
       const surfY = arenaSurfaceYAtArenaLocal(arena, alx, alz);
-      if (surfY > bestSurfY) { bestSurfY = surfY; bestMat = arena.baseMaterial; }
+      if (surfY > bestSurfY) {
+        bestSurfY = surfY;
+        bestMat = arena.baseMaterial;
+        this._currentGravityScale = arena.gravityScale ?? 1.0;
+      }
     }
 
     // Octagon base fallback — top face is at DEFAULT_BASE_HEIGHT (30 cm)

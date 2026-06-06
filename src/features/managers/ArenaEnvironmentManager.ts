@@ -119,7 +119,7 @@ export class ArenaEnvironmentManager implements ITickableManager {
   addEntry(arenaId: string, entry: EnvScheduleEntry): void {
     const arena = this.getArenas().get(arenaId);
     if (!arena) return;
-    entry._timer       = entry.triggerType === 'interval' ? entry.intervalSec - entry.delaySec : 0;
+    entry._timer       = entry.triggerType === 'interval' ? Math.max(0, entry.intervalSec - entry.delaySec) : 0;
     entry._revertTimer = undefined;
     entry._prevValues  = undefined;
     arena.envSchedule.push(entry);
