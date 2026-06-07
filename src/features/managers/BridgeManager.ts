@@ -21,7 +21,8 @@ import {
 import { buildSurfaceMaterial } from '../../geometry/materialBuilders';
 import { bridgeToSave } from '../../utils/arenaPersistence';
 import { FeatureManager } from '../FeatureManager';
-import type { SceneContext } from '../IArenaFeature';
+import type { SceneContext, ITickableManager } from '../IArenaFeature';
+import { segmentAnimator } from './sub/SegmentAnimator';
 
 /**
  * Manages bridges and their ordered chains of segments.
@@ -57,7 +58,7 @@ import type { SceneContext } from '../IArenaFeature';
  * BridgeManager has no dependency on ArenaSandbox beyond what SceneContext provides
  * and what is injected via the constructor.
  */
-export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
+export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implements ITickableManager {
 
   /** Internal segment store — parallel to FeatureManager.items for bridges. */
   private readonly segments = new Map<string, BridgeSegmentData>();
@@ -73,6 +74,17 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     super(ctx, 'bridge', 'Bridge');
   }
 
+  // ── ITickableManager ─────────────────────────────────────────────────────
+
+  tick(dtMs: number): void {
+    for (const bridge of this.items.values()) {
+      for (const segId of bridge.segmentIds) {
+        const seg = this.segments.get(segId);
+        if (seg) segmentAnimator.tick(seg, dtMs);
+      }
+    }
+  }
+
   // ── Public factory ───────────────────────────────────────────────────────
 
   /**
@@ -83,7 +95,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     const id    = this.nextId();
     const name  = this.nextLabel();
     const group = new THREE.Group();
-    this.ctx.scene.add(group);
+    this.ctx.renderMgr.add(id, [group]);
 
     const bridge: BridgeData = {
       id,
@@ -177,14 +189,15 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     seg._animCenter.copy(center);
     const negCenter = center.clone().negate();
 
-    if (!seg._animPivot) {
+    const pivotIsNew = !seg._animPivot;
+    if (pivotIsNew) {
       seg._animPivot = new THREE.Group();
       if (seg.mesh)  { bridge.group.remove(seg.mesh);  seg._animPivot.add(seg.mesh); }
       if (seg.edges) { bridge.group.remove(seg.edges); seg._animPivot.add(seg.edges); }
-      bridge.group.add(seg._animPivot);
     }
-    seg._animPivot.position.copy(center);
-    if (!seg.animEnabled) seg._animPivot.rotation.set(0, 0, 0);
+    const pivot = seg._animPivot!;
+    pivot.position.copy(center);
+    if (!seg.animEnabled) pivot.rotation.set(0, 0, 0);
 
     const segMat = buildSurfaceMaterial({
       color,
@@ -207,7 +220,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
     } else {
       seg.mesh = new THREE.Mesh(geo, segMat);
       seg.mesh.position.copy(negCenter);
-      seg._animPivot.add(seg.mesh);
+      pivot.add(seg.mesh);
     }
 
     const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
@@ -222,10 +235,10 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
         new THREE.LineBasicMaterial({ color: edgeCol }),
       );
       seg.edges.position.copy(negCenter);
-      seg._animPivot.add(seg.edges);
+      pivot.add(seg.edges);
     }
 
-    this.ctx.trackObjects(seg.id, [seg.mesh, seg.edges]);
+    if (pivotIsNew) this.ctx.renderMgr.add(seg.id, [pivot], bridge.group);
   }
 
   /** Reapply segId and every subsequent segment in the same bridge. */
@@ -369,7 +382,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
         this.segments.delete(sid);
       }
     }
-    this.ctx.scene.remove(data.group);
+    // renderMgr.dispose(data.id) called by FeatureManager.remove() removes bridge.group from scene.
   }
 
   // ── Serialisation ─────────────────────────────────────────────────────────
@@ -388,7 +401,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
 
   fromSave(save: BridgeSave): BridgeData {
     const group = new THREE.Group();
-    this.ctx.scene.add(group);
+    this.ctx.renderMgr.add(save.id, [group]);
 
     const bridge: BridgeData = {
       id:               save.id,
@@ -451,11 +464,11 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
       (seg.edges.material as THREE.Material).dispose();
       seg.edges = null;
     }
+    // renderMgr.dispose removes _animPivot from bridge.group (via registered parent) and clears registry
+    this.ctx.renderMgr.dispose(seg.id);
     if (seg._animPivot) {
-      bridge.group.remove(seg._animPivot);
       seg._animPivot = null;
     }
-    this.ctx.untrackObjects(seg.id);
   }
 }
 

@@ -1,4 +1,4 @@
-import type { SceneContext } from './IArenaFeature';
+import type { SceneContext, FeatureStoreSlice } from './IArenaFeature';
 
 /**
  * Abstract generic manager for arena features.
@@ -29,6 +29,9 @@ export abstract class FeatureManager<
   /** Monotonically increasing counter; never reset to 0 mid-session. */
   protected seq = 0;
 
+  /** Optional Zustand store slice — injected by ArenaSandbox after construction. */
+  private _store?: FeatureStoreSlice<TSave>;
+
   /**
    * @param ctx       Scene dependency-injection context.
    * @param idPrefix  Short prefix used to build unique IDs (e.g. 'obs').
@@ -39,6 +42,18 @@ export abstract class FeatureManager<
     protected readonly idPrefix: string,
     protected readonly labelBase: string,
   ) {}
+
+  // ── Store injection ──────────────────────────────────────────────────────
+
+  /** Wire a Zustand store slice — call before loadArena(). */
+  setStore(store: FeatureStoreSlice<TSave>): void {
+    this._store = store;
+  }
+
+  /** Call at end of every apply() override to auto-persist the mutation. */
+  protected _afterApplyStore(data: TData): void {
+    this._store?.upsert(this.toSave(data));
+  }
 
   // ── Template Method hooks (must be implemented by subclasses) ────────────
 
@@ -103,6 +118,7 @@ export abstract class FeatureManager<
     const d = data as unknown as { visible?: boolean };
     if (d.visible === false) this.setVisible(data.id, false);
     this.ctx.sceneTree.add(data.id, data.name, treeIcon, treeParentId, treeOpts as never);
+    this._store?.upsert(this.toSave(data));
     return data;
   }
 
@@ -116,10 +132,11 @@ export abstract class FeatureManager<
   remove(id: string): boolean {
     const data = this.items.get(id);
     if (!data) return false;
-    this.ctx.untrackObjects(id);
     this.disposeOne(data);
+    this.ctx.renderMgr.dispose(id);
     this.items.delete(id);
     this.ctx.sceneTree.remove(id);
+    this._store?.remove(id);
     return true;
   }
 
@@ -130,11 +147,13 @@ export abstract class FeatureManager<
    */
   clear(): void {
     for (const data of this.items.values()) {
-      this.ctx.untrackObjects(data.id);
       this.disposeOne(data);
+      this.ctx.renderMgr.dispose(data.id);
+      this.ctx.sceneTree.remove(data.id);
     }
     this.items.clear();
     this.seq = 0;
+    this._store?.clear();
   }
 
   /**
@@ -144,13 +163,7 @@ export abstract class FeatureManager<
    * this and call super.setVisible(id, visible) first.
    */
   setVisible(id: string, visible: boolean): void {
-    const data = this.items.get(id) as unknown as {
-      mesh?:  { visible: boolean } | null;
-      edges?: { visible: boolean } | null;
-    };
-    if (!data) return;
-    if (data.mesh)  data.mesh.visible  = visible;
-    if (data.edges) data.edges.visible = visible;
+    this.ctx.renderMgr.setVisible(id, visible);
   }
 
   /**

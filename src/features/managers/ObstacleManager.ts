@@ -8,7 +8,7 @@ import {
 } from '../../geometry/obstacleBuilders';
 import { obstacleToSave } from '../../utils/arenaPersistence';
 import { FeatureManager } from '../FeatureManager';
-import type { SceneContext } from '../IArenaFeature';
+import type { SceneContext, IPositionedManager } from '../IArenaFeature';
 
 /**
  * Manages free-floating 3-D obstacle shapes placed anywhere in world space.
@@ -27,10 +27,18 @@ import type { SceneContext } from '../IArenaFeature';
  * ObstacleManager has no arena-specific dependencies beyond SceneContext.
  * It can be used in any Three.js sandbox that hosts free-floating shapes.
  */
-export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> {
+export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> implements IPositionedManager {
 
   constructor(ctx: SceneContext) {
     super(ctx, 'obstacle', 'Obstacle');
+  }
+
+  // ── IPositionedManager ───────────────────────────────────────────────────
+
+  getWorldPosition(id: string): THREE.Vector3 | null {
+    const data = this.items.get(id);
+    if (!data?.mesh) return null;
+    return data.mesh.getWorldPosition(new THREE.Vector3());
   }
 
   // ── Public factory ───────────────────────────────────────────────────────
@@ -53,7 +61,6 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
    */
   apply(data: ObstacleData): void {
     applyObstacle(data);
-    this.ctx.trackObjects(data.id, [data.mesh!, data.edges!]);
     this.setVisible(data.id, data.visible ?? true);
   }
 
@@ -84,17 +91,11 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
     const [mesh, edges] = buildObstacleObjects(data);
     data.mesh  = mesh;
     data.edges = edges;
-    this.ctx.scene.add(mesh, edges);
-    this.ctx.trackObjects(data.id, [mesh, edges]);
+    this.ctx.renderMgr.add(data.id, [mesh, edges]);
   }
 
-  protected disposeOne(data: ObstacleData): void {
-    this.ctx.scene.remove(data.mesh);
-    data.mesh.geometry.dispose();
-    (data.mesh.material as THREE.Material).dispose();
-    this.ctx.scene.remove(data.edges);
-    data.edges.geometry.dispose();
-    (data.edges.material as THREE.Material).dispose();
+  protected disposeOne(_data: ObstacleData): void {
+    // renderMgr.dispose() in base remove()/clear() handles scene removal + GPU disposal.
   }
 
   // ── Serialisation ────────────────────────────────────────────────────────

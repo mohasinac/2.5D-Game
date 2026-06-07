@@ -7,6 +7,7 @@ import { AdminHubScreen }     from './screens/admin/AdminHubScreen';
 import { ArenaLibraryScreen } from './screens/ArenaLibraryScreen';
 import { BeyLibraryScreen }   from './screens/BeyLibraryScreen';
 import { gameConfirm }        from './utils/dialog';
+import { inputManager }       from './features/managers/InputManager';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
 type ScreenId = 'landing' | 'beyblade' | 'arena' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor';
@@ -205,12 +206,10 @@ class App {
       fsBtn.title = document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen';
     });
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'f' || e.key === 'F') fsBtn.click();
-      if (e.key === '=') setScale(scale + STEP);
-      if (e.key === '-') setScale(scale - STEP);
-      if (e.key === '0') setScale(1);
-    });
+    inputManager.onPress('KeyF', () => fsBtn.click());
+    inputManager.onPress('Equal', () => setScale(scale + STEP));
+    inputManager.onPress('Minus', () => setScale(scale - STEP));
+    inputManager.onPress('Digit0', () => setScale(1));
   }
 }
 

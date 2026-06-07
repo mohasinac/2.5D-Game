@@ -38,51 +38,53 @@ import {
   buildPitObjects, applyPit,
   buildZoneObjects, applyZone,
   defaultArena, defaultPit, defaultZone,
-  defaultSegment as defaultSlSegment, defaultSpeedLine, buildSpeedLineObjects, applySpeedLine,
+  defaultSegment as defaultSlSegment, applySpeedLine,
 } from '../geometry/arenaObjectBuilders';
 import { samplePathForOverlap, buildOverlapSphere, generatePresetSegments } from '../geometry/speedLineBuilders';
-import { SceneSurfaceProjector } from '../geometry/sceneSurfaceProjector';
 import { SceneTree } from '../utils/SceneTree';
 import { PropertiesPanel } from '../utils/PropertiesPanel';
 import {
   PitSave, ZoneSave, WallSave, BridgeSave, SpeedLineSave, ArenaConfig, RotationSave,
   ObstacleSave, TrapSave, PortalSave, BaseFootingSave,
-  pitToSave, zoneToSave, arenaToSave, wallToSave, bridgeToSave, speedLineToSave,
-  obstacleToSave, trapToSave, portalToSave, rotationToSave, footingToSave,
+  pitToSave, zoneToSave, arenaToSave,
+  obstacleToSave, footingToSave,
 } from '../utils/arenaPersistence';
 import { DEMO_ARENA_CONFIG } from '../config/demoArenaConfig';
-import { buildObstacleObjects, applyObstacle, defaultObstacle } from '../geometry/obstacleBuilders';
-import { buildFootingObjects, applyFooting, defaultFooting } from '../geometry/footingBuilders';
-import { buildTrapObjects, applyTrap, defaultTrap, trapSurfY, clampTrapDim, buildEarthquakeMesh, updateEarthquakeMeshHeights, buildRPMMesh } from '../geometry/trapBuilders';
+import { trapSurfY, updateEarthquakeMeshHeights } from '../geometry/trapBuilders';
+import { TrapManager } from '../features/managers/TrapManager';
 import { defaultProjectileConfig } from '../types/arenaTypes';
 import { ProjectileManager } from '../features/managers/ProjectileManager';
-import { buildPortalObjects, applyPortal, defaultPortal, portalSurfY } from '../geometry/portalBuilders';
-import {
-  buildJumpLinkObjects, applyJumpLink, defaultJumpLink, jumpLinkFromSave, resolveEndpointWorld,
-} from '../geometry/jumpLinkBuilders';
+import { ProjectionService } from '../features/ProjectionService';
+import { PortalManager } from '../features/managers/PortalManager';
+import { resolveEndpointWorld } from '../geometry/jumpLinkBuilders';
 import { JumpLinkData, JumpLinkParentType } from '../types/arenaTypes';
-import { jumpLinkToSave, JumpLinkSave } from '../utils/arenaPersistence';
-import { buildWallGeometry, buildWallEdgeGeometry, defaultWallData, trapRimPoints, trapWorldCenter } from '../geometry/wallBuilders';
-import {
-  SegmentPose, DEFAULT_START_POSE,
-  resolveStartPose, computeSegmentEndPose,
-  buildSegmentDeckGeometry, buildSegmentEdgeGeometry,
-  defaultBridgeSection, defaultSegment,
-} from '../geometry/bridgeSegmentBuilders';
+import { JumpLinkSave } from '../utils/arenaPersistence';
+import { JumpLinkManager } from '../features/managers/JumpLinkManager';
+import { WallManager } from '../features/managers/WallManager';
+import { BridgeManager } from '../features/managers/BridgeManager';
+import { SpeedLineManager } from '../features/managers/SpeedLineManager';
 import {
   listArenaPresets, saveArenaPreset, newPresetId,
   generateArenaThumb, remapArenaConfigIds, extractArenaConfig,
 } from '../utils/presetStore';
 import { SpawnManager } from '../features/managers/SpawnManager';
+import { ObstacleManager } from '../features/managers/ObstacleManager';
+import { FootingManager } from '../features/managers/FootingManager';
 import { ArenaEnvironmentManager } from '../features/managers/ArenaEnvironmentManager';
 import { TranslationManager } from '../features/managers/TranslationManager';
 import { TargetManager } from '../features/managers/TargetManager';
 import { TriggerZoneManager } from '../features/managers/TriggerZoneManager';
+import { RotationManager } from '../features/managers/RotationManager';
+import { PresentationManager } from '../features/managers/PresentationManager';
+import { RenderManager } from '../features/managers/RenderManager';
 import type { SceneContext } from '../features/IArenaFeature';
 import { ArenaSurfaceProvider, FlatSurfaceProvider } from '../features/surfaceProviders';
 import type { ISurfaceProvider } from '../features/ISurfaceProvider';
 import type { TranslationData } from '../types/arenaTypes';
 import type { TranslationSave } from '../utils/arenaPersistence';
+import { inputManager } from '../features/managers/InputManager';
+import { pendingLoadStore } from '../stores/pendingLoadStore';
+import { createArenaStateStore, type ArenaStateStore } from '../stores/arenaStateStore';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
@@ -99,6 +101,7 @@ export class ArenaSandbox extends Sandbox {
   private solidMode = true;
   private modeBtn:  HTMLButtonElement;
   private readonly arenaStorageKey: string;
+  private _arenaStore!: ArenaStateStore;
 
   private baseConfig = {
     height: DEFAULT_BASE_HEIGHT, sides: DEFAULT_BASE_SIDES, color: DEFAULT_BASE_COLOR,
@@ -113,29 +116,17 @@ export class ArenaSandbox extends Sandbox {
   private pitSeq        = 0;
   private zones         = new Map<string, ZoneData>();
   private zoneSeq       = 0;
-  private walls         = new Map<string, WallData>();
-  private wallSeq       = 0;
-  private bridges       = new Map<string, BridgeData>();
-  private bridgeSeq     = 0;
-  private segments      = new Map<string, BridgeSegmentData>();
-  private segmentSeq    = 0;
+  private _wallMgr!:     WallManager;
+  private _bridgeMgr!:  BridgeManager;
+  private _slMgr!:      SpeedLineManager;
   private bridgesByArena = new Map<string, Set<string>>();
-  private speedLines    = new Map<string, SpeedLineData>();
-  private speedlineSeq  = 0;
   private slSegSeq      = 0;
-  private obstacles     = new Map<string, ObstacleData>();
-  private obstacleSeq   = 0;
-  private traps         = new Map<string, TrapData>();
-  private trapSeq       = 0;
-  private portals       = new Map<string, PortalData>();
-  private portalSeq     = 0;
-  private rotations     = new Map<string, RotationData>();
-  private rotationSeq   = 0;
-  private nodeRotationId = new Map<string, string>(); // nodeId → rotationId
-  private footings      = new Map<string, BaseFootingData>();
-  private footingSeq    = 0;
-  private jumpLinks     = new Map<string, JumpLinkData>();
-  private jumpLinkSeq   = 0;
+  private _obstacleMgr!: ObstacleManager;
+  private _footingMgr!:  FootingManager;
+  private _trapMgr!:     TrapManager;
+  private _portalMgr!:   PortalManager;
+  private _rotMgr!: RotationManager;
+  private _jlMgr!: JumpLinkManager;
   private translations  = new Map<string, TranslationData>();
   private translationSeq = 0;
   private _surfaceProviders = new Map<string, ISurfaceProvider>();
@@ -155,7 +146,7 @@ export class ArenaSandbox extends Sandbox {
   private _onPointerUp:   (e: PointerEvent) => void;
   private props:        PropertiesPanel;
   private selectedId:   string | null = null;
-  private _presentMeshes = new Map<string, THREE.Mesh>();
+  private _presentMgr!: PresentationManager;
   private _arenaViewMode: 'hitbox' | 'both' | 'present' = 'both';
   private _viewBtns: HTMLButtonElement[] = [];
   /** Per-feature PresentConfig for the Presentation sub-node system. */
@@ -164,11 +155,16 @@ export class ArenaSandbox extends Sandbox {
   private _particleConfigs = new Map<string, ParticleConfig>();
   /** Tracks which sub-node IDs (present-X, particle-X, weather-X) are in the tree. */
   private _subNodesAdded = new Set<string>();
+  /** Tracks wallprofile-<arenaId> node IDs so they can be cleared on reset. */
+  private _wallProfileNodes = new Set<string>();
   private _projectileMgr: ProjectileManager | null = null;
   private _spawnMgr:    SpawnManager | null = null;
   private _spawnMgrBtn: HTMLButtonElement | null = null;
   private _envMgr!: ArenaEnvironmentManager;
+  private _projectionService!: ProjectionService;
+  private _renderMgr!: RenderManager;
   private _scoreHudEl: HTMLDivElement | null = null;
+  private _keyUnsubs: Array<() => void> = [];
 
   /* ── Undo / Redo ── */
   private undoStack: string[] = [];
@@ -184,6 +180,7 @@ export class ArenaSandbox extends Sandbox {
     super(container, opts);
     this._arenaOpts = opts;
     this.arenaStorageKey = `bey_arena_${opts.title.toLowerCase().replace(/\s+/g,'_')}`;
+    this._arenaStore = createArenaStateStore(this.arenaStorageKey);
 
     this.modeBtn = this.addTopBarButton('● Solid', 'Toggle solid / mesh view');
     this.modeBtn.addEventListener('click', ()=>this.toggleMode());
@@ -259,24 +256,28 @@ export class ArenaSandbox extends Sandbox {
 
     this.sceneTree.onSelect = (ids)=>{
       // Hide handles of previously selected speed line
-      if(this.selectedSlId){ const prev=this.speedLines.get(this.selectedSlId); if(prev) this._hideSlHandles(prev); }
+      if(this.selectedSlId){ const prev=this._slMgr.get(this.selectedSlId); if(prev) this._slMgr.hideHandles(prev); }
       this.selectedSlId = null;
       this.selectedId = ids.length===1 ? ids[0] : null;
       // Show handles of newly selected speed line
-      if(this.selectedId && this.speedLines.has(this.selectedId)){
+      if(this.selectedId && this._slMgr.has(this.selectedId)){
         this.selectedSlId = this.selectedId;
-        this._showSlHandles(this.speedLines.get(this.selectedId)!);
+        this._slMgr.showHandles(this._slMgr.get(this.selectedId)!);
       }
       this.renderProps();
     };
 
     this.sceneTree.onVisibilityToggle = (id, visible)=>{
+      // Manager-owned objects (via RenderManager) + bare scene objects (arenas/pits/zones/octagon)
+      this._renderMgr?.setVisible(id, visible);
       (this.sceneObjects.get(id)??[]).forEach(o=>{ o.visible=visible; });
     };
 
     this.sceneTree.onDelete = (ids)=>{
       this.captureUndo();
       for (const id of ids) {
+        // Wall-profile nodes are deleted with their arena; ignore direct deletion
+        if (id.startsWith('wallprofile-')) continue;
         // Sub-node deletion: clean up config and track set; don't touch feature data
         if (id.startsWith('present-')) {
           const fid = id.slice(8);
@@ -321,6 +322,7 @@ export class ArenaSandbox extends Sandbox {
           this._subNodesAdded.delete(`particle-${id}`);
           this._subNodesAdded.delete(`weather-${id}`);
           this._subNodesAdded.delete(`env-${id}`);
+          this._wallProfileNodes.delete(`wallprofile-${id}`);
           continue;
         }
         if(this.pits.has(id)){
@@ -333,30 +335,30 @@ export class ArenaSandbox extends Sandbox {
         if(this.zones.has(id)){
           const zone=this.zones.get(id)!;
           const parentArena=this.arenas.get(zone.parentArenaId);
-          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+          if(this._rotMgr.hasNode(id)) this._removeMemberFromRotation(id);
           this.removeZoneFromScene(id);
           if(parentArena){ this.updateArenaFloor(parentArena); this.updateArenaBowlHoles(parentArena,zone.parentArenaId); }
           continue;
         }
-        if(this.speedLines.has(id)){ this.captureUndo(); this._removeSpeedLine(id); continue; }
-        if(this.walls.has(id)){
-          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+        if(this._slMgr.has(id)){ this.captureUndo(); this._removeSpeedLine(id); continue; }
+        if(this._wallMgr.has(id)){
+          if(this._rotMgr.hasNode(id)) this._removeMemberFromRotation(id);
           this.removeWall(id); continue;
         }
-        if(this.segments.has(id)){ this.removeSegment(id); continue; }
-        if(this.bridges.has(id)){ this.removeBridge(id); continue; }
-        if(this.obstacles.has(id)){
-          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+        if(this._bridgeMgr.getSegment(id) !== undefined){ this.removeSegment(id); continue; }
+        if(this._bridgeMgr.has(id)){ this.removeBridge(id); continue; }
+        if(this._obstacleMgr.has(id)){
+          if(this._rotMgr.hasNode(id)) this._removeMemberFromRotation(id);
           this.removeObstacle(id); continue;
         }
-        if(this.traps.has(id)){
-          if(this.nodeRotationId.has(id)) this._removeMemberFromRotation(id);
+        if(this._trapMgr.has(id)){
+          if(this._rotMgr.hasNode(id)) this._removeMemberFromRotation(id);
           this.removeTrap(id); continue;
         }
-        if(this.portals.has(id)){ this.removePortal(id); continue; }
-        if(this.jumpLinks.has(id)){ this._removeJumpLink(id); continue; }
-        if(this.rotations.has(id)){ this.removeRotation(id); continue; }
-        if(this.footings.has(id)){ this.removeFooting(id); continue; }
+        if(this._portalMgr.has(id)){ this.removePortal(id); continue; }
+        if(this._jlMgr.has(id)){ this._removeJumpLink(id); continue; }
+        if(this._rotMgr.has(id)){ this.removeRotation(id); continue; }
+        if(this._footingMgr.has(id)){ this.removeFooting(id); continue; }
         const objs=this.sceneObjects.get(id);
         if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
       }
@@ -372,7 +374,7 @@ export class ArenaSandbox extends Sandbox {
       const validTypes: RotationNodeType[] = [];
       for (const cid of childIds) {
         const t = this._nodeTypeOf(cid);
-        if (t && !this.nodeRotationId.has(cid)) { validIds.push(cid); validTypes.push(t); }
+        if (t && !this._rotMgr.hasNode(cid)) { validIds.push(cid); validTypes.push(t); }
       }
       if (validIds.length < 1) return;
       let sumX=0, sumY=0, sumZ=0;
@@ -390,18 +392,6 @@ export class ArenaSandbox extends Sandbox {
 
     this.sceneTree.onDuplicate = (id: string) => { this._duplicateNode(id); };
 
-    /* Keyboard shortcuts: Ctrl+Z = undo, Ctrl+Y / Ctrl+Shift+Z = redo */
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (!e.ctrlKey && !e.metaKey) return;
-      if (e.key === 'z' || e.key === 'Z') {
-        e.preventDefault();
-        if (e.shiftKey) { this.redo(); } else { this.undo(); }
-      } else if (e.key === 'y' || e.key === 'Y') {
-        e.preventDefault();
-        this.redo();
-      }
-    });
-
     this.updateUndoRedoUI();
 
     // Bind speed line pointer handlers (wired to canvas in mountRenderer override)
@@ -418,41 +408,30 @@ export class ArenaSandbox extends Sandbox {
       arenaSeq: this.arenaSeq, pitSeq: this.pitSeq, zoneSeq: this.zoneSeq,
       arenas: [...this.arenas.entries()].map(([id,a]) => {
         const s = arenaToSave(id,a,this.pits,this.zones);
-        s.walls = [...this.walls.values()]
-          .filter(w => w.parentType==='arena' && w.parentId===id)
-          .map(wallToSave);
-        s.speedLines = [...this.speedLines.values()]
-          .filter(sl => sl.parentArenaId===id && sl.parentZoneId===null)
-          .map(speedLineToSave);
+        s.walls = this._wallMgr.serializeAll(w => w.parentType==='arena' && w.parentId===id);
+        s.speedLines = this._slMgr.serializeAll(sl => sl.parentArenaId===id && sl.parentZoneId===null);
         return s;
       }),
-      bridges: [...this.bridges.values()].map(b=>bridgeToSave(b,this.segments,this.walls)),
-      wallSeq: this.wallSeq, bridgeSeq: this.bridgeSeq, segmentSeq: this.segmentSeq,
-      speedLineSeq: this.speedlineSeq,
-      speedLines: [...this.speedLines.values()]
-        .filter(sl => sl.parentZoneId !== null)
-        .map(speedLineToSave),
-      baseWalls: [...this.walls.values()]
-        .filter(w => w.parentType==='base')
-        .map(wallToSave),
-      obstacles: [...this.obstacles.values()].map(obstacleToSave),
-      obstacleSeq: this.obstacleSeq,
-      traps: [...this.traps.values()].map(t => {
-        const ts = trapToSave(t);
-        ts.walls = [...this.walls.values()]
-          .filter(w => w.parentType==='trap' && w.parentId===t.id)
-          .map(wallToSave);
+      bridges: [...this._bridgeMgr.getAll().values()].map(b => this._bridgeMgr.toSaveWithWalls(b, this._wallMgr.getAll() as Map<string, WallData>)),
+      wallSeq: this._wallMgr.getSeq(), bridgeSeq: this._bridgeMgr.getSeq(), segmentSeq: this._bridgeMgr.getSegSeq(),
+      speedLineSeq: this._slMgr.getSeq(),
+      speedLines: this._slMgr.serializeAll(sl => sl.parentZoneId !== null),
+      baseWalls: this._wallMgr.serializeAll(w => w.parentType==='base'),
+      obstacles: this._obstacleMgr.serializeAll(),
+      obstacleSeq: this._obstacleMgr.getSeq(),
+      traps: this._trapMgr.serializeAll().map(ts => {
+        ts.walls = this._wallMgr.serializeAll(w => w.parentType==='trap' && w.parentId===ts.id);
         return ts;
       }),
-      trapSeq: this.trapSeq,
-      portals: [...this.portals.values()].map(portalToSave),
-      portalSeq: this.portalSeq,
-      rotations: [...this.rotations.values()].map(rotationToSave),
-      rotationSeq: this.rotationSeq,
-      footings: [...this.footings.values()].map(footingToSave),
-      footingSeq: this.footingSeq,
-      jumpLinks: [...this.jumpLinks.values()].map(jumpLinkToSave),
-      jumpLinkSeq: this.jumpLinkSeq,
+      trapSeq: this._trapMgr.getSeq(),
+      portals: this._portalMgr.serializeAll(),
+      portalSeq: this._portalMgr.getSeq(),
+      rotations: this._rotMgr.serializeAll(),
+      rotationSeq: this._rotMgr.getSeq(),
+      footings: this._footingMgr.serializeAll(),
+      footingSeq: this._footingMgr.getSeq(),
+      jumpLinks: this._jlMgr.serializeAll(),
+      jumpLinkSeq: this._jlMgr.getSeq(),
       translations: this._translationMgr
         ? ([...this._translationMgr.getAll().values()].map(d => this._translationMgr!.toSave(d)) as TranslationSave[])
         : [],
@@ -513,19 +492,14 @@ export class ArenaSandbox extends Sandbox {
   /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
     this._envMgr?.clear();
+    this._presentMgr?.disposeAll();
+    this._presentConfigs.clear();
     this._subNodesAdded.clear();
-    // Remove rotations first to return objects to scene root before clearing
-    for(const rot of this.rotations.values()){
-      const scene=this.getScene();
-      if(rot.pivotGroup && scene){
-        for(const mid of rot.memberIds) for(const obj of this._getMemberObjects(mid)) scene.attach(obj);
-        scene.remove(rot.pivotGroup);
-      }
-    }
-    this.rotations.clear(); this.nodeRotationId.clear(); this.rotationSeq=0;
-    for(const sl of this.speedLines.values()) this._disposeSpeedLine(sl);
-    this.speedLines.clear();
-    this.speedlineSeq = 0; this.slSegSeq = 0;
+    this._wallProfileNodes.clear();
+    // Detach rotation members first so other managers can cleanly dispose their objects
+    this._rotMgr.detachAll();
+    this._slMgr.clear();
+    this.slSegSeq = 0;
     for(const [id,] of this.arenas.entries()) this.sceneTree.remove(id);
     for(const pit of this.pits.values()){
       this.disposePit(pit);
@@ -540,21 +514,16 @@ export class ArenaSandbox extends Sandbox {
     for(const arena of this.arenas.values()){
       this.disposeArena(arena); this.removeFromScene(arena.mesh, arena.edges);
     }
-    for(const wall of this.walls.values()) this._disposeWall(wall);
-    for(const bridge of this.bridges.values()) this._disposeBridge(bridge);
+    this._wallMgr.clear();
+    this._bridgeMgr.clear();
     this.pits.clear(); this.zones.clear(); this.arenas.clear();
-    this.walls.clear(); this.bridges.clear(); this.segments.clear();
     this.bridgesByArena.clear();
-    for(const obs of this.obstacles.values()) this._disposeObstacle(obs);
-    this.obstacles.clear(); this.obstacleSeq = 0;
-    for(const trap of this.traps.values()) this._disposeTrap(trap);
-    this.traps.clear(); this.trapSeq = 0;
-    for(const portal of this.portals.values()) this._disposePortal(portal);
-    this.portals.clear(); this.portalSeq = 0;
-    for(const footing of this.footings.values()) this._disposeFooting(footing);
-    this.footings.clear(); this.footingSeq = 0;
-    for(const jl of this.jumpLinks.values()) this._disposeJumpLink(jl);
-    this.jumpLinks.clear(); this.jumpLinkSeq = 0;
+    this._obstacleMgr.clear();
+    this._trapMgr.clear();
+    this._portalMgr.clear();
+    this._footingMgr.clear();
+    this._rotMgr.clear();
+    this._jlMgr.clear();
     this._translationMgr?.clear();
     this.translations.clear(); this.translationSeq = 0;
     this._surfaceProviders.clear();
@@ -562,7 +531,6 @@ export class ArenaSandbox extends Sandbox {
       new FlatSurfaceProvider('octagon-base', this.baseConfig.height, 0, 0));
     this.sceneObjects.clear();
     this.arenaSeq = 0; this.pitSeq = 0; this.zoneSeq = 0;
-    this.wallSeq = 0; this.bridgeSeq = 0; this.segmentSeq = 0;
   }
 
   /** Rebuild the scene from an ArenaConfig (used by undo/redo). */
@@ -571,14 +539,16 @@ export class ArenaSandbox extends Sandbox {
     this.baseConfig = { ...this.baseConfig, ...cfg.baseConfig };
     this.rebuildBase();
     this.arenaSeq = cfg.arenaSeq; this.pitSeq = cfg.pitSeq; this.zoneSeq = cfg.zoneSeq;
-    this.wallSeq = cfg.wallSeq; this.bridgeSeq = cfg.bridgeSeq; this.segmentSeq = cfg.segmentSeq;
-    this.speedlineSeq = cfg.speedLineSeq;
-    this.obstacleSeq = cfg.obstacleSeq;
-    this.trapSeq = cfg.trapSeq;
-    this.portalSeq = cfg.portalSeq;
-    this.rotationSeq = cfg.rotationSeq;
-    this.footingSeq = cfg.footingSeq;
-    this.jumpLinkSeq = cfg.jumpLinkSeq ?? 0;
+    this._bridgeMgr.restoreSeq(cfg.bridgeSeq);
+    this._bridgeMgr.restoreSegSeq(cfg.segmentSeq);
+    this._slMgr.restoreSeq(cfg.speedLineSeq);
+    this._wallMgr.restoreSeq(cfg.wallSeq);
+    this._obstacleMgr.restoreSeq(cfg.obstacleSeq);
+    this._trapMgr.restoreSeq(cfg.trapSeq);
+    this._portalMgr.restoreSeq(cfg.portalSeq);
+    this._rotMgr.restoreSeq(cfg.rotationSeq ?? 0);
+    this._footingMgr.restoreSeq(cfg.footingSeq);
+    this._jlMgr.restoreSeq(cfg.jumpLinkSeq ?? 0);
     this.translationSeq = cfg.translationSeq ?? 0;
     this._translationMgr?.restoreSeq(this.translationSeq);
     this._loadArenasFromConfig(cfg);
@@ -688,17 +658,17 @@ export class ArenaSandbox extends Sandbox {
   private _getFeaturePresent(featureId: string): { stlb64: string | null; color: number } {
     const arena = this.arenas.get(featureId);
     if (arena) return { stlb64: arena.presentStlb64, color: arena.presentColor };
-    const wall = this.walls.get(featureId);
+    const wall = this._wallMgr.get(featureId);
     if (wall) return { stlb64: wall.presentStlb64, color: wall.presentColor };
-    const bridge = this.bridges.get(featureId);
+    const bridge = this._bridgeMgr.get(featureId);
     if (bridge) return { stlb64: bridge.presentStlb64, color: bridge.presentColor };
-    const obs = this.obstacles.get(featureId);
+    const obs = this._obstacleMgr.get(featureId);
     if (obs) return { stlb64: obs.presentStlb64, color: obs.presentColor };
-    const trap = this.traps.get(featureId);
+    const trap = this._trapMgr.get(featureId);
     if (trap) return { stlb64: trap.presentStlb64, color: trap.presentColor };
-    const portal = this.portals.get(featureId);
+    const portal = this._portalMgr.get(featureId);
     if (portal) return { stlb64: portal.presentStlb64, color: portal.presentColor };
-    const footing = this.footings.get(featureId);
+    const footing = this._footingMgr.get(featureId);
     if (footing) return { stlb64: footing.presentStlb64, color: footing.presentColor };
     return { stlb64: null, color: 0xaaaaaa };
   }
@@ -706,47 +676,24 @@ export class ArenaSandbox extends Sandbox {
   /** Load STL from PresentConfig and apply all transforms. */
   private _loadPresentStlWithConfig(featureId: string, cfg: PresentConfig): void {
     if (!cfg.stlb64) return;
-    this._disposePresentMesh(featureId);
     const bin = Uint8Array.from(atob(cfg.stlb64), c => c.charCodeAt(0));
     const loader = new STLLoader();
     const geo = loader.parse(bin.buffer);
-    const mat = new THREE.MeshStandardMaterial({ color: cfg.color, roughness: 0.6, metalness: 0.1 });
-    const mesh = new THREE.Mesh(geo, mat);
     const hitbox = this._getHitboxMesh(featureId);
-    const bx = hitbox?.position.x ?? 0;
-    const by = hitbox?.position.y ?? 0;
-    const bz = hitbox?.position.z ?? 0;
-    mesh.position.set(bx + cfg.offX, by + cfg.offY, bz + cfg.offZ);
-    mesh.rotation.set(
-      THREE.MathUtils.degToRad(cfg.rotX),
-      THREE.MathUtils.degToRad(cfg.rotY),
-      THREE.MathUtils.degToRad(cfg.rotZ),
-    );
-    mesh.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
-    this.addToScene(mesh);
-    this._presentMeshes.set(featureId, mesh);
-    this._applyViewMode();
+    const worldPos = hitbox ? hitbox.position.clone() : new THREE.Vector3();
+    this._presentMgr.load(featureId, cfg, worldPos, geo);
   }
 
   /** Apply PresentConfig to an existing or new present mesh. */
   private _applyPresentConfig(featureId: string, cfg: PresentConfig): void {
-    if (!cfg.stlb64) { this._disposePresentMesh(featureId); this._applyViewMode(); return; }
-    const pm = this._presentMeshes.get(featureId);
-    if (!pm) {
+    if (!cfg.stlb64) { this._disposePresentMesh(featureId); return; }
+    const entry = this._presentMgr.getEntry(featureId);
+    if (!entry) {
       this._loadPresentStlWithConfig(featureId, cfg);
     } else {
       const hitbox = this._getHitboxMesh(featureId);
-      const bx = hitbox?.position.x ?? 0;
-      const by = hitbox?.position.y ?? 0;
-      const bz = hitbox?.position.z ?? 0;
-      pm.position.set(bx + cfg.offX, by + cfg.offY, bz + cfg.offZ);
-      pm.rotation.set(
-        THREE.MathUtils.degToRad(cfg.rotX),
-        THREE.MathUtils.degToRad(cfg.rotY),
-        THREE.MathUtils.degToRad(cfg.rotZ),
-      );
-      pm.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
-      (pm.material as THREE.MeshStandardMaterial).color.setHex(cfg.color);
+      const worldPos = hitbox ? hitbox.position.clone() : new THREE.Vector3();
+      this._presentMgr.updateTransform(featureId, cfg, worldPos);
     }
   }
 
@@ -794,7 +741,7 @@ export class ArenaSandbox extends Sandbox {
       this._particleConfigs.set(featureId, cfg);
     }
     const cfg = this._particleConfigs.get(featureId)!;
-    const isSpeedLine = this.speedLines.has(featureId);
+    const isSpeedLine = this._slMgr.has(featureId);
     this.props.showParticle(
       cfg,
       () => {
@@ -826,6 +773,25 @@ export class ArenaSandbox extends Sandbox {
     if (this._subNodesAdded.has(subId)) return;
     this._subNodesAdded.add(subId);
     this.sceneTree.add(subId, 'Environment', '🌍', arenaId);
+  }
+
+  private _showWallProfileNode(arenaId: string): void {
+    const arena = this.arenas.get(arenaId); if (!arena) return;
+    const onGeom = () => {
+      this.captureUndo();
+      applyArena(arena, this.getArenaHoles(arena), this.getScene() ?? undefined);
+      this._applyArenaTilt(arena);
+      this.updateArenaChildren(arena);
+      this.updateArenaFloor(arena);
+      this.updateIslandCap(arena, arenaId);
+      this.updateArenaRimSeam(arena);
+      this.updateAllMoatIslandCaps();
+      this.updateTopFace();
+      this.rebuildDependentsOf(arenaId);
+      this.saveArena();
+    };
+    const onFull = () => { onGeom(); this.renderProps(); };
+    this.props.showWallProfile(arena, onGeom, onFull);
   }
 
   private _onEnvChange(arenaId: string, changedProps: EnvProperty[]): void {
@@ -937,51 +903,34 @@ export class ArenaSandbox extends Sandbox {
     this._applyViewMode();
   }
   private _applyViewMode(): void {
-    const showHitbox  = this._arenaViewMode !== 'present';
-    const showPresent = this._arenaViewMode !== 'hitbox';
-    // Hitbox objects
-    const hitboxSets: THREE.Object3D[][] = [];
-    for (const objs of this.sceneObjects.values()) hitboxSets.push(objs);
-    for (const objs of hitboxSets) for (const o of objs) o.visible = showHitbox;
-    // Present meshes
-    for (const [nodeId, pm] of this._presentMeshes) {
-      pm.visible = showPresent;
-      // If present is shown and hitbox hidden, keep hitbox hidden even if no present mesh
-      if (!showHitbox && showPresent) {
-        // The hitbox for this node was already hidden above; present mesh is visible
-      }
-      void nodeId;
-    }
+    // Merge bare sceneObjects (arenas/pits/zones/octagon) with renderMgr-owned objects (managers)
+    const merged = new Map<string, THREE.Object3D[]>(this.sceneObjects);
+    for (const [id, objs] of this._renderMgr.getAllEntries()) merged.set(id, objs);
+    this._presentMgr.applyViewMode(this._arenaViewMode, merged);
   }
   private _loadPresentStl(nodeId: string, b64: string, color: number): void {
-    this._disposePresentMesh(nodeId);
     const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     const loader = new STLLoader();
     const geo = loader.parse(bin.buffer);
-    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.1 });
-    const mesh = new THREE.Mesh(geo, mat);
-    // Position to match hitbox
+    const cfg: PresentConfig = {
+      ...defaultPresentConfig(),
+      stlb64: b64,
+      color,
+    };
     const hitbox = this._getHitboxMesh(nodeId);
-    if (hitbox) { mesh.position.copy(hitbox.position); mesh.rotation.copy(hitbox.rotation); }
-    this.addToScene(mesh);
-    this._presentMeshes.set(nodeId, mesh);
-    this._applyViewMode();
+    const worldPos = hitbox ? hitbox.position.clone() : new THREE.Vector3();
+    this._presentMgr.load(nodeId, cfg, worldPos, geo);
   }
   private _disposePresentMesh(nodeId: string): void {
-    const pm = this._presentMeshes.get(nodeId);
-    if (!pm) return;
-    this.removeFromScene(pm);
-    pm.geometry.dispose();
-    (pm.material as THREE.Material).dispose();
-    this._presentMeshes.delete(nodeId);
+    this._presentMgr.dispose(nodeId);
   }
   private _getHitboxMesh(nodeId: string): THREE.Mesh | null {
     const arena = this.arenas.get(nodeId); if (arena) return arena.mesh;
-    const obs = this.obstacles.get(nodeId); if (obs) return obs.mesh;
-    const trap = this.traps.get(nodeId); if (trap) return trap.mesh;
-    const portal = this.portals.get(nodeId); if (portal) return portal.mesh;
-    const wall = this.walls.get(nodeId); if (wall?.mesh) return wall.mesh;
-    const footing = this.footings.get(nodeId); if (footing?.mesh) return footing.mesh;
+    const obs = this._obstacleMgr.get(nodeId); if (obs) return obs.mesh;
+    const trap = this._trapMgr.get(nodeId); if (trap) return trap.mesh;
+    const portal = this._portalMgr.get(nodeId); if (portal) return portal.mesh;
+    const wall = this._wallMgr.get(nodeId); if (wall?.mesh) return wall.mesh;
+    const footing = this._footingMgr.get(nodeId); if (footing?.mesh) return footing.mesh;
     return null;
   }
   _fileInputStl(nodeId: string, color: number, onLoaded: (b64: string) => void): void {
@@ -1035,72 +984,53 @@ export class ArenaSandbox extends Sandbox {
 
   /* ── Speed line helpers ───────────────────────────────────────────────── */
 
-  private _disposeSpeedLine(sl: SpeedLineData): void {
-    if(sl.mesh){ this.removeFromScene(sl.mesh); sl.mesh.geometry.dispose();(sl.mesh.material as THREE.Material).dispose(); }
-    if(sl.edges){ this.removeFromScene(sl.edges); sl.edges.geometry.dispose();(sl.edges.material as THREE.Material).dispose(); }
-    for(const m of sl.markerMeshes){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
-    for(const m of sl.handleMeshes){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
-    for(const m of sl.overlapMarkers){ this.removeFromScene(m); m.geometry.dispose();(m.material as THREE.Material).dispose(); }
-    sl.markerMeshes=[]; sl.handleMeshes=[]; sl.overlapMarkers=[];
-    this.sceneObjects.delete(sl.id);
-    this.sceneTree.remove(sl.id);
-  }
-
   private _addSpeedLine(arenaId: string, parentZoneId: string | null = null): void {
     this.captureUndo();
-    const id   = `sl-${++this.speedlineSeq}`;
-    const name = `Speed Line ${this.speedlineSeq}`;
     const arena = this.arenas.get(arenaId); if(!arena) return;
-    const sl = defaultSpeedLine(name, arenaId, id, parentZoneId);
-    sl.segments[0].id = `${id}-seg-${++this.slSegSeq}`;
-    this.speedLines.set(id, sl);
-    arena.speedLineIds.push(id);
-
-    const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
-    sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
-    this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
-    this.sceneObjects.set(id, [mesh, edges]);
-
-    const treeParentId = parentZoneId ?? arenaId;
-    this.sceneTree.add(id, name, '↝', treeParentId);
+    const slSegRef = { value: this.slSegSeq };
+    const sl = this._slMgr.add(arenaId, parentZoneId, slSegRef);
+    if (!sl) return;
+    this.slSegSeq = slSegRef.value;
+    arena.speedLineIds.push(sl.id);
     this._checkSpeedLineOverlaps(arenaId);
     this.saveArena();
   }
 
   private _removeSpeedLine(id: string): void {
-    const sl = this.speedLines.get(id); if(!sl) return;
+    const sl = this._slMgr.get(id); if(!sl) return;
     // Clear back-refs on bridges/traps that reference this SL
     if (sl.linkedBridgeId) {
-      const bridge = this.bridges.get(sl.linkedBridgeId);
+      const bridge = this._bridgeMgr.get(sl.linkedBridgeId);
       if (bridge) bridge.linkedSpeedLineId = null;
     }
     if (sl.linkedTrapId) {
-      const trap = this.traps.get(sl.linkedTrapId);
+      const trap = this._trapMgr.get(sl.linkedTrapId);
       if (trap) trap.linkedSpeedLineId = null;
     }
-    this._disposeSpeedLine(sl);
-    const arena = this.arenas.get(sl.parentArenaId);
+    const arenaId = sl.parentArenaId;
+    const arena = this.arenas.get(arenaId);
     if(arena) arena.speedLineIds = arena.speedLineIds.filter(x=>x!==id);
     if(sl.parentZoneId){ const z=this.zones.get(sl.parentZoneId); if(z) z.speedLineIds=z.speedLineIds.filter(x=>x!==id); }
-    this.speedLines.delete(id);
     if(this.selectedSlId===id){ this.selectedSlId=null; }
-    this._checkSpeedLineOverlaps(sl.parentArenaId);
+    this._slMgr.remove(id);
+    this._checkSpeedLineOverlaps(arenaId);
     this.saveArena();
   }
 
   /** Auto-create an arena-level speed line and link it to a bridge. */
   private _autoLinkSpeedLine(bridgeId: string, segType: BridgeSegmentType, arenaId: string): void {
-    const bridge = this.bridges.get(bridgeId); if (!bridge) return;
+    const bridge = this._bridgeMgr.get(bridgeId); if (!bridge) return;
     if (bridge.linkedSpeedLineId) return; // already linked
     const arena  = this.arenas.get(arenaId); if (!arena) return;
 
-    const id   = `sl-${++this.speedlineSeq}`;
-    const name = `SL for ${bridge.name}`;
-    const sl = defaultSpeedLine(name, arenaId, id, null);
-    sl.segments[0].id = `${id}-seg-${++this.slSegSeq}`;
-    sl.linkedBridgeId  = bridgeId;
-    sl.targetType      = 'linked_bridge';
-    sl.targetBridgeId  = bridgeId;
+    const slSegRef = { value: this.slSegSeq };
+    const sl = this._slMgr.add(arenaId, null, slSegRef);
+    if (!sl) return;
+    this.slSegSeq = slSegRef.value;
+
+    sl.linkedBridgeId = bridgeId;
+    sl.targetType     = 'linked_bridge';
+    sl.targetBridgeId = bridgeId;
 
     // Choose preset based on segment type
     if (segType === 'loop' || segType === 'return_loop' || segType === 'exit_loop') {
@@ -1111,30 +1041,25 @@ export class ArenaSandbox extends Sandbox {
       sl.presetType = 'spiral_in';
     }
 
-    this.speedLines.set(id, sl);
-    arena.speedLineIds.push(id);
-    bridge.linkedSpeedLineId = id;
-
-    const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
-    sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
-    this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
-    this.sceneObjects.set(id, [mesh, edges]);
-    this.sceneTree.add(id, name, '↝', arenaId);
+    arena.speedLineIds.push(sl.id);
+    bridge.linkedSpeedLineId = sl.id;
+    this._slMgr.apply(sl);
   }
 
   /** Auto-create an arena-level speed line and link it to a trap. */
   private _autoLinkTrapSpeedLine(trapId: string, arenaId: string): void {
-    const trap  = this.traps.get(trapId);   if (!trap)  return;
+    const trap  = this._trapMgr.get(trapId);   if (!trap)  return;
     if (trap.linkedSpeedLineId) return;
     const arena = this.arenas.get(arenaId); if (!arena) return;
 
-    const id   = `sl-${++this.speedlineSeq}`;
-    const name = `SL for ${trap.name}`;
-    const sl = defaultSpeedLine(name, arenaId, id, null);
-    sl.segments[0].id = `${id}-seg-${++this.slSegSeq}`;
-    sl.linkedTrapId  = trapId;
-    sl.targetType    = 'linked_trap';
-    sl.targetTrapId  = trapId;
+    const slSegRef = { value: this.slSegSeq };
+    const sl = this._slMgr.add(arenaId, null, slSegRef);
+    if (!sl) return;
+    this.slSegSeq = slSegRef.value;
+
+    sl.linkedTrapId = trapId;
+    sl.targetType   = 'linked_trap';
+    sl.targetTrapId = trapId;
 
     // Choose preset based on trap effect
     switch (trap.effect) {
@@ -1146,18 +1071,12 @@ export class ArenaSandbox extends Sandbox {
       case 'rpm':          sl.presetType = 'circle';     break;
       case 'earthquake':   sl.presetType = 'polygon';    break;
       case 'projectile':   sl.presetType = 'polygon';    break;
-      default: return; // no SL for freeze/reverse_controls/hidden_pit
+      default: this._slMgr.remove(sl.id); return; // no SL for freeze/reverse_controls/hidden_pit
     }
 
-    this.speedLines.set(id, sl);
-    arena.speedLineIds.push(id);
-    trap.linkedSpeedLineId = id;
-
-    const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones);
-    sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
-    this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
-    this.sceneObjects.set(id, [mesh, edges]);
-    this.sceneTree.add(id, name, '↝', arenaId);
+    arena.speedLineIds.push(sl.id);
+    trap.linkedSpeedLineId = sl.id;
+    this._slMgr.apply(sl);
   }
 
   private _updateSpeedLine(sl: SpeedLineData): void {
@@ -1180,8 +1099,8 @@ export class ArenaSandbox extends Sandbox {
         worldX: p.jumpDstWorldX ?? 0, worldY: p.jumpDstWorldY ?? 0, worldZ: p.jumpDstWorldZ ?? 0,
         speedLineId: p.jumpDstSpeedLineId ?? null, atStart: p.jumpDstAtStart ?? false,
       };
-      const dstW = resolveEndpointWorld(ep, this.arenas, this.obstacles, this.traps,
-        id => this.speedLines.get(id), this.baseConfig.height);
+      const dstW = resolveEndpointWorld(ep, this.arenas, this._obstacleMgr.getAll() as Map<string, ObstacleData>, this._trapMgr.getAll() as Map<string, TrapData>,
+        id => this._slMgr.get(id), this.baseConfig.height);
       const dx = dstW.x - arena.posX; const dz = dstW.z - arena.posZ;
       const cosR = Math.cos(-arena.rotY * DEG2RAD); const sinR = Math.sin(-arena.rotY * DEG2RAD);
       p.endPosX = dx * cosR - dz * sinR;
@@ -1189,13 +1108,11 @@ export class ArenaSandbox extends Sandbox {
       p.endPosY = dstW.y;
     }
 
-    const projector = this._buildSurfaceProjector(sl.parentArenaId);
-    applySpeedLine(sl, arena, this.zones, this.getScene(), (...o)=>this.addToScene(...o), (...o)=>this.removeFromScene(...o), projector);
-    this.sceneObjects.set(sl.id, [sl.mesh, sl.edges]);
+    this._slMgr.apply(sl);
   }
 
   private _addSegmentsToLine(slId: string, segs: SpeedLineSegment[]): void {
-    const sl = this.speedLines.get(slId); if(!sl) return;
+    const sl = this._slMgr.get(slId); if(!sl) return;
     for(const seg of segs){ seg.id = `${slId}-seg-${++this.slSegSeq}`; }
     sl.segments.push(...segs);
     this._updateSpeedLine(sl);
@@ -1203,7 +1120,7 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private _removeSegmentFromLine(slId: string, k: number): void {
-    const sl = this.speedLines.get(slId); if(!sl) return;
+    const sl = this._slMgr.get(slId); if(!sl) return;
     if(sl.segments.length<=1) return;
     sl.segments.splice(k, 1);
     this._updateSpeedLine(sl);
@@ -1215,7 +1132,7 @@ export class ArenaSandbox extends Sandbox {
 
   private _checkSpeedLineOverlaps(arenaId: string): void {
     const arena = this.arenas.get(arenaId); if(!arena) return;
-    const arenaLines = [...this.speedLines.values()].filter(sl=>sl.parentArenaId===arenaId);
+    const arenaLines = [...this._slMgr.getAll().values()].filter(sl=>sl.parentArenaId===arenaId);
 
     // Clear old overlap markers
     for(const sl of arenaLines){
@@ -1248,77 +1165,19 @@ export class ArenaSandbox extends Sandbox {
 
   private _restoreSpeedLineSave(sls: SpeedLineSave[], arenaId: string): void {
     const arena = this.arenas.get(arenaId); if(!arena) return;
+    this._slMgr.restoreData(sls);
     for(const sls_ of sls){
-      const sl: SpeedLineData = {
-        ...sls_,
-        presetType:               sls_.presetType,
-        presetParams:             sls_.presetParams,
-        speedRamp:                sls_.speedRamp,
-        surfaceOffset:            sls_.surfaceOffset,
-        surfaceOrientObject:      sls_.surfaceOrientObject,
-        airNormalMode:            sls_.airNormalMode,
-        airNormalTiltDeg:         sls_.airNormalTiltDeg,
-        pointNormals:             [],
-        baseCondition:            sls_.baseCondition,
-        conditionPhase:           sls_.conditionPhase as SpeedLineData['conditionPhase'],
-        ejectBehavior:            sls_.ejectBehavior,
-        targetSelectionMode:      sls_.targetSelectionMode,
-        conditionCheckIntervalMs: sls_.conditionCheckIntervalMs,
-        statModifiers:            sls_.statModifiers,
-        linkedBridgeId:           sls_.linkedBridgeId ?? null,
-        linkedTrapId:             sls_.linkedTrapId   ?? null,
-        enabled:                  sls_.enabled        ?? true,
-        visible:                  sls_.visible        ?? true,
-        targetBridgeId:           sls_.targetBridgeId ?? null,
-        targetTrapId:             sls_.targetTrapId   ?? null,
-        jumpLinkId:               sls_.jumpLinkId     ?? null,
-        totalLength: 0,
-        mesh: null as unknown as THREE.Mesh,
-        edges: null as unknown as THREE.LineSegments,
-        markerMeshes: [], handleMeshes: [], overlapMarkers: [],
-      };
-      this.speedLines.set(sl.id, sl);
+      const sl = this._slMgr.get(sls_.id)!;
       arena.speedLineIds.push(sl.id);
       if(sl.parentZoneId){ const z=this.zones.get(sl.parentZoneId); if(z && !z.speedLineIds.includes(sl.id)) z.speedLineIds.push(sl.id); }
-
-      const projector = this._buildSurfaceProjector(arenaId);
-      const { mesh, edges, markerMeshes, handleMeshes, totalLength } = buildSpeedLineObjects(sl, arena, this.zones, projector);
-      sl.mesh=mesh; sl.edges=edges; sl.markerMeshes=markerMeshes; sl.handleMeshes=handleMeshes; sl.totalLength=totalLength;
-      this.addToScene(mesh, edges, ...markerMeshes, ...handleMeshes);
-      this.sceneObjects.set(sl.id, [mesh, edges]);
-
-      const treeParentId = sl.parentZoneId ?? arenaId;
-      this.sceneTree.add(sl.id, sl.name, '↝', treeParentId);
+      this._slMgr.buildAndShow(sl);
     }
-  }
-
-  private _buildSurfaceProjector(arenaId: string): SceneSurfaceProjector | undefined {
-    const arena = this.arenas.get(arenaId);
-    if (!arena) return undefined;
-    const fallbackSurf = (lx: number, lz: number) => arenaSurfaceYAtArenaLocal(arena, lx, lz);
-    const projector = new SceneSurfaceProjector([], fallbackSurf);
-    for (const wallId of arena.wallIds) {
-      const wall = this.walls.get(wallId);
-      if (wall?.mesh) projector.addMesh(wall.mesh);
-    }
-    for (const [, obs] of this.obstacles) {
-      if (obs.mesh) projector.addMesh(obs.mesh);
-    }
-    for (const bridgeId of this.bridgesByArena.get(arenaId) ?? new Set<string>()) {
-      const bridge = this.bridges.get(bridgeId);
-      if (!bridge) continue;
-      for (const segId of bridge.segmentIds) {
-        const seg = this.segments.get(segId);
-        if (seg?.mesh) projector.addMesh(seg.mesh);
-      }
-    }
-    return projector;
   }
 
   /* ── Speed line drag interaction ─────────────────────────────────────── */
 
   private _slPointerDown(e: PointerEvent): void {
-    const sl = this.selectedSlId ? this.speedLines.get(this.selectedSlId) : null;
+    const sl = this.selectedSlId ? this._slMgr.get(this.selectedSlId) : null;
     if(!sl) return;
     const canvas = this.getRendererCanvas(); if(!canvas) return;
     const cam = this.getCamera(); if(!cam) return;
@@ -1348,7 +1207,7 @@ export class ArenaSandbox extends Sandbox {
 
     if(!this.slDrag) {
       // Hover highlight
-      const sl = this.selectedSlId ? this.speedLines.get(this.selectedSlId) : null;
+      const sl = this.selectedSlId ? this._slMgr.get(this.selectedSlId) : null;
       if(sl) {
         const hits = this.slRaycaster.intersectObjects(sl.handleMeshes, false);
         for(const h of sl.handleMeshes) (h.material as THREE.MeshBasicMaterial).color.setHex(SL.HANDLE_COLOR);
@@ -1358,7 +1217,7 @@ export class ArenaSandbox extends Sandbox {
     }
 
     const { slId, handleType, handleIndex, dragPlane } = this.slDrag;
-    const sl = this.speedLines.get(slId); if(!sl) return;
+    const sl = this._slMgr.get(slId); if(!sl) return;
     const arena = this.arenas.get(sl.parentArenaId); if(!arena) return;
 
     const worldPt = new THREE.Vector3();
@@ -1389,216 +1248,51 @@ export class ArenaSandbox extends Sandbox {
     this._flushUndoPending();
   }
 
-  private _disposeWall(wall: WallData): void {
-    // Detach from pivot group first if rotating
-    if(wall._rotatePivot){
-      const scene = this.getScene();
-      if(scene){
-        scene.remove(wall._rotatePivot);
-        wall._rotatePivot.clear();
-      }
-      wall._rotatePivot = undefined;
-    }
-    if(wall.mesh){ wall.mesh.geometry.dispose();(wall.mesh.material as THREE.Material).dispose(); this.removeFromScene(wall.mesh); wall.mesh=null; }
-    if(wall.edges){ wall.edges.geometry.dispose();(wall.edges.material as THREE.Material).dispose(); this.removeFromScene(wall.edges); wall.edges=null; }
-    this.sceneObjects.delete(wall.id);
-    this.sceneTree.remove(wall.id);
-  }
-
-  private _disposeBridge(bridge: BridgeData): void {
-    for(const sid of bridge.segmentIds){
-      const seg=this.segments.get(sid);
-      if(seg){
-        if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose(); seg.mesh=null; }
-        if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose(); seg.edges=null; }
-        if(seg._animPivot){ bridge.group.remove(seg._animPivot); seg._animPivot=null; }
-        this.sceneObjects.delete(sid);
-        this.sceneTree.remove(sid);
-        this.segments.delete(sid);
-      }
-    }
-    for(const wid of bridge.wallIds){
-      const w=this.walls.get(wid);
-      if(w){ this._disposeWall(w); this.walls.delete(wid); }
-    }
-    if(bridge.group) this.removeFromScene(bridge.group);
-    this.sceneObjects.delete(bridge.id);
-    this.sceneTree.remove(bridge.id);
-  }
 
   /* ── Wall helpers ─────────────────────────────────────────────────────── */
 
-  private _getArenaRimPts(arenaId: string): THREE.Vector2[] {
-    const arena = this.arenas.get(arenaId);
-    if(!arena) return [];
-    return shapePoints(arena);
-  }
-
-  private _arenaRimY(arenaId: string): number {
-    const arena = this.arenas.get(arenaId);
-    if(!arena) return 0;
-    return arena.posY;
-  }
-
-  /** Rebuild mesh+edges for a wall and add/replace in scene. */
+  /** Rebuild mesh+edges for a wall and add/replace in scene. Delegates to WallManager. */
   private applyWall(wall: WallData, _rebuildingSiblings?: Set<string>): void {
-    let rimPts: THREE.Vector2[];
-    let rimY: number;
-    let cx = 0; let cz = 0;
-
-    if(wall.parentType==='arena'){
-      const arena=this.arenas.get(wall.parentId);
-      if(!arena) return;
-      if(arena.isMoat && wall.moatRing==='inner'){
-        rimPts = shapePoints({
-          ...arena,
-          radiusX: arena.innerRadiusX, radiusZ: arena.innerRadiusZ,
-          openingShape: arena.innerOpeningShape, sides: arena.innerSides, starInner: arena.innerStarInner,
-        } as typeof arena);
-        rimY = arena.posY + arena.innerRimOffset;
-      } else {
-        rimPts = shapePoints(arena);
-        rimY   = arena.posY;
-      }
-      cx = arena.posX; cz = arena.posZ;
-    } else if(wall.parentType==='base'){
-      rimPts = [];
-      rimY   = this.baseConfig.height;
-      cx     = wall.basePosX; cz = wall.basePosZ;
-    } else if(wall.parentType==='trap'){
-      const trap = this.traps.get(wall.parentId);
-      if(!trap) return;
-      const surfY = this._getTrapSurfY(trap);
-      rimY = surfY + TRAP_PLATE_HEIGHT;
-      const c = trapWorldCenter(trap, this.arenas);
-      // trapRimPoints returns trap-local XZ (centered 0,0); translate to world space
-      // so that inwardDir and inner-offset calculations use consistent coordinates.
-      rimPts = trapRimPoints(trap).map(p => new THREE.Vector2(p.x + c.x, p.y + c.z));
-      cx = c.x; cz = c.z;
-    } else {
-      // bridge walls — handled by applyBridgeFromSegment, not here
-      return;
-    }
-
-    // Compute auto-join: detect adjacent walls on the same parent that share an arc boundary
-    let joinStart = false;
-    let joinEnd   = false;
-    if(wall.autoJoin && wall.parentType==='arena'){
-      const siblings = [...this.walls.values()].filter(
-        w => w.id !== wall.id && w.parentId === wall.parentId && w.parentType === 'arena',
-      );
-      joinStart = siblings.some(w => Math.abs((w.arcEnd   % 360 + 360) % 360 - (wall.arcStart % 360 + 360) % 360) < 1);
-      joinEnd   = siblings.some(w => Math.abs((w.arcStart % 360 + 360) % 360 - (wall.arcEnd   % 360 + 360) % 360) < 1);
-    }
-
-    const scene = this.getScene();
-    if(!scene) return;
-
-    const geo  = buildWallGeometry(wall, rimPts, rimY, cx, cz, joinStart, joinEnd);
-    const eGeo = buildWallEdgeGeometry(wall, rimPts, rimY, cx, cz, joinStart, joinEnd);
-
-    const wallMat = buildSurfaceMaterial({
-      color: wall.color, surface: wall.surface,
-      customTileData: wall.customTileData, tileScale: wall.tileScale,
-      transparent: wall.opacity < 1, opacity: wall.opacity,
-    });
-    (wallMat as THREE.MeshStandardMaterial).emissive.setHex(wall.emissiveColor);
-    (wallMat as THREE.MeshStandardMaterial).emissiveIntensity = wall.emissiveIntensity;
-    (wallMat as THREE.MeshStandardMaterial).depthWrite = wall.opacity >= 1;
-
-    // Detach from old pivot before recreating geometry
-    if(wall._rotatePivot && !wall.rotateOnArena){
-      scene.remove(wall._rotatePivot);
-      wall._rotatePivot.clear();
-      wall._rotatePivot = undefined;
-    }
-
-    if(wall.mesh){
-      wall.mesh.geometry.dispose();
-      wall.mesh.geometry = geo;
-      (wall.mesh.material as THREE.Material).dispose();
-      wall.mesh.material = wallMat;
-    } else {
-      wall.mesh = new THREE.Mesh(geo, wallMat);
-      scene.add(wall.mesh);
-    }
-    const edgeCol = new THREE.Color(wall.color).lerp(new THREE.Color(0xffffff), 0.5);
-    if(wall.edges){
-      wall.edges.geometry.dispose();
-      wall.edges.geometry = eGeo;
-      (wall.edges.material as THREE.LineBasicMaterial).color.copy(edgeCol);
-    } else {
-      wall.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
-      scene.add(wall.edges);
-    }
-
-    // Pivot group for arena auto-rotation
-    if(wall.rotateOnArena && wall.parentType==='arena'){
-      if(!wall._rotatePivot){
-        wall._rotatePivot = new THREE.Group();
-        wall._rotatePivot.position.set(cx, 0, cz);
-        scene.add(wall._rotatePivot);
-        wall._arenaRotateTimer = wall.arenaRotateStepInterval;
-      }
-      // Re-parent mesh and edges into pivot; offset positions by -cx/-cz
-      scene.remove(wall.mesh);
-      scene.remove(wall.edges);
-      wall._rotatePivot.add(wall.mesh);
-      wall._rotatePivot.add(wall.edges);
-      wall.mesh.position.x  = 0;
-      wall.mesh.position.z  = 0;
-      wall.edges.position.x = 0;
-      wall.edges.position.z = 0;
-    }
-
-    this.sceneObjects.set(wall.id, [wall.mesh, wall.edges]);
-
-    // Rebuild adjacent walls that share this wall's arc boundary so their join-caps update
-    if(!_rebuildingSiblings && wall.autoJoin && wall.parentType==='arena'){
-      const sibs = new Set<string>([wall.id]);
-      for(const w of this.walls.values()){
-        if(w.id === wall.id || w.parentId !== wall.parentId || w.parentType !== 'arena') continue;
-        const a0 = (wall.arcStart % 360 + 360) % 360;
-        const a1 = (wall.arcEnd   % 360 + 360) % 360;
-        const b0 = (w.arcStart    % 360 + 360) % 360;
-        const b1 = (w.arcEnd      % 360 + 360) % 360;
-        if(Math.abs(b1 - a0) < 1 || Math.abs(b0 - a1) < 1){
-          this.applyWall(w, sibs);
-        }
-      }
-    }
+    this._wallMgr.apply(wall, _rebuildingSiblings);
   }
 
   private addWall(parentId: string, parentType: WallData['parentType']): void {
     this.captureUndo();
-    const id   = `wall-${++this.wallSeq}`;
-    const name = `Wall ${this.wallSeq}`;
-    const wall = defaultWallData(id, name, parentId, parentType);
-    this.walls.set(id, wall);
-    this.applyWall(wall);
-
-    const parentTreeId = parentType==='base' ? 'octagon-base' : parentId;
-    this.sceneTree.add(id, name, '🧱', parentTreeId, {
+    let data!: WallData;
+    const treeOpts = {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'wall'); this.addRotation([id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
+        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'wall'); this.addRotation([data.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
-    });
+    };
+    switch (parentType) {
+      case 'arena':  data = this._wallMgr.addToArena(parentId, treeOpts); break;
+      case 'base':   data = this._wallMgr.addToBase(treeOpts); break;
+      case 'trap':   data = this._wallMgr.addToTrap(parentId, treeOpts); break;
+      case 'bridge': data = this._wallMgr.addToBridge(parentId, treeOpts); break;
+    }
+    if (parentType === 'arena') {
+      const arena = this.arenas.get(parentId);
+      if (arena && !arena.wallIds.includes(data.id)) arena.wallIds.push(data.id);
+    }
+    if (parentType === 'bridge') {
+      const bridge = this._bridgeMgr.get(parentId);
+      if (bridge && !bridge.wallIds.includes(data.id)) bridge.wallIds.push(data.id);
+    }
     this.saveArena();
   }
 
   private removeWall(id: string): void {
-    const wall = this.walls.get(id); if(!wall) return;
-    this._disposeWall(wall);
-    this.walls.delete(id);
+    const wall = this._wallMgr.get(id); if(!wall) return;
     if(wall.parentType==='arena'){
       const arena=this.arenas.get(wall.parentId);
       if(arena) arena.wallIds=arena.wallIds.filter(x=>x!==id);
     }
     if(wall.parentType==='bridge'){
-      const bridge=[...this.bridges.values()].find(b=>b.wallIds.includes(id));
+      const bridge=[...this._bridgeMgr.getAll().values()].find(b=>b.wallIds.includes(id));
       if(bridge) bridge.wallIds=bridge.wallIds.filter(x=>x!==id);
     }
+    this._wallMgr.remove(id);
     this.saveArena();
   }
 
@@ -1606,86 +1300,43 @@ export class ArenaSandbox extends Sandbox {
 
   private addObstacle(): void {
     this.captureUndo();
-    const id = `obstacle-${++this.obstacleSeq}`;
-    const data = defaultObstacle(`Obstacle ${this.obstacleSeq}`, id, this.baseConfig.height);
-    const [mesh, edges] = buildObstacleObjects(data);
-    data.mesh = mesh; data.edges = edges;
-    this.addToScene(mesh, edges);
-    this.sceneObjects.set(id, [mesh, edges]);
-    this.obstacles.set(id, data);
-    this.sceneTree.add(id, data.name, '⬛', 'octagon-base', {
+    let data!: ObstacleData;
+    data = this._obstacleMgr.add({
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'obstacle'); this.addRotation([id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'⤻+', title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(id,'obstacle') },
-        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
+        { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'obstacle'); this.addRotation([data.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(data.id,'obstacle') },
+        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     });
     this.saveArena();
   }
 
   private removeObstacle(id: string): void {
-    const obs = this.obstacles.get(id); if(!obs) return;
-    this._disposeObstacle(obs);
-    this.obstacles.delete(id);
+    this._obstacleMgr.remove(id);
     this.saveArena();
   }
 
-  private _disposeObstacle(obs: ObstacleData): void {
-    this.removeFromScene(obs.mesh, obs.edges);
-    obs.mesh.geometry.dispose();
-    (obs.mesh.material as THREE.Material).dispose();
-    obs.edges.geometry.dispose();
-    (obs.edges.material as THREE.Material).dispose();
-    this.sceneObjects.delete(obs.id);
-  }
-
   private _restoreObstacleSave(os: ObstacleSave): void {
-    const data = defaultObstacle(os.name, os.id, this.baseConfig.height);
-    Object.assign(data, {
-      shape: os.shape, theme: os.theme,
-      dimX: os.dimX, dimY: os.dimY, dimZ: os.dimZ,
-      posX: os.posX, posY: os.posY, posZ: os.posZ,
-      rotX: os.rotX, rotY: os.rotY, rotZ: os.rotZ,
-      isFloating: os.isFloating, isDestructible: os.isDestructible, hitPoints: os.hitPoints,
-      contactForceX: os.contactForceX, contactForceY: os.contactForceY, contactForceZ: os.contactForceZ,
-      color: os.color, surface: os.surface, tileScale: os.tileScale,
-      material: os.material, speedPathId: os.speedPathId,
-      customTileData:    os.customTileData,
-      emissiveColor:     os.emissiveColor,
-      emissiveIntensity: os.emissiveIntensity,
-      opacity:           os.opacity,
-      presentStlb64:     os.presentStlb64,
-      presentColor:      os.presentColor,
-    });
-    const [mesh, edges] = buildObstacleObjects(data);
-    data.mesh = mesh; data.edges = edges;
-    this.addToScene(mesh, edges);
-    this.sceneObjects.set(os.id, [mesh, edges]);
-    this.obstacles.set(os.id, data);
-    if (data.presentStlb64) this._loadPresentStl(os.id, data.presentStlb64, data.presentColor);
-    this.sceneTree.add(os.id, data.name, '⬛', 'octagon-base', {
+    this._obstacleMgr.restoreData([os]);
+    const data = this._obstacleMgr.get(os.id)!;
+    this._obstacleMgr.buildAndShow(data, {
       addChildButtons: [
         { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
         { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(os.id,'obstacle') },
         { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(os.id) },
       ],
     });
+    if (data.presentStlb64) this._loadPresentStl(os.id, data.presentStlb64, data.presentColor);
   }
 
   /* ── Footing methods ─────────────────────────────────────────────────── */
 
   private addFooting(): void {
     this.captureUndo();
-    const id = `footing-${++this.footingSeq}`;
-    const data = defaultFooting(`Footing ${this.footingSeq}`, id, this.baseConfig.height);
-    const [mesh, edges] = buildFootingObjects(data, this.baseConfig.height);
-    data.mesh = mesh; data.edges = edges;
-    this.addToScene(mesh, edges);
-    this.sceneObjects.set(id, [mesh, edges]);
-    this.footings.set(id, data);
-    this.sceneTree.add(id, data.name, '⬢', 'octagon-base', {
+    let data!: BaseFootingData;
+    data = this._footingMgr.add({
       addChildButtons: [
-        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(id) },
+        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     });
     this._applyViewMode();
@@ -1693,106 +1344,53 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private removeFooting(id: string): void {
-    const f = this.footings.get(id); if (!f) return;
-    this._disposeFooting(f);
+    this._footingMgr.remove(id);
     this._disposePresentMesh(id);
-    this.footings.delete(id);
     this.saveArena();
   }
 
-  private _disposeFooting(f: BaseFootingData): void {
-    if (f.mesh) { this.removeFromScene(f.mesh); f.mesh.geometry.dispose(); (f.mesh.material as THREE.Material).dispose(); }
-    if (f.edges) { this.removeFromScene(f.edges); f.edges.geometry.dispose(); (f.edges.material as THREE.Material).dispose(); }
-    this.sceneObjects.delete(f.id);
-  }
-
   private _restoreFootingSave(fs: BaseFootingSave): void {
-    const data = defaultFooting(fs.name, fs.id, this.baseConfig.height);
-    Object.assign(data, {
-      shape: fs.shape,
-      dimX: fs.dimX, dimY: fs.dimY, dimZ: fs.dimZ,
-      basePosX: fs.basePosX, basePosZ: fs.basePosZ, baseRotY: fs.baseRotY, posY: fs.posY,
-      color: fs.color, surface: fs.surface,
-      customTileData:    fs.customTileData,
-      tileScale:         fs.tileScale,
-      emissiveColor:     fs.emissiveColor,
-      emissiveIntensity: fs.emissiveIntensity,
-      opacity:           fs.opacity,
-      presentStlb64:     fs.presentStlb64,
-      presentColor:      fs.presentColor,
-    });
-    const [mesh, edges] = buildFootingObjects(data, this.baseConfig.height);
-    data.mesh = mesh; data.edges = edges;
-    this.addToScene(mesh, edges);
-    this.sceneObjects.set(fs.id, [mesh, edges]);
-    this.footings.set(fs.id, data);
-    if (data.presentStlb64) this._loadPresentStl(fs.id, data.presentStlb64, data.presentColor);
-    this.sceneTree.add(fs.id, data.name, '⬢', 'octagon-base', {
+    this._footingMgr.restoreData([fs]);
+    const data = this._footingMgr.get(fs.id)!;
+    this._footingMgr.buildAndShow(data, {
       addChildButtons: [
         { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(fs.id) },
       ],
     });
+    if (data.presentStlb64) this._loadPresentStl(fs.id, data.presentStlb64, data.presentColor);
   }
 
   /* ── Trap methods ────────────────────────────────────────────────────── */
 
   private addTrap(parentId: string, parentType: 'arena' | 'base'): void {
     this.captureUndo();
-    const id = `trap-${++this.trapSeq}`;
-    const data = defaultTrap(`Trap ${this.trapSeq}`, id, parentId, parentType);
-    const surfY = this._getTrapSurfY(data);
-    const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
-    data.mesh = mesh; data.edges = edges; data.variantMesh = variantMesh;
-    const objs: THREE.Object3D[] = [mesh, edges];
-    if(variantMesh) objs.push(variantMesh);
-    this.addToScene(...objs);
-    this.sceneObjects.set(id, objs);
-    this.traps.set(id, data);
-    const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
-    this.sceneTree.add(id, data.name, '⚡', parentTreeId, {
+    let data!: TrapData;
+    data = this._trapMgr.add(parentId, parentType, {
       addChildButtons: [
-        { label:'🧱+', title:'Add wall',          onClick:()=>this.addWall(id, 'trap') },
-        { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(id,'trap'); this.addRotation([id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'⤻+',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(id,'trap') },
-        { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(id) },
-        { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(id) },
+        { label:'🧱+', title:'Add wall',           onClick:()=>this.addWall(data.id, 'trap') },
+        { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'trap'); this.addRotation([data.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'⤻+',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(data.id,'trap') },
+        { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(data.id) },
       ],
     });
-    if (parentType === 'arena') this._autoLinkTrapSpeedLine(id, parentId);
+    if (parentType === 'arena') this._autoLinkTrapSpeedLine(data.id, parentId);
     this.saveArena();
   }
 
   private removeTrap(id: string): void {
-    const trap = this.traps.get(id); if(!trap) return;
-    // Clear back-ref on the linked SL
+    const trap = this._trapMgr.get(id); if (!trap) return;
     if (trap.linkedSpeedLineId) {
-      const sl = this.speedLines.get(trap.linkedSpeedLineId);
+      const sl = this._slMgr.get(trap.linkedSpeedLineId);
       if (sl) sl.linkedTrapId = null;
     }
-    this._disposeTrap(trap);
-    this.traps.delete(id);
+    this._trapMgr.removeWithWalls(id, (trapId) => {
+      const trapWallIds = [...this._wallMgr.getAll().values()]
+        .filter(w => w.parentType === 'trap' && w.parentId === trapId)
+        .map(w => w.id);
+      for (const wid of trapWallIds) this._wallMgr.remove(wid);
+    });
     this.saveArena();
-  }
-
-  private _disposeTrap(trap: TrapData): void {
-    // Clean up any walls parented to this trap
-    for(const wall of [...this.walls.values()]){
-      if(wall.parentType==='trap' && wall.parentId===trap.id){
-        this._disposeWall(wall);
-        this.walls.delete(wall.id);
-      }
-    }
-    this.removeFromScene(trap.mesh, trap.edges);
-    trap.mesh.geometry.dispose();
-    (trap.mesh.material as THREE.Material).dispose();
-    trap.edges.geometry.dispose();
-    (trap.edges.material as THREE.Material).dispose();
-    if(trap.variantMesh){
-      this.removeFromScene(trap.variantMesh);
-      trap.variantMesh.geometry.dispose();
-      (trap.variantMesh.material as THREE.Material).dispose();
-    }
-    this.sceneObjects.delete(trap.id);
   }
 
   private _getTrapSurfY(trap: TrapData): number {
@@ -1800,73 +1398,9 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private _restoreTrapSave(ts: TrapSave): void {
-    const data = defaultTrap(ts.name, ts.id, ts.parentId, ts.parentType);
-    Object.assign(data, {
-      shape: ts.shape, variant: ts.variant, effect: ts.effect,
-      dimX: ts.dimX, dimZ: ts.dimZ, rotY: ts.rotY,
-      posR: ts.posR, posAngle: ts.posAngle, basePosX: ts.basePosX, basePosZ: ts.basePosZ,
-      forceX: ts.forceX, forceY: ts.forceY, forceZ: ts.forceZ,
-      damageFactor: ts.damageFactor, healFactor: ts.healFactor, freezeDuration: ts.freezeDuration,
-      buffSurface: ts.buffSurface,
-      pitShape: ts.pitShape, pitRadiusX: ts.pitRadiusX, pitRadiusZ: ts.pitRadiusZ,
-      pitDepth: ts.pitDepth, pitSides: ts.pitSides, pitStarInner: ts.pitStarInner,
-      isPeriodic: ts.isPeriodic, safeInterval: ts.safeInterval, unsafeInterval: ts.unsafeInterval,
-      activationLimit: ts.activationLimit, speedPathId: ts.speedPathId,
-      durationTiers: ts.durationTiers.map(d=>({...d})),
-      color: ts.color, surface: ts.surface, tileScale: ts.tileScale,
-      baseMaterial:      ts.baseMaterial,
-      customTileData:    ts.customTileData,
-      emissiveColor:     ts.emissiveColor,
-      emissiveIntensity: ts.emissiveIntensity,
-      presentStlb64:     ts.presentStlb64,
-      presentColor:      ts.presentColor,
-      linkedSpeedLineId: ts.linkedSpeedLineId ?? null,
-      eqRingCount:       ts.eqRingCount       ?? 3,
-      eqSegmentsPerRing: ts.eqSegmentsPerRing ?? 6,
-      eqMaxElevationCm:  ts.eqMaxElevationCm  ?? 5,
-      eqElevationMode:   (ts.eqElevationMode  ?? 'random') as TrapData['eqElevationMode'],
-      eqRingRanges:      ts.eqRingRanges      ?? [0.3, 0.7, 1.0],
-      eqPermanent:       ts.eqPermanent       ?? false,
-      eqFadeCycles:      ts.eqFadeCycles      ?? 3,
-      eqPulseMode:       (ts.eqPulseMode      ?? 'triggered') as TrapData['eqPulseMode'],
-      eqPulseIntervalMs: ts.eqPulseIntervalMs ?? 2000,
-      eqPulseWidthMs:    ts.eqPulseWidthMs    ?? 1000,
-      rpmSpeed:          ts.rpmSpeed          ?? 180,
-      rpmEffect:         (ts.rpmEffect        ?? 'tangential') as TrapData['rpmEffect'],
-      rpmRange:          ts.rpmRange          ?? 0,
-      rpmMatchSpin:      ts.rpmMatchSpin      ?? false,
-      rpmForceScale:     ts.rpmForceScale     ?? 1.0,
-      rpmPulseMode:      (ts.rpmPulseMode     ?? 'continuous') as TrapData['rpmPulseMode'],
-      rpmPulseIntervalMs:ts.rpmPulseIntervalMs?? 0,
-      rpmPulseWidthMs:   ts.rpmPulseWidthMs   ?? 0,
-      projLaunchMode:    (ts.projLaunchMode   ?? 'single') as TrapData['projLaunchMode'],
-      projCount:         ts.projCount         ?? 1,
-      projSpreadAngleDeg:ts.projSpreadAngleDeg?? 30,
-      projBurstCount:    ts.projBurstCount    ?? 3,
-      projBurstDelayMs:  ts.projBurstDelayMs  ?? 100,
-      projLaunchDelayMs: ts.projLaunchDelayMs ?? 0,
-      projLaunchAngleDeg:ts.projLaunchAngleDeg?? 0,
-      projRandomizeAngle:ts.projRandomizeAngle?? false,
-      projPattern:       (ts.projPattern      ?? 'ring') as TrapData['projPattern'],
-      projPatternCount:  ts.projPatternCount  ?? 6,
-      projConfig:        ts.projConfig ? { ...defaultProjectileConfig(), ...ts.projConfig } : defaultProjectileConfig(),
-      projPulseMode:     (ts.projPulseMode    ?? 'triggered') as TrapData['projPulseMode'],
-      projPulseIntervalMs:ts.projPulseIntervalMs?? 3000,
-      projPlateSpin:     ts.projPlateSpin     ?? 0,
-      envTriggerEvent:   ts.envTriggerEvent   ?? '',
-      envTargetArenaId:  ts.envTargetArenaId  ?? '',
-    });
-    const surfY = this._getTrapSurfY(data);
-    const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
-    data.mesh = mesh; data.edges = edges; data.variantMesh = variantMesh;
-    const objs: THREE.Object3D[] = [mesh, edges];
-    if(variantMesh) objs.push(variantMesh);
-    this.addToScene(...objs);
-    this.sceneObjects.set(ts.id, objs);
-    this.traps.set(ts.id, data);
-    if (data.presentStlb64) this._loadPresentStl(ts.id, data.presentStlb64, data.presentColor);
-    const parentTreeId = ts.parentType === 'base' ? 'octagon-base' : ts.parentId;
-    this.sceneTree.add(ts.id, data.name, '⚡', parentTreeId, {
+    this._trapMgr.restoreData([ts]);
+    const data = this._trapMgr.get(ts.id)!;
+    this._trapMgr.buildAndShow(data, {
       addChildButtons: [
         { label:'🧱+', title:'Add wall',           onClick:()=>this.addWall(ts.id, 'trap') },
         { label:'↻+',  title:'Add rotation',    className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
@@ -1875,364 +1409,134 @@ export class ArenaSandbox extends Sandbox {
         { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(ts.id) },
       ],
     });
-    // Restore trap-parented walls
-    for(const ws of ts.walls) this._restoreWallSave(ws);
+    if (data.presentStlb64) this._loadPresentStl(ts.id, data.presentStlb64, data.presentColor);
+    for (const ws of ts.walls) this._restoreWallSave(ws, ts.id);
   }
 
   /* ── Portal methods ──────────────────────────────────────────────────── */
 
   private addPortal(parentId: string, parentType: 'arena' | 'base'): void {
     this.captureUndo();
-    const id = `portal-${++this.portalSeq}`;
-    const data = defaultPortal(`Portal ${this.portalSeq}`, id, parentId, parentType);
-    const surfY = this._getPortalSurfY(data);
-    const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
-    data.mesh = mesh; data.edges = edges; data.ringMesh = ringMesh;
-    const objs: THREE.Object3D[] = [mesh, edges];
-    if(ringMesh) objs.push(ringMesh);
-    this.addToScene(...objs);
-    this.sceneObjects.set(id, objs);
-    this.portals.set(id, data);
-    const parentTreeId = parentType === 'base' ? 'octagon-base' : parentId;
-    this.sceneTree.add(id, data.name, '◉', parentTreeId, {
+    let data!: PortalData;
+    data = this._portalMgr.add(parentId, parentType, {
       addChildButtons: [
-        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(id) },
+        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     });
     this.saveArena();
   }
 
   private removePortal(id: string): void {
-    const portal = this.portals.get(id); if(!portal) return;
-    this._disposePortal(portal);
-    this.portals.delete(id);
+    this._portalMgr.remove(id);
     this.saveArena();
   }
 
-  private _disposePortal(portal: PortalData): void {
-    this.removeFromScene(portal.mesh, portal.edges);
-    portal.mesh.geometry.dispose();
-    (portal.mesh.material as THREE.Material).dispose();
-    portal.edges.geometry.dispose();
-    (portal.edges.material as THREE.Material).dispose();
-    if(portal.ringMesh){
-      this.removeFromScene(portal.ringMesh);
-      portal.ringMesh.geometry.dispose();
-      (portal.ringMesh.material as THREE.Material).dispose();
-    }
-    this.sceneObjects.delete(portal.id);
-  }
-
-  private _getPortalSurfY(portal: PortalData): number {
-    return portalSurfY(portal, this.arenas, this.baseConfig.height);
-  }
-
   private _restorePortalSave(ps: PortalSave): void {
-    const data = defaultPortal(ps.name, ps.id, ps.parentId, ps.parentType);
-    Object.assign(data, {
-      shape: ps.shape, dimX: ps.dimX, dimZ: ps.dimZ, rotY: ps.rotY,
-      posR: ps.posR, posAngle: ps.posAngle, basePosX: ps.basePosX, basePosZ: ps.basePosZ,
-      destType: ps.destType, destPortalId: ps.destPortalId, destArenaId: ps.destArenaId,
-      destPosX: ps.destPosX, destPosY: ps.destPosY, destPosZ: ps.destPosZ,
-      exitVelScale: ps.exitVelScale, exitRotY: ps.exitRotY, isBidirectional: ps.isBidirectional,
-      color: ps.color, glowColor: ps.glowColor,
-      surface:       ps.surface,
-      customTileData:ps.customTileData,
-      tileScale:     ps.tileScale,
-      presentStlb64: ps.presentStlb64,
-      presentColor:  ps.presentColor,
-    });
-    const surfY = this._getPortalSurfY(data);
-    const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
-    data.mesh = mesh; data.edges = edges; data.ringMesh = ringMesh;
-    const objs: THREE.Object3D[] = [mesh, edges];
-    if(ringMesh) objs.push(ringMesh);
-    this.addToScene(...objs);
-    this.sceneObjects.set(ps.id, objs);
-    this.portals.set(ps.id, data);
-    if (data.presentStlb64) this._loadPresentStl(ps.id, data.presentStlb64, data.presentColor);
-    const parentTreeId = ps.parentType === 'base' ? 'octagon-base' : ps.parentId;
-    this.sceneTree.add(ps.id, data.name, '◉', parentTreeId, {
+    this._portalMgr.restoreData([ps]);
+    const data = this._portalMgr.get(ps.id)!;
+    this._portalMgr.buildAndShow(data, {
       addChildButtons: [
         { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(ps.id) },
       ],
     });
+    if (data.presentStlb64) this._loadPresentStl(ps.id, data.presentStlb64, data.presentColor);
   }
 
   /* ── Jump Link methods ───────────────────────────────────────────────── */
 
   private _addJumpLink(srcParentId: string, srcParentType: JumpLinkParentType): void {
     this.captureUndo();
-    const id = `jl-${++this.jumpLinkSeq}`;
-    const data = defaultJumpLink(`Jump Link ${this.jumpLinkSeq}`, id, srcParentId, srcParentType);
-    this._buildJumpLinkGeometry(data);
-    this.jumpLinks.set(id, data);
-    const treeParent = srcParentType === 'base' ? 'octagon-base' : srcParentId;
-    this.sceneTree.add(id, data.name, '⤻', treeParent);
+    this._jlMgr.add(srcParentId, srcParentType);
     this.saveArena();
   }
 
-  private _buildJumpLinkGeometry(data: JumpLinkData): void {
-    const result = buildJumpLinkObjects(
-      data, this.arenas, this.obstacles, this.traps,
-      jlid => this.speedLines.get(jlid), this.baseConfig.height,
-    );
-    data.sourceMesh  = result.sourceMesh;
-    data.destMesh    = result.destMesh;
-    data.arcLine     = result.arcLine;
-    data.arrowMeshes = result.arrowMeshes;
-    const objs: THREE.Object3D[] = [result.sourceMesh, result.destMesh, result.arcLine, ...result.arrowMeshes];
-    this.addToScene(...objs);
-    this.sceneObjects.set(data.id, objs);
-  }
-
-  private _applyJL(jl: JumpLinkData): void {
-    const prev = this.sceneObjects.get(jl.id) ?? [];
-    for (const obj of prev) this.removeFromScene(obj);
-    applyJumpLink(jl, this.arenas, this.obstacles, this.traps,
-      jlid => this.speedLines.get(jlid), this.baseConfig.height);
-    const objs: THREE.Object3D[] = [jl.sourceMesh, jl.destMesh, jl.arcLine, ...jl.arrowMeshes];
-    this.addToScene(...objs);
-    this.sceneObjects.set(jl.id, objs);
-  }
-
-  private _disposeJumpLink(jl: JumpLinkData): void {
-    const objs = this.sceneObjects.get(jl.id) ?? [];
-    for (const obj of objs) this.removeFromScene(obj);
-    jl.sourceMesh.geometry.dispose();
-    (jl.sourceMesh.material as THREE.Material).dispose();
-    jl.destMesh.geometry.dispose();
-    (jl.destMesh.material as THREE.Material).dispose();
-    jl.arcLine.geometry.dispose();
-    (jl.arcLine.material as THREE.Material).dispose();
-    for (const m of jl.arrowMeshes) {
-      m.geometry.dispose();
-      (m.material as THREE.Material).dispose();
-    }
-    jl.arrowMeshes = [];
-    this.sceneObjects.delete(jl.id);
-  }
 
   private _removeJumpLink(id: string): void {
-    const jl = this.jumpLinks.get(id); if (!jl) return;
+    if (!this._jlMgr.has(id)) return;
     // Clear stale jumpLinkId references on speed lines
-    for (const sl of this.speedLines.values()) {
+    for (const sl of this._slMgr.getAll().values()) {
       if (sl.jumpLinkId === id) sl.jumpLinkId = null;
     }
-    this._disposeJumpLink(jl);
-    this.jumpLinks.delete(id);
-    this.sceneTree.remove(id);
+    this._jlMgr.remove(id);
     this.saveArena();
   }
 
-  private _restoreJumpLinkSave(js: JumpLinkSave): void {
-    const data = jumpLinkFromSave(js);
-    this._buildJumpLinkGeometry(data);
-    this.jumpLinks.set(js.id, data);
-    const treeParent = data.src.parentType === 'base' ? 'octagon-base' : data.src.parentId;
-    this.sceneTree.add(js.id, data.name, '⤻', treeParent);
+  private _restoreJumpLinkSave(saves: JumpLinkSave[]): void {
+    this._jlMgr.restoreData(saves);
+    for (const save of saves) {
+      const data = this._jlMgr.get(save.id)!;
+      const treeParent = data.src.parentType === 'base' ? 'octagon-base' : data.src.parentId;
+      this._jlMgr.buildAndShow(data, treeParent);
+    }
   }
 
   /** Returns Map<id, name> of all speed lines — used to populate speed path dropdowns. */
   private _getSpeedLineNames(): Map<string, string> {
-    return new Map([...this.speedLines.entries()].map(([slId, sl])=>[slId, sl.name]));
+    return new Map([...this._slMgr.getAll().entries()].map(([slId, sl])=>[slId, sl.name]));
   }
 
   /** Rebuild all walls attached to an arena, then rebuild dependent bridges. */
   private rebuildDependentsOf(arenaId: string): void {
-    for(const wall of this.walls.values()){
-      if(wall.parentType==='arena' && wall.parentId===arenaId) this.applyWall(wall);
+    for(const wall of this._wallMgr.getAll().values()){
+      if(wall.parentType==='arena' && wall.parentId===arenaId) this._wallMgr.apply(wall);
     }
     const depBridges=this.bridgesByArena.get(arenaId);
     if(depBridges){
       for(const bid of depBridges){
-        const bridge=this.bridges.get(bid);
-        if(bridge && bridge.segmentIds.length>0) this.applyBridgeFromSegment(bridge.segmentIds[0]);
+        const bridge=this._bridgeMgr.get(bid);
+        if(bridge && bridge.segmentIds.length>0) this._bridgeMgr.applyBridgeFromSegment(bridge.segmentIds[0]);
       }
     }
   }
 
   /* ── Bridge helpers ───────────────────────────────────────────────────── */
 
-  private _segmentStartPose(seg: BridgeSegmentData): SegmentPose {
-    const bridge = this.bridges.get(seg.bridgeId);
-    if(!bridge) return { ...DEFAULT_START_POSE, pos: DEFAULT_START_POSE.pos.clone(), dir: DEFAULT_START_POSE.dir.clone(), up: DEFAULT_START_POSE.up.clone() };
-    let pose: SegmentPose = bridge.startRef
-      ? resolveStartPose(bridge.startRef, this.arenas, this.walls, 0)
-      : { pos: DEFAULT_START_POSE.pos.clone(), dir: DEFAULT_START_POSE.dir.clone(), up: DEFAULT_START_POSE.up.clone() };
-    for(const sid of bridge.segmentIds){
-      if(sid===seg.id) break;
-      const prev=this.segments.get(sid);
-      if(prev) pose=computeSegmentEndPose(prev, pose, bridge.section);
-    }
-    return pose;
-  }
-
-  private applySegment(seg: BridgeSegmentData): void {
-    const bridge=this.bridges.get(seg.bridgeId); if(!bridge) return;
-    const scene=this.getScene(); if(!scene) return;
-    const startPose=this._segmentStartPose(seg);
-
-    const sec = bridge.section;
-    const color: number = seg.color ?? sec.color;
-    const surface: SurfaceType = seg.surface ?? sec.surface;
-
-    const geo  = buildSegmentDeckGeometry(seg, startPose, sec);
-    const eGeo = buildSegmentEdgeGeometry(seg, startPose, sec);
-
-    // Compute bounding-box center — pivot for tick-based animation
-    geo.computeBoundingBox();
-    const center = new THREE.Vector3();
-    geo.boundingBox!.getCenter(center);
-    seg._animCenter.copy(center);
-    const negCenter = center.clone().negate();
-
-    // Ensure animation pivot group exists
-    if (!seg._animPivot) {
-      seg._animPivot = new THREE.Group();
-      // Reparent any existing mesh/edges from bridge.group into the pivot
-      if (seg.mesh)  { bridge.group.remove(seg.mesh);  seg._animPivot.add(seg.mesh); }
-      if (seg.edges) { bridge.group.remove(seg.edges); seg._animPivot.add(seg.edges); }
-      bridge.group.add(seg._animPivot);
-      scene.add(bridge.group);
-    }
-    seg._animPivot.position.copy(center);
-    if (!seg.animEnabled) seg._animPivot.rotation.set(0, 0, 0);
-
-    const segMat = buildSurfaceMaterial({
-      color, surface, customTileData: sec.customTileData, tileScale: sec.tileScale,
-      transparent: sec.opacity < 1, opacity: sec.opacity,
-    });
-    (segMat as THREE.MeshStandardMaterial).emissive.setHex(sec.emissiveColor);
-    (segMat as THREE.MeshStandardMaterial).emissiveIntensity = sec.emissiveIntensity;
-    (segMat as THREE.MeshStandardMaterial).depthWrite = sec.opacity >= 1;
-
-    if(seg.mesh){
-      seg.mesh.geometry.dispose();
-      (seg.mesh.material as THREE.Material).dispose();
-      seg.mesh.geometry = geo;
-      seg.mesh.material = segMat;
-      seg.mesh.position.copy(negCenter);
-    } else {
-      seg.mesh = new THREE.Mesh(geo, segMat);
-      seg.mesh.position.copy(negCenter);
-      seg._animPivot.add(seg.mesh);
-    }
-    const edgeCol = new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.5);
-    if(seg.edges){
-      seg.edges.geometry.dispose();
-      seg.edges.geometry = eGeo;
-      (seg.edges.material as THREE.LineBasicMaterial).color.copy(edgeCol);
-      seg.edges.position.copy(negCenter);
-    } else {
-      seg.edges = new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: edgeCol }));
-      seg.edges.position.copy(negCenter);
-      seg._animPivot.add(seg.edges);
-    }
-    this.sceneObjects.set(seg.id, [seg.mesh, seg.edges]);
-  }
-
-  /** Reapply segId and every subsequent segment in the same bridge. */
-  private applyBridgeFromSegment(segId: string): void {
-    const seg=this.segments.get(segId); if(!seg) return;
-    const bridge=this.bridges.get(seg.bridgeId); if(!bridge) return;
-    const startIdx=bridge.segmentIds.indexOf(segId);
-    if(startIdx<0) return;
-    for(let i=startIdx; i<bridge.segmentIds.length; i++){
-      const s=this.segments.get(bridge.segmentIds[i]);
-      if(s) this.applySegment(s);
-    }
-  }
-
   private addBridge(): void {
     this.captureUndo();
-    const bid  = `bridge-${++this.bridgeSeq}`;
-    const name = `Bridge ${this.bridgeSeq}`;
-    const group = new THREE.Group();
-    const bridge: BridgeData = {
-      id: bid, name,
-      startRef: null,
-      segmentIds: [],
-      section: defaultBridgeSection(),
-      color: 0xaaaacc,
-      surface: 'metal' as SurfaceType,
-      wallIds: [],
-      presentStlb64: null, presentColor: 0xaaaaaa,
-      linkedSpeedLineId: null,
-      visible: true,
-      group,
-    };
-    this.bridges.set(bid, bridge);
-    const scene=this.getScene(); if(scene) scene.add(group);
-    this.sceneTree.add(bid, name, '🌉', 'octagon-base', {
-      addChildButtons:[
-        {label:'Seg+',title:'Add segment',      className:'zone-btn',onClick:()=>this.addSegment(bid,'straight')},
-        {label:'W+',  title:'Add wall',         className:'pit-btn', onClick:()=>this.addWall(bid,'bridge')},
-        {label:'✦+',  title:'Add presentation', className:'sl-btn',  onClick:()=>this._addSubNodePresent(bid)},
+    let data!: BridgeData;
+    const treeOpts = {
+      addChildButtons: [
+        { label:'Seg+', title:'Add segment',      className:'zone-btn', onClick:()=>this.addSegment(data.id,'straight') },
+        { label:'W+',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(data.id,'bridge') },
+        { label:'✦+',   title:'Add presentation', className:'sl-btn',   onClick:()=>this._addSubNodePresent(data.id) },
       ],
-    });
-    // Add a default straight segment
-    this.addSegment(bid, 'straight');
+    };
+    data = this._bridgeMgr.add(treeOpts);
     this.saveArena();
   }
 
   private removeBridge(id: string): void {
-    const bridge=this.bridges.get(id); if(!bridge) return;
+    const bridge = this._bridgeMgr.get(id); if (!bridge) return;
     // Clear back-ref on the linked SL
     if (bridge.linkedSpeedLineId) {
-      const sl = this.speedLines.get(bridge.linkedSpeedLineId);
+      const sl = this._slMgr.get(bridge.linkedSpeedLineId);
       if (sl) sl.linkedBridgeId = null;
     }
-    this._disposeBridge(bridge);
-    this.bridges.delete(id);
-    // Remove from dependency index
-    if(bridge.startRef?.type==='arena'){
-      const set=this.bridgesByArena.get(bridge.startRef.id);
-      if(set){ set.delete(id); if(!set.size) this.bridgesByArena.delete(bridge.startRef.id); }
+    // Remove from dependency index before disposal
+    if (bridge.startRef?.type === 'arena') {
+      const set = this.bridgesByArena.get(bridge.startRef.id);
+      if (set) { set.delete(id); if (!set.size) this.bridgesByArena.delete(bridge.startRef.id); }
     }
+    this._bridgeMgr.removeWithWalls(id, (wid) => this._wallMgr.remove(wid));
     this.saveArena();
   }
 
   private addSegment(bridgeId: string, type: BridgeSegmentType): void {
-    const bridge=this.bridges.get(bridgeId); if(!bridge) return;
+    const bridge = this._bridgeMgr.get(bridgeId); if (!bridge) return;
     this.captureUndo();
-    const sid  = `seg-${++this.segmentSeq}`;
-    const name = `Seg ${this.segmentSeq}`;
-    const seg  = defaultSegment(sid, name, bridgeId, bridge.segmentIds.length, type);
-    this.segments.set(sid, seg);
-    bridge.segmentIds.push(sid);
-    this.applySegment(seg);
-
-    const icon = segmentIcon(type);
-    this.sceneTree.add(sid, name, icon, bridgeId);
+    const seg = this._bridgeMgr.addSegment(bridgeId, type);
+    if (!seg) return;
     if (['loop','return_loop','exit_loop','corkscrew','hairpin'].includes(type)) {
-      const b = this.bridges.get(bridgeId);
-      if (b) {
-        const arenaRef = b.startRef?.type === 'arena' ? b.startRef.id : null;
-        if (arenaRef) this._autoLinkSpeedLine(bridgeId, type, arenaRef);
-      }
+      const arenaRef = bridge.startRef?.type === 'arena' ? bridge.startRef.id : null;
+      if (arenaRef) this._autoLinkSpeedLine(bridgeId, type, arenaRef);
     }
     this.saveArena();
   }
 
   private removeSegment(id: string): void {
-    const seg=this.segments.get(id); if(!seg) return;
-    const bridge=this.bridges.get(seg.bridgeId); if(!bridge) return;
-    const idx=bridge.segmentIds.indexOf(id);
-    if(idx<0) return;
+    const seg = this._bridgeMgr.getSegment(id); if (!seg) return;
     this.captureUndo();
-    if(seg.mesh){ seg.mesh.geometry.dispose();(seg.mesh.material as THREE.Material).dispose(); seg.mesh=null; }
-    if(seg.edges){ seg.edges.geometry.dispose();(seg.edges.material as THREE.Material).dispose(); seg.edges=null; }
-    if(seg._animPivot){ bridge.group.remove(seg._animPivot); seg._animPivot=null; }
-    this.sceneObjects.delete(id);
-    this.sceneTree.remove(id);
-    bridge.segmentIds.splice(idx,1);
-    this.segments.delete(id);
-    // Update orderIndex for subsequent segments and rebuild
-    for(let i=idx; i<bridge.segmentIds.length; i++){
-      const s=this.segments.get(bridge.segmentIds[i]);
-      if(s){ s.orderIndex=i; this.applySegment(s); }
-    }
+    this._bridgeMgr.removeSegment(id);
     this.saveArena();
   }
 
@@ -2241,60 +1545,47 @@ export class ArenaSandbox extends Sandbox {
   protected override onTick(dtMs: number): void {
     const dt = dtMs / 1000;
 
-    // Bridge segment animation ticks (tick-based offset/return)
-    const DEG2RAD_ANIM = Math.PI / 180;
-    for (const seg of this.segments.values()) {
-      if (!seg.animEnabled || !seg._animPivot) continue;
-      seg._animTimer += dtMs;
-      const effectiveTime = seg._animTimer - seg.animStartMs;
-      if (effectiveTime < 0) continue;
-      const interval = Math.max(1, seg.animIntervalMs);
-      const hold = Math.min(seg.animHoldMs, interval);
-      const phase = effectiveTime % interval;
-      if (phase < hold) {
-        seg._animPivot.position.set(
-          seg._animCenter.x + seg.animOffsetX,
-          seg._animCenter.y + seg.animOffsetY,
-          seg._animCenter.z + seg.animOffsetZ,
-        );
-        seg._animPivot.rotation.set(
-          seg.animRotX * DEG2RAD_ANIM,
-          seg.animRotY * DEG2RAD_ANIM,
-          seg.animRotZ * DEG2RAD_ANIM,
-        );
-      } else {
-        seg._animPivot.position.copy(seg._animCenter);
-        seg._animPivot.rotation.set(0, 0, 0);
-      }
-    }
+    // Stage 1: Environment (defines physics constants for this frame)
+    this._envMgr?.tick(dt);
 
-    // Earthquake + RPM + projectile plate spin ticks
-    for (const trap of this.traps.values()) {
-      if (trap.effect === 'earthquake') this._tickEarthquakeTrap(trap, dt);
-      if (trap.effect === 'rpm')        this._tickRPMTrap(trap, dt);
-      if (trap.effect === 'projectile' && trap.projPlateSpin !== 0) {
-        const omega = trap.projPlateSpin * (Math.PI / 180);
-        trap.mesh.rotation.y  += omega * dt;
-        trap.edges.rotation.y  = trap.mesh.rotation.y;
-      }
-    }
-
-    // Projectile bullets
-    if (!this._projectileMgr) {
-      const scene = this.getScene();
-      if (scene) {
-        this._projectileMgr = new ProjectileManager(scene, () => this.speedLines);
-      }
-    }
-    this._projectileMgr?.tick(dt);
+    // Stage 2: Particle/Weather systems (independent of physics)
     for (const arena of this.arenas.values()) {
       if (arena.particleSystem) arena.particleSystem.tick(dt);
       if (arena.weatherSystem)  arena.weatherSystem.tick(dt);
       if (arena.fogSystem)      arena.fogSystem.tick(dt);
     }
-    this._envMgr?.tick(dt);
+    for (const zone of this.zones.values()) {
+      if (zone.particleSystem) zone.particleSystem.tick(dt);
+    }
+    for (const pit of this.pits.values()) {
+      if (pit.particleSystem) pit.particleSystem.tick(dt);
+    }
 
-    // Score HUD
+    // Stage 3: Animation transforms (position all entities for this frame)
+    this._trapMgr.tick(dt);
+    this._wallMgr.tick(dt);
+    this._rotMgr.tick(dt);
+    this._translationMgr?.tick(dt);
+    this._bridgeMgr.tick(dtMs);
+    if (!this._projectileMgr) {
+      const scene = this.getScene();
+      if (scene) {
+        this._projectileMgr = new ProjectileManager(scene, () => this._slMgr.getAll() as Map<string, SpeedLineData>);
+      }
+    }
+    this._projectileMgr?.tick(dt);
+
+    // Stage 4: Physics (reads stage 1 constants + stage 3 final positions)
+    this._spawnMgr?.tick(dtMs);
+
+    // Stage 5: Target tracking
+    this._targetMgr?.tick(dt);
+
+    // Stage 6: Trigger detection
+    this._triggerZoneMgr?.tick(dt);
+
+    // Stage 7: Presentation / UI
+    this._presentMgr?.tick(dt);
     if (this._scoreHudEl) {
       let showHud = false; let lines = '';
       for (const arena of this.arenas.values()) {
@@ -2306,154 +1597,6 @@ export class ArenaSandbox extends Sandbox {
       this._scoreHudEl.style.display = showHud ? '' : 'none';
       this._scoreHudEl.textContent = lines.trim();
     }
-
-    for (const zone of this.zones.values()) {
-      if (zone.particleSystem) zone.particleSystem.tick(dt);
-    }
-    for (const pit of this.pits.values()) {
-      if (pit.particleSystem) pit.particleSystem.tick(dt);
-    }
-    for (const rot of this.rotations.values()) {
-      if (!rot.enabled || !rot.pivotGroup) continue;
-      if (rot.mode === 'continuous') {
-        rot.currentAngle += rot.speed * rot.direction * dt;
-      } else {
-        const t = performance.now() / 1000;
-        rot.currentAngle = rot.oscAmplitude *
-          Math.sin(TWO_PI * rot.oscFrequency * t + rot.oscPhase);
-      }
-      rot.pivotGroup.rotation.y = DEG2RAD * rot.currentAngle;
-      this._applyFloorCorrection(rot);
-      // Bridge snap rules
-      for (const rule of rot.snapRules) {
-        const bridge = this.bridges.get(rule.bridgeId);
-        if (bridge) {
-          const a = ((rot.currentAngle % 360) + 360) % 360;
-          bridge.group.visible = a >= rule.minDeg && a <= rule.maxDeg;
-        }
-      }
-    }
-
-    // Wall auto-rotation on arena rim
-    const t = performance.now() / 1000;
-    for (const wall of this.walls.values()) {
-      if (!wall.rotateOnArena || !wall._rotatePivot) continue;
-      switch (wall.arenaRotateMode) {
-        case 'continuous':
-          wall._rotatePivot.rotation.y += wall.arenaRotateSpeed * DEG2RAD * dt;
-          break;
-        case 'step':
-          wall._arenaRotateTimer = (wall._arenaRotateTimer ?? wall.arenaRotateStepInterval) - dt;
-          if (wall._arenaRotateTimer <= 0) {
-            wall._rotatePivot.rotation.y += wall.arenaRotateStepDeg * DEG2RAD;
-            wall._arenaRotateTimer = wall.arenaRotateStepInterval;
-          }
-          break;
-        case 'oscillate':
-          wall._rotatePivot.rotation.y =
-            wall.arenaRotateOscAmp * DEG2RAD *
-            Math.sin(TWO_PI * wall.arenaRotateOscFreq * t);
-          break;
-      }
-    }
-
-    this._spawnMgr?.tick(dtMs);
-    this._translationMgr?.tick(dt);
-    this._targetMgr?.tick(dt);
-    this._triggerZoneMgr?.tick(dt);
-  }
-
-  // ── Trap tick helpers (earthquake / RPM) ───────────────────────────────
-
-  private _tickEarthquakeTrap(trap: TrapData, dt: number): void {
-    if (!trap._eqPhase) {
-      if (trap.eqPulseMode === 'continuous') {
-        this._eqStartPulse(trap);
-      } else if (trap.eqPulseMode === 'periodic') {
-        trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-        if (trap._eqTimer >= trap.eqPulseIntervalMs) {
-          trap._eqTimer = 0; this._eqStartPulse(trap);
-        }
-      }
-      return;
-    }
-    const wMs = Math.max(100, trap.eqPulseWidthMs);
-    if (trap._eqPhase === 'rising') {
-      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-      const t = Math.min(1, trap._eqTimer / (wMs * 0.3));
-      this._eqLerp(trap, t);
-      if (t >= 1) { trap._eqPhase = 'active'; trap._eqTimer = 0; }
-    } else if (trap._eqPhase === 'active') {
-      if (trap.eqPermanent) return;
-      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-      if (trap._eqTimer >= wMs * 0.4) { trap._eqPhase = 'fading'; trap._eqTimer = 0; }
-    } else if (trap._eqPhase === 'fading') {
-      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-      const t = Math.min(1, trap._eqTimer / (wMs * 0.3));
-      this._eqLerp(trap, 1 - t);
-      if (t >= 1) {
-        trap._eqPhase = undefined; trap._eqTimer = 0;
-        trap._eqCycleCount = (trap._eqCycleCount ?? 0) + 1;
-        if (trap.eqPulseMode === 'continuous' && (trap.eqFadeCycles === 0 || (trap._eqCycleCount ?? 0) < trap.eqFadeCycles)) {
-          this._eqStartPulse(trap);
-        }
-      }
-    }
-    updateEarthquakeMeshHeights(trap);
-  }
-
-  private _eqStartPulse(trap: TrapData): void {
-    const rings = Math.max(1, trap.eqRingCount), segs = Math.max(3, trap.eqSegmentsPerRing);
-    const total = rings * segs;
-    if (!trap._eqTargetHeights || trap._eqTargetHeights.length !== total) {
-      trap._eqTargetHeights  = new Array(total).fill(0);
-      trap._eqCurrentHeights = new Array(total).fill(0);
-    }
-    for (let r = 0; r < rings; r++) {
-      const rm = trap.eqRingRanges[r] ?? 1;
-      for (let s = 0; s < segs; s++) {
-        const idx = r * segs + s;
-        let h = 0;
-        switch (trap.eqElevationMode) {
-          case 'wave':        h = trap.eqMaxElevationCm * rm * Math.sin((s / segs) * Math.PI * 2); break;
-          case 'ripple':      h = trap.eqMaxElevationCm * rm * Math.sin((r / rings) * Math.PI * 4); break;
-          case 'checkerboard': h = trap.eqMaxElevationCm * rm * ((r + s) % 2 === 0 ? 1 : -1); break;
-          default:            h = trap.eqMaxElevationCm * rm * (Math.random() * 2 - 1); break;
-        }
-        trap._eqTargetHeights[idx] = h;
-      }
-    }
-    trap._eqPhase = 'rising'; trap._eqTimer = 0;
-    if (trap.envTriggerEvent) {
-      const targetId = trap.envTargetArenaId || trap.parentId;
-      this._envMgr.triggerEvent(targetId, trap.envTriggerEvent);
-    }
-  }
-
-  private _eqLerp(trap: TrapData, t: number): void {
-    if (!trap._eqCurrentHeights || !trap._eqTargetHeights) return;
-    for (let i = 0; i < trap._eqCurrentHeights.length; i++) {
-      trap._eqCurrentHeights[i] = (trap._eqTargetHeights[i] ?? 0) * t;
-    }
-  }
-
-  private _tickRPMTrap(trap: TrapData, dt: number): void {
-    if (!trap.variantMesh) return;
-    const omega = (trap.rpmSpeed ?? 0) * (Math.PI / 180);
-    const prevAngle = trap._rpmCurrentAngle ?? 0;
-    trap._rpmCurrentAngle = (prevAngle + omega * dt) % (Math.PI * 2);
-    trap.variantMesh.rotation.y = trap._rpmCurrentAngle;
-    if (trap.envTriggerEvent && omega !== 0) {
-      const wrapped = prevAngle + omega * dt;
-      if (Math.floor(wrapped / (Math.PI * 2)) !== Math.floor(prevAngle / (Math.PI * 2))) {
-        const targetId = trap.envTargetArenaId || trap.parentId;
-        this._envMgr.triggerEvent(targetId, trap.envTriggerEvent);
-      }
-    }
-    const mat = trap.variantMesh.material as THREE.MeshStandardMaterial;
-    if (mat && 'emissiveIntensity' in mat) {
-      mat.emissiveIntensity = Math.min(1, Math.abs(trap.rpmSpeed ?? 0) / 360);
-    }
   }
 
   /** For trap/zone members: after pivotGroup rotates, fix Y to follow arena bowl surface. */
@@ -2461,7 +1604,7 @@ export class ArenaSandbox extends Sandbox {
     const pg = rot.pivotGroup; if (!pg) return;
     const wp = new THREE.Vector3();
     for (const mid of rot.memberIds) {
-      const trap = this.traps.get(mid);
+      const trap = this._trapMgr.get(mid);
       if (trap) {
         let arenaForTrap: ArenaData | undefined;
         if (trap.parentType === 'arena') arenaForTrap = this.arenas.get(trap.parentId);
@@ -2492,28 +1635,28 @@ export class ArenaSandbox extends Sandbox {
   /** Returns all Three.js scene objects belonging to a node. */
   private _getMemberObjects(nodeId: string): THREE.Object3D[] {
     const objs: THREE.Object3D[] = [];
-    const trap = this.traps.get(nodeId);
+    const trap = this._trapMgr.get(nodeId);
     if (trap) { objs.push(trap.mesh, trap.edges); if (trap.variantMesh) objs.push(trap.variantMesh); return objs; }
-    const obs = this.obstacles.get(nodeId);
+    const obs = this._obstacleMgr.get(nodeId);
     if (obs) { return [obs.mesh, obs.edges]; }
     const zone = this.zones.get(nodeId);
     if (zone) { objs.push(zone.mesh, zone.edges); if (zone.seamMesh) objs.push(zone.seamMesh); return objs; }
-    const wall = this.walls.get(nodeId);
+    const wall = this._wallMgr.get(nodeId);
     if (wall) { if (wall.mesh) objs.push(wall.mesh); if (wall.edges) objs.push(wall.edges); return objs; }
     return objs;
   }
 
   private _nodeTypeOf(id: string): RotationNodeType | undefined {
-    if (this.traps.has(id))     return 'trap';
-    if (this.obstacles.has(id)) return 'obstacle';
+    if (this._trapMgr.has(id))          return 'trap';
+    if (this._obstacleMgr.has(id)) return 'obstacle';
     if (this.zones.has(id))     return 'zone';
-    if (this.walls.has(id))     return 'wall';
+    if (this._wallMgr.has(id))  return 'wall';
     return undefined;
   }
 
   private _defaultPivotForMember(nodeId: string, nodeType: RotationNodeType): { pivotX: number; pivotY: number; pivotZ: number } {
     if (nodeType === 'trap') {
-      const trap = this.traps.get(nodeId);
+      const trap = this._trapMgr.get(nodeId);
       if (trap) {
         const surfY = this._getTrapSurfY(trap);
         if (trap.parentType === 'arena') {
@@ -2528,7 +1671,7 @@ export class ArenaSandbox extends Sandbox {
       }
     }
     if (nodeType === 'obstacle') {
-      const obs = this.obstacles.get(nodeId);
+      const obs = this._obstacleMgr.get(nodeId);
       if (obs) return { pivotX: obs.posX, pivotY: obs.posY, pivotZ: obs.posZ };
     }
     if (nodeType === 'zone') {
@@ -2545,7 +1688,7 @@ export class ArenaSandbox extends Sandbox {
       }
     }
     if (nodeType === 'wall') {
-      const wall = this.walls.get(nodeId);
+      const wall = this._wallMgr.get(nodeId);
       if (wall) {
         if (wall.parentType === 'arena') {
           const arena = this.arenas.get(wall.parentId);
@@ -2560,12 +1703,12 @@ export class ArenaSandbox extends Sandbox {
   private _commonTreeParent(nodeIds: string[]): string | null {
     if (nodeIds.length === 0) return null;
     const getParent = (id: string): string | null => {
-      const trap = this.traps.get(id);
+      const trap = this._trapMgr.get(id);
       if (trap) return trap.parentType === 'base' ? 'octagon-base' : trap.parentId;
-      const obs = this.obstacles.get(id); if (obs) return 'octagon-base';
+      const obs = this._obstacleMgr.get(id); if (obs) return 'octagon-base';
       const zone = this.zones.get(id);
       if (zone) return zone.parentZoneId ?? zone.parentArenaId;
-      const wall = this.walls.get(id);
+      const wall = this._wallMgr.get(id);
       if (wall) return wall.parentType === 'base' ? 'octagon-base' : wall.parentId;
       return null;
     };
@@ -2575,63 +1718,20 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private addRotation(memberIds: string[], memberTypes: RotationNodeType[], pivotX: number, pivotY: number, pivotZ: number): void {
-    if (memberIds.some(id => this.nodeRotationId.has(id))) return;
     this.captureUndo();
-    const id   = `rot-${++this.rotationSeq}`;
-    const name = memberIds.length === 1 ? `Rotate ${this.rotationSeq}` : `Group ↻ ${this.rotationSeq}`;
-    const rot: RotationData = {
-      id, name, memberIds, memberTypes,
-      pivotX, pivotY, pivotZ,
-      mode: 'continuous', speed: ROT.DEFAULT_SPEED, direction: 1,
-      oscAmplitude: ROT.DEFAULT_OSC_AMP, oscFrequency: ROT.DEFAULT_OSC_FREQ, oscPhase: 0,
-      enabled: true, visible: true, currentAngle: 0, snapRules: [], pivotGroup: null,
-    };
-    const scene = this.getScene();
-    if (scene) {
-      const pg = new THREE.Group();
-      pg.position.set(pivotX, pivotY, pivotZ);
-      scene.add(pg);
-      rot.pivotGroup = pg;
-      for (const mid of memberIds) {
-        for (const obj of this._getMemberObjects(mid)) pg.attach(obj);
-      }
-    }
-    this.rotations.set(id, rot);
-    memberIds.forEach(mid => this.nodeRotationId.set(mid, id));
     const treeParent = this._commonTreeParent(memberIds) ?? 'octagon-base';
-    this.sceneTree.add(id, name, '↻', treeParent);
+    const rot = this._rotMgr.add(memberIds, memberTypes, pivotX, pivotY, pivotZ, treeParent);
+    if (!rot) return;
     this.saveArena();
   }
 
   private removeRotation(id: string): void {
-    const rot = this.rotations.get(id); if (!rot) return;
-    const scene = this.getScene();
-    if (rot.pivotGroup && scene) {
-      for (const mid of rot.memberIds) {
-        for (const obj of this._getMemberObjects(mid)) scene.attach(obj);
-      }
-      scene.remove(rot.pivotGroup);
-    }
-    rot.memberIds.forEach(mid => this.nodeRotationId.delete(mid));
-    this.rotations.delete(id);
-    this.sceneTree.remove(id);
+    this._rotMgr.remove(id);
     this.saveArena();
   }
 
   private _removeMemberFromRotation(nodeId: string): void {
-    const rotId = this.nodeRotationId.get(nodeId); if (!rotId) return;
-    const rot = this.rotations.get(rotId); if (!rot) return;
-    if (rot.memberIds.length <= 1) {
-      this.removeRotation(rotId);
-      return;
-    }
-    const scene = this.getScene();
-    if (rot.pivotGroup && scene) {
-      for (const obj of this._getMemberObjects(nodeId)) scene.attach(obj);
-    }
-    this.nodeRotationId.delete(nodeId);
-    rot.memberIds = rot.memberIds.filter(id => id !== nodeId);
-    rot.memberTypes = rot.memberTypes.filter((_, i) => rot.memberIds[i] !== nodeId);
+    this._rotMgr.removeMember(nodeId);
   }
 
   /**
@@ -2639,29 +1739,11 @@ export class ArenaSandbox extends Sandbox {
    * The apply functions set mesh.position in scene-root coords; we need to correct to group-local.
    */
   private _afterApply(nodeId: string): void {
-    const rotId = this.nodeRotationId.get(nodeId); if (!rotId) return;
-    const rot = this.rotations.get(rotId); if (!rot || !rot.pivotGroup) return;
-    const pg = rot.pivotGroup;
-    const scene = this.getScene();
-    for (const obj of this._getMemberObjects(nodeId)) {
-      if (obj.parent === pg) {
-        obj.position.x -= pg.position.x;
-        obj.position.y -= pg.position.y;
-        obj.position.z -= pg.position.z;
-      } else if (obj.parent === scene && scene) {
-        const nat = obj.position.clone();
-        pg.add(obj);
-        obj.position.set(nat.x - pg.position.x, nat.y - pg.position.y, nat.z - pg.position.z);
-      }
-    }
+    this._rotMgr.afterApply(nodeId);
   }
 
   private _updateRotationPivot(rot: RotationData): void {
-    const pg = rot.pivotGroup; if (!pg) return;
-    pg.position.set(rot.pivotX, rot.pivotY, rot.pivotZ);
-    for (const mid of rot.memberIds) {
-      for (const obj of this._getMemberObjects(mid)) pg.attach(obj);
-    }
+    this._rotMgr.updatePivot(rot);
   }
 
   protected override buildCustom(scene: THREE.Scene): void {
@@ -2686,6 +1768,64 @@ export class ArenaSandbox extends Sandbox {
 
     this.sceneObjects.set('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
 
+    this._renderMgr = new RenderManager(scene);
+
+    const mgrCtx: SceneContext = {
+      scene:     scene,
+      sceneTree: this.sceneTree,
+      getFallbackY: () => this.baseConfig.height,
+      renderMgr: this._renderMgr,
+    };
+    this._obstacleMgr = new ObstacleManager(mgrCtx);
+    this._footingMgr  = new FootingManager(mgrCtx);
+    this._trapMgr     = new TrapManager(
+      mgrCtx,
+      (surfaceId) => this._surfaceProviders.get(surfaceId),
+      (trap) => this._envMgr.triggerEvent(trap.envTargetArenaId || trap.parentId, trap.envTriggerEvent),
+    );
+    this._portalMgr   = new PortalManager(mgrCtx, (surfaceId) => this._surfaceProviders.get(surfaceId));
+    this._wallMgr     = new WallManager(
+      mgrCtx,
+      (id) => this.arenas.get(id),
+      () => this.arenas,
+      (id) => this._trapMgr.get(id),
+      (trap) => this._getTrapSurfY(trap),
+    );
+    this._bridgeMgr = new BridgeManager(
+      mgrCtx,
+      () => this.arenas,
+      () => this._wallMgr.getAll() as Map<string, WallData>,
+    );
+
+    this._projectionService = new ProjectionService(
+      () => this.arenas, () => this._wallMgr.getAll() as Map<string, WallData>, () => this._obstacleMgr.getAll(),
+      () => this.bridgesByArena, () => this._bridgeMgr.getAll(), () => this._bridgeMgr.getAllSegments(),
+    );
+
+    this._slMgr = new SpeedLineManager(
+      mgrCtx,
+      (id) => this.arenas.get(id),
+      () => this.zones,
+      (arenaId) => this._projectionService.buildProjector(arenaId),
+    );
+
+    this._rotMgr = new RotationManager(
+      mgrCtx,
+      (nodeId) => this._getMemberObjects(nodeId),
+      (rot)    => this._applyFloorCorrection(rot),
+      (id)     => this._bridgeMgr.get(id) as { group: THREE.Group } | undefined,
+    );
+
+    this._jlMgr = new JumpLinkManager(
+      mgrCtx,
+      () => this.arenas,
+      () => this._obstacleMgr.getAll() as ReadonlyMap<string, ObstacleData>,
+      () => this._trapMgr.getAll() as ReadonlyMap<string, TrapData>,
+      (id) => this._slMgr.get(id),
+    );
+
+    this._presentMgr = new PresentationManager(mgrCtx);
+
     // Instantiate before loadArena() so any tick/triggerEvent calls during restore are safe
     this._envMgr = new ArenaEnvironmentManager(
       () => this.arenas,
@@ -2700,11 +1840,10 @@ export class ArenaSandbox extends Sandbox {
     this._scoreHudEl = scoreHud;
 
     const smCtx: SceneContext = {
-      scene:          scene,
-      sceneTree:      this.sceneTree,
-      getFallbackY:   () => this.baseConfig.height,
-      trackObjects:   () => {},
-      untrackObjects: () => {},
+      scene:     scene,
+      sceneTree: this.sceneTree,
+      getFallbackY: () => this.baseConfig.height,
+      renderMgr: this._renderMgr,
     };
     const smHud = this.addOverlayPanel('spawn-manager-hud');
     this._spawnMgr = new SpawnManager(
@@ -2712,11 +1851,12 @@ export class ArenaSandbox extends Sandbox {
       () => this.getCamera(),
       () => this.getControls(),
       () => this.arenas,
-      () => this.traps,
-      () => this.speedLines,
+      () => this._trapMgr.getAll() as Map<string, TrapData>,
+      () => this._slMgr.getAll() as Map<string, SpeedLineData>,
       () => this.zones,
-      () => this.walls,
+      () => this._wallMgr.getAll() as Map<string, WallData>,
       smHud,
+      () => inputManager,
     );
     this._spawnMgrBtn = this.addTopBarButton('⚽ Spawn', 'Spawn/despawn physics test top');
     this._spawnMgrBtn.addEventListener('click', () => {
@@ -2914,7 +2054,7 @@ export class ArenaSandbox extends Sandbox {
       this._updateZoneChildren(zone, arena);
     }
     for (const slId of arena.speedLineIds) {
-      const sl = this.speedLines.get(slId); if (!sl) continue;
+      const sl = this._slMgr.get(slId); if (!sl) continue;
       this._updateSpeedLine(sl);
     }
   }
@@ -2929,7 +2069,7 @@ export class ArenaSandbox extends Sandbox {
       this._updateZoneChildren(zone, arena);
     }
     for (const slId of parentZone.speedLineIds ?? []) {
-      const sl = this.speedLines.get(slId); if (!sl) continue;
+      const sl = this._slMgr.get(slId); if (!sl) continue;
       this._updateSpeedLine(sl);
     }
   }
@@ -2940,10 +2080,11 @@ export class ArenaSandbox extends Sandbox {
     if(!id){ this.props.showEmpty(); return; }
 
     // Sub-node routing
-    if (id.startsWith('present-'))  { this._showPresentNode(id.slice(8));  return; }
-    if (id.startsWith('particle-')) { this._showParticleNode(id.slice(9)); return; }
-    if (id.startsWith('weather-'))  { this._showWeatherNode(id.slice(8));  return; }
-    if (id.startsWith('env-'))      { this._showEnvNode(id.slice(4));      return; }
+    if (id.startsWith('present-'))      { this._showPresentNode(id.slice(8));  return; }
+    if (id.startsWith('particle-'))     { this._showParticleNode(id.slice(9)); return; }
+    if (id.startsWith('weather-'))      { this._showWeatherNode(id.slice(8));  return; }
+    if (id.startsWith('env-'))          { this._showEnvNode(id.slice(4));      return; }
+    if (id.startsWith('wallprofile-'))  { this._showWallProfileNode(id.slice('wallprofile-'.length)); return; }
 
     if(id==='octagon-base'){
       this.props.showBase(
@@ -3007,7 +2148,7 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
-    const sl=this.speedLines.get(id);
+    const sl=this._slMgr.get(id);
     if(sl){
       const slArena=this.arenas.get(sl.parentArenaId)!;
       this.props.showSpeedLine(
@@ -3035,20 +2176,20 @@ export class ArenaSandbox extends Sandbox {
         },
         undefined,
         undefined,
-        () => [...this.bridges.values()],
-        () => [...this.traps.values()],
-        () => [...this.jumpLinks.values()],
+        () => [...this._bridgeMgr.getAll().values()],
+        () => [...this._trapMgr.getAll().values()],
+        () => [...this._jlMgr.getAll().values()],
       );
       return;
     }
 
-    const wall=this.walls.get(id);
+    const wall=this._wallMgr.get(id);
     if(wall){
       const parentArena = wall.parentType==='arena' ? this.arenas.get(wall.parentId) : undefined;
       const showW=()=>this.props.showWall(
         wall,
-        ()=>{ this.captureUndo(); this.applyWall(wall); this.saveArena(); },
-        ()=>{ this.captureUndo(); this.applyWall(wall); this.saveArena(); showW(); },
+        ()=>{ this.captureUndo(); this._wallMgr.apply(wall); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._wallMgr.apply(wall); this.saveArena(); showW(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         (cb)=>this._fileInputStl(id,wall.presentColor,cb),
         ()=>{ wall.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
@@ -3058,28 +2199,28 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
-    const bridge=this.bridges.get(id);
+    const bridge=this._bridgeMgr.get(id);
     if(bridge){
       const arenaNames = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
-      const wallNames  = new Map([...this.walls.entries()].map(([wid,w])=>[wid,w.name]));
+      const wallNames  = new Map([...this._wallMgr.getAll().entries()].map(([wid,w])=>[wid,w.name]));
       const showB = () => this.props.showBridge(
         bridge, arenaNames, wallNames,
-        ()=>{ this.captureUndo(); if(bridge.segmentIds.length>0) this.applyBridgeFromSegment(bridge.segmentIds[0]); this.saveArena(); showB(); },
+        ()=>{ this.captureUndo(); if(bridge.segmentIds.length>0) this._bridgeMgr.applyBridgeFromSegment(bridge.segmentIds[0]); this.saveArena(); showB(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         (type)=>{ this.addSegment(id, type as BridgeSegmentType); },
         (cb)=>this._fileInputStl(id,bridge.presentColor,cb),
         ()=>{ bridge.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
-        () => [...this.speedLines.values()].map(s => ({ id: s.id, name: s.name })),
+        () => [...this._slMgr.getAll().values()].map(s => ({ id: s.id, name: s.name })),
       );
       showB();
       return;
     }
 
-    const seg=this.segments.get(id);
+    const seg=this._bridgeMgr.getSegment(id);
     if(seg){
       const showS = () => this.props.showBridgeSegment(
         seg,
-        ()=>{ this.captureUndo(); this.applyBridgeFromSegment(seg.id); this.saveArena(); showS(); },
+        ()=>{ this.captureUndo(); this._bridgeMgr.applyBridgeFromSegment(seg.id); this.saveArena(); showS(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         ()=>{ showS(); },
       );
@@ -3087,12 +2228,12 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
-    const obstacle=this.obstacles.get(id);
+    const obstacle=this._obstacleMgr.get(id);
     if(obstacle){
       const showO=()=>this.props.showObstacle(
         obstacle,
-        ()=>{ this.captureUndo(); applyObstacle(obstacle); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyObstacle(obstacle); this.saveArena(); showO(); },
+        ()=>{ this.captureUndo(); this._obstacleMgr.apply(obstacle); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._obstacleMgr.apply(obstacle); this.saveArena(); showO(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         this._getSpeedLineNames(),
         (cb)=>this._fileInputStl(id,obstacle.presentColor,cb),
@@ -3102,30 +2243,30 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
-    const trap=this.traps.get(id);
+    const trap=this._trapMgr.get(id);
     if(trap){
       const showT=()=>this.props.showTrap(
         trap,
-        ()=>{ this.captureUndo(); applyTrap(trap, this._getTrapSurfY(trap)); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyTrap(trap, this._getTrapSurfY(trap)); this.saveArena(); showT(); },
+        ()=>{ this.captureUndo(); this._trapMgr.apply(trap); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._trapMgr.apply(trap); this.saveArena(); showT(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         this._getSpeedLineNames(),
         (cb)=>this._fileInputStl(id,trap.presentColor,cb),
         ()=>{ trap.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
-        () => [...this.speedLines.values()].map(s => ({ id: s.id, name: s.name })),
+        () => [...this._slMgr.getAll().values()].map(s => ({ id: s.id, name: s.name })),
       );
       showT();
       return;
     }
 
-    const portal=this.portals.get(id);
+    const portal=this._portalMgr.get(id);
     if(portal){
       const arenaNames = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
-      const portalNames = new Map([...this.portals.entries()].map(([pid,p])=>[pid,p.name]));
+      const portalNames = new Map([...this._portalMgr.getAll().entries()].map(([pid,p])=>[pid,p.name]));
       const showPo=()=>this.props.showPortal(
         portal, arenaNames, portalNames,
-        ()=>{ this.captureUndo(); applyPortal(portal, this._getPortalSurfY(portal)); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyPortal(portal, this._getPortalSurfY(portal)); this.saveArena(); showPo(); },
+        ()=>{ this.captureUndo(); this._portalMgr.apply(portal); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._portalMgr.apply(portal); this.saveArena(); showPo(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         (cb)=>this._fileInputStl(id,portal.presentColor,cb),
         ()=>{ portal.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
@@ -3134,29 +2275,29 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
-    const jl=this.jumpLinks.get(id);
+    const jl=this._jlMgr.get(id);
     if(jl){
       const arenaNames    = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
-      const obstacleNames = new Map([...this.obstacles.entries()].map(([oid,o])=>[oid,o.name]));
-      const trapNames     = new Map([...this.traps.entries()].map(([tid,t])=>[tid,t.name]));
-      const slNames       = new Map([...this.speedLines.entries()].map(([slid,sl])=>[slid,sl.name]));
+      const obstacleNames = new Map([...this._obstacleMgr.getAll().entries()].map(([oid,o])=>[oid,o.name]));
+      const trapNames     = new Map([...this._trapMgr.getAll().entries()].map(([tid,t])=>[tid,t.name]));
+      const slNames       = new Map([...this._slMgr.getAll().entries()].map(([slid,sl])=>[slid,sl.name]));
       const showJL=()=>this.props.showJumpLink(
         jl, arenaNames, obstacleNames, trapNames, slNames,
-        ()=>{ this.captureUndo(); this._applyJL(jl); this.saveArena(); },
-        ()=>{ this.captureUndo(); this._applyJL(jl); this.saveArena(); showJL(); },
+        ()=>{ this.captureUndo(); this._jlMgr.apply(jl); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._jlMgr.apply(jl); this.saveArena(); showJL(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); jl.name=name; this.saveArena(); },
       );
       showJL();
       return;
     }
 
-    const footing=this.footings.get(id);
+    const footing=this._footingMgr.get(id);
     if(footing){
       const showF=()=>this.props.showFooting(
         footing,
         this.baseConfig.height,
-        ()=>{ this.captureUndo(); applyFooting(footing, this.baseConfig.height); this.saveArena(); },
-        ()=>{ this.captureUndo(); applyFooting(footing, this.baseConfig.height); this.saveArena(); showF(); },
+        ()=>{ this.captureUndo(); this._footingMgr.apply(footing); this.saveArena(); },
+        ()=>{ this.captureUndo(); this._footingMgr.apply(footing); this.saveArena(); showF(); },
         (name)=>{ this.captureUndo(); this.sceneTree.setLabel(id,name); this.saveArena(); },
         (cb)=>this._fileInputStl(id,footing.presentColor,cb),
         ()=>{ footing.presentStlb64=null; this._disposePresentMesh(id); this._applyViewMode(); this.saveArena(); },
@@ -3165,9 +2306,9 @@ export class ArenaSandbox extends Sandbox {
       return;
     }
 
-    const rotation=this.rotations.get(id);
+    const rotation=this._rotMgr.get(id);
     if(rotation){
-      const bridgeNames = new Map([...this.bridges.entries()].map(([bid,b])=>[bid,b.name]));
+      const bridgeNames = new Map([...this._bridgeMgr.getAll().entries()].map(([bid,b])=>[bid,b.name]));
       this.props.showRotation(
         rotation,
         ()=>{ this.captureUndo(); this._updateRotationPivot(rotation); this.saveArena(); },
@@ -3200,18 +2341,18 @@ export class ArenaSandbox extends Sandbox {
       zone.mesh.visible=this.solidMode;
       if(zone.seamMesh) zone.seamMesh.visible=this.solidMode;
     }
-    for(const obs of this.obstacles.values()){
+    for(const obs of this._obstacleMgr.getAll().values()){
       obs.mesh.visible=this.solidMode;
     }
-    for(const trap of this.traps.values()){
+    for(const trap of this._trapMgr.getAll().values()){
       trap.mesh.visible=this.solidMode;
       if(trap.variantMesh) trap.variantMesh.visible=this.solidMode;
     }
-    for(const portal of this.portals.values()){
+    for(const portal of this._portalMgr.getAll().values()){
       portal.mesh.visible=this.solidMode;
       if(portal.ringMesh) portal.ringMesh.visible=this.solidMode;
     }
-    for(const footing of this.footings.values()){
+    for(const footing of this._footingMgr.getAll().values()){
       if(footing.mesh) footing.mesh.visible=this.solidMode;
     }
   }
@@ -3245,6 +2386,8 @@ export class ArenaSandbox extends Sandbox {
         {label:'🌍+',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(id)},
       ],
     });
+    this.sceneTree.add(`wallprofile-${id}`, 'Wall Profile', '◌', id);
+    this._wallProfileNodes.add(`wallprofile-${id}`);
     this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
   }
 
@@ -3526,14 +2669,12 @@ export class ArenaSandbox extends Sandbox {
   private _saveTimerId = 0;
   private saveArena(): void {
     clearTimeout(this._saveTimerId);
-    this._saveTimerId = window.setTimeout(
-      () => localStorage.setItem(this.arenaStorageKey, this.serializeConfig()),
-      300,
-    );
+    this._saveTimerId = window.setTimeout(() => this._flushSave(), 300);
   }
   private _flushSave(): void {
     clearTimeout(this._saveTimerId);
-    localStorage.setItem(this.arenaStorageKey, this.serializeConfig());
+    const cfg = (JSON.parse(this.serializeConfig()) as { v: number; c: ArenaConfig }).c;
+    this._arenaStore.getState().replace(cfg);
   }
 
   private restorePitSave(ps: PitSave, arenaId: string, parentId: string, data: ArenaData): void {
@@ -3707,6 +2848,8 @@ export class ArenaSandbox extends Sandbox {
           {label:'🌍+',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(as.id)},
         ],
       });
+      this.sceneTree.add(`wallprofile-${as.id}`, 'Wall Profile', '◌', as.id);
+      this._wallProfileNodes.add(`wallprofile-${as.id}`);
 
       for(const ps of as.pits)  this.restorePitSave(ps, as.id, as.id, data);
       for(const zs of as.zones) this.restoreZoneSave(zs, as.id, as.id, data);
@@ -3790,191 +2933,137 @@ export class ArenaSandbox extends Sandbox {
     for(const fs of cfg.footings) this._restoreFootingSave(fs);
 
     // Restore jump links
-    for(const js of (cfg.jumpLinks ?? [])) this._restoreJumpLinkSave(js);
+    this._restoreJumpLinkSave(cfg.jumpLinks ?? []);
 
     // Restore rotations after all nodes are loaded
     for(const rs of cfg.rotations) this._restoreRotationSave(rs);
   }
 
-  private _restoreWallSave(ws: WallSave): void {
-    const wall: WallData = {
-      id:ws.id, name:ws.name, parentId:ws.parentId, parentType:ws.parentType,
-      fullPerimeter:ws.fullPerimeter, arcStart:ws.arcStart, arcEnd:ws.arcEnd,
-      basePosX:ws.basePosX, basePosZ:ws.basePosZ, baseRotY:ws.baseRotY, baseLength:ws.baseLength,
-      height:ws.height, tilt:ws.tilt, thickness:ws.thickness, thicknessDirection:ws.thicknessDirection??'outward',
-      hasGaps:ws.hasGaps, gapWidth:ws.gapWidth, panelWidth:ws.panelWidth,
-      topProfile:ws.topProfile, topAmplitude:ws.topAmplitude, topFrequency:ws.topFrequency,
-      isDouble:ws.isDouble, peakHeight:ws.peakHeight, peakTilt:ws.peakTilt,
-      holes:ws.holes.map(h=>({...h})),
-      isDestructible:ws.isDestructible, hitPoints:ws.hitPoints,
-      autoJoin:ws.autoJoin, moatRing:ws.moatRing,
-      rotateOnArena:ws.rotateOnArena, arenaRotateMode:ws.arenaRotateMode,
-      arenaRotateSpeed:ws.arenaRotateSpeed, arenaRotateStepDeg:ws.arenaRotateStepDeg,
-      arenaRotateStepInterval:ws.arenaRotateStepInterval,
-      arenaRotateOscAmp:ws.arenaRotateOscAmp, arenaRotateOscFreq:ws.arenaRotateOscFreq,
-      color:ws.color, surface:ws.surface, material:ws.material,
-      customTileData:ws.customTileData, tileScale:ws.tileScale,
-      emissiveColor:ws.emissiveColor, emissiveIntensity:ws.emissiveIntensity, opacity:ws.opacity,
-      presentStlb64:ws.presentStlb64, presentColor:ws.presentColor,
-      visible: ws.visible ?? true,
-      mesh:null, edges:null,
-    };
-    this.walls.set(ws.id, wall);
-    this.applyWall(wall);
-    if (wall.presentStlb64) this._loadPresentStl(ws.id, wall.presentStlb64, wall.presentColor);
-    const parentTreeId = ws.parentType==='base' ? 'octagon-base' : ws.parentId;
-    this.sceneTree.add(ws.id, wall.name, '🧱', parentTreeId, {
+  private _restoreWallSave(ws: WallSave, bridgeOwnerId?: string): void {
+    this._wallMgr.restoreData([ws]);
+    const data = this._wallMgr.get(ws.id)!;
+    this._wallMgr.buildAndShow(data, {
       addChildButtons: [
         { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(ws.id,'wall'); this.addRotation([ws.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
         { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(ws.id) },
       ],
     });
-    if(ws.parentType==='arena'){
-      const arena=this.arenas.get(ws.parentId);
-      if(arena && !arena.wallIds.includes(ws.id)) arena.wallIds.push(ws.id);
+    if (data.presentStlb64) this._loadPresentStl(ws.id, data.presentStlb64, data.presentColor);
+    if (ws.parentType === 'arena') {
+      const arena = this.arenas.get(ws.parentId);
+      if (arena && !arena.wallIds.includes(ws.id)) arena.wallIds.push(ws.id);
+    }
+    if (ws.parentType === 'bridge' && bridgeOwnerId) {
+      const bridge = this._bridgeMgr.get(bridgeOwnerId);
+      if (bridge && !bridge.wallIds.includes(ws.id)) bridge.wallIds.push(ws.id);
     }
   }
 
   private _restoreBridgeSave(bs: BridgeSave): void {
-    const group = new THREE.Group();
-    const bridge: BridgeData = {
-      id:bs.id, name:bs.name,
-      startRef: bs.startRef ?? null,
-      segmentIds:[],
-      section:{ ...bs.section },
-      color:bs.color, surface:bs.surface as SurfaceType,
-      wallIds:[],
-      presentStlb64: bs.presentStlb64 ?? null, presentColor: bs.presentColor ?? 0xaaaaaa,
-      linkedSpeedLineId: bs.linkedSpeedLineId ?? null,
-      visible: bs.visible ?? true,
-      group,
-    };
-    this.bridges.set(bs.id, bridge);
-    const scene=this.getScene(); if(scene) scene.add(group);
-    this.sceneTree.add(bs.id, bridge.name, '🌉', 'octagon-base', {
-      addChildButtons:[
-        {label:'Seg+',title:'Add segment',      className:'zone-btn',onClick:()=>this.addSegment(bs.id,'straight')},
-        {label:'W+',  title:'Add wall',         className:'pit-btn', onClick:()=>this.addWall(bs.id,'bridge')},
-        {label:'✦+',  title:'Add presentation', className:'sl-btn',  onClick:()=>this._addSubNodePresent(bs.id)},
+    // Hydrate bridge + segment data (no geometry yet); fromSave creates group + adds to scene
+    this._bridgeMgr.restoreData([bs]);
+    const data = this._bridgeMgr.get(bs.id)!;
+    const treeOpts = {
+      addChildButtons: [
+        { label:'Seg+', title:'Add segment',      className:'zone-btn', onClick:()=>this.addSegment(bs.id,'straight') },
+        { label:'W+',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(bs.id,'bridge') },
+        { label:'✦+',   title:'Add presentation', className:'sl-btn',   onClick:()=>this._addSubNodePresent(bs.id) },
       ],
-    });
-    if(bridge.startRef?.type==='arena'){
-      if(!this.bridgesByArena.has(bridge.startRef.id)) this.bridgesByArena.set(bridge.startRef.id, new Set());
-      this.bridgesByArena.get(bridge.startRef.id)!.add(bs.id);
+    };
+    // Add bridge tree node + build all segment geometry (does NOT add segment tree nodes)
+    this._bridgeMgr.buildAndShow(data, treeOpts);
+    // Manually add segment tree nodes (buildAndShow skips them)
+    for (const seg of this._bridgeMgr.getSegmentsForBridge(bs.id)) {
+      this.sceneTree.add(seg.id, seg.name, segmentIcon(seg.type), bs.id);
     }
-    for(const ss of bs.segments){
-      const seg: BridgeSegmentData = {
-        id:ss.id, name:ss.name, bridgeId:bs.id, orderIndex:ss.orderIndex, type:ss.type,
-        length:ss.length, rampAngle:ss.rampAngle,
-        curveRadius:ss.curveRadius, curveAngle:ss.curveAngle, curveDirection:ss.curveDirection, bankAngle:ss.bankAngle,
-        cp1X:ss.cp1X, cp1Y:ss.cp1Y, cp1Z:ss.cp1Z,
-        cp2X:ss.cp2X, cp2Y:ss.cp2Y, cp2Z:ss.cp2Z,
-        endX:ss.endX, endY:ss.endY, endZ:ss.endZ,
-        loopRadius:ss.loopRadius,
-        loopOrientation: ss.loopOrientation ?? 'vertical',
-        tiltAngle: ss.tiltAngle ?? 0,
-        corkscrewLength:ss.corkscrewLength, corkscrewTurns:ss.corkscrewTurns,
-        color:ss.color, surface:ss.surface,
-        animEnabled:    ss.animEnabled    ?? false,
-        animOffsetX:    ss.animOffsetX    ?? 0,
-        animOffsetY:    ss.animOffsetY    ?? 0,
-        animOffsetZ:    ss.animOffsetZ    ?? 0,
-        animRotX:       ss.animRotX      ?? 0,
-        animRotY:       ss.animRotY      ?? 0,
-        animRotZ:       ss.animRotZ      ?? 0,
-        animStartMs:    ss.animStartMs    ?? 0,
-        animIntervalMs: ss.animIntervalMs ?? 2000,
-        animHoldMs:     ss.animHoldMs    ?? 1000,
-        _animTimer: 0,
-        _animCenter: new THREE.Vector3(),
-        _animPivot: null,
-        mesh:null, edges:null,
-      };
-      this.segments.set(ss.id, seg);
-      bridge.segmentIds.push(ss.id);
-      const icon=segmentIcon(seg.type);
-      this.sceneTree.add(ss.id, seg.name, icon, bs.id);
+    // Update bridgesByArena index
+    if (data.startRef?.type === 'arena') {
+      if (!this.bridgesByArena.has(data.startRef.id)) this.bridgesByArena.set(data.startRef.id, new Set());
+      this.bridgesByArena.get(data.startRef.id)!.add(bs.id);
     }
-    if(bridge.segmentIds.length>0) this.applyBridgeFromSegment(bridge.segmentIds[0]);
-    for(const ws of bs.walls) this._restoreWallSave(ws);
-    if(bridge.presentStlb64) this._loadPresentStl(bs.id, bridge.presentStlb64, bridge.presentColor);
+    for (const ws of bs.walls) this._restoreWallSave(ws, bs.id);
+    if (data.presentStlb64) this._loadPresentStl(bs.id, data.presentStlb64, data.presentColor);
   }
 
   private _restoreRotationSave(rs: RotationSave): void {
-    if (rs.memberIds.some(id => this.nodeRotationId.has(id))) return;
-    const scene = this.getScene();
-    const rot: RotationData = {
-      id: rs.id, name: rs.name,
-      memberIds: [...rs.memberIds], memberTypes: [...rs.memberTypes],
-      pivotX: rs.pivotX, pivotY: rs.pivotY, pivotZ: rs.pivotZ,
-      mode: rs.mode, speed: rs.speed, direction: rs.direction,
-      oscAmplitude: rs.oscAmplitude, oscFrequency: rs.oscFrequency, oscPhase: rs.oscPhase,
-      enabled: rs.enabled, visible: rs.visible ?? true, currentAngle: 0, snapRules: rs.snapRules.map(s=>({...s})),
-      pivotGroup: null,
-    };
-    if (scene) {
-      const pg = new THREE.Group();
-      pg.position.set(rot.pivotX, rot.pivotY, rot.pivotZ);
-      scene.add(pg);
-      rot.pivotGroup = pg;
-      for (const mid of rot.memberIds) {
-        for (const obj of this._getMemberObjects(mid)) pg.attach(obj);
-      }
-    }
-    this.rotations.set(rs.id, rot);
-    rs.memberIds.forEach(mid => this.nodeRotationId.set(mid, rs.id));
+    this._rotMgr.restoreData([rs]);
+    const rot = this._rotMgr.get(rs.id);
+    if (!rot) return;
     const treeParent = this._commonTreeParent(rs.memberIds) ?? 'octagon-base';
-    this.sceneTree.add(rs.id, rs.name, '↻', treeParent);
+    this._rotMgr.buildAndShow(rot, treeParent);
   }
 
   private loadArena(): void {
-    try {
-      const raw=localStorage.getItem(this.arenaStorageKey); if(!raw) return;
-      const saved=JSON.parse(raw) as { v: number; c: ArenaConfig };
-      if(saved.v !== ARENA_SAVE_VERSION){ localStorage.removeItem(this.arenaStorageKey); return; }
-      const cfg=saved.c;
-      this.baseConfig={...this.baseConfig,...cfg.baseConfig};
-      this.rebuildBase();
-      this.arenaSeq=cfg.arenaSeq; this.pitSeq=cfg.pitSeq; this.zoneSeq=cfg.zoneSeq;
-      this.wallSeq=cfg.wallSeq; this.bridgeSeq=cfg.bridgeSeq; this.segmentSeq=cfg.segmentSeq;
-      this.speedlineSeq=cfg.speedLineSeq;
-      this.obstacleSeq=cfg.obstacleSeq; this.trapSeq=cfg.trapSeq; this.portalSeq=cfg.portalSeq;
-      this.rotationSeq=cfg.rotationSeq; this.footingSeq=cfg.footingSeq;
-      this.jumpLinkSeq=cfg.jumpLinkSeq ?? 0;
-      this.translationSeq=cfg.translationSeq ?? 0;
-      this._translationMgr?.restoreSeq(this.translationSeq);
-      this._loadArenasFromConfig(cfg);
-    } catch { localStorage.removeItem(this.arenaStorageKey); }
+    const st = this._arenaStore.getState();
+    const hasData = st.arenas.length > 0 || st.obstacles.length > 0 || st.traps.length > 0
+      || st.bridges.length > 0 || st.portals.length > 0 || st.footings.length > 0
+      || st.jumpLinks.length > 0 || st.rotations.length > 0 || st.baseWalls.length > 0
+      || st.speedLines.length > 0 || st.translations.length > 0;
+    if (!hasData) return;
+    const cfg: ArenaConfig = {
+      baseConfig:      st.baseConfig,
+      arenas:          st.arenas,          arenaSeq:       st.arenaSeq,
+      pitSeq:          st.pitSeq,          zoneSeq:        st.zoneSeq,
+      bridges:         st.bridges,
+      wallSeq:         st.wallSeq,         bridgeSeq:      st.bridgeSeq,
+      segmentSeq:      st.segmentSeq,      speedLineSeq:   st.speedLineSeq,
+      speedLines:      st.speedLines,
+      baseWalls:       st.baseWalls,
+      obstacles:       st.obstacles,       obstacleSeq:    st.obstacleSeq,
+      traps:           st.traps,           trapSeq:        st.trapSeq,
+      portals:         st.portals,         portalSeq:      st.portalSeq,
+      rotations:       st.rotations,       rotationSeq:    st.rotationSeq,
+      footings:        st.footings,        footingSeq:     st.footingSeq,
+      jumpLinks:       st.jumpLinks,       jumpLinkSeq:    st.jumpLinkSeq,
+      translations:    st.translations,    translationSeq: st.translationSeq,
+    };
+    this.baseConfig = { ...this.baseConfig, ...cfg.baseConfig };
+    this.rebuildBase();
+    this.arenaSeq = cfg.arenaSeq; this.pitSeq = cfg.pitSeq; this.zoneSeq = cfg.zoneSeq;
+    this._bridgeMgr.restoreSeq(cfg.bridgeSeq);
+    this._bridgeMgr.restoreSegSeq(cfg.segmentSeq);
+    this._slMgr.restoreSeq(cfg.speedLineSeq);
+    this._wallMgr.restoreSeq(cfg.wallSeq);
+    this._obstacleMgr.restoreSeq(cfg.obstacleSeq); this._trapMgr.restoreSeq(cfg.trapSeq); this._portalMgr.restoreSeq(cfg.portalSeq);
+    this._rotMgr.restoreSeq(cfg.rotationSeq ?? 0); this._footingMgr.restoreSeq(cfg.footingSeq);
+    this._jlMgr.restoreSeq(cfg.jumpLinkSeq ?? 0);
+    this.translationSeq = cfg.translationSeq ?? 0;
+    this._translationMgr?.restoreSeq(this.translationSeq);
+    this._loadArenasFromConfig(cfg);
   }
 
   /* ── Renderer visibility override — wire speed line pointer events ──── */
   override setVisible(v: boolean): void {
     super.setVisible(v);
     const canvas = this.getRendererCanvas();
-    if(v && canvas){
+    if (v && canvas) {
       canvas.addEventListener('pointerdown', this._onPointerDown);
       canvas.addEventListener('pointermove', this._onPointerMove);
       canvas.addEventListener('pointerup',   this._onPointerUp);
+      this._keyUnsubs = [
+        inputManager.onPress('KeyZ', (e) => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } }),
+        inputManager.onPress('KeyY', (e) => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); this.redo(); } }),
+      ];
       this._checkPendingLoad();
-    } else if(!v && canvas){
+    } else if (!v && canvas) {
       canvas.removeEventListener('pointerdown', this._onPointerDown);
       canvas.removeEventListener('pointermove', this._onPointerMove);
       canvas.removeEventListener('pointerup',   this._onPointerUp);
+      this._keyUnsubs.forEach(fn => fn());
+      this._keyUnsubs = [];
       this._spawnMgr?.despawn();
       this._spawnMgrBtn?.classList.remove('active');
     }
   }
 
   private _checkPendingLoad(): void {
-    const raw = localStorage.getItem('bey_pending_arena_load');
-    if (!raw) return;
-    localStorage.removeItem('bey_pending_arena_load');
+    const pending = pendingLoadStore.getState().takeArenaPending();
+    if (!pending) return;
     try {
-      const { config, mode } = JSON.parse(raw) as { config: ArenaConfig; mode: 'replace' | 'merge' };
-      if (mode === 'replace') {
-        this._applyConfigToScene(config);
+      if (pending.mode === 'replace') {
+        this._applyConfigToScene(pending.config);
       } else {
-        this._mergeConfigIntoScene(config);
+        this._mergeConfigIntoScene(pending.config);
       }
       this._flushSave();
     } catch { /* malformed pending load — discard */ }
@@ -3986,16 +3075,16 @@ export class ArenaSandbox extends Sandbox {
     this.arenaSeq     = Math.max(this.arenaSeq,     remapped.arenaSeq);
     this.pitSeq       = Math.max(this.pitSeq,       remapped.pitSeq);
     this.zoneSeq      = Math.max(this.zoneSeq,      remapped.zoneSeq);
-    this.wallSeq      = Math.max(this.wallSeq,       remapped.wallSeq);
-    this.bridgeSeq    = Math.max(this.bridgeSeq,     remapped.bridgeSeq);
-    this.segmentSeq   = Math.max(this.segmentSeq,    remapped.segmentSeq);
-    this.speedlineSeq = Math.max(this.speedlineSeq,  remapped.speedLineSeq);
-    this.obstacleSeq  = Math.max(this.obstacleSeq,   remapped.obstacleSeq ?? 0);
-    this.trapSeq      = Math.max(this.trapSeq,       remapped.trapSeq ?? 0);
-    this.portalSeq    = Math.max(this.portalSeq,     remapped.portalSeq ?? 0);
-    this.footingSeq   = Math.max(this.footingSeq,    remapped.footingSeq ?? 0);
-    this.rotationSeq  = Math.max(this.rotationSeq,   remapped.rotationSeq ?? 0);
-    this.jumpLinkSeq    = Math.max(this.jumpLinkSeq,    remapped.jumpLinkSeq ?? 0);
+    this._wallMgr.restoreSeq(remapped.wallSeq);
+    this._bridgeMgr.restoreSeq(remapped.bridgeSeq);
+    this._bridgeMgr.restoreSegSeq(remapped.segmentSeq);
+    this._slMgr.restoreSeq(remapped.speedLineSeq);
+    this._obstacleMgr.restoreSeq(remapped.obstacleSeq ?? 0);
+    this._trapMgr.restoreSeq(remapped.trapSeq ?? 0);
+    this._portalMgr.restoreSeq(remapped.portalSeq ?? 0);
+    this._footingMgr.restoreSeq(remapped.footingSeq ?? 0);
+    this._rotMgr.restoreSeq(remapped.rotationSeq ?? 0);
+    this._jlMgr.restoreSeq(remapped.jumpLinkSeq ?? 0);
     this.translationSeq = Math.max(this.translationSeq, remapped.translationSeq ?? 0);
     this._translationMgr?.restoreSeq(this.translationSeq);
     this._loadArenasFromConfig(remapped);
@@ -4010,10 +3099,10 @@ export class ArenaSandbox extends Sandbox {
     } else {
       config = extractArenaConfig(checkedIds, {
         arenas: this.arenas, pits: this.pits, zones: this.zones,
-        walls: this.walls, bridges: this.bridges, segments: this.segments,
-        speedLines: this.speedLines, obstacles: this.obstacles,
-        traps: this.traps, portals: this.portals,
-        footings: this.footings, rotations: this.rotations,
+        walls: this._wallMgr.getAll() as Map<string, WallData>, bridges: this._bridgeMgr.getAll() as Map<string, BridgeData>, segments: this._bridgeMgr.getAllSegments() as Map<string, BridgeSegmentData>,
+        speedLines: this._slMgr.getAll() as Map<string, SpeedLineData>, obstacles: this._obstacleMgr.getAll() as Map<string, ObstacleData>,
+        traps: this._trapMgr.getAll() as Map<string, TrapData>, portals: this._portalMgr.getAll() as Map<string, PortalData>,
+        footings: this._footingMgr.getAll() as Map<string, BaseFootingData>, rotations: this._rotMgr.getAll() as Map<string, RotationData>,
       }, this.baseConfig);
     }
 
@@ -4095,41 +3184,42 @@ export class ArenaSandbox extends Sandbox {
 
   private _onReparent(nodeId: string, newParentId: string | null): void {
     if (!newParentId) return;
-    // Sub-nodes and jump links are not reparentable
+    // Sub-nodes, wall-profile nodes, and jump links are not reparentable
     if (nodeId.startsWith('present-') || nodeId.startsWith('particle-') || nodeId.startsWith('weather-') || nodeId.startsWith('env-')) return;
-    if (this.jumpLinks.has(nodeId)) return;
+    if (nodeId.startsWith('wallprofile-')) return;
+    if (this._jlMgr.has(nodeId)) return;
 
     // ── Bridge segment: reorder within same bridge OR move to another bridge ──
-    const seg = this.segments.get(nodeId);
+    const seg = this._bridgeMgr.getSegment(nodeId);
     if (seg) {
       if (newParentId === seg.bridgeId) {
         // Same-bridge reorder
-        const bridge = this.bridges.get(seg.bridgeId); if (!bridge) return;
-        const newOrder = this.sceneTree.getChildIds(seg.bridgeId).filter(id => this.segments.has(id));
+        const bridge = this._bridgeMgr.get(seg.bridgeId); if (!bridge) return;
+        const newOrder = this.sceneTree.getChildIds(seg.bridgeId).filter(id => this._bridgeMgr.getSegment(id) !== undefined);
         bridge.segmentIds = newOrder;
-        newOrder.forEach((sid, i) => { const s = this.segments.get(sid); if (s) s.orderIndex = i; });
-        if (newOrder.length > 0) this.applyBridgeFromSegment(newOrder[0]);
+        newOrder.forEach((sid, i) => { const s = this._bridgeMgr.getSegment(sid); if (s) s.orderIndex = i; });
+        if (newOrder.length > 0) this._bridgeMgr.applyBridgeFromSegment(newOrder[0]);
       } else {
         // Cross-bridge reparent
-        const oldBridge = this.bridges.get(seg.bridgeId);
-        const newBridge = this.bridges.get(newParentId);
+        const oldBridge = this._bridgeMgr.get(seg.bridgeId);
+        const newBridge = this._bridgeMgr.get(newParentId);
         if (!oldBridge || !newBridge) return;
         // Remove from old bridge
         oldBridge.segmentIds = oldBridge.segmentIds.filter(id => id !== nodeId);
-        oldBridge.segmentIds.forEach((sid, i) => { const s = this.segments.get(sid); if (s) s.orderIndex = i; });
+        oldBridge.segmentIds.forEach((sid, i) => { const s = this._bridgeMgr.getSegment(sid); if (s) s.orderIndex = i; });
         // Add to new bridge
-        const newOrder = this.sceneTree.getChildIds(newParentId).filter(id => this.segments.has(id));
+        const newOrder = this.sceneTree.getChildIds(newParentId).filter(id => this._bridgeMgr.getSegment(id) !== undefined);
         newBridge.segmentIds = newOrder;
-        newOrder.forEach((sid, i) => { const s = this.segments.get(sid); if (s) { s.orderIndex = i; s.bridgeId = newParentId; } });
+        newOrder.forEach((sid, i) => { const s = this._bridgeMgr.getSegment(sid); if (s) { s.orderIndex = i; s.bridgeId = newParentId; } });
         // Rebuild both
-        if (oldBridge.segmentIds.length > 0) this.applyBridgeFromSegment(oldBridge.segmentIds[0]);
-        if (newBridge.segmentIds.length > 0) this.applyBridgeFromSegment(newBridge.segmentIds[0]);
+        if (oldBridge.segmentIds.length > 0) this._bridgeMgr.applyBridgeFromSegment(oldBridge.segmentIds[0]);
+        if (newBridge.segmentIds.length > 0) this._bridgeMgr.applyBridgeFromSegment(newBridge.segmentIds[0]);
       }
       this.saveArena(); return;
     }
 
     // ── Wall: reparent between arenas or arena↔base ──────────────────────
-    const wall = this.walls.get(nodeId);
+    const wall = this._wallMgr.get(nodeId);
     if (wall) {
       const oldParentId = wall.parentId; const oldParentType = wall.parentType;
       if (oldParentType === 'bridge') return; // bridge walls not reparentable
@@ -4148,7 +3238,7 @@ export class ArenaSandbox extends Sandbox {
         const newArena = this.arenas.get(newParentId);
         if (newArena && !newArena.wallIds.includes(nodeId)) newArena.wallIds.push(nodeId);
       }
-      this.applyWall(wall);
+      this._wallMgr.apply(wall);
       if (oldParentType === 'arena') this.rebuildDependentsOf(oldParentId);
       if (isNewArena) this.rebuildDependentsOf(newParentId);
       this.saveArena(); return;
@@ -4194,32 +3284,32 @@ export class ArenaSandbox extends Sandbox {
     }
 
     // ── Trap: reparent arena↔base ─────────────────────────────────────────
-    const trap = this.traps.get(nodeId);
+    const trap = this._trapMgr.get(nodeId);
     if (trap) {
       const isNewArena = this.arenas.has(newParentId);
       const isNewBase  = newParentId === 'octagon-base';
       if (!isNewArena && !isNewBase) return;
       trap.parentId   = isNewBase ? 'octagon-base' : newParentId;
       trap.parentType = isNewBase ? 'base' : 'arena';
-      applyTrap(trap, this._getTrapSurfY(trap));
-      if (this.nodeRotationId.has(nodeId)) this._afterApply(nodeId);
+      this._trapMgr.apply(trap);
+      if (this._rotMgr.hasNode(nodeId)) this._afterApply(nodeId);
       this.saveArena(); return;
     }
 
     // ── Portal: reparent arena↔base ───────────────────────────────────────
-    const portal = this.portals.get(nodeId);
+    const portal = this._portalMgr.get(nodeId);
     if (portal) {
       const isNewArena = this.arenas.has(newParentId);
       const isNewBase  = newParentId === 'octagon-base';
       if (!isNewArena && !isNewBase) return;
       portal.parentId   = isNewBase ? 'octagon-base' : newParentId;
       portal.parentType = isNewBase ? 'base' : 'arena';
-      applyPortal(portal, this._getPortalSurfY(portal));
+      this._portalMgr.apply(portal);
       this.saveArena(); return;
     }
 
     // ── Speed line: reparent between arenas / zones ───────────────────────
-    const sl = this.speedLines.get(nodeId);
+    const sl = this._slMgr.get(nodeId);
     if (sl) {
       const oldArena = this.arenas.get(sl.parentArenaId);
       if (oldArena) oldArena.speedLineIds = oldArena.speedLineIds.filter(id => id !== nodeId);
@@ -4246,11 +3336,12 @@ export class ArenaSandbox extends Sandbox {
   /* ── Duplicate ───────────────────────────────────────────────────────── */
 
   private _duplicateNode(id: string): void {
-    // Sub-nodes, bridges, speed lines, rotations, jump links are not duplicatable
+    // Sub-nodes, wall-profile nodes, bridges, speed lines, rotations, jump links are not duplicatable
     if (id.startsWith('present-') || id.startsWith('particle-') || id.startsWith('weather-') || id.startsWith('env-')) return;
-    if (this.bridges.has(id) || this.speedLines.has(id) || this.rotations.has(id)) return;
-    if (this.jumpLinks.has(id)) return;
-    if (this.segments.has(id)) return;
+    if (id.startsWith('wallprofile-')) return;
+    if (this._bridgeMgr.has(id) || this._slMgr.has(id) || this._rotMgr.has(id)) return;
+    if (this._jlMgr.has(id)) return;
+    if (this._bridgeMgr.getSegment(id) !== undefined) return;
 
     this.captureUndo();
 
@@ -4288,24 +3379,21 @@ export class ArenaSandbox extends Sandbox {
           { label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(newId) },
         ],
       });
+      this.sceneTree.add(`wallprofile-${newId}`, 'Wall Profile', '◌', newId);
+      this._wallProfileNodes.add(`wallprofile-${newId}`);
       this.updateTopFace(); this.updateAllMoatIslandCaps(); this.saveArena();
       return;
     }
 
     // ── Obstacle ───────────────────────────────────────────────────────────
-    const obs = this.obstacles.get(id);
+    const obs = this._obstacleMgr.get(id);
     if (obs) {
-      const newId = `obstacle-${++this.obstacleSeq}`;
-      const clone = { ...obs, id: newId, name: `Obstacle ${this.obstacleSeq}`,
-        posX: obs.posX + 10,
-        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
-      };
-      const [mesh, edges] = buildObstacleObjects(clone);
-      clone.mesh = mesh; clone.edges = edges;
-      this.addToScene(mesh, edges);
-      this.sceneObjects.set(newId, [mesh, edges]);
-      this.obstacles.set(newId, clone);
-      this.sceneTree.add(newId, clone.name, '⬛', 'octagon-base', {
+      const nextSeq = this._obstacleMgr.getSeq() + 1;
+      const newId = `obstacle-${nextSeq}`;
+      const save: ObstacleSave = { ...obstacleToSave(obs), id: newId, name: `Obstacle ${nextSeq}`, posX: obs.posX + 10 };
+      this._obstacleMgr.restoreData([save]);
+      const newData = this._obstacleMgr.get(newId)!;
+      this._obstacleMgr.buildAndShow(newData, {
         addChildButtons: [
           { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'obstacle'); this.addRotation([newId],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
           { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'obstacle') },
@@ -4316,19 +3404,14 @@ export class ArenaSandbox extends Sandbox {
     }
 
     // ── Footing ────────────────────────────────────────────────────────────
-    const footing = this.footings.get(id);
+    const footing = this._footingMgr.get(id);
     if (footing) {
-      const newId = `footing-${++this.footingSeq}`;
-      const clone = { ...footing, id: newId, name: `Footing ${this.footingSeq}`,
-        basePosX: footing.basePosX + 10,
-        mesh: null as unknown as THREE.Mesh | null, edges: null as unknown as THREE.LineSegments | null,
-      };
-      const [mesh, edges] = buildFootingObjects(clone, this.baseConfig.height);
-      clone.mesh = mesh; clone.edges = edges;
-      this.addToScene(mesh, edges);
-      this.sceneObjects.set(newId, [mesh, edges]);
-      this.footings.set(newId, clone);
-      this.sceneTree.add(newId, clone.name, '⬢', 'octagon-base', {
+      const nextSeq = this._footingMgr.getSeq() + 1;
+      const newId = `footing-${nextSeq}`;
+      const save: BaseFootingSave = { ...footingToSave(footing), id: newId, name: `Footing ${nextSeq}`, basePosX: footing.basePosX + 10 };
+      this._footingMgr.restoreData([save]);
+      const newData = this._footingMgr.get(newId)!;
+      this._footingMgr.buildAndShow(newData, {
         addChildButtons: [
           { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
@@ -4337,30 +3420,22 @@ export class ArenaSandbox extends Sandbox {
     }
 
     // ── Trap ───────────────────────────────────────────────────────────────
-    const trap = this.traps.get(id);
+    const trap = this._trapMgr.get(id);
     if (trap) {
-      const newId = `trap-${++this.trapSeq}`;
-      const clone = { ...trap, id: newId, name: `Trap ${this.trapSeq}`,
-        posAngle: trap.posAngle + 10,
-        durationTiers: trap.durationTiers.map(t => ({ ...t })),
-        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
-        variantMesh: null as THREE.Mesh | null,
+      const nextSeq = this._trapMgr.getSeq() + 1;
+      const newId = `trap-${nextSeq}`;
+      const save: TrapSave = {
+        ...this._trapMgr.toSave(trap), id: newId, name: `Trap ${nextSeq}`,
+        posAngle: trap.posAngle + 10, walls: [],
       };
-      const surfY = this._getTrapSurfY(clone);
-      const [mesh, edges, variantMesh] = buildTrapObjects(clone, surfY);
-      clone.mesh = mesh; clone.edges = edges; clone.variantMesh = variantMesh;
-      const objs: THREE.Object3D[] = [mesh, edges];
-      if (variantMesh) objs.push(variantMesh);
-      this.addToScene(...objs);
-      this.sceneObjects.set(newId, objs);
-      this.traps.set(newId, clone);
-      const parentTreeId = clone.parentType === 'base' ? 'octagon-base' : clone.parentId;
-      this.sceneTree.add(newId, clone.name, '⚡', parentTreeId, {
+      this._trapMgr.restoreData([save]);
+      const newData = this._trapMgr.get(newId)!;
+      this._trapMgr.buildAndShow(newData, {
         addChildButtons: [
-          { label:'🧱+', title:'Add wall',            onClick:()=>this.addWall(newId, 'trap') },
-          { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'trap'); this.addRotation([newId],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
-          { label:'⤻+',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'trap') },
-          { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'🧱+', title:'Add wall',              onClick:()=>this.addWall(newId, 'trap') },
+          { label:'↻+',  title:'Add rotation',      className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'trap'); this.addRotation([newId],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'⤻+',  title:'Add jump link',     className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'trap') },
+          { label:'✦+',  title:'Add presentation',  className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
           { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(newId) },
         ],
       });
@@ -4368,24 +3443,14 @@ export class ArenaSandbox extends Sandbox {
     }
 
     // ── Portal ─────────────────────────────────────────────────────────────
-    const portal = this.portals.get(id);
+    const portal = this._portalMgr.get(id);
     if (portal) {
-      const newId = `portal-${++this.portalSeq}`;
-      const clone = { ...portal, id: newId, name: `Portal ${this.portalSeq}`,
-        posAngle: portal.posAngle + 10,
-        mesh: null as unknown as THREE.Mesh, edges: null as unknown as THREE.LineSegments,
-        ringMesh: null as THREE.Mesh | null,
-      };
-      const surfY = this._getPortalSurfY(clone);
-      const [mesh, edges, ringMesh] = buildPortalObjects(clone, surfY);
-      clone.mesh = mesh; clone.edges = edges; clone.ringMesh = ringMesh;
-      const objs: THREE.Object3D[] = [mesh, edges];
-      if (ringMesh) objs.push(ringMesh);
-      this.addToScene(...objs);
-      this.sceneObjects.set(newId, objs);
-      this.portals.set(newId, clone);
-      const parentTreeId = clone.parentType === 'base' ? 'octagon-base' : clone.parentId;
-      this.sceneTree.add(newId, clone.name, '◉', parentTreeId, {
+      const nextSeq = this._portalMgr.getSeq() + 1;
+      const newId = `portal-${nextSeq}`;
+      const save: PortalSave = { ...this._portalMgr.toSave(portal), id: newId, name: `Portal ${nextSeq}`, posAngle: portal.posAngle + 10 };
+      this._portalMgr.restoreData([save]);
+      const newData = this._portalMgr.get(newId)!;
+      this._portalMgr.buildAndShow(newData, {
         addChildButtons: [
           { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
@@ -4394,23 +3459,23 @@ export class ArenaSandbox extends Sandbox {
     }
 
     // ── Wall ───────────────────────────────────────────────────────────────
-    const wall = this.walls.get(id);
+    const wall = this._wallMgr.get(id);
     if (wall) {
-      const newId = `wall-${++this.wallSeq}`;
-      const clone = { ...wall, id: newId, name: `Wall ${this.wallSeq}`,
-        holes: wall.holes.map(h => ({ ...h })),
-        mesh: null as THREE.Mesh | null, edges: null as THREE.LineSegments | null,
-        _rotatePivot: undefined, _arenaRotateTimer: undefined,
-      };
-      this.walls.set(newId, clone);
-      this.applyWall(clone);
-      const parentTreeId = clone.parentType === 'base' ? 'octagon-base' : clone.parentId;
-      this.sceneTree.add(newId, clone.name, '🧱', parentTreeId, {
+      const nextSeq = this._wallMgr.getSeq() + 1;
+      const newId = `wall-${nextSeq}`;
+      const save: WallSave = { ...this._wallMgr.toSave(wall), id: newId, name: `Wall ${nextSeq}` };
+      this._wallMgr.restoreData([save]);
+      const newData = this._wallMgr.get(newId)!;
+      this._wallMgr.buildAndShow(newData, {
         addChildButtons: [
           { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'wall'); this.addRotation([newId],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
           { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
       });
+      if (newData.parentType === 'arena') {
+        const arena = this.arenas.get(newData.parentId);
+        if (arena && !arena.wallIds.includes(newId)) arena.wallIds.push(newId);
+      }
       this.saveArena(); return;
     }
 
@@ -4475,27 +3540,23 @@ export class ArenaSandbox extends Sandbox {
     const ok=await gameConfirm('Reset arena?\nAll arenas, pits, zones, walls and bridges will be cleared.','Reset','Cancel');
     if(!ok) return;
     this.captureUndo();
-    for(const sl of this.speedLines.values()) this._disposeSpeedLine(sl);
-    this.speedLines.clear(); this.speedlineSeq=0; this.slSegSeq=0;
+    this._slMgr.clear(); this.slSegSeq=0;
     for(const[id,arena] of this.arenas.entries()){
       for(const pid of arena.pitIds){const p=this.pits.get(pid);if(p){this.disposePit(p);this.removeFromScene(p.mesh,p.edges);if(p.seamMesh)this.removeFromScene(p.seamMesh);}this.pits.delete(pid);this.sceneObjects.delete(pid);}
       for(const zid of arena.zoneIds){const z=this.zones.get(zid);if(z){this.disposeZone(z);this.removeFromScene(z.mesh,z.edges);if(z.seamMesh)this.removeFromScene(z.seamMesh);}this.zones.delete(zid);this.sceneObjects.delete(zid);}
       this.disposeArena(arena); this.removeFromScene(arena.mesh,arena.edges);
       this.sceneObjects.delete(id); this.sceneTree.remove(id);
     }
-    for(const wall of this.walls.values()) this._disposeWall(wall);
-    for(const bridge of this.bridges.values()) this._disposeBridge(bridge);
+    this._wallMgr.clear();
+    this._bridgeMgr.clear();
     this.arenas.clear(); this.arenaSeq=0;
     this.pits.clear();   this.pitSeq=0;
     this.zones.clear();  this.zoneSeq=0;
-    this.walls.clear();    this.wallSeq=0;
-    this.bridges.clear();  this.bridgeSeq=0;
-    this.segments.clear(); this.segmentSeq=0;
     this.bridgesByArena.clear();
     this.baseConfig={height:DEFAULT_BASE_HEIGHT,sides:DEFAULT_BASE_SIDES,color:DEFAULT_BASE_COLOR,surface:'plain',customTileData:null,tileScale:DEFAULT_BASE_TILE};
     this.rebuildBase(); this.updateTopFace();
     this.selectedId=null; this.sceneTree.clearSel(); this.props.showEmpty();
-    localStorage.removeItem(this.arenaStorageKey);
+    this._arenaStore.getState().discard();
     this._flushUndoPending();
   }
 }

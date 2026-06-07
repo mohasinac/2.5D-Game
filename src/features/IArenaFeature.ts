@@ -1,5 +1,7 @@
 import type * as THREE from 'three';
 import type { SceneTree } from '../utils/SceneTree';
+import type { BaseStatModifiers } from '../types/sharedTypes';
+import type { RenderManager } from './managers/RenderManager';
 
 /**
  * Minimum identity contract for any managed arena feature.
@@ -32,6 +34,35 @@ export interface ITickableManager {
 }
 
 /**
+ * Implemented by FeatureManagers that hold world-positioned entities.
+ * Returns null when id is not found in this manager.
+ */
+export interface IPositionedManager {
+  getWorldPosition(id: string): THREE.Vector3 | null;
+}
+
+/**
+ * Minimal buff/debuff receiver interface. Implemented by SpawnManager
+ * and any future multi-bey physics agent.
+ */
+export interface IBuffReceiver {
+  readonly entityId: string;
+  applyBuff(sourceId: string, mods: Partial<BaseStatModifiers>, durationMs: number | null): void;
+  removeBuff(sourceId: string): void;
+  getEffectiveStats(): BaseStatModifiers;
+}
+
+/**
+ * Minimal store slice injected into each FeatureManager via setStore().
+ * Managers call these on every mutation; they never import from src/stores/ directly.
+ */
+export interface FeatureStoreSlice<TSave> {
+  upsert: (save: TSave) => void;
+  remove: (id: string) => void;
+  clear:  () => void;
+}
+
+/**
  * Dependency-injection context passed to every FeatureManager at
  * construction time.  Managers never import from src/screens/ — they
  * receive all they need through this interface instead (DIP — Dependency
@@ -55,16 +86,6 @@ export interface SceneContext {
    */
   readonly getFallbackY: () => number;
 
-  /**
-   * Register a set of Three.js objects under a node ID for the
-   * view-mode (hitbox / both / present) system.  Must be called any
-   * time new objects are added to the scene for a given feature node.
-   */
-  readonly trackObjects: (id: string, objects: THREE.Object3D[]) => void;
-
-  /**
-   * Remove a node's Three.js objects from the view-mode tracking map.
-   * Call before disposing geometry.
-   */
-  readonly untrackObjects: (id: string) => void;
+  /** Centralised Three.js object registry — replaces trackObjects/untrackObjects. */
+  readonly renderMgr: RenderManager;
 }

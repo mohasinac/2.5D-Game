@@ -1,14 +1,16 @@
 import type { SaveSlot, SaveSlotMeta } from '../../types/rpgTypes.ts';
-import { LS_SAVE_PFX, SAVE_VERSION, MAX_SAVE_SLOTS } from '../config/rpgConstants.ts';
+import { SAVE_VERSION, MAX_SAVE_SLOTS } from '../config/rpgConstants.ts';
 import { gameStateStore } from './GameStateStore.ts';
 import { inventoryStore } from './InventoryStore.ts';
+import { rpgSaveStore } from '../../stores/rpg/rpgSaveStore.ts';
 
 interface PersistedSave extends SaveSlot { _version: number; }
 
 export class SaveSystem {
   static hasAnySlot(): boolean {
+    const blobs = rpgSaveStore.getState().slotBlobs;
     for (let i = 0; i < MAX_SAVE_SLOTS; i++) {
-      if (localStorage.getItem(`${LS_SAVE_PFX}${i}`)) return true;
+      if (blobs[i]) return true;
     }
     return false;
   }
@@ -32,16 +34,16 @@ export class SaveSystem {
       quests:      state.quests,
       playtimeMs:  gameStateStore.getPlaytime(),
     };
-    localStorage.setItem(`${LS_SAVE_PFX}${slot}`, JSON.stringify(s));
+    rpgSaveStore.getState().setSlot(slot, JSON.stringify(s));
   }
 
   static load(slot: 0 | 1 | 2): boolean {
-    const raw = localStorage.getItem(`${LS_SAVE_PFX}${slot}`);
+    const raw = rpgSaveStore.getState().getSlot(slot);
     if (!raw) return false;
     try {
       const s = JSON.parse(raw) as PersistedSave;
       if ((s._version ?? 0) !== SAVE_VERSION) {
-        localStorage.removeItem(`${LS_SAVE_PFX}${slot}`); return false;
+        rpgSaveStore.getState().deleteSlot(slot); return false;
       }
       gameStateStore.fromData({
         flags:       s.flags,
@@ -59,7 +61,7 @@ export class SaveSystem {
   static getSlotsMetadata(): (SaveSlotMeta | null)[] {
     const result: (SaveSlotMeta | null)[] = [];
     for (let i = 0; i < MAX_SAVE_SLOTS; i++) {
-      const raw = localStorage.getItem(`${LS_SAVE_PFX}${i}`);
+      const raw = rpgSaveStore.getState().getSlot(i);
       if (!raw) { result.push(null); continue; }
       try {
         const s = JSON.parse(raw) as PersistedSave;
@@ -70,6 +72,6 @@ export class SaveSystem {
   }
 
   static deleteSlot(slot: 0 | 1 | 2): void {
-    localStorage.removeItem(`${LS_SAVE_PFX}${slot}`);
+    rpgSaveStore.getState().deleteSlot(slot);
   }
 }

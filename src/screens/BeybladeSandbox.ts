@@ -22,9 +22,10 @@ import { gameConfirm } from '../utils/dialog';
 import {
   listBeyPresets, saveBeyPreset, newPresetId, generateBeyThumb, remapBeyConfigIds,
 } from '../utils/presetStore';
-
-const STORAGE_KEY = 'bey_beyblade_builder';
-const BEY_SAVE_VERSION = 2;
+import { inputManager } from '../features/managers/InputManager';
+import { createBeybladeConfigStore, type BeybladeConfigStore } from '../stores/beybladeConfigStore';
+import { createTreeStateStore, type TreeStateStore } from '../stores/treeStateStore';
+import { pendingLoadStore } from '../stores/pendingLoadStore';
 
 export interface BeybladeSandboxOptions {
   onBack: () => void;
@@ -55,6 +56,9 @@ export class BeybladeSandbox extends Sandbox {
 
   private _subNodesAdded = new Set<string>();
   private _beyOpts: BeybladeSandboxOptions;
+  private _beyStore!: BeybladeConfigStore;
+  private _treeStore!: TreeStateStore;
+  private _keyUnsubs: Array<() => void> = [];
 
   constructor(container: HTMLElement, opts: BeybladeSandboxOptions) {
     const sandboxOpts: SandboxOptions = {
@@ -89,22 +93,24 @@ export class BeybladeSandbox extends Sandbox {
   override setVisible(v: boolean): void {
     super.setVisible(v);
     if (v) {
-      document.addEventListener('keydown', this._onKey);
+      this._keyUnsubs = [
+        inputManager.onPress('KeyZ', (e) => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo(); } }),
+        inputManager.onPress('KeyY', (e) => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); this._redo(); } }),
+      ];
       this._checkPendingLoad();
     } else {
-      document.removeEventListener('keydown', this._onKey);
+      this._keyUnsubs.forEach(fn => fn());
+      this._keyUnsubs = [];
     }
   }
 
   private _checkPendingLoad(): void {
-    const raw = localStorage.getItem('bey_pending_bey_load');
-    if (!raw) return;
-    localStorage.removeItem('bey_pending_bey_load');
+    const pending = pendingLoadStore.getState().takeBeyPending();
+    if (!pending) return;
     try {
-      const { config, mode } = JSON.parse(raw) as { config: BeybladeBuildConfig; mode: 'replace' | 'merge' };
       const batchTag = Date.now().toString(36);
-      const remapped = remapBeyConfigIds(config, batchTag);
-      if (mode === 'replace') {
+      const remapped = remapBeyConfigIds(pending.config, batchTag);
+      if (pending.mode === 'replace') {
         this.store.deserialize(remapped);
       } else {
         this.store.mergeDeserialize(remapped);
@@ -290,11 +296,23 @@ export class BeybladeSandbox extends Sandbox {
     // Bottom controls bar
     this._buildBottomBar();
 
+    // Create stores (before _loadFromStorage)
+    this._beyStore  = createBeybladeConfigStore('bey_beyblade_builder');
+    this._treeStore = createTreeStateStore('bey_beyblade_builder_tree');
+
+    // Wire tree expansion persistence
+    this.tree.onExpand = (id, expanded) => this._treeStore.getState().setExpanded(id, expanded);
+
     // Wire tree callbacks
     this._wireTree();
 
     // Load persisted data
     this._loadFromStorage();
+
+    // Restore tree expansion state
+    for (const id of this._treeStore.getState().expandedIds) {
+      this.tree.setExpanded(id, true);
+    }
   }
 
   // ── Per-frame tick ────────────────────────────────────────────────────────
@@ -891,8 +909,8 @@ export class BeybladeSandbox extends Sandbox {
     this.panel.showEmpty();
     this._syncUndoButtons();
 
-    // Clear localStorage
-    localStorage.removeItem(STORAGE_KEY);
+    // Clear persisted config
+    this._beyStore.getState().discard();
   }
 
   private _undo(): void {
@@ -912,33 +930,17 @@ export class BeybladeSandbox extends Sandbox {
     this.redoBtn.style.opacity = this.history.canRedo ? '1' : '0.4';
   }
 
-  private _onKey = (e: KeyboardEvent): void => {
-    const isMac = /mac/i.test(navigator.platform);
-    const ctrl  = isMac ? e.metaKey : e.ctrlKey;
-    if (!ctrl) return;
-    if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); this._undo(); }
-    if ((e.key === 'z' && e.shiftKey) || e.key === 'y') { e.preventDefault(); this._redo(); }
-  };
-
   // ── Persistence ───────────────────────────────────────────────────────────
 
   private _saveToStorage(): void {
-    try {
-      const cfg = this.store.serialize();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...cfg, v: BEY_SAVE_VERSION }));
-    } catch { /* quota exceeded — ignore */ }
+    this._beyStore.getState().save(this.store.serialize());
   }
 
   private _loadFromStorage(): void {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as BeybladeBuildConfig & { v?: number };
-      if (parsed.v !== BEY_SAVE_VERSION) {
-        localStorage.removeItem(STORAGE_KEY);
-        return;
-      }
-      this.store.deserialize(parsed);
+      const cfg = this._beyStore.getState().load();
+      if (!cfg) return;
+      this.store.deserialize(cfg);
       // Restore axis pose
       const axis = this.store.getAxis();
       this.tiltInput.value  = String(axis.tiltAngle);

@@ -4,7 +4,6 @@ import type { SpeedLineSave } from '../../utils/arenaPersistence';
 import {
   defaultSpeedLine,
   buildSpeedLineObjects,
-  applySpeedLine,
 } from '../../geometry/arenaObjectBuilders';
 import { speedLineToSave } from '../../utils/arenaPersistence';
 import type { SceneSurfaceProjector } from '../../geometry/sceneSurfaceProjector';
@@ -93,8 +92,8 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     sl.handleMeshes  = handleMeshes;
     sl.totalLength   = totalLength;
 
-    this.ctx.scene.add(mesh, edges, ...markerMeshes, ...handleMeshes);
-    this.ctx.trackObjects(id, [mesh, edges]);
+    this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    this.ctx.renderMgr.add(id, [mesh, edges]);
 
     const treeParentId = parentZoneId ?? arenaId;
     this.ctx.sceneTree.add(id, name, '↝', treeParentId, treeOpts as never);
@@ -108,17 +107,28 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     const arena = this.getArena(sl.parentArenaId);
     if (!arena) return;
 
+    // Dispose old markers/handles/overlaps (scene-managed directly)
+    for (const m of sl.markerMeshes)   { this.ctx.scene.remove(m); m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
+    for (const m of sl.handleMeshes)   { this.ctx.scene.remove(m as unknown as THREE.Mesh); (m as unknown as THREE.Mesh).geometry.dispose(); ((m as unknown as THREE.Mesh).material as THREE.Material).dispose(); }
+    for (const m of sl.overlapMarkers) { this.ctx.scene.remove(m); m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
+    sl.markerMeshes = []; sl.handleMeshes = []; sl.overlapMarkers = [];
+
+    // Detach old mesh+edges from scene (without geo-dispose) then dispose manually
+    this.ctx.renderMgr.detach(sl.id);
+    if (sl.mesh)  { sl.mesh.geometry.dispose();  (sl.mesh.material  as THREE.Material).dispose(); }
+    if (sl.edges) { sl.edges.geometry.dispose(); (sl.edges.material as THREE.Material).dispose(); }
+
+    // Build new objects
     const projector = this.buildProjector(sl.parentArenaId);
-    applySpeedLine(
-      sl,
-      arena,
-      this.getZones() as Map<string, ZoneData>,
-      this.ctx.scene,
-      (...o) => this.ctx.scene.add(...o),
-      (...o) => this.ctx.scene.remove(...o),
-      projector,
-    );
-    this.ctx.trackObjects(sl.id, [sl.mesh, sl.edges]);
+    const { mesh, edges, markerMeshes, handleMeshes, totalLength } =
+      buildSpeedLineObjects(sl, arena, this.getZones() as Map<string, ZoneData>, projector);
+    sl.mesh = mesh; sl.edges = edges;
+    sl.markerMeshes = markerMeshes; sl.handleMeshes = handleMeshes;
+    sl.totalLength  = totalLength;
+
+    this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    this.ctx.renderMgr.add(sl.id, [mesh, edges]);
+    this.setVisible(sl.id, sl.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ───────────────────────
@@ -136,8 +146,8 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     data.handleMeshes = handleMeshes;
     data.totalLength  = totalLength;
 
-    this.ctx.scene.add(mesh, edges, ...markerMeshes, ...handleMeshes);
-    this.ctx.trackObjects(data.id, [mesh, edges]);
+    this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    this.ctx.renderMgr.add(data.id, [mesh, edges]);
 
     const treeParentId = data.parentZoneId ?? data.parentArenaId;
     this.ctx.sceneTree.add(data.id, data.name, '↝', treeParentId, treeOpts as never);
@@ -168,29 +178,17 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     data.markerMeshes = markerMeshes;
     data.handleMeshes = handleMeshes;
     data.totalLength  = totalLength;
-    this.ctx.scene.add(mesh, edges, ...markerMeshes, ...handleMeshes);
-    this.ctx.trackObjects(data.id, [mesh, edges]);
+    this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    this.ctx.renderMgr.add(data.id, [mesh, edges]);
   }
 
   protected disposeOne(data: SpeedLineData): void {
-    const disposeMesh = (m: THREE.Mesh) => {
-      this.ctx.scene.remove(m);
-      m.geometry.dispose();
-      (m.material as THREE.Material).dispose();
-    };
-
-    if (data.mesh)  disposeMesh(data.mesh  as unknown as THREE.Mesh);
-    if (data.edges) {
-      this.ctx.scene.remove(data.edges);
-      data.edges.geometry.dispose();
-      (data.edges.material as THREE.Material).dispose();
-    }
-    for (const m of data.markerMeshes)  disposeMesh(m);
-    for (const m of data.handleMeshes)  disposeMesh(m as unknown as THREE.Mesh);
-    for (const m of data.overlapMarkers) disposeMesh(m);
-
-    data.markerMeshes  = [];
-    data.handleMeshes  = [];
+    // mesh + edges are disposed by renderMgr.dispose() called by FeatureManager.remove()
+    for (const m of data.markerMeshes)   { this.ctx.scene.remove(m); m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
+    for (const m of data.handleMeshes)   { this.ctx.scene.remove(m as unknown as THREE.Mesh); (m as unknown as THREE.Mesh).geometry.dispose(); ((m as unknown as THREE.Mesh).material as THREE.Material).dispose(); }
+    for (const m of data.overlapMarkers) { this.ctx.scene.remove(m); m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
+    data.markerMeshes   = [];
+    data.handleMeshes   = [];
     data.overlapMarkers = [];
   }
 

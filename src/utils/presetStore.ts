@@ -9,11 +9,8 @@ import {
   arenaToSave, wallToSave, bridgeToSave,
   speedLineToSave, obstacleToSave, trapToSave, portalToSave, footingToSave, rotationToSave,
 } from './arenaPersistence';
-
-// ── Storage keys ───────────────────────────────────────────────────────────
-
-const ARENA_PRESETS_KEY = 'bey_arena_presets';
-const BEY_PRESETS_KEY   = 'bey_bey_presets';
+import { arenaPresetsStore } from '../stores/arenaPresetsStore';
+import { beyPresetsStore }   from '../stores/beyPresetsStore';
 
 // ── ID generation ─────────────────────────────────────────────────────────
 
@@ -24,55 +21,37 @@ export function newPresetId(): string {
 // ── Arena preset CRUD ─────────────────────────────────────────────────────
 
 export function listArenaPresets(): ArenaPreset[] {
-  try { return JSON.parse(localStorage.getItem(ARENA_PRESETS_KEY) ?? '[]') as ArenaPreset[]; }
-  catch { return []; }
+  return arenaPresetsStore.getState().list();
 }
 
 export function saveArenaPreset(p: ArenaPreset): void {
-  const list = listArenaPresets();
-  const idx = list.findIndex(x => x.id === p.id);
-  if (idx >= 0) list[idx] = p; else list.push(p);
-  localStorage.setItem(ARENA_PRESETS_KEY, JSON.stringify(list));
+  arenaPresetsStore.getState().save(p);
 }
 
 export function deleteArenaPreset(id: string): void {
-  const list = listArenaPresets().filter(p => p.id !== id);
-  localStorage.setItem(ARENA_PRESETS_KEY, JSON.stringify(list));
+  arenaPresetsStore.getState().remove(id);
 }
 
 export function updateArenaPreset(id: string, patch: Partial<ArenaPreset>): void {
-  const list = listArenaPresets();
-  const idx = list.findIndex(p => p.id === id);
-  if (idx < 0) return;
-  list[idx] = { ...list[idx], ...patch };
-  localStorage.setItem(ARENA_PRESETS_KEY, JSON.stringify(list));
+  arenaPresetsStore.getState().update(id, patch);
 }
 
 // ── Bey preset CRUD ───────────────────────────────────────────────────────
 
 export function listBeyPresets(): BeyPreset[] {
-  try { return JSON.parse(localStorage.getItem(BEY_PRESETS_KEY) ?? '[]') as BeyPreset[]; }
-  catch { return []; }
+  return beyPresetsStore.getState().list();
 }
 
 export function saveBeyPreset(p: BeyPreset): void {
-  const list = listBeyPresets();
-  const idx = list.findIndex(x => x.id === p.id);
-  if (idx >= 0) list[idx] = p; else list.push(p);
-  localStorage.setItem(BEY_PRESETS_KEY, JSON.stringify(list));
+  beyPresetsStore.getState().save(p);
 }
 
 export function deleteBeyPreset(id: string): void {
-  const list = listBeyPresets().filter(p => p.id !== id);
-  localStorage.setItem(BEY_PRESETS_KEY, JSON.stringify(list));
+  beyPresetsStore.getState().remove(id);
 }
 
 export function updateBeyPreset(id: string, patch: Partial<BeyPreset>): void {
-  const list = listBeyPresets();
-  const idx = list.findIndex(p => p.id === id);
-  if (idx < 0) return;
-  list[idx] = { ...list[idx], ...patch };
-  localStorage.setItem(BEY_PRESETS_KEY, JSON.stringify(list));
+  beyPresetsStore.getState().update(id, patch);
 }
 
 // ── Thumbnail generation ───────────────────────────────────────────────────

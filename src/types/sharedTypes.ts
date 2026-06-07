@@ -73,3 +73,30 @@ export interface WeatherSystem {
   tick(dt: number): void;
   dispose(): void;
 }
+
+/* ── Stat modifiers (shared between arena speed-lines, jump-links, zones) ─ */
+
+export interface BaseStatModifiers {
+  spinRateMult:    number;
+  staminaMult:     number;
+  attackMult:      number;
+  defenseMult:     number;
+  weightMult:      number;
+  burstResistMult: number;
+}
+
+export function defaultBaseStatModifiers(): BaseStatModifiers {
+  return { spinRateMult: 1, staminaMult: 1, attackMult: 1, defenseMult: 1, weightMult: 1, burstResistMult: 1 };
+}
+
+// Multiplicative combination — 0.8 × 0.8 = 0.64, not 1.6.
+export function combineStatMods(a: BaseStatModifiers, b: BaseStatModifiers): BaseStatModifiers {
+  return {
+    spinRateMult:    a.spinRateMult    * b.spinRateMult,
+    staminaMult:     a.staminaMult     * b.staminaMult,
+    attackMult:      a.attackMult      * b.attackMult,
+    defenseMult:     a.defenseMult     * b.defenseMult,
+    weightMult:      a.weightMult      * b.weightMult,
+    burstResistMult: a.burstResistMult * b.burstResistMult,
+  };
+}

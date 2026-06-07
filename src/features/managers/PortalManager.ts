@@ -8,7 +8,7 @@ import {
 } from '../../geometry/portalBuilders';
 import { portalToSave } from '../../utils/arenaPersistence';
 import { ParentedFeatureManager } from '../ParentedFeatureManager';
-import type { SceneContext } from '../IArenaFeature';
+import type { SceneContext, IPositionedManager } from '../IArenaFeature';
 import type { ISurfaceProvider } from '../ISurfaceProvider';
 
 /**
@@ -27,7 +27,7 @@ import type { ISurfaceProvider } from '../ISurfaceProvider';
  * Has no arena-specific dependencies beyond what SceneContext and
  * getArenas() already provide.
  */
-export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave> {
+export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave> implements IPositionedManager {
 
   constructor(
     ctx:        SceneContext,
@@ -36,43 +36,41 @@ export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave
     super(ctx, 'portal', 'Portal', getSurface);
   }
 
+  // ── IPositionedManager ───────────────────────────────────────────────────
+
+  getWorldPosition(id: string): THREE.Vector3 | null {
+    const data = this.items.get(id);
+    if (!data?.mesh) return null;
+    return data.mesh.getWorldPosition(new THREE.Vector3());
+  }
+
   // ── Public factory ───────────────────────────────────────────────────────
 
   add(
     parentId:   string,
     parentType: 'arena' | 'base',
+    treeOpts?: Record<string, unknown>,
   ): PortalData {
     const id   = this.nextId();
     const data = defaultPortal(this.nextLabel(), id, parentId, parentType);
     const treeParent = this.resolveTreeParent(data);
-    return this._insert(data, '◉', treeParent);
+    return this._insert(data, '◉', treeParent, treeOpts);
   }
 
   // ── Apply (rebuild geometry in-place after property edits) ──────────────
 
   apply(data: PortalData): void {
     applyPortal(data, this.resolveSurfaceY(data));
-    const objs: THREE.Object3D[] = [data.mesh!, data.edges!];
-    if (data.ringMesh) objs.push(data.ringMesh);
-    this.ctx.trackObjects(data.id, objs);
     this.setVisible(data.id, data.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
 
-  buildAndShow(data: PortalData): void {
+  buildAndShow(data: PortalData, treeOpts?: Record<string, unknown>): void {
     this.buildGeometry(data);
     this.setVisible(data.id, data.visible ?? true);
     const treeParent = this.resolveTreeParent(data);
-    this.ctx.sceneTree.add(data.id, data.name, '◉', treeParent);
-  }
-
-  // ── Override to include ringMesh ─────────────────────────────────────────
-
-  setVisible(id: string, visible: boolean): void {
-    super.setVisible(id, visible);
-    const data = this.items.get(id);
-    if (data?.ringMesh) data.ringMesh.visible = visible;
+    this.ctx.sceneTree.add(data.id, data.name, '◉', treeParent, treeOpts as never);
   }
 
   // ── Template Method implementation ───────────────────────────────────────
@@ -85,23 +83,12 @@ export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave
 
     const objs: THREE.Object3D[] = [mesh, edges];
     if (ringMesh) objs.push(ringMesh);
-    this.ctx.scene.add(...objs);
-    this.ctx.trackObjects(data.id, objs);
+    this.ctx.renderMgr.add(data.id, objs);
   }
 
   protected disposeOne(data: PortalData): void {
-    this.ctx.scene.remove(data.mesh);
-    data.mesh.geometry.dispose();
-    (data.mesh.material as THREE.Material).dispose();
-    this.ctx.scene.remove(data.edges);
-    data.edges.geometry.dispose();
-    (data.edges.material as THREE.Material).dispose();
-    if (data.ringMesh) {
-      this.ctx.scene.remove(data.ringMesh);
-      data.ringMesh.geometry.dispose();
-      (data.ringMesh.material as THREE.Material).dispose();
-      data.ringMesh = null;
-    }
+    data.ringMesh = null;
+    // renderMgr.dispose() in base remove()/clear() handles scene removal + GPU disposal.
   }
 
   // ── Serialisation ────────────────────────────────────────────────────────

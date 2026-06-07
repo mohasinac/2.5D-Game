@@ -11,6 +11,15 @@ import {
 } from '../../geometry/surfaceUtils';
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
 import { DEG2RAD, DEFAULT_BASE_HEIGHT } from '../../config/arenaConstants';
+import { BuffDebuffManager } from './BuffDebuffManager';
+import type { ActiveBuff } from './BuffDebuffManager';
+import { evalEntryCondition, evalActivationMode } from '../conditions/ConditionEvaluator';
+import type { ConditionContext } from '../conditions/ConditionEvaluator';
+import { ZONE_EFFECTS } from '../conditions/ZoneEffectRegistry';
+import { applyEjectBehavior } from '../conditions/EjectBehaviorHandler';
+import type { EjectContext } from '../conditions/EjectBehaviorHandler';
+import type { InputManager } from './InputManager';
+import { spawnSettingsStore } from '../../stores/spawnSettingsStore';
 
 // ── Spinning-top geometry ────────────────────────────────────────────────────
 // Physics: BALL_RADIUS for XZ (wall/SL/trap contact), tip point for floor
@@ -88,28 +97,26 @@ export class SpawnManager {
   private _lastCollisionIsSticky = false;
   private _currentGravityScale   = 1.0;
 
+  // Buff / duration-tier tracking
+  private _buffMgr    = new BuffDebuffManager();
+  private _trapTimers = new Map<string, number>();
+
   // Speed line tracking
   private slPathCache   = new Map<string, { pts: THREE.Vector3[]; ts: number }>();
   private slOnRibbon    = new Map<string, boolean>();
   private slExitTangent = new THREE.Vector3();
 
-  // Input
-  private keys = new Set<string>();
-  private _onKeyDown: ((e: KeyboardEvent) => void) | null = null;
-  private _onKeyUp:   ((e: KeyboardEvent) => void) | null = null;
-
-  private static readonly SETTINGS_KEY = 'bey_spawn_manager_settings';
-
   constructor(
-    private readonly ctx:           SceneContext,
-    private readonly getCamera:     () => THREE.PerspectiveCamera | null,
-    private readonly getControls:   () => OrbitControls | null,
-    private readonly getArenas:     () => ReadonlyMap<string, ArenaData>,
-    private readonly getTraps:      () => ReadonlyMap<string, TrapData>,
-    private readonly getSpeedLines: () => ReadonlyMap<string, SpeedLineData>,
-    private readonly getZones:      () => ReadonlyMap<string, ZoneData>,
-    private readonly getWalls:      () => ReadonlyMap<string, WallData>,
-    private readonly hudEl:         HTMLElement,
+    private readonly ctx:             SceneContext,
+    private readonly getCamera:       () => THREE.PerspectiveCamera | null,
+    private readonly getControls:     () => OrbitControls | null,
+    private readonly getArenas:       () => ReadonlyMap<string, ArenaData>,
+    private readonly getTraps:        () => ReadonlyMap<string, TrapData>,
+    private readonly getSpeedLines:   () => ReadonlyMap<string, SpeedLineData>,
+    private readonly getZones:        () => ReadonlyMap<string, ZoneData>,
+    private readonly getWalls:        () => ReadonlyMap<string, WallData>,
+    private readonly hudEl:           HTMLElement,
+    private readonly getInputManager: () => InputManager | null = () => null,
   ) {
     this._buildHUD();
     this._loadSettings();
@@ -133,15 +140,6 @@ export class SpawnManager {
     this.ctx.scene.add(this.topGroup);
     this.topGroup.position.copy(this.pos);
 
-    this._onKeyDown = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement;
-      if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') return;
-      this.keys.add(e.code);
-    };
-    this._onKeyUp = (e: KeyboardEvent) => { this.keys.delete(e.code); };
-    document.addEventListener('keydown', this._onKeyDown);
-    document.addEventListener('keyup', this._onKeyUp);
-
     this.hudEl.style.display = 'flex';
   }
 
@@ -162,11 +160,10 @@ export class SpawnManager {
       this.topGroup = null;
     }
 
-    if (this._onKeyDown) { document.removeEventListener('keydown', this._onKeyDown); this._onKeyDown = null; }
-    if (this._onKeyUp)   { document.removeEventListener('keyup',   this._onKeyUp);   this._onKeyUp   = null; }
-    this.keys.clear();
     this.slPathCache.clear();
     this.slOnRibbon.clear();
+    this._buffMgr.clearEntity('spawn_ball');
+    this._trapTimers.clear();
 
     this.hudEl.style.display = 'none';
   }
@@ -190,6 +187,7 @@ export class SpawnManager {
     this._applySpeedLines(dt);
     this._applyTraps(dt);
     this._applyZones(dt);
+    this._buffMgr.tick(dtMs);
     this._applyTrigger(dt);
     this._checkRespawn();
     this._applySelfRotation(dt);
@@ -261,16 +259,18 @@ export class SpawnManager {
 
   private _applyInput(dt: number): void {
     if (this.autoMove) return;
+    const inp = this.getInputManager();
+    if (!inp || inp.isTextFocused()) return;
     const cam = this.getCamera();
     if (!cam) return;
     const fwd = cam.getWorldDirection(new THREE.Vector3()); fwd.y = 0; fwd.normalize();
     const right = new THREE.Vector3().crossVectors(fwd, THREE.Object3D.DEFAULT_UP).normalize();
 
     const dir = new THREE.Vector3();
-    if (this.keys.has('KeyW')     || this.keys.has('ArrowUp'))    dir.addScaledVector(fwd,    1);
-    if (this.keys.has('KeyS')     || this.keys.has('ArrowDown'))  dir.addScaledVector(fwd,   -1);
-    if (this.keys.has('KeyA')     || this.keys.has('ArrowLeft'))  dir.addScaledVector(right, -1);
-    if (this.keys.has('KeyD')     || this.keys.has('ArrowRight')) dir.addScaledVector(right,  1);
+    if (inp.isDown('KeyW')     || inp.isDown('ArrowUp'))    dir.addScaledVector(fwd,    1);
+    if (inp.isDown('KeyS')     || inp.isDown('ArrowDown'))  dir.addScaledVector(fwd,   -1);
+    if (inp.isDown('KeyA')     || inp.isDown('ArrowLeft'))  dir.addScaledVector(right, -1);
+    if (inp.isDown('KeyD')     || inp.isDown('ArrowRight')) dir.addScaledVector(right,  1);
 
     if (dir.lengthSq() > 0) {
       dir.normalize();
@@ -279,7 +279,7 @@ export class SpawnManager {
       this.vel.z += dir.z * accel;
     }
 
-    if (this.keys.has('Space') && this.grounded) {
+    if (inp.isDown('Space') && this.grounded) {
       this.vel.y = JUMP_IMPULSE;
       this.grounded = false;
     }
@@ -423,32 +423,6 @@ export class SpawnManager {
     return worldPts;
   }
 
-  private _slIsActive(sl: SpeedLineData, startPt: THREE.Vector3): boolean {
-    switch (sl.activationMode) {
-      case 'always': return true;
-      case 'proximity': {
-        const dx = this.pos.x - startPt.x; const dz = this.pos.z - startPt.z;
-        return dx * dx + dz * dz < sl.activationRadius * sl.activationRadius;
-      }
-      case 'periodic': {
-        const phase = ((performance.now() / 1000) % sl.period) / sl.period;
-        return phase < sl.activeDuty;
-      }
-      default: return true;
-    }
-  }
-
-  private _slMeetsEntry(cond: SpeedLineEntryCondition): boolean {
-    const vh = Math.sqrt(this.vel.x ** 2 + this.vel.z ** 2);
-    switch (cond) {
-      case 'always':      return true;
-      case 'moving_only': return vh > 5;
-      case 'fast_only':   return vh > 100;
-      case 'slow_only':   return vh < 50;
-      default:            return true;
-    }
-  }
-
   private _applySpeedLines(dt: number): void {
     for (const [slId, sl] of this.getSpeedLines()) {
       if (sl.enabled === false) { this.slOnRibbon.set(slId, false); continue; }
@@ -485,7 +459,16 @@ export class SpawnManager {
         continue;
       }
 
-      if (!this._slIsActive(sl, pts[0])) { this.slOnRibbon.set(slId, false); continue; }
+      const condCtx: ConditionContext = {
+        velocityMs:   Math.sqrt(this.vel.x ** 2 + this.vel.y ** 2 + this.vel.z ** 2),
+        gamePhase:    'battle',
+        timeOnPath:   0,
+        activePeriod: performance.now() / 1000,
+      };
+      const worldDistToStart = Math.sqrt((this.pos.x - pts[0].x) ** 2 + (this.pos.z - pts[0].z) ** 2);
+      if (!evalActivationMode(sl.activationMode, sl, condCtx, worldDistToStart)) {
+        this.slOnRibbon.set(slId, false); continue;
+      }
 
       const segIdx = Math.min(
         Math.floor(closestSegIdx * sl.segments.length / (pts.length - 1)),
@@ -500,7 +483,7 @@ export class SpawnManager {
 
       const effectiveCond: SpeedLineEntryCondition =
         (sec?.entryCondition ?? sl.entryCondition) as SpeedLineEntryCondition;
-      if (!this._slMeetsEntry(effectiveCond)) { this.slOnRibbon.set(slId, false); continue; }
+      if (!evalEntryCondition(effectiveCond, condCtx)) { this.slOnRibbon.set(slId, false); continue; }
 
       const segMult  = (seg?.speedMult && seg.speedMult !== 0) ? seg.speedMult : 1;
       const secMult  = (sec?.speedMult !== null && sec?.speedMult !== undefined) ? sec.speedMult : 1;
@@ -525,16 +508,33 @@ export class SpawnManager {
       if (hspd > speedCap) { this.vel.x = this.vel.x / hspd * speedCap; this.vel.z = this.vel.z / hspd * speedCap; }
 
       this.slExitTangent.set(tx, 0, tz);
+
+      if (sl.statModifiers) {
+        const buff: ActiveBuff = {
+          sourceId: sl.id, sourceType: 'speed_line',
+          mods: sl.statModifiers, durationMs: null, appliedAt: performance.now(),
+        };
+        this._buffMgr.apply('spawn_ball', buff);
+      }
+
       this.slOnRibbon.set(slId, true);
     }
   }
 
   private _handleSlExit(sl: SpeedLineData): void {
+    this._buffMgr.removeSource('spawn_ball', sl.id);
+    const ctx: EjectContext = {
+      velocity:     this.vel.clone(),
+      position:     this.pos.clone(),
+      pathForward:  this.slExitTangent.clone(),
+      launchForce:  sl.launchForce * SL_LAUNCH_SCALE,
+      jumpLinks:    new Map(),
+      slJumpLinkId: sl.jumpLinkId,
+    };
+    const result = applyEjectBehavior(sl.exitBehavior, ctx);
+    this.vel.copy(result.velocity);
     if (sl.exitBehavior === 'launch') {
-      const lspeed = sl.launchForce * SL_LAUNCH_SCALE;
-      this.vel.x += this.slExitTangent.x * lspeed;
-      this.vel.z += this.slExitTangent.z * lspeed;
-      this.vel.y = Math.max(this.vel.y, lspeed * 0.4);
+      this.vel.y = Math.max(this.vel.y, result.velocity.length() * 0.4);
       this.grounded = false;
     }
   }
@@ -542,6 +542,8 @@ export class SpawnManager {
   // ── Traps ───────────────────────────────────────────────────────────────────
 
   private _applyTraps(dt: number): void {
+    const insideThisFrame = new Set<string>();
+
     for (const trap of this.getTraps().values()) {
       let cx: number, cz: number, surfY: number;
       if (trap.parentType === 'base') {
@@ -572,7 +574,31 @@ export class SpawnManager {
       }
       if (!inside) continue;
 
+      insideThisFrame.add(trap.id);
       this._applyTrapEffect(trap, dt);
+
+      if (trap.effect === 'buff_zone' && trap.durationTiers?.length) {
+        const key = `${trap.id}:spawn_ball`;
+        const elapsed = (this._trapTimers.get(key) ?? 0) + dt;
+        this._trapTimers.set(key, elapsed);
+        const tier = [...trap.durationTiers].reverse().find(t => elapsed >= t.thresholdSeconds);
+        if (tier) {
+          const buff: ActiveBuff = {
+            sourceId: `${trap.id}_tier`, sourceType: 'trap',
+            mods: { spinRateMult: 1 - (tier.rpmLossFactor ?? 0) },
+            durationMs: null, appliedAt: performance.now(),
+          };
+          this._buffMgr.apply('spawn_ball', buff);
+        }
+      }
+    }
+
+    for (const [key] of this._trapTimers) {
+      const trapId = key.split(':')[0];
+      if (!insideThisFrame.has(trapId)) {
+        this._trapTimers.delete(key);
+        this._buffMgr.removeSource('spawn_ball', `${trapId}_tier`);
+      }
     }
   }
 
@@ -621,30 +647,20 @@ export class SpawnManager {
       const dx = this.pos.x - wx; const dz = this.pos.z - wz;
       if ((dx / zone.radiusX) ** 2 + (dz / zone.radiusZ) ** 2 > 1.0) continue;
 
-      switch (zone.fill) {
-        case 'ice':
-          this.vel.x *= Math.pow(0.998, dt * 60);
-          this.vel.z *= Math.pow(0.998, dt * 60);
-          break;
-        case 'lava':
-          this.health = Math.max(0, this.health - 15 * dt); break;
-        case 'water':
-          this.vel.x *= Math.pow(0.85, dt * 60);
-          this.vel.z *= Math.pow(0.85, dt * 60);
-          this.vel.y *= Math.pow(0.90, dt * 60);
-          break;
-        case 'sand':
-          this.vel.x *= Math.pow(0.92, dt * 60);
-          this.vel.z *= Math.pow(0.92, dt * 60);
-          break;
-        case 'poison':
-        case 'swamp':
-          this.health = Math.max(0, this.health - 5 * dt);
-          this.vel.x *= Math.pow(0.93, dt * 60);
-          this.vel.z *= Math.pow(0.93, dt * 60);
-          break;
-        case 'void':
-          this.health = Math.max(0, this.health - 30 * dt); break;
+      const eff = ZONE_EFFECTS[zone.fill ?? 'none'] ?? ZONE_EFFECTS.none;
+      const xzMult = eff.frictionPerSec * eff.velDragMult;
+      this.vel.x *= Math.pow(xzMult, dt * 60);
+      this.vel.z *= Math.pow(xzMult, dt * 60);
+      if (zone.fill === 'water') this.vel.y *= Math.pow(0.90, dt * 60);
+      if (eff.healthDrainSec !== 0) {
+        this.health = Math.max(0, this.health + eff.healthDrainSec * dt);
+      }
+      if (eff.statMods) {
+        const buff: ActiveBuff = {
+          sourceId: zone.id, sourceType: 'zone',
+          mods: eff.statMods, durationMs: null, appliedAt: performance.now(),
+        };
+        this._buffMgr.apply('spawn_ball', buff);
       }
     }
   }
@@ -652,7 +668,7 @@ export class SpawnManager {
   // ── T-key trigger ───────────────────────────────────────────────────────────
 
   private _applyTrigger(dt: number): void {
-    if (!this.keys.has('KeyT')) return;
+    if (!this.getInputManager()?.isDown('KeyT')) return;
 
     // Find nearest trap
     let nearestTrap: TrapData | null = null; let nearestTrapDist2 = Infinity;
@@ -808,10 +824,8 @@ export class SpawnManager {
   }
 
   private _loadSettings(): void {
-    const raw = localStorage.getItem(SpawnManager.SETTINGS_KEY);
-    if (!raw) { this._populateInputs(); return; }
-    try {
-      const s = JSON.parse(raw);
+    const s = spawnSettingsStore.getState().load();
+    if (s) {
       if (typeof s.spawnX === 'number') this.spawnPos.x = s.spawnX;
       if (typeof s.spawnY === 'number') this.spawnPos.y = s.spawnY;
       if (typeof s.spawnZ === 'number') this.spawnPos.z = s.spawnZ;
@@ -823,7 +837,7 @@ export class SpawnManager {
       if (typeof s.followCam  === 'boolean') this.followCam  = s.followCam;
       if (typeof s.selfRotate === 'boolean') this.selfRotate = s.selfRotate;
       if (typeof s.autoMove   === 'boolean') this.autoMove   = s.autoMove;
-    } catch { /* ignore bad json */ }
+    }
     this._populateInputs();
   }
 
@@ -840,12 +854,12 @@ export class SpawnManager {
   }
 
   private _saveSettings(): void {
-    localStorage.setItem(SpawnManager.SETTINGS_KEY, JSON.stringify({
+    spawnSettingsStore.getState().save({
       spawnX: this.spawnPos.x, spawnY: this.spawnPos.y, spawnZ: this.spawnPos.z,
       velX: this.spawnVel.x,   velY:   this.spawnVel.y, velZ:   this.spawnVel.z,
       tiltDeg: this.tiltDeg, rpm: this.rpm,
       followCam: this.followCam, selfRotate: this.selfRotate, autoMove: this.autoMove,
-    }));
+    });
   }
 }
 

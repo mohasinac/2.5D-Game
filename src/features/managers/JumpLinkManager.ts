@@ -48,10 +48,12 @@ export class JumpLinkManager extends FeatureManager<JumpLinkData, JumpLinkSave> 
   // ── Apply (rebuild geometry in-place after property edits) ──────────────
 
   apply(data: JumpLinkData): void {
+    // Remove all objects from scene (without disposing) so new arrowMeshes can be re-registered
+    this.ctx.renderMgr.detach(data.id);
     applyJumpLink(data, this.getArenas(), this.getObstacles(), this.getTraps(),
       this.getSpeedLine, this.ctx.getFallbackY());
     const objs: THREE.Object3D[] = [data.sourceMesh, data.destMesh, data.arcLine, ...data.arrowMeshes];
-    this.ctx.trackObjects(data.id, objs);
+    this.ctx.renderMgr.add(data.id, objs);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
@@ -74,22 +76,15 @@ export class JumpLinkManager extends FeatureManager<JumpLinkData, JumpLinkSave> 
     data.arrowMeshes = result.arrowMeshes;
 
     const objs: THREE.Object3D[] = [result.sourceMesh, result.destMesh, result.arcLine, ...result.arrowMeshes];
-    this.ctx.scene.add(...objs);
-    this.ctx.trackObjects(data.id, objs);
+    this.ctx.renderMgr.add(data.id, objs);
   }
 
   protected disposeOne(data: JumpLinkData): void {
-    this.ctx.scene.remove(data.sourceMesh, data.destMesh, data.arcLine, ...data.arrowMeshes);
-    data.sourceMesh.geometry.dispose();
-    (data.sourceMesh.material as THREE.Material).dispose();
-    data.destMesh.geometry.dispose();
-    (data.destMesh.material as THREE.Material).dispose();
+    // THREE.Line (arcLine) is not auto-disposed by renderMgr — handle it explicitly.
+    // renderMgr.dispose() (called by FeatureManager.remove after this) handles
+    // scene.remove + geometry disposal for Mesh (sourceMesh, destMesh, arrowMeshes).
     data.arcLine.geometry.dispose();
     (data.arcLine.material as THREE.Material).dispose();
-    for (const m of data.arrowMeshes) {
-      m.geometry.dispose();
-      (m.material as THREE.Material).dispose();
-    }
     data.arrowMeshes = [];
   }
 

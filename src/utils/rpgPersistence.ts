@@ -1,20 +1,17 @@
 import { svgAssetStore } from '../rpg/stores/SVGAssetStore.ts';
-import { LS_ASSETS } from '../rpg/config/rpgConstants.ts';
 
 export function saveAllRPGAssets(): void {
   svgAssetStore.save();
 }
 
 export function loadAllRPGAssets(): boolean {
-  const raw = localStorage.getItem(LS_ASSETS);
-  if (!raw) return false;
-  svgAssetStore.deserialize(raw);
+  svgAssetStore.load();
   return true;
 }
 
 export function clearAllRPGAssets(): void {
   svgAssetStore.clear();
-  localStorage.removeItem(LS_ASSETS);
+  svgAssetStore.save();
 }
 
 export function exportRPGAssets(): string {

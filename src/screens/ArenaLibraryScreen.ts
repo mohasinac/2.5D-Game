@@ -3,6 +3,7 @@ import {
 } from '../utils/presetStore';
 import type { ArenaPreset } from '../types/presetTypes';
 import { gameConfirm } from '../utils/dialog';
+import { pendingLoadStore } from '../stores/pendingLoadStore';
 
 export interface ArenaLibraryOptions {
   onBack: () => void;
@@ -169,7 +170,7 @@ export class ArenaLibraryScreen {
     editBtn.className = 'game-btn preset-card__btn';
     editBtn.textContent = '✏ Edit';
     editBtn.addEventListener('click', () => {
-      localStorage.setItem('bey_pending_arena_load', JSON.stringify({ config: preset.config, mode: 'replace' }));
+      pendingLoadStore.getState().setArenaPending({ config: preset.config, mode: 'replace' });
       this.opts.onEditPreset();
     });
 
@@ -229,12 +230,12 @@ export class ArenaLibraryScreen {
 
     overlay.querySelector('#load-replace')!.addEventListener('click', () => {
       close();
-      localStorage.setItem('bey_pending_arena_load', JSON.stringify({ config: preset.config, mode: 'replace' }));
+      pendingLoadStore.getState().setArenaPending({ config: preset.config, mode: 'replace' });
       this.opts.onLoadArena();
     });
     overlay.querySelector('#load-merge')!.addEventListener('click', () => {
       close();
-      localStorage.setItem('bey_pending_arena_load', JSON.stringify({ config: preset.config, mode: 'merge' }));
+      pendingLoadStore.getState().setArenaPending({ config: preset.config, mode: 'merge' });
       this.opts.onLoadArena();
     });
   }

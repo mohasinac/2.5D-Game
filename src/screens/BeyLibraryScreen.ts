@@ -6,6 +6,7 @@ import type { BeyPreset } from '../types/presetTypes';
 import type { BeybladeBuildConfig } from '../types/beybladeTypes';
 import type { BeyPartType } from '../types/presetTypes';
 import { gameConfirm } from '../utils/dialog';
+import { pendingLoadStore } from '../stores/pendingLoadStore';
 
 export interface BeyLibraryOptions {
   onBack: () => void;
@@ -310,7 +311,7 @@ export class BeyLibraryScreen {
       alert('Pick at least one part slot before building.');
       return;
     }
-    localStorage.setItem('bey_pending_bey_load', JSON.stringify({ config, mode: 'replace' }));
+    pendingLoadStore.getState().setBeyPending({ config, mode: 'replace' });
     this.opts.onLoadBuild();
   }
 
@@ -432,7 +433,7 @@ export class BeyLibraryScreen {
     loadBtn.className = 'game-btn preset-card__btn';
     loadBtn.textContent = '▶ Load';
     loadBtn.addEventListener('click', () => {
-      localStorage.setItem('bey_pending_bey_load', JSON.stringify({ config: preset.config, mode: 'merge' }));
+      pendingLoadStore.getState().setBeyPending({ config: preset.config, mode: 'merge' });
       this.opts.onLoadBuild();
     });
 

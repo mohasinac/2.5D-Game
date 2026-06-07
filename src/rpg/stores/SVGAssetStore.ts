@@ -3,7 +3,7 @@ import type {
   DialogueTree, CutsceneScript, AudioAssetData, ShopData,
   PipePuzzleLevel, PlatformLevel, TriggerData,
 } from '../../types/rpgTypes.ts';
-import { LS_ASSETS } from '../config/rpgConstants.ts';
+import { svgAssetStore as zustandSvgAssets } from '../../stores/rpg/svgAssetStore.ts';
 
 interface AssetBundle {
   sprites:        SVGSpriteData[];
@@ -174,10 +174,10 @@ class SVGAssetStore {
     }
   }
 
-  save(): void { localStorage.setItem(LS_ASSETS, this.serialize()); }
+  save(): void { zustandSvgAssets.getState().setAsset('bundle', this.serialize()); }
 
   load(): void {
-    const raw = localStorage.getItem(LS_ASSETS);
+    const raw = zustandSvgAssets.getState().getAsset('bundle');
     if (raw) this.deserialize(raw);
   }
 

@@ -31,6 +31,7 @@ export class SceneTree {
   onSelect:           (ids: string[]) => void = () => {};
   onVisibilityToggle: (id: string, visible: boolean) => void = () => {};
   onCheck:            (ids: string[]) => void = () => {};
+  onExpand:           (id: string, expanded: boolean) => void = () => {};
 
   get header(): HTMLElement { return this.headerEl; }
 
@@ -50,10 +51,6 @@ export class SceneTree {
     document.addEventListener('pointerdown', (e) => {
       if (!this.ctxMenu.contains(e.target as Node)) this.hideCtx();
       if (!this.addMenu.contains(e.target as Node) && !(e.target as HTMLElement).classList.contains('tree-add-btn')) this.hideAddMenu();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Delete') this.deleteSelected();
-      if (e.key === 'Escape') this.clearSel();
     });
   }
 
@@ -179,6 +176,15 @@ export class SceneTree {
     const node=this.nodes.get(id); if(!node||!node.childIds.length) return;
     node.expanded=!node.expanded;
     node.childrenEl.classList.toggle('tree-children--collapsed',!node.expanded);
+    this.refreshCaret(node);
+    this.onExpand(id, node.expanded);
+  }
+
+  /** Programmatic expand/collapse — does NOT fire onExpand callback (avoids store→tree→store loop). */
+  setExpanded(id: string, expanded: boolean): void {
+    const node=this.nodes.get(id); if(!node) return;
+    node.expanded=expanded;
+    node.childrenEl.classList.toggle('tree-children--collapsed',!expanded);
     this.refreshCaret(node);
   }
 

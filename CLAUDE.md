@@ -57,6 +57,18 @@ Known confirmed features added (2026-06-10 — Preset Library System):
 - **New routes**: `/arena-library` (ArenaLibraryScreen), `/bey-library` (BeyLibraryScreen), `/preset-editor` (second ArenaSandbox, presetEditorMode).
 - **Landing buttons**: Two new `game-btn--lib` buttons: "Arena Library" and "Bey Library".
 
+Known confirmed features added (2026-06-08 — ArenaSandbox manager migration complete):
+- **All 10 dormant feature managers wired**: `ObstacleManager`, `FootingManager`, `PortalManager`, `TrapManager`, `WallManager`, `BridgeManager`, `SpeedLineManager`, `RotationManager`, `JumpLinkManager`, `PresentationManager` fully replace raw `Map<string, X>` fields and inline CRUD in `ArenaSandbox`. `ProjectionService` replaces `_buildSurfaceProjector`.
+- **Remaining bare Maps** (intentionally kept): `arenas`, `pits`, `zones`, `bridgesByArena`, `translations`, `_presentConfigs`.
+- **TrapManager now has optional `onActivate?` callback**: `new TrapManager(ctx, getSurface, onActivate?)`. Called on earthquake pulse start and on each full RPM revolution (both only when `trap.envTriggerEvent` is set). ArenaSandbox passes `(trap) => this._envMgr.triggerEvent(trap.envTargetArenaId || trap.parentId, trap.envTriggerEvent)`.
+- **Trap tick fully delegated**: `this._trapMgr.tick(dt)` replaces the inline loop in `onTick()`. Private helpers `_tickEarthquakeTrap`, `_eqStartPulse`, `_eqLerp`, `_tickRPMTrap` deleted from ArenaSandbox.
+- **`slSegSeq` stays in ArenaSandbox**: `SpeedLineManager.add()` takes `slSegSeqRef: { value: number }` mutable ref; caller syncs back with `this.slSegSeq = slSegRef.value` after each call.
+- **`bridgesByArena` stays in ArenaSandbox**: `BridgeManager` has no `getBridgesForArena()` method; the index is maintained inline.
+- **`_presentConfigs` stays in ArenaSandbox**: `PresentationManager` tracks only meshes. Config state for the sub-node UI panel remains in `_presentConfigs`.
+- **`_arenaViewMode` stays in ArenaSandbox**: Passed to `_presentMgr.applyViewMode()` when view mode changes.
+- **ArenaSandbox line count**: ~3587 (down from ~4000+ before migration).
+- **ITickableManager tick units**: Feature managers (`_trapMgr`, `_wallMgr`, `_rotMgr`) receive `dt` in **seconds** (`dtMs / 1000`). `_envMgr.tick(dtMs)` and `_spawnMgr.tick(dtMs)` take **milliseconds** directly.
+
 Known confirmed bugs fixed (2026-06-07 — env manager wiring, tilt/fog/sub-node cleanup, SpawnManager gravity scale):
 - **`_clearArenas` missing `_subNodesAdded.clear()`**: After undo/redo/demo-load, `_subNodesAdded` still contained all old `present-/particle-/weather-/env-` IDs, preventing sub-nodes from being re-added to the tree. Fixed: `this._subNodesAdded.clear()` added at start of `_clearArenas()` after `_envMgr.clear()`.
 - **`_createArenaFog` used `'dust'` preset and ignored `fogDensity` for scaling**: Built a dust particle system regardless of fog intent; density was always the `defaultParticleConfig()` default. Fixed: uses `'fog'` preset and sets `density: arena.fogDensity`.
@@ -178,6 +190,22 @@ Known confirmed bugs fixed (2026-06-07 — jump link system):
 - **`showJumpLink` 15+ `numRow`/`toggleRow` callbacks missing `onGeomChange()`**: LAUNCH PHYSICS, LANDING, IN-FLIGHT SPIN, IN-FLIGHT STATS, VISUAL TRAIL (width, fade), FLASH (launch, land, color) callbacks mutated data in-memory but never triggered `saveArena()`. Fixed by adding `onGeomChange()` to every callback in those sections.
 - **`showSpeedLine` `jump_link` exitBehavior used unusable `textRow` for jumpLinkId**: Required user to manually type an internal ID (e.g. "jl-1"). Fixed: added `getJumpLinks?: () => JumpLinkData[]` optional parameter to `showSpeedLine`; the 'jump_link' section now uses `selectRow` populated from the live jump link list; ArenaSandbox passes `() => [...this.jumpLinks.values()]`.
 - **`_removeJumpLink` left stale `jumpLinkId` on speed lines**: When a jump link was deleted, speed lines that had `sl.jumpLinkId === deletedId` retained the stale reference. Fixed: `_removeJumpLink` now clears `sl.jumpLinkId = null` on all matching speed lines before disposal.
+
+Known confirmed bugs fixed (2026-06-10 — FeatureManager.clear() tree-node leak):
+- **`FeatureManager.clear()` was not removing scene-tree nodes**: The base `clear()` loop called `disposeOne()` and `untrackObjects()` but omitted `this.ctx.sceneTree.remove(data.id)`. After every scene reset (undo/redo/demo load/Reset Arena), all tree nodes for managed features (obstacles, footings, portals, traps, walls, bridges, speed lines, rotations) were orphaned in the tree. Fixed: `this.ctx.sceneTree.remove(data.id)` added inside the `clear()` loop before `disposeOne()`. Callers that were calling `sceneTree.remove()` manually after clearing a manager are no longer required to do so (but it is harmless).
+
+Known confirmed features added (2026-06-10 — Manager refactor + ProjectionService):
+- **`ArenaSandbox` fully converted to manager classes**: All bare `Map<string, X>` fields replaced by typed manager instances. Raw property maps removed: `walls`, `bridges`, `segments`, `speedLines`, `obstacles`, `traps`, `portals`, `rotations`, `footings`, `nodeRotationId`. Sequence counters for these types are now owned and persisted by the managers via `getSeq()` / `restoreSeq()`. Serialization uses `serializeAll()` instead of inline `[...map.values()].map(toSave)`. See the updated ArenaSandbox internal structure diagram below.
+- **`ProjectionService`** (`src/features/ProjectionService.ts` — new): Centralizes surface-projection mesh aggregation. `buildProjector(arenaId)` collects wall/obstacle/bridge-segment meshes for a given arena, returns a fresh `SceneSurfaceProjector`. No caching — always fresh so mesh references stay current. Injected into `SpeedLineManager` constructor as `(arenaId) => this._projectionService.buildProjector(arenaId)`. Replaces the old inline `_buildSurfaceProjector(arenaId)` method on `ArenaSandbox`.
+- **`PropertiesPanel.showWallProfile(data, onGeomChange, onFullChange)`** (new method): Wall profile, moat outer/inner wall profile, STEPS APPEARANCE, and SPIRAL APPEARANCE sections extracted from `showArena()` into a dedicated panel method. ArenaSandbox adds a `wallprofile-{arenaId}` sub-node to the arena tree node; selecting it calls `showWallProfile()`. This keeps `showArena()` focused on dimensions/position/light while wall profile gets its own dedicated panel view.
+- **`FootingManager.add(treeOpts?)` and `buildAndShow(treeOpts?)`**: Optional `treeOpts?: Record<string, unknown>` parameter added so callers can pass add-child buttons and other scene-tree node options when creating footings programmatically.
+- **`PortalManager.add(parentId, parentType, treeOpts?)` and `buildAndShow(data, treeOpts?)`**: Same pattern — optional `treeOpts` parameter forwarded to `_insert()` and `sceneTree.add()`.
+
+Known confirmed features added (2026-06-08 — Zustand persistence migration):
+- **All localStorage → Zustand**: Zero raw `localStorage.setItem/getItem/removeItem` calls remain in `src/` outside `src/stores/`. 9 arena/game stores + 4 RPG stores created. `createArenaStateStore`, `createBeybladeConfigStore`, `createTreeStateStore`, `arenaPresetsStore`, `beyPresetsStore`, `createCameraViewStore`, `spawnSettingsStore`, `pendingLoadStore` (no persist), `rpgSaveStore`, `svgAssetStore`, `rpgSettingsStore`, `adminUiStore`.
+- **`ArenaSandbox._arenaStore`**: `_arenaStore: ArenaStateStore` field; initialized in constructor from `createArenaStateStore(arenaStorageKey)`; `_flushSave()` calls `replace(cfg)`; `resetArena()` calls `discard()`; `loadArena()` reads from store state (no JSON parse, no version check — Zustand `migrate` handles it).
+- **`pendingLoadStore`** (no persist): replaces `bey_pending_arena_load` / `bey_pending_bey_load` localStorage keys; `takeArenaPending()` / `takeBeyPending()` read-and-clear atomically.
+- **RPG stores**: `rpgSaveStore` consolidates `rpg_save_0/1/2` into single key `rpg_saves`; `svgAssetStore` preserves key `rpg_assets_v1` exactly.
 
 Features to re-verify (not exhaustive): wall tilt/gaps/profiles, all bridge segment types, zone fill shaders, speed line physics, portal linking, rotation/orbit floor correction, trap variants, obstacle floating, particle systems, Load Demo button, save/load round-trip.
 
@@ -303,8 +331,9 @@ src/
     LandingScreen.ts            — Title + sandbox nav buttons (onBeyblade, onArena, onRpg, onAdmin)
     Sandbox.ts                  — Reusable Three.js XYZ viewport (SandboxOptions); provides onTick() hook;
                                   public getCamera() / getControls() / getRendererCanvas() accessors
-    ArenaSandbox.ts             — Full arena builder: arenas, pits, zones, moats, walls, bridges, speed lines,
-                                  traps, portals, obstacles, footings, rotations, weather; _duplicateNode; sub-nodes
+    ArenaSandbox.ts             — Thin orchestrator: delegates all feature CRUD to manager classes; owns
+                                  arenas/pits/zones/jumpLinks/translations Maps; _duplicateNode; sub-nodes;
+                                  _projectionService wires ProjectionService → SpeedLineManager
     BeybladeSandbox.ts          — Beyblade part builder (extends Sandbox); thin orchestrator/Facade;
                                   _duplicateNode; present/particle sub-nodes; BEY_SAVE_VERSION=2
     RPGScreen.ts                — Phaser-based RPG world screen (GameScene, WorldScene, UIScene, etc.)
@@ -338,6 +367,19 @@ src/
                                   MiniGameLevel, MapData, TileData, CutsceneData, SaveSlot, EventBusEvents
   stores/
     BeybladeStore.ts            — Pure data store (no Three.js); getters/setters/serialize/deserialize/mergeDeserialize
+    arenaStateStore.ts          — createArenaStateStore(key): full ArenaConfig state + per-entity upsert/remove + replace/discard; ARENA_SAVE_VERSION; migrate → emptySlice
+    beybladeConfigStore.ts      — createBeybladeConfigStore(key): BeybladeBuildConfig | null; BEY_SAVE_VERSION; save/load/discard
+    treeStateStore.ts           — createTreeStateStore(key): Set<string> expanded node IDs; custom partialize (Set→string[]) + merge (string[]→Set)
+    arenaPresetsStore.ts        — singleton; ArenaPreset[]; list/save/remove/update; key: bey_arena_presets
+    beyPresetsStore.ts          — singleton; BeyPreset[]; list/save/remove/update; key: bey_bey_presets
+    cameraViewStore.ts          — createCameraViewStore(key): { position, target } | null; save/load/reset; used by CameraManager
+    spawnSettingsStore.ts       — singleton; SpawnSettings; replaces SpawnManager localStorage block; key: bey_spawn_manager_settings
+    pendingLoadStore.ts         — singleton; NO persist; arenaPending + beyPending (transient cross-screen msgs); takeArenaPending/takeBeyPending
+    rpg/
+      rpgSaveStore.ts           — singleton; slot blobs Record<number,string|null>; setSlot/getSlot/deleteSlot; key: rpg_saves (consolidated from rpg_save_0/1/2)
+      svgAssetStore.ts          — singleton; assets Record<string,string>; setAsset/getAsset/removeAsset/clear; key: rpg_assets_v1 (preserved exactly)
+      rpgSettingsStore.ts       — singleton; settings Record|null; save/load/discard; key: rpg_settings (currently unused, returns null)
+      adminUiStore.ts           — singleton; NO persist; admin panel tab + selection state; setTab/select
   commands/
     ICommand.ts                 — ICommand interface + CommandHistory (undo/redo stack, max 50)
     beybladeCommands.ts         — All concrete commands: AddPartCmd, DeletePartCmd, UpdatePartCmd,
@@ -360,12 +402,16 @@ src/
     IArenaFeature.ts            — SceneContext (getFallbackY replaces old getBaseHeight), ITickableManager, IArenaFeature, ISceneFeature interfaces; setVisible in FeatureManager base
     ISurfaceProvider.ts         — ISurfaceProvider interface (SurfaceHit, getSurfaceAt, getCenter, polarToWorld); decouples ParentedFeatureManager from ArenaData
     surfaceProviders.ts         — ArenaSurfaceProvider (wraps arena parabola math), FlatSurfaceProvider (constant Y), MeshSurfaceProvider (downward raycast)
-    FeatureManager.ts           — Abstract base (Template Method): _insert/remove/clear/restoreData/serializeAll; setVisible(id, visible) sets mesh/edges visibility
+    FeatureManager.ts           — Abstract base (Template Method): _insert/remove/clear/restoreData/serializeAll; setVisible(id, visible) sets mesh/edges visibility;
+                                  clear() removes tree nodes + disposes geometry + calls untrackObjects
     ParentedFeatureManager.ts   — Extension: resolveSurfaceY/resolveWorldXZ/resolveTreeParent via ISurfaceProvider (getSurface callback replaces getArenas)
+    ProjectionService.ts        — Centralizes SceneSurfaceProjector mesh aggregation; buildProjector(arenaId) collects
+                                  wall/obstacle/bridge-segment meshes → fresh SceneSurfaceProjector; no caching;
+                                  injected into SpeedLineManager; replaces inline _buildSurfaceProjector() in ArenaSandbox
     managers/
       ObstacleManager.ts        — Free-floating 3D obstacle shapes
       FootingManager.ts         — Base-mounted decorative shapes (intentionally decoupled from obstacleBuilders)
-      TrapManager.ts            — Trigger plates; variantMesh disposed separately; removeWithWalls(id, cb); ITickableManager (earthquake/RPM/plateSpin tick)
+      TrapManager.ts            — Trigger plates; variantMesh disposed separately; removeWithWalls(id, cb); ITickableManager (earthquake/RPM/plateSpin tick); optional onActivate?(trap) callback fires on eq pulse + RPM revolution when envTriggerEvent set
       ArenaEnvironmentManager.ts — ITickableManager; envSchedule tick (interval/once/event/revert); setGravity/setWeather/setTilt/setFog/setScore/triggerEvent
       PortalManager.ts          — Teleport pads; ringMesh disposed separately
       WallManager.ts            — 4 parent types; auto-join sibling guard; ITickableManager for pivot rotation
@@ -780,16 +826,68 @@ Future fill types (whirlpool, lava flow, tsunami) should be implemented as addit
 ### ArenaSandbox internal structure
 
 ```
-Maps:          arenas, pits, zones, walls, bridges, segments, speedLines, obstacles, traps, portals, rotations, footings
-Seq counters:  arenaSeq, pitSeq, zoneSeq, wallSeq, bridgeSeq, segmentSeq, speedlineSeq, slSegSeq,
-               obstacleSeq, trapSeq, portalSeq, rotationSeq, footingSeq
-Dep index:     bridgesByArena   — arenaId → Set<bridgeId> (rebuilt on anchor change)
-               nodeRotationId   — nodeId → rotationId (each rotatable node belongs to at most one rotation)
-Raycaster:     slRaycaster — used for speed line handle hit-testing on mouse move
-Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set on mouse-down, cleared on mouse-up
+ArenaSandbox (thin orchestrator — delegates feature CRUD to managers)
+│
+├── Bare Maps (owned directly)
+│     arenas          Map<string, ArenaData>
+│     pits            Map<string, PitData>
+│     zones           Map<string, ZoneData>
+│     bridgesByArena  Map<string, Set<string>>  ← arenaId → Set<bridgeId>
+│     jumpLinks       Map<string, JumpLinkData>
+│     translations    Map<string, TranslationData>
+│
+├── Seq counters (owned directly — managers own all others via getSeq/restoreSeq)
+│     arenaSeq  pitSeq  zoneSeq  slSegSeq  jumpLinkSeq  translationSeq
+│
+├── Manager instances (all created in buildCustom; injected with SceneContext + callbacks)
+│     _wallMgr        WallManager         ← 4 parent types; auto-join; pivot rotation
+│     _bridgeMgr      BridgeManager       ← owns segments Map + segSeq internally
+│     _slMgr          SpeedLineManager    ← projector injected as callback; showHandles/hideHandles
+│     _obstacleMgr    ObstacleManager     ← free-floating 3D shapes
+│     _trapMgr        TrapManager         ← ITickableManager (earthquake/RPM/plateSpin)
+│     _portalMgr      PortalManager       ← ringMesh disposed separately
+│     _footingMgr     FootingManager      ← base-mounted decorative shapes
+│     _rotMgr         RotationManager     ← ITickableManager; detachAll() + afterApply()
+│     _envMgr         ArenaEnvironmentManager  ← ITickableManager (gravity/tilt/fog/score)
+│
+├── Service instances
+│     _projectionService  ProjectionService  ← buildProjector(arenaId) for SL thread-on-surface
+│     _spawnMgr           SpawnManager       ← ITickableManager; physics test pyriform
+│     _projectileMgr      ProjectileManager  ← ITickableManager; bullet lifecycle
+│     _translationMgr     TranslationManager ← ITickableManager; path-animation
+│     _targetMgr          TargetManager      ← ITickableManager; not serialized
+│     _triggerZoneMgr     TriggerZoneManager ← ITickableManager; not serialized
+│
+├── SL interaction state
+│     slRaycaster   THREE.Raycaster  ← handle hit-testing on mouse move
+│     slDrag        { slId, handleType, handleIndex, dragPlane } | null
+│     selectedSlId  string | null    ← which SL has handles shown
+│
+└── _projectionService data flow:
+      ProjectionService.buildProjector(arenaId)
+        → reads _wallMgr / _obstacleMgr / _bridgeMgr for live meshes
+        → returns fresh SceneSurfaceProjector (no cache)
+        → passed to _slMgr via constructor callback (arenaId) => buildProjector(arenaId)
+        → SpeedLineManager forwards it to applySpeedLine(..., projector)
 ```
 
-**Speed Line drag-editing**: handles are shown only when the speed line is selected (`_showSlHandles` / `_hideSlHandles`). Mouse-move raycasts against visible handles; mouse-down sets `slDrag`; mouse-move with `slDrag` set repositions the dragged segment joint and rebuilds; mouse-up clears `slDrag`. All done in `ArenaSandbox` mouse event handlers — not in `PropertiesPanel`.
+**Manager API surface** (all FeatureManager subclasses expose):
+```
+get(id)          → TData | undefined
+getAll()         → ReadonlyMap<string, TData>
+has(id)          → boolean
+getSeq()         → number
+restoreSeq(n)    → void          ← call during load to sync counter
+add(...)         → TData         ← subclass-specific factory
+apply(data)      → void          ← rebuild geometry in-place
+buildAndShow(d)  → void          ← restore + add tree node
+remove(id)       → boolean       ← dispose + remove tree node
+clear()          → void          ← dispose all + remove all tree nodes + reset seq
+setVisible(id,v) → void          ← mesh/edges visibility; subclasses handle extra meshes
+serializeAll(?)  → TSave[]       ← optional filter predicate
+```
+
+**Speed Line drag-editing**: handles are shown only when the speed line is selected (`_slMgr.showHandles(sl)` / `_slMgr.hideHandles(sl)`). Mouse-move raycasts against visible handles; mouse-down sets `slDrag`; mouse-move with `slDrag` set repositions the dragged segment joint and rebuilds; mouse-up clears `slDrag`. All done in `ArenaSandbox` mouse event handlers — not in `PropertiesPanel`.
 
 **Dependency rebuild chain**: whenever an arena's geometry changes, call `rebuildDependentsOf(arenaId)`. This reapplies all rim walls attached to that arena, then reapplies all bridges in `bridgesByArena[arenaId]` starting from their first segment.
 
@@ -799,9 +897,13 @@ Drag state:    slDrag — { slId, handleType, handleIndex, dragPlane } — set o
 
 **Tree node add button**: every node that can have children shows a single `+` button. Clicking it opens a floating add-popup listing all available child types by title (e.g. "Add arena", "Add bridge", "Add base wall"). If a node has exactly one child type the `+` fires it directly with no popup. The popup is a `.tree-ctx-menu.tree-add-menu` element (cyan border) positioned below the anchor button. `addChildButtons` on the octagon-base node offers: Add arena, Add bridge, Add base wall, Add obstacle, Add base trap, Add base portal, Add footing (⬢+). Arena nodes offer: Add pit, Add zone, Add wall, Add speed line, Add arena trap, Add arena portal. Bridge nodes offer: Add segment, Add wall. Zone nodes offer: Add speed line, Add rotation (↻+). Trap nodes offer: Add rotation (↻+). Obstacle nodes offer: Add rotation (↻+). Wall nodes offer: Add rotation (↻+). Beyblade part nodes offer: Cut into sectors (single-action, no popup). Multi-select → Group creates a group rotation via `sceneTree.onGroup`.
 
-### Save / load (localStorage)
+### Save / load (Zustand — zero raw localStorage)
 
-Key: `bey_arena_arena_sandbox`. `ARENA_SAVE_VERSION = 12`. On any parse error `localStorage.removeItem(key)` and return (no migration). `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead. `ArenaSave` now has `weatherPreset`, `windEnabled/Direction/Strength/GustInterval/GustMult`, env physics fields (`gravityScale`, `tiltX/Z`, `weightTilt*`, `fogDensity`, `scoreMultiplier`, `pointsPerSecond`, `weatherSurfaceMap`, `envSchedule`), `particleConfig`. `ZoneSave` has `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` (optional `?`). `BridgeSegmentSave` has anim fields (all optional `?`). `TrapSave` has earthquake/RPM/projectile fields (all optional `?`). All env fields in `ArenaSave` are optional `?` to survive partial saves.
+All persistence goes through Zustand stores in `src/stores/`. Zero `localStorage.setItem/getItem/removeItem` calls outside that directory.
+
+Key: `bey_arena_arena_sandbox` (store name; used by `createArenaStateStore`). `ARENA_SAVE_VERSION = 12`. On version mismatch Zustand's `migrate: () => emptySlice()` discards stale saves automatically — no manual version check needed. `PitSave` has no `wallProfile`, `isMoat`, or inner moat fields. `ZoneSave` has no `maskMesh` — use `lidMesh`/`seamMesh` instead. `ArenaSave` now has `weatherPreset`, `windEnabled/Direction/Strength/GustInterval/GustMult`, env physics fields (`gravityScale`, `tiltX/Z`, `weightTilt*`, `fogDensity`, `scoreMultiplier`, `pointsPerSecond`, `weatherSurfaceMap`, `envSchedule`), `particleConfig`. `ZoneSave` has `innerSpiralTurns/Count/Clockwise/LedgeWidth/LedgeHeight/RadiusFrac` (optional `?`). `BridgeSegmentSave` has anim fields (all optional `?`). `TrapSave` has earthquake/RPM/projectile fields (all optional `?`). All env fields in `ArenaSave` are optional `?` to survive partial saves.
+
+`saveArena()` is debounced 300 ms and calls `_flushSave()` on timeout. `_flushSave()` parses `serializeConfig()` (for undo/redo) and calls `_arenaStore.getState().replace(cfg)`. For full resets, call `_arenaStore.getState().discard()`.
 
 `ArenaConfig` (top-level save):
 - `arenas[]` — each `ArenaSave` includes `walls: WallSave[]` (rim walls) and `speedLines: SpeedLineSave[]`
@@ -901,11 +1003,11 @@ Presentation meshes come from imported STL files (one per part). If no STL is lo
 
 ### Persistence (Beyblade Builder)
 
-- localStorage key: `bey_beyblade_builder`
-- **`BEY_SAVE_VERSION = 2`**: Saved with `{ ...cfg, v: BEY_SAVE_VERSION }`. On load: if `parsed.v !== BEY_SAVE_VERSION`, discard. No migration. `PartData.present` and `particleConfig` use `defaultPresentConfig()`/`defaultParticleConfig()` as defaults when fields are missing.
-- Saved on every `CommandHistory.execute()` call and on axis property changes.
-- **Reset Builder** (`✕ Reset` button): stops animation, disposes all meshes, calls `store.reset()`, clears history, clears localStorage.
-- Camera view key (from Sandbox base): `bey_view_beyblade_builder` (reset via `↺ View` button).
+- Zustand store key: `bey_beyblade_builder` (via `createBeybladeConfigStore`)
+- **`BEY_SAVE_VERSION = 2`**: Persist `version: BEY_SAVE_VERSION`; `migrate: () => null` discards stale saves automatically. `PartData.present` and `particleConfig` use `defaultPresentConfig()`/`defaultParticleConfig()` as defaults when fields are missing.
+- Saved on every `CommandHistory.execute()` call and on axis property changes via `_beyStore.getState().save(this.store.serialize())`.
+- **Reset Builder** (`✕ Reset` button): stops animation, disposes all meshes, calls `store.reset()`, clears history, calls `_beyStore.getState().discard()`.
+- Camera view key (from Sandbox base): `bey_view_beyblade_builder` (reset via `↺ View` button). Camera is managed by `CameraManager` inside `Sandbox.mountRenderer()`.
 
 ---
 
@@ -946,7 +1048,7 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **Speed line `exitBehavior` vs `direction`**: `'loop'` is a valid `SpeedLineExitBehavior`, not a `SpeedLineDirection` (`'forward'|'reverse'|'bidirectional'`). Use `sl.exitBehavior !== 'loop'` to gate end-marker placement, never `sl.direction !== 'loop'`.
 - **Speed line handles on wrong object type**: `handleMeshes` contain `THREE.Mesh` objects; hit-testing returns `THREE.Object3D`. Always cast to `THREE.Mesh` before accessing `.material`. Use `(hits[0].object as THREE.Mesh).material`.
 - **`SL` constants namespace**: All speed line tuning values live in the `SL` object in `arenaConstants.ts`. Never inline magic numbers for speed line geometry (e.g. `SL.ARROW_SPACING`, `SL.SURFACE_LIFT`, `SL.HANDLE_RADIUS`).
-- **Speed line preset: always pass projector to `applySpeedLine`**: `_updateSpeedLine` (ArenaSandbox) must call `this._buildSurfaceProjector(sl.parentArenaId)` and pass it as the 7th argument. Omitting it silently breaks thread-on-surface (D-shape) projection on every UI edit — surface projection only works on initial load if projector is missing from the update path.
+- **Speed line projector is now injected via `ProjectionService`, not `_buildSurfaceProjector`**: `ArenaSandbox` no longer has an inline `_buildSurfaceProjector(arenaId)` method. Instead, `ProjectionService` is constructed in `buildCustom()` and its `buildProjector` method is passed as a callback to `SpeedLineManager`'s constructor. `SpeedLineManager` calls it automatically on every `apply(sl)` call. Do NOT add inline projector construction back to `ArenaSandbox` — it belongs in `ProjectionService`.
 - **Speed line preset mode and segment editor**: When `sl.presetType !== 'custom'`, the START and SEGMENTS sections in PropertiesPanel are hidden — they show only for `'custom'`. The "↺ Regenerate Shape" button calls `onPresetChange()` then `refresh()` so the INFO section (segment count, total length) updates immediately.
 - **`_slSectionsUI` structural changes need `refresh()`**: Add section / delete section / "Sync All to Global" in `_slSectionsUI` must call `refresh()` after `onPresetChange()`. Otherwise the section list shows a stale count (old DOM) while the data model has changed.
 - **`samplePathForOverlap` requires `arena` argument**: Signature is `samplePathForOverlap(sl, arena, surfFn)` — `arena` is needed because `computeSegmentPath` now takes the arena for coordinate transforms. Omitting it is a TypeScript error.
@@ -961,17 +1063,16 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **`speedPathId` is a reverse reference, not a path builder**: `ObstacleData.speedPathId`, `TrapData.speedPathId`, `PortalData.speedPathId` are ID strings pointing to existing `SpeedLineData` that targets this object. They do NOT create new speed lines and require no geometry rebuild when changed.
 - **`BUFF_TIER_PRESETS` keys are surface names, not tier-effect names**: The keys are `'sand'|'lava'|'ice'|'water'|'oil'` (matching `buffSurface`). The `tierEffect` values inside each preset entry are `TrapTierEffect` variants. Never confuse the two.
 - **Duration tiers only rendered for `effect='buff_zone'`**: The `_trapDurationTiersSection` call in `showTrap()` is conditional. Tiers stored in `TrapData.durationTiers` are serialized/deserialized regardless of effect type, but only shown in the UI and applied at runtime for `buff_zone`.
-- **Obstacle/trap/portal sequences in both `_applyConfigToScene` AND `loadArena`**: Both code paths that restore config must set `obstacleSeq`, `trapSeq`, `portalSeq` from `cfg`. Missing either one causes ID collisions after load.
-- **Rotation sequences in both `_applyConfigToScene` AND `loadArena`**: Same pattern — both paths must set `rotationSeq` from `cfg.rotationSeq ?? 0`.
-- **`_clearArenas` must detach rotations first**: Before disposing any node objects, iterate `this.rotations` and call `scene.attach(obj)` for all member objects to return them to scene root, then `scene.remove(pivotGroup)`. Skipping this causes objects to vanish when the pivot group is garbage-collected.
-- **`_afterApply` after every rotation-member rebuild**: Whenever `applyTrap/applyObstacle/applyZone/applyWall` is called for a node in a rotation, call `_afterApply(nodeId)` afterward. The apply functions reset `mesh.position` to natural world coords; `_afterApply` corrects to group-local by subtracting `pivotGroup.position`.
+- **All feature sequence counters restored via `restoreSeq()` on managers**: Both `_applyConfigToScene` and `loadArena` must call `mgr.restoreSeq(cfg.xSeq)` for every manager — `_wallMgr.restoreSeq(cfg.wallSeq)`, `_bridgeMgr.restoreSeq(cfg.bridgeSeq)`, `_bridgeMgr.restoreSegSeq(cfg.segmentSeq)`, `_slMgr.restoreSeq(cfg.speedLineSeq)`, `_obstacleMgr.restoreSeq(cfg.obstacleSeq)`, `_trapMgr.restoreSeq(cfg.trapSeq)`, `_portalMgr.restoreSeq(cfg.portalSeq)`, `_rotMgr.restoreSeq(cfg.rotationSeq ?? 0)`, `_footingMgr.restoreSeq(cfg.footingSeq)`. Missing any one causes ID collisions on the next add after load.
+- **`_clearArenas` must call `_rotMgr.detachAll()` first**: `RotationManager.detachAll()` returns all rotation-member objects to scene root before their managers dispose them. Skipping this causes the pivot group's child objects to be garbage-collected when the pivot group is removed, before `disposeOne()` can remove them from the scene — they vanish instead of being properly disposed.
+- **`_afterApply` after every rotation-member rebuild**: Whenever any feature manager's `apply()` is called for a node in a rotation, call `_afterApply(nodeId)` afterward. The apply functions set `mesh.position` to natural world coords; `_afterApply` delegates to `_rotMgr.afterApply(nodeId)` which corrects to group-local by subtracting `pivotGroup.position`.
 - **SceneTree `onGroup` auto-creates a group node**: `sceneTree.onGroup(autoGroupId, childIds)` is called after the tree already added a `group-N` node. Call `this.sceneTree.remove(autoGroupId)` first, then `addRotation()` which creates its own `rot-N` node with the `↻` icon.
 - **`ROT` constants namespace**: All rotation tuning values live in the `ROT` object in `arenaConstants.ts` (`DEFAULT_SPEED`, `DEFAULT_OSC_AMP`, `DEFAULT_OSC_FREQ`, `MIN_SPEED`, `MAX_SPEED`). Never inline these as magic numbers.
 - **Rotation floor Y correction is per-tick, not per-apply**: Trap/zone members must have their Y corrected every tick via `_applyFloorCorrection()` because the bowl surface Y at their world XZ changes continuously as they orbit. Do not try to bake a fixed Y at attach time.
 - **Properties panel two-callback pattern**: `showWall/showObstacle/showTrap/showPortal/showFooting` each take two callbacks — `onGeomChange` (sliders/colors, no re-render) and `onFullChange` (button-group rows that show/hide sub-sections or change surface/material/shape — triggers `showX()` closure re-render). Never route a button-group row to `onGeomChange` — it will leave conditional sub-rows and sibling button highlights stale. The `showX` closure pattern: `const showX = () => this.props.showX(data, live, () => { ...; showX(); }, ...); showX();`.
-- **`saveArena()` is debounced 300 ms**: Never assume a `saveArena()` call writes immediately. For paths that must write right away (demo load, `_applyConfigToScene`, undo/redo restore), call `this._flushSave()` instead. `_flushSave()` cancels the pending timer and writes synchronously. Never add a direct `localStorage.setItem` call — all persistence goes through `saveArena()`/`_flushSave()`.
+- **`saveArena()` is debounced 300 ms**: Never assume a `saveArena()` call writes immediately. For paths that must write right away (demo load, `_applyConfigToScene`, undo/redo restore), call `this._flushSave()` instead. `_flushSave()` cancels the pending timer, parses `serializeConfig()`, and calls `_arenaStore.getState().replace(cfg)`. Never add a direct `localStorage.setItem` call — all persistence goes through Zustand stores in `src/stores/`.
 - **Footing sequences in both `_applyConfigToScene` AND `loadArena`**: Both code paths that restore config must set `footingSeq` from `cfg.footingSeq ?? 0`. Missing either one causes ID collisions after load. (Same rule applies to obstacle/trap/portal/rotation sequences — all sequence counters must be restored in both paths.)
-- **`_clearArenas` must dispose footings**: Iterate `this.footings` and call `_disposeFooting(f)` + `this.sceneTree.remove(f.id)` before clearing the map. Also reset `this.footingSeq = 0`. Skipping this leaks GPU geometry when the scene is reset.
+- **`_clearArenas` disposes footings via `_footingMgr.clear()`**: Do NOT iterate `this.footings` manually. Call `this._footingMgr.clear()` — `FeatureManager.clear()` handles geometry disposal, tree-node removal, and seq reset atomically. Same applies for all managed features: `_obstacleMgr.clear()`, `_trapMgr.clear()`, `_portalMgr.clear()`, `_wallMgr.clear()`, `_bridgeMgr.clear()`, `_slMgr.clear()`, `_rotMgr.clear()`. The `_rotMgr.detachAll()` call must happen BEFORE all other `clear()` calls — see above.
 - **`_onReparent` coverage — reparentable vs not**: The `sceneTree.onReparent` handler supports these node types: wall (arena↔base), pit (arena↔arena), zone (arena↔arena), trap (arena↔base), portal (arena↔base), speed line (arena/zone), bridge segment (same-bridge reorder + cross-bridge). These types are **not reparentable** and their drops must be silently ignored: arena, obstacle, footing, bridge (container), rotation. For non-reparentable nodes, do not call `saveArena()` or modify any data model.
 - **`footingBuilders.ts` must not import from `obstacleBuilders.ts`**: Both files implement the same 6-shape geometry switch (cube/cuboid/sphere/cylinder/pyramid/frustum) independently. This is intentional per coupling-prevention rules — base footings and world obstacles are distinct object types. Sharing the geometry function would couple their build/dispose/apply lifecycle.
 - **`src/features/` managers must not import from `src/screens/`**: Managers are reusable classes independent of ArenaSandbox. They receive everything they need via `SceneContext` and injected getter callbacks. Any import from `screens/` is a violation that couples the manager to the sandbox.
@@ -983,6 +1084,12 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 - **`RotationManager.detachAll()` must be called before any other manager's `clear()`**: `detachAll()` returns all member objects from pivot groups back to scene root. If another manager disposes a member object before detachAll, the pivot group's reference becomes dangling and the object disappears without being properly disposed. Call order: `rotationMgr.detachAll()` → then all other `mgr.clear()` → then `rotationMgr.clear()`.
 - **`RotationManager.afterApply(nodeId)` after every rotation-member rebuild**: When any feature's `apply()` method is called for a node that belongs to a rotation, call `rotationMgr.afterApply(nodeId)` afterward. The `apply()` functions set `mesh.position` to natural world coordinates; `afterApply()` corrects to group-local by subtracting `pivotGroup.position`.
 - **`src/features/` managers never import each other directly**: Inter-manager communication uses injected callbacks. TrapManager accepts a `removeTrapWalls: (trapId) => void` callback rather than importing WallManager. BridgeManager accepts a `removeWall: (wallId) => void` callback. This prevents circular dependencies and keeps managers independently testable.
+- **`TrapManager.tick()` receives seconds, not milliseconds**: ArenaSandbox's `onTick(dtMs)` passes `dt = dtMs / 1000` to feature managers (`_trapMgr.tick(dt)`, `_wallMgr.tick(dt)`, `_rotMgr.tick(dt)`). `_envMgr.tick(dtMs)` and `_spawnMgr.tick(dtMs)` receive milliseconds directly. Never pass `dtMs` to a feature manager tick.
+- **`TrapManager` `onActivate?` callback fires for env triggers only**: The third constructor arg `onActivate?: (trap: TrapData) => void` is only called when `trap.envTriggerEvent` is non-empty. It fires on: earthquake pulse start (one call per `_eqStartPulse`), RPM full revolution (detected via `Math.floor(wrapped/2π) !== Math.floor(prevAngle/2π)`). It is NOT called for every tick.
+- **`slSegSeq` is owned by ArenaSandbox, not SpeedLineManager**: `_slMgr.add()` takes a `slSegSeqRef: { value: number }` mutable wrapper. After the call, sync back: `this.slSegSeq = slSegRef.value`. Never store a permanent reference to the ref — create a fresh `{ value: this.slSegSeq }` object at each call site.
+- **`bridgesByArena` index stays in ArenaSandbox**: `BridgeManager` exposes no `getBridgesForArena()`. ArenaSandbox maintains the `Map<string, Set<string>>` index manually and passes `() => this.bridgesByArena` to `ProjectionService`.
+- **`_presentConfigs` and `_arenaViewMode` stay in ArenaSandbox**: `PresentationManager` tracks only Three.js meshes. Call `_presentMgr.applyViewMode(_arenaViewMode, hitboxMap)` after any view-mode change or mesh add/remove. `_presentConfigs` is keyed by node ID; its values feed `_presentMgr.load()`.
+- **Deleted private methods in ArenaSandbox (do not re-add)**: `_tickEarthquakeTrap`, `_eqStartPulse`, `_eqLerp`, `_tickRPMTrap` — all replaced by `_trapMgr.tick(dt)`. `_disposeSpeedLine`, `_showSlHandles`, `_hideSlHandles` — replaced by manager methods. `_buildSurfaceProjector` — replaced by `ProjectionService.buildProjector`. `_disposeJumpLink`, `_buildJumpLinkGeometry`, `_applyJL` — replaced by `_jlMgr`.
 
 ---
 
@@ -1012,6 +1119,7 @@ When a part is cut into N sectors (`CutSectorsCmd`), the parent's `weight` is di
 | `src/features/IArenaFeature.ts` | A new context capability or manager interface is added |
 | `src/features/FeatureManager.ts` | The shared CRUD lifecycle (insert/remove/clear/serialize) pattern changes |
 | `src/features/ParentedFeatureManager.ts` | Surface-Y resolution or tree-parent logic for arena/base parents changes |
+| `src/features/ProjectionService.ts` | Surface-projector mesh aggregation (walls/obstacles/bridge segments → SceneSurfaceProjector) changes |
 | `src/features/managers/WallManager.ts` | Wall lifecycle, auto-join, auto-rotation, or parent-type dispatch changes |
 | `src/features/managers/BridgeManager.ts` | Bridge/segment lifecycle, pose chaining, or wall-cascade callback changes |
 | `src/features/managers/SpeedLineManager.ts` | Speed line lifecycle, projector wiring, or handle show/hide changes |
@@ -1041,17 +1149,21 @@ arenaConstants + arenaTypes  ←  primitives.ts
                              ←  obstacleBuilders.ts / trapBuilders.ts / portalBuilders.ts / footingBuilders.ts
                              ←  src/features/IArenaFeature.ts  (no project imports — only THREE + SceneTree types)
                              ←  src/features/FeatureManager.ts / ParentedFeatureManager.ts
+                             ←  src/features/ProjectionService.ts  (imports arenaTypes + sceneSurfaceProjector + surfaceUtils only)
                              ←  src/features/managers/*.ts  (import geometry builders + persistence; never from screens/)
                              ←  ArenaSandbox.ts
                              ←  PropertiesPanel.ts (imports arenaTypes + arenaConstants ONLY — no geometry)
 ```
 
 ### Banned patterns — never introduce
+- **Direct `localStorage.setItem/getItem/removeItem` calls outside `src/stores/`** — all persistence goes through Zustand stores. The only valid localStorage access pattern is `createJSONStorage(() => localStorage)` inside Zustand `persist` middleware.
 - Writing to `OCTAGON_BASE.*` anywhere — it is `as const`, TypeScript will error.
 - Hardcoding `30`, `0.5`, `-1.0`, `0.02` outside `arenaConstants.ts`. Use `DEFAULT_BASE_HEIGHT`, `ARENA_ELEVATED_THRESHOLD`, `ZONE_FILL_OFFSET`, `RIM_EPS`.
 - Importing geometry builders or `OCTAGON_BASE` in `PropertiesPanel.ts` — it receives values as parameters.
 - Importing from `screens/` inside any `geometry/` file.
 - Putting geometry builder functions in `ArenaSandbox.ts`.
+- Re-adding inline `SceneSurfaceProjector` construction to `ArenaSandbox.ts` — surface projection is centralized in `ProjectionService`; inject it as a callback into managers.
+- Direct `Map<string, X>` fields on `ArenaSandbox` for managed features (walls/bridges/segments/speedLines/obstacles/traps/portals/rotations/footings) — all managed via their respective manager classes now. The bare Maps that remain are: `arenas`, `pits`, `zones`, `bridgesByArena`, `jumpLinks`, `translations`.
 - Implementing the parabolic Y formula `baseY - depth*(1-t²)` inline — call `buildParabolicRingGeo` from `primitives.ts`.
 - Implementing `posR*cos(angle*DEG2RAD)` inline — call `polarToLocalXZ` from `surfaceUtils.ts`.
 - Implementing `{cx,cz,rotY}` extraction for pits/zones inline — call `extractChildTransform` from `surfaceUtils.ts`.
@@ -1132,7 +1244,7 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **`buildArcArrows` cone orientation must use quaternion, NOT `lookAt` + `rotateX`**: `ConeGeometry` tip is at Y+. To point it along an arbitrary 3D direction use `mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir)`. The `mesh.lookAt(next); mesh.rotateX(Math.PI / 2)` pattern gimbal-locks for near-vertical arcs (the arc apex), producing randomly-flipped cones.
 - **`showJumpLink` physics-only `numRow` callbacks must still call `onGeomChange()`**: Even when a property doesn't affect arc geometry (e.g., `f.arcDuration`, `f.launchForce`, stat modifiers), the callback MUST call `onGeomChange()` so `saveArena()` is triggered. Without it, slider changes are lost on page reload. The pattern: `v => { f.someField = v; onGeomChange(); }` for every numRow and colorRow in the panel.
 - **`showSpeedLine` `jump_link` exitBehavior must use `selectRow` with `getJumpLinks` callback, NOT `textRow`**: `textRow` requires the user to type internal IDs like "jl-1" — unusable in practice. The correct pattern: add `getJumpLinks?: () => JumpLinkData[]` as the last optional parameter to `showSpeedLine`, and pass `() => [...this.jumpLinks.values()]` from ArenaSandbox. The 'jump_link' section then uses `selectRow` with `jlList.map(jl => ({ value: jl.id, label: jl.name }))`. The `refresh` closure inside `showSpeedLine` must forward `getJumpLinks` so the list stays current after navigation.
-- **`_removeJumpLink` must clear stale `jumpLinkId` references on speed lines**: When a jump link is deleted, any speed line that has `sl.jumpLinkId === deletedId` will silently point to a non-existent link. Always iterate `this.speedLines` and set `sl.jumpLinkId = null` for matching entries BEFORE disposing the jump link.
+- **`_removeJumpLink` must clear stale `jumpLinkId` references on speed lines**: When a jump link is deleted, any speed line that has `sl.jumpLinkId === deletedId` will silently point to a non-existent link. Always iterate `this._slMgr.getAll()` and set `sl.jumpLinkId = null` for matching entries BEFORE disposing the jump link.
 
 - **`ArenaEnvironmentManager.clear()` resets timers, not schedule entries**: `clear()` only zeroes `_timer/_revertTimer/_prevValues` on existing entries. Call `clearSchedule(arenaId)` to actually remove entries for an arena. Never confuse these two methods.
 - **`triggerEvent()` only fires `'event'`-type entries**: `'interval'` and `'once'` entries are unaffected by `triggerEvent()` calls — they only advance via `tick()`.
@@ -1152,6 +1264,15 @@ arenaConstants + arenaTypes  ←  primitives.ts
 - **`showBridgeSegment` animation parameter rows MUST call `onGeomChange()`**: All 9 rows (`animOffsetX/Y/Z`, `animRotX/Y/Z`, `animStartMs`, `animIntervalMs`, `animHoldMs`) write to data but must call `onGeomChange()` to trigger `saveArena()`. Without it, the values are lost on page reload. These are timing/offset params — no geometry rebuild needed — but `onGeomChange()` is still required for persistence.
 - **`showObstacle` and `showTrap` SPEED PATH and THEME rows must call `onGeomChange()`**: `speedPathId` (obstacle + trap) and `theme` (obstacle) selectRows must call `onGeomChange()` or changes are silently lost on reload. These are pure data fields with no geometry side-effect, but `onGeomChange()` is still needed to trigger `saveArena()`.
 - **`WallManager.fromSave()` must restore `thicknessDirection`**: It was absent from the `Object.assign()` block. Every save/load round-trip reset all walls to `'outward'` regardless of what was saved. Always include `thicknessDirection: save.thicknessDirection ?? 'outward'` in the assign block alongside `thickness`.
+
+- **`_rotMgr.hasNode(id)` replaces `nodeRotationId.has(id)`**: The `nodeRotationId` Map (nodeId → rotationId) was removed and is now an internal detail of `RotationManager`. Use `_rotMgr.hasNode(id)` to test whether a node is in any rotation, and `_rotMgr.removeMember(nodeId)` to detach a node from its rotation before deleting it.
+- **`_slMgr.showHandles(sl)` / `_slMgr.hideHandles(sl)` replace `_showSlHandles` / `_hideSlHandles`**: These were private ArenaSandbox methods that are now encapsulated in `SpeedLineManager`. Do not re-add private SL handle methods to ArenaSandbox.
+- **`FeatureManager.clear()` removes tree nodes — callers must not also call `sceneTree.remove()`**: Since the manager's `clear()` now calls `this.ctx.sceneTree.remove(data.id)` for every item, any caller that also manually removes tree nodes for managed features will produce a no-op on the second call (harmless) but it is redundant and confusing. Let managers own their tree-node lifecycle entirely.
+- **`showWallProfile()` is a separate PropertiesPanel method, not inline in `showArena()`**: The WALL PROFILE, STEPS APPEARANCE, and SPIRAL APPEARANCE sections were extracted from `showArena()` into `PropertiesPanel.showWallProfile(data, onGeomChange, onFullChange)`. ArenaSandbox adds a `wallprofile-{arenaId}` sub-node to each arena tree node. Selecting that sub-node calls `showWallProfile()`. Do NOT put these sections back into `showArena()` — it would make the arena panel too tall and re-introduce the stale re-render problem on profile changes.
+- **`wallprofile-{arenaId}` sub-nodes are tracked in `_wallProfileNodes: Set<string>`**: When an arena is deleted, its `wallprofile-{arenaId}` node ID must be removed from `_wallProfileNodes` and from the scene tree. When `_clearArenas()` runs, `_wallProfileNodes.clear()` must also be called. Otherwise ghost wall-profile nodes accumulate and block re-creation of new arena wall-profile nodes with the same IDs.
+- **`ProjectionService` must not import from `src/screens/`**: It imports only `arenaTypes`, `sceneSurfaceProjector`, and `surfaceUtils`. Never add a reference to `ArenaSandbox` or any screen — it is a pure utility service that can be unit-tested in isolation.
+- **Manager serialization: `serializeAll(filter?)` replaces inline Map iteration**: Use `this._wallMgr.serializeAll(w => w.parentType==='arena' && w.parentId===id)` instead of `[...this.walls.values()].filter(...).map(wallToSave)`. The filter predicate receives the live `TData` object. Import `wallToSave` / `trapToSave` etc. from `arenaPersistence` is no longer needed in `ArenaSandbox` for serialization — the managers call their own `toSave()` methods internally.
+- **`BridgeManager.toSaveWithWalls(bridge, walls)` replaces `bridgeToSave(b, segments, walls)`**: The `bridgeToSave` function (which accepted a segments Map as third arg) is no longer called from ArenaSandbox directly. `BridgeManager` now exposes `toSaveWithWalls(bridge, wallsMap)` which uses its internal segments Map.
 
 ### When you add a new constant
 Add it to `src/config/arenaConstants.ts` with a name. Never inline magic numbers.

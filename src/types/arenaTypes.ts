@@ -2,9 +2,10 @@ import * as THREE from 'three';
 export type {
   PresentConfig, ParticlePreset, ParticleConfig, ParticleSystem,
   WeatherPreset, WeatherSystem,
+  BaseStatModifiers,
 } from './sharedTypes';
-export { defaultPresentConfig, defaultParticleConfig } from './sharedTypes';
-import type { ParticlePreset, ParticleConfig, ParticleSystem, WeatherPreset, WeatherSystem } from './sharedTypes';
+export { defaultPresentConfig, defaultParticleConfig, defaultBaseStatModifiers, combineStatMods } from './sharedTypes';
+import type { ParticlePreset, ParticleConfig, ParticleSystem, WeatherPreset, WeatherSystem, BaseStatModifiers } from './sharedTypes';
 
 /* ── Opening shape / wall profile types ─────────────────────────────────── */
 export type OpeningShape = 'circle' | 'ellipse' | 'rectangle' | 'hexagon' | 'triangle' | 'star';
@@ -376,13 +377,7 @@ export type SpeedLineEjectBehavior = 'toward_center' | 'forward' | 'backward' | 
 export type SpeedLineTargetSelectionMode = 'at_entrance' | 'dynamic';
 
 /* ── Stat modifiers ──────────────────────────────────────────────────────── */
-export interface SpeedLineStatModifiers {
-  spinRateMult:    number;
-  staminaMult:     number;
-  attackMult:      number;
-  defenseMult:     number;
-  weightMult:      number;
-  burstResistMult: number;
+export interface SpeedLineStatModifiers extends BaseStatModifiers {
   /** Tilt applied to the beyblade (degrees). Positive = toward arena center. Default 0. */
   tiltAngleDeg:      number;
   /** If true, tilt direction reverses for opposite spin direction. */
@@ -935,6 +930,8 @@ export interface TrapData {
   variantMesh: THREE.Mesh | null;
   /** Runtime-only pulse timer — not saved. */
   _gravityTimer?: number;
+  /** Runtime-only tick behavior sub-object — not saved. Set in buildGeometry, disposed in disposeOne. */
+  _tickBehavior?: import('../features/managers/sub/TrapTickBehavior').TrapTickBehavior;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1133,14 +1130,8 @@ export interface JumpLinkEndpoint {
   atStart:     boolean;  // true = speed line start point, false = end point
 }
 
-export interface JumpFlightStatModifiers {
-  spinRateMult:    number;
-  staminaMult:     number;
-  attackMult:      number;
-  defenseMult:     number;
-  weightMult:      number;
-  burstResistMult: number;
-}
+// JumpFlightStatModifiers is identical to BaseStatModifiers — use type alias.
+export type JumpFlightStatModifiers = BaseStatModifiers;
 
 export interface JumpFlightConfig {
   // Travel time — arc is aimed at predicted dst position at t=arcDuration ms

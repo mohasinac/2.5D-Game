@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SandboxSprites } from '../utils/SandboxSprites';
+import { CameraManager } from '../features/managers/CameraManager';
+import { createCameraViewStore } from '../stores/cameraViewStore';
 
 export interface SandboxOptions {
   title:      string;
@@ -25,26 +27,20 @@ export interface SandboxOptions {
   axisYOffset?: number;
 }
 
-interface SavedView {
-  camX: number; camY: number; camZ: number;
-  tgtX: number; tgtY: number; tgtZ: number;
-}
-
-const DEFAULT_TGT = { x: 0, y: 0, z: 0 } as const;
-
 export class Sandbox {
   private el: HTMLElement;
   private canvasWrap: HTMLDivElement;
   private topBar!: HTMLElement;
   private overlayEl!: HTMLElement;
-  private readonly storageKey: string;
+  protected readonly storageKey: string;
 
   private scene:    THREE.Scene | null = null;
   private camera:   THREE.PerspectiveCamera | null = null;
   private renderer: THREE.WebGLRenderer | null = null;
   private controls: OrbitControls | null = null;
 
-  private savedTarget = new THREE.Vector3();
+  protected cameraManager: CameraManager | null = null;
+
   private rafId = 0;
   private ro: ResizeObserver;
   private textures: THREE.Texture[] = [];
@@ -153,14 +149,20 @@ export class Sandbox {
       TWO: THREE.TOUCH.DOLLY_PAN,
     };
 
-    this.loadView();
+    this.cameraManager = new CameraManager(
+      () => this.camera,
+      () => this.controls,
+      createCameraViewStore(this.storageKey),
+      this.opts.defaultCam,
+    );
+    this.cameraManager.load();
     this.lastFrameTime = 0;
   }
 
   private unmountRenderer(): void {
-    this.saveView();
+    this.cameraManager?.save();
+    this.cameraManager = null;
     if (this.controls) {
-      this.savedTarget.copy(this.controls.target);
       this.controls.dispose();
       this.controls = null;
     }
@@ -171,37 +173,14 @@ export class Sandbox {
     }
   }
 
-  /* ── localStorage ───────────────────────────────────────────── */
-  private saveView(): void {
-    if (!this.camera || !this.controls) return;
-    const d: SavedView = {
-      camX: this.camera.position.x, camY: this.camera.position.y, camZ: this.camera.position.z,
-      tgtX: this.controls.target.x, tgtY: this.controls.target.y, tgtZ: this.controls.target.z,
-    };
-    localStorage.setItem(this.storageKey, JSON.stringify(d));
-  }
-
-  private loadView(): void {
-    if (!this.camera || !this.controls) return;
-    try {
-      const raw = localStorage.getItem(this.storageKey);
-      if (!raw) return;
-      const d = JSON.parse(raw) as SavedView;
-      this.camera.position.set(d.camX, d.camY, d.camZ);
-      this.controls.target.set(d.tgtX, d.tgtY, d.tgtZ);
-      this.controls.update();
-    } catch { /* corrupted */ }
-  }
-
   resetView(): void {
-    localStorage.removeItem(this.storageKey);
-    const { defaultCam: dc } = this.opts;
-    this.camera?.position.set(dc.x, dc.y, dc.z);
-    if (this.controls) {
-      this.controls.target.set(DEFAULT_TGT.x, DEFAULT_TGT.y, DEFAULT_TGT.z);
-      this.controls.update();
+    this.cameraManager?.reset();
+    if (!this.cameraManager) {
+      // fallback when called before first mount
+      const { defaultCam: dc } = this.opts;
+      this.camera?.position.set(dc.x, dc.y, dc.z);
+      if (this.controls) { this.controls.target.set(0, 0, 0); this.controls.update(); }
     }
-    this.savedTarget.set(DEFAULT_TGT.x, DEFAULT_TGT.y, DEFAULT_TGT.z);
   }
 
   /* ── Extension hook — subclasses add their geometry here ─────── */
@@ -299,6 +278,7 @@ export class Sandbox {
       this.camera!.updateProjectionMatrix();
     }
     this.onTick(dt);
+    this.cameraManager?.tick(dt);
     this.controls!.update();
     renderer.render(this.scene!, this.camera!);
   };

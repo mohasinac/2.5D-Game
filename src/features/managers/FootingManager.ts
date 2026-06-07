@@ -8,7 +8,7 @@ import {
 } from '../../geometry/footingBuilders';
 import { footingToSave } from '../../utils/arenaPersistence';
 import { FeatureManager } from '../FeatureManager';
-import type { SceneContext } from '../IArenaFeature';
+import type { SceneContext, IPositionedManager } from '../IArenaFeature';
 
 /**
  * Manages decorative / structural 3-D shapes placed on the octagon base.
@@ -26,34 +26,41 @@ import type { SceneContext } from '../IArenaFeature';
  * FootingManager has no arena-specific dependencies beyond SceneContext.
  * It can host footing objects on any flat base surface in any Three.js scene.
  */
-export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingSave> {
+export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingSave> implements IPositionedManager {
 
   constructor(ctx: SceneContext) {
     super(ctx, 'footing', 'Footing');
   }
 
+  // ── IPositionedManager ───────────────────────────────────────────────────
+
+  getWorldPosition(id: string): THREE.Vector3 | null {
+    const data = this.items.get(id);
+    if (!data?.mesh) return null;
+    return data.mesh.getWorldPosition(new THREE.Vector3());
+  }
+
   // ── Public factory ───────────────────────────────────────────────────────
 
-  add(): BaseFootingData {
+  add(treeOpts?: Record<string, unknown>): BaseFootingData {
     const id   = this.nextId();
     const data = defaultFooting(this.nextLabel(), id, this.ctx.getFallbackY());
-    return this._insert(data, '⬢', 'octagon-base');
+    return this._insert(data, '⬢', 'octagon-base', treeOpts);
   }
 
   // ── Apply (rebuild geometry in-place after property edits) ──────────────
 
   apply(data: BaseFootingData): void {
     applyFooting(data, this.ctx.getFallbackY());
-    this.ctx.trackObjects(data.id, [data.mesh!, data.edges!]);
     this.setVisible(data.id, data.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
 
-  buildAndShow(data: BaseFootingData): void {
+  buildAndShow(data: BaseFootingData, treeOpts?: Record<string, unknown>): void {
     this.buildGeometry(data);
     this.setVisible(data.id, data.visible ?? true);
-    this.ctx.sceneTree.add(data.id, data.name, '⬢', 'octagon-base');
+    this.ctx.sceneTree.add(data.id, data.name, '⬢', 'octagon-base', treeOpts as never);
   }
 
   // ── Template Method implementation ───────────────────────────────────────
@@ -66,23 +73,13 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
     const [mesh, edges] = buildFootingObjects(data, this.ctx.getFallbackY());
     data.mesh  = mesh;
     data.edges = edges;
-    this.ctx.scene.add(mesh, edges);
-    this.ctx.trackObjects(data.id, [mesh, edges]);
+    this.ctx.renderMgr.add(data.id, [mesh, edges]);
   }
 
   protected disposeOne(data: BaseFootingData): void {
-    if (data.mesh) {
-      this.ctx.scene.remove(data.mesh);
-      data.mesh.geometry.dispose();
-      (data.mesh.material as THREE.Material).dispose();
-      data.mesh = null;
-    }
-    if (data.edges) {
-      this.ctx.scene.remove(data.edges);
-      data.edges.geometry.dispose();
-      (data.edges.material as THREE.Material).dispose();
-      data.edges = null;
-    }
+    data.mesh  = null;
+    data.edges = null;
+    // renderMgr.dispose() in base remove()/clear() handles scene removal + GPU disposal.
   }
 
   // ── Serialisation ────────────────────────────────────────────────────────

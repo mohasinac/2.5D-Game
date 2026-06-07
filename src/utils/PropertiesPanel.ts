@@ -100,19 +100,6 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.numRow('Inner Y offset', data.innerRimOffset, -data.depth+1, 200, 1, v=>{ data.innerRimOffset=v; onGeomChange(); });
       this.section('INNER SHAPE');
       this.innerShapeGrid(data, onFullChange);
-      this.section('OUTER WALL');
-      this.profileRow(data, 'wallProfile', onFullChange);
-      if (data.wallProfile === 'step')   this._moatOuterStepSubOptions(data, onGeomChange, onFullChange);
-      if (data.wallProfile === 'spiral') this._spiralSubOptions(data, onFullChange);
-      this.section('INNER WALL');
-      this.innerProfileRow(data, onFullChange);
-      if (data.innerWallProfile === 'step')   this._moatInnerStepSubOptions(data, onGeomChange, onFullChange);
-      if (data.innerWallProfile === 'spiral') this._innerSpiralSubOptions(data, onFullChange);
-    }
-
-    if (!data.isMoat) {
-      this.section('WALL PROFILE');
-      this.wallProfileSection(data, onFullChange, onGeomChange);
     }
 
     this.section('DIMENSIONS');
@@ -131,38 +118,6 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Y (tower)', data.posY, 0, 200, 1, v=>{ data.posY=v; onGeomChange(); });
     this.numRow('Rot Y °',  THREE.MathUtils.radToDeg(data.rotY), -180, 180, 1,
       v=>{ data.rotY=THREE.MathUtils.degToRad(v); onGeomChange(); });
-
-    if (data.wallProfile === 'step') {
-      this.section('STEPS APPEARANCE');
-      this.colorRow('Steps Color', data.stepsColor ?? data.color, v => { data.stepsColor = v; onFullChange(); });
-      const stepsProxy = {
-        surface: (data.stepsSurface ?? 'plain') as SurfaceType,
-        customTileData: data.stepsCustomTileData,
-        tileScale: 1,
-        color: data.stepsColor ?? data.color,
-      };
-      this.surfaceRow(stepsProxy, () => {
-        data.stepsSurface = stepsProxy.surface;
-        data.stepsCustomTileData = stepsProxy.customTileData;
-        onFullChange();
-      });
-    }
-
-    if (data.wallProfile === 'spiral' && data.spiralCount > 0) {
-      this.section('SPIRAL APPEARANCE');
-      this.colorRow('Spiral Color', data.spiralColor ?? data.color, v => { data.spiralColor = v; onFullChange(); });
-      const spiralProxy = {
-        surface: (data.spiralSurface ?? 'plain') as SurfaceType,
-        customTileData: data.spiralCustomTileData,
-        tileScale: 1,
-        color: data.spiralColor ?? data.color,
-      };
-      this.surfaceRow(spiralProxy, () => {
-        data.spiralSurface = spiralProxy.surface;
-        data.spiralCustomTileData = spiralProxy.customTileData;
-        onFullChange();
-      });
-    }
 
     this.section('ARENA LIGHT');
     const lightPresetRow = document.createElement('div'); lightPresetRow.className = 'prop-profile-row';
@@ -196,6 +151,55 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     if (data.presentStlb64) {
       this.colorRow('Present Color', data.presentColor, v => { data.presentColor = v; onGeomChange(); });
       this.buttonRow('', 'Clear STL', () => { data.presentStlb64 = null; onStlClear?.(); onGeomChange(); });
+    }
+  }
+
+  showWallProfile(data: ArenaData, onGeomChange: () => void, onFullChange: () => void): void {
+    this.content.innerHTML = '';
+    this.section('WALL PROFILE');
+    if (data.isMoat) {
+      this.section('OUTER WALL');
+      this.profileRow(data, 'wallProfile', onFullChange);
+      if (data.wallProfile === 'step')   this._moatOuterStepSubOptions(data, onGeomChange, onFullChange);
+      if (data.wallProfile === 'spiral') this._spiralSubOptions(data, onFullChange);
+      this.section('INNER WALL');
+      this.innerProfileRow(data, onFullChange);
+      if (data.innerWallProfile === 'step')   this._moatInnerStepSubOptions(data, onGeomChange, onFullChange);
+      if (data.innerWallProfile === 'spiral') this._innerSpiralSubOptions(data, onFullChange);
+    } else {
+      this.wallProfileSection(data, onFullChange, onGeomChange);
+    }
+
+    if (data.wallProfile === 'step') {
+      this.section('STEPS APPEARANCE');
+      this.colorRow('Steps Color', data.stepsColor ?? data.color, v => { data.stepsColor = v; onFullChange(); });
+      const stepsProxy = {
+        surface: (data.stepsSurface ?? 'plain') as SurfaceType,
+        customTileData: data.stepsCustomTileData,
+        tileScale: 1,
+        color: data.stepsColor ?? data.color,
+      };
+      this.surfaceRow(stepsProxy, () => {
+        data.stepsSurface = stepsProxy.surface;
+        data.stepsCustomTileData = stepsProxy.customTileData;
+        onFullChange();
+      });
+    }
+
+    if (data.wallProfile === 'spiral' && data.spiralCount > 0) {
+      this.section('SPIRAL APPEARANCE');
+      this.colorRow('Spiral Color', data.spiralColor ?? data.color, v => { data.spiralColor = v; onFullChange(); });
+      const spiralProxy = {
+        surface: (data.spiralSurface ?? 'plain') as SurfaceType,
+        customTileData: data.spiralCustomTileData,
+        tileScale: 1,
+        color: data.spiralColor ?? data.color,
+      };
+      this.surfaceRow(spiralProxy, () => {
+        data.spiralSurface = spiralProxy.surface;
+        data.spiralCustomTileData = spiralProxy.customTileData;
+        onFullChange();
+      });
     }
   }
 

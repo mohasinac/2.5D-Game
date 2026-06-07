@@ -118,8 +118,8 @@ export class RotationManager
 
     const pg = new THREE.Group();
     pg.position.set(pivotX, pivotY, pivotZ);
-    this.ctx.scene.add(pg);
     rot.pivotGroup = pg;
+    this.ctx.renderMgr.add(id, [pg]);
 
     // Attach member objects into the pivot group (preserving world transform)
     for (const mid of memberIds) {
@@ -133,28 +133,7 @@ export class RotationManager
     return rot;
   }
 
-  // ── Remove ───────────────────────────────────────────────────────────────
-
-  /**
-   * Remove a rotation: detach all member objects back to scene root,
-   * remove the pivot group, clean up the nodeRotationId index.
-   */
-  override remove(id: string): boolean {
-    const rot = this.items.get(id);
-    if (!rot) return false;
-
-    this._detachMembersToScene(rot);
-
-    if (rot.pivotGroup) {
-      this.ctx.scene.remove(rot.pivotGroup);
-      rot.pivotGroup = null;
-    }
-
-    rot.memberIds.forEach(mid => this.nodeRotationId.delete(mid));
-    this.items.delete(id);
-    this.ctx.sceneTree.remove(id);
-    return true;
-  }
+  // ── Remove (inherited from FeatureManager → disposeOne → renderMgr.dispose → sceneTree.remove) ─
 
   /**
    * Remove a single member from its rotation.
@@ -196,15 +175,19 @@ export class RotationManager
   detachAll(): void {
     for (const rot of this.items.values()) {
       this._detachMembersToScene(rot);
-      if (rot.pivotGroup) {
-        this.ctx.scene.remove(rot.pivotGroup);
-        rot.pivotGroup = null;
-      }
+      this.ctx.renderMgr.dispose(rot.id);
+      rot.pivotGroup = null;
     }
   }
 
   override clear(): void {
-    this.detachAll();
+    for (const rot of this.items.values()) {
+      this._detachMembersToScene(rot);
+      this.ctx.renderMgr.dispose(rot.id);
+      this.ctx.sceneTree.remove(rot.id);
+      rot.pivotGroup = null;
+      rot.memberIds.forEach(mid => this.nodeRotationId.delete(mid));
+    }
     this.items.clear();
     this.nodeRotationId.clear();
     this.seq = 0;
@@ -309,10 +292,8 @@ export class RotationManager
 
   protected disposeOne(data: RotationData): void {
     this._detachMembersToScene(data);
-    if (data.pivotGroup) {
-      this.ctx.scene.remove(data.pivotGroup);
-      data.pivotGroup = null;
-    }
+    // pivotGroup scene removal handled by renderMgr.dispose() in FeatureManager.remove()
+    data.pivotGroup = null;
     data.memberIds.forEach(mid => this.nodeRotationId.delete(mid));
   }
 
@@ -358,8 +339,8 @@ export class RotationManager
   ): void {
     const pg = new THREE.Group();
     pg.position.set(data.pivotX, data.pivotY, data.pivotZ);
-    this.ctx.scene.add(pg);
     data.pivotGroup = pg;
+    this.ctx.renderMgr.add(data.id, [pg]);
 
     for (const mid of data.memberIds) {
       for (const obj of this.getMemberObjects(mid)) pg.attach(obj);

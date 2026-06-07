@@ -13,7 +13,8 @@ import { shapePoints } from '../../geometry/surfaceUtils';
 import { wallToSave } from '../../utils/arenaPersistence';
 import { DEG2RAD, TRAP_PLATE_HEIGHT, TWO_PI } from '../../config/arenaConstants';
 import { FeatureManager } from '../FeatureManager';
-import type { SceneContext, ITickableManager } from '../IArenaFeature';
+import type { SceneContext, ITickableManager, IPositionedManager } from '../IArenaFeature';
+import { wallPivotAnimator } from './sub/WallPivotAnimator';
 
 /**
  * Manages walls — rim-mounted barriers extruded from arena rims, trap surfaces,
@@ -49,7 +50,7 @@ import type { SceneContext, ITickableManager } from '../IArenaFeature';
  */
 export class WallManager
   extends FeatureManager<WallData, WallSave>
-  implements ITickableManager
+  implements ITickableManager, IPositionedManager
 {
   constructor(
     ctx: SceneContext,
@@ -176,11 +177,20 @@ export class WallManager
     (wallMat as THREE.MeshStandardMaterial).emissiveIntensity = wall.emissiveIntensity;
     (wallMat as THREE.MeshStandardMaterial).depthWrite = wall.opacity >= 1;
 
-    // Detach from old pivot group if rotation was just disabled
-    if (wall._rotatePivot && !wall.rotateOnArena) {
-      this.ctx.scene.remove(wall._rotatePivot);
-      wall._rotatePivot.clear();
-      wall._rotatePivot = undefined;
+    const willHavePivot = wall.rotateOnArena && wall.parentType === 'arena';
+    const wasRegistered = !!wall.mesh;
+    const wasInPivot    = !!wall._rotatePivot;
+    const modeChanged   = wasRegistered && wasInPivot !== willHavePivot;
+
+    // Deregister (without geo-dispose) when switching pivot modes
+    if (modeChanged) {
+      this.ctx.renderMgr.detach(wall.id);
+      if (wasInPivot && wall._rotatePivot) {
+        // Extract mesh+edges from pivot so they can be re-parented
+        if (wall.mesh)  wall._rotatePivot.remove(wall.mesh);
+        if (wall.edges) wall._rotatePivot.remove(wall.edges);
+        wall._rotatePivot = undefined;
+      }
     }
 
     // Update or create mesh
@@ -191,7 +201,6 @@ export class WallManager
       wall.mesh.material = wallMat;
     } else {
       wall.mesh = new THREE.Mesh(geo, wallMat);
-      this.ctx.scene.add(wall.mesh);
     }
 
     // Update or create edge lines
@@ -205,29 +214,28 @@ export class WallManager
         eGeo,
         new THREE.LineBasicMaterial({ color: edgeCol }),
       );
-      this.ctx.scene.add(wall.edges);
     }
 
     // Pivot group for arena auto-rotation
-    if (wall.rotateOnArena && wall.parentType === 'arena') {
+    if (willHavePivot) {
       if (!wall._rotatePivot) {
         wall._rotatePivot = new THREE.Group();
         wall._rotatePivot.position.set(cx, 0, cz);
-        this.ctx.scene.add(wall._rotatePivot);
         wall._arenaRotateTimer = wall.arenaRotateStepInterval;
+      } else {
+        wall._rotatePivot.position.set(cx, 0, cz);
       }
-      // Re-parent mesh + edges into pivot; zero their X/Z so they sit at pivot origin
-      this.ctx.scene.remove(wall.mesh);
-      this.ctx.scene.remove(wall.edges);
-      wall._rotatePivot.add(wall.mesh);
-      wall._rotatePivot.add(wall.edges);
+      if (wall.mesh.parent  !== wall._rotatePivot) wall._rotatePivot.add(wall.mesh);
+      if (wall.edges.parent !== wall._rotatePivot) wall._rotatePivot.add(wall.edges);
       wall.mesh.position.x  = 0;
       wall.mesh.position.z  = 0;
       wall.edges.position.x = 0;
       wall.edges.position.z = 0;
+      if (!wasRegistered || modeChanged) this.ctx.renderMgr.add(wall.id, [wall._rotatePivot]);
+    } else {
+      if (!wasRegistered || modeChanged) this.ctx.renderMgr.add(wall.id, [wall.mesh, wall.edges]);
     }
 
-    this.ctx.trackObjects(wall.id, [wall.mesh, wall.edges]);
     this.setVisible(wall.id, wall.visible ?? true);
 
     // Rebuild adjacent walls sharing this wall's arc boundary so their join-caps update
@@ -266,27 +274,15 @@ export class WallManager
   // ── ITickableManager ─────────────────────────────────────────────────────
 
   tick(dt: number): void {
-    const t = performance.now() / 1000;
     for (const wall of this.items.values()) {
-      if (!wall.rotateOnArena || !wall._rotatePivot) continue;
-      switch (wall.arenaRotateMode) {
-        case 'continuous':
-          wall._rotatePivot.rotation.y += wall.arenaRotateSpeed * DEG2RAD * dt;
-          break;
-        case 'step':
-          wall._arenaRotateTimer = (wall._arenaRotateTimer ?? wall.arenaRotateStepInterval) - dt;
-          if (wall._arenaRotateTimer <= 0) {
-            wall._rotatePivot.rotation.y += wall.arenaRotateStepDeg * DEG2RAD;
-            wall._arenaRotateTimer = wall.arenaRotateStepInterval;
-          }
-          break;
-        case 'oscillate':
-          wall._rotatePivot.rotation.y =
-            wall.arenaRotateOscAmp * DEG2RAD *
-            Math.sin(TWO_PI * wall.arenaRotateOscFreq * t);
-          break;
-      }
+      wallPivotAnimator.tick(wall, dt);
     }
+  }
+
+  getWorldPosition(id: string): THREE.Vector3 | null {
+    const data = this.items.get(id);
+    if (!data?.mesh) return null;
+    return data.mesh.getWorldPosition(new THREE.Vector3());
   }
 
   // ── Template Method implementation ────────────────────────────────────────
@@ -297,22 +293,25 @@ export class WallManager
   }
 
   protected disposeOne(data: WallData): void {
-    // Remove pivot group first (contains mesh+edges as children)
     if (data._rotatePivot) {
-      this.ctx.scene.remove(data._rotatePivot);
+      // Mesh+edges are pivot children — manually dispose their geometry.
+      // renderMgr.dispose (called by FeatureManager.remove after this) removes the Group
+      // from the scene but does not recurse into Group children for disposal.
+      if (data.mesh) {
+        data.mesh.geometry.dispose();
+        (data.mesh.material as THREE.Material).dispose();
+        data.mesh = null;
+      }
+      if (data.edges) {
+        data.edges.geometry.dispose();
+        (data.edges.material as THREE.Material).dispose();
+        data.edges = null;
+      }
       data._rotatePivot.clear();
       data._rotatePivot = undefined;
-    }
-    if (data.mesh) {
-      this.ctx.scene.remove(data.mesh);
-      data.mesh.geometry.dispose();
-      (data.mesh.material as THREE.Material).dispose();
-      data.mesh = null;
-    }
-    if (data.edges) {
-      this.ctx.scene.remove(data.edges);
-      data.edges.geometry.dispose();
-      (data.edges.material as THREE.Material).dispose();
+    } else {
+      // renderMgr.dispose handles scene.remove + geometry disposal for mesh+edges
+      data.mesh  = null;
       data.edges = null;
     }
   }

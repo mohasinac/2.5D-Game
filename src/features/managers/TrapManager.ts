@@ -6,12 +6,12 @@ import {
   buildTrapObjects,
   applyTrap,
   defaultTrap,
-  updateEarthquakeMeshHeights,
 } from '../../geometry/trapBuilders';
 import { trapToSave } from '../../utils/arenaPersistence';
 import { ParentedFeatureManager } from '../ParentedFeatureManager';
-import type { SceneContext, ITickableManager } from '../IArenaFeature';
+import type { SceneContext, ITickableManager, IPositionedManager } from '../IArenaFeature';
 import type { ISurfaceProvider } from '../ISurfaceProvider';
+import { createTrapTickBehavior } from './sub/TrapTickBehavior';
 
 /**
  * Manages trigger trap pads — flat interactive surfaces placed on arena bowls
@@ -35,11 +35,14 @@ import type { ISurfaceProvider } from '../ISurfaceProvider';
  * Inherits parent-surface resolution from ParentedFeatureManager.
  * Has no direct dependency on WallManager — wall cleanup is injected.
  */
-export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> implements ITickableManager {
+export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave>
+  implements ITickableManager, IPositionedManager {
 
   constructor(
     ctx:        SceneContext,
     getSurface: (surfaceId: string) => ISurfaceProvider | undefined,
+    /** Called when a trap activates (earthquake pulse start or RPM revolution); used for env-trigger events. */
+    private readonly onActivate?: (trap: TrapData) => void,
   ) {
     super(ctx, 'trap', 'Trap', getSurface);
   }
@@ -65,9 +68,6 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
 
   apply(data: TrapData): void {
     applyTrap(data, this.resolveSurfaceY(data));
-    const objs: THREE.Object3D[] = [data.mesh!, data.edges!];
-    if (data.variantMesh) objs.push(data.variantMesh);
-    this.ctx.trackObjects(data.id, objs);
     this.setVisible(data.id, data.visible ?? true);
   }
 
@@ -81,14 +81,6 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
     this.setVisible(data.id, data.visible ?? true);
     const treeParent = data.parentType === 'base' ? 'octagon-base' : data.parentId;
     this.ctx.sceneTree.add(data.id, data.name, '⚡', treeParent, treeOpts as never);
-  }
-
-  // ── Override to include variantMesh ──────────────────────────────────────
-
-  setVisible(id: string, visible: boolean): void {
-    super.setVisible(id, visible);
-    const data = this.items.get(id);
-    if (data?.variantMesh) data.variantMesh.visible = visible;
   }
 
   // ── Override remove to support wall cascade ──────────────────────────────
@@ -110,105 +102,16 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
 
   tick(dt: number): void {
     for (const trap of this.items.values()) {
-      if (trap.effect === 'earthquake') this._tickEarthquake(trap, dt);
-      if (trap.effect === 'rpm')        this._tickRPM(trap, dt);
-      if (trap.effect === 'projectile' && trap.projPlateSpin !== 0) this._tickPlateSpin(trap, dt);
+      trap._tickBehavior?.tick(trap, dt);
     }
   }
 
-  private _tickPlateSpin(trap: TrapData, dt: number): void {
-    const omega = trap.projPlateSpin * (Math.PI / 180);
-    trap.mesh.rotation.y += omega * dt;
-    trap.edges.rotation.y = trap.mesh.rotation.y;
-  }
+  // ── IPositionedManager ───────────────────────────────────────────────────
 
-  private _tickEarthquake(trap: TrapData, dt: number): void {
-    if (!trap._eqPhase) {
-      if (trap.eqPulseMode === 'continuous') {
-        this._eqStartPulse(trap);
-      } else if (trap.eqPulseMode === 'periodic') {
-        trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-        if (trap._eqTimer >= trap.eqPulseIntervalMs) {
-          trap._eqTimer = 0;
-          this._eqStartPulse(trap);
-        }
-      }
-      return;
-    }
-
-    const phase = trap._eqPhase;
-    const widthMs = Math.max(100, trap.eqPulseWidthMs);
-
-    if (phase === 'rising') {
-      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-      const t = Math.min(1, trap._eqTimer / (widthMs * 0.3));
-      this._eqLerpHeights(trap, t);
-      if (t >= 1) { trap._eqPhase = 'active'; trap._eqTimer = 0; }
-    } else if (phase === 'active') {
-      if (trap.eqPermanent) return;
-      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-      if (trap._eqTimer >= widthMs * 0.4) { trap._eqPhase = 'fading'; trap._eqTimer = 0; }
-    } else if (phase === 'fading') {
-      trap._eqTimer = (trap._eqTimer ?? 0) + dt * 1000;
-      const t = Math.min(1, trap._eqTimer / (widthMs * 0.3));
-      this._eqLerpHeights(trap, 1 - t);
-      if (t >= 1) {
-        trap._eqPhase = undefined;
-        trap._eqTimer = 0;
-        trap._eqCycleCount = (trap._eqCycleCount ?? 0) + 1;
-        if (trap.eqPulseMode === 'continuous' && (trap.eqFadeCycles === 0 || (trap._eqCycleCount ?? 0) < trap.eqFadeCycles)) {
-          this._eqStartPulse(trap);
-        }
-      }
-    }
-    updateEarthquakeMeshHeights(trap);
-  }
-
-  private _eqStartPulse(trap: TrapData): void {
-    const rings = Math.max(1, trap.eqRingCount);
-    const segs  = Math.max(3, trap.eqSegmentsPerRing);
-    const total = rings * segs;
-    if (!trap._eqTargetHeights || trap._eqTargetHeights.length !== total) {
-      trap._eqTargetHeights  = new Array(total).fill(0);
-      trap._eqCurrentHeights = new Array(total).fill(0);
-    }
-    const maxH = trap.eqMaxElevationCm;
-    for (let r = 0; r < rings; r++) {
-      const ringMult = trap.eqRingRanges[r] ?? 1;
-      for (let s = 0; s < segs; s++) {
-        const idx = r * segs + s;
-        let h = 0;
-        switch (trap.eqElevationMode) {
-          case 'wave':        h = maxH * ringMult * Math.sin((s / segs) * Math.PI * 2); break;
-          case 'ripple':      h = maxH * ringMult * Math.sin((r / rings) * Math.PI * 4); break;
-          case 'checkerboard': h = maxH * ringMult * ((r + s) % 2 === 0 ? 1 : -1); break;
-          case 'random':
-          default:            h = maxH * ringMult * (Math.random() * 2 - 1); break;
-        }
-        trap._eqTargetHeights[idx] = h;
-      }
-    }
-    trap._eqPhase = 'rising';
-    trap._eqTimer = 0;
-  }
-
-  private _eqLerpHeights(trap: TrapData, t: number): void {
-    if (!trap._eqCurrentHeights || !trap._eqTargetHeights) return;
-    for (let i = 0; i < trap._eqCurrentHeights.length; i++) {
-      trap._eqCurrentHeights[i] = (trap._eqTargetHeights[i] ?? 0) * t;
-    }
-  }
-
-  private _tickRPM(trap: TrapData, dt: number): void {
-    if (!trap.variantMesh) return;
-    const omega = (trap.rpmSpeed ?? 0) * (Math.PI / 180);
-    trap._rpmCurrentAngle = ((trap._rpmCurrentAngle ?? 0) + omega * dt) % (Math.PI * 2);
-    trap.variantMesh.rotation.y = trap._rpmCurrentAngle;
-    // Emissive scales with |speed|
-    const mat = trap.variantMesh.material as THREE.MeshStandardMaterial;
-    if (mat && 'emissiveIntensity' in mat) {
-      mat.emissiveIntensity = Math.min(1, Math.abs(trap.rpmSpeed ?? 0) / 360);
-    }
+  getWorldPosition(id: string): THREE.Vector3 | null {
+    const data = this.items.get(id);
+    if (!data?.mesh) return null;
+    return data.mesh.getWorldPosition(new THREE.Vector3());
   }
 
   // ── Template Method implementation ───────────────────────────────────────
@@ -218,26 +121,18 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
     data.mesh        = mesh;
     data.edges       = edges;
     data.variantMesh = variantMesh;
+    data._tickBehavior = createTrapTickBehavior(data.effect, this.onActivate) ?? undefined;
 
     const objs: THREE.Object3D[] = [mesh, edges];
     if (variantMesh) objs.push(variantMesh);
-    this.ctx.scene.add(...objs);
-    this.ctx.trackObjects(data.id, objs);
+    this.ctx.renderMgr.add(data.id, objs);
   }
 
   protected disposeOne(data: TrapData): void {
-    this.ctx.scene.remove(data.mesh);
-    data.mesh.geometry.dispose();
-    (data.mesh.material as THREE.Material).dispose();
-    this.ctx.scene.remove(data.edges);
-    data.edges.geometry.dispose();
-    (data.edges.material as THREE.Material).dispose();
-    if (data.variantMesh) {
-      this.ctx.scene.remove(data.variantMesh);
-      data.variantMesh.geometry.dispose();
-      (data.variantMesh.material as THREE.Material).dispose();
-      data.variantMesh = null;
-    }
+    data._tickBehavior?.dispose();
+    data._tickBehavior = undefined;
+    data.variantMesh = null;
+    // renderMgr.dispose() in base remove()/clear() handles scene removal + GPU disposal.
   }
 
   // ── Serialisation ────────────────────────────────────────────────────────
