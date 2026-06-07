@@ -53,8 +53,8 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
    */
   apply(data: ObstacleData): void {
     applyObstacle(data);
-    // Re-register the same objects (they are mutated in-place by applyObstacle)
     this.ctx.trackObjects(data.id, [data.mesh!, data.edges!]);
+    this.setVisible(data.id, data.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
@@ -69,6 +69,7 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
     treeOpts?: Record<string, unknown>,
   ): void {
     this.buildGeometry(data);
+    this.setVisible(data.id, data.visible ?? true);
     this.ctx.sceneTree.add(data.id, data.name, '⬛', 'octagon-base', treeOpts as never);
   }
 

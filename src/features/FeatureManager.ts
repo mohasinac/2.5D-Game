@@ -100,6 +100,8 @@ export abstract class FeatureManager<
   ): TData {
     this.items.set(data.id, data);
     this.buildGeometry(data);
+    const d = data as unknown as { visible?: boolean };
+    if (d.visible === false) this.setVisible(data.id, false);
     this.ctx.sceneTree.add(data.id, data.name, treeIcon, treeParentId, treeOpts as never);
     return data;
   }

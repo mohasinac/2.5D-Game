@@ -45,12 +45,14 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
   apply(data: BaseFootingData): void {
     applyFooting(data, this.ctx.getFallbackY());
     this.ctx.trackObjects(data.id, [data.mesh!, data.edges!]);
+    this.setVisible(data.id, data.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
 
   buildAndShow(data: BaseFootingData): void {
     this.buildGeometry(data);
+    this.setVisible(data.id, data.visible ?? true);
     this.ctx.sceneTree.add(data.id, data.name, '⬢', 'octagon-base');
   }
 

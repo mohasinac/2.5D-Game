@@ -68,6 +68,7 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
     const objs: THREE.Object3D[] = [data.mesh!, data.edges!];
     if (data.variantMesh) objs.push(data.variantMesh);
     this.ctx.trackObjects(data.id, objs);
+    this.setVisible(data.id, data.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
@@ -77,8 +78,17 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
     treeOpts?: Record<string, unknown>,
   ): void {
     this.buildGeometry(data);
+    this.setVisible(data.id, data.visible ?? true);
     const treeParent = data.parentType === 'base' ? 'octagon-base' : data.parentId;
     this.ctx.sceneTree.add(data.id, data.name, '⚡', treeParent, treeOpts as never);
+  }
+
+  // ── Override to include variantMesh ──────────────────────────────────────
+
+  setVisible(id: string, visible: boolean): void {
+    super.setVisible(id, visible);
+    const data = this.items.get(id);
+    if (data?.variantMesh) data.variantMesh.visible = visible;
   }
 
   // ── Override remove to support wall cascade ──────────────────────────────

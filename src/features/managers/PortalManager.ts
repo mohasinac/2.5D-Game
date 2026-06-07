@@ -55,14 +55,24 @@ export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave
     const objs: THREE.Object3D[] = [data.mesh!, data.edges!];
     if (data.ringMesh) objs.push(data.ringMesh);
     this.ctx.trackObjects(data.id, objs);
+    this.setVisible(data.id, data.visible ?? true);
   }
 
   // ── Build + show (used during restore / undo-redo) ──────────────────────
 
   buildAndShow(data: PortalData): void {
     this.buildGeometry(data);
+    this.setVisible(data.id, data.visible ?? true);
     const treeParent = this.resolveTreeParent(data);
     this.ctx.sceneTree.add(data.id, data.name, '◉', treeParent);
+  }
+
+  // ── Override to include ringMesh ─────────────────────────────────────────
+
+  setVisible(id: string, visible: boolean): void {
+    super.setVisible(id, visible);
+    const data = this.items.get(id);
+    if (data?.ringMesh) data.ringMesh.visible = visible;
   }
 
   // ── Template Method implementation ───────────────────────────────────────

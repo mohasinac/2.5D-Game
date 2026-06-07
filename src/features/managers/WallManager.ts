@@ -228,6 +228,7 @@ export class WallManager
     }
 
     this.ctx.trackObjects(wall.id, [wall.mesh, wall.edges]);
+    this.setVisible(wall.id, wall.visible ?? true);
 
     // Rebuild adjacent walls sharing this wall's arc boundary so their join-caps update
     if (!_rebuildingSiblings && wall.autoJoin && wall.parentType === 'arena') {

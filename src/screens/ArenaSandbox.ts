@@ -75,7 +75,14 @@ import {
 } from '../utils/presetStore';
 import { SpawnManager } from '../features/managers/SpawnManager';
 import { ArenaEnvironmentManager } from '../features/managers/ArenaEnvironmentManager';
+import { TranslationManager } from '../features/managers/TranslationManager';
+import { TargetManager } from '../features/managers/TargetManager';
+import { TriggerZoneManager } from '../features/managers/TriggerZoneManager';
 import type { SceneContext } from '../features/IArenaFeature';
+import { ArenaSurfaceProvider, FlatSurfaceProvider } from '../features/surfaceProviders';
+import type { ISurfaceProvider } from '../features/ISurfaceProvider';
+import type { TranslationData } from '../types/arenaTypes';
+import type { TranslationSave } from '../utils/arenaPersistence';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
@@ -129,6 +136,12 @@ export class ArenaSandbox extends Sandbox {
   private footingSeq    = 0;
   private jumpLinks     = new Map<string, JumpLinkData>();
   private jumpLinkSeq   = 0;
+  private translations  = new Map<string, TranslationData>();
+  private translationSeq = 0;
+  private _surfaceProviders = new Map<string, ISurfaceProvider>();
+  private _translationMgr: TranslationManager | null = null;
+  private _targetMgr: TargetManager | null = null;
+  private _triggerZoneMgr: TriggerZoneManager | null = null;
   private selectedSlId: string | null = null;
   private slDrag: {
     slId: string;
@@ -301,7 +314,8 @@ export class ArenaSandbox extends Sandbox {
           const objs=this.sceneObjects.get(id);
           if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
           this.disposeArena(arena);
-          this.arenas.delete(id); this.updateTopFace(); this.updateAllMoatIslandCaps();
+          this.arenas.delete(id); this._surfaceProviders.delete(id);
+          this.updateTopFace(); this.updateAllMoatIslandCaps();
           // Clean up all sub-node tracking entries for this arena
           this._subNodesAdded.delete(`present-${id}`);
           this._subNodesAdded.delete(`particle-${id}`);
@@ -439,8 +453,10 @@ export class ArenaSandbox extends Sandbox {
       footingSeq: this.footingSeq,
       jumpLinks: [...this.jumpLinks.values()].map(jumpLinkToSave),
       jumpLinkSeq: this.jumpLinkSeq,
-      translations: [],
-      translationSeq: 0,
+      translations: this._translationMgr
+        ? ([...this._translationMgr.getAll().values()].map(d => this._translationMgr!.toSave(d)) as TranslationSave[])
+        : [],
+      translationSeq: this.translationSeq,
     };
     return JSON.stringify({ v: ARENA_SAVE_VERSION, c: config });
   }
@@ -539,6 +555,11 @@ export class ArenaSandbox extends Sandbox {
     this.footings.clear(); this.footingSeq = 0;
     for(const jl of this.jumpLinks.values()) this._disposeJumpLink(jl);
     this.jumpLinks.clear(); this.jumpLinkSeq = 0;
+    this._translationMgr?.clear();
+    this.translations.clear(); this.translationSeq = 0;
+    this._surfaceProviders.clear();
+    this._surfaceProviders.set('octagon-base',
+      new FlatSurfaceProvider('octagon-base', this.baseConfig.height, 0, 0));
     this.sceneObjects.clear();
     this.arenaSeq = 0; this.pitSeq = 0; this.zoneSeq = 0;
     this.wallSeq = 0; this.bridgeSeq = 0; this.segmentSeq = 0;
@@ -558,6 +579,8 @@ export class ArenaSandbox extends Sandbox {
     this.rotationSeq = cfg.rotationSeq;
     this.footingSeq = cfg.footingSeq;
     this.jumpLinkSeq = cfg.jumpLinkSeq ?? 0;
+    this.translationSeq = cfg.translationSeq ?? 0;
+    this._translationMgr?.restoreSeq(this.translationSeq);
     this._loadArenasFromConfig(cfg);
     this.selectedId = null; this.sceneTree.clearSel(); this.props.showEmpty();
   }
@@ -2335,6 +2358,9 @@ export class ArenaSandbox extends Sandbox {
     }
 
     this._spawnMgr?.tick(dtMs);
+    this._translationMgr?.tick(dt);
+    this._targetMgr?.tick(dt);
+    this._triggerZoneMgr?.tick(dt);
   }
 
   // ── Trap tick helpers (earthquake / RPM) ───────────────────────────────
@@ -2698,6 +2724,37 @@ export class ArenaSandbox extends Sandbox {
       else this._spawnMgr?.spawn();
       this._spawnMgrBtn!.classList.toggle('active', this._spawnMgr?.isSpawned ?? false);
     });
+
+    // TranslationManager — path-animation for member objects
+    this._translationMgr = new TranslationManager(
+      smCtx,
+      (nodeId) => this._getMemberObjects(nodeId),
+    );
+
+    // TargetManager — runtime target-tracking bindings (not serialized)
+    this._targetMgr = new TargetManager(
+      (nodeId) => {
+        const objs = this._getMemberObjects(nodeId);
+        if (objs.length === 0) return null;
+        const p = new THREE.Vector3(); objs[0].getWorldPosition(p); return p;
+      },
+      (nodeId, pos) => {
+        for (const obj of this._getMemberObjects(nodeId)) obj.position.copy(pos);
+      },
+    );
+
+    // TriggerZoneManager — spatial cylinder-overlap events (not serialized)
+    this._triggerZoneMgr = new TriggerZoneManager(
+      (nodeId) => {
+        const objs = this._getMemberObjects(nodeId);
+        if (objs.length === 0) return null;
+        const p = new THREE.Vector3(); objs[0].getWorldPosition(p); return p;
+      },
+    );
+
+    // Register flat surface provider for the octagon base
+    this._surfaceProviders.set('octagon-base',
+      new FlatSurfaceProvider('octagon-base', this.baseConfig.height, 0, 0));
   }
 
   private rebuildBase(): void {
@@ -3171,6 +3228,7 @@ export class ArenaSandbox extends Sandbox {
     this.addToScene(mesh,edges,rim,...(data.spiralMeshes??[]));
     this.sceneObjects.set(id,[mesh,edges,rim]);
     this.arenas.set(id,data);
+    this._surfaceProviders.set(id, new ArenaSurfaceProvider(id, data));
     this._createArenaLight(data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
       addChildButtons:[
@@ -3631,6 +3689,7 @@ export class ArenaSandbox extends Sandbox {
         floorMesh:null,islandMesh:null,rimSeamMesh:null,
       };
       this.arenas.set(as.id,data);
+      this._surfaceProviders.set(as.id, new ArenaSurfaceProvider(as.id, data));
 
       // Arena node must exist in the tree before children are added as its descendants
       this.sceneTree.add(as.id,data.name,'⏺','octagon-base',{
@@ -3882,6 +3941,8 @@ export class ArenaSandbox extends Sandbox {
       this.obstacleSeq=cfg.obstacleSeq; this.trapSeq=cfg.trapSeq; this.portalSeq=cfg.portalSeq;
       this.rotationSeq=cfg.rotationSeq; this.footingSeq=cfg.footingSeq;
       this.jumpLinkSeq=cfg.jumpLinkSeq ?? 0;
+      this.translationSeq=cfg.translationSeq ?? 0;
+      this._translationMgr?.restoreSeq(this.translationSeq);
       this._loadArenasFromConfig(cfg);
     } catch { localStorage.removeItem(this.arenaStorageKey); }
   }
@@ -3934,7 +3995,9 @@ export class ArenaSandbox extends Sandbox {
     this.portalSeq    = Math.max(this.portalSeq,     remapped.portalSeq ?? 0);
     this.footingSeq   = Math.max(this.footingSeq,    remapped.footingSeq ?? 0);
     this.rotationSeq  = Math.max(this.rotationSeq,   remapped.rotationSeq ?? 0);
-    this.jumpLinkSeq  = Math.max(this.jumpLinkSeq,   remapped.jumpLinkSeq ?? 0);
+    this.jumpLinkSeq    = Math.max(this.jumpLinkSeq,    remapped.jumpLinkSeq ?? 0);
+    this.translationSeq = Math.max(this.translationSeq, remapped.translationSeq ?? 0);
+    this._translationMgr?.restoreSeq(this.translationSeq);
     this._loadArenasFromConfig(remapped);
   }
 

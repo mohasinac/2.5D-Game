@@ -779,6 +779,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = wall.name;
     nameInp.addEventListener('input', () => { wall.name = nameInp.value; onRename(wall.name); });
     this.content.appendChild(nameInp);
+    this.toggleRow('Visible', wall.visible ?? true, v => { wall.visible = v; onGeomChange(); });
 
     // ── Attachment ────────────────────────────────────────────────────────
     this.section('ATTACHMENT');
@@ -2082,6 +2083,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
     nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
     this.content.appendChild(nameInp);
+    this.toggleRow('Visible', data.visible ?? true, v => { data.visible = v; onGeomChange(); });
 
     this.section('SHAPE');
     this.selectRow('Shape', [
@@ -2213,6 +2215,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
     nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
     this.content.appendChild(nameInp);
+    this.toggleRow('Visible', data.visible ?? true, v => { data.visible = v; onGeomChange(); });
 
     this.section('SHAPE');
     this.selectRow('Shape', [
@@ -2644,6 +2647,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
     nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
     this.content.appendChild(nameInp);
+    this.toggleRow('Visible', data.visible ?? true, v => { data.visible = v; onGeomChange(); });
 
     this.section('SHAPE');
     this.selectRow('Shape', [
@@ -2728,6 +2732,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.section('NAME');
     const nameInp = this.textRow('Name', data.name, v => { data.name = v; onRename(v); });
     nameInp.style.fontFamily = 'Rajdhani, sans-serif';
+    this.toggleRow('Visible', data.visible ?? true, v => { data.visible = v; onUpdate(); });
 
     this.section('ROTATION');
     this.selectRow('Mode', [
@@ -2810,6 +2815,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     nameInp.type = 'text'; nameInp.className = 'prop-text-input'; nameInp.value = data.name;
     nameInp.addEventListener('input', () => { data.name = nameInp.value; onRename(data.name); });
     this.content.appendChild(nameInp);
+    this.toggleRow('Visible', data.visible ?? true, v => { data.visible = v; onGeomChange(); });
 
     this.section('SHAPE');
     this.selectRow('Shape', [
