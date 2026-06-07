@@ -136,6 +136,22 @@ export abstract class FeatureManager<
   }
 
   /**
+   * Set the visibility of the mesh and edges for a feature.
+   * Physics and trigger logic runs regardless of visibility.
+   * Subclasses with extra meshes (variantMesh, ringMesh, etc.) should override
+   * this and call super.setVisible(id, visible) first.
+   */
+  setVisible(id: string, visible: boolean): void {
+    const data = this.items.get(id) as unknown as {
+      mesh?:  { visible: boolean } | null;
+      edges?: { visible: boolean } | null;
+    };
+    if (!data) return;
+    if (data.mesh)  data.mesh.visible  = visible;
+    if (data.edges) data.edges.visible = visible;
+  }
+
+  /**
    * Serialise all items (optionally filtered).
    */
   serializeAll(filter?: (d: TData) => boolean): TSave[] {

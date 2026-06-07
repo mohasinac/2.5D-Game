@@ -404,6 +404,7 @@ export function defaultSpeedLine(
     linkedBridgeId: null,
     linkedTrapId:   null,
     enabled:        true,
+    visible:        true,
     targetBridgeId: null,
     targetTrapId:   null,
     jumpLinkId:     null,

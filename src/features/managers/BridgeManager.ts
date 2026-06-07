@@ -98,6 +98,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
       presentColor:     0xaaaaaa,
       group,
       linkedSpeedLineId: null,
+      visible: true,
     };
 
     this.items.set(id, bridge);
@@ -402,6 +403,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
       presentColor:     save.presentColor,
       group,
       linkedSpeedLineId: save.linkedSpeedLineId ?? null,
+      visible: save.visible ?? true,
     };
 
     // Restore segment data objects (no geometry yet)
@@ -422,7 +424,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> {
           bridge.startRef,
           this.getArenas() as Map<string, ArenaData>,
           this.getWalls() as Map<string, WallData>,
-          this.ctx.getBaseHeight(),
+          this.ctx.getFallbackY(),
         )
       : {
           pos: DEFAULT_START_POSE.pos.clone(),

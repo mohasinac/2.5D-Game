@@ -41,7 +41,7 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
    */
   add(treeOpts?: Record<string, unknown>): ObstacleData {
     const id   = this.nextId();
-    const data = defaultObstacle(this.nextLabel(), id, this.ctx.getBaseHeight());
+    const data = defaultObstacle(this.nextLabel(), id, this.ctx.getFallbackY());
     return this._insert(data, '⬛', 'octagon-base', treeOpts);
   }
 
@@ -106,7 +106,7 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
     // Start from defaults so all required fields are present, then overlay
     // the saved values.  The placeholder mesh from defaultObstacle will be
     // disposed and replaced when buildGeometry() is called.
-    const data = defaultObstacle(save.name, save.id, this.ctx.getBaseHeight());
+    const data = defaultObstacle(save.name, save.id, this.ctx.getFallbackY());
     Object.assign(data, {
       shape:            save.shape,
       theme:            save.theme,
@@ -136,6 +136,7 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
       speedPathId:      save.speedPathId,
       presentStlb64:    save.presentStlb64,
       presentColor:     save.presentColor,
+      visible:          save.visible ?? true,
     });
     return data;
   }

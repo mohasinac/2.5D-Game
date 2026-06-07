@@ -1,17 +1,17 @@
 import * as THREE from 'three';
-import type { TrapData, TrapDurationTier, ArenaData } from '../../types/arenaTypes';
+import type { TrapData, TrapDurationTier } from '../../types/arenaTypes';
 import { defaultProjectileConfig } from '../../types/arenaTypes';
 import type { TrapSave, WallSave } from '../../utils/arenaPersistence';
 import {
   buildTrapObjects,
   applyTrap,
   defaultTrap,
-  trapSurfY,
   updateEarthquakeMeshHeights,
 } from '../../geometry/trapBuilders';
 import { trapToSave } from '../../utils/arenaPersistence';
 import { ParentedFeatureManager } from '../ParentedFeatureManager';
 import type { SceneContext, ITickableManager } from '../IArenaFeature';
+import type { ISurfaceProvider } from '../ISurfaceProvider';
 
 /**
  * Manages trigger trap pads — flat interactive surfaces placed on arena bowls
@@ -38,10 +38,10 @@ import type { SceneContext, ITickableManager } from '../IArenaFeature';
 export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> implements ITickableManager {
 
   constructor(
-    ctx: SceneContext,
-    getArenas: () => ReadonlyMap<string, ArenaData>,
+    ctx:        SceneContext,
+    getSurface: (surfaceId: string) => ISurfaceProvider | undefined,
   ) {
-    super(ctx, 'trap', 'Trap', getArenas);
+    super(ctx, 'trap', 'Trap', getSurface);
   }
 
   // ── Public factory ───────────────────────────────────────────────────────
@@ -64,8 +64,7 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
   // ── Apply (rebuild geometry in-place after property edits) ──────────────
 
   apply(data: TrapData): void {
-    const surfY = trapSurfY(data, this.getArenas() as Map<string, ArenaData>, this.ctx.getBaseHeight());
-    applyTrap(data, surfY);
+    applyTrap(data, this.resolveSurfaceY(data));
     const objs: THREE.Object3D[] = [data.mesh!, data.edges!];
     if (data.variantMesh) objs.push(data.variantMesh);
     this.ctx.trackObjects(data.id, objs);
@@ -205,8 +204,7 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
   // ── Template Method implementation ───────────────────────────────────────
 
   protected buildGeometry(data: TrapData): void {
-    const surfY = trapSurfY(data, this.getArenas() as Map<string, ArenaData>, this.ctx.getBaseHeight());
-    const [mesh, edges, variantMesh] = buildTrapObjects(data, surfY);
+    const [mesh, edges, variantMesh] = buildTrapObjects(data, this.resolveSurfaceY(data));
     data.mesh        = mesh;
     data.edges       = edges;
     data.variantMesh = variantMesh;
@@ -318,6 +316,7 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave> impl
       emissiveIntensity: save.emissiveIntensity,
       presentStlb64:     save.presentStlb64,
       presentColor:      save.presentColor,
+      visible:           save.visible ?? true,
     });
     return data;
   }

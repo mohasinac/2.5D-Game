@@ -346,6 +346,8 @@ export function remapArenaConfigIds(config: ArenaConfig, batchTag: string): Aren
     footingSeq: config.footingSeq,
     jumpLinks: [],
     jumpLinkSeq: 0,
+    translations: [],
+    translationSeq: 0,
   };
 }
 
@@ -540,5 +542,7 @@ export function extractArenaConfig(
     footingSeq: maxSeq(allExtractedIds, 'footing'),
     jumpLinks: [],
     jumpLinkSeq: 0,
+    translations: [],
+    translationSeq: 0,
   };
 }

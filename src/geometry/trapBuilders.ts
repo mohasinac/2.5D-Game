@@ -405,6 +405,7 @@ export function defaultTrap(
     emissiveIntensity: 0,
     presentStlb64: null,
     presentColor: 0xaaaaaa,
+    visible: true,
     mesh, edges, variantMesh: null,
   };
 }

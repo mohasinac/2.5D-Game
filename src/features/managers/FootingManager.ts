@@ -36,14 +36,14 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
 
   add(): BaseFootingData {
     const id   = this.nextId();
-    const data = defaultFooting(this.nextLabel(), id, this.ctx.getBaseHeight());
+    const data = defaultFooting(this.nextLabel(), id, this.ctx.getFallbackY());
     return this._insert(data, '⬢', 'octagon-base');
   }
 
   // ── Apply (rebuild geometry in-place after property edits) ──────────────
 
   apply(data: BaseFootingData): void {
-    applyFooting(data, this.ctx.getBaseHeight());
+    applyFooting(data, this.ctx.getFallbackY());
     this.ctx.trackObjects(data.id, [data.mesh!, data.edges!]);
   }
 
@@ -61,7 +61,7 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
     if (data.mesh)  { data.mesh.geometry.dispose();  (data.mesh.material  as THREE.Material).dispose(); }
     if (data.edges) { data.edges.geometry.dispose(); (data.edges.material as THREE.Material).dispose(); }
 
-    const [mesh, edges] = buildFootingObjects(data, this.ctx.getBaseHeight());
+    const [mesh, edges] = buildFootingObjects(data, this.ctx.getFallbackY());
     data.mesh  = mesh;
     data.edges = edges;
     this.ctx.scene.add(mesh, edges);
@@ -90,7 +90,7 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
   }
 
   fromSave(save: BaseFootingSave): BaseFootingData {
-    const data = defaultFooting(save.name, save.id, this.ctx.getBaseHeight());
+    const data = defaultFooting(save.name, save.id, this.ctx.getFallbackY());
     Object.assign(data, {
       shape:             save.shape,
       dimX:              save.dimX,
@@ -109,6 +109,7 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
       opacity:           save.opacity,
       presentStlb64:     save.presentStlb64,
       presentColor:      save.presentColor,
+      visible:           save.visible ?? true,
     });
     return data;
   }

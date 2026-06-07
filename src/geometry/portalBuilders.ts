@@ -177,6 +177,7 @@ export function defaultPortal(
     tileScale: 1,
     presentStlb64: null,
     presentColor: 0xaaaaaa,
+    visible: true,
     mesh, edges, ringMesh,
   };
 }

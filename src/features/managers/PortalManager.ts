@@ -1,15 +1,15 @@
 import * as THREE from 'three';
-import type { PortalData, ArenaData } from '../../types/arenaTypes';
+import type { PortalData } from '../../types/arenaTypes';
 import type { PortalSave } from '../../utils/arenaPersistence';
 import {
   buildPortalObjects,
   applyPortal,
   defaultPortal,
-  portalSurfY,
 } from '../../geometry/portalBuilders';
 import { portalToSave } from '../../utils/arenaPersistence';
 import { ParentedFeatureManager } from '../ParentedFeatureManager';
 import type { SceneContext } from '../IArenaFeature';
+import type { ISurfaceProvider } from '../ISurfaceProvider';
 
 /**
  * Manages instant-teleport portal pads placed on arena bowls or the octagon base.
@@ -30,10 +30,10 @@ import type { SceneContext } from '../IArenaFeature';
 export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave> {
 
   constructor(
-    ctx:       SceneContext,
-    getArenas: () => ReadonlyMap<string, ArenaData>,
+    ctx:        SceneContext,
+    getSurface: (surfaceId: string) => ISurfaceProvider | undefined,
   ) {
-    super(ctx, 'portal', 'Portal', getArenas);
+    super(ctx, 'portal', 'Portal', getSurface);
   }
 
   // ── Public factory ───────────────────────────────────────────────────────
@@ -51,8 +51,7 @@ export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave
   // ── Apply (rebuild geometry in-place after property edits) ──────────────
 
   apply(data: PortalData): void {
-    const surfY = portalSurfY(data, this.getArenas() as Map<string, ArenaData>, this.ctx.getBaseHeight());
-    applyPortal(data, surfY);
+    applyPortal(data, this.resolveSurfaceY(data));
     const objs: THREE.Object3D[] = [data.mesh!, data.edges!];
     if (data.ringMesh) objs.push(data.ringMesh);
     this.ctx.trackObjects(data.id, objs);
@@ -69,8 +68,7 @@ export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave
   // ── Template Method implementation ───────────────────────────────────────
 
   protected buildGeometry(data: PortalData): void {
-    const surfY = portalSurfY(data, this.getArenas() as Map<string, ArenaData>, this.ctx.getBaseHeight());
-    const [mesh, edges, ringMesh] = buildPortalObjects(data, surfY);
+    const [mesh, edges, ringMesh] = buildPortalObjects(data, this.resolveSurfaceY(data));
     data.mesh     = mesh;
     data.edges    = edges;
     data.ringMesh = ringMesh;
@@ -129,6 +127,7 @@ export class PortalManager extends ParentedFeatureManager<PortalData, PortalSave
       tileScale:      save.tileScale,
       presentStlb64:  save.presentStlb64,
       presentColor:   save.presentColor,
+      visible:        save.visible ?? true,
     });
     return data;
   }

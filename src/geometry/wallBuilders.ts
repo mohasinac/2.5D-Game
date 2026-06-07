@@ -677,6 +677,7 @@ export function defaultWallData(
     material: 'abs',
     presentStlb64: null,
     presentColor: 0xaaaaaa,
+    visible: true,
     mesh: null,
     edges: null,
   };

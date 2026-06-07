@@ -125,7 +125,7 @@ export class WallManager
       cz = arena.posZ;
     } else if (wall.parentType === 'base') {
       rimPts = [];
-      rimY   = this.ctx.getBaseHeight();
+      rimY   = this.ctx.getFallbackY();
       cx     = wall.basePosX;
       cz     = wall.basePosZ;
     } else if (wall.parentType === 'trap') {
@@ -367,6 +367,7 @@ export class WallManager
       opacity:               save.opacity,
       presentStlb64:         save.presentStlb64,
       presentColor:          save.presentColor,
+      visible:               save.visible ?? true,
     });
     return data;
   }

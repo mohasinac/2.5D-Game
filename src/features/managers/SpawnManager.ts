@@ -314,11 +314,11 @@ export class SpawnManager {
       }
     }
 
-    // Octagon base fallback — top face is at DEFAULT_BASE_HEIGHT (30 cm)
+    // Octagon base fallback — top face is at world Y=0 (baseMesh.position.y=-H/2 puts top at 0)
     if (bestSurfY === -Infinity &&
         Math.abs(this.pos.x) <= BASE_APOTHEM &&
         Math.abs(this.pos.z) <= BASE_APOTHEM) {
-      bestSurfY = DEFAULT_BASE_HEIGHT;
+      bestSurfY = 0;
     }
 
     if (bestSurfY === -Infinity) return;
@@ -341,7 +341,7 @@ export class SpawnManager {
       const arena = this.getArenas().get(wall.parentId);
       if (!arena) continue;
 
-      const rimY = DEFAULT_BASE_HEIGHT + arena.posY;
+      const rimY = arena.posY;  // arena wall mesh starts at arena.posY (world Y=0 default)
       if (this.pos.y - BALL_RADIUS > rimY + wall.height) continue;
 
       const { alx, alz } = worldToArenaLocal(this.pos.x, this.pos.z, arena);

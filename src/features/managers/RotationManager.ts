@@ -110,6 +110,7 @@ export class RotationManager
       oscFrequency: ROT.DEFAULT_OSC_FREQ,
       oscPhase:     0,
       enabled:      true,
+      visible:      true,
       currentAngle: 0,
       snapRules:    [],
       pivotGroup:   null,
@@ -337,6 +338,7 @@ export class RotationManager
       oscFrequency: save.oscFrequency,
       oscPhase:     save.oscPhase,
       enabled:      save.enabled,
+      visible:      save.visible ?? true,
       currentAngle: 0,  // runtime-only
       snapRules:    save.snapRules.map(r => ({ ...r })),
       pivotGroup:   null,  // runtime-only

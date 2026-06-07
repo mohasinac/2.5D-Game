@@ -49,7 +49,7 @@ export class JumpLinkManager extends FeatureManager<JumpLinkData, JumpLinkSave> 
 
   apply(data: JumpLinkData): void {
     applyJumpLink(data, this.getArenas(), this.getObstacles(), this.getTraps(),
-      this.getSpeedLine, this.ctx.getBaseHeight());
+      this.getSpeedLine, this.ctx.getFallbackY());
     const objs: THREE.Object3D[] = [data.sourceMesh, data.destMesh, data.arcLine, ...data.arrowMeshes];
     this.ctx.trackObjects(data.id, objs);
   }
@@ -66,7 +66,7 @@ export class JumpLinkManager extends FeatureManager<JumpLinkData, JumpLinkSave> 
   protected buildGeometry(data: JumpLinkData): void {
     const result = buildJumpLinkObjects(
       data, this.getArenas(), this.getObstacles(), this.getTraps(),
-      this.getSpeedLine, this.ctx.getBaseHeight(),
+      this.getSpeedLine, this.ctx.getFallbackY(),
     );
     data.sourceMesh  = result.sourceMesh;
     data.destMesh    = result.destMesh;

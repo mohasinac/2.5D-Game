@@ -439,6 +439,8 @@ export class ArenaSandbox extends Sandbox {
       footingSeq: this.footingSeq,
       jumpLinks: [...this.jumpLinks.values()].map(jumpLinkToSave),
       jumpLinkSeq: this.jumpLinkSeq,
+      translations: [],
+      translationSeq: 0,
     };
     return JSON.stringify({ v: ARENA_SAVE_VERSION, c: config });
   }
@@ -1243,6 +1245,7 @@ export class ArenaSandbox extends Sandbox {
         linkedBridgeId:           sls_.linkedBridgeId ?? null,
         linkedTrapId:             sls_.linkedTrapId   ?? null,
         enabled:                  sls_.enabled        ?? true,
+        visible:                  sls_.visible        ?? true,
         targetBridgeId:           sls_.targetBridgeId ?? null,
         targetTrapId:             sls_.targetTrapId   ?? null,
         jumpLinkId:               sls_.jumpLinkId     ?? null,
@@ -2133,6 +2136,7 @@ export class ArenaSandbox extends Sandbox {
       wallIds: [],
       presentStlb64: null, presentColor: 0xaaaaaa,
       linkedSpeedLineId: null,
+      visible: true,
       group,
     };
     this.bridges.set(bid, bridge);
@@ -2554,7 +2558,7 @@ export class ArenaSandbox extends Sandbox {
       pivotX, pivotY, pivotZ,
       mode: 'continuous', speed: ROT.DEFAULT_SPEED, direction: 1,
       oscAmplitude: ROT.DEFAULT_OSC_AMP, oscFrequency: ROT.DEFAULT_OSC_FREQ, oscPhase: 0,
-      enabled: true, currentAngle: 0, snapRules: [], pivotGroup: null,
+      enabled: true, visible: true, currentAngle: 0, snapRules: [], pivotGroup: null,
     };
     const scene = this.getScene();
     if (scene) {
@@ -2672,7 +2676,7 @@ export class ArenaSandbox extends Sandbox {
     const smCtx: SceneContext = {
       scene:          scene,
       sceneTree:      this.sceneTree,
-      getBaseHeight:  () => this.baseConfig.height,
+      getFallbackY:   () => this.baseConfig.height,
       trackObjects:   () => {},
       untrackObjects: () => {},
     };
@@ -3753,6 +3757,7 @@ export class ArenaSandbox extends Sandbox {
       customTileData:ws.customTileData, tileScale:ws.tileScale,
       emissiveColor:ws.emissiveColor, emissiveIntensity:ws.emissiveIntensity, opacity:ws.opacity,
       presentStlb64:ws.presentStlb64, presentColor:ws.presentColor,
+      visible: ws.visible ?? true,
       mesh:null, edges:null,
     };
     this.walls.set(ws.id, wall);
@@ -3782,6 +3787,7 @@ export class ArenaSandbox extends Sandbox {
       wallIds:[],
       presentStlb64: bs.presentStlb64 ?? null, presentColor: bs.presentColor ?? 0xaaaaaa,
       linkedSpeedLineId: bs.linkedSpeedLineId ?? null,
+      visible: bs.visible ?? true,
       group,
     };
     this.bridges.set(bs.id, bridge);
@@ -3844,7 +3850,7 @@ export class ArenaSandbox extends Sandbox {
       pivotX: rs.pivotX, pivotY: rs.pivotY, pivotZ: rs.pivotZ,
       mode: rs.mode, speed: rs.speed, direction: rs.direction,
       oscAmplitude: rs.oscAmplitude, oscFrequency: rs.oscFrequency, oscPhase: rs.oscPhase,
-      enabled: rs.enabled, currentAngle: 0, snapRules: rs.snapRules.map(s=>({...s})),
+      enabled: rs.enabled, visible: rs.visible ?? true, currentAngle: 0, snapRules: rs.snapRules.map(s=>({...s})),
       pivotGroup: null,
     };
     if (scene) {

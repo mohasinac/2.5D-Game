@@ -27,6 +27,8 @@ export const DEMO_ARENA_CONFIG: ArenaConfig = {
   footingSeq: 0,
   jumpLinks: [],
   jumpLinkSeq: 0,
+  translations: [],
+  translationSeq: 0,
 
   baseWalls: [],  // free-standing walls on the octagon base (none in this demo)
   speedLines: [], // zone-parented speed lines (none in this demo)

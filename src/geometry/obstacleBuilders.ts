@@ -115,6 +115,7 @@ export function defaultObstacle(name: string, id: string, baseHeight: number): O
     speedPathId: null,
     presentStlb64: null,
     presentColor: 0xaaaaaa,
+    visible: true,
     mesh, edges,
   };
 }

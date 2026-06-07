@@ -48,11 +48,12 @@ export interface SceneContext {
   readonly sceneTree: SceneTree;
 
   /**
-   * Returns the current octagon-base height (cm).
-   * Called lazily so managers always see the live value even after
-   * the user adjusts the base slider.
+   * Returns the fallback floor Y (cm) for this sandbox.
+   * For ArenaSandbox this is the octagon-base top face; for other sandboxes
+   * it is whatever Y the sandbox considers its ground plane.
+   * Called lazily so managers always see the live value.
    */
-  readonly getBaseHeight: () => number;
+  readonly getFallbackY: () => number;
 
   /**
    * Register a set of Three.js objects under a node ID for the

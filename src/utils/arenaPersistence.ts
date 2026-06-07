@@ -1,6 +1,7 @@
 import {
   OpeningShape, WallProfile, RampMode, SurfaceType, ArenaMaterial, ZoneFill,
   ArenaData, PitData, ZoneData, SpeedLineData, ParticlePreset, ParticleConfig, WeatherPreset, EnvScheduleSave,
+  TranslationLoopMode, TranslationEasing, TranslationWaypoint,
   SpeedLineSegment, SpeedLineTargetType, SpeedLineActivationMode,
   SpeedLineOscAxis, SpeedLineEntryCondition, SpeedLineExitBehavior, SpeedLineDirection,
   SpeedLinePresetType, SpeedLinePresetParams, SpeedLineRamp,
@@ -56,6 +57,7 @@ export interface SpeedLineSave {
   linkedBridgeId?: string | null;
   linkedTrapId?:   string | null;
   enabled?:        boolean;
+  visible?:        boolean;
   targetBridgeId?: string | null;
   targetTrapId?:   string | null;
   jumpLinkId?:     string | null;
@@ -117,6 +119,7 @@ export interface WallSave {
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   material: ArenaMaterial;
   presentStlb64: string | null; presentColor: number;
+  visible?: boolean;
 }
 
 export interface BridgeSectionSave {
@@ -157,6 +160,7 @@ export interface BridgeSave {
   section: BridgeSectionSave;
   color: number; surface: SurfaceType;
   presentStlb64: string | null; presentColor: number;
+  visible?: boolean;
   walls: WallSave[];
   linkedSpeedLineId?: string | null;
 }
@@ -211,6 +215,7 @@ export interface ObstacleSave {
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   material: ArenaMaterial; speedPathId: string | null;
   presentStlb64: string | null; presentColor: number;
+  visible?: boolean;
 }
 
 export interface TrapDurationTierSave {
@@ -280,6 +285,7 @@ export interface TrapSave {
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number;
   presentStlb64: string | null; presentColor: number;
+  visible?: boolean;
   walls: WallSave[];
 }
 
@@ -294,6 +300,7 @@ export interface PortalSave {
   color: number; glowColor: number;
   surface: SurfaceType; customTileData: string | null; tileScale: number;
   presentStlb64: string | null; presentColor: number;
+  visible?: boolean;
 }
 
 export interface JumpLinkEndpointSave {
@@ -325,6 +332,7 @@ export interface BaseFootingSave {
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   presentStlb64: string | null; presentColor: number;
+  visible?: boolean;
 }
 
 export interface BridgeSnapRuleSave { id: string; bridgeId: string; minDeg: number; maxDeg: number; }
@@ -336,7 +344,20 @@ export interface RotationSave {
   mode: RotationMode; speed: number; direction: 1 | -1;
   oscAmplitude: number; oscFrequency: number; oscPhase: number;
   enabled: boolean;
+  visible?: boolean;
   snapRules: BridgeSnapRuleSave[];
+}
+
+export interface TranslationSave {
+  id: string;
+  name: string;
+  memberIds: string[];
+  waypoints: TranslationWaypoint[];
+  durationMs: number;
+  loopMode: TranslationLoopMode;
+  easing: TranslationEasing;
+  enabled: boolean;
+  visible?: boolean;
 }
 
 export interface ArenaConfig {
@@ -353,6 +374,7 @@ export interface ArenaConfig {
   rotations: RotationSave[]; rotationSeq: number;
   footings: BaseFootingSave[]; footingSeq: number;
   jumpLinks: JumpLinkSave[]; jumpLinkSeq: number;
+  translations: TranslationSave[]; translationSeq: number;
 }
 
 export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
@@ -394,6 +416,7 @@ export function speedLineToSave(sl: SpeedLineData): SpeedLineSave {
     targetBridgeId: sl.targetBridgeId,
     targetTrapId:   sl.targetTrapId,
     jumpLinkId:     sl.jumpLinkId,
+    visible:        sl.visible,
   };
 }
 
@@ -507,6 +530,7 @@ export function wallToSave(w: WallData): WallSave {
     emissiveColor:w.emissiveColor, emissiveIntensity:w.emissiveIntensity, opacity:w.opacity,
     material:w.material,
     presentStlb64:w.presentStlb64, presentColor:w.presentColor,
+    visible:w.visible,
   };
 }
 
@@ -555,6 +579,7 @@ export function bridgeToSave(
     },
     color:b.color, surface:b.surface,
     presentStlb64:b.presentStlb64, presentColor:b.presentColor,
+    visible:b.visible,
     walls: b.wallIds.map(id=>{ const w=walls.get(id); return w?wallToSave(w):null!; }).filter(Boolean),
     linkedSpeedLineId: b.linkedSpeedLineId,
   };
@@ -572,6 +597,7 @@ export function obstacleToSave(o: ObstacleData): ObstacleSave {
     emissiveColor:o.emissiveColor, emissiveIntensity:o.emissiveIntensity, opacity:o.opacity,
     material:o.material, speedPathId:o.speedPathId,
     presentStlb64:o.presentStlb64, presentColor:o.presentColor,
+    visible:o.visible,
   };
 }
 
@@ -616,6 +642,7 @@ export function trapToSave(t: TrapData): TrapSave {
     color:t.color, surface:t.surface, customTileData:t.customTileData, tileScale:t.tileScale,
     emissiveColor:t.emissiveColor, emissiveIntensity:t.emissiveIntensity,
     presentStlb64:t.presentStlb64, presentColor:t.presentColor,
+    visible:t.visible,
     walls: [],   // caller overwrites with actual trap walls
   };
 }
@@ -631,6 +658,7 @@ export function portalToSave(p: PortalData): PortalSave {
     color:p.color, glowColor:p.glowColor,
     surface:p.surface, customTileData:p.customTileData, tileScale:p.tileScale,
     presentStlb64:p.presentStlb64, presentColor:p.presentColor,
+    visible:p.visible,
   };
 }
 
@@ -674,7 +702,7 @@ export function rotationToSave(r: RotationData): RotationSave {
     pivotX:r.pivotX, pivotY:r.pivotY, pivotZ:r.pivotZ,
     mode:r.mode, speed:r.speed, direction:r.direction,
     oscAmplitude:r.oscAmplitude, oscFrequency:r.oscFrequency, oscPhase:r.oscPhase,
-    enabled:r.enabled,
+    enabled:r.enabled, visible:r.visible,
     snapRules:r.snapRules.map(s=>({ id:s.id, bridgeId:s.bridgeId, minDeg:s.minDeg, maxDeg:s.maxDeg })),
   };
 }
@@ -687,5 +715,6 @@ export function footingToSave(f: BaseFootingData): BaseFootingSave {
     color:f.color, surface:f.surface, customTileData:f.customTileData, tileScale:f.tileScale,
     emissiveColor:f.emissiveColor, emissiveIntensity:f.emissiveIntensity, opacity:f.opacity,
     presentStlb64:f.presentStlb64, presentColor:f.presentColor,
+    visible:f.visible,
   };
 }

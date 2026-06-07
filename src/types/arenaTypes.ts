@@ -537,6 +537,9 @@ export interface SpeedLineData {
   /* ── Stat modifiers ────────────────────────────────────────────────────── */
   statModifiers: SpeedLineStatModifiers;
 
+  /** Hidden from view; path physics still active. Default true. */
+  visible: boolean;
+
   mesh:              THREE.Mesh;
   edges:             THREE.LineSegments;
   markerMeshes:      THREE.Mesh[];
@@ -635,6 +638,9 @@ export interface WallData {
   material: ArenaMaterial;
   presentStlb64: string | null;
   presentColor: number;
+
+  /** Hidden from view; geometry/physics still present. Default true. */
+  visible: boolean;
 
   mesh: THREE.Mesh | null;
   edges: THREE.LineSegments | null;
@@ -763,6 +769,8 @@ export interface BridgeData {
   group: THREE.Group;     // Three.js container for all segment meshes
   /** ID of an existing arena-level SpeedLineData linked to this bridge. */
   linkedSpeedLineId: string | null;
+  /** Hidden from view; segment physics still active. Default true. */
+  visible: boolean;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -798,6 +806,8 @@ export interface ObstacleData {
   speedPathId: string | null;
   presentStlb64: string | null;
   presentColor: number;
+  /** Hidden from view; collision/physics still active. Default true. */
+  visible: boolean;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
 }
 
@@ -917,6 +927,9 @@ export interface TrapData {
   /* ── Environment trigger ────────────────────────────────────────────── */
   envTriggerEvent:  string;   // event name dispatched on trap activation ('' = none)
   envTargetArenaId: string;   // target arena ('' = parent arena of the trap)
+
+  /** Hidden from view; trigger logic still fires when bey overlaps. Default true. */
+  visible: boolean;
 
   mesh: THREE.Mesh; edges: THREE.LineSegments;
   variantMesh: THREE.Mesh | null;
@@ -1057,6 +1070,8 @@ export interface RotationData {
   oscPhase:     number;
 
   enabled:      boolean;
+  /** Hidden from view; members still rotate. Default true. */
+  visible: boolean;
   currentAngle: number;          // runtime — not saved
   snapRules:    BridgeSnapRule[];
 
@@ -1086,6 +1101,8 @@ export interface PortalData {
   tileScale: number;
   presentStlb64: string | null;
   presentColor: number;
+  /** Hidden from view; teleport logic still active. Default true. */
+  visible: boolean;
   mesh: THREE.Mesh;
   edges: THREE.LineSegments;
   ringMesh: THREE.Mesh | null;
@@ -1196,6 +1213,32 @@ export interface BaseFootingData {
   opacity: number;
   presentStlb64: string | null;
   presentColor: number;
+  /** Hidden from view. Default true. */
+  visible: boolean;
   mesh: THREE.Mesh | null;
   edges: THREE.LineSegments | null;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TRANSLATION — path-animation for member objects
+   ══════════════════════════════════════════════════════════════════════════ */
+export type TranslationLoopMode = 'once' | 'loop' | 'pingpong';
+export type TranslationEasing   = 'linear' | 'ease_in' | 'ease_out' | 'smooth';
+
+export interface TranslationWaypoint { x: number; y: number; z: number; }
+
+export interface TranslationData {
+  id:         string;
+  name:       string;
+  memberIds:  string[];
+  waypoints:  TranslationWaypoint[];
+  durationMs: number;
+  loopMode:   TranslationLoopMode;
+  easing:     TranslationEasing;
+  enabled:    boolean;
+  visible:    boolean;
+  /** Runtime only — normalised time [0,1]. Not serialised. */
+  _t:   number;
+  /** Runtime only — direction: 1 = forward, -1 = backward (pingpong). */
+  _dir: 1 | -1;
 }

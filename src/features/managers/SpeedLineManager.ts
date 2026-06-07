@@ -209,6 +209,7 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
       targetBridgeId: save.targetBridgeId ?? null,
       targetTrapId:   save.targetTrapId   ?? null,
       jumpLinkId:     save.jumpLinkId     ?? null,
+      visible:        save.visible        ?? true,
       pointNormals:  [],
       totalLength:   0,
       mesh:          null as unknown as THREE.Mesh,

@@ -277,6 +277,14 @@ export const ENV = {
   DEFAULT_REVERT_SEC:         0,
 } as const;
 
+export const TRANS = {
+  DEFAULT_DURATION_MS:  2000,
+  DEFAULT_EASING:       'linear'   as const,
+  DEFAULT_LOOP:         'pingpong' as const,
+  MIN_DURATION_MS:      100,
+  MAX_DURATION_MS:      60000,
+} as const;
+
 /* ── Octagon base — frozen default, never mutate ─────────────────────────
    ArenaSandbox stores a mutable copy in this.baseConfig; this is only the
    default seed value. The `as const` makes TypeScript enforce that nobody

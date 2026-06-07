@@ -1,8 +1,6 @@
-import type { ArenaData } from '../types/arenaTypes';
-import { DEG2RAD } from '../config/arenaConstants';
-import { polarToLocalXZ, arenaSurfaceYAtArenaLocal } from '../geometry/surfaceUtils';
 import { FeatureManager } from './FeatureManager';
 import type { SceneContext } from './IArenaFeature';
+import type { ISurfaceProvider } from './ISurfaceProvider';
 
 /**
  * ParentType restricts which surfaces a feature can be placed on.
@@ -28,16 +26,15 @@ export interface ParentedData {
  * Abstract extension of FeatureManager for features that sit on a surface
  * (arena bowl or octagon base).
  *
- * Adds two protected helpers:
- *   resolveSurfaceY(data)    — world Y of the surface the feature sits on
- *   resolveWorldXZ(data)     — world { x, z } centre of the feature
+ * The ArenaData dependency has been removed.  Instead, a generic
+ * `getSurface(surfaceId)` callback is injected so this class works in
+ * any sandbox — ArenaSandbox passes ArenaSurfaceProvider instances;
+ * other sandboxes pass FlatSurfaceProvider or MeshSurfaceProvider.
  *
- * These are used by TrapManager, PortalManager, and any future surface-
- * mounted feature to position geometry correctly without duplicating the
- * coordinate maths in every subclass (DRY / SRP).
- *
- * The arenas map is injected as a getter callback so that the manager always
- * sees the live map without needing a reference to ArenaSandbox (DIP).
+ * Protected helpers:
+ *   resolveSurfaceY(data)  — world Y of the surface beneath the feature
+ *   resolveWorldXZ(data)   — world { x, z } centre of the feature
+ *   resolveTreeParent(data) — scene-tree parent node ID
  */
 export abstract class ParentedFeatureManager<
   TData extends { id: string; name: string } & ParentedData,
@@ -48,8 +45,8 @@ export abstract class ParentedFeatureManager<
     ctx: SceneContext,
     idPrefix: string,
     labelBase: string,
-    /** Read-only getter for the live arenas map — injected, never imported. */
-    protected readonly getArenas: () => ReadonlyMap<string, ArenaData>,
+    /** Lookup callback: returns the ISurfaceProvider for the given parentId. */
+    protected readonly getSurface: (surfaceId: string) => ISurfaceProvider | undefined,
   ) {
     super(ctx, idPrefix, labelBase);
   }
@@ -58,41 +55,31 @@ export abstract class ParentedFeatureManager<
 
   /**
    * Returns the world Y of the surface beneath a parented feature.
-   * For 'arena': samples the bowl parabola at the feature's polar position.
-   * For 'base':  returns the octagon base top-face height.
+   * For 'base':  returns getFallbackY() (sandbox floor).
+   * For 'arena': delegates to the ISurfaceProvider for that arena.
    */
   protected resolveSurfaceY(data: TData): number {
-    if (data.parentType === 'base') {
-      return this.ctx.getBaseHeight();
-    }
-    const arena = this.getArenas().get(data.parentId);
-    if (!arena) return this.ctx.getBaseHeight();
-    const { lx, lz } = polarToLocalXZ(data.posR, data.posAngle);
-    return arenaSurfaceYAtArenaLocal(arena, lx, lz);
+    if (data.parentType === 'base') return this.ctx.getFallbackY();
+    const surf = this.getSurface(data.parentId);
+    if (!surf) return this.ctx.getFallbackY();
+    const { x, z } = surf.polarToWorld(data.posR, data.posAngle);
+    return surf.getSurfaceAt(x, z).y;
   }
 
   /**
    * Returns the world XZ centre for a parented feature.
-   * For 'arena': converts polar → arena-local → world (via arena.rotY).
    * For 'base':  returns basePosX / basePosZ directly.
+   * For 'arena': delegates to the ISurfaceProvider.polarToWorld.
    */
   protected resolveWorldXZ(data: TData): { x: number; z: number } {
-    if (data.parentType === 'base') {
-      return { x: data.basePosX, z: data.basePosZ };
-    }
-    const arena = this.getArenas().get(data.parentId);
-    const { lx, lz } = polarToLocalXZ(data.posR, data.posAngle);
-    if (!arena) return { x: lx, z: lz };
-    const c = Math.cos(arena.rotY * DEG2RAD);
-    const s = Math.sin(arena.rotY * DEG2RAD);
-    return {
-      x: arena.posX + lx * c - lz * s,
-      z: arena.posZ + lx * s + lz * c,
-    };
+    if (data.parentType === 'base') return { x: data.basePosX, z: data.basePosZ };
+    const surf = this.getSurface(data.parentId);
+    if (!surf) return { x: 0, z: 0 };
+    return surf.polarToWorld(data.posR, data.posAngle);
   }
 
   /**
-   * Resolves the tree parent node ID used for the scene tree.
+   * Resolves the scene-tree parent node ID.
    * Arena-parented features go under their arena node;
    * base-parented features go under the octagon-base node.
    */
