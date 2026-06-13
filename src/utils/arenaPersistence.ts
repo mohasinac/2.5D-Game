@@ -215,6 +215,7 @@ export interface ObstacleSave {
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   material: ArenaMaterial; speedPathId: string | null;
   presentStlb64: string | null; presentColor: number;
+  weight?: number;
   visible?: boolean;
 }
 
@@ -239,6 +240,7 @@ export interface ProjectileConfigSave {
   scaleFactor?: number; scaleRandomize?: boolean; scaleMin?: number; scaleMax?: number;
   orbitSource?: boolean; orbitRadius?: number; orbitSpeed?: number; orbitElevation?: number;
   homingEnabled?: boolean; homingStrength?: number;
+  weight?: number;
 }
 
 export interface TrapSave {
@@ -597,6 +599,7 @@ export function obstacleToSave(o: ObstacleData): ObstacleSave {
     emissiveColor:o.emissiveColor, emissiveIntensity:o.emissiveIntensity, opacity:o.opacity,
     material:o.material, speedPathId:o.speedPathId,
     presentStlb64:o.presentStlb64, presentColor:o.presentColor,
+    weight:o.weight,
     visible:o.visible,
   };
 }

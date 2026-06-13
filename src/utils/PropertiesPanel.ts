@@ -3,6 +3,8 @@ import {
   APOTHEM, MIN_WALL_HEIGHT, MIN_WALL_GAP, ARENA_MATERIAL_PRESETS, SL, JL,
   MIN_OBSTACLE_DIM, MIN_TRAP_DIM, BUFF_TIER_PRESETS, ARENA_LIGHT_PRESETS,
   MIN_ZONE_DEPTH, ROT, ENV,
+  MIN_OBSTACLE_WEIGHT, MAX_OBSTACLE_WEIGHT,
+  MIN_PROJECTILE_WEIGHT, MAX_PROJECTILE_WEIGHT,
 } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, SpeedLineData, SpeedLineSegment,
@@ -2123,6 +2125,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     this.numRow('Force X (cm/s)', data.contactForceX, -500, 500, 1, v => { data.contactForceX = v; });
     this.numRow('Force Y (cm/s)', data.contactForceY, -500, 500, 1, v => { data.contactForceY = v; });
     this.numRow('Force Z (cm/s)', data.contactForceZ, -500, 500, 1, v => { data.contactForceZ = v; });
+    this.numRow('Weight (g)', data.weight, MIN_OBSTACLE_WEIGHT, MAX_OBSTACLE_WEIGHT, 1, v => { data.weight = v; });
 
     this.section('SURFACE');
     this._wallMaterialRow(data, ['abs','metal','stone','rubber'], onFullChange);
@@ -2384,6 +2387,7 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
       this.section('FLIGHT');
       this.numRow('Speed (cm/s)', cfg.speed, 1, 500, 5, v => { cfg.speed = v; });
+      this.numRow('Weight (g)', cfg.weight, MIN_PROJECTILE_WEIGHT, MAX_PROJECTILE_WEIGHT, 0.5, v => { cfg.weight = v; });
       this.toggleRow('Airborne', cfg.isAirborne, v => { cfg.isAirborne = v; onFullChange(); });
       if (cfg.isAirborne) {
         this.numRow('Arc Height (cm)', cfg.arcHeight, 0, 200, 5, v => { cfg.arcHeight = v; });

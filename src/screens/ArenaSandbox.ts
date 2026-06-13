@@ -226,13 +226,13 @@ export class ArenaSandbox extends Sandbox {
     this.sceneTree.add('octagon-base', 'Octagon Base', '⬡', null, {
       onAddChild: ()=>this.addArena(),
       addChildButtons: [
-        {label:'A+',   title:'Add arena',       className:'',        onClick:()=>this.addArena()},
-        {label:'B+',   title:'Add bridge',      className:'zone-btn',onClick:()=>this.addBridge()},
-        {label:'Obs+', title:'Add obstacle',    className:'sl-btn',  onClick:()=>this.addObstacle()},
-        {label:'Trap+',title:'Add base trap',   className:'pit-btn', onClick:()=>this.addTrap('octagon-base','base')},
-        {label:'⬡+',   title:'Add base portal', className:'zone-btn',onClick:()=>this.addPortal('octagon-base','base')},
-        {label:'⬢+',   title:'Add footing',     className:'pit-btn', onClick:()=>this.addFooting()},
-        {label:'⤻+',   title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink('octagon-base','base')},
+        {label:'Add arena',   title:'Add arena',       className:'',        onClick:()=>this.addArena()},
+        {label:'Add bridge',   title:'Add bridge',      className:'zone-btn',onClick:()=>this.addBridge()},
+        {label:'Add obstacle', title:'Add obstacle',    className:'sl-btn',  onClick:()=>this.addObstacle()},
+        {label:'Add base trap',   title:'Add base trap',   className:'pit-btn', onClick:()=>this.addTrap('octagon-base','base')},
+        {label:'Add base portal', title:'Add base portal', className:'zone-btn',onClick:()=>this.addPortal('octagon-base','base')},
+        {label:'Add footing',   title:'Add footing',     className:'pit-btn', onClick:()=>this.addFooting()},
+        {label:'Add jump link',   title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink('octagon-base','base')},
       ],
     });
 
@@ -1261,8 +1261,8 @@ export class ArenaSandbox extends Sandbox {
     let data!: WallData;
     const treeOpts = {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'wall'); this.addRotation([data.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'Add rotation', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'wall'); this.addRotation([data.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'Add presentation', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     };
     switch (parentType) {
@@ -1303,9 +1303,9 @@ export class ArenaSandbox extends Sandbox {
     let data!: ObstacleData;
     data = this._obstacleMgr.add({
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'obstacle'); this.addRotation([data.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(data.id,'obstacle') },
-        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'Add rotation', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'obstacle'); this.addRotation([data.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'Add jump link', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(data.id,'obstacle') },
+        { label:'Add presentation', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     });
     this.saveArena();
@@ -1321,9 +1321,9 @@ export class ArenaSandbox extends Sandbox {
     const data = this._obstacleMgr.get(os.id)!;
     this._obstacleMgr.buildAndShow(data, {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(os.id,'obstacle') },
-        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(os.id) },
+        { label:'Add rotation', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(os.id,'obstacle'); this.addRotation([os.id],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'Add jump link', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(os.id,'obstacle') },
+        { label:'Add presentation', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(os.id) },
       ],
     });
     if (data.presentStlb64) this._loadPresentStl(os.id, data.presentStlb64, data.presentColor);
@@ -1336,7 +1336,7 @@ export class ArenaSandbox extends Sandbox {
     let data!: BaseFootingData;
     data = this._footingMgr.add({
       addChildButtons: [
-        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'Add presentation', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     });
     this._applyViewMode();
@@ -1354,7 +1354,7 @@ export class ArenaSandbox extends Sandbox {
     const data = this._footingMgr.get(fs.id)!;
     this._footingMgr.buildAndShow(data, {
       addChildButtons: [
-        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(fs.id) },
+        { label:'Add presentation', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(fs.id) },
       ],
     });
     if (data.presentStlb64) this._loadPresentStl(fs.id, data.presentStlb64, data.presentColor);
@@ -1367,11 +1367,11 @@ export class ArenaSandbox extends Sandbox {
     let data!: TrapData;
     data = this._trapMgr.add(parentId, parentType, {
       addChildButtons: [
-        { label:'🧱+', title:'Add wall',           onClick:()=>this.addWall(data.id, 'trap') },
-        { label:'↻+',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'trap'); this.addRotation([data.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'⤻+',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(data.id,'trap') },
-        { label:'✦+',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
-        { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(data.id) },
+        { label:'Add wall', title:'Add wall',           onClick:()=>this.addWall(data.id, 'trap') },
+        { label:'Add rotation',  title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(data.id,'trap'); this.addRotation([data.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'Add jump link',  title:'Add jump link',   className:'sl-btn',  onClick:()=>this._addJumpLink(data.id,'trap') },
+        { label:'Add presentation',  title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'Add particle effect',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(data.id) },
       ],
     });
     if (parentType === 'arena') this._autoLinkTrapSpeedLine(data.id, parentId);
@@ -1402,11 +1402,11 @@ export class ArenaSandbox extends Sandbox {
     const data = this._trapMgr.get(ts.id)!;
     this._trapMgr.buildAndShow(data, {
       addChildButtons: [
-        { label:'🧱+', title:'Add wall',           onClick:()=>this.addWall(ts.id, 'trap') },
-        { label:'↻+',  title:'Add rotation',    className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'⤻+',  title:'Add jump link',   className:'sl-btn',   onClick:()=>this._addJumpLink(ts.id,'trap') },
-        { label:'✦+',  title:'Add presentation', className:'pit-btn',  onClick:()=>this._addSubNodePresent(ts.id) },
-        { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(ts.id) },
+        { label:'Add wall', title:'Add wall',           onClick:()=>this.addWall(ts.id, 'trap') },
+        { label:'Add rotation',  title:'Add rotation',    className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(ts.id,'trap'); this.addRotation([ts.id],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'Add jump link',  title:'Add jump link',   className:'sl-btn',   onClick:()=>this._addJumpLink(ts.id,'trap') },
+        { label:'Add presentation',  title:'Add presentation', className:'pit-btn',  onClick:()=>this._addSubNodePresent(ts.id) },
+        { label:'Add particle effect',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(ts.id) },
       ],
     });
     if (data.presentStlb64) this._loadPresentStl(ts.id, data.presentStlb64, data.presentColor);
@@ -1420,7 +1420,7 @@ export class ArenaSandbox extends Sandbox {
     let data!: PortalData;
     data = this._portalMgr.add(parentId, parentType, {
       addChildButtons: [
-        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'Add presentation', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(data.id) },
       ],
     });
     this.saveArena();
@@ -1436,7 +1436,7 @@ export class ArenaSandbox extends Sandbox {
     const data = this._portalMgr.get(ps.id)!;
     this._portalMgr.buildAndShow(data, {
       addChildButtons: [
-        { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(ps.id) },
+        { label:'Add presentation', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(ps.id) },
       ],
     });
     if (data.presentStlb64) this._loadPresentStl(ps.id, data.presentStlb64, data.presentColor);
@@ -1496,9 +1496,9 @@ export class ArenaSandbox extends Sandbox {
     let data!: BridgeData;
     const treeOpts = {
       addChildButtons: [
-        { label:'Seg+', title:'Add segment',      className:'zone-btn', onClick:()=>this.addSegment(data.id,'straight') },
-        { label:'W+',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(data.id,'bridge') },
-        { label:'✦+',   title:'Add presentation', className:'sl-btn',   onClick:()=>this._addSubNodePresent(data.id) },
+        { label:'Add segment', title:'Add segment',      className:'zone-btn', onClick:()=>this.addSegment(data.id,'straight') },
+        { label:'Add wall',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(data.id,'bridge') },
+        { label:'Add presentation',   title:'Add presentation', className:'sl-btn',   onClick:()=>this._addSubNodePresent(data.id) },
       ],
     };
     data = this._bridgeMgr.add(treeOpts);
@@ -2373,17 +2373,17 @@ export class ArenaSandbox extends Sandbox {
     this._createArenaLight(data);
     this.sceneTree.add(id,data.name,'⏺','octagon-base',{
       addChildButtons:[
-        {label:'P+',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(id)},
-        {label:'Z+',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(id)},
-        {label:'W+',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
-        {label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
-        {label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(id,'arena')},
-        {label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(id,'arena')},
-        {label:'⤻+',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(id,'arena')},
-        {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(id)},
-        {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(id)},
-        {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(id)},
-        {label:'🌍+',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(id)},
+        {label:'Add pit',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(id)},
+        {label:'Add zone',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(id)},
+        {label:'Add wall',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(id,'arena')},
+        {label:'Add speed line',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(id)},
+        {label:'Add arena trap',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(id,'arena')},
+        {label:'Add arena portal',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(id,'arena')},
+        {label:'Add jump link',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(id,'arena')},
+        {label:'Add presentation',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(id)},
+        {label:'Add particle effect',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(id)},
+        {label:'Add weather',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(id)},
+        {label:'Add environment',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(id)},
       ],
     });
     this.sceneTree.add(`wallprofile-${id}`, 'Wall Profile', '◌', id);
@@ -2559,10 +2559,10 @@ export class ArenaSandbox extends Sandbox {
       this.addChildToParent(newId, 'zone', parentId, parentType);
       this.sceneTree.add(newId, mergedZone.name, '◈', parentId, {
         addChildButtons: [
-          {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone')},
-          {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone')},
-          {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
-          {label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(newId)},
+          {label:'Add nested pit',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone')},
+          {label:'Add nested zone',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone')},
+          {label:'Add rotation',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
+          {label:'Add particle effect',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(newId)},
         ],
       });
     }
@@ -2653,10 +2653,10 @@ export class ArenaSandbox extends Sandbox {
 
     this.sceneTree.add(id, zone.name, '◈', parentId, {
       addChildButtons: [
-        {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(id,'zone')},
-        {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(id,'zone')},
-        {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(id,'zone'); this.addRotation([id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
-        {label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(id)},
+        {label:'Add nested pit',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(id,'zone')},
+        {label:'Add nested zone',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(id,'zone')},
+        {label:'Add rotation',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(id,'zone'); this.addRotation([id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
+        {label:'Add particle effect',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(id)},
       ],
     });
     this.updateArenaBowlHoles(arena, arenaId);
@@ -2740,10 +2740,10 @@ export class ArenaSandbox extends Sandbox {
     this.sceneObjects.set(zs.id,[zm,ze,zsm]);
     this.sceneTree.add(zs.id,zone.name,'◈',parentId,{
       addChildButtons:[
-        {label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(zs.id,'zone')},
-        {label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(zs.id,'zone')},
-        {label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(zs.id,'zone'); this.addRotation([zs.id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
-        {label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(zs.id)},
+        {label:'Add nested pit',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(zs.id,'zone')},
+        {label:'Add nested zone',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(zs.id,'zone')},
+        {label:'Add rotation',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(zs.id,'zone'); this.addRotation([zs.id],['zone'],p.pivotX,p.pivotY,p.pivotZ); }},
+        {label:'Add particle effect',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(zs.id)},
       ],
     });
     for(const cps of zs.pits)  this.restorePitSave(cps,arenaId,zs.id,data);
@@ -2835,17 +2835,17 @@ export class ArenaSandbox extends Sandbox {
       // Arena node must exist in the tree before children are added as its descendants
       this.sceneTree.add(as.id,data.name,'⏺','octagon-base',{
         addChildButtons:[
-          {label:'P+',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(as.id)},
-          {label:'Z+',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(as.id)},
-          {label:'W+',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
-          {label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
-          {label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(as.id,'arena')},
-          {label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(as.id,'arena')},
-          {label:'⤻+',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(as.id,'arena')},
-          {label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(as.id)},
-          {label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(as.id)},
-          {label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(as.id)},
-          {label:'🌍+',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(as.id)},
+          {label:'Add pit',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(as.id)},
+          {label:'Add zone',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(as.id)},
+          {label:'Add wall',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(as.id,'arena')},
+          {label:'Add speed line',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(as.id)},
+          {label:'Add arena trap',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(as.id,'arena')},
+          {label:'Add arena portal',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(as.id,'arena')},
+          {label:'Add jump link',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(as.id,'arena')},
+          {label:'Add presentation',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(as.id)},
+          {label:'Add particle effect',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(as.id)},
+          {label:'Add weather',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(as.id)},
+          {label:'Add environment',  title:'Add environment',    className:'pit-btn',  onClick:()=>this._addSubNodeEnv(as.id)},
         ],
       });
       this.sceneTree.add(`wallprofile-${as.id}`, 'Wall Profile', '◌', as.id);
@@ -2944,8 +2944,8 @@ export class ArenaSandbox extends Sandbox {
     const data = this._wallMgr.get(ws.id)!;
     this._wallMgr.buildAndShow(data, {
       addChildButtons: [
-        { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(ws.id,'wall'); this.addRotation([ws.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
-        { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(ws.id) },
+        { label:'Add rotation', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(ws.id,'wall'); this.addRotation([ws.id],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+        { label:'Add presentation', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(ws.id) },
       ],
     });
     if (data.presentStlb64) this._loadPresentStl(ws.id, data.presentStlb64, data.presentColor);
@@ -2965,9 +2965,9 @@ export class ArenaSandbox extends Sandbox {
     const data = this._bridgeMgr.get(bs.id)!;
     const treeOpts = {
       addChildButtons: [
-        { label:'Seg+', title:'Add segment',      className:'zone-btn', onClick:()=>this.addSegment(bs.id,'straight') },
-        { label:'W+',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(bs.id,'bridge') },
-        { label:'✦+',   title:'Add presentation', className:'sl-btn',   onClick:()=>this._addSubNodePresent(bs.id) },
+        { label:'Add segment', title:'Add segment',      className:'zone-btn', onClick:()=>this.addSegment(bs.id,'straight') },
+        { label:'Add wall',   title:'Add wall',         className:'pit-btn',  onClick:()=>this.addWall(bs.id,'bridge') },
+        { label:'Add presentation',   title:'Add presentation', className:'sl-btn',   onClick:()=>this._addSubNodePresent(bs.id) },
       ],
     };
     // Add bridge tree node + build all segment geometry (does NOT add segment tree nodes)
@@ -3367,16 +3367,16 @@ export class ArenaSandbox extends Sandbox {
       this._createArenaLight(clone);
       this.sceneTree.add(newId, clone.name, '⏺', 'octagon-base', {
         addChildButtons: [
-          { label:'P+',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(newId) },
-          { label:'Z+',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(newId) },
-          { label:'W+',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(newId,'arena') },
-          { label:'SL+',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(newId) },
-          { label:'Trap+',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(newId,'arena') },
-          { label:'⬡+',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(newId,'arena') },
-          { label:'⤻+',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(newId,'arena') },
-          { label:'✦+',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(newId) },
-          { label:'✧+',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(newId) },
-          { label:'🌤+',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(newId) },
+          { label:'Add pit',   title:'Add pit',            className:'pit-btn',  onClick:()=>this.addPit(newId) },
+          { label:'Add zone',   title:'Add zone',           className:'zone-btn', onClick:()=>this.addZone(newId) },
+          { label:'Add wall',   title:'Add wall',           className:'pit-btn',  onClick:()=>this.addWall(newId,'arena') },
+          { label:'Add speed line',  title:'Add speed line',     className:'sl-btn',   onClick:()=>this._addSpeedLine(newId) },
+          { label:'Add arena trap',title:'Add arena trap',     className:'pit-btn',  onClick:()=>this.addTrap(newId,'arena') },
+          { label:'Add arena portal',   title:'Add arena portal',   className:'zone-btn', onClick:()=>this.addPortal(newId,'arena') },
+          { label:'Add jump link',   title:'Add jump link',      className:'sl-btn',   onClick:()=>this._addJumpLink(newId,'arena') },
+          { label:'Add presentation',   title:'Add presentation',   className:'sl-btn',   onClick:()=>this._addSubNodePresent(newId) },
+          { label:'Add particle effect',   title:'Add particle effect',className:'pit-btn',  onClick:()=>this._addSubNodeParticle(newId) },
+          { label:'Add weather',  title:'Add weather',        className:'zone-btn', onClick:()=>this._addSubNodeWeather(newId) },
         ],
       });
       this.sceneTree.add(`wallprofile-${newId}`, 'Wall Profile', '◌', newId);
@@ -3395,9 +3395,9 @@ export class ArenaSandbox extends Sandbox {
       const newData = this._obstacleMgr.get(newId)!;
       this._obstacleMgr.buildAndShow(newData, {
         addChildButtons: [
-          { label:'↻+', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'obstacle'); this.addRotation([newId],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
-          { label:'⤻+', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'obstacle') },
-          { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'Add rotation', title:'Add rotation',     className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'obstacle'); this.addRotation([newId],['obstacle'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'Add jump link', title:'Add jump link',    className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'obstacle') },
+          { label:'Add presentation', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
       });
       this.saveArena(); return;
@@ -3413,7 +3413,7 @@ export class ArenaSandbox extends Sandbox {
       const newData = this._footingMgr.get(newId)!;
       this._footingMgr.buildAndShow(newData, {
         addChildButtons: [
-          { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'Add presentation', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
       });
       this._applyViewMode(); this.saveArena(); return;
@@ -3432,11 +3432,11 @@ export class ArenaSandbox extends Sandbox {
       const newData = this._trapMgr.get(newId)!;
       this._trapMgr.buildAndShow(newData, {
         addChildButtons: [
-          { label:'🧱+', title:'Add wall',              onClick:()=>this.addWall(newId, 'trap') },
-          { label:'↻+',  title:'Add rotation',      className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'trap'); this.addRotation([newId],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
-          { label:'⤻+',  title:'Add jump link',     className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'trap') },
-          { label:'✦+',  title:'Add presentation',  className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
-          { label:'✧+',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(newId) },
+          { label:'Add wall', title:'Add wall',              onClick:()=>this.addWall(newId, 'trap') },
+          { label:'Add rotation',  title:'Add rotation',      className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'trap'); this.addRotation([newId],['trap'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'Add jump link',  title:'Add jump link',     className:'sl-btn',  onClick:()=>this._addJumpLink(newId,'trap') },
+          { label:'Add presentation',  title:'Add presentation',  className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'Add particle effect',  title:'Add particle effect',className:'zone-btn',onClick:()=>this._addSubNodeParticle(newId) },
         ],
       });
       this.saveArena(); return;
@@ -3452,7 +3452,7 @@ export class ArenaSandbox extends Sandbox {
       const newData = this._portalMgr.get(newId)!;
       this._portalMgr.buildAndShow(newData, {
         addChildButtons: [
-          { label:'✦+', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'Add presentation', title:'Add presentation', className:'sl-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
       });
       this.saveArena(); return;
@@ -3468,8 +3468,8 @@ export class ArenaSandbox extends Sandbox {
       const newData = this._wallMgr.get(newId)!;
       this._wallMgr.buildAndShow(newData, {
         addChildButtons: [
-          { label:'↻+', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'wall'); this.addRotation([newId],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
-          { label:'✦+', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
+          { label:'Add rotation', title:'Add rotation',    className:'sl-btn',  onClick:()=>{ const p=this._defaultPivotForMember(newId,'wall'); this.addRotation([newId],['wall'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'Add presentation', title:'Add presentation', className:'pit-btn', onClick:()=>this._addSubNodePresent(newId) },
         ],
       });
       if (newData.parentType === 'arena') {
@@ -3523,10 +3523,10 @@ export class ArenaSandbox extends Sandbox {
       const parentId = zone.parentZoneId ?? zone.parentArenaId;
       this.sceneTree.add(newId, clone.name, '◈', parentId, {
         addChildButtons: [
-          { label:'P+',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone') },
-          { label:'Z+',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone') },
-          { label:'↻+',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); } },
-          { label:'✧+',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(newId) },
+          { label:'Add nested pit',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(newId,'zone') },
+          { label:'Add nested zone',title:'Add nested zone',className:'zone-btn',onClick:()=>this.addZoneToParent(newId,'zone') },
+          { label:'Add rotation',title:'Add rotation',  className:'sl-btn',   onClick:()=>{ const p=this._defaultPivotForMember(newId,'zone'); this.addRotation([newId],['zone'],p.pivotX,p.pivotY,p.pivotZ); } },
+          { label:'Add particle effect',title:'Add particle effect',className:'pit-btn',onClick:()=>this._addSubNodeParticle(newId) },
         ],
       });
       this.updateArenaBowlHoles(arena, zone.parentArenaId);

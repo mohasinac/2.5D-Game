@@ -6,6 +6,7 @@ import {
   applyObstacle,
   defaultObstacle,
 } from '../../geometry/obstacleBuilders';
+import { DEFAULT_OBSTACLE_WEIGHT } from '../../config/arenaConstants';
 import { obstacleToSave } from '../../utils/arenaPersistence';
 import { FeatureManager } from '../FeatureManager';
 import type { SceneContext, IPositionedManager } from '../IArenaFeature';
@@ -138,6 +139,7 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
       speedPathId:      save.speedPathId,
       presentStlb64:    save.presentStlb64,
       presentColor:     save.presentColor,
+      weight:           save.weight ?? DEFAULT_OBSTACLE_WEIGHT,
       visible:          save.visible ?? true,
     });
     return data;

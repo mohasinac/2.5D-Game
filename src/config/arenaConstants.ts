@@ -23,8 +23,14 @@ export const ARENA_SAVE_VERSION = 12;
 export const DEFAULT_ARENA_MATERIAL = 'abs' as const;
 
 /* ── Obstacle constants ──────────────────────────────────────────────────── */
-export const MIN_OBSTACLE_DIM     = 10;   // cm — minimum any obstacle dimension
-export const DEFAULT_OBSTACLE_DIM = 20;   // cm — default cube side length
+export const MIN_OBSTACLE_DIM      = 10;   // cm — minimum any obstacle dimension
+export const DEFAULT_OBSTACLE_DIM  = 20;   // cm — default cube side length
+export const DEFAULT_OBSTACLE_WEIGHT  = 50;   // g
+export const MIN_OBSTACLE_WEIGHT      = 1;    // g
+export const MAX_OBSTACLE_WEIGHT      = 5000; // g
+export const DEFAULT_PROJECTILE_WEIGHT = 5;   // g
+export const MIN_PROJECTILE_WEIGHT     = 0.1; // g
+export const MAX_PROJECTILE_WEIGHT     = 500; // g
 
 /* ── Trap constants ──────────────────────────────────────────────────────── */
 export const MIN_TRAP_DIM         = 10;   // cm — minimum footprint dimension

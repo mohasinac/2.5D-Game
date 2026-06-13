@@ -801,6 +801,7 @@ export interface ObstacleData {
   speedPathId: string | null;
   presentStlb64: string | null;
   presentColor: number;
+  weight: number;   // g
   /** Hidden from view; collision/physics still active. Default true. */
   visible: boolean;
   mesh: THREE.Mesh; edges: THREE.LineSegments;
@@ -975,6 +976,7 @@ export interface ProjectileConfig {
   /** Homing (data flag — not simulated in builder, applied in game simulation). */
   homingEnabled:  boolean;
   homingStrength: number;   // 0–10 turn rate
+  weight: number;   // g
 }
 
 export function defaultProjectileConfig(): ProjectileConfig {
@@ -992,6 +994,7 @@ export function defaultProjectileConfig(): ProjectileConfig {
     scaleFactor: 1.0, scaleRandomize: false, scaleMin: 0.5, scaleMax: 2.0,
     orbitSource: false, orbitRadius: 10, orbitSpeed: 180, orbitElevation: 2,
     homingEnabled: false, homingStrength: 2.0,
+    weight: 5,
   };
 }
 

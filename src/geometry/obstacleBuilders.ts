@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {
-  MIN_OBSTACLE_DIM, DEFAULT_OBSTACLE_DIM, DEFAULT_ARENA_MATERIAL,
+  MIN_OBSTACLE_DIM, DEFAULT_OBSTACLE_DIM, DEFAULT_ARENA_MATERIAL, DEFAULT_OBSTACLE_WEIGHT,
 } from '../config/arenaConstants';
 import { ObstacleData, ObstacleShape, SurfaceType, ArenaMaterial } from '../types/arenaTypes';
 import { buildSurfaceMaterial } from './materialBuilders';
@@ -103,6 +103,7 @@ export function defaultObstacle(name: string, id: string, baseHeight: number): O
     isDestructible: false,
     hitPoints: 3,
     contactForceX: 0, contactForceY: 0, contactForceZ: 0,
+    weight: DEFAULT_OBSTACLE_WEIGHT,
     color: 0x888888,
     surface: 'plain' as SurfaceType,
     customTileData: null,

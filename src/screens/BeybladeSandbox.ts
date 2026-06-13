@@ -678,12 +678,12 @@ export class BeybladeSandbox extends Sandbox {
     const part = this.store.getPart(id);
     this.tree.add(id, part.name, part.isHollow ? '◯' : '⬡', null, {
       addChildButtons: [
-        { label: 'S+', title: 'Cut into sectors', onClick: () => {
+        { label: 'Cut into sectors', title: 'Cut into sectors', onClick: () => {
           const n = parseInt(prompt('Number of sectors (2–12):', '3') ?? '3', 10) || 3;
           this._cutPart(id, Math.max(2, Math.min(12, n)));
         }},
-        { label: '✦+', title: 'Add Presentation', onClick: () => this._addSubNodePresent(id) },
-        { label: '✧+', title: 'Add Particle Effect', onClick: () => this._addSubNodeParticle(id) },
+        { label: 'Add Presentation', title: 'Add Presentation', onClick: () => this._addSubNodePresent(id) },
+        { label: 'Add Particle Effect', title: 'Add Particle Effect', onClick: () => this._addSubNodeParticle(id) },
       ],
     });
     this.tree.setNodeActions(id, [
