@@ -101,6 +101,7 @@ export class BeybladeSandbox extends Sandbox {
     } else {
       this._keyUnsubs.forEach(fn => fn());
       this._keyUnsubs = [];
+      this._drawerMgr?.closeAll();
     }
   }
 
@@ -282,6 +283,7 @@ export class BeybladeSandbox extends Sandbox {
     const rightPanel = this.addOverlayPanel('sandbox-right-panel');
     this.rightPanelEl = rightPanel;
     this.panel = new BeybladePropertiesPanel(rightPanel);
+    this._drawerMgr.bind(leftPanel, rightPanel);
     this.panel.onClose = () => {
       this.tree.clearSel();
       this.rightPanelEl.style.display = 'none';

@@ -68,6 +68,8 @@ import {
   generateArenaThumb, remapArenaConfigIds, extractArenaConfig,
 } from '../utils/presetStore';
 import { SpawnManager } from '../features/managers/SpawnManager';
+import { ControlManager } from '../features/managers/ControlManager';
+import { VirtualControlsOverlay } from '../features/managers/VirtualControlsOverlay';
 import { ObstacleManager } from '../features/managers/ObstacleManager';
 import { FootingManager } from '../features/managers/FootingManager';
 import { ArenaEnvironmentManager } from '../features/managers/ArenaEnvironmentManager';
@@ -158,8 +160,10 @@ export class ArenaSandbox extends Sandbox {
   /** Tracks wallprofile-<arenaId> node IDs so they can be cleared on reset. */
   private _wallProfileNodes = new Set<string>();
   private _projectileMgr: ProjectileManager | null = null;
-  private _spawnMgr:    SpawnManager | null = null;
-  private _spawnMgrBtn: HTMLButtonElement | null = null;
+  private _spawnMgr:       SpawnManager | null = null;
+  private _spawnMgrBtn:    HTMLButtonElement | null = null;
+  private _ctrlMgr!:       ControlManager;
+  private _virtualControls!: VirtualControlsOverlay;
   private _envMgr!: ArenaEnvironmentManager;
   private _projectionService!: ProjectionService;
   private _renderMgr!: RenderManager;
@@ -239,6 +243,7 @@ export class ArenaSandbox extends Sandbox {
     const rightPanel = this.addOverlayPanel('sandbox-right-panel');
     this.props = new PropertiesPanel(rightPanel);
     this.props.onClose = ()=>{ this.selectedId=null; this.sceneTree.clearSel(); this.props.showEmpty(); };
+    this._drawerMgr.bind(leftPanel, rightPanel);
 
     // View mode bottom bar
     const viewBar = this.addOverlayPanel('arena-view-bar');
@@ -1845,6 +1850,7 @@ export class ArenaSandbox extends Sandbox {
       getFallbackY: () => this.baseConfig.height,
       renderMgr: this._renderMgr,
     };
+    this._ctrlMgr = new ControlManager(inputManager);
     const smHud = this.addOverlayPanel('spawn-manager-hud');
     this._spawnMgr = new SpawnManager(
       smCtx,
@@ -1856,12 +1862,22 @@ export class ArenaSandbox extends Sandbox {
       () => this.zones,
       () => this._wallMgr.getAll() as Map<string, WallData>,
       smHud,
-      () => inputManager,
+      this._ctrlMgr,
+    );
+    this._virtualControls = new VirtualControlsOverlay(
+      this.el,
+      this._ctrlMgr,
+      () => this.getControls(),
     );
     this._spawnMgrBtn = this.addTopBarButton('⚽ Spawn', 'Spawn/despawn physics test top');
     this._spawnMgrBtn.addEventListener('click', () => {
-      if (this._spawnMgr?.isSpawned) this._spawnMgr.despawn();
-      else this._spawnMgr?.spawn();
+      if (this._spawnMgr?.isSpawned) {
+        this._spawnMgr.despawn();
+        this._virtualControls.hide();
+      } else {
+        this._spawnMgr?.spawn();
+        this._virtualControls.show();
+      }
       this._spawnMgrBtn!.classList.toggle('active', this._spawnMgr?.isSpawned ?? false);
     });
 
@@ -3053,6 +3069,8 @@ export class ArenaSandbox extends Sandbox {
       this._keyUnsubs = [];
       this._spawnMgr?.despawn();
       this._spawnMgrBtn?.classList.remove('active');
+      this._virtualControls?.hide();
+      this._drawerMgr?.closeAll();
     }
   }
 

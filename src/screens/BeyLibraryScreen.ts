@@ -262,8 +262,8 @@ export class BeyLibraryScreen {
 
     const ar = anchor.getBoundingClientRect();
     const pr = picker.getBoundingClientRect();
-    picker.style.left = `${Math.min(ar.left, window.innerWidth - pr.width - 8)}px`;
-    picker.style.top  = `${Math.min(ar.bottom + 4, window.innerHeight - pr.height - 8)}px`;
+    picker.style.left = `${Math.max(4, Math.min(ar.left, window.innerWidth  - pr.width  - 8))}px`;
+    picker.style.top  = `${Math.max(4, Math.min(ar.bottom + 4, window.innerHeight - pr.height - 8))}px`;
   }
 
   private _mergeConfigs(presets: Array<BeyPreset | null>): BeybladeBuildConfig | null {

@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SandboxSprites } from '../utils/SandboxSprites';
 import { CameraManager } from '../features/managers/CameraManager';
 import { createCameraViewStore } from '../stores/cameraViewStore';
+import { DrawerManager } from '../utils/DrawerManager';
+import { layoutObserver } from '../utils/LayoutObserver';
 
 export interface SandboxOptions {
   title:      string;
@@ -28,7 +30,7 @@ export interface SandboxOptions {
 }
 
 export class Sandbox {
-  private el: HTMLElement;
+  protected el: HTMLElement;
   private canvasWrap: HTMLDivElement;
   private topBar!: HTMLElement;
   private overlayEl!: HTMLElement;
@@ -40,6 +42,8 @@ export class Sandbox {
   private controls: OrbitControls | null = null;
 
   protected cameraManager: CameraManager | null = null;
+  protected _drawerMgr!: DrawerManager;
+  private _layoutUnsub: (() => void) | null = null;
 
   private rafId = 0;
   private ro: ResizeObserver;
@@ -59,9 +63,11 @@ export class Sandbox {
     overlay.className = 'sandbox-overlay';
     overlay.innerHTML = `
       <div class="sandbox-top-bar">
-        <button class="game-btn back-btn"  id="sb-back">← Back</button>
+        <button class="game-btn drawer-btn" id="sb-tree"  title="Scene Tree">☰</button>
+        <button class="game-btn back-btn"   id="sb-back">← Back</button>
         <span  class="sandbox-title">${opts.title}</span>
-        <button class="game-btn reset-btn" id="sb-reset" title="Reset camera view to default">↺ View</button>
+        <button class="game-btn reset-btn"  id="sb-reset" title="Reset camera view to default">↺ View</button>
+        <button class="game-btn drawer-btn" id="sb-props" title="Properties">⚙</button>
       </div>
       <div class="sandbox-hint">Orbit · Left drag &nbsp;|&nbsp; Pan · Right drag &nbsp;|&nbsp; Zoom · Scroll</div>
     `;
@@ -72,6 +78,14 @@ export class Sandbox {
     this.topBar = overlay.querySelector('.sandbox-top-bar')!;
     overlay.querySelector('#sb-back')!.addEventListener('click',  () => opts.onBack());
     overlay.querySelector('#sb-reset')!.addEventListener('click', () => this.resetView());
+
+    this._drawerMgr = new DrawerManager(this.el);
+    overlay.querySelector('#sb-tree')!.addEventListener('click',  () => this._drawerMgr.toggleLeft());
+    overlay.querySelector('#sb-props')!.addEventListener('click', () => this._drawerMgr.toggleRight());
+
+    this._layoutUnsub = layoutObserver.onChange(mode => {
+      if (mode === 'desktop' || mode === 'tablet') this._drawerMgr.closeAll();
+    });
 
     this.ro = new ResizeObserver(() => this.resize());
   }
@@ -322,6 +336,9 @@ export class Sandbox {
     this.textures.length = 0;
     this.scene  = null;
     this.camera = null;
+    this._layoutUnsub?.();
+    this._layoutUnsub = null;
+    this._drawerMgr.destroy();
     this.el.remove();
   }
 }

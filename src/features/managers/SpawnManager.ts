@@ -18,7 +18,7 @@ import type { ConditionContext } from '../conditions/ConditionEvaluator';
 import { ZONE_EFFECTS } from '../conditions/ZoneEffectRegistry';
 import { applyEjectBehavior } from '../conditions/EjectBehaviorHandler';
 import type { EjectContext } from '../conditions/EjectBehaviorHandler';
-import type { InputManager } from './InputManager';
+import type { IControlManager } from './ControlManager';
 import { spawnSettingsStore } from '../../stores/spawnSettingsStore';
 
 // ── Spinning-top geometry ────────────────────────────────────────────────────
@@ -115,11 +115,20 @@ export class SpawnManager {
     private readonly getSpeedLines:   () => ReadonlyMap<string, SpeedLineData>,
     private readonly getZones:        () => ReadonlyMap<string, ZoneData>,
     private readonly getWalls:        () => ReadonlyMap<string, WallData>,
-    private readonly hudEl:           HTMLElement,
-    private readonly getInputManager: () => InputManager | null = () => null,
+    private readonly hudEl:   HTMLElement,
+    private readonly ctrlMgr: IControlManager,
   ) {
     this._buildHUD();
     this._loadSettings();
+    this.ctrlMgr.onButtonPress('jump', () => {
+      if (this.spawned && this.grounded) {
+        this.vel.y    = JUMP_IMPULSE;
+        this.grounded = false;
+      }
+    });
+    this.ctrlMgr.onButtonPress('trigger', () => {
+      if (this.spawned) this._applyTrigger(1 / 20);
+    });
   }
 
   get isSpawned(): boolean { return this.spawned; }
@@ -259,31 +268,21 @@ export class SpawnManager {
 
   private _applyInput(dt: number): void {
     if (this.autoMove) return;
-    const inp = this.getInputManager();
-    if (!inp || inp.isTextFocused()) return;
+    const axes = this.ctrlMgr.getMovementAxes();
+    if (axes.x === 0 && axes.y === 0) return;
     const cam = this.getCamera();
     if (!cam) return;
     const fwd = cam.getWorldDirection(new THREE.Vector3()); fwd.y = 0; fwd.normalize();
     const right = new THREE.Vector3().crossVectors(fwd, THREE.Object3D.DEFAULT_UP).normalize();
-
     const dir = new THREE.Vector3();
-    if (inp.isDown('KeyW')     || inp.isDown('ArrowUp'))    dir.addScaledVector(fwd,    1);
-    if (inp.isDown('KeyS')     || inp.isDown('ArrowDown'))  dir.addScaledVector(fwd,   -1);
-    if (inp.isDown('KeyA')     || inp.isDown('ArrowLeft'))  dir.addScaledVector(right, -1);
-    if (inp.isDown('KeyD')     || inp.isDown('ArrowRight')) dir.addScaledVector(right,  1);
-
+    dir.addScaledVector(fwd,   axes.y);
+    dir.addScaledVector(right, axes.x);
     if (dir.lengthSq() > 0) {
       dir.normalize();
       const accel = MOVE_FORCE * (this.grounded ? 1 : AIR_CONTROL) * dt;
       this.vel.x += dir.x * accel;
       this.vel.z += dir.z * accel;
     }
-
-    if (inp.isDown('Space') && this.grounded) {
-      this.vel.y = JUMP_IMPULSE;
-      this.grounded = false;
-    }
-
     const hspd = Math.sqrt(this.vel.x ** 2 + this.vel.z ** 2);
     if (hspd > MAX_SPEED_H) { const s = MAX_SPEED_H / hspd; this.vel.x *= s; this.vel.z *= s; }
   }
@@ -668,7 +667,6 @@ export class SpawnManager {
   // ── T-key trigger ───────────────────────────────────────────────────────────
 
   private _applyTrigger(dt: number): void {
-    if (!this.getInputManager()?.isDown('KeyT')) return;
 
     // Find nearest trap
     let nearestTrap: TrapData | null = null; let nearestTrapDist2 = Infinity;

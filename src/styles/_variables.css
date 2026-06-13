@@ -1,0 +1,20 @@
+/* ── Scale system ──────────────────────────────────────────────────────────── *
+ * Physical scale convention:  1 cm = 1 vmin  |  1 mm = 0.1 vmin
+ * --cm and --mm are the canonical unit aliases — use them for all sizing.
+ * --ui-scale (adjusted by +/− controls) multiplies both uniformly.
+ * Minimum design unit: 1 mm (never go below 1 × var(--mm)).
+ * html font-size = 2 cm baseline so 1 em = 2 cm everywhere.
+ */
+:root {
+  --ui-scale:     1;
+  --cm:           calc(1vmin  * var(--ui-scale));   /* 1 cm  */
+  --mm:           calc(0.1vmin * var(--ui-scale));  /* 1 mm  */
+  --accent:       #00e5ff;
+  --accent2:      #ff6b35;
+  --bg:           #080810;
+  --bg2:          #0f0f1a;
+  --text:         #dde8ff;
+  --border:       rgba(0, 229, 255, 0.25);
+  --drawer-speed: 0.22s;
+  --drawer-ease:  cubic-bezier(0.4,0,0.2,1);
+}

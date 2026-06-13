@@ -184,6 +184,11 @@ class App {
     `;
     root.appendChild(ctrl);
 
+    for (const btn of ctrl.querySelectorAll<HTMLElement>('.ctrl-btn')) {
+      btn.style.minHeight = '44px';
+      btn.style.minWidth  = '44px';
+    }
+
     ctrl.querySelector('#scale-down')!.addEventListener('click',  () => setScale(scale - STEP));
     ctrl.querySelector('#scale-up')!.addEventListener('click',    () => setScale(scale + STEP));
     ctrl.querySelector('#scale-reset')!.addEventListener('click', () => setScale(1));
@@ -192,6 +197,8 @@ class App {
     fsBtn.className   = 'fs-btn';
     fsBtn.title       = 'Toggle fullscreen';
     fsBtn.textContent = '⛶';
+    fsBtn.style.minHeight = '44px';
+    fsBtn.style.minWidth  = '44px';
     root.appendChild(fsBtn);
 
     fsBtn.addEventListener('click', () => {

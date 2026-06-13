@@ -95,6 +95,8 @@ export class RPGScreen {
     };
 
     this.game = new Phaser.Game(config);
+    (this.gameContainer.querySelector('canvas') as HTMLCanvasElement | null)
+      ?.setAttribute('style', 'touch-action: none');
   }
 
   private unmountGame(): void {

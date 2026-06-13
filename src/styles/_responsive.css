@@ -1,0 +1,136 @@
+/* ── Responsive Layout — imported LAST, overrides everything ─────────────── */
+
+/* Drawer toggle buttons: hidden on desktop */
+.drawer-btn { display: none; }
+
+/* Drawer backdrop */
+.drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(2px);
+  z-index: 119;
+}
+.drawer-backdrop.active { display: block; }
+
+/* ── Tablet (≤1024px) ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .sandbox-left-panel  { width: calc(38 * var(--cm)); }
+  .sandbox-right-panel { width: calc(38 * var(--cm)); }
+  .admin-hub-grid      { grid-template-columns: repeat(3, 1fr); }
+  .admin-layout        { grid-template-columns: calc(18*var(--cm)) 1fr calc(20*var(--cm)); }
+  .bey-bar-row         { flex-wrap: wrap; gap: calc(4*var(--mm)); }
+  .sandbox-top-bar     { gap: calc(6*var(--mm)); }
+  .game-btn            { padding: calc(6*var(--mm)) calc(10*var(--mm)); font-size: 0.8em; }
+  .library-grid        { grid-template-columns: repeat(auto-fill, minmax(calc(22*var(--cm)), 1fr)); }
+}
+
+/* ── Mobile (≤768px) ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Drawer buttons shown */
+  .drawer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Left panel → slide-in drawer */
+  .sandbox-left-panel {
+    position: fixed;
+    width: min(calc(55*var(--cm)), 82vw);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform var(--drawer-speed) var(--drawer-ease);
+    z-index: 120;
+    pointer-events: all;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.65);
+  }
+  .sandbox-left-panel--open  { transform: translateX(0); }
+
+  /* Right panel → slide-in drawer */
+  .sandbox-right-panel {
+    position: fixed;
+    width: min(calc(55*var(--cm)), 84vw);
+    top: 0;
+    bottom: 0;
+    right: 0;
+    transform: translateX(100%);
+    transition: transform var(--drawer-speed) var(--drawer-ease);
+    z-index: 120;
+    pointer-events: all;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.65);
+  }
+  .sandbox-right-panel--open { transform: translateX(0); }
+
+  /* Top bar */
+  .sandbox-top-bar { flex-wrap: wrap; gap: calc(4*var(--mm)); padding: calc(4*var(--mm)) calc(6*var(--mm)); }
+  .sandbox-hint    { display: none; }
+  .sandbox-title   { font-size: 0.85em; }
+
+  /* Admin */
+  .admin-hub-grid { grid-template-columns: repeat(2, 1fr); }
+  .admin-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .admin-layout > *:first-child { max-height: calc(20*var(--cm)); overflow-y: auto; }
+
+  /* Library */
+  .library-grid   { grid-template-columns: repeat(auto-fill, minmax(calc(28*var(--cm)), 1fr)); }
+  .library-search { width: auto; flex: 1; min-width: 0; }
+  .library-header { flex-wrap: wrap; gap: calc(6*var(--mm)); }
+
+  /* BeyLibrary assembly */
+  .bey-builds-layout { flex-direction: column; }
+  .assembly-panel    { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+
+  /* Touch targets — 44px is the iOS/Android HIG minimum */
+  .game-btn, .tree-add-btn, .tree-vis-btn, .prop-close-btn,
+  .tree-node-row, .library-chip, .admin-hub-btn,
+  .scene-tree-header-collapse, .preset-card__btn,
+  .admin-back-btn, .bey-bar-collapse-btn {
+    min-height: 44px;
+  }
+
+  /* Beyblade bottom bar height cap for landscape */
+  .beyblade-bottom-bar { max-height: 36vh; overflow-y: auto; }
+
+  /* Prop panel labels — allow shrinking */
+  .prop-label { flex: 0 0 auto; max-width: 40%; }
+}
+
+/* ── Portrait phone (≤480px) ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .landing-buttons  { width: min(calc(24*var(--cm)), 92vw); }
+  .admin-hub-grid   { gap: calc(0.8*var(--cm)); }
+  .library-grid     { grid-template-columns: repeat(2, 1fr); }
+  .confirm-dialog   { min-width: 70vw; max-width: 90vw; }
+  .preset-card__btn { font-size: 0.65em; padding: calc(3*var(--mm)) calc(5*var(--mm)); }
+  .prop-label       { max-width: 36%; font-size: 0.8em; }
+  .prop-row         { gap: calc(3*var(--mm)); }
+  /* Lift view mode bar above virtual controls */
+  .arena-view-bar   { bottom: calc(28*var(--cm)); }
+  /* Tree rows taller for fat-finger selection */
+  .tree-node-row    { height: calc(60*var(--mm)); }
+}
+
+/* ── Virtual controls: landscape phone/tablet ──────────────────────────── */
+@media (orientation: landscape) and (max-width: 1024px) {
+  .vctrl-stick-zone {
+    bottom: calc(1*var(--cm));
+    left: calc(1*var(--cm));
+    width: calc(18*var(--cm));
+    height: calc(18*var(--cm));
+  }
+  .vctrl-btn-zone { bottom: calc(1*var(--cm)); right: calc(1*var(--cm)); }
+  .vctrl-btn { width: calc(11*var(--cm)); height: calc(11*var(--cm)); font-size: calc(1.2*var(--cm)); }
+  .arena-view-bar { bottom: calc(20*var(--cm)); }
+}
+
+/* ── Desktop detection: suppress virtual controls ──────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .vctrl-overlay { display: none !important; }
+}

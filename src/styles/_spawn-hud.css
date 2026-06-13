@@ -1,0 +1,126 @@
+/* ── Spawn Manager HUD ───────────────────────────────────────────────────── */
+.spawn-manager-hud {
+  position:       absolute;
+  bottom:         calc(4 * var(--cm));
+  left:           50%;
+  transform:      translateX(-50%);
+  display:        none;
+  flex-direction: column;
+  gap:            calc(5 * var(--mm));
+  min-width:      calc(50 * var(--cm));
+  background:     rgba(8, 8, 16, 0.88);
+  border:         calc(1 * var(--mm)) solid rgba(255, 107, 53, 0.40);
+  border-radius:  calc(4 * var(--mm));
+  padding:        calc(10 * var(--mm)) calc(14 * var(--mm));
+  pointer-events: all;
+  user-select:    none;
+  z-index:        30;
+}
+.tb-title {
+  font-family:    'Orbitron', monospace;
+  font-size:      calc(11 * var(--mm));
+  font-weight:    700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color:          #ff6b35;
+  text-align:     center;
+  margin-bottom:  calc(3 * var(--mm));
+}
+.tb-row {
+  display:     flex;
+  align-items: center;
+  gap:         calc(5 * var(--mm));
+  flex-wrap:   nowrap;
+}
+.tb-label {
+  font-family:    'Orbitron', monospace;
+  font-size:      calc(8 * var(--mm));
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color:          rgba(221, 232, 255, 0.50);
+  flex-shrink:    0;
+}
+.tb-val {
+  font-family: 'Rajdhani', sans-serif;
+  font-size:   calc(12 * var(--mm));
+  font-weight: 600;
+  color:       var(--text);
+  flex-shrink: 0;
+}
+.tb-mono {
+  font-family: 'Orbitron', monospace;
+  font-size:   calc(8  * var(--mm));
+  color:       var(--text);
+  min-width:   calc(22 * var(--mm));
+  text-align:  right;
+  flex-shrink: 0;
+}
+.tb-hp-track {
+  flex:           1;
+  height:         calc(7 * var(--mm));
+  background:     rgba(255,255,255,0.07);
+  border-radius:  calc(3 * var(--mm));
+  overflow:       hidden;
+  min-width:      calc(16 * var(--cm));
+}
+.tb-hp-fill {
+  height:         100%;
+  width:          100%;
+  background:     #00e5ff;
+  border-radius:  calc(3 * var(--mm));
+  transition:     width 0.10s ease, background 0.20s ease;
+}
+.tb-divider {
+  height:     calc(1 * var(--mm));
+  background: rgba(255, 107, 53, 0.18);
+  margin:     calc(4 * var(--mm)) 0;
+}
+.tb-check {
+  display:        flex;
+  align-items:    center;
+  gap:            calc(6 * var(--mm));
+  font-family:    'Rajdhani', sans-serif;
+  font-size:      calc(10 * var(--mm));
+  font-weight:    600;
+  color:          rgba(221, 232, 255, 0.75);
+  cursor:         pointer;
+  letter-spacing: 0.04em;
+}
+.tb-check input[type="checkbox"] {
+  width:        calc(14 * var(--mm));
+  height:       calc(14 * var(--mm));
+  accent-color: #ff6b35;
+  cursor:       pointer;
+}
+.tb-section-label {
+  font-family:    'Orbitron', monospace;
+  font-size:      calc(7 * var(--mm));
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color:          rgba(255, 107, 53, 0.70);
+  margin-top:     calc(3 * var(--mm));
+}
+.tb-input {
+  font-family:   'Rajdhani', sans-serif;
+  font-size:     calc(9 * var(--mm));
+  font-weight:   600;
+  color:         var(--text);
+  background:    rgba(255,255,255,0.06);
+  border:        calc(0.5 * var(--mm)) solid rgba(255, 107, 53, 0.30);
+  border-radius: calc(2 * var(--mm));
+  padding:       calc(2 * var(--mm)) calc(4 * var(--mm));
+  width:         calc(20 * var(--mm));
+  text-align:    right;
+  outline:       none;
+}
+.tb-input:focus {
+  border-color: #ff6b35;
+  background:   rgba(255, 107, 53, 0.08);
+}
+.tb-hint {
+  font-family:  'Rajdhani', sans-serif;
+  font-size:    calc(7.5 * var(--mm));
+  color:        rgba(221, 232, 255, 0.35);
+  font-style:   italic;
+  margin-top:   calc(2 * var(--mm));
+}

@@ -154,8 +154,8 @@ export class SceneTree {
     append(stdItems);
     this.ctxMenu.classList.remove('hidden');
     const r = this.ctxMenu.getBoundingClientRect();
-    this.ctxMenu.style.left = `${Math.min(x, window.innerWidth  - r.width  - 8)}px`;
-    this.ctxMenu.style.top  = `${Math.min(y, window.innerHeight - r.height - 8)}px`;
+    this.ctxMenu.style.left = `${Math.max(4, Math.min(x, window.innerWidth  - r.width  - 8))}px`;
+    this.ctxMenu.style.top  = `${Math.max(4, Math.min(y, window.innerHeight - r.height - 8))}px`;
   }
 
   private hideCtx(): void { this.ctxMenu.classList.add('hidden'); }
@@ -222,6 +222,52 @@ export class SceneTree {
       if(pos==='inside') this.reparentTo(src,id);
       else { const t=this.nodes.get(id)!; this.reparentTo(src,t.parentId,pos==='before'?id:null,pos==='after'?id:null); }
     });
+
+    // Touch long-press drag (500 ms hold)
+    let _pressTimer: ReturnType<typeof setTimeout> | null = null;
+    rowEl.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch') return;
+      _pressTimer = setTimeout(() => { _pressTimer = null; this._startDragFromTouch(id, rowEl, e); }, 500);
+    });
+    const _cancelPress = () => { if (_pressTimer) { clearTimeout(_pressTimer); _pressTimer = null; } };
+    rowEl.addEventListener('pointermove',   _cancelPress);
+    rowEl.addEventListener('pointerup',     _cancelPress);
+    rowEl.addEventListener('pointercancel', _cancelPress);
+  }
+
+  private _startDragFromTouch(nodeId: string, rowEl: HTMLElement, startEvent: PointerEvent): void {
+    this.dragId = nodeId;
+    rowEl.classList.add('tree-node--dragging');
+
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerId !== startEvent.pointerId) return;
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      const targetRow = target?.closest<HTMLElement>('.tree-node-row');
+      if (!targetRow) { this.clearDrop(); return; }
+      const targetId = targetRow.closest<HTMLElement>('.tree-node')?.dataset['id'];
+      if (!targetId || targetId === nodeId) { this.clearDrop(); return; }
+      const rel = (e.clientY - targetRow.getBoundingClientRect().top) / targetRow.getBoundingClientRect().height;
+      const pos: DropPos = rel < 0.28 ? 'before' : rel > 0.72 ? 'after' : 'inside';
+      this.clearDrop();
+      this.dropTarget = { id: targetId, pos };
+      targetRow.classList.add(`tree-drop-${pos}`);
+    };
+    const onUp = (e: PointerEvent) => {
+      if (e.pointerId !== startEvent.pointerId) return;
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup',   onUp);
+      document.removeEventListener('pointercancel', onUp);
+      rowEl.classList.remove('tree-node--dragging');
+      if (this.dragId && this.dropTarget) {
+        const src = this.dragId; const { id: tgtId, pos } = this.dropTarget; this.clearDrop();
+        if (pos === 'inside') this.reparentTo(src, tgtId);
+        else { const t = this.nodes.get(tgtId)!; this.reparentTo(src, t.parentId, pos === 'before' ? tgtId : null, pos === 'after' ? tgtId : null); }
+      }
+      this.dragId = null;
+    };
+    document.addEventListener('pointermove',   onMove);
+    document.addEventListener('pointerup',     onUp);
+    document.addEventListener('pointercancel', onUp);
   }
 
   private cascadeVisibility(id: string, visible: boolean): void {
@@ -269,8 +315,8 @@ export class SceneTree {
     this.addMenu.classList.remove('hidden');
     const ar = anchor.getBoundingClientRect();
     const mr = this.addMenu.getBoundingClientRect();
-    const left = Math.min(ar.left, window.innerWidth  - mr.width  - 8);
-    const top  = Math.min(ar.bottom + 4, window.innerHeight - mr.height - 8);
+    const left = Math.max(4, Math.min(ar.left, window.innerWidth  - mr.width  - 8));
+    const top  = Math.max(4, Math.min(ar.bottom + 4, window.innerHeight - mr.height - 8));
     this.addMenu.style.left = `${left}px`;
     this.addMenu.style.top  = `${top}px`;
   }

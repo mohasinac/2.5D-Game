@@ -1,0 +1,80 @@
+/* ── Virtual Controls Overlay ────────────────────────────────────────────── */
+.vctrl-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  display: none;
+}
+.vctrl-overlay.active { display: block; }
+
+.vctrl-stick-zone {
+  position: absolute;
+  left: calc(2 * var(--cm));
+  bottom: calc(3 * var(--cm));
+  width: calc(22 * var(--cm));
+  height: calc(22 * var(--cm));
+  pointer-events: all;
+  touch-action: none;
+}
+.vctrl-stick-base {
+  position: absolute;
+  inset: calc(2 * var(--cm));
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(0,229,255,0.22);
+  transition: border-color 0.1s;
+}
+.vctrl-stick-base.active { border-color: rgba(0,229,255,0.55); }
+.vctrl-stick-knob {
+  position: absolute;
+  width: calc(8 * var(--cm));
+  height: calc(8 * var(--cm));
+  border-radius: 50%;
+  background: rgba(0,229,255,0.45);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+.vctrl-btn-zone {
+  position: absolute;
+  right: calc(2 * var(--cm));
+  bottom: calc(3 * var(--cm));
+  display: flex;
+  flex-direction: column;
+  gap: calc(1.5 * var(--cm));
+  pointer-events: all;
+}
+.vctrl-btn {
+  width: calc(14 * var(--cm));
+  height: calc(14 * var(--cm));
+  border-radius: 50%;
+  border: 2px solid rgba(0,229,255,0.35);
+  background: rgba(0,0,0,0.45);
+  color: var(--accent);
+  font-family: 'Orbitron', sans-serif;
+  font-size: calc(1.4 * var(--cm));
+  font-weight: 700;
+  touch-action: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vctrl-btn--a { border-color: rgba(255,107,53,0.4); color: var(--accent2); }
+.vctrl-btn.pressed { background: rgba(0,229,255,0.18); }
+.vctrl-btn--a.pressed { background: rgba(255,107,53,0.18); }
+.vctrl-hint {
+  position: absolute;
+  bottom: calc(1 * var(--cm));
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.28);
+  font-size: calc(1.1 * var(--cm));
+  font-family: 'Rajdhani', sans-serif;
+  pointer-events: none;
+  white-space: nowrap;
+}
