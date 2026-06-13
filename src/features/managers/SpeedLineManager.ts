@@ -93,6 +93,7 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     sl.totalLength   = totalLength;
 
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    sl.handleMeshes.forEach(h => { h.visible = false; });
     this.ctx.renderMgr.add(id, [mesh, edges]);
 
     const treeParentId = parentZoneId ?? arenaId;
@@ -127,6 +128,7 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     sl.totalLength  = totalLength;
 
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    sl.handleMeshes.forEach(h => { h.visible = false; });
     this.ctx.renderMgr.add(sl.id, [mesh, edges]);
     this.setVisible(sl.id, sl.visible ?? true);
   }
@@ -147,6 +149,7 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     data.totalLength  = totalLength;
 
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
+    data.handleMeshes.forEach(h => { h.visible = false; });
     this.ctx.renderMgr.add(data.id, [mesh, edges]);
 
     const treeParentId = data.parentZoneId ?? data.parentArenaId;
@@ -156,6 +159,7 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
   // ── Visibility helpers (used for custom-mode drag handle interaction) ────
 
   showHandles(sl: SpeedLineData): void {
+    if (sl.presetType !== 'custom') return;
     sl.handleMeshes.forEach(h => { h.visible = true; });
   }
 

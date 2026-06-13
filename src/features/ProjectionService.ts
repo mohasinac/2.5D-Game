@@ -38,8 +38,13 @@ export class ProjectionService {
       const wall = this.getWalls().get(wallId);
       if (wall?.mesh) projector.addMesh(wall.mesh);
     }
+    const arenaR = Math.max(arena.radiusX, arena.radiusZ);
+    const rSq    = (arenaR + 20) * (arenaR + 20);
     for (const [, obs] of this.getObstacles()) {
-      if (obs.mesh) projector.addMesh(obs.mesh);
+      if (!obs.mesh) continue;
+      const dx = obs.posX - arena.posX;
+      const dz = obs.posZ - arena.posZ;
+      if (dx * dx + dz * dz <= rSq) projector.addMesh(obs.mesh);
     }
     for (const bridgeId of this.getBridgesByArena().get(arenaId) ?? new Set<string>()) {
       const bridge = this.getBridges().get(bridgeId);

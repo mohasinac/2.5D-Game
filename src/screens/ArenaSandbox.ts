@@ -199,6 +199,9 @@ export class ArenaSandbox extends Sandbox {
       demoBtn.addEventListener('click', async () => {
         const ok = await gameConfirm('Load demo arena? Current work will be replaced.');
         if (!ok) return;
+        this.undoStack.length = 0;
+        this.redoStack.length = 0;
+        this.updateUndoRedoUI();
         this._applyConfigToScene(DEMO_ARENA_CONFIG);
         this._flushSave();
       });
@@ -496,13 +499,12 @@ export class ArenaSandbox extends Sandbox {
 
   /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
+    this._rotMgr.detachAll();
     this._envMgr?.clear();
     this._presentMgr?.disposeAll();
     this._presentConfigs.clear();
     this._subNodesAdded.clear();
     this._wallProfileNodes.clear();
-    // Detach rotation members first so other managers can cleanly dispose their objects
-    this._rotMgr.detachAll();
     this._slMgr.clear();
     this.slSegSeq = 0;
     for(const [id,] of this.arenas.entries()) this.sceneTree.remove(id);

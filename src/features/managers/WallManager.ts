@@ -248,6 +248,7 @@ export class WallManager
         const b0 = (w.arcStart    % 360 + 360) % 360;
         const b1 = (w.arcEnd      % 360 + 360) % 360;
         if (Math.abs(b1 - a0) < 1 || Math.abs(b0 - a1) < 1) {
+          sibs.add(w.id);
           this.apply(w, sibs);
         }
       }

@@ -197,7 +197,6 @@ export class SpawnManager {
     this._applyTraps(dt);
     this._applyZones(dt);
     this._buffMgr.tick(dtMs);
-    this._applyTrigger(dt);
     this._checkRespawn();
     this._applySelfRotation(dt);
     this._updateCamera();
