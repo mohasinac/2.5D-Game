@@ -1,11 +1,17 @@
-/**
+﻿/**
  * create-demo-arena.js
  *
- * Puppeteer script that builds the full demo arena by clicking through the
- * Arena Sandbox UI one node at a time.
+ * Puppeteer script that builds the full demo arena step-by-step through the
+ * Arena Sandbox UI, demonstrating all major features:
+ * - Hex Race Moat arena (outer hexagon, inner circle moat, r=80)
+ * - Tower Command arena (elevated on island, r=30, posY=28)
+ * - Zones, pits, walls, speed lines, traps, portals, obstacles, rotations
+ * - Tower Spiral Drop bridge (4 segments, arena-2 anchor, tapered width)
+ * - Bridge ribbon speed line, rotation groups
+ * - Preset save and library load
  *
  * Prerequisites:
- *   npm run dev   OR   npm run preview:host   (server on port 3000)
+ *   npm run dev   (server on port 3000)
  *   npm run demo  (runs this script)
  */
 
@@ -18,10 +24,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCREENSHOTS_DIR = path.join(__dirname, '..', 'screenshots', 'demo-arena');
 
 const BASE_URL = 'http://localhost:3000';
-const STEP_DELAY = 400;
-const NAV_TIMEOUT = 15000;
+const STEP_DELAY = 500;
+const NAV_TIMEOUT = 20000;
 
-// ─── Screenshot counter ───────────────────────────────────────────────────────
 let _shotIndex = 0;
 
 function ensureScreenshotsDir() {
@@ -33,11 +38,26 @@ async function screenshot(page, label) {
   const safe = label.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
   const filename = `${String(_shotIndex).padStart(3, '0')}_${safe}.png`;
   const filepath = path.join(SCREENSHOTS_DIR, filename);
-  await page.screenshot({ path: filepath, fullPage: false });
-  console.log(`  📸 ${filename}`);
+  try {
+    await page.screenshot({ path: filepath, fullPage: false });
+    console.log(`  ðŸ“¸ ${filename}`);
+  } catch (e) {
+    console.warn(`  [warn] screenshot failed (${filename}): ${e.message.slice(0, 80)}`);
+  }
 }
 
-// ─── Core helpers ─────────────────────────────────────────────────────────────
+/** Verify the page is still on /arena; re-navigate if it drifted. */
+async function ensureArenaPage(page) {
+  const url = page.url();
+  if (!url.includes('/arena')) {
+    console.warn(`  [recover] page drifted to ${url} â€” re-navigating to /arena`);
+    await page.goto(`${BASE_URL}/arena`, { waitUntil: 'domcontentloaded', timeout: NAV_TIMEOUT });
+    await page.waitForSelector('.tree-node[data-id="octagon-base"]', { timeout: NAV_TIMEOUT });
+    await sleep(800);
+  }
+}
+
+// â”€â”€â”€ Core helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -57,16 +77,21 @@ async function clickAddBtn(page, nodeId) {
 }
 
 async function clickMenuOption(page, labelText) {
-  const items = await page.$$('.tree-add-menu .tree-ctx-item');
-  for (const item of items) {
-    const text = await item.evaluate(el => el.textContent?.trim());
-    if (text === labelText) {
-      await item.click();
-      await sleep(STEP_DELAY);
-      return;
+  const clicked = await page.evaluate((lbl) => {
+    const items = [...document.querySelectorAll('.tree-add-menu .tree-ctx-item')];
+    for (const item of items) {
+      if ((item.textContent?.trim() ?? '') === lbl) {
+        item.click();
+        return true;
+      }
     }
+    const texts = items.map(i => i.textContent?.trim());
+    return { notFound: true, texts };
+  }, labelText);
+  if (!clicked || clicked.notFound) {
+    console.warn(`  [skip] menu option not found: "${labelText}"`, clicked?.texts ? JSON.stringify(clicked.texts) : '');
   }
-  throw new Error(`Menu option "${labelText}" not found`);
+  await sleep(STEP_DELAY);
 }
 
 async function waitForProps(page) {
@@ -80,92 +105,159 @@ async function waitForProps(page) {
   await sleep(200);
 }
 
-// Normalize internal whitespace for label matching (handles 'Height   (cm)' etc.)
 const normLabel = s => s.replace(/\s+/g, ' ').trim();
 
+// findPropRow uses a single evaluate call to avoid stale ElementHandle issues
 async function findPropRow(page, labelText) {
   const norm = normLabel(labelText);
-  const rows = await page.$$('.prop-row');
-  for (const row of rows) {
-    const label = await row.$('.prop-label');
-    if (!label) continue;
-    const text = await label.evaluate(el => el.textContent?.replace(/\s+/g, ' ').trim());
-    if (text === norm) return row;
-  }
-  return null;
+  const found = await page.evaluate((lbl) => {
+    const rows = [...document.querySelectorAll('.prop-row')];
+    for (const row of rows) {
+      const label = row.querySelector('.prop-label');
+      if (!label) continue;
+      const t = (label.textContent ?? '').replace(/\s+/g, ' ').trim();
+      if (t === lbl) return true;
+    }
+    return false;
+  }, norm);
+  // Return a sentinel object when found â€” callers that need an ElementHandle use setPropToggle's
+  // inline evaluate approach instead
+  return found ? { _found: true } : null;
 }
 
-/** Set a number input — prefers visible rows (skips collapsed segment bodies). */
-async function setPropNum(page, labelText, value) {
+/**
+ * Set a numeric input row.
+ * Fires the slider's change event (which calls onChange in AbstractPropertiesPanel.numRow)
+ * rather than the number input's change event (which has no listener).
+ */
+async function setPropNum(page, labelText, value, occurrence = 0) {
+  const norm = normLabel(labelText);
+  const found = await page.evaluate((lbl, val, occ) => {
+    const rows = [...document.querySelectorAll('.prop-row')];
+    let count = 0;
+    for (const row of rows) {
+      const label = row.querySelector('.prop-label');
+      if (!label) continue;
+      const t = (label.textContent ?? '').replace(/\s+/g, ' ').trim();
+      if (t !== lbl) continue;
+      const numInput = row.querySelector('input.prop-input');
+      if (!numInput) continue;
+      if (numInput.offsetParent === null) continue;
+      if (count < occ) { count++; continue; }
+      // Set value on number input (display)
+      numInput.value = String(val);
+      numInput.dispatchEvent(new Event('input', { bubbles: true }));
+      // Fire change on the SLIDER (range input) which triggers onChange in AbstractPropertiesPanel
+      const slider = row.querySelector('input[type="range"]');
+      if (slider) {
+        slider.value = String(val);
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+      } else {
+        // No slider (rare) â€” dispatch blur on number input to trigger commit()
+        numInput.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+      }
+      return true;
+    }
+    return false;
+  }, norm, value, occurrence);
+  if (!found) console.warn(`  [skip] num row not found or hidden (occ=${occurrence}): "${labelText}"`);
+  await sleep(250);
+}
+
+async function setPropText(page, labelText, value) {
   const norm = normLabel(labelText);
   const found = await page.evaluate((lbl, val) => {
     const rows = [...document.querySelectorAll('.prop-row')];
     for (const row of rows) {
       const label = row.querySelector('.prop-label');
       if (!label) continue;
-      const t = (label.textContent ?? '').replace(/\s+/g, ' ').trim();
-      if (t !== lbl) continue;
-      const input = row.querySelector('input.prop-input');
-      if (!input) continue;
-      if (input.offsetParent === null) continue; // skip hidden rows
-      input.value = String(val);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+      if ((label.textContent ?? '').replace(/\s+/g, ' ').trim() !== lbl) continue;
+      const inp = row.querySelector('input[type="text"], input:not([type="color"]):not([type="number"])');
+      if (!inp || inp.offsetParent === null) continue;
+      inp.value = val;
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      inp.dispatchEvent(new Event('change', { bubbles: true }));
       return true;
     }
     return false;
   }, norm, value);
-  if (!found) console.warn(`  [skip] num row not found or hidden: "${labelText}"`);
+  if (!found) console.warn(`  [skip] text row not found: "${labelText}"`);
   await sleep(200);
 }
 
-async function setPropSelect(page, labelText, optionValue) {
+/**
+ * Set a select/dropdown row. occurrence=0 means first matching row,
+ * occurrence=1 means second, etc.
+ */
+async function setPropSelect(page, labelText, optionValue, occurrence = 0) {
   const norm = normLabel(labelText);
-  // Search for first row with matching label that ALSO has a <select> (skips themeRow etc.)
-  const rows = await page.$$('.prop-row');
-  for (const row of rows) {
-    const label = await row.$('.prop-label');
-    if (!label) continue;
-    const text = await label.evaluate(el => el.textContent?.replace(/\s+/g, ' ').trim());
-    if (text !== norm) continue;
-    // _selectRow() uses class="prop-input"; selectRow() uses class="prop-select"
-    const sel = await row.$('select.prop-select') ?? await row.$('select.prop-input');
-    if (!sel) continue;  // label matches but no <select> — skip (e.g. themeRow)
-    await sel.select(optionValue);
-    await sleep(200);
-    return;
-  }
-  console.warn(`  [skip] select row not found: "${labelText}"`);
+  const found = await page.evaluate((lbl, val, occ) => {
+    const rows = [...document.querySelectorAll('.prop-row')];
+    let count = 0;
+    for (const row of rows) {
+      const label = row.querySelector('.prop-label');
+      if (!label) continue;
+      const t = (label.textContent ?? '').replace(/\s+/g, ' ').trim();
+      if (t !== lbl) continue;
+      if (count < occ) { count++; continue; }
+      const sel = row.querySelector('select');
+      if (!sel) continue;
+      sel.value = val;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }
+    return false;
+  }, norm, optionValue, occurrence);
+  if (!found) console.warn(`  [skip] select row not found (occ=${occurrence}): "${labelText}"`);
+  await sleep(200);
 }
 
 async function setPropColor(page, labelText, hex) {
-  const row = await findPropRow(page, labelText);
-  if (!row) { console.warn(`  [skip] color row not found: "${labelText}"`); return; }
-  const input = await row.$('input[type="color"]');
-  if (!input) { console.warn(`  [skip] no color input in row: "${labelText}"`); return; }
-  await input.evaluate((el, v) => {
-    el.value = v;
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-  }, hex);
+  const norm = normLabel(labelText);
+  const found = await page.evaluate((lbl, v) => {
+    const rows = [...document.querySelectorAll('.prop-row')];
+    for (const row of rows) {
+      const label = row.querySelector('.prop-label');
+      if (!label) continue;
+      if ((label.textContent ?? '').replace(/\s+/g, ' ').trim() !== lbl) continue;
+      const inp = row.querySelector('input[type="color"]');
+      if (!inp) continue;
+      inp.value = v;
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    }
+    return false;
+  }, norm, hex);
+  if (!found) console.warn(`  [skip] color row not found: "${labelText}"`);
   await sleep(200);
 }
 
 async function setPropToggle(page, labelText, on) {
-  const row = await findPropRow(page, labelText);
-  if (!row) { console.warn(`  [skip] toggle row not found: "${labelText}"`); return; }
-  const btn = await row.$('.prop-profile-btn');
-  if (!btn) { console.warn(`  [skip] no toggle btn in row: "${labelText}"`); return; }
-  const isActive = await btn.evaluate(el => el.classList.contains('active'));
-  if (isActive !== on) {
-    await btn.click();
-    await sleep(200);
+  const norm = normLabel(labelText);
+  const result = await page.evaluate((lbl, wantOn) => {
+    const rows = [...document.querySelectorAll('.prop-row')];
+    for (const row of rows) {
+      const label = row.querySelector('.prop-label');
+      if (!label) continue;
+      const t = (label.textContent ?? '').replace(/\s+/g, ' ').trim();
+      if (t !== lbl) continue;
+      const btn = row.querySelector('.prop-profile-btn');
+      if (!btn) return { found: false, reason: 'no btn in row' };
+      const isActive = btn.classList.contains('active');
+      if (isActive !== wantOn) btn.click();
+      return { found: true };
+    }
+    const allLabels = [...document.querySelectorAll('.prop-label')].map(el => el.textContent?.trim());
+    return { found: false, reason: 'row not found', labels: allLabels.slice(0, 20) };
+  }, norm, on);
+  if (!result.found) {
+    console.warn(`  [skip] toggle row not found: "${labelText}"`, result.reason,
+      result.labels ? `labels=${JSON.stringify(result.labels)}` : '');
   }
+  await sleep(200);
 }
 
-/**
- * Click a .prop-profile-btn by its exact text content.
- * Used for: wall profile, wall top profile, obstacle shape, trap shape.
- */
+/** Click a .prop-profile-btn by text. */
 async function clickProfileBtn(page, btnText) {
   const clicked = await page.evaluate((text) => {
     const btns = [...document.querySelectorAll('.prop-profile-btn')];
@@ -182,890 +274,722 @@ async function clickProfileBtn(page, btnText) {
 }
 
 /**
- * Click a zone fill button by fill type name.
- * Falls back to positional index in the FILLS array.
+ * Click the Nth .prop-profile-btn matching btnText.
+ * occurrence=0 â†’ first match, occurrence=1 â†’ second match, etc.
  */
-async function clickFillBtn(page, fillName) {
-  const FILLS = ['water', 'lava', 'swamp', 'poison', 'sand', 'ice', 'void', 'custom'];
-  const idx = FILLS.indexOf(fillName);
-  const clicked = await page.evaluate((f, i) => {
-    const btns = [...document.querySelectorAll('.prop-fill-btn')];
+async function clickProfileBtnAt(page, btnText, occurrence = 0) {
+  const clicked = await page.evaluate((text, occ) => {
+    const btns = [...document.querySelectorAll('.prop-profile-btn')];
+    let count = 0;
     for (const btn of btns) {
-      const t = (btn.textContent ?? '').trim().toLowerCase();
-      if (t === f || t.includes(f)) { btn.click(); return true; }
+      if ((btn.textContent ?? '').trim() === text) {
+        if (count === occ) { btn.click(); return true; }
+        count++;
+      }
     }
-    if (i >= 0 && btns[i]) { btns[i].click(); return true; }
     return false;
-  }, fillName, idx);
-  if (!clicked) console.warn(`  [skip] fill btn not found: "${fillName}"`);
+  }, btnText, occurrence);
+  if (!clicked) console.warn(`  [skip] profile btn not found (occ=${occurrence}): "${btnText}"`);
   await sleep(300);
 }
 
-/**
- * Click a bridge segment type button by its label (e.g. 'Loop', 'Curve', 'Hairpin').
- * Uses the second <span> inside .prop-shape-btn which holds the text label.
- */
-async function clickSegmentType(page, label) {
-  const clicked = await page.evaluate((lbl) => {
+/** Click a .prop-shape-btn (opening shapes, segment types) by its label span text. */
+async function clickShapeBtn(page, label) {
+  // Wait up to 5 s for shape buttons to appear in the panel
+  await page.waitForFunction(
+    () => document.querySelectorAll('.prop-shape-btn').length > 0,
+    { timeout: 5000 },
+  ).catch(() => {});
+
+  const result = await page.evaluate((lbl) => {
     const btns = [...document.querySelectorAll('.prop-shape-btn')];
     for (const btn of btns) {
       const spans = btn.querySelectorAll('span');
       const lastSpan = spans[spans.length - 1];
       if (lastSpan && lastSpan.textContent?.trim() === lbl) {
         btn.click();
-        return true;
+        return { found: true, count: btns.length };
       }
     }
-    return false;
+    // Fallback: check full textContent
+    for (const btn of btns) {
+      if ((btn.textContent ?? '').includes(lbl)) {
+        btn.click();
+        return { found: true, count: btns.length, fallback: true };
+      }
+    }
+    return { found: false, count: btns.length, texts: btns.map(b => b.textContent?.trim()) };
   }, label);
-  if (!clicked) console.warn(`  [skip] segment type btn not found: "${label}"`);
+
+  if (!result.found) {
+    console.warn(`  [skip] shape btn not found: "${label}" (${result.count} btns: ${JSON.stringify(result.texts)})`);
+  }
   await sleep(300);
 }
 
-function step(msg) {
-  console.log(`  ▸ ${msg}`);
+async function clickFillBtn(page, fillName) {
+  // Wait for fill buttons to appear in the panel (they render when a zone is selected)
+  await page.waitForFunction(
+    () => document.querySelectorAll('.prop-fill-btn').length > 0,
+    { timeout: 5000 },
+  ).catch(() => {});
+
+  const FILLS = ['water', 'lava', 'swamp', 'poison', 'sand', 'ice', 'void', 'custom'];
+  const idx = FILLS.indexOf(fillName);
+  const result = await page.evaluate((f, i) => {
+    const btns = [...document.querySelectorAll('.prop-fill-btn')];
+    for (const btn of btns) {
+      const t = (btn.textContent ?? '').trim().toLowerCase();
+      if (t === f || t.includes(f)) { btn.click(); return { ok: true }; }
+    }
+    if (i >= 0 && btns[i]) { btns[i].click(); return { ok: true, byIndex: true }; }
+    return { ok: false, count: btns.length, texts: btns.map(b => b.textContent?.trim()) };
+  }, fillName, idx);
+  if (!result.ok) console.warn(`  [skip] fill btn not found: "${fillName}" (${result.count} btns: ${JSON.stringify(result.texts)})`);
+  await sleep(300);
 }
 
-// ─── Node creation helpers ────────────────────────────────────────────────────
+/** Check or uncheck a tree node's checkbox */
+async function checkTreeNode(page, nodeId, checked = true) {
+  const found = await page.evaluate((id, want) => {
+    const node = document.querySelector(`.tree-node[data-id="${id}"]`);
+    if (!node) return false;
+    const chk = node.querySelector('.tree-chk');
+    if (!chk) return false;
+    const isChecked = chk.checked || chk.classList.contains('checked');
+    if (isChecked !== want) chk.click();
+    return true;
+  }, nodeId, checked);
+  if (!found) console.warn(`  [skip] tree-chk not found for ${nodeId}`);
+  await sleep(150);
+}
+
+/** Click a small icon button on a tree node by button text or title */
+async function clickChildBtn(page, nodeId, btnLabel) {
+  const found = await page.evaluate((id, lbl) => {
+    const node = document.querySelector(`.tree-node[data-id="${id}"]`);
+    if (!node) return false;
+    const btns = [...node.querySelectorAll('button')];
+    const btn = btns.find(b => (b.textContent?.trim() === lbl) || (b.title?.includes(lbl)));
+    if (btn) { btn.click(); return true; }
+    return false;
+  }, nodeId, btnLabel);
+  if (!found) console.warn(`  [skip] child btn "${btnLabel}" not found on ${nodeId}`);
+  await sleep(300);
+}
+
+/** Wait for and dismiss a confirm/dialog modal */
+async function confirmDialog(page, yesText = null) {
+  await page.waitForSelector('.dialog-modal, .game-confirm', { timeout: 5000 }).catch(() => {});
+  await page.evaluate((t) => {
+    const btns = [...document.querySelectorAll('.dialog-modal button, .game-confirm button')];
+    const btn = t
+      ? btns.find(b => b.textContent?.trim().toLowerCase().includes(t.toLowerCase()))
+      : btns[0];
+    if (btn) btn.click();
+  }, yesText);
+  await sleep(400);
+}
+
+function step(msg) {
+  console.log(`  â–¸ ${msg}`);
+}
+
+// â”€â”€â”€ Node creation helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function addArena(page) {
   await clickAddBtn(page, 'octagon-base');
-  await clickMenuOption(page, 'A+');
+  await clickMenuOption(page, 'Add arena');
+}
+async function addPitToArena(page, arenaId) {
+  await clickAddBtn(page, arenaId);
+  await clickMenuOption(page, 'Add pit');
 }
 async function addZoneToArena(page, arenaId) {
   await clickAddBtn(page, arenaId);
-  await clickMenuOption(page, 'Z+');
+  await clickMenuOption(page, 'Add zone');
 }
 async function addWallToArena(page, arenaId) {
   await clickAddBtn(page, arenaId);
-  await clickMenuOption(page, 'W+');
+  await clickMenuOption(page, 'Add wall');
 }
 async function addSpeedLineToArena(page, arenaId) {
   await clickAddBtn(page, arenaId);
-  await clickMenuOption(page, 'SL+');
+  await clickMenuOption(page, 'Add speed line');
 }
 async function addTrapToArena(page, arenaId) {
   await clickAddBtn(page, arenaId);
-  await clickMenuOption(page, 'Trap+');
+  await clickMenuOption(page, 'Add arena trap');
 }
 async function addPortalToArena(page, arenaId) {
   await clickAddBtn(page, arenaId);
-  await clickMenuOption(page, '⬡+');
+  await clickMenuOption(page, 'Add arena portal');
 }
 async function addBridge(page) {
   await clickAddBtn(page, 'octagon-base');
-  await clickMenuOption(page, 'B+');
+  await clickMenuOption(page, 'Add bridge');
 }
 async function addSegmentToBridge(page, bridgeId) {
   await clickAddBtn(page, bridgeId);
-  await clickMenuOption(page, 'Seg+');
-}
-async function addWallToBridge(page, bridgeId) {
-  await clickAddBtn(page, bridgeId);
-  await clickMenuOption(page, 'W+');
+  await clickMenuOption(page, 'Add segment');
 }
 async function addObstacle(page) {
   await clickAddBtn(page, 'octagon-base');
-  await clickMenuOption(page, 'Obs+');
-}
-async function addBaseTrap(page) {
-  await clickAddBtn(page, 'octagon-base');
-  await clickMenuOption(page, 'Trap+');
+  await clickMenuOption(page, 'Add obstacle');
 }
 async function addBasePortal(page) {
   await clickAddBtn(page, 'octagon-base');
-  await clickMenuOption(page, '⬡+');
+  await clickMenuOption(page, 'Add base portal');
 }
-async function addRotation(page, nodeId) {
-  await clickAddBtn(page, nodeId);
-  await sleep(STEP_DELAY);
+
+
+// ─── Pier helpers ─────────────────────────────────────────────────────────────
+
+async function setPierSection(page) {
+  await setPropNum(page, 'Width (cm)', 5);
+  await clickProfileBtn(page, '━ Flat');
+  await sleep(200);
+  await setPropNum(page, 'Depth (cm)', 1);
+  await clickProfileBtn(page, '◈ Stone');
+  await setPropColor(page, 'Color', '#a09070');
+  await clickProfileBtn(page, 'Concrete');
+}
+
+async function addPier(page, angle, bridgeId, segIdA, segIdB, pierName) {
+  await addBridge(page);
+  await waitForNode(page, bridgeId);
+  step(`${bridgeId} created`);
+
+  // Configure start ref: Arena, angle, yOffset=-11
+  await selectNode(page, bridgeId);
+  await waitForProps(page);
+  await clickProfileBtnAt(page, 'Arena', 0);
+  await sleep(400);
+  await selectNode(page, bridgeId);
+  await waitForProps(page);
+  await sleep(200);
+  await setPropSelect(page, 'Arena', 'arena-1', 0);
+  await setPropNum(page, 'Angle°', angle, 0);
+  await setPropNum(page, 'Y Offset (cm)', -11, 0);
+
+  // Section
+  await selectNode(page, bridgeId);
+  await waitForProps(page);
+  await setPierSection(page);
+
+  // Segment A: Ramp -25 degrees, length 15
+  await addSegmentToBridge(page, bridgeId);
+  await waitForNode(page, segIdA);
+  await selectNode(page, segIdA);
+  await waitForProps(page);
+  await clickShapeBtn(page, 'Ramp');
+  await sleep(300);
+  await selectNode(page, segIdA);
+  await waitForProps(page);
+  await setPropNum(page, 'Length (cm)', 15);
+  await setPropNum(page, 'Ramp Angle°', -25);
+
+  // Segment B: Straight, length 20
+  await addSegmentToBridge(page, bridgeId);
+  await waitForNode(page, segIdB);
+  await selectNode(page, segIdB);
+  await waitForProps(page);
+  // Straight is default type
+  await setPropNum(page, 'Length (cm)', 20);
+
+  step(`${pierName} pier complete`);
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('\n🎡  Arena Sandbox — Demo Arena Builder\n');
-  console.log('  Make sure dev/preview server is running on http://localhost:3000\n');
+  console.log('\n⛵  Black Sea Bowl — Demo Arena Builder\n');
+  console.log('  Make sure dev server is running on http://localhost:3000\n');
 
   ensureScreenshotsDir();
   console.log(`  📁 Screenshots → ${SCREENSHOTS_DIR}\n`);
 
   const browser = await puppeteer.launch({
     headless: false,
+    protocolTimeout: 90000,
     defaultViewport: { width: 1440, height: 900 },
-    args: ['--window-size=1440,900'],
+    args: [
+      '--window-size=1440,900',
+      '--no-first-run',
+      '--no-default-browser-check',
+      '--disable-session-crashed-bubble',
+      '--disable-infobars',
+    ],
   });
 
   const page = await browser.newPage();
-  page.on('console', m => { if (m.type() === 'error') console.error('  [page error]', m.text()); });
+  page.on('pageerror', err => console.error('  [JS error]', err.message));
+  page.on('console', m => { if (m.type() === 'error') console.error('  [console error]', m.text()); });
+  page.on('dialog', async dialog => { await dialog.dismiss().catch(() => {}); });
 
-  console.log('📍 Navigating to Arena Sandbox…');
-  await page.goto(`${BASE_URL}/arena`, { waitUntil: 'networkidle0', timeout: NAV_TIMEOUT });
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEP 0 — Navigate to Arena Sandbox
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n📍 Step 0 — Navigating to Arena Sandbox…');
+  await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: NAV_TIMEOUT });
+  await sleep(500);
+  await page.goto(`${BASE_URL}/arena`, { waitUntil: 'domcontentloaded', timeout: NAV_TIMEOUT });
   await page.waitForSelector('.tree-node[data-id="octagon-base"]', { timeout: NAV_TIMEOUT });
   await sleep(800);
+  const hasDialog = await page.$('.game-confirm, .dialog-modal');
+  if (hasDialog) await confirmDialog(page, 'confirm');
   step('Page loaded');
-  await screenshot(page, 'page_loaded');
+  await screenshot(page, '00_arena_loaded');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ARENA 1 — Moat Arena
+  // STEP 1 — Reset / clear any existing arena
   // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n🏟  Creating Moat Arena…');
+  console.log('\n🗑  Step 1 — Clearing existing arena…');
+  const didReset = await page.evaluate(() => {
+    const btns = [...document.querySelectorAll('button')];
+    const btn = btns.find(b =>
+      b.title?.includes('Reset') || b.className?.includes('reset-arena') ||
+      b.textContent?.trim() === 'Reset Arena'
+    );
+    if (btn) { btn.click(); return true; }
+    return false;
+  });
+  if (didReset) {
+    await sleep(500);
+    const dlg = await page.$('.game-confirm, .dialog-modal');
+    if (dlg) await confirmDialog(page, 'confirm');
+    await sleep(700);
+    step('Arena reset');
+  } else {
+    step('[skip] No reset button found — starting fresh');
+  }
+  await screenshot(page, '01_reset');
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 2-3 — Configure Base
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n🔷 Steps 2-3 — Configure Base…');
+  await selectNode(page, 'octagon-base');
+  await waitForProps(page);
+  await setPropNum(page, 'Height', 30);
+  await setPropNum(page, 'Sides', 8);
+  await setPropColor(page, 'Color', '#e8dcc0');
+  step('Base: height=30, sides=8');
+  await screenshot(page, '02_base_config');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 4-11 — Arena 1: Black Sea Bowl
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n🏟  Steps 4-11 — Creating Black Sea Bowl arena…');
   await addArena(page);
   await waitForNode(page, 'arena-1');
   step('arena-1 created');
 
   await selectNode(page, 'arena-1');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.prop-shape-btn').length > 0,
+    { timeout: 8000 },
+  ).catch(() => console.warn('  [warn] shape btns did not appear'));
+  await sleep(300);
+
+  await clickShapeBtn(page, 'Circle');
+  await sleep(400);
+  await clickProfileBtn(page, '▭ Step');
+  await sleep(400);
+
+  await selectNode(page, 'arena-1');
   await waitForProps(page);
+
   await setPropNum(page, 'Radius X', 60);
   await setPropNum(page, 'Radius Z', 60);
   await setPropNum(page, 'Depth', 22);
-  await setPropColor(page, 'Color', '#1a3a5c');
+  await setPropNum(page, 'Step Count', 2);
+  await setPropNum(page, 'Y (tower)', 24);
 
-  // Enable moat + set moat island dims
-  await setPropToggle(page, 'Ring/Moat', true);
-  await sleep(400);
-  await setPropNum(page, 'Inner R X', 25);
-  await setPropNum(page, 'Inner R Z', 25);
-  await setPropNum(page, 'Inner Y offset', 20);
+  await setPropColor(page, 'Color', '#4a8fa8');
+  await clickProfileBtn(page, 'Plain');
+  await clickProfileBtn(page, '◈ Stone');
+  await setPropColor(page, 'Light Color', '#44aadd');
+  await setPropNum(page, 'Intensity', 1.3);
+  await setPropNum(page, 'Fog Density', 3);
 
-  // Set particle preset
-  await setPropSelect(page, 'Preset', 'void_motes');
+  step('Black Sea Bowl: circle/step, r=60, depth=22, posY=24');
+  await screenshot(page, '03_black_sea_bowl');
 
-  // Switch to spiral profile — also need 'Apply to all edges' ON for spiral rows to appear
-  await setPropToggle(page, 'Apply to all edges', true);
-  await clickProfileBtn(page, '↺ Spiral');
-  await sleep(400);
-  await selectNode(page, 'arena-1');
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 12-14 — Pit: Whirlpool Eye
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n▼ Steps 12-14 — Adding Whirlpool Eye pit…');
+  await addPitToArena(page, 'arena-1');
+  await waitForNode(page, 'pit-1');
+  step('pit-1 created');
+
+  await selectNode(page, 'pit-1');
   await waitForProps(page);
+  await clickShapeBtn(page, 'Circle');
   await sleep(300);
+  await selectNode(page, 'pit-1');
+  await waitForProps(page);
+  await setPropNum(page, 'Radius X', 6);
+  await setPropNum(page, 'Radius Z', 6);
+  await setPropNum(page, 'Dist (cm)', 0);
+  await setPropNum(page, 'Angle °', 0);
+  await setPropColor(page, 'Color', '#041520');
+  await setPropColor(page, 'Glow Color', '#0044aa');
+  await setPropNum(page, 'Intensity', 0.6);
+  step('Whirlpool Eye: circle r=6, centered');
+  await screenshot(page, '04_whirlpool_eye');
 
-  // These rows only appear when wallProfile='spiral' AND stepApplyToAll=true
-  await setPropNum(page, 'Turns', 1.5);
-  await setPropNum(page, 'Helices', 2);
-
-  step('Moat Arena configured');
-  await screenshot(page, 'arena-1_moat_arena');
-
-  // ── Zone 1: Water Zone ────────────────────────────────────────────────────
-  console.log('\n💧 Adding Water Zone…');
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 15-18 — Zone: Black Sea (water fill)
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n💧 Steps 15-18 — Adding Black Sea water zone…');
   await addZoneToArena(page, 'arena-1');
   await waitForNode(page, 'zone-1');
   step('zone-1 created');
 
   await selectNode(page, 'zone-1');
   await waitForProps(page);
-  await setPropNum(page, 'Radius X', 14);
-  await setPropNum(page, 'Radius Z', 14);
-  await setPropNum(page, 'Depth', 8);
-  await setPropNum(page, 'Dist (cm)', 42);
-  await setPropNum(page, 'Angle °', 45);
-  await clickFillBtn(page, 'water');
-  await setPropColor(page, 'Glow Color', '#00aaff');
-  step('Water Zone configured');
-  await screenshot(page, 'zone-1_water_zone');
-
-  // ── Zone 2: Void Zone ─────────────────────────────────────────────────────
-  console.log('\n🌀 Adding Void Zone…');
-  await addZoneToArena(page, 'arena-1');
-  await waitForNode(page, 'zone-2');
-  step('zone-2 created');
-
-  await selectNode(page, 'zone-2');
+  await clickShapeBtn(page, 'Circle');
+  await sleep(300);
+  await selectNode(page, 'zone-1');
   await waitForProps(page);
-  await setPropNum(page, 'Radius X', 12);
-  await setPropNum(page, 'Radius Z', 12);
-  await setPropNum(page, 'Depth', 8);
-  await setPropNum(page, 'Dist (cm)', 42);
-  await setPropNum(page, 'Angle °', 225);
-  await clickFillBtn(page, 'void');
-  await setPropColor(page, 'Glow Color', '#8800ff');
-  await setPropSelect(page, 'Preset', 'void_motes');
-  step('Void Zone configured');
-  await screenshot(page, 'zone-2_void_zone');
+  await setPropNum(page, 'Radius X', 30);
+  await setPropNum(page, 'Radius Z', 30);
+  await setPropNum(page, 'Depth', 14);
+  await setPropNum(page, 'Dist (cm)', 0);
+  await setPropNum(page, 'Angle °', 0);
+  await clickFillBtn(page, 'water');
+  await sleep(300);
+  await selectNode(page, 'zone-1');
+  await waitForProps(page);
+  await setPropNum(page, 'Opacity', 0.88);
+  await setPropColor(page, 'Glow Color', '#00aaff');
+  await setPropNum(page, 'Intensity', 0.5);
+  step('Black Sea: r=30, water fill, opacity=0.88');
+  await screenshot(page, '05_black_sea_zone');
 
-  // ── Wall 1: Full-perimeter wave wall ──────────────────────────────────────
-  console.log('\n🧱 Adding Wall 1 — Full perimeter waves…');
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 19-22 — Wall: City Perimeter (crenellated)
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n🧱 Steps 19-22 — Adding City Perimeter wall…');
   await addWallToArena(page, 'arena-1');
   await waitForNode(page, 'wall-1');
   step('wall-1 created');
 
   await selectNode(page, 'wall-1');
   await waitForProps(page);
-  // Default is full-perimeter; tilt is forced to 0 for closed ring — that's fine
+  await setPropToggle(page, 'Full Perimeter', true);
   await setPropNum(page, 'Height (cm)', 20);
-  await clickProfileBtn(page, '∿ Waves');   // top profile
+  await setPropNum(page, 'Tilt°', 0);
+  await setPropNum(page, 'Thickness (cm)', 3);
+  await clickProfileBtn(page, '⊓ Crenellated');
   await sleep(300);
-  // Re-select so Amplitude/Frequency rows appear (conditional on topProfile !== 'flat')
   await selectNode(page, 'wall-1');
   await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Amplitude (cm)', 4);
-  await setPropNum(page, 'Frequency', 6);
-  await setPropColor(page, 'Color', '#2255aa');
-  await setPropNum(page, 'Glow Intensity', 0.4);
-  await setPropColor(page, 'Glow Color', '#00e5ff');
-  step('Wall 1 configured');
-  await screenshot(page, 'wall-1_wave_full_perimeter');
-
-  // ── Wall 2: Partial-arc serrated wall (0–180°) ────────────────────────────
-  console.log('\n🧱 Adding Wall 2 — Serrated step (0–180°)…');
-  await addWallToArena(page, 'arena-1');
-  await waitForNode(page, 'wall-2');
-  step('wall-2 created');
-
-  await selectNode(page, 'wall-2');
-  await waitForProps(page);
-  // Toggle off full-perimeter, then re-select so arc rows appear
-  await setPropToggle(page, 'Full Perimeter', false);
-  await sleep(400);
-  await selectNode(page, 'wall-2');
-  await waitForProps(page);
-  await sleep(300);
-  await setPropNum(page, 'Arc Start°', 0);
-  await setPropNum(page, 'Arc End°', 180);
-  await setPropNum(page, 'Height (cm)', 30);
-  await setPropNum(page, 'Tilt°', -35);
-  await clickProfileBtn(page, '⟋ Serrated');
-  await sleep(300);
-  await selectNode(page, 'wall-2');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Amplitude (cm)', 5);
+  await setPropNum(page, 'Amplitude (cm)', 3);
   await setPropNum(page, 'Frequency', 8);
-  await setPropColor(page, 'Color', '#334466');
-  step('Wall 2 configured');
-  await screenshot(page, 'wall-2_serrated_0-180deg');
+  await setPropColor(page, 'Color', '#c4aa80');
+  await clickProfileBtn(page, 'Concrete');
+  await clickProfileBtn(page, '◈ Stone');
+  step('City Perimeter: full, h=20, crenellated, sandstone');
+  await screenshot(page, '06_city_perimeter');
 
-  // ── Wall 3: Partial-arc flat wall (180–360°) ──────────────────────────────
-  console.log('\n🧱 Adding Wall 3 — Flat (180–360°)…');
-  await addWallToArena(page, 'arena-1');
-  await waitForNode(page, 'wall-3');
-  step('wall-3 created');
-
-  await selectNode(page, 'wall-3');
-  await waitForProps(page);
-  await setPropToggle(page, 'Full Perimeter', false);
-  await sleep(400);
-  await selectNode(page, 'wall-3');
-  await waitForProps(page);
-  await sleep(300);
-  await setPropNum(page, 'Arc Start°', 180);
-  await setPropNum(page, 'Arc End°', 360);
-  await setPropNum(page, 'Height (cm)', 15);
-  await setPropNum(page, 'Tilt°', 10);
-  await clickProfileBtn(page, '━ Flat');
-  await setPropColor(page, 'Color', '#3a5050');
-  step('Wall 3 configured');
-  await screenshot(page, 'wall-3_flat_180-360deg');
-
-  // ── Wall 4: Outward-leaning triangles (60–120°) ───────────────────────────
-  console.log('\n🧱 Adding Wall 4 — Triangles outward (60–120°)…');
-  await addWallToArena(page, 'arena-1');
-  await waitForNode(page, 'wall-4');
-  step('wall-4 created');
-
-  await selectNode(page, 'wall-4');
-  await waitForProps(page);
-  await setPropToggle(page, 'Full Perimeter', false);
-  await sleep(400);
-  await selectNode(page, 'wall-4');
-  await waitForProps(page);
-  await sleep(300);
-  await setPropNum(page, 'Arc Start°', 60);
-  await setPropNum(page, 'Arc End°', 120);
-  await setPropNum(page, 'Height (cm)', 25);
-  await setPropNum(page, 'Tilt°', 25);
-  await clickProfileBtn(page, '▲ Triangles');
-  await sleep(300);
-  await selectNode(page, 'wall-4');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Amplitude (cm)', 4);
-  await setPropColor(page, 'Color', '#663322');
-  await setPropNum(page, 'Glow Intensity', 0.3);
-  await setPropColor(page, 'Glow Color', '#ff6b35');
-  step('Wall 4 configured');
-  await screenshot(page, 'wall-4_triangles_60-120deg');
-
-  // ── Speed Line 1: Whirlpool ────────────────────────────────────────────────
-  console.log('\n⚡ Adding Speed Line 1 — Whirlpool…');
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 23-29 — Speed Line: Whirlpool Current (spiral_in, periodic)
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n⚡ Steps 23-29 — Adding Whirlpool Current speed line…');
   await addSpeedLineToArena(page, 'arena-1');
   await waitForNode(page, 'sl-1');
   step('sl-1 created');
 
   await selectNode(page, 'sl-1');
   await waitForProps(page);
-  await setPropNum(page, 'Start Dist', 42);
-  await setPropNum(page, 'Start Angle', 45);
-  await setPropNum(page, 'Start Dir °', 90);
-  await setPropToggle(page, 'Surface Follow', true);
-  await setPropNum(page, 'Width cm', 3);
-  await setPropColor(page, 'Color', '#0088ff');
-  await setPropNum(page, 'Opacity', 0.85);
-  await setPropToggle(page, 'Glow', true);     // glow copies ribbon color
-  await setPropSelect(page, 'Direction', 'forward');
-  await setPropNum(page, 'Speed ×', 2.5);      // setPropNum now skips hidden rows
-  step('Whirlpool configured');
-  await screenshot(page, 'sl-1_whirlpool');
-
-  // ── Speed Line 2: Flower Pattern ──────────────────────────────────────────
-  console.log('\n⚡ Adding Speed Line 2 — Flower Pattern…');
-  await addSpeedLineToArena(page, 'arena-1');
-  await waitForNode(page, 'sl-2');
-  step('sl-2 created');
-
-  await selectNode(page, 'sl-2');
+  await setPropSelect(page, 'Shape', 'spiral_in');
+  await sleep(400);
+  await selectNode(page, 'sl-1');
   await waitForProps(page);
-  await setPropNum(page, 'Start Dist', 10);
-  await setPropNum(page, 'Start Angle', 0);
-  await setPropNum(page, 'Start Dir °', 30);
-  await setPropToggle(page, 'Surface Follow', true);
-  await setPropNum(page, 'Width cm', 2);
-  await setPropColor(page, 'Color', '#ff00aa');
-  await setPropNum(page, 'Opacity', 0.75);
-  await setPropToggle(page, 'Glow', true);
-  await setPropSelect(page, 'Direction', 'bidirectional');
-  await setPropNum(page, 'Speed ×', 1.8);
-  step('Flower Pattern configured');
-  await screenshot(page, 'sl-2_flower_pattern');
 
-  // ── Speed Line 3: Wall Climb ──────────────────────────────────────────────
-  console.log('\n⚡ Adding Speed Line 3 — Wall Climb…');
-  await addSpeedLineToArena(page, 'arena-1');
-  await waitForNode(page, 'sl-3');
-  step('sl-3 created');
+  await setPropNum(page, 'Radius X cm', 28);
+  await setPropNum(page, 'Turns', 3.5);
+  await setPropNum(page, 'Total Steps', 80);
 
-  await selectNode(page, 'sl-3');
-  await waitForProps(page);
-  await setPropNum(page, 'Start Dist', 55);
-  await setPropNum(page, 'Start Angle', 270);
-  await setPropNum(page, 'Start Dir °', 180);
-  await setPropToggle(page, 'Surface Follow', false);
+  await setPropNum(page, 'Speed ×', 3.5);
   await setPropNum(page, 'Width cm', 2.5);
-  await setPropColor(page, 'Color', '#ffaa00');
-  await setPropNum(page, 'Opacity', 0.9);
-  await setPropSelect(page, 'Exit', 'launch');
-  await sleep(300);
-  // Re-select so Launch × row appears (conditional on exitBehavior='launch')
-  await selectNode(page, 'sl-3');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Launch ×', 2.0);
-  step('Wall Climb configured');
-  await screenshot(page, 'sl-3_wall_climb');
+  await setPropColor(page, 'Color', '#00ccff');
+  await setPropNum(page, 'Opacity', 0.75);
+  await setPropColor(page, 'Glow Color', '#44ddff');
 
-  // ── Trap 1: Launch Pad ───────────────────────────────────────────────────
-  console.log('\n⚡ Adding Trap 1 — Launch Pad…');
+  await setPropSelect(page, 'Direction', 'forward');
+  await sleep(200);
+  await setPropSelect(page, 'Exit', 'launch');
+  await sleep(200);
+  await selectNode(page, 'sl-1');
+  await waitForProps(page);
+  await setPropNum(page, 'Launch ×', 3.0);
+
+  await setPropSelect(page, 'Activation', 'periodic');
+  await sleep(300);
+  await selectNode(page, 'sl-1');
+  await waitForProps(page);
+  await setPropNum(page, 'Period ms', 45000);
+  await setPropNum(page, 'Duty 0–1', 0.33);
+
+  await page.evaluate(() => {
+    const btns = [...document.querySelectorAll('button')];
+    const regen = btns.find(b => b.textContent?.includes('Regenerate') || b.textContent?.includes('↺ Regen'));
+    if (regen) regen.click();
+  });
+  await sleep(600);
+
+  step('Whirlpool Current: spiral_in, periodic 45s/0.33, launch force=3');
+  await screenshot(page, '07_whirlpool_sl');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 30-35 — Trap: Whirlpool (gravity_pull, periodic)
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n⚡ Steps 30-35 — Adding Whirlpool trap…');
   await addTrapToArena(page, 'arena-1');
   await waitForNode(page, 'trap-1');
   step('trap-1 created');
 
   await selectNode(page, 'trap-1');
   await waitForProps(page);
-  // Default effect is 'launch' so Force Y row is already visible
-  await setPropSelect(page, 'Variant', 'trampoline');
-  await setPropNum(page, 'Radius (cm)', 36);  // posR=36: inner edge at r=26, clear of moat inner wall (r=25)
-  await setPropNum(page, 'Angle°', 135);
-  await setPropNum(page, 'Force Y (cm/s)', 80);
-  await setPropColor(page, 'Color', '#ffcc00');
-  step('Launch Pad configured');
-  await screenshot(page, 'trap-1_launch_pad');
-
-  // ── Trap 2: Buff Zone ────────────────────────────────────────────────────
-  console.log('\n⚡ Adding Trap 2 — Buff Zone…');
-  await addTrapToArena(page, 'arena-1');
-  await waitForNode(page, 'trap-2');
-  step('trap-2 created');
-
-  await selectNode(page, 'trap-2');
-  await waitForProps(page);
-  await setPropSelect(page, 'Effect', 'buff_zone');
-  await setPropSelect(page, 'Variant', 'buff');
-  await setPropNum(page, 'Radius (cm)', 46);  // posR=46: outer edge at r=58, inside the 60cm rim
-  await setPropNum(page, 'Angle°', 315);
-  await setPropColor(page, 'Color', '#cc8800');
-  step('Buff Zone configured');
-  await screenshot(page, 'trap-2_buff_zone');
-
-  // ── Portal 1: Portal A ───────────────────────────────────────────────────
-  console.log('\n◉ Adding Portal 1 — Portal A…');
-  await addPortalToArena(page, 'arena-1');
-  await waitForNode(page, 'portal-1');
-  step('portal-1 created');
-
-  await selectNode(page, 'portal-1');
-  await waitForProps(page);
-  await setPropNum(page, 'Radius (cm)', 8);
-  await setPropNum(page, 'Angle°', 200);
-  await setPropColor(page, 'Pad Color', '#00e5ff');
-  await setPropColor(page, 'Glow Color', '#00aaff');
-  step('Portal A configured');
-  await screenshot(page, 'portal-1_portal_A');
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ARENA 2 — Tower Arena (on moat island)
-  // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n🏰 Creating Tower Arena…');
-
-  await addArena(page);
-  await waitForNode(page, 'arena-2');
-  step('arena-2 created');
-
-  await selectNode(page, 'arena-2');
-  await waitForProps(page);
-  await setPropNum(page, 'Radius X', 22);
-  await setPropNum(page, 'Radius Z', 22);
-  await setPropNum(page, 'Depth', 12);
-  await setPropNum(page, 'Y (tower)', 20);
-  await setPropColor(page, 'Color', '#2d4a7a');
-  await setPropSelect(page, 'Preset', 'embers');
-
-  // Switch to step profile → re-select to expose Step Count row
-  await clickProfileBtn(page, '▭ Step');
-  await sleep(400);
-  await selectNode(page, 'arena-2');
-  await waitForProps(page);
+  await setPropSelect(page, 'Shape', 'circle');
   await sleep(300);
-  await setPropNum(page, 'Step Count', 3);
-
-  step('Tower Arena configured');
-  await screenshot(page, 'arena-2_tower_arena');
-
-  // ── Zone 3: Lava Zone ────────────────────────────────────────────────────
-  console.log('\n🌋 Adding Lava Zone to Tower Arena…');
-  await addZoneToArena(page, 'arena-2');
-  await waitForNode(page, 'zone-3');
-  step('zone-3 created');
-
-  await selectNode(page, 'zone-3');
-  await waitForProps(page);
-  await setPropNum(page, 'Radius X', 8);
-  await setPropNum(page, 'Radius Z', 8);
-  await setPropNum(page, 'Depth', 6);
-  await setPropNum(page, 'Dist (cm)', 8);
-  await setPropNum(page, 'Angle °', 90);
-  await clickFillBtn(page, 'lava');
-  await setPropColor(page, 'Glow Color', '#ff4400');
-  await setPropSelect(page, 'Preset', 'embers');
-  step('Lava Zone configured');
-  await screenshot(page, 'zone-3_lava_zone');
-
-  // ── Wall 5: Nearly-full inward tilt (-45°) ────────────────────────────────
-  // Full-perimeter forces tilt=0, so use a wide arc (0–350°) instead.
-  console.log('\n🧱 Adding Wall 5 — Inward tilt -45° (0–350°)…');
-  await addWallToArena(page, 'arena-2');
-  await waitForNode(page, 'wall-5');
-  step('wall-5 created');
-
-  await selectNode(page, 'wall-5');
-  await waitForProps(page);
-  await setPropToggle(page, 'Full Perimeter', false);
-  await sleep(400);
-  await selectNode(page, 'wall-5');
-  await waitForProps(page);
+  await setPropSelect(page, 'Effect', 'gravity_pull');
   await sleep(300);
-  await setPropNum(page, 'Arc Start°', 0);
-  await setPropNum(page, 'Arc End°', 350);
-  await setPropNum(page, 'Height (cm)', 20);
-  await setPropNum(page, 'Tilt°', -45);
-  await clickProfileBtn(page, '━ Flat');
-  await setPropColor(page, 'Color', '#1a3355');
-  await setPropNum(page, 'Glow Intensity', 0.5);
-  await setPropColor(page, 'Glow Color', '#3366ff');
-  step('Wall 5 configured');
-  await screenshot(page, 'wall-5_inward_-45deg_tower');
-
-  // ── Wall 6: Double wall (240–360°) ───────────────────────────────────────
-  console.log('\n🧱 Adding Wall 6 — Double wall (240–360°)…');
-  await addWallToArena(page, 'arena-2');
-  await waitForNode(page, 'wall-6');
-  step('wall-6 created');
-
-  await selectNode(page, 'wall-6');
+  await selectNode(page, 'trap-1');
   await waitForProps(page);
-  await setPropToggle(page, 'Full Perimeter', false);
-  await sleep(400);
-  await selectNode(page, 'wall-6');
-  await waitForProps(page);
-  await sleep(300);
-  await setPropNum(page, 'Arc Start°', 240);
-  await setPropNum(page, 'Arc End°', 360);
-  await setPropNum(page, 'Height (cm)', 18);
-  await setPropToggle(page, 'Enable', true);  // double wall
-  await sleep(300);
-  // Re-select so Peak Height/Peak Tilt rows appear (conditional on isDouble=true)
-  await selectNode(page, 'wall-6');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Peak Height (cm)', 12);
-  await setPropNum(page, 'Peak Tilt°', 30);
-  await setPropColor(page, 'Color', '#446688');
-  step('Wall 6 double wall configured');
-  await screenshot(page, 'wall-6_double_wall_tower');
 
-  // ── Trap 3: Saw Trap ─────────────────────────────────────────────────────
-  console.log('\n⚡ Adding Trap 3 — Saw Trap…');
-  await addTrapToArena(page, 'arena-2');
-  await waitForNode(page, 'trap-3');
-  step('trap-3 created');
-
-  await selectNode(page, 'trap-3');
-  await waitForProps(page);
-  await setPropSelect(page, 'Variant', 'saw');
-  await setPropSelect(page, 'Effect', 'damage');
-  await setPropNum(page, 'Radius (cm)', 8);
-  await setPropNum(page, 'Angle°', 270);
-  await setPropToggle(page, 'Periodic', true);
-  await sleep(300);
-  // Re-select to get Safe/Unsafe rows (appear after Periodic toggle)
-  await selectNode(page, 'trap-3');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Unsafe (s)', 1.5);
-  await setPropNum(page, 'Safe (s)', 1.0);
-  await setPropColor(page, 'Color', '#cc2200');
-  step('Saw Trap configured');
-  await screenshot(page, 'trap-3_saw_trap_tower');
-
-  // ── Speed Line 4: Tower Ring ──────────────────────────────────────────────
-  console.log('\n⚡ Adding Speed Line 4 — Tower Ring…');
-  await addSpeedLineToArena(page, 'arena-2');
-  await waitForNode(page, 'sl-4');
-  step('sl-4 created');
-
-  await selectNode(page, 'sl-4');
-  await waitForProps(page);
-  await setPropNum(page, 'Start Dist', 18);
-  await setPropNum(page, 'Start Angle', 0);
-  await setPropNum(page, 'Start Dir °', 90);
-  await setPropToggle(page, 'Surface Follow', true);
-  await setPropNum(page, 'Width cm', 2);
-  await setPropColor(page, 'Color', '#ff6600');
-  await setPropNum(page, 'Opacity', 0.8);
-  await setPropToggle(page, 'Glow', true);
-  await setPropSelect(page, 'Direction', 'forward');
-  await setPropNum(page, 'Speed ×', 3.0);
-  step('Tower Ring configured');
-  await screenshot(page, 'sl-4_tower_ring');
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // BRIDGE 1 — Loop Bridge
-  // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n🌉 Creating Loop Bridge…');
-
-  await addBridge(page);
-  await waitForNode(page, 'bridge-1');
-  step('bridge-1 created');
-
-  await selectNode(page, 'bridge-1');
-  await waitForProps(page);
-  await setPropNum(page, 'Width (cm)', 12);
-  await setPropColor(page, 'Color', '#aabbcc');
-
-  // Anchor to arena-1 outer rim at 0° (east side) — bridges default to Floating
-  await clickProfileBtn(page, 'Arena');
-  await sleep(400);
-  await selectNode(page, 'bridge-1');   // re-select so Arena select + Angle° rows appear
-  await waitForProps(page);
-  await sleep(300);
-  await setPropSelect(page, 'Arena', 'arena-1');
+  await setPropNum(page, 'Width (cm)', 72);
+  await setPropNum(page, 'Depth (cm)', 72);
+  await setPropNum(page, 'Radius (cm)', 0);
   await setPropNum(page, 'Angle°', 0);
 
-  await screenshot(page, 'bridge-1_created');
-
-  // seg-1 is auto-created as 'straight' — just set length
-  await waitForNode(page, 'seg-1');
-  await selectNode(page, 'seg-1');
-  await waitForProps(page);
-  await setPropNum(page, 'Length (cm)', 80);
-  step('seg-1 straight configured');
-
-  // seg-2: add, change to loop type, re-select, set loop radius
-  await addSegmentToBridge(page, 'bridge-1');
-  await waitForNode(page, 'seg-2');
-  await selectNode(page, 'seg-2');
-  await waitForProps(page);
-  await clickSegmentType(page, 'Loop');
+  await setPropToggle(page, 'Periodic', true);
   await sleep(300);
-  await selectNode(page, 'seg-2');   // re-select to get loop-specific rows
+  await selectNode(page, 'trap-1');
   await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Loop Radius (cm)', 25);
-  step('seg-2 loop configured');
+  await setPropNum(page, 'Safe (s)', 30);
+  await setPropNum(page, 'Unsafe (s)', 15);
 
-  // seg-3: add, change to curve type, re-select, set radius + angle
-  await addSegmentToBridge(page, 'bridge-1');
-  await waitForNode(page, 'seg-3');
-  await selectNode(page, 'seg-3');
-  await waitForProps(page);
-  await clickSegmentType(page, 'Curve');
-  await sleep(300);
-  await selectNode(page, 'seg-3');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Radius (cm)', 40);
-  await setPropNum(page, 'Angle°', 90);
-  step('seg-3 curve configured');
+  await setPropNum(page, 'Range (cm)', 30);
+  await setPropNum(page, 'Strength (cm/s²)', 18);
+  await clickProfileBtn(page, 'Continuous');
 
-  // wall-7: bridge side wall
-  await addWallToBridge(page, 'bridge-1');
-  await waitForNode(page, 'wall-7');
-  await selectNode(page, 'wall-7');
-  await waitForProps(page);
-  await setPropNum(page, 'Height (cm)', 12);
-  await setPropNum(page, 'Tilt°', -15);
-  await setPropColor(page, 'Color', '#8899aa');
-  step('wall-7 bridge side wall configured');
-  await screenshot(page, 'bridge-1_loop_complete');
+  await setPropColor(page, 'Color', '#0055aa');
+  await setPropColor(page, 'Glow Color', '#0099cc');
+  await setPropNum(page, 'Glow Intensity', 0.35);
+
+  step('Whirlpool trap: gravity_pull, periodic 30s safe/15s unsafe');
+  await screenshot(page, '08_whirlpool_trap');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // BRIDGE 2 — Hairpin Bridge
+  // STEPS 36-45 — Four Pier Bridges (E, S, W, N)
   // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n🌉 Creating Hairpin Bridge…');
+  console.log('\n🌉 Steps 36-45 — Building four pier bridges…');
 
-  await addBridge(page);
-  await waitForNode(page, 'bridge-2');
-  step('bridge-2 created');
+  console.log('\n  East Pier (bridge-1)…');
+  await addPier(page, 0, 'bridge-1', 'seg-1', 'seg-2', 'East');
+  await screenshot(page, '09_east_pier');
 
-  await selectNode(page, 'bridge-2');
-  await waitForProps(page);
-  await setPropNum(page, 'Width (cm)', 10);
-  await setPropColor(page, 'Color', '#cc9944');
+  console.log('\n  South Pier (bridge-2)…');
+  await addPier(page, 90, 'bridge-2', 'seg-3', 'seg-4', 'South');
+  await screenshot(page, '10_south_pier');
 
-  // Anchor inside the moat ring at (0, 30, -40) heading north (+Z) toward the tower island
-  await clickProfileBtn(page, 'Free pt');
-  await sleep(400);
-  await selectNode(page, 'bridge-2');   // re-select so freepoint rows appear
-  await waitForProps(page);
-  await sleep(300);
-  await setPropNum(page, 'X (cm)', 0);
-  await setPropNum(page, 'Y (cm)', 30);
-  await setPropNum(page, 'Z (cm)', -40);
-  await setPropNum(page, 'Heading°', 90);  // 90° = +Z direction (toward tower)
+  console.log('\n  West Pier (bridge-3)…');
+  await addPier(page, 180, 'bridge-3', 'seg-5', 'seg-6', 'West');
+  await screenshot(page, '11_west_pier');
 
-  // seg-4: auto-created straight → change to ramp
-  await waitForNode(page, 'seg-4');
-  await selectNode(page, 'seg-4');
-  await waitForProps(page);
-  await clickSegmentType(page, 'Ramp');
-  await sleep(300);
-  await selectNode(page, 'seg-4');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Length (cm)', 60);
-  await setPropNum(page, 'Ramp Angle°', 20);  // 20° gives ~20cm rise to reach island at Y=50
-  step('seg-4 ramp configured');
+  console.log('\n  North Pier (bridge-4)…');
+  await addPier(page, 270, 'bridge-4', 'seg-7', 'seg-8', 'North');
+  await screenshot(page, '12_north_pier');
 
-  // seg-5: hairpin
-  await addSegmentToBridge(page, 'bridge-2');
-  await waitForNode(page, 'seg-5');
-  await selectNode(page, 'seg-5');
-  await waitForProps(page);
-  await clickSegmentType(page, 'Hairpin');
-  await sleep(300);
-  await selectNode(page, 'seg-5');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Radius (cm)', 20);
-  step('seg-5 hairpin configured');
-
-  // seg-6: chicane
-  await addSegmentToBridge(page, 'bridge-2');
-  await waitForNode(page, 'seg-6');
-  await selectNode(page, 'seg-6');
-  await waitForProps(page);
-  await clickSegmentType(page, 'Chicane');
-  await sleep(300);
-  await selectNode(page, 'seg-6');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Radius (cm)', 15);
-  step('seg-6 chicane configured');
-  await screenshot(page, 'bridge-2_hairpin_complete');
+  step('All four pier bridges complete');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // OBSTACLES
+  // STEPS 46-53 — Eight Boats (floating obstacles, theme=boat)
   // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n⬛ Adding obstacles…');
+  console.log('\n⛵ Steps 46-53 — Adding boats…');
 
-  // obstacle-1: Boat A (sphere, floating, orange)
-  await addObstacle(page);
-  await waitForNode(page, 'obstacle-1');
-  step('obstacle-1 created');
+  const boats = [
+    { id: 'obstacle-1', dx:20, dy:4,  dz:10, x:17.3,  y:3,   z:10.0,  rot:30,  color:'#8a7a6a' },
+    { id: 'obstacle-2', dx:22, dy:4,  dz:10, x:-20.7, y:3,   z:-7.5,  rot:200, color:'#7a8a9a' },
+    { id: 'obstacle-3', dx:14, dy:3,  dz:8,  x:-2.6,  y:2.5, z:14.8,  rot:100, color:'#9a8a7a' },
+    { id: 'obstacle-4', dx:12, dy:3,  dz:7,  x:13.8,  y:2.5, z:-11.6, rot:320, color:'#8a9a8a' },
+    { id: 'obstacle-5', dx:10, dy:2,  dz:5,  x:10.0,  y:2,   z:0.0,   rot:0,   color:'#a0a0b0' },
+    { id: 'obstacle-6', dx:10, dy:2,  dz:5,  x:-5.0,  y:2,   z:8.7,   rot:120, color:'#b0a090' },
+    { id: 'obstacle-7', dx:10, dy:2,  dz:5,  x:-5.0,  y:2,   z:-8.7,  rot:240, color:'#a0b0a0' },
+    { id: 'obstacle-8', dx:16, dy:3,  dz:8,  x:-20.8, y:2.5, z:12.0,  rot:150, color:'#88a0b8' },
+  ];
 
-  await selectNode(page, 'obstacle-1');
-  await waitForProps(page);
-  // Default is cube — click sphere button, re-select to get Diameter row
-  await clickProfileBtn(page, '● sphere');
-  await sleep(300);
-  await selectNode(page, 'obstacle-1');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Diameter (cm)', 14);
-  await setPropNum(page, 'X (cm)', 40);
-  await setPropNum(page, 'Y (cm)', 40);
-  await setPropNum(page, 'Z (cm)', 0);
-  await setPropToggle(page, 'Floating', true);
-  await setPropColor(page, 'Color', '#ff6b35');
-  await setPropNum(page, 'Glow Intensity', 0.5);
-  await setPropColor(page, 'Glow Color', '#ff9955');
-  await setPropSelect(page, 'Theme', 'boat');
-  step('Boat A configured');
-  await screenshot(page, 'obstacle-1_boat_A');
-
-  // obstacle-2: Boat B (cylinder, cyan)
-  await addObstacle(page);
-  await waitForNode(page, 'obstacle-2');
-  step('obstacle-2 created');
-
-  await selectNode(page, 'obstacle-2');
-  await waitForProps(page);
-  await clickProfileBtn(page, '⬭ cylinder');
-  await sleep(300);
-  await selectNode(page, 'obstacle-2');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Diameter (cm)', 10);
-  await setPropNum(page, 'Height (cm)', 10);
-  await setPropNum(page, 'X (cm)', -40);
-  await setPropNum(page, 'Y (cm)', 40);
-  await setPropNum(page, 'Z (cm)', 0);
-  await setPropToggle(page, 'Floating', true);
-  await setPropColor(page, 'Color', '#00e5ff');
-  await setPropNum(page, 'Glow Intensity', 0.5);
-  await setPropColor(page, 'Glow Color', '#00aaff');
-  await setPropSelect(page, 'Theme', 'boat');
-  step('Boat B configured');
-  await screenshot(page, 'obstacle-2_boat_B');
-
-  // obstacle-3: Pillar (cuboid, stone/rock theme)
-  await addObstacle(page);
-  await waitForNode(page, 'obstacle-3');
-  step('obstacle-3 created');
-
-  await selectNode(page, 'obstacle-3');
-  await waitForProps(page);
-  await clickProfileBtn(page, '▬ cuboid');
-  await sleep(300);
-  await selectNode(page, 'obstacle-3');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropNum(page, 'Width (cm)', 10);
-  await setPropNum(page, 'Height (cm)', 50);
-  await setPropNum(page, 'Depth (cm)', 10);
-  await setPropNum(page, 'Y (cm)', 50);
-  await setPropColor(page, 'Color', '#667788');
-  await setPropSelect(page, 'Theme', 'rock');
-  step('Pillar configured');
-  await screenshot(page, 'obstacle-3_pillar');
+  for (const b of boats) {
+    await addObstacle(page);
+    await waitForNode(page, b.id);
+    await selectNode(page, b.id);
+    await waitForProps(page);
+    await setPropSelect(page, 'Shape', 'cuboid');
+    await sleep(200);
+    await selectNode(page, b.id);
+    await waitForProps(page);
+    await setPropNum(page, 'Width (cm)', b.dx);
+    await setPropNum(page, 'Height (cm)', b.dy);
+    await setPropNum(page, 'Depth (cm)', b.dz);
+    await setPropNum(page, 'X (cm)', b.x);
+    await setPropNum(page, 'Y (cm)', b.y);
+    await setPropNum(page, 'Z (cm)', b.z);
+    await setPropNum(page, 'Rot Y°', b.rot);
+    await setPropSelect(page, 'Theme', 'boat');
+    await setPropToggle(page, 'Floating', true);
+    await setPropColor(page, 'Color', b.color);
+    step(`${b.id}: cuboid ${b.dx}x${b.dy}x${b.dz}, boat theme`);
+  }
+  await screenshot(page, '13_boats');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ROTATIONS — moving boat obstacles
+  // STEPS 53a-53d — Four City Tower Obstacles (shore ring, r=47)
   // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n↻ Adding rotations…');
+  console.log('\n🏰 Steps 53a-53d — Adding city towers…');
 
-  await addRotation(page, 'obstacle-1');
+  const towers = [
+    { id: 'obstacle-9',  x:33.2,  y:19, z:33.2,  rot:45,  color:'#c4aa80' },
+    { id: 'obstacle-10', x:-33.2, y:19, z:33.2,  rot:135, color:'#b8a070' },
+    { id: 'obstacle-11', x:-33.2, y:19, z:-33.2, rot:225, color:'#c4aa80' },
+    { id: 'obstacle-12', x:33.2,  y:19, z:-33.2, rot:315, color:'#b8a070' },
+  ];
+
+  for (const t of towers) {
+    await addObstacle(page);
+    await waitForNode(page, t.id);
+    await selectNode(page, t.id);
+    await waitForProps(page);
+    await setPropSelect(page, 'Shape', 'cuboid');
+    await sleep(200);
+    await selectNode(page, t.id);
+    await waitForProps(page);
+    await setPropNum(page, 'Width (cm)', 5);
+    await setPropNum(page, 'Height (cm)', 12);
+    await setPropNum(page, 'Depth (cm)', 5);
+    await setPropNum(page, 'X (cm)', t.x);
+    await setPropNum(page, 'Y (cm)', t.y);
+    await setPropNum(page, 'Z (cm)', t.z);
+    await setPropNum(page, 'Rot Y°', t.rot);
+    await clickProfileBtn(page, 'Concrete');
+    await setPropColor(page, 'Color', t.color);
+    step(`${t.id}: tower 5x12x5 at (${t.x},${t.z})`);
+  }
+  await screenshot(page, '14_towers');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 54-57 — Rotation: Drifting Fleet (obstacles 5,6,7)
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n↻ Steps 54-57 — Creating Drifting Fleet rotation…');
+  await checkTreeNode(page, 'obstacle-5', true);
+  await checkTreeNode(page, 'obstacle-6', true);
+  await checkTreeNode(page, 'obstacle-7', true);
+  await sleep(300);
+  await clickAddBtn(page, 'obstacle-5');
+  await clickMenuOption(page, 'Add rotation');
+  await sleep(600);
+  await checkTreeNode(page, 'obstacle-5', false);
+  await checkTreeNode(page, 'obstacle-6', false);
+  await checkTreeNode(page, 'obstacle-7', false);
+
   await waitForNode(page, 'rot-1');
-  step('rot-1 created (Boat A orbit)');
+  step('rot-1 created');
 
   await selectNode(page, 'rot-1');
   await waitForProps(page);
   await setPropSelect(page, 'Mode', 'continuous');
-  await setPropNum(page, 'Speed (°/s)', 25);
+  await setPropNum(page, 'Speed (°/s)', 5);
   await setPropNum(page, 'Pivot X (cm)', 0);
-  await setPropNum(page, 'Pivot Y (cm)', 35);
+  await setPropNum(page, 'Pivot Y (cm)', 2);
   await setPropNum(page, 'Pivot Z (cm)', 0);
-  step('Rot 1 — Boat A orbits CW');
-  await screenshot(page, 'rot-1_boat_A_orbit');
+  step('Drifting Fleet: continuous 5 deg/s, pivot Y=2');
+  await screenshot(page, '15_drifting_fleet');
 
-  await addRotation(page, 'obstacle-2');
-  await waitForNode(page, 'rot-2');
-  step('rot-2 created (Boat B counter-orbit)');
+  // NOTE: Boat translations (docking motion) are defined in demoArenaConfig.ts
+  // and loaded directly — there is no UI button to add translations via Puppeteer.
+  // They will appear automatically when the demo arena config is loaded.
 
-  await selectNode(page, 'rot-2');
-  await waitForProps(page);
-  await setPropSelect(page, 'Mode', 'continuous');
-  await setPropNum(page, 'Speed (°/s)', 18);
-  // Toggle direction CW→CCW
-  const dirRow = await findPropRow(page, 'Direction');
-  if (dirRow) {
-    const dirBtn = await dirRow.$('.prop-profile-btn');
-    if (dirBtn) { await dirBtn.click(); await sleep(200); }
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 63-66 — Overview screenshots
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n📸 Steps 63-66 — Taking overview screenshots…');
+
+  // Top-down overview
+  await selectNode(page, 'arena-1');
+  await sleep(500);
+  await screenshot(page, '17_overview');
+
+  // Center (pit + water zone)
+  await selectNode(page, 'zone-1');
+  await sleep(500);
+  await screenshot(page, '18_water_zone');
+
+  // One pier
+  await selectNode(page, 'bridge-1');
+  await sleep(500);
+  await screenshot(page, '19_east_pier_detail');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPS 67-69 — Save as Preset
+  // ═══════════════════════════════════════════════════════════════════════════
+  console.log('\n💾 Steps 67-69 — Saving as preset…');
+  const presetClicked = await page.evaluate(() => {
+    const btns = [...document.querySelectorAll('button')];
+    const btn = btns.find(b =>
+      b.textContent?.includes('Preset') || b.title?.toLowerCase().includes('preset')
+    );
+    if (btn) { btn.click(); return true; }
+    return false;
+  });
+  if (presetClicked) {
+    await sleep(500);
+    // Fill Name field
+    const nameFilled = await page.evaluate(() => {
+      const inputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
+      const inp = inputs.find(i =>
+        (i.placeholder || '').toLowerCase().includes('name') ||
+        (i.closest('.modal-row') || i.closest('.prop-row') || { textContent: '' }).textContent.includes('Name')
+      );
+      if (!inp) return false;
+      inp.value = 'Black Sea Bowl';
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    });
+    if (!nameFilled) console.warn('  [warn] name input not found in preset modal');
+    await sleep(200);
+    // Fill Group field
+    await page.evaluate(() => {
+      const inputs = Array.from(document.querySelectorAll('input[type="text"], input:not([type])'));
+      const inp = inputs.find(i =>
+        (i.placeholder || '').toLowerCase().includes('group') ||
+        (i.closest('.modal-row') || i.closest('.prop-row') || { textContent: '' }).textContent.includes('Group')
+      );
+      if (!inp) return;
+      inp.value = 'Demo Arenas';
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await sleep(200);
+    // Click Save button in modal
+    await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const save = btns.find(b => b.textContent?.trim() === 'Save' || b.textContent?.includes('💾'));
+      if (save) save.click();
+    });
+    await sleep(600);
+    await screenshot(page, '20_preset_saved');
+    step('Preset saved: Black Sea Bowl / Demo Arenas');
+  } else {
+    step('[skip] Preset button not found');
   }
-  await setPropNum(page, 'Pivot X (cm)', 0);
-  await setPropNum(page, 'Pivot Y (cm)', 35);
-  await setPropNum(page, 'Pivot Z (cm)', 0);
-  step('Rot 2 — Boat B orbits CCW');
-  await screenshot(page, 'rot-2_boat_B_orbit_ccw');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // BASE TRAP — Trampoline
+  // DONE
   // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n⚡ Adding base trampoline trap…');
-
-  await addBaseTrap(page);
-  await waitForNode(page, 'trap-4');
-  step('trap-4 created (base)');
-
-  await selectNode(page, 'trap-4');
-  await waitForProps(page);
-  await setPropSelect(page, 'Variant', 'trampoline');
-  await setPropNum(page, 'X (cm)', 80);
-  await setPropNum(page, 'Z (cm)', 0);
-  await setPropNum(page, 'Force Y (cm/s)', 100);
-  await setPropColor(page, 'Color', '#eecc44');
-  step('Base trampoline configured');
-  await screenshot(page, 'trap-4_base_trampoline');
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PORTAL 2 — Portal B (base, linked to portal-1)
-  // ═══════════════════════════════════════════════════════════════════════════
-  console.log('\n◉ Adding Portal B (base)…');
-
-  await addBasePortal(page);
-  await waitForNode(page, 'portal-2');
-  step('portal-2 created');
-
-  await selectNode(page, 'portal-2');
-  await waitForProps(page);
-  await setPropNum(page, 'X (cm)', -80);
-  await setPropNum(page, 'Z (cm)', 0);
-  await setPropSelect(page, 'Type', 'portal');
-  await sleep(300);
-  // Re-select to get Bidirectional + Target Portal rows
-  await selectNode(page, 'portal-2');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropToggle(page, 'Bidirectional', true);
-  await setPropColor(page, 'Pad Color', '#ff6b35');
-  await setPropColor(page, 'Glow Color', '#ff9944');
-  step('Portal B configured');
-  await screenshot(page, 'portal-2_portal_B');
-
-  // ── Link portals ──────────────────────────────────────────────────────────
-  step('Linking Portal A → Portal B…');
-  await selectNode(page, 'portal-1');
-  await waitForProps(page);
-  await setPropSelect(page, 'Type', 'portal');
-  await sleep(300);
-  await selectNode(page, 'portal-1');
-  await waitForProps(page);
-  await sleep(200);
-  await setPropToggle(page, 'Bidirectional', true);
-  await setPropSelect(page, 'Target Portal', 'portal-2');
-  step('Portals linked');
-  await screenshot(page, 'portal-1_linked');
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // FINAL OVERVIEW SCREENSHOT
-  // ═══════════════════════════════════════════════════════════════════════════
-  step('Final overview screenshot…');
-  await selectNode(page, 'octagon-base');
-  await sleep(800);
-  await screenshot(page, 'FINAL_demo_arena_complete');
-
-  console.log('\n✅  Demo arena creation complete!');
+  console.log('\n✅  All steps complete!');
   console.log('    Auto-saved to localStorage.');
   console.log(`    📁 Screenshots: ${SCREENSHOTS_DIR}`);
   console.log(`    📸 ${_shotIndex} screenshots taken`);
@@ -1074,6 +998,7 @@ async function main() {
 
 main().catch(err => {
   console.error('\n❌  Demo builder failed:', err.message);
-  console.error('    Make sure dev/preview server is running on http://localhost:3000');
+  console.error('    Stack:', err.stack);
+  console.error('    Make sure dev server is running on http://localhost:3000');
   process.exit(1);
 });

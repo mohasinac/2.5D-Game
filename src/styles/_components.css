@@ -481,6 +481,11 @@
   border-bottom-left-radius: calc(3 * var(--mm));
   pointer-events: all;
   user-select:   none;
+  transition: transform 0.2s ease;
+}
+.sandbox-right-panel--collapsed {
+  transform: translateX(100%);
+  pointer-events: none;
 }
 .sandbox-right-panel::-webkit-scrollbar { width: calc(4 * var(--mm)); }
 .sandbox-right-panel::-webkit-scrollbar-track { background: transparent; }

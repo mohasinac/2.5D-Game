@@ -100,7 +100,7 @@ export function defaultFooting(
   id: string,
   baseHeight: number,
 ): BaseFootingData {
-  const dim = 20;
+  const dim = 10;
   const geo = new THREE.BoxGeometry(dim, dim, dim);
   const mat = buildSurfaceMaterial({ color: 0x888888, surface: 'plain' as SurfaceType, tileScale: 1 });
   const mesh = new THREE.Mesh(geo, mat);

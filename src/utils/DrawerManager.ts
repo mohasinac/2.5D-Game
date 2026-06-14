@@ -16,7 +16,19 @@ export class DrawerManager {
   }
 
   toggleLeft():  void { this._toggle(this._left,  'sandbox-left-panel--open'); }
-  toggleRight(): void { this._toggle(this._right, 'sandbox-right-panel--open'); }
+
+  toggleRight(): void {
+    if (!this._right) return;
+    if (this._right.classList.contains('sandbox-right-panel--collapsed')) {
+      this._right.classList.remove('sandbox-right-panel--collapsed');
+      return;
+    }
+    if (window.matchMedia('(min-width: 769px)').matches) {
+      this._right.classList.add('sandbox-right-panel--collapsed');
+      return;
+    }
+    this._toggle(this._right, 'sandbox-right-panel--open');
+  }
 
   closeAll(): void {
     this._left?.classList.remove('sandbox-left-panel--open');

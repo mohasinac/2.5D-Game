@@ -106,6 +106,18 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave>
     }
   }
 
+  /**
+   * Returns true if the given periodic trap is currently in its unsafe phase.
+   * Uses pure wall-clock math — no per-trap timer state needed.
+   */
+  isUnsafePhase(id: string): boolean {
+    const trap = this.items.get(id);
+    if (!trap || !trap.isPeriodic) return false;
+    const now    = performance.now() / 1000;
+    const cycle  = trap.safeInterval + trap.unsafeInterval;
+    return (now % cycle) >= trap.safeInterval;
+  }
+
   // ── IPositionedManager ───────────────────────────────────────────────────
 
   getWorldPosition(id: string): THREE.Vector3 | null {

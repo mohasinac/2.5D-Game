@@ -108,6 +108,7 @@ export class ArenaSandbox extends Sandbox {
   private baseConfig = {
     height: DEFAULT_BASE_HEIGHT, sides: DEFAULT_BASE_SIDES, color: DEFAULT_BASE_COLOR,
     surface: 'plain' as SurfaceType, customTileData: null as string | null, tileScale: DEFAULT_BASE_TILE,
+    apothem: APOTHEM,
   };
 
   protected sceneTree: SceneTree;
@@ -168,7 +169,14 @@ export class ArenaSandbox extends Sandbox {
   private _projectionService!: ProjectionService;
   private _renderMgr!: RenderManager;
   private _scoreHudEl: HTMLDivElement | null = null;
+  private _bridgeEndRefMarker: THREE.Mesh | null = null;
   private _keyUnsubs: Array<() => void> = [];
+  /** Octagon-clipped grid LineSegments (replaces default GridHelper). */
+  private _octagonGrid: THREE.LineSegments | null = null;
+  /** Octagon boundary outline LineLoop. */
+  private _octagonOutline: THREE.LineLoop | null = null;
+  /** Tracks per-obstacle trap-driven hide state to avoid redundant setVisible calls. */
+  private _trapHideState = new Map<string, boolean>();
 
   /* ── Undo / Redo ── */
   private undoStack: string[] = [];
@@ -263,6 +271,8 @@ export class ArenaSandbox extends Sandbox {
     }
 
     this.sceneTree.onSelect = (ids)=>{
+      // Dispose endRef marker when selection changes
+      this._disposeEndRefMarker();
       // Hide handles of previously selected speed line
       if(this.selectedSlId){ const prev=this._slMgr.get(this.selectedSlId); if(prev) this._slMgr.hideHandles(prev); }
       this.selectedSlId = null;
@@ -499,6 +509,7 @@ export class ArenaSandbox extends Sandbox {
 
   /** Clear all arenas/pits/zones/walls/bridges/speedlines from scene without touching base. */
   private _clearArenas(): void {
+    this._disposeEndRefMarker();
     this._rotMgr.detachAll();
     this._envMgr?.clear();
     this._presentMgr?.disposeAll();
@@ -930,6 +941,13 @@ export class ArenaSandbox extends Sandbox {
   }
   private _disposePresentMesh(nodeId: string): void {
     this._presentMgr.dispose(nodeId);
+  }
+  private _disposeEndRefMarker(): void {
+    if (!this._bridgeEndRefMarker) return;
+    this.getScene()?.remove(this._bridgeEndRefMarker);
+    this._bridgeEndRefMarker.geometry.dispose();
+    (this._bridgeEndRefMarker.material as THREE.Material).dispose();
+    this._bridgeEndRefMarker = null;
   }
   private _getHitboxMesh(nodeId: string): THREE.Mesh | null {
     const arena = this.arenas.get(nodeId); if (arena) return arena.mesh;
@@ -1570,6 +1588,17 @@ export class ArenaSandbox extends Sandbox {
 
     // Stage 3: Animation transforms (position all entities for this frame)
     this._trapMgr.tick(dt);
+    // Obstacle hide/show driven by trap unsafe phase
+    for (const [id, obs] of this._obstacleMgr.getAll()) {
+      const ids = obs.hideOnTrapIds;
+      if (!ids || ids.length === 0) continue;
+      const shouldHide = ids.some(tid => this._trapMgr.isUnsafePhase(tid));
+      const wasHidden = this._trapHideState.get(id) ?? false;
+      if (shouldHide !== wasHidden) {
+        this._trapHideState.set(id, shouldHide);
+        this._obstacleMgr.setVisible(id, shouldHide ? false : (obs.visible ?? true));
+      }
+    }
     this._wallMgr.tick(dt);
     this._rotMgr.tick(dt);
     this._translationMgr?.tick(dt);
@@ -1753,10 +1782,92 @@ export class ArenaSandbox extends Sandbox {
     this._rotMgr.updatePivot(rot);
   }
 
+  // ── Octagon-clipped grid ─────────────────────────────────────────────────
+
+  private _buildOctagonGrid(): THREE.LineSegments {
+    const apothem = this.baseConfig.apothem;
+    const sides   = this.baseConfig.sides;
+    const R       = apothem / Math.cos(Math.PI / sides);
+    const align   = Math.PI / sides;
+
+    // Build CCW octagon polygon vertices in XZ plane
+    const poly: [number, number][] = [];
+    for (let i = 0; i < sides; i++) {
+      const angle = align + i * (TWO_PI / sides);
+      poly.push([R * Math.cos(angle), R * Math.sin(angle)]);
+    }
+    // Precompute inward normals and edge anchor points (Cyrus-Beck)
+    const norms: [number, number][] = [];
+    const anchors: [number, number][] = [];
+    for (let i = 0; i < sides; i++) {
+      const [ax, az] = poly[i];
+      const [bx, bz] = poly[(i + 1) % sides];
+      const ex = bx - ax, ez = bz - az;
+      const len = Math.sqrt(ex * ex + ez * ez);
+      norms.push([-ez / len, ex / len]);   // inward normal for CCW polygon
+      anchors.push([ax, az]);
+    }
+
+    const clipLine = (x0: number, z0: number, x1: number, z1: number): [number, number, number, number] | null => {
+      let tEnter = 0, tLeave = 1;
+      const dx = x1 - x0, dz = z1 - z0;
+      for (let i = 0; i < sides; i++) {
+        const [nx, nz] = norms[i];
+        const [fx, fz] = anchors[i];
+        const num = nx * (x0 - fx) + nz * (z0 - fz);
+        const den = nx * dx + nz * dz;
+        if (Math.abs(den) < 1e-10) {
+          if (num < 0) return null;
+          continue;
+        }
+        const t = -num / den;
+        if (den > 0) tEnter = Math.max(tEnter, t);
+        else         tLeave = Math.min(tLeave, t);
+        if (tEnter > tLeave) return null;
+      }
+      if (tEnter > tLeave) return null;
+      return [x0 + tEnter * dx, z0 + tEnter * dz, x0 + tLeave * dx, z0 + tLeave * dz];
+    };
+
+    const positions: number[] = [];
+    const gridSize = 200;
+    const gridDivs = 20;
+    const step = gridSize / gridDivs;
+    const half = gridSize / 2;
+
+    for (let k = -gridDivs; k <= gridDivs; k++) {
+      const v = k * step;
+      // Horizontal line z=v
+      const h = clipLine(-half, v, half, v);
+      if (h) positions.push(h[0], 0, h[1], h[2], 0, h[3]);
+      // Vertical line x=v
+      const vl = clipLine(v, -half, v, half);
+      if (vl) positions.push(vl[0], 0, vl[1], vl[2], 0, vl[3]);
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    return new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0x2a2a4a }));
+  }
+
+  private _buildOctagonOutline(): THREE.LineLoop {
+    const apothem = this.baseConfig.apothem;
+    const sides   = this.baseConfig.sides;
+    const R       = apothem / Math.cos(Math.PI / sides);
+    const align   = Math.PI / sides;
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i < sides; i++) {
+      const angle = align + i * (TWO_PI / sides);
+      pts.push(new THREE.Vector3(R * Math.cos(angle), 0, R * Math.sin(angle)));
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    return new THREE.LineLoop(geo, new THREE.LineBasicMaterial({ color: 0x00e5ff }));
+  }
+
   protected override buildCustom(scene: THREE.Scene): void {
     const H = this.baseConfig.height;
     const sides = this.baseConfig.sides;
-    const R = APOTHEM / Math.cos(Math.PI / sides);
+    const R = this.baseConfig.apothem / Math.cos(Math.PI / sides);
     const align = Math.PI / sides;
 
     const baseMat = buildSurfaceMaterial({ color:this.baseConfig.color, surface:this.baseConfig.surface, customTileData:this.baseConfig.customTileData, tileScale:this.baseConfig.tileScale });
@@ -1772,6 +1883,14 @@ export class ArenaSandbox extends Sandbox {
     const topFaceMat=buildSurfaceMaterial({ color:this.baseConfig.color, surface:this.baseConfig.surface, customTileData:this.baseConfig.customTileData, tileScale:this.baseConfig.tileScale, polygonOffset:true });
     this.topFaceMesh=new THREE.Mesh(buildTopFaceGeo(sides,R,align,0,[]),topFaceMat);
     scene.add(this.topFaceMesh);
+
+    // Replace the default GridHelper with an octagon-clipped grid
+    const defaultGroundGrids = scene.children.filter(c => c instanceof THREE.GridHelper && (c as THREE.GridHelper).rotation.x === 0);
+    defaultGroundGrids.forEach(c => { (c as THREE.GridHelper).geometry.dispose(); scene.remove(c); });
+    this._octagonGrid = this._buildOctagonGrid();
+    this._octagonOutline = this._buildOctagonOutline();
+    scene.add(this._octagonGrid);
+    scene.add(this._octagonOutline);
 
     this.sceneObjects.set('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
 
@@ -1887,6 +2006,8 @@ export class ArenaSandbox extends Sandbox {
     this._translationMgr = new TranslationManager(
       smCtx,
       (nodeId) => this._getMemberObjects(nodeId),
+      undefined,
+      (id) => this._trapMgr.isUnsafePhase(id),
     );
 
     // TargetManager — runtime target-tracking bindings (not serialized)
@@ -1919,7 +2040,7 @@ export class ArenaSandbox extends Sandbox {
     if(!this.baseMesh||!this.baseEdges||!this.topFaceMesh) return;
     const H=this.baseConfig.height;
     const sides=this.baseConfig.sides;
-    const R=APOTHEM/Math.cos(Math.PI/sides);
+    const R=this.baseConfig.apothem/Math.cos(Math.PI/sides);
     const align=Math.PI/sides;
     this.baseMesh.geometry.dispose();
     this.baseMesh.geometry=new THREE.CylinderGeometry(R,R,H,sides,1,true);
@@ -1932,12 +2053,21 @@ export class ArenaSandbox extends Sandbox {
     const newTopMat=buildSurfaceMaterial({color:this.baseConfig.color,surface:this.baseConfig.surface,customTileData:this.baseConfig.customTileData,tileScale:this.baseConfig.tileScale,polygonOffset:true});
     (this.topFaceMesh.material as THREE.Material).dispose(); this.topFaceMesh.material=newTopMat;
     for(const arena of this.arenas.values()){ if(arena.depth>H) arena.depth=H; applyArena(arena,this.getArenaHoles(arena),this.getScene()??undefined); this._applyArenaTilt(arena); this.updateArenaChildren(arena); this.updateArenaRimSeam(arena); }
+    // Rebuild octagon-clipped grid for new apothem/sides
+    const sc = this.getScene();
+    if (sc && this._octagonGrid && this._octagonOutline) {
+      sc.remove(this._octagonGrid); this._octagonGrid.geometry.dispose();
+      sc.remove(this._octagonOutline); this._octagonOutline.geometry.dispose();
+      this._octagonGrid = this._buildOctagonGrid();
+      this._octagonOutline = this._buildOctagonOutline();
+      sc.add(this._octagonGrid); sc.add(this._octagonOutline);
+    }
   }
 
   private updateTopFace(): void {
     if(!this.topFaceMesh) return;
     const sides=this.baseConfig.sides;
-    const R=APOTHEM/Math.cos(Math.PI/sides);
+    const R=this.baseConfig.apothem/Math.cos(Math.PI/sides);
     const align=Math.PI/sides;
     const newGeo=buildTopFaceGeo(sides,R,align,0,[...this.arenas.values()]);
     this.topFaceMesh.geometry.dispose();
@@ -2219,6 +2349,19 @@ export class ArenaSandbox extends Sandbox {
 
     const bridge=this._bridgeMgr.get(id);
     if(bridge){
+      // Show endRef marker (orange sphere)
+      this._disposeEndRefMarker();
+      if(bridge.endRef){
+        const pos = this._bridgeMgr.resolveEndRefPos(bridge.endRef);
+        if(pos){
+          this._bridgeEndRefMarker = new THREE.Mesh(
+            new THREE.SphereGeometry(3, 12, 8),
+            new THREE.MeshBasicMaterial({ color: 0xff6600 }),
+          );
+          this._bridgeEndRefMarker.position.copy(pos);
+          this.getScene()?.add(this._bridgeEndRefMarker);
+        }
+      }
       const arenaNames = new Map([...this.arenas.entries()].map(([aid,a])=>[aid,a.name]));
       const wallNames  = new Map([...this._wallMgr.getAll().entries()].map(([wid,w])=>[wid,w.name]));
       const showB = () => this.props.showBridge(
@@ -3573,7 +3716,7 @@ export class ArenaSandbox extends Sandbox {
     this.pits.clear();   this.pitSeq=0;
     this.zones.clear();  this.zoneSeq=0;
     this.bridgesByArena.clear();
-    this.baseConfig={height:DEFAULT_BASE_HEIGHT,sides:DEFAULT_BASE_SIDES,color:DEFAULT_BASE_COLOR,surface:'plain',customTileData:null,tileScale:DEFAULT_BASE_TILE};
+    this.baseConfig={height:DEFAULT_BASE_HEIGHT,sides:DEFAULT_BASE_SIDES,color:DEFAULT_BASE_COLOR,surface:'plain',customTileData:null,tileScale:DEFAULT_BASE_TILE,apothem:APOTHEM};
     this.rebuildBase(); this.updateTopFace();
     this.selectedId=null; this.sceneTree.clearSel(); this.props.showEmpty();
     this._arenaStore.getState().discard();

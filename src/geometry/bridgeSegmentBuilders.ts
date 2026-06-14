@@ -76,7 +76,7 @@ export function resolveStartPose(
     const rx = arena.radiusX; const rz = arena.radiusZ;
     const rimX = arena.posX + rx * Math.cos(ang);
     const rimZ = arena.posZ + rz * Math.sin(ang);
-    const rimY = baseHeight + arena.posY;
+    const rimY = baseHeight + arena.posY + (ref.yOffset ?? 0);
     const tangX =  -rz * Math.sin(ang);
     const tangZ =   rx * Math.cos(ang);
     const tangLen = Math.sqrt(tangX * tangX + tangZ * tangZ) || 1;
@@ -86,7 +86,41 @@ export function resolveStartPose(
       up:  new THREE.Vector3(0, 1, 0),
     };
   }
-  // wall attachment — simplified: use freepoint fallback
+  if (ref.type === 'wall') {
+    const wall = walls.get(ref.id);
+    if (!wall) return clonePose(DEFAULT_START_POSE);
+
+    if (wall.parentType === 'arena') {
+      const arena = arenas.get(wall.parentId);
+      if (!arena) return clonePose(DEFAULT_START_POSE);
+      const ang = ref.angle * DEG2RAD;
+      const rimX = arena.posX + arena.radiusX * Math.cos(ang);
+      const rimZ = arena.posZ + arena.radiusZ * Math.sin(ang);
+      const wallY = baseHeight + arena.posY + ref.wallHeight * wall.height + (ref.yOffset ?? 0);
+      const tx = -arena.radiusZ * Math.sin(ang);
+      const tz =  arena.radiusX * Math.cos(ang);
+      const tl = Math.sqrt(tx * tx + tz * tz) || 1;
+      return {
+        pos: new THREE.Vector3(rimX, wallY, rimZ),
+        dir: new THREE.Vector3(tx / tl, 0, tz / tl),
+        up:  new THREE.Vector3(0, 1, 0),
+      };
+    }
+    if (wall.parentType === 'base') {
+      const t = (ref.angle / 360) * 2 - 1;
+      const cosR = Math.cos(wall.baseRotY * DEG2RAD);
+      const sinR = Math.sin(wall.baseRotY * DEG2RAD);
+      const wx = wall.basePosX + t * (wall.baseLength / 2) * cosR;
+      const wz = wall.basePosZ + t * (wall.baseLength / 2) * sinR;
+      const wy = baseHeight + ref.wallHeight * wall.height + (ref.yOffset ?? 0);
+      return {
+        pos: new THREE.Vector3(wx, wy, wz),
+        dir: new THREE.Vector3(cosR, 0, sinR),
+        up:  new THREE.Vector3(0, 1, 0),
+      };
+    }
+    return clonePose(DEFAULT_START_POSE);
+  }
   return clonePose(DEFAULT_START_POSE);
 }
 

@@ -123,7 +123,8 @@ export interface WallSave {
 }
 
 export interface BridgeSectionSave {
-  width: number; crossSection: BridgeCrossSection; depth: number;
+  width: number; startWidth?: number; endWidth?: number;
+  crossSection: BridgeCrossSection; depth: number;
   hasLeftWall: boolean; hasRightWall: boolean; sideWallHeight: number;
   material: ArenaMaterial;
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
@@ -150,12 +151,14 @@ export interface BridgeSegmentSave {
 
 export interface BridgeEndpointRefSave {
   type: BridgeEndpointType; id: string; angle: number; wallHeight: number;
+  yOffset?: number;
   freePosX: number; freePosY: number; freePosZ: number; freeDirDeg: number;
 }
 
 export interface BridgeSave {
   id: string; name: string;
   startRef: BridgeEndpointRefSave | null;
+  endRef?: BridgeEndpointRefSave | null;
   segments: BridgeSegmentSave[];
   section: BridgeSectionSave;
   color: number; surface: SurfaceType;
@@ -217,6 +220,7 @@ export interface ObstacleSave {
   presentStlb64: string | null; presentColor: number;
   weight?: number;
   visible?: boolean;
+  hideOnTrapIds?: string[];
 }
 
 export interface TrapDurationTierSave {
@@ -360,10 +364,11 @@ export interface TranslationSave {
   easing: TranslationEasing;
   enabled: boolean;
   visible?: boolean;
+  pauseOnTrapIds?: string[];
 }
 
 export interface ArenaConfig {
-  baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number };
+  baseConfig: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number; apothem?: number };
   arenas: ArenaSave[]; arenaSeq: number; pitSeq: number; zoneSeq: number;
   bridges: BridgeSave[];
   wallSeq: number; bridgeSeq: number; segmentSeq: number;
@@ -538,6 +543,7 @@ export function wallToSave(w: WallData): WallSave {
 
 export function endpointRefToSave(r: BridgeEndpointRef): BridgeEndpointRefSave {
   return { type:r.type, id:r.id, angle:r.angle, wallHeight:r.wallHeight,
+           yOffset:r.yOffset,
            freePosX:r.freePosX, freePosY:r.freePosY, freePosZ:r.freePosZ, freeDirDeg:r.freeDirDeg };
 }
 
@@ -572,8 +578,10 @@ export function bridgeToSave(
     id:b.id, name:b.name,
     startRef: b.startRef ? endpointRefToSave(b.startRef) : null,
     segments: b.segmentIds.map(id=>{ const s=segments.get(id); return s?segmentToSave(s):null!; }).filter(Boolean),
+    endRef: b.endRef ? endpointRefToSave(b.endRef) : null,
     section: {
-      width:sec.width, crossSection:sec.crossSection, depth:sec.depth,
+      width:sec.width, startWidth:sec.startWidth, endWidth:sec.endWidth,
+      crossSection:sec.crossSection, depth:sec.depth,
       hasLeftWall:sec.hasLeftWall, hasRightWall:sec.hasRightWall,
       sideWallHeight:sec.sideWallHeight, material:sec.material,
       color:sec.color, surface:sec.surface, customTileData:sec.customTileData, tileScale:sec.tileScale,
@@ -601,6 +609,7 @@ export function obstacleToSave(o: ObstacleData): ObstacleSave {
     presentStlb64:o.presentStlb64, presentColor:o.presentColor,
     weight:o.weight,
     visible:o.visible,
+    hideOnTrapIds:o.hideOnTrapIds,
   };
 }
 

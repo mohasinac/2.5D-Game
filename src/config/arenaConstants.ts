@@ -24,7 +24,7 @@ export const DEFAULT_ARENA_MATERIAL = 'abs' as const;
 
 /* ── Obstacle constants ──────────────────────────────────────────────────── */
 export const MIN_OBSTACLE_DIM      = 10;   // cm — minimum any obstacle dimension
-export const DEFAULT_OBSTACLE_DIM  = 20;   // cm — default cube side length
+export const DEFAULT_OBSTACLE_DIM  = 10;   // cm — default cube side length
 export const DEFAULT_OBSTACLE_WEIGHT  = 50;   // g
 export const MIN_OBSTACLE_WEIGHT      = 1;    // g
 export const MAX_OBSTACLE_WEIGHT      = 5000; // g
@@ -34,8 +34,8 @@ export const MAX_PROJECTILE_WEIGHT     = 500; // g
 
 /* ── Trap constants ──────────────────────────────────────────────────────── */
 export const MIN_TRAP_DIM         = 10;   // cm — minimum footprint dimension
-export const DEFAULT_TRAP_DIM_X   = 20;   // cm
-export const DEFAULT_TRAP_DIM_Z   = 20;   // cm
+export const DEFAULT_TRAP_DIM_X   = 10;   // cm
+export const DEFAULT_TRAP_DIM_Z   = 10;   // cm
 export const TRAP_PLATE_HEIGHT    = 2;    // cm — visual thickness of trigger plate
 export const SPIKE_COUNT          = 9;    // 3×3 grid of spikes
 export const SPIKE_HEIGHT         = 8;    // cm — spike cone height
@@ -96,9 +96,9 @@ export const DEFAULT_WALL_GAP_W    = 10;  // cm
 export const WALL_ARC_STEP_DEG     = 5;   // degrees — rim sampling resolution for walls
 
 /* ── Bridge / segment constants ─────────────────────────────────────────── */
-export const DEFAULT_BRIDGE_WIDTH      = 10;  // cm
+export const DEFAULT_BRIDGE_WIDTH      = 5;   // cm
 export const DEFAULT_BRIDGE_DEPTH      = 5;   // cm (u_channel default depth)
-export const DEFAULT_SEGMENT_LENGTH    = 30;  // cm
+export const DEFAULT_SEGMENT_LENGTH    = 10;  // cm
 export const DEFAULT_CURVE_RADIUS      = 20;  // cm
 export const DEFAULT_CURVE_ANGLE       = 90;  // degrees
 export const DEFAULT_LOOP_RADIUS       = 15;  // cm

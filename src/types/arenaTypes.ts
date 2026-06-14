@@ -659,6 +659,8 @@ export type BridgeCrossSection = 'flat' | 'u_channel';
 /** Bridge-level cross-section — shared by ALL segments; never changes per segment. */
 export interface BridgeSection {
   width: number;                    // cm rail-to-rail
+  startWidth?: number;              // cm opening width at bridge start; undefined = use width
+  endWidth?: number;                // cm opening width at bridge end; undefined = use width
   crossSection: BridgeCrossSection;
   depth: number;                    // cm centre dip (u_channel only)
   hasLeftWall: boolean;
@@ -743,6 +745,7 @@ export interface BridgeEndpointRef {
   id: string;           // arena/wall id (empty for freepoint)
   angle: number;        // degrees around rim (arena/wall)
   wallHeight: number;   // 0–1 height on wall face (wall only)
+  yOffset?: number;     // cm additional Y lift above the resolved rim/wall Y
   freePosX: number;     // world cm
   freePosY: number;
   freePosZ: number;
@@ -754,6 +757,8 @@ export interface BridgeData {
   name: string;
   /** Where the first segment starts. null = floating (freepoint in startRef). */
   startRef: BridgeEndpointRef | null;
+  /** Optional end-anchor reference for visual marker display. null = no end anchor. */
+  endRef?: BridgeEndpointRef | null;
   segmentIds: string[];
   section: BridgeSection;
   color: number;
@@ -804,6 +809,8 @@ export interface ObstacleData {
   weight: number;   // g
   /** Hidden from view; collision/physics still active. Default true. */
   visible: boolean;
+  /** Hide this obstacle when any of these trap IDs are in their unsafe phase. Default []. */
+  hideOnTrapIds?: string[];
   mesh: THREE.Mesh; edges: THREE.LineSegments;
 }
 
@@ -1231,6 +1238,8 @@ export interface TranslationData {
   easing:     TranslationEasing;
   enabled:    boolean;
   visible:    boolean;
+  /** Pause translation when any of these trap IDs are in their unsafe phase. Default []. */
+  pauseOnTrapIds?: string[];
   /** Runtime only — normalised time [0,1]. Not serialised. */
   _t:   number;
   /** Runtime only — direction: 1 = forward, -1 = backward (pingpong). */

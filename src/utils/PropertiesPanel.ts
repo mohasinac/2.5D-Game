@@ -49,14 +49,14 @@ export const SURFACE_LABEL: Record<SurfaceType, string> = {
 export class PropertiesPanel extends AbstractPropertiesPanel {
 
   showBase(
-    cfg: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number },
+    cfg: { height: number; sides: number; color: number; surface: SurfaceType; customTileData: string | null; tileScale: number; apothem?: number },
     onRebuild: () => void,
     onColorChange: (hex: number) => void,
     onSurfaceChange: () => void,
   ): void {
     this.content.innerHTML = '';
     this.section('OCTAGON BASE');
-    this.readRow('Flat-to-flat', '200 cm');
+    this.numRow('Apothem', cfg.apothem ?? APOTHEM, 40, 200, 1, v => { cfg.apothem = v; onRebuild(); });
     this.numRow('Height', cfg.height, 5, 80, 1,  v => { cfg.height=v; onRebuild(); });
     this.numRow('Sides',  cfg.sides,  3, 16, 1,  v => { cfg.sides=Math.round(v); onRebuild(); });
     this.section('SURFACE');
@@ -972,10 +972,12 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     if (ref?.type === 'arena') {
       this._selectRow('Arena', [...arenaNames.entries()], ref.id, v => { ref.id = v; onGeomChange(); });
       this.numRow('Angle°', ref.angle, 0, 360, 1, v => { ref.angle = v; onGeomChange(); });
+      this.numRow('Y Offset (cm)', ref.yOffset ?? 0, -50, 50, 0.5, v => { ref.yOffset = v; onGeomChange(); });
     } else if (ref?.type === 'wall') {
       this._selectRow('Wall', [...wallNames.entries()], ref.id, v => { ref.id = v; onGeomChange(); });
       this.numRow('Angle°', ref.angle, 0, 360, 1, v => { ref.angle = v; onGeomChange(); });
       this.numRow('Height t', ref.wallHeight, 0, 1, 0.05, v => { ref.wallHeight = v; onGeomChange(); });
+      this.numRow('Y Offset (cm)', ref.yOffset ?? 0, -50, 50, 0.5, v => { ref.yOffset = v; onGeomChange(); });
     } else if (ref?.type === 'freepoint') {
       this.numRow('X (cm)',    ref.freePosX,  -500, 500, 1,  v => { ref.freePosX = v;  onGeomChange(); });
       this.numRow('Y (cm)',    ref.freePosY,     0, 500, 1,  v => { ref.freePosY = v;  onGeomChange(); });
@@ -983,10 +985,54 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
       this.numRow('Heading°', ref.freeDirDeg, 0, 360, 1, v => { ref.freeDirDeg = v; onGeomChange(); });
     }
 
+    // ── End anchor ───────────────────────────────────────────────────────
+    this.section('END ANCHOR');
+    const eref = bridge.endRef ?? null;
+    const etypes: [BridgeEndpointType | 'none', string][] = [
+      ['none', 'None'], ['arena', 'Arena'], ['wall', 'Wall'], ['freepoint', 'Free pt'],
+    ];
+    const etypeRow = document.createElement('div'); etypeRow.className = 'prop-profile-row';
+    const curEType = eref?.type ?? 'none';
+    for (const [t, label] of etypes) {
+      const btn = document.createElement('button');
+      btn.className = 'prop-profile-btn' + (curEType === t ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        if (t === 'none') { bridge.endRef = null; }
+        else {
+          bridge.endRef = bridge.endRef ?? {
+            type: t as BridgeEndpointType, id: '', angle: 0, wallHeight: 0,
+            yOffset: 0, freePosX: 0, freePosY: 31, freePosZ: 0, freeDirDeg: 0,
+          };
+          bridge.endRef.type = t as BridgeEndpointType;
+        }
+        onGeomChange();
+      });
+      etypeRow.appendChild(btn);
+    }
+    this.content.appendChild(etypeRow);
+    if (eref?.type === 'arena') {
+      this._selectRow('Arena', [...arenaNames.entries()], eref.id, v => { eref.id = v; onGeomChange(); });
+      this.numRow('Angle°', eref.angle, 0, 360, 1, v => { eref.angle = v; onGeomChange(); });
+      this.numRow('Y Offset (cm)', eref.yOffset ?? 0, -50, 50, 0.5, v => { eref.yOffset = v; onGeomChange(); });
+    } else if (eref?.type === 'wall') {
+      this._selectRow('Wall', [...wallNames.entries()], eref.id, v => { eref.id = v; onGeomChange(); });
+      this.numRow('Angle°', eref.angle, 0, 360, 1, v => { eref.angle = v; onGeomChange(); });
+      this.numRow('Height t', eref.wallHeight, 0, 1, 0.05, v => { eref.wallHeight = v; onGeomChange(); });
+      this.numRow('Y Offset (cm)', eref.yOffset ?? 0, -50, 50, 0.5, v => { eref.yOffset = v; onGeomChange(); });
+    } else if (eref?.type === 'freepoint') {
+      this.numRow('X (cm)',    eref.freePosX,  -500, 500, 1, v => { eref.freePosX = v;  onGeomChange(); });
+      this.numRow('Y (cm)',    eref.freePosY,     0, 500, 1, v => { eref.freePosY = v;  onGeomChange(); });
+      this.numRow('Z (cm)',    eref.freePosZ,  -500, 500, 1, v => { eref.freePosZ = v;  onGeomChange(); });
+      this.numRow('Heading°', eref.freeDirDeg, 0, 360, 1, v => { eref.freeDirDeg = v; onGeomChange(); });
+    }
+
     // ── Track cross-section ───────────────────────────────────────────────
     this.section('TRACK CROSS-SECTION');
     const sec = bridge.section;
-    this.numRow('Width (cm)', sec.width, 5, 100, 1, v => { sec.width = v; onGeomChange(); });
+    this.numRow('Width (cm)',       sec.width,                        2, 100, 1,   v => { sec.width = v; onGeomChange(); });
+    this.numRow('Start Width (cm)', sec.startWidth ?? sec.width,      2, 100, 1,   v => { sec.startWidth = v; onGeomChange(); });
+    this.numRow('End Width (cm)',   sec.endWidth   ?? sec.width,      2, 100, 1,   v => { sec.endWidth   = v; onGeomChange(); });
     const csRow = document.createElement('div'); csRow.className = 'prop-profile-row';
     for (const [cs, label] of [['flat','━ Flat'],['u_channel','⌣ U-Channel']] as [BridgeCrossSection, string][]) {
       const btn = document.createElement('button');

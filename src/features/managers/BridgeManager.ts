@@ -162,20 +162,28 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implem
     // Update orderIndex for subsequent segments and rebuild from first affected
     for (let i = idx; i < bridge.segmentIds.length; i++) {
       const s = this.segments.get(bridge.segmentIds[i]);
-      if (s) { s.orderIndex = i; this.applySegment(s); }
+      if (s) s.orderIndex = i;
+    }
+    if (bridge.segmentIds.length > 0 && idx < bridge.segmentIds.length) {
+      this.applyBridgeFromSegment(bridge.segmentIds[idx]);
+    } else if (bridge.segmentIds.length > 0) {
+      this.applyBridgeFromSegment(bridge.segmentIds[0]);
     }
   }
 
   /**
    * Rebuild geometry for a single segment (update in-place or create).
    * Segments are children of bridge.group — never added directly to scene.
+   * @param effectiveWidth  Optional interpolated width; overrides section.width when provided.
    */
-  applySegment(seg: BridgeSegmentData): void {
+  applySegment(seg: BridgeSegmentData, effectiveWidth?: number): void {
     const bridge = this.items.get(seg.bridgeId);
     if (!bridge) return;
 
     const startPose = this._segmentStartPose(seg, bridge);
-    const sec       = bridge.section;
+    const sec = effectiveWidth !== undefined
+      ? { ...bridge.section, width: effectiveWidth }
+      : bridge.section;
     const color:   number      = seg.color   ?? sec.color;
     const surface: SurfaceType = seg.surface ?? sec.surface;
 
@@ -251,9 +259,17 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implem
     const startIdx = bridge.segmentIds.indexOf(segId);
     if (startIdx < 0) return;
 
-    for (let i = startIdx; i < bridge.segmentIds.length; i++) {
+    const section = bridge.section;
+    const n       = bridge.segmentIds.length;
+    const w0      = section.startWidth ?? section.width;
+    const w1      = section.endWidth   ?? section.width;
+    const taper   = w0 !== w1;
+
+    for (let i = startIdx; i < n; i++) {
       const s = this.segments.get(bridge.segmentIds[i]);
-      if (s) this.applySegment(s);
+      if (!s) continue;
+      const effectiveWidth = taper ? (n > 1 ? w0 + (i / (n - 1)) * (w1 - w0) : w0) : undefined;
+      this.applySegment(s, effectiveWidth);
     }
   }
 
@@ -262,6 +278,21 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implem
     const bridge = this.items.get(bridgeId);
     if (!bridge || bridge.segmentIds.length === 0) return;
     this.applyBridgeFromSegment(bridge.segmentIds[0]);
+  }
+
+  /** Resolve the world position of a bridge endpoint reference. Returns null if unresolvable. */
+  resolveEndRefPos(ref: import('../../types/arenaTypes').BridgeEndpointRef): THREE.Vector3 | null {
+    try {
+      const pose = resolveStartPose(
+        ref,
+        this.getArenas() as Map<string, ArenaData>,
+        this.getWalls() as Map<string, WallData>,
+        this.ctx.getFallbackY(),
+      );
+      return pose.pos.clone();
+    } catch {
+      return null;
+    }
   }
 
   // ── Segment accessors ────────────────────────────────────────────────────
@@ -407,6 +438,7 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implem
       id:               save.id,
       name:             save.name,
       startRef:         save.startRef as BridgeData['startRef'],
+      endRef:           save.endRef ?? null,
       segmentIds:       [],
       section:          { ...defaultBridgeSection(), ...save.section },
       color:            save.color,

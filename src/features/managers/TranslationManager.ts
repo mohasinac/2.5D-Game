@@ -45,6 +45,8 @@ export class TranslationManager
     private readonly getMemberObjects: (nodeId: string) => THREE.Object3D[],
     /** Optional hook fired after positions are updated (e.g. floor correction). */
     private readonly onAfterMove?: (data: TranslationData) => void,
+    /** Optional callback to test whether a trap ID is in its unsafe phase. */
+    private readonly isTrapUnsafe?: (trapId: string) => boolean,
   ) {
     super(ctx, 'trans', 'Translation');
   }
@@ -66,7 +68,9 @@ export class TranslationManager
   tick(dt: number): void {
     for (const data of this.items.values()) {
       if (!data.enabled || data.waypoints.length < 2) continue;
-      this._advance(data, dt);
+      const paused = this.isTrapUnsafe != null &&
+        (data.pauseOnTrapIds ?? []).some(tid => this.isTrapUnsafe!(tid));
+      if (!paused) this._advance(data, dt);
       this._applyPositions(data);
       this.onAfterMove?.(data);
     }
@@ -108,15 +112,16 @@ export class TranslationManager
 
   toSave(data: TranslationData): TranslationSave {
     return {
-      id:         data.id,
-      name:       data.name,
-      memberIds:  [...data.memberIds],
-      waypoints:  data.waypoints.map(w => ({ ...w })),
-      durationMs: data.durationMs,
-      loopMode:   data.loopMode,
-      easing:     data.easing,
-      enabled:    data.enabled,
-      visible:    data.visible,
+      id:             data.id,
+      name:           data.name,
+      memberIds:      [...data.memberIds],
+      waypoints:      data.waypoints.map(w => ({ ...w })),
+      durationMs:     data.durationMs,
+      loopMode:       data.loopMode,
+      easing:         data.easing,
+      enabled:        data.enabled,
+      visible:        data.visible,
+      pauseOnTrapIds: data.pauseOnTrapIds,
     };
   }
 
@@ -126,11 +131,12 @@ export class TranslationManager
       [...save.memberIds],
       save.waypoints.map(w => ({ ...w })),
       {
-        durationMs: save.durationMs,
-        loopMode:   save.loopMode,
-        easing:     save.easing,
-        enabled:    save.enabled,
-        visible:    save.visible ?? true,
+        durationMs:     save.durationMs,
+        loopMode:       save.loopMode,
+        easing:         save.easing,
+        enabled:        save.enabled,
+        visible:        save.visible ?? true,
+        pauseOnTrapIds: save.pauseOnTrapIds,
       },
     );
   }

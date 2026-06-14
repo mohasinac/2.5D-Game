@@ -12,7 +12,12 @@ export abstract class AbstractPropertiesPanel {
     `;
     this.content = container.querySelector<HTMLElement>('.prop-content')!;
     container.querySelector<HTMLButtonElement>('.prop-close-btn')!
-      .addEventListener('click', () => this.onClose());
+      .addEventListener('click', () => {
+        if (window.matchMedia('(min-width: 769px)').matches) {
+          container.classList.add('sandbox-right-panel--collapsed');
+        }
+        this.onClose();
+      });
     this.showEmpty();
   }
 

@@ -141,6 +141,7 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
       presentColor:     save.presentColor,
       weight:           save.weight ?? DEFAULT_OBSTACLE_WEIGHT,
       visible:          save.visible ?? true,
+      hideOnTrapIds:    save.hideOnTrapIds,
     });
     return data;
   }
