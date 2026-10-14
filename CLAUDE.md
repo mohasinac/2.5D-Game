@@ -30,17 +30,18 @@ The battle layer is designed in `case study/CS23 — battle layer design.md`. It
 
 ```
 npm run docker:build        # build images
-npm run docker:dev          # Vite dev server → http://localhost:3000
+npm run docker:dev          # Vite dev server → http://localhost:3001
 npm run docker:typecheck    # tsc --noEmit
 npm run docker:unit         # browser-free unit specs only (no dev server needed)
 npm run docker:dist         # production bundle (NODE_ENV=production — see trap 5)
-npm run docker:test         # full Playwright suite against http://bey-app:3000
+npm run docker:demos        # regenerate screenshots/demos/** headless (host run stays headed)
+npm run docker:test         # full Playwright suite against http://bey-app:3001
 npm run docker:down         # tear down + drop volumes
 
 npm run dev                 # host fallback
 npm run build               # tsc && vite build
 npm run typecheck           # tsc --noEmit
-npm run test:e2e            # Playwright on the host (needs a dev server on :3000)
+npm run test:e2e            # Playwright on the host (needs a dev server on :3001)
 npm run demo                # Puppeteer script that builds the demo arena through the UI
 npm run deploy              # npm run build && firebase deploy --only hosting
 ```
@@ -59,6 +60,8 @@ These are fixed. They are recorded because every one of them presents as "the ap
 
 1. **Never let the Vite watcher see `linka/`.** `linka/` is a 7.3 GB / ~44,000-file scraped research archive in the repo root (gitignored, imported by nothing). With `usePolling` on, chokidar stat-ed all of it every 300 ms and **every HTTP request took ~26 s**, so the healthcheck could never pass. `server.watch.ignored` in `vite.config.ts` fixes it (~26,000 ms → ~200 ms). Polling cost scales with file count, so raising `interval` is not a substitute.
 2. **`server.allowedHosts` must list the container hostname.** Vite 5.4.12 backported a DNS-rebinding fix; `package.json` asks for `^5.2.0`, so `npm ci` resolves 5.4.21 and unlisted hosts get `403 Blocked request. This host (…) is not allowed.` A patch-range bump silently broke a passing gate.
+**The project's port is 3001, inside the container and out** — port 3000 on this machine belongs to a different project. `vite.config.ts` `server.port`, the compose published port, the healthcheck probe and `PLAYWRIGHT_BASE_URL` all carry the same number deliberately; splitting host and container ports only invites them to drift.
+
 3. **The test hostname is `bey-app`, never `app`.** `.app` is a Google gTLD on Chromium's HSTS preload list TLD-wide, so the browser rewrites `http://app:3000` to HTTPS and fails with `ERR_SSL_PROTOCOL_ERROR` against a plain-HTTP dev server — before the request is even sent. `PLAYWRIGHT_BASE_URL` and `allowedHosts` must stay in sync.
 4. **The healthcheck probes `127.0.0.1`, not `localhost`.** Inside the container `localhost` resolves to `::1` first while Vite's `host: true` binds IPv4-only, so the probe hung until timeout.
 5. **Build production bundles with `npm run docker:dist`, never `vite build` in the dev container.** The `dev` stage sets `NODE_ENV=development`, and Vite derives `import.meta.env.DEV` from `NODE_ENV` *even during `vite build`*. Building there yields `DEV === true`, so the dev-only `window.__demo` API ships to production — the exact thing the `grep __demo dist/assets/*.js` check exists to catch, and it was silently failing. The `dist` compose service overrides `NODE_ENV=production`.

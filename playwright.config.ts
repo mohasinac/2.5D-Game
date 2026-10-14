@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
-/* http://app:3000 inside compose, http://localhost:3000 on the host. */
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000';
+/* http://bey-app:3001 inside compose, http://localhost:3001 on the host. */
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3001';
 
 const IPHONE_UA =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 ' +

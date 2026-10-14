@@ -60,6 +60,11 @@ const WATCH_IGNORED = [
  */
 const ALLOWED_HOSTS = ['bey-app', 'localhost', '127.0.0.1'];
 
+/* 3001, not 3000: port 3000 on this machine belongs to a different project.
+   Kept identical inside and outside the container so there is exactly one
+   number to remember — the healthcheck, PLAYWRIGHT_BASE_URL and the published
+   port in docker-compose.yml all follow it. */
+
 export default defineConfig({
   base: '/',
   /* Static art is served from `assets/`, NOT Vite's default `public/`.
@@ -69,7 +74,7 @@ export default defineConfig({
      See assets/README.md. */
   publicDir: 'assets',
   server: {
-    port: 3000,
+    port: 3001,
     strictPort: true,   /* fail instead of silently picking another port */
     host: true,         /* bind 0.0.0.0 so the container is reachable */
     allowedHosts: ALLOWED_HOSTS,

@@ -1,6 +1,6 @@
 # Dev + test environment.
 #
-#   docker compose up app              → Vite dev server on http://localhost:3000
+#   docker compose up app              → Vite dev server on http://localhost:3001
 #   docker compose run --rm typecheck  → tsc --noEmit
 #   docker compose run --rm test       → Playwright specs against the app service
 #
@@ -13,13 +13,11 @@ services:
       context: .
       target: dev
     container_name: bey-app
-    # Host 3001 -> container 3000. Only the host side moves: Vite still binds
-    # 3000 inside the container, so the healthcheck (127.0.0.1:3000), the test
-    # service's PLAYWRIGHT_BASE_URL (http://bey-app:3000) and `allowedHosts`
-    # all stay as they are. Changing Vite's own port would mean touching all
-    # three in lockstep for no gain.
+    # 3001 on BOTH sides. Port 3000 on the host belongs to a different project,
+    # and keeping the container on a second number only invites the healthcheck,
+    # PLAYWRIGHT_BASE_URL and `allowedHosts` to drift apart. One number.
     ports:
-      - "3001:3000"
+      - "3001:3001"
     environment:
       DOCKER: "1"
     volumes:
@@ -37,7 +35,7 @@ services:
         - CMD
         - node
         - -e
-        - "fetch('http://127.0.0.1:3000').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        - "fetch('http://127.0.0.1:3001').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
       interval: 5s
       # 10s, not 5s: a cold start still pays for Vite's dependency pre-bundling
       # (three + phaser) on the first request over a Windows bind mount.
@@ -91,6 +89,27 @@ services:
       - node_modules:/app/node_modules
     command: npx playwright test --project=unit
 
+  # Regenerates the feature-demo screenshot set into the gitignored
+  # `screenshots/demos/<family>/<id>.png`. Headless + SwiftShader, unlike
+  # `npm run demo:features`, which stays headed on the host with a real GPU
+  # because the point of THAT is to watch the tour.
+  demos:
+    build:
+      context: .
+      target: test
+    profiles: ["ci"]
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      PLAYWRIGHT_BASE_URL: http://bey-app:3001
+      DOCKER: "1"
+    shm_size: 1gb
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    command: npx playwright test --config=playwright.demos.config.ts
+
   test:
     build:
       context: .
@@ -105,7 +124,7 @@ services:
       # ERR_SSL_PROTOCOL_ERROR before the request leaves the browser. Resolves
       # via the app service's container_name. Must stay in sync with
       # `allowedHosts` in vite.config.ts, or Vite answers 403.
-      PLAYWRIGHT_BASE_URL: http://bey-app:3000
+      PLAYWRIGHT_BASE_URL: http://bey-app:3001
       DOCKER: "1"
     # Chromium crashes on Docker's default 64 MB /dev/shm.
     shm_size: 1gb

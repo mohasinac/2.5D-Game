@@ -35,7 +35,7 @@ import { chromium } from '@playwright/test';
  * place to assert on that.
  */
 
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000';
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3001';
 
 /** Generous: this is the cold path, measured at ~51 s with headroom for CI noise. */
 const WARM_TIMEOUT_MS = 180_000;
