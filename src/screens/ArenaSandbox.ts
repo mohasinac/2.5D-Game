@@ -2235,6 +2235,63 @@ export class ArenaSandbox extends Sandbox {
             scaleY:       m.scale.y,
           };
         })(),
+        /* WHAT IS IN FRONT OF THE RIBBON.
+           Casts from the live camera toward a point on the ribbon and names
+           every surface hit before it. "The mesh is valid but you cannot see it"
+           has exactly one remaining explanation — something opaque is nearer —
+           and this is the only way to find out which thing. */
+        occluders: (() => {
+          const m = sl.mesh; const cam = this.getCamera(); const sc = this.getScene();
+          if (!m || !cam || !sc) return null;
+          m.geometry.computeBoundingBox();
+          const bb = m.geometry.boundingBox; if (!bb) return null;
+          const target = bb.getCenter(new THREE.Vector3());
+          /* Aim at a real vertex rather than the bbox centre: the centre of a
+             ring sits in empty space. */
+          const pos = m.geometry.getAttribute('position');
+          target.set(pos.getX(0), pos.getY(0), pos.getZ(0));
+          m.localToWorld(target);
+
+          const origin = cam.position.clone();
+          const dir = target.clone().sub(origin);
+          const distToRibbon = dir.length();
+          dir.normalize();
+          /* Meshes only. Raycasting the whole scene throws on some non-mesh
+             object types, and only a mesh can occlude anything anyway. */
+          const meshes: THREE.Mesh[] = [];
+          sc.traverse((o) => { if ((o as THREE.Mesh).isMesh && o.visible) meshes.push(o as THREE.Mesh); });
+          const rc = new THREE.Raycaster(origin, dir, 0.01, distToRibbon * 1.3);
+          const hits = rc.intersectObjects(meshes, false);
+          return {
+            distToRibbon: +distToRibbon.toFixed(1),
+            hits: hits.slice(0, 6).map(h => {
+              const hm = h.object as THREE.Mesh;
+              const mt = hm.material as THREE.Material | undefined;
+              /* Identify by reference against the meshes we own, so the answer
+                 is a name rather than "some Mesh". */
+              let who = 'unknown';
+              if (h.object === m)                   who = 'THE RIBBON';
+              else if (h.object === this.topFaceMesh) who = 'octagon TOP FACE';
+              else if (h.object === this.baseMesh)    who = 'octagon base side';
+              else {
+                for (const [aid, a] of this.arenas.entries()) {
+                  if (h.object === a.mesh)        { who = `arena ${aid} bowl`;      break; }
+                  if (h.object === a.floorMesh)   { who = `arena ${aid} floorMesh`; break; }
+                  if (h.object === a.islandMesh)  { who = `arena ${aid} islandCap`; break; }
+                  if (h.object === a.rimSeamMesh) { who = `arena ${aid} rimSeam`;   break; }
+                }
+                if (who === 'unknown') {
+                  for (const [zid, z] of this.zones.entries()) {
+                    if (h.object === z.mesh)     { who = `zone ${zid}`;     break; }
+                    if (h.object === z.seamMesh) { who = `zone ${zid} seam`; break; }
+                  }
+                }
+              }
+              return `${+h.distance.toFixed(1)} ${who}` +
+                     `${mt ? (mt.transparent ? ' [transp]' : ' [OPAQUE]') : ''}`;
+            }),
+          };
+        })(),
         /* Bowl surface Y directly beneath the ribbon's first point. If the
            ribbon's minY sits at or below this, it is inside the floor. */
         surfaceYAtStart: (() => {

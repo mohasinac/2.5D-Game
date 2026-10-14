@@ -78,7 +78,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 133 tests** — 82 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 141 tests** — 90 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -556,44 +556,47 @@ Also: `ProjectileManager` bullets never collide with anything. `SpawnManager` ha
 - `ShopScene` is complete but unreachable (no shop trigger or NPC `shopId` in seeded data).
 - `CutscenePlayer` `npc_move` and `sfx` are empty resolves. `UIScene` minimap is an empty box.
 
-**Speed line ribbons ARE rendered -- they are OCCLUDED (OPEN, but narrowed to one
-question).** Two separate problems were tangled together here.
+**Speed line ribbons: ROOT CAUSE FOUND AND FIXED.** Two independent bugs were
+tangled together under one symptom.
 
-FIXED -- the path was being built in the wrong place. The two halves of the
-pipeline disagreed about heading: `waypointsToSegments` ENCODES as
-`atan2(-dx, dz)` (forward `(-sin, 0, cos)`), `computeSegmentPath` REPLAYED by
-rotating `(0,0,1)` about **+Y** (`(+sin, 0, cos)`). X was flipped, so all 24
-presets replayed mirrored and the spirals wound outward: the shipped
-`spiral_in` (radiusX 70) spanned **x 68.8..210.5**, outside its own bowl. Now
-`-70.7..71.2`. The convention lives in `headingToForward` / `forwardToHeading`,
-used by both sides, with round-trip tests in `tests/unit/speedLinePath.spec.ts`.
+**1. The path was built in the wrong place.** The halves of the pipeline
+disagreed about heading: `waypointsToSegments` ENCODES as `atan2(-dx, dz)`
+(forward `(-sin, 0, cos)`), `computeSegmentPath` REPLAYED by rotating `(0,0,1)`
+about **+Y** (`(+sin, 0, cos)`). X was flipped, so all 24 presets replayed
+mirrored and the spirals wound outward -- the shipped `spiral_in` (radiusX 70)
+spanned x 68.8..210.5, outside its own bowl. The convention now lives in
+`headingToForward` / `forwardToHeading`, used by both sides, with round-trip
+tests in `tests/unit/speedLinePath.spec.ts`.
 
-STILL OPEN -- but it is an OCCLUSION problem, not a rendering one. Setting the
-ribbon material's `depthTest = false` makes it appear immediately, correctly
-shaped and correctly placed. Everything about the mesh is already valid:
+**2. THE LID -- the real reason nothing was visible.** `buildTopFaceGeo` pushed
+an arena's opening as a `Shape` hole unconditionally. **A hole can only be cut
+from a shape that contains it**; when an arena is bigger than its base, Three's
+triangulator cannot express that and silently emits a SOLID face. The shipped
+demo arena is radius 120 on a base of circumradius 108.24 (apothem 100 -- the
+documented fixed 2 m base), so its top face was never perforated. **What looked
+like the bowl floor in every screenshot was the lid**; the bowl, its speed line
+and everything in it sat underneath. The builder now emits no top face when the
+opening swallows the base (`tests/unit/topFaceHole.spec.ts`).
 
-```
-chain Mesh:v < Scene:v   rootIsScene true   indexCount 4800   (= 800 rungs x 6)
-bsRadius 74.48 finite    matVisible true    colorWrite true   layersMask 1
-bounds x -75.4..76,  y -22.05..-10.95   (arena depth 22, posY 0)
-```
+HOW IT WAS FOUND, because the method mattered more than the fix: a
+camera-to-ribbon raycast that NAMES each surface it passes through. It printed
+`199.7 octagon TOP FACE [OPAQUE]` in front and `243.6 arena arena-1 bowl` behind,
+which ended an investigation that four plausible hypotheses had already failed
+to resolve. `__demo.getFeatureState(<slId>)` keeps that probe (`occluders`),
+plus mesh/geometry/material diagnostics -- reach for it before theorising about
+anything invisible.
 
-So the only question left is **which opaque surface is drawn in front of it**.
-The ribbon lies inside the bowl (y -11..-22) while the octagon base top face is
-at y = 0; `_loadArenasFromConfig` does call `updateTopFace()`, so the hole is
-cut on the load path -- that is where to start, together with the fact that the
-demo arena uses `wallProfile: 'step'` while `arenaSurfaceYAtArenaLocal` models
-only parabolic/straight/bb10, so the analytic surface Y and the real stepped
-mesh need not agree.
+FALSIFIED on the way, do not re-try: empty/degenerate geometry (4800 indices,
+finite bounds); opacity or sub-pixel width (opacity 1 + width 12 cm changed
+nothing); depth-precision z-fighting (`polygonOffset` at BOTH signs changed
+nothing -- a two-sided null result is what distinguishes occlusion from
+z-fighting); and `renderMgr.add` vs `scene.add` (markers appear only because
+`buildStartMarker` sets `depthTest: false`).
 
-FALSIFIED -- do not re-try these:
-  1. empty/degenerate geometry (4800 indices, finite bounds, valid normals/UVs);
-  2. opacity or sub-pixel width (opacity 1 + width 12 cm changes nothing);
-  3. depth-precision z-fighting -- `polygonOffset` at BOTH signs changes nothing,
-     which is what distinguishes genuine occlusion from z-fighting;
-  4. `renderMgr.add` vs direct `scene.add` -- a red herring. The markers appear
-     because `buildStartMarker` sets `depthTest: false`, not because of how they
-     were added.
+**Still true and worth knowing:** a ribbon draws at `opacity x
+SL.INACTIVE_OPACITY_MULT` (0.4) whenever `activationMode !== 'always'`, so the
+demo line renders at 0.30 alpha and 2.5 cm wide -- faint at full-arena zoom.
+That is authored data, not a bug.
 
 **Mobile layout:** the bottom view-mode bar (HITBOX/BOTH/VISUAL) overflows off-screen on mobile portrait — "VISUAL" is unreachable. Root cause is the `vmin` scale collapsing on narrow viewports.
 

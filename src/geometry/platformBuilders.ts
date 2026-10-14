@@ -13,6 +13,30 @@ import { applyPlanarUV } from './uvMapping';
    ══════════════════════════════════════════════════════════════════════════ */
 
 /** Top face of base — polygon with voids for arena openings. */
+/** Ray-crossing point-in-polygon, used to tell a real hole from one that
+ *  swallows the shape it is meant to be cut from. */
+function pointInPolygon(p: THREE.Vector2, poly: THREE.Vector2[]): boolean {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i], b = poly[j];
+    if ((a.y > p.y) !== (b.y > p.y) &&
+        p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+/** A top face with no surface left. Still a valid, UV-bearing geometry so every
+ *  caller's dispose/assign path is unchanged. */
+function emptyTopFace(): THREE.BufferGeometry {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
+  geo.setAttribute('uv',  new THREE.Float32BufferAttribute([], 2));
+  geo.setAttribute('uv1', new THREE.Float32BufferAttribute([], 2));
+  return geo;
+}
+
 export function buildTopFaceGeo(
   baseSides: number, baseRadius: number, align: number,
   baseHeight: number, arenas: ArenaData[],
@@ -38,6 +62,21 @@ export function buildTopFaceGeo(
     const local = shapePoints(arena);
     const cos = Math.cos(arena.rotY); const sin = Math.sin(arena.rotY);
     const holePts = local.map(p => new THREE.Vector2(p.x*cos - p.y*sin + arena.posX, p.x*sin + p.y*cos + arena.posZ)).reverse();
+    /* A hole can only be cut from a shape that CONTAINS it. When an arena is
+       larger than the base it sits on, Three's triangulator cannot express the
+       result and silently emits a SOLID face instead — an opaque lid sealing the
+       bowl and everything inside it, with no error anywhere.
+
+       That is exactly what made speed-line ribbons look like they never
+       rendered: the shipped demo arena is radius 120 on a base of circumradius
+       108.24 (apothem 100, the documented fixed 2 m base), so its top face was
+       never actually perforated. What everyone took for the bowl floor was the
+       lid; the bowl, its ribbon and its contents were underneath.
+
+       If the opening swallows the whole base there is no top face left, so emit
+       nothing rather than a surface that does not exist. */
+    if (outerPts.every(p => pointInPolygon(p, holePts))) return emptyTopFace();
+
     shape.holes.push(new THREE.Path(holePts));
   }
   const geo = new THREE.ShapeGeometry(shape);
