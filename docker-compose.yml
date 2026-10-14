@@ -1,0 +1,63 @@
+# Dev + test environment.
+#
+#   docker compose up app              → Vite dev server on http://localhost:3000
+#   docker compose run --rm typecheck  → tsc --noEmit
+#   docker compose run --rm test       → Playwright specs against the app service
+#
+# The named node_modules volume is load-bearing on Windows: without it the host
+# bind-mount shadows /app/node_modules and the Linux-built dependencies vanish.
+
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    container_name: bey-app
+    ports:
+      - "3000:3000"
+    environment:
+      DOCKER: "1"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    healthcheck:
+      # Plain node fetch — avoids depending on curl/wget being in the slim image.
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3000').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+  typecheck:
+    build:
+      context: .
+      target: dev
+    profiles: ["ci"]
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    command: npx tsc --noEmit
+
+  test:
+    build:
+      context: .
+      target: test
+    profiles: ["ci"]
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      PLAYWRIGHT_BASE_URL: http://app:3000
+    # Chromium crashes on Docker's default 64 MB /dev/shm.
+    shm_size: 1gb
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    command: npx playwright test
+
+volumes:
+  node_modules:

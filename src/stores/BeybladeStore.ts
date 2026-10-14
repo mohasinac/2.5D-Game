@@ -106,8 +106,14 @@ export class BeybladeStore {
     this.groups.clear();
     for (const p of cfg.parts) {
       const part: PartData = { ...p, sectorIds: [...p.sectorIds] };
-      if (!part.present) part.present = defaultPresentConfig();
+      if (!part.present)       part.present       = defaultPresentConfig();
       if (!part.particleConfig) part.particleConfig = defaultParticleConfig();
+      if (part.attack          == null) part.attack          = 50;
+      if (part.defense         == null) part.defense         = 50;
+      if (part.stamina         == null) part.stamina         = 50;
+      if (part.speed           == null) part.speed           = 50;
+      if (part.gimmickType     == null) part.gimmickType     = 'none';
+      if (part.gimmickStrength == null) part.gimmickStrength = 50;
       this.parts.set(p.id, part);
     }
     for (const s of cfg.sectors) this.sectors.set(s.id, { ...s });
@@ -121,8 +127,14 @@ export class BeybladeStore {
   mergeDeserialize(cfg: BeybladeBuildConfig): void {
     for (const p of cfg.parts) {
       const part: PartData = { ...p, sectorIds: [...p.sectorIds] };
-      if (!part.present) part.present = defaultPresentConfig();
-      if (!part.particleConfig) part.particleConfig = defaultParticleConfig();
+      if (!part.present)        part.present        = defaultPresentConfig();
+      if (!part.particleConfig) part.particleConfig  = defaultParticleConfig();
+      if (part.attack          == null) part.attack          = 50;
+      if (part.defense         == null) part.defense         = 50;
+      if (part.stamina         == null) part.stamina         = 50;
+      if (part.speed           == null) part.speed           = 50;
+      if (part.gimmickType     == null) part.gimmickType     = 'none';
+      if (part.gimmickStrength == null) part.gimmickStrength = 50;
       this.parts.set(p.id, part);
     }
     for (const s of cfg.sectors) this.sectors.set(s.id, { ...s });

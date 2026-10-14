@@ -709,6 +709,15 @@ function normalizeAngle180(deg: number): number {
   return d;
 }
 
+/** Radially clamp XZ waypoints to the given ellipse bounds in-place. */
+export function clampToEllipse(pts: [number, number][], rX: number, rZ: number): void {
+  if (rX <= 0 || rZ <= 0) return;
+  for (const p of pts) {
+    const t = Math.sqrt((p[0] / rX) ** 2 + (p[1] / rZ) ** 2);
+    if (t > 1) { p[0] /= t; p[1] /= t; }
+  }
+}
+
 /** Convert N+1 XZ waypoints to SpeedLineSegment array using heading convention. */
 export function waypointsToSegments(
   pts: [number, number][],
@@ -975,6 +984,10 @@ export function generatePresetSegments(
     default:
       return { segments: [], startDir: 0, startR: 0, startAngle: 0 };
   }
+
+  // Clamp waypoints to SL's own ellipse bounds — prevents raycast jumping to base.
+  // 'custom' and 'jump' return early above; all other presets reach here.
+  clampToEllipse(pts, rx, rz);
 
   // Apply modulation before segment conversion
   if (params.modulation.type !== 'none') {

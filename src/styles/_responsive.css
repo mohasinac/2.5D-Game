@@ -68,7 +68,15 @@
   /* Top bar */
   .sandbox-top-bar { flex-wrap: wrap; gap: calc(4*var(--mm)); padding: calc(4*var(--mm)) calc(6*var(--mm)); }
   .sandbox-hint    { display: none; }
-  .sandbox-title   { font-size: 0.85em; }
+  /* `flex: 1 1 0%` collapses this to ~10px at 390px wide, and with
+     `white-space: nowrap` + the default `overflow: visible` the text paints
+     straight over the neighbouring top-bar buttons. Clip it instead. */
+  .sandbox-title {
+    font-size: 0.85em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   /* Admin */
   .admin-hub-grid { grid-template-columns: repeat(2, 1fr); }
@@ -93,6 +101,15 @@
   .scene-tree-header-collapse, .preset-card__btn,
   .admin-back-btn, .bey-bar-collapse-btn {
     min-height: 44px;
+  }
+
+  /* …and on the cross axis. min-height alone let flex squeeze the top-bar
+     buttons to 16px wide on a 390px viewport, which is not a 44px target.
+     .tree-node-row is excluded — it is a full-width row, not a control. */
+  .game-btn, .tree-add-btn, .tree-vis-btn, .prop-close-btn,
+  .scene-tree-header-collapse, .admin-back-btn, .bey-bar-collapse-btn {
+    min-width: 44px;
+    flex-shrink: 0;
   }
 
   /* Beyblade bottom bar height cap for landscape */

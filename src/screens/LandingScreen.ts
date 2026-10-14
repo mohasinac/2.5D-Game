@@ -5,6 +5,7 @@ export interface LandingOptions {
   onAdmin:        () => void;
   onArenaLibrary: () => void;
   onBeyLibrary:   () => void;
+  onSpecialMoves: () => void;
 }
 
 export class LandingScreen {
@@ -45,6 +46,10 @@ export class LandingScreen {
             <span class="btn-icon">⬡</span>
             Bey Library
           </button>
+          <button class="game-btn game-btn--lib" id="btn-special-moves">
+            <span class="btn-icon">⚔</span>
+            Special Moves
+          </button>
         </div>
       </div>
     `;
@@ -56,6 +61,7 @@ export class LandingScreen {
     this.el.querySelector('#btn-admin')!.addEventListener('click',         opts.onAdmin);
     this.el.querySelector('#btn-arena-library')!.addEventListener('click', opts.onArenaLibrary);
     this.el.querySelector('#btn-bey-library')!.addEventListener('click',   opts.onBeyLibrary);
+    this.el.querySelector('#btn-special-moves')!.addEventListener('click', opts.onSpecialMoves);
   }
 
   setVisible(v: boolean): void {

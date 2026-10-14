@@ -275,12 +275,32 @@ export class Sandbox {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected onTick(_dtMs: number): void {}
 
+  /* ── Demo / test determinism hooks ───────────────────────────
+     Physics normally steps on whatever dt rAF hands it, so the same scenario
+     never replays identically. A fixed timestep makes demos reproducible and
+     lets them assert on physics outcomes rather than just "something moved".
+     Frozen means dt = 0: rendering and OrbitControls keep working, simulation
+     does not advance. Only the demo runner touches these. */
+  private _fixedDtMs: number | null = null;
+  private _frozen = false;
+  private _stepFrames = 0;
+
+  setFixedTimestep(ms: number | null): void { this._fixedDtMs = ms; }
+  freezeLoop(): void { this._frozen = true; this._stepFrames = 0; }
+  resumeLoop(): void { this._frozen = false; this._stepFrames = 0; }
+  stepLoop(frames = 1): void { this._stepFrames += Math.max(1, frames); }
+
   /* ── Render loop — self-heals canvas size every frame ───────── */
   private lastFrameTime = 0;
   private loop = (now: number): void => {
     this.rafId = requestAnimationFrame(this.loop);
-    const dt = this.lastFrameTime ? now - this.lastFrameTime : 0;
+    let dt = this.lastFrameTime ? now - this.lastFrameTime : 0;
     this.lastFrameTime = now;
+    if (this._fixedDtMs !== null) dt = this._fixedDtMs;
+    if (this._frozen) {
+      if (this._stepFrames > 0) this._stepFrames--;
+      else dt = 0;
+    }
     const w = this.canvasWrap.clientWidth;
     const h = this.canvasWrap.clientHeight;
     if (w === 0 || h === 0) return;

@@ -1,38 +1,41 @@
 import './styles/global.css';
-import { LandingScreen }      from './screens/LandingScreen';
-import { BeybladeSandbox }    from './screens/BeybladeSandbox';
-import { ArenaSandbox }       from './screens/ArenaSandbox';
-import { RPGScreen }          from './screens/RPGScreen';
-import { AdminHubScreen }     from './screens/admin/AdminHubScreen';
-import { ArenaLibraryScreen } from './screens/ArenaLibraryScreen';
-import { BeyLibraryScreen }   from './screens/BeyLibraryScreen';
-import { gameConfirm }        from './utils/dialog';
-import { inputManager }       from './features/managers/InputManager';
+import { LandingScreen }       from './screens/LandingScreen';
+import { BeybladeSandbox }     from './screens/BeybladeSandbox';
+import { ArenaSandbox }        from './screens/ArenaSandbox';
+import { RPGScreen }           from './screens/RPGScreen';
+import { AdminHubScreen }      from './screens/admin/AdminHubScreen';
+import { ArenaLibraryScreen }  from './screens/ArenaLibraryScreen';
+import { BeyLibraryScreen }    from './screens/BeyLibraryScreen';
+import { SpecialMoveSandbox }  from './screens/SpecialMoveSandbox';
+import { gameConfirm }         from './utils/dialog';
+import { inputManager }        from './features/managers/InputManager';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
-type ScreenId = 'landing' | 'beyblade' | 'arena' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor';
+type ScreenId = 'landing' | 'beyblade' | 'arena' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor' | 'special-moves';
 
 class App {
   private current: ScreenId = 'landing';
-  private landing:       LandingScreen;
-  private beyblade:      BeybladeSandbox;
-  private arena:         ArenaSandbox;
-  private presetEditor:  ArenaSandbox;
-  private rpg:           RPGScreen;
-  private admin:         AdminHubScreen;
-  private arenaLibrary:  ArenaLibraryScreen;
-  private beyLibrary:    BeyLibraryScreen;
+  private landing:        LandingScreen;
+  private beyblade:       BeybladeSandbox;
+  private arena:          ArenaSandbox;
+  private presetEditor:   ArenaSandbox;
+  private rpg:            RPGScreen;
+  private admin:          AdminHubScreen;
+  private arenaLibrary:   ArenaLibraryScreen;
+  private beyLibrary:     BeyLibraryScreen;
+  private specialMoves:   SpecialMoveSandbox;
 
   constructor() {
     const root = document.getElementById('app')!;
 
     this.landing = new LandingScreen(root, {
-      onBeyblade:     () => this.go('beyblade'),
-      onArena:        () => this.go('arena'),
-      onRpg:          () => this.go('rpg'),
-      onAdmin:        () => this.go('admin'),
-      onArenaLibrary: () => this.go('arena-library'),
-      onBeyLibrary:   () => this.go('bey-library'),
+      onBeyblade:      () => this.go('beyblade'),
+      onArena:         () => this.go('arena'),
+      onRpg:           () => this.go('rpg'),
+      onAdmin:         () => this.go('admin'),
+      onArenaLibrary:  () => this.go('arena-library'),
+      onBeyLibrary:    () => this.go('bey-library'),
+      onSpecialMoves:  () => this.go('special-moves'),
     });
 
     this.beyblade = new BeybladeSandbox(root, {
@@ -95,6 +98,10 @@ class App {
       onLoadBuild: () => this.go('beyblade'),
     });
 
+    this.specialMoves = new SpecialMoveSandbox(root, {
+      onBack: () => { void this.confirmLeave(); },
+    });
+
     this.mountGlobalControls(root);
 
     window.addEventListener('popstate', (e) => {
@@ -131,17 +138,19 @@ class App {
     this.admin.setVisible(id === 'admin');
     this.arenaLibrary.setVisible(id === 'arena-library');
     this.beyLibrary.setVisible(id === 'bey-library');
+    this.specialMoves.setVisible(id === 'special-moves');
   }
 
   private pathToScreen(): ScreenId {
     const p = location.pathname;
-    if (p === '/beyblade')      return 'beyblade';
-    if (p === '/arena')         return 'arena';
-    if (p === '/preset-editor') return 'preset-editor';
-    if (p === '/rpg')           return 'rpg';
-    if (p === '/admin')         return 'admin';
-    if (p === '/arena-library') return 'arena-library';
-    if (p === '/bey-library')   return 'bey-library';
+    if (p === '/beyblade')       return 'beyblade';
+    if (p === '/arena')          return 'arena';
+    if (p === '/preset-editor')  return 'preset-editor';
+    if (p === '/rpg')            return 'rpg';
+    if (p === '/admin')          return 'admin';
+    if (p === '/arena-library')  return 'arena-library';
+    if (p === '/bey-library')    return 'bey-library';
+    if (p === '/special-moves')  return 'special-moves';
     return 'landing';
   }
 

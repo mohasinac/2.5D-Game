@@ -97,6 +97,12 @@ export class SpawnManager {
   private _lastCollisionIsSticky = false;
   private _currentGravityScale   = 1.0;
 
+  // Spin direction + wall-impact callback + tip polarity (used by test mode / SpecialMoveManager)
+  private _spinDir: 'right' | 'left' = 'right';
+  _onWallImpact?: () => void;
+  private _tipPolarity: 'north' | 'south' | 'none' = 'none';
+  private _rKeyUnsub?: () => void;
+
   // Buff / duration-tier tracking
   private _buffMgr    = new BuffDebuffManager();
   private _trapTimers = new Map<string, number>();
@@ -129,6 +135,13 @@ export class SpawnManager {
     this.ctrlMgr.onButtonPress('trigger', () => {
       if (this.spawned) this._applyTrigger(1 / 20);
     });
+    const rKeyHandler = (e: KeyboardEvent) => {
+      if (e.code === 'KeyR' && !e.repeat && this.spawned) {
+        this._spinDir = this._spinDir === 'right' ? 'left' : 'right';
+      }
+    };
+    document.addEventListener('keydown', rKeyHandler);
+    this._rKeyUnsub = () => document.removeEventListener('keydown', rKeyHandler);
   }
 
   get isSpawned(): boolean { return this.spawned; }
@@ -179,6 +192,7 @@ export class SpawnManager {
 
   dispose(): void {
     this.despawn();
+    this._rKeyUnsub?.();
   }
 
   // ── Tick ────────────────────────────────────────────────────────────────────
@@ -392,6 +406,7 @@ export class SpawnManager {
 
       this._lastCollisionTime     = performance.now();
       this._lastCollisionIsSticky = false;
+      if (gap < 0) this._onWallImpact?.();
     }
   }
 
@@ -857,6 +872,49 @@ export class SpawnManager {
       tiltDeg: this.tiltDeg, rpm: this.rpm,
       followCam: this.followCam, selfRotate: this.selfRotate, autoMove: this.autoMove,
     });
+  }
+
+  // ── Public extension API (used by test mode + SpecialMoveManager) ─────────
+
+  getPosition(): THREE.Vector3 { return this.pos.clone(); }
+  getVelocity(): THREE.Vector3 { return this.vel.clone(); }
+  setVelocity(v: THREE.Vector3): void { this.vel.copy(v); this.grounded = false; }
+  setGravityScale(s: number): void { this._currentGravityScale = s; }
+  getTipPolarity(): 'north' | 'south' | 'none' { return this._tipPolarity; }
+  setTipPolarity(p: 'north' | 'south' | 'none'): void { this._tipPolarity = p; }
+  getSpinDir(): 'right' | 'left' { return this._spinDir; }
+
+  // ── Demo / test hooks ───────────────────────────────────────────────────────
+  // Needed because spawn() reads spawnPos/spawnVel, which were only settable
+  // through the HUD input fields. Driving those by UI would make every demo
+  // slow and flaky; the demo runner sets the state directly instead.
+
+  // NOTE: `isSpawned` already exists as a getter further up — do not re-add it here.
+  getHealth(): number { return this.health; }
+  isGrounded(): boolean { return this.grounded; }
+  getRpm(): number { return this.rpm; }
+
+  /** Set the state that the NEXT spawn() will use. */
+  setSpawnState(s: {
+    pos?: THREE.Vector3; vel?: THREE.Vector3; rpm?: number; tiltDeg?: number;
+  }): void {
+    if (s.pos) this.spawnPos.copy(s.pos);
+    if (s.vel) this.spawnVel.copy(s.vel);
+    if (s.rpm !== undefined) this.rpm = s.rpm;
+    if (s.tiltDeg !== undefined) this.tiltDeg = s.tiltDeg;
+  }
+
+  /** Teleport a live top (does not touch the stored spawn state). */
+  setPosition(p: THREE.Vector3): void {
+    this.pos.copy(p);
+    this.topGroup?.position.copy(p);
+    this.grounded = false;
+  }
+
+  setOptions(o: { followCam?: boolean; selfRotate?: boolean; autoMove?: boolean }): void {
+    if (o.followCam !== undefined) this.followCam = o.followCam;
+    if (o.selfRotate !== undefined) this.selfRotate = o.selfRotate;
+    if (o.autoMove !== undefined) this.autoMove = o.autoMove;
   }
 }
 

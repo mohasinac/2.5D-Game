@@ -598,6 +598,8 @@ export class BeybladeSandbox extends Sandbox {
       sectorIds: [], material: 'plastic' as BeyMaterial, weight: 1, color: 0x00e5ff,
       present: defaultPresentConfig(),
       particleConfig: defaultParticleConfig(),
+      attack: 50, defense: 50, stamina: 50, speed: 50,
+      gimmickType: 'none', gimmickStrength: 50,
     };
     this.history.execute(new AddPartCmd(this._ctx(), data));
   }

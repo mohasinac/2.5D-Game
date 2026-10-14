@@ -5,6 +5,7 @@ export { defaultPresentConfig, defaultParticleConfig };
 export type BeyMaterial = 'plastic' | 'metal' | 'rubber' | 'resin' | 'custom';
 export type SpinDir = 'left' | 'right';
 export type ViewMode = 'hitbox' | 'both' | 'present';
+export type GimmickType = 'none' | 'engine_gear' | 'free_spin' | 'rubber_absorb' | 'mode_change';
 
 // The spin axis is always a straight line.
 // pivotOffset = cm above the ground contact point where the tilt pivot is fixed.
@@ -55,6 +56,20 @@ export interface PartData {
   color: number;
   present: PresentConfig;
   particleConfig: ParticleConfig;
+  // NFS-style stats (0–100 each)
+  attack:          number;
+  defense:         number;
+  stamina:         number;
+  speed:           number;
+  gimmickType:     GimmickType;
+  gimmickStrength: number;  // 0–100; scales gimmick effect magnitude
+}
+
+export interface LayerData {
+  id:               string;
+  name:             string;
+  heightFromBottom: number;  // cm — Y position of this layer's bottom edge
+  partIds:          string[];
 }
 
 export interface GroupData {
@@ -73,4 +88,6 @@ export interface BeybladeBuildConfig {
   partSeq: number;
   sectorSeq: number;
   groupSeq: number;
+  layers?: LayerData[];
+  layerSeq?: number;
 }

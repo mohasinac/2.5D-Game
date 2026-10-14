@@ -4,7 +4,12 @@ export const DEG2RAD = Math.PI / 180;
 export const APOTHEM = 100; // cm — octagon inradius (flat-to-flat half-width)
 
 /* ── Default base platform config ───────────────────────────────────────── */
-export const DEFAULT_BASE_HEIGHT = 30;     // cm — octagon top face world Y
+/* THICKNESS of the octagon platform, NOT its world Y.
+   `baseMesh.position.y = -H/2` puts the slab at −30..0, so the TOP FACE IS AT
+   WORLD Y = 0 (hence `buildTopFaceGeo(..., baseHeight = 0, ...)`).
+   Known exception: `trapSurfY()` returns this value for base-parented traps, so
+   those meshes really do sit at Y≈30 — SpawnManager deliberately matches that. */
+export const DEFAULT_BASE_HEIGHT = 30;     // cm
 export const DEFAULT_BASE_SIDES  = 8;
 export const DEFAULT_BASE_COLOR  = 0xe8dcc0;
 export const DEFAULT_BASE_TILE   = 20;

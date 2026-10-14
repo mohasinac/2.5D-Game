@@ -5,6 +5,7 @@ import {
   defaultSpeedLine,
   buildSpeedLineObjects,
 } from '../../geometry/arenaObjectBuilders';
+import { generatePresetSegments } from '../../geometry/speedLineBuilders';
 import { speedLineToSave } from '../../utils/arenaPersistence';
 import type { SceneSurfaceProjector } from '../../geometry/sceneSurfaceProjector';
 import { FeatureManager } from '../FeatureManager';
@@ -78,6 +79,12 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     const name = this.nextLabel();
     const sl   = defaultSpeedLine(name, arenaId, id, parentZoneId);
 
+    // Default preset radius proportional to parent arena, clamped inside rim
+    const arenaRadius = arena.radiusX;
+    const proportional = Math.max(5, arenaRadius * 0.65);
+    sl.presetParams.radiusX = Math.min(proportional, arena.radiusX - 2);
+    sl.presetParams.radiusZ = Math.min(proportional, arena.radiusZ - 2);
+
     // Assign the first segment's ID using the caller's slSegSeq
     sl.segments[0].id = `${id}-seg-${++slSegSeqRef.value}`;
 
@@ -104,9 +111,35 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
 
   // ── Apply (rebuild all geometry in-place after property edits) ───────────
 
+  /**
+   * Generate the path for a preset-type speed line that was saved without segments.
+   *
+   * MUST be called from every geometry path. There are three — `apply()`,
+   * `buildAndShow()` and `buildGeometry()` — and they do NOT chain: `apply` and
+   * `buildAndShow` call `buildSpeedLineObjects` directly. Putting this only in
+   * `buildGeometry` meant every speed line restored from a save (which goes through
+   * `buildAndShow`) rendered as an empty ribbon, including the shipped
+   * `testArenaConfig.ts` used by /special-moves.
+   */
+  private _ensurePresetSegments(data: SpeedLineData): void {
+    if (data.presetType === 'custom' || data.presetType === 'jump') return;
+    if (data.segments.length > 0) return;
+
+    let segSeq = 0;
+    const result = generatePresetSegments(
+      data.presetType, data.presetParams, data.speedRamp,
+      data.id, () => `${data.id}-seg-${++segSeq}`,
+    );
+    data.segments   = result.segments;
+    data.startDir   = result.startDir;
+    data.startR     = result.startR;
+    data.startAngle = result.startAngle;
+  }
+
   apply(sl: SpeedLineData): void {
     const arena = this.getArena(sl.parentArenaId);
     if (!arena) return;
+    this._ensurePresetSegments(sl);
 
     // Dispose old markers/handles/overlaps (scene-managed directly)
     for (const m of sl.markerMeshes)   { this.ctx.scene.remove(m); m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
@@ -138,6 +171,7 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
   buildAndShow(data: SpeedLineData, treeOpts?: Record<string, unknown>): void {
     const arena = this.getArena(data.parentArenaId);
     if (!arena) return;
+    this._ensurePresetSegments(data);
 
     const projector = this.buildProjector(data.parentArenaId);
     const { mesh, edges, markerMeshes, handleMeshes, totalLength } =
@@ -170,10 +204,10 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
   // ── Template Method implementation ───────────────────────────────────────
 
   protected buildGeometry(data: SpeedLineData): void {
-    // Building is done in add() and buildAndShow() — geometry needs the arena
-    // object which is retrieved from the injected getArena().
     const arena = this.getArena(data.parentArenaId);
     if (!arena) return;
+
+    this._ensurePresetSegments(data);
     const projector = this.buildProjector(data.parentArenaId);
     const { mesh, edges, markerMeshes, handleMeshes, totalLength } =
       buildSpeedLineObjects(data, arena, this.getZones() as Map<string, ZoneData>, projector);

@@ -10,7 +10,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    /* Supplies import.meta.env, used to strip the dev-only demo API from
+       production builds. */
+    "types": ["vite/client", "node"]
   },
-  "include": ["src"]
+  "include": ["src", "tests", "playwright.config.ts", "playwright.demos.config.ts"]
 }

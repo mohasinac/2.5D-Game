@@ -1,6 +1,12 @@
 linka/
 case study/
 node_modules/
-.vercel
 dist/
 screenshots/
+playwright-report/
+test-results/
+demos/
+.firebase/
+.stl-scratch/
+# Dead local state from the decommissioned Vercel setup — safe to delete by hand.
+.vercel/

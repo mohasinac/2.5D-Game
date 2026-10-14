@@ -87,6 +87,10 @@ import type { TranslationSave } from '../utils/arenaPersistence';
 import { inputManager } from '../features/managers/InputManager';
 import { pendingLoadStore } from '../stores/pendingLoadStore';
 import { createArenaStateStore, type ArenaStateStore } from '../stores/arenaStateStore';
+/* demoApi is loaded via dynamic import inside an `import.meta.env.DEV` guard so the
+   whole module is excluded from production bundles. A static import here would keep
+   it in the graph even though the call site is dead code. Type-only import is erased. */
+import type { DemoVec, DemoHooks } from '../utils/demoApi';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
@@ -1247,7 +1251,11 @@ export class ArenaSandbox extends Sandbox {
 
     const worldPt = new THREE.Vector3();
     if(!this.slRaycaster.ray.intersectPlane(dragPlane, worldPt)) return;
-    const { alx, alz } = worldToArenaLocal(worldPt.x, worldPt.z, arena);
+    let { alx, alz } = worldToArenaLocal(worldPt.x, worldPt.z, arena);
+    // Clamp drag position to parent arena ellipse to prevent SL jumping to octagon base
+    const _slRX = arena.radiusX, _slRZ = arena.radiusZ;
+    const _slT = Math.sqrt((alx / _slRX) ** 2 + (alz / _slRZ) ** 2);
+    if (_slT > 1) { alx /= _slT; alz /= _slT; }
 
     if(handleType === 'start') {
       sl.startR     = Math.hypot(alx, alz);
@@ -2034,6 +2042,167 @@ export class ArenaSandbox extends Sandbox {
     // Register flat surface provider for the octagon base
     this._surfaceProviders.set('octagon-base',
       new FlatSurfaceProvider('octagon-base', this.baseConfig.height, 0, 0));
+
+    /* Dev-only demo hooks. The dynamic import() must sit lexically inside this
+       `if` so that, once Vite substitutes `import.meta.env.DEV` → false, Rollup
+       drops the whole branch and demoApi.ts never enters the module graph.
+       Putting the import() inside a helper method does NOT work: the method is
+       always reachable, so the module is always bundled. */
+    if (import.meta.env.DEV) {
+      void import('../utils/demoApi').then(({ mountDemoApi }) =>
+        mountDemoApi(this._demoHooks()));
+    }
+  }
+
+  /* ── Demo API (dev only) ──────────────────────────────────────────────────
+     Closures over privates so `demoApi.ts` never imports from `screens/`. */
+  private _demoHooks(): DemoHooks {
+    const vec = (v: THREE.Vector3): DemoVec => ({ x: v.x, y: v.y, z: v.z });
+
+    return {
+      loadConfig: (cfg) => { this._applyConfigToScene(cfg); this._flushSave(); },
+      clearScene: () => { this._clearArenas(); },
+
+      spawn: (o) => {
+        const sm = this._spawnMgr;
+        if (!sm) return;
+        if (sm.isSpawned) sm.despawn();
+        sm.setSpawnState({
+          pos: o.pos ? new THREE.Vector3(o.pos.x, o.pos.y, o.pos.z) : undefined,
+          vel: o.vel ? new THREE.Vector3(o.vel.x, o.vel.y, o.vel.z) : undefined,
+          rpm: o.rpm,
+          tiltDeg: o.tiltDeg,
+        });
+        // Demos drive the bey explicitly; autopilot and camera-follow would
+        // make every clip different and hide the behaviour under test.
+        sm.setOptions({ autoMove: false, followCam: false, selfRotate: true });
+        sm.spawn();
+      },
+      despawn: () => this._spawnMgr?.despawn(),
+
+      getBeyState: () => {
+        const sm = this._spawnMgr;
+        if (!sm) return null;
+        const v = sm.getVelocity();
+        return {
+          pos: vec(sm.getPosition()),
+          vel: vec(v),
+          speed: v.length(),
+          health: sm.getHealth(),
+          rpm: sm.getRpm(),
+          grounded: sm.isGrounded(),
+          spawned: sm.isSpawned,
+        };
+      },
+      setBeyPosition: (p) => this._spawnMgr?.setPosition(new THREE.Vector3(p.x, p.y, p.z)),
+      setBeyVelocity: (v) => this._spawnMgr?.setVelocity(new THREE.Vector3(v.x, v.y, v.z)),
+
+      getScene: () => this.getScene()!,
+      getCamera: () => this.getCamera(),
+      setCameraTarget: (pos, target) => {
+        const cam = this.getCamera();
+        const ctl = this.getControls();
+        if (!cam) return;
+        cam.position.set(pos.x, pos.y, pos.z);
+        if (ctl) { ctl.target.set(target.x, target.y, target.z); ctl.update(); }
+        else cam.lookAt(target.x, target.y, target.z);
+      },
+
+      getFeatureWorldPos: (id) => {
+        const p = this._demoFeatureWorldPos(id);
+        return p ? vec(p) : null;
+      },
+      getFeatureState: (id) => this._demoFeatureState(id),
+
+      setFixedTimestep: (ms) => this.setFixedTimestep(ms),
+      freeze: () => this.freezeLoop(),
+      resume: () => this.resumeLoop(),
+      step: (n) => this.stepLoop(n),
+    };
+  }
+
+  /** World position of any feature, by id. Broader than `_getMemberObjects`,
+      which is deliberately scoped to rotation-eligible node types. */
+  private _demoFeatureWorldPos(id: string): THREE.Vector3 | null {
+    const out = new THREE.Vector3();
+
+    const arena = this.arenas.get(id);
+    if (arena) return out.set(arena.posX, arena.posY, arena.posZ);
+
+    const pit = this.pits.get(id);
+    if (pit?.mesh) { pit.mesh.getWorldPosition(out); return out; }
+
+    const zone = this.zones.get(id);
+    if (zone?.mesh) { zone.mesh.getWorldPosition(out); return out; }
+
+    const wall = this._wallMgr.get(id);
+    if (wall?.mesh) { wall.mesh.getWorldPosition(out); return out; }
+
+    const obs = this._obstacleMgr.get(id);
+    if (obs?.mesh) { obs.mesh.getWorldPosition(out); return out; }
+
+    const trap = this._trapMgr.get(id);
+    if (trap?.mesh) { trap.mesh.getWorldPosition(out); return out; }
+
+    const portal = this._portalMgr.get(id);
+    if (portal?.mesh) { portal.mesh.getWorldPosition(out); return out; }
+
+    const footing = this._footingMgr.get(id);
+    if (footing?.mesh) { footing.mesh.getWorldPosition(out); return out; }
+
+    const sl = this._slMgr.get(id);
+    if (sl?.mesh) { sl.mesh.getWorldPosition(out); return out; }
+
+    const bridge = this._bridgeMgr.get(id);
+    if (bridge?.group) { bridge.group.getWorldPosition(out); return out; }
+
+    return null;
+  }
+
+  /** Live runtime state for assertions — what a demo cannot see from geometry. */
+  private _demoFeatureState(id: string): Record<string, unknown> | null {
+    const trap = this._trapMgr.get(id);
+    if (trap) {
+      return {
+        kind: 'trap', effect: trap.effect, variant: trap.variant,
+        isPeriodic: trap.isPeriodic, unsafe: this._trapMgr.isUnsafePhase(id),
+      };
+    }
+    const sl = this._slMgr.get(id);
+    if (sl) {
+      return {
+        kind: 'speedLine', presetType: sl.presetType, enabled: sl.enabled,
+        segments: sl.segments.length, totalLength: sl.totalLength,
+        activationMode: sl.activationMode, exitBehavior: sl.exitBehavior,
+        // Diagnostics: distinguishes "geometry never built" from "built but empty".
+        hasMesh: !!sl.mesh, hasEdges: !!sl.edges,
+        markers: sl.markerMeshes?.length ?? 0,
+        parentArenaId: sl.parentArenaId,
+        arenaExists: this.arenas.has(sl.parentArenaId),
+        startR: sl.startR, startDir: sl.startDir,
+        presetRadiusX: sl.presetParams?.radiusX, presetSteps: sl.presetParams?.steps,
+      };
+    }
+    const rot = this._rotMgr.get(id);
+    if (rot) {
+      return { kind: 'rotation', mode: rot.mode, enabled: rot.enabled, angle: rot.currentAngle };
+    }
+    const wall = this._wallMgr.get(id);
+    if (wall) {
+      return {
+        kind: 'wall', height: wall.height, thickness: wall.thickness,
+        topProfile: wall.topProfile, tilt: wall.tilt,
+        fullPerimeter: wall.fullPerimeter, hasGaps: wall.hasGaps,
+      };
+    }
+    const arena = this.arenas.get(id);
+    if (arena) {
+      return {
+        kind: 'arena', wallProfile: arena.wallProfile, openingShape: arena.openingShape,
+        radiusX: arena.radiusX, radiusZ: arena.radiusZ, depth: arena.depth, isMoat: arena.isMoat,
+      };
+    }
+    return null;
   }
 
   private rebuildBase(): void {
