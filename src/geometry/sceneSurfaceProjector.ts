@@ -90,4 +90,51 @@ export class SceneSurfaceProjector {
       normal: new THREE.Vector3(0, 1, 0),
     };
   }
+
+  /**
+   * Highest surface at or below `maxY` — the one a body at that height would
+   * actually stand on.
+   *
+   * `project` takes the globally topmost hit, which is right for painting a
+   * ribbon onto a stadium from above and badly wrong for physics: a bey inside
+   * a bowl with a bridge crossing over it would be told the deck is its ground
+   * and teleport up onto it. Standing is "what is beneath my feet", not "what is
+   * highest in this column".
+   *
+   * `slack` lets the test see a surface a little ABOVE the probe point so a body
+   * resting exactly on a deck is not dropped through it by floating-point noise
+   * on the following frame.
+   *
+   * Returns null when nothing is underneath, so the caller can fall back to its
+   * own analytic surface rather than being handed an invented one.
+   */
+  projectBelow(
+    x: number,
+    z: number,
+    maxY: number,
+    surfaceOffset = 0,
+    slack = 0.5,
+  ): { point: THREE.Vector3; normal: THREE.Vector3; object: THREE.Object3D } | null {
+    if (this.meshes.length === 0) return null;
+
+    this.raycaster.set(new THREE.Vector3(x, 500, z), new THREE.Vector3(0, -1, 0));
+    const hits = this.raycaster.intersectObjects(this.meshes, false);
+
+    /* Hits arrive nearest-first from above, so the LAST one within the ceiling
+       is the highest surface at or below it. */
+    let best: THREE.Intersection | null = null;
+    for (const h of hits) {
+      if (h.point.y <= maxY + slack) { best = h; break; }
+    }
+    if (!best) return null;
+
+    const normal = best.face
+      ? best.face.normal.clone().transformDirection(best.object.matrixWorld).normalize()
+      : new THREE.Vector3(0, 1, 0);
+    return {
+      point: best.point.clone().addScaledVector(normal, surfaceOffset),
+      normal,
+      object: best.object,
+    };
+  }
 }

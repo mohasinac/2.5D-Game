@@ -2069,6 +2069,7 @@ export class ArenaSandbox extends Sandbox {
     return {
       loadConfig: (cfg) => { this._applyConfigToScene(cfg); this._flushSave(); },
       getRenderer: () => this.getRenderer(),
+      probeDown: (x, z) => this._demoProbeDown(x, z),
       clearScene: () => { this._clearArenas(); },
 
       spawn: (o) => {
@@ -2168,6 +2169,39 @@ export class ArenaSandbox extends Sandbox {
   }
 
   /** Live runtime state for assertions — what a demo cannot see from geometry. */
+  /** Name every surface a downward ray meets at (x, z). See DemoApi.probeDown. */
+  private _demoProbeDown(x: number, z: number): string[] {
+    const sc = this.getScene();
+    if (!sc) return [];
+    const meshes: THREE.Mesh[] = [];
+    sc.traverse((o) => { if ((o as THREE.Mesh).isMesh && o.visible) meshes.push(o as THREE.Mesh); });
+    const rc = new THREE.Raycaster(new THREE.Vector3(x, 500, z), new THREE.Vector3(0, -1, 0));
+    return rc.intersectObjects(meshes, false).slice(0, 8).map((h) => {
+      let who = 'unknown';
+      if (h.object === this.topFaceMesh)      who = 'octagon top face';
+      else if (h.object === this.baseMesh)    who = 'octagon base side';
+      else {
+        for (const [aid, a] of this.arenas.entries()) {
+          if (h.object === a.mesh)       { who = `arena ${aid} bowl`;  break; }
+          if (h.object === a.floorMesh)  { who = `arena ${aid} floor`; break; }
+        }
+        if (who === 'unknown') {
+          for (const [sid, seg] of this._bridgeMgr.getAllSegments())
+            if (h.object === seg.mesh) { who = `BRIDGE SEGMENT ${sid}`; break; }
+        }
+        if (who === 'unknown') {
+          for (const [oid, o] of this._obstacleMgr.getAll())
+            if (h.object === o.mesh) { who = `obstacle ${oid}`; break; }
+        }
+        if (who === 'unknown') {
+          for (const [zid, z2] of this.zones.entries())
+            if (h.object === z2.mesh) { who = `zone ${zid}`; break; }
+        }
+      }
+      return `y=${h.point.y.toFixed(2)} ${who}`;
+    });
+  }
+
   private _demoFeatureState(id: string): Record<string, unknown> | null {
     const trap = this._trapMgr.get(id);
     if (trap) {

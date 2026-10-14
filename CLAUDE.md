@@ -78,7 +78,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 162 tests** — 111 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 171 tests** — 120 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -673,6 +673,8 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 ## Pitfalls — do not re-introduce
 
 ### Rendering
+- **`project` vs `projectBelow` — do not confuse them.** `project` returns the globally TOPMOST surface in a column, which is right for painting a ribbon onto a stadium from above and wrong for physics: a bey inside a bowl with a bridge crossing over it would be told the deck is its ground and teleport up onto it. `projectBelow(x, z, maxY)` returns the highest surface at or BELOW a height — "what is under my feet" — and returns null rather than inventing one, so the caller can fall back to its analytic surface. Its `slack` keeps a body resting exactly on a deck from dropping through it on the next frame.
+- **`__demo.probeDown(x, z)` names every surface a downward ray meets.** Reach for it before reasoning about the scene graph. "Why is nothing under the bey here?" and "what is drawn in front of this?" are the two questions that keep costing hours, and both are answered by naming surfaces along a ray — that is how the ribbon occlusion was finally cracked.
 - **`SceneSurfaceProjector` is BVH-accelerated, and that is load-bearing.** It raycasts once per path point and a speed line is ~800 points, so once the arena bowl joined the projector, brute-force `intersectObjects` cost **434 ms per path rebuild** against an 8,128-triangle bowl — ~87% of the 500 ms cache window, every second a bey is near a speed line. With `three-mesh-bvh` the same work is **27 ms**. `tests/unit/projectorBvh.spec.ts` keeps a loose 200 ms guard to catch a silent fall back to the unaccelerated path.
 - The BVH prototype patch (`BufferGeometry.computeBoundsTree`, `Mesh.raycast`) is installed once at module load in `sceneSurfaceProjector.ts`. `acceleratedRaycast` defers to the stock implementation for any geometry without a bounds tree, so picking, selection and every other raycast in the app are unaffected.
 - **A bounds tree is freed by a listener on the geometry's own `dispose` event.** `geometry.dispose()` knows nothing about it, and this project disposes geometry on every arena edit — hooking the event frees it at the right moment without any of the ~20 bespoke disposal sites needing to know BVHs exist.

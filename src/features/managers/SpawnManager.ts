@@ -383,8 +383,9 @@ export class SpawnManager {
     let bestSurfY = -Infinity;
     let bestMat: string | undefined;
     let bestMu = SURFACE_MU_REFERENCE;
+    let bestArenaId: string | undefined;
 
-    for (const arena of this.getArenas().values()) {
+    for (const [arenaId, arena] of this.getArenas().entries()) {
       const { alx, alz } = worldToArenaLocal(this.pos.x, this.pos.z, arena);
       if ((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2 > 1.0) continue;
       const surfY = arenaSurfaceYAtArenaLocal(arena, alx, alz);
@@ -392,6 +393,7 @@ export class SpawnManager {
         bestSurfY = surfY;
         bestMat = arena.baseMaterial;
         bestMu = SURFACE_PHYSICS[arena.surface]?.friction ?? SURFACE_MU_REFERENCE;
+        bestArenaId = arenaId;
         this._currentGravityScale = arena.gravityScale ?? 1.0;
       }
     }
@@ -401,6 +403,32 @@ export class SpawnManager {
         Math.abs(this.pos.x) <= BASE_APOTHEM &&
         Math.abs(this.pos.z) <= BASE_APOTHEM) {
       bestSurfY = 0;
+    }
+
+    /* MESH SURFACES — bridge decks, obstacle tops, wall caps, the real bowl.
+       Until now the bey stood only on the analytic arena formula plus a flat
+       octagon fallback, so it drove straight through every bridge in the
+       project: ten segment types including loops and corkscrews, all of them
+       scenery.
+
+       `projectBelow`, not `project`: the topmost surface in the column is the
+       wrong answer for standing. A bey inside a bowl with a bridge crossing
+       above it would otherwise be told the deck is its ground and teleport up
+       onto it. Only a surface at or below the tip can hold it up.
+
+       This is affordable at all because the projector is BVH-accelerated; the
+       same query brute-force was ~0.5 ms per call. */
+    const projector = this.getProjector(bestArenaId ?? '');
+    if (projector) {
+      const tipNow = this.pos.y + BALL_TIP_OFFSET;
+      const hit = projector.projectBelow(this.pos.x, this.pos.z, tipNow);
+      if (hit && hit.point.y > bestSurfY) {
+        bestSurfY = hit.point.y;
+        /* A deck is ABS unless its own feature says otherwise; resolving the
+           exact per-feature material needs the owning manager and belongs with
+           the per-tip friction work. */
+        bestMat = bestMat ?? 'abs';
+      }
     }
 
     if (bestSurfY === -Infinity) return;

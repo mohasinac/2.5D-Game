@@ -73,6 +73,7 @@ export interface DemoHooks {
   getScene(): THREE.Scene;
   getCamera(): THREE.PerspectiveCamera | null;
   getRenderer(): THREE.WebGLRenderer | null;
+  probeDown(x: number, z: number): string[];
   setCameraTarget(pos: DemoVec, target: DemoVec): void;
 
   /** Live feature lookup for focusOn/markFeature and state assertions. */
@@ -127,6 +128,17 @@ export interface DemoApi {
    * actually applied to the live scene.
    */
   getRenderStats(): DemoRenderStats | null;
+
+  /**
+   * Everything a downward ray hits at world (x, z), nearest-first, each named.
+   *
+   * "Why is nothing under the bey here?" and "what is drawn in front of this?"
+   * are the two questions that keep costing hours, and both are answered by
+   * naming the surfaces along a ray rather than by reasoning about the scene
+   * graph. Generic on purpose — the speed-line-specific `occluders` probe that
+   * cracked the ribbon bug was this, scoped to one feature.
+   */
+  probeDown(x: number, z: number): string[];
 
   /** Resolves once the bey's |velocity| drops below `speed`, or on timeout. */
   waitForRest(speed?: number, timeoutMs?: number): Promise<boolean>;
@@ -281,6 +293,8 @@ export function mountDemoApi(hooks: DemoHooks): void {
     },
 
     setChromeVisible(visible) { setChromeHidden(!visible); },
+
+    probeDown(x, z) { return hooks.probeDown(x, z); },
 
     getRenderStats() {
       const renderer = hooks.getRenderer();

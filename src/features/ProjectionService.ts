@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import type { ArenaData, WallData, ObstacleData, BridgeData, BridgeSegmentData } from '../types/arenaTypes';
 import { SceneSurfaceProjector } from '../geometry/sceneSurfaceProjector';
 import { arenaSurfaceYAtArenaLocal } from '../geometry/surfaceUtils';
@@ -61,12 +62,30 @@ export class ProjectionService {
       const dz = obs.posZ - arena.posZ;
       if (dx * dx + dz * dz <= rSq) projector.addMesh(obs.mesh);
     }
-    for (const bridgeId of this.getBridgesByArena().get(arenaId) ?? new Set<string>()) {
-      const bridge = this.getBridges().get(bridgeId);
-      if (!bridge) continue;
+    /* Bridge decks, BY PROXIMITY rather than by the bridgesByArena index.
+       That index is keyed on `bridge.startRef.id`, which is the EMPTY STRING for
+       a `freepoint` bridge — one anchored to a world position instead of to an
+       arena or wall. The shipped demo arena's piers are exactly that, so an
+       index lookup finds nothing and the decks stay invisible to physics: the
+       bey falls straight through a pier it should be able to ride.
+
+       Proximity mirrors how obstacles are already gathered just above, and it
+       is the honest test anyway — what matters for projecting onto a surface is
+       whether the surface is HERE, not who owns it. The index is still consulted
+       so arena-parented bridges outside the radius are not dropped. */
+    const indexed = this.getBridgesByArena().get(arenaId) ?? new Set<string>();
+    const segWorld = new THREE.Vector3();
+    for (const [bridgeId, bridge] of this.getBridges()) {
       for (const segId of bridge.segmentIds) {
         const seg = this.getSegments().get(segId);
-        if (seg?.mesh) projector.addMesh(seg.mesh);
+        if (!seg?.mesh) continue;
+        if (!indexed.has(bridgeId)) {
+          seg.mesh.getWorldPosition(segWorld);
+          const dx = segWorld.x - arena.posX;
+          const dz = segWorld.z - arena.posZ;
+          if (dx * dx + dz * dz > rSq) continue;
+        }
+        projector.addMesh(seg.mesh);
       }
     }
     return projector;
