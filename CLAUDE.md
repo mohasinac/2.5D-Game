@@ -94,6 +94,8 @@ DEMO_RECORD=1   npm run demo:features  # per-demo video
 ```
 
 - **Headed on the host by design**, with real GPU WebGL — the point is to watch them. The headless Docker suite is `tests/e2e`.
+- **`npm run docker:demos` runs the same tour headless in the container** (SwiftShader), purely to regenerate the screenshot set after a visual change. The config branches on `DOCKER=1` for headless, the GL args and the artifact dir; the host behaviour is untouched.
+- Each demo writes `screenshots/demos/<family>/<id>.png` (the whole `screenshots/` tree is gitignored). That set is the cheapest way to review a rendering change across every feature at once — it is how the bey's cast shadow was first confirmed on a real bowl.
 - `playwright.demos.config.ts` is deliberately separate, and must **not** use `mode: 'serial'` — serial skips every remaining test after a failure, which is the opposite of an audit runner. Ordering comes from `workers: 1`.
 - `tests/demos/arenaFactory.ts` builds one-feature arenas: *the same base bowl with exactly one thing changed*, so anything wrong is attributable to the varied property.
 - Demos share one page; reloading per demo would add ~15 minutes of pure navigation.
