@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../render/shadowPolicy';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { Sandbox, SandboxOptions } from './Sandbox';
 import { BeybladeStore } from '../stores/BeybladeStore';
@@ -563,6 +564,11 @@ export class BeybladeSandbox extends Sandbox {
     if (cfg.preset === 'none' || !scene) return;
     const part = this.store.getPart(partId);
     const ps = buildParticleSystem(cfg, 0, 0, Math.max(part.topRadiusX, part.topRadiusZ, part.bottomRadiusX, part.bottomRadiusZ), part.axisOffsetY + part.height, part.height);
+    /* THREE.Points with a PointsMaterial — an unlit, authored-colour
+       element, so the policy excludes it from shadows and from the ACES
+       curve. Particles are the one effect where a dimmed colour reads
+       immediately as a bug. */
+    applyRenderPolicy(ps.points);
     scene.add(ps.points);
     this._partParticleSystems.set(partId, ps);
   }

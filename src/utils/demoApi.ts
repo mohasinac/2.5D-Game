@@ -28,6 +28,37 @@ export interface DemoBeyState {
   spawned: boolean;
 }
 
+/**
+ * How the scene is being drawn. See `DemoApi.getRenderStats`.
+ *
+ * `litCasters` / `litReceivers` vs `unlitExcluded` is the load-bearing split:
+ * it is the live-scene counterpart of the unlit-vs-lit rule in
+ * `render/shadowPolicy.ts`. `toneMappedUnlit` must be **0** — anything above
+ * that is an authored colour silently being pushed through the ACES curve,
+ * which is how the cyan/orange palette would get dulled without any test
+ * noticing.
+ */
+export interface DemoRenderStats {
+  toneMapping: number;
+  toneMappingExposure: number;
+  outputColorSpace: string;
+  shadowMapEnabled: boolean;
+  shadowMapType: number;
+  environmentSet: boolean;
+  environmentIntensity: number;
+  /** Meshes with a lit material that cast / receive. */
+  litCasters: number;
+  litReceivers: number;
+  /** Lines, sprites, points and unlit meshes held out of the shadow pass. */
+  unlitExcluded: number;
+  /** MUST be 0 — unlit materials left tone-mapped. */
+  toneMappedUnlit: number;
+  /** Shadow-casting directional lights, and the first one's ortho frustum. */
+  shadowLights: number;
+  shadowCamera: { left: number; right: number; top: number; bottom: number; near: number; far: number } | null;
+  shadowMapSize: { width: number; height: number } | null;
+}
+
 /** Everything the host screen must supply. Kept deliberately small. */
 export interface DemoHooks {
   loadConfig(cfg: ArenaConfig): void;
@@ -41,6 +72,7 @@ export interface DemoHooks {
 
   getScene(): THREE.Scene;
   getCamera(): THREE.PerspectiveCamera | null;
+  getRenderer(): THREE.WebGLRenderer | null;
   setCameraTarget(pos: DemoVec, target: DemoVec): void;
 
   /** Live feature lookup for focusOn/markFeature and state assertions. */
@@ -82,6 +114,19 @@ export interface DemoApi {
 
   /** Hide the editor chrome so the arena fills the frame during a demo. */
   setChromeVisible(visible: boolean): void;
+
+  /**
+   * Renderer + scene render-state snapshot, for asserting on *how* the scene is
+   * being drawn rather than on what is in it.
+   *
+   * Exists because the look-and-feel work (tone mapping, IBL, shadows, the
+   * unlit-material exclusion) is otherwise only checkable by eye, and "the
+   * colours went slightly dull" is exactly the kind of regression that survives
+   * a green test suite. Pairs with `tests/unit/renderPolicy.spec.ts`: that
+   * proves the policy decides correctly in isolation, this proves it was
+   * actually applied to the live scene.
+   */
+  getRenderStats(): DemoRenderStats | null;
 
   /** Resolves once the bey's |velocity| drops below `speed`, or on timeout. */
   waitForRest(speed?: number, timeoutMs?: number): Promise<boolean>;
@@ -236,6 +281,62 @@ export function mountDemoApi(hooks: DemoHooks): void {
     },
 
     setChromeVisible(visible) { setChromeHidden(!visible); },
+
+    getRenderStats() {
+      const renderer = hooks.getRenderer();
+      if (!renderer) return null;
+      const scene = hooks.getScene();
+
+      let litCasters = 0, litReceivers = 0, unlitExcluded = 0, toneMappedUnlit = 0;
+      let shadowLights = 0;
+      let shadowCam: DemoRenderStats['shadowCamera'] = null;
+      let shadowMapSize: DemoRenderStats['shadowMapSize'] = null;
+
+      scene.traverse((obj) => {
+        const dl = obj as THREE.DirectionalLight;
+        if (dl.isDirectionalLight && dl.castShadow) {
+          shadowLights++;
+          if (!shadowCam) {
+            const c = dl.shadow.camera;
+            shadowCam = { left: c.left, right: c.right, top: c.top, bottom: c.bottom, near: c.near, far: c.far };
+            shadowMapSize = { width: dl.shadow.mapSize.width, height: dl.shadow.mapSize.height };
+          }
+        }
+
+        const matRaw = (obj as Partial<THREE.Mesh>).material;
+        if (!matRaw) return;
+        const mats = Array.isArray(matRaw) ? matRaw : [matRaw];
+
+        /* Mirror shadowPolicy's own test rather than re-deriving it: an object
+           counts as unlit if ANY slot is unlit, which is how the policy decides. */
+        const unlit = mats.some((m) =>
+          (m as THREE.MeshBasicMaterial).isMeshBasicMaterial === true ||
+          (m as THREE.ShaderMaterial).isShaderMaterial === true ||
+          (m as THREE.SpriteMaterial).isSpriteMaterial === true ||
+          (m as THREE.LineBasicMaterial).isLineBasicMaterial === true ||
+          (m as THREE.PointsMaterial).isPointsMaterial === true);
+
+        if (unlit || (obj as Partial<THREE.Mesh>).isMesh !== true) {
+          unlitExcluded++;
+          if (mats.some((m) => m.toneMapped)) toneMappedUnlit++;
+        } else {
+          if (obj.castShadow)    litCasters++;
+          if (obj.receiveShadow) litReceivers++;
+        }
+      });
+
+      return {
+        toneMapping:         renderer.toneMapping,
+        toneMappingExposure: renderer.toneMappingExposure,
+        outputColorSpace:    renderer.outputColorSpace,
+        shadowMapEnabled:    renderer.shadowMap.enabled,
+        shadowMapType:       renderer.shadowMap.type,
+        environmentSet:      scene.environment !== null,
+        environmentIntensity: scene.environmentIntensity,
+        litCasters, litReceivers, unlitExcluded, toneMappedUnlit,
+        shadowLights, shadowCamera: shadowCam, shadowMapSize,
+      };
+    },
 
     waitForRest(speed = 2, timeoutMs = 8000) {
       return new Promise<boolean>((resolve) => {

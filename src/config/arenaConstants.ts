@@ -131,10 +131,62 @@ export const DEFAULT_SPIRAL_RADIUS_FRAC = 0.85;
 export const STEP_RING_SEGS             = 96;
 export const SPIRAL_SEGS_PER_TURN       = 96;
 
+/* ── BB-10 five-zone cross-section ──────────────────────────────────────────
+   The real "BeyStadium Attack Type" radial profile, from
+   `case study/10 case study.md` Case 545, tagged [REAL-WORLD CONFIRMED].
+
+   This is the first NON-MONOTONIC radial profile in the project. Every other
+   profile (parabolic, straight, step, spiral) descends monotonically from rim
+   to centre, which made a Tornado Ridge inexpressible — and the ridge is the
+   single feature that actually shapes attack-type movement. A moat does not
+   substitute: it raises the whole inner region into a plateau, the opposite
+   topology (centre becomes the HIGHEST point, where BB-10's centre is lowest).
+
+   Source measurements at R_outer = 170 mm, converted to fractions of R so the
+   profile scales to our anime-sized arenas (Sec. H5: anime scale is canonical):
+
+     Zone 1  Flat centre      r = 0    - 40 mm    0.000 - 0.235 R   0 deg
+     Zone 2  Main slope       r = 40   - 125 mm   0.235 - 0.735 R   ~30 deg
+     Zone 3  Tornado Ridge    r = 125  - 145 mm   0.735 - 0.853 R   face 16.7 deg
+     Zone 4  Second incline   r = 145  - 155 mm   0.853 - 0.912 R   ~50 deg
+     Zone 5  Outer wall       r = 155  - 170 mm   0.912 - 1.000 R   vertical
+
+   Depth budget: zone 2 rises 85*tan(30) = 49.1 mm, zone 4 rises
+   10*tan(50) = 11.9 mm, so rim-to-floor = 61.0 mm. Those two are expressed
+   below as fractions of the authored `depth`, and the 3 mm ridge as 3/61.
+
+   The ridge is deliberately a LINEAR (triangular) bump, not a smoothed hump:
+   Case 546 derives the impulse split from the face angle
+   beta = atan(h_TR / w_half) = atan(3/10) = 16.7 deg, and smoothing would
+   change beta and therefore every number in that derivation. Zone 3's bounds
+   are exactly peak +- w_half, so the triangle and the zone coincide.
+
+   Zone 5 is intentionally NOT part of the bowl surface: the vertical wall is a
+   WallData feature (with its own collision), not bowl geometry. The surface
+   function flattens to rim level there.
+   ────────────────────────────────────────────────────────────────────────── */
+export const BB10 = {
+  R_FLAT_END:      40  / 170,   // 0.2353 — flat centre ends
+  R_SLOPE_END:     125 / 170,   // 0.7353 — 30deg slope ends / ridge begins
+  R_RIDGE_PEAK:    135 / 170,   // 0.7941 — ridge crest
+  R_RIDGE_END:     145 / 170,   // 0.8529 — ridge ends / 50deg incline begins
+  R_INCLINE_END:   155 / 170,   // 0.9118 — incline ends / vertical wall begins
+  /** Fraction of total depth climbed across zone 2 (49.1 of 61.0 mm). */
+  RISE_SLOPE:      49.1 / 61.0, // 0.8049
+  /** Ridge crest height above the local surface, as a fraction of depth (3/61). */
+  RIDGE_HEIGHT:    3.0  / 61.0, // 0.0492
+  /** Documented ridge face angle, for the Case 546 impulse split. */
+  RIDGE_FACE_DEG:  16.7,
+} as const;
+
 /* ── Tessellation quality ────────────────────────────────────────────────── */
 export const TESS = {
   PARABOLIC_BOWL: 64,   // ring count; doubles to 128 when pit/zone holes present
   STRAIGHT_BOWL:  48,   // ring count; doubles to 128 when holes present
+  // BB-10 needs more rings than a smooth parabola: the Tornado Ridge spans only
+  // ~12% of the radius (0.735 -> 0.853 R), so at 64 rings it would get ~7 rings
+  // and visibly facet the one feature the profile exists for. 160 gives it ~19.
+  BB10_BOWL:      160,
   SCOOP_RINGS:    36,
   SCOOP_WALLS:    6,
   MOAT_HALF:      20,   // rings per moat section (outer or inner)

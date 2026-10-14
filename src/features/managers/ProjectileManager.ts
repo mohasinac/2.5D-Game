@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../../render/shadowPolicy';
 import type { SpeedLineData, BulletLaunchRequest, ProjectileBullet } from '../../types/arenaTypes';
 import { buildProjectileMesh } from '../../geometry/trapBuilders';
 import type { ITickableManager } from '../IArenaFeature';
@@ -109,6 +110,9 @@ export class ProjectileManager implements ITickableManager {
     const mesh = buildProjectileMesh(cfg);
     mesh.scale.setScalar(scale);
     mesh.position.copy(pos);
+    /* Bullets go through the same policy as everything else; their material
+       decides the outcome rather than a special case here. */
+    applyRenderPolicy(mesh);
     this.scene.add(mesh);
 
     const speed = Math.max(0.01, cfg.speed);

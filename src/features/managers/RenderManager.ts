@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../../render/shadowPolicy';
 
 interface RenderEntry {
   objects: THREE.Object3D[];
@@ -31,6 +32,13 @@ export class RenderManager {
     for (const obj of objects) {
       entry.objects.push(obj);
       entry.parents.push(parent ?? null);
+      /* The project's main scene-add funnel, so it is where shadow casting and
+         tone-mapping exclusion are decided for every managed feature — walls,
+         bridges, obstacles, traps, portals, footings, jump links, speed lines.
+         Applying it here rather than in the 21 geometry builders keeps those
+         pure (params -> BufferGeometry) as the import-direction rule requires.
+         Recurses, so wall pivot groups and bridge anim pivots are covered. */
+      applyRenderPolicy(obj);
       (parent ?? this.scene).add(obj);
     }
   }

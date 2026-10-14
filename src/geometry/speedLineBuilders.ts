@@ -6,6 +6,7 @@ import {
   SpeedLineSection,
 } from '../types/arenaTypes';
 import { polarToLocalXZ } from './surfaceUtils';
+import { applyExplicitUV } from './uvMapping';
 import { SceneSurfaceProjector } from './sceneSurfaceProjector';
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -129,10 +130,17 @@ export function buildRibbon3D(
 
   const positions: number[] = [];
   const indices: number[] = [];
+  // Exact ribbon parameterisation: u = cumulative distance along the centreline,
+  // v = across the width. A projection cannot express this — any texture with
+  // direction (an arrow, a flow streak) would be misaligned. Emitted in cm;
+  // applyExplicitUV handles the UV_REFERENCE_CM conversion.
+  const uvsCm: number[] = [];
+  let runLen = 0;
 
   for (let i = 0; i < N; i++) {
     const pt = centerline[i];
     const normal = normals[i];
+    if (i > 0) runLen += centerline[i].distanceTo(centerline[i - 1]);
 
     // Tangent via central diff
     let tangent: THREE.Vector3;
@@ -151,6 +159,10 @@ export function buildRibbon3D(
 
     positions.push(left.x,  left.y,  left.z);
     positions.push(right.x, right.y, right.z);
+    // v spans the true width so the texture is not stretched on wide ribbons
+    // (width is author-settable up to 30 cm).
+    uvsCm.push(runLen, 0);
+    uvsCm.push(runLen, width);
   }
 
   for (let i = 0; i < N - 1; i++) {
@@ -163,6 +175,7 @@ export function buildRibbon3D(
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   geo.computeVertexNormals();
+  applyExplicitUV(geo, uvsCm);
   return geo;
 }
 

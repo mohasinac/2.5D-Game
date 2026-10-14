@@ -7,6 +7,7 @@ import {
 import { effectiveProfile, rampExistsAt } from './surfaceUtils';
 import { inChildHole } from './primitives';
 import { buildSurfaceMaterial } from './materialBuilders';
+import { applyTriplanarUV } from './uvMapping';
 
 /* ══════════════════════════════════════════════════════════════════════════
    Floor Profile Builders — stepped terraces and spiral ledge.
@@ -168,6 +169,8 @@ export function buildSteppedBowl(
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx);
   geo.computeVertexNormals();
+  // Stepped bowl alternates horizontal treads and vertical risers -> triplanar.
+  applyTriplanarUV(geo);
 
   const edgeGeo = new THREE.BufferGeometry();
   edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(epos, 3));
@@ -237,6 +240,8 @@ export function buildSpiralLedgeMesh(
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx);
   geo.computeVertexNormals();
+  // Spiral ledge has tread + outer face -> triplanar.
+  applyTriplanarUV(geo);
 
   const resolvedColor = spiralColorOverride != null ? spiralColorOverride : new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.3).getHex();
   const resolvedSurface: SurfaceType = spiralSurfaceOverride ?? 'plain';

@@ -12,6 +12,7 @@
 import * as THREE from 'three';
 import { DEG2RAD, OCTAGON_BASE, MIN_WALL_HEIGHT, MIN_WALL_GAP, ROT } from '../config/arenaConstants';
 import { WallData, WallTopProfile, TrapData, ArenaData } from '../types/arenaTypes';
+import { applyCylindricalUV } from './uvMapping';
 
 /* ── Arc filter ─────────────────────────────────────────────────────────── */
 
@@ -336,6 +337,14 @@ export function buildWallGeometry(
   geo.setAttribute('position', new THREE.Float32BufferAttribute(allPositions, 3));
   geo.setIndex(allIndices);
   geo.computeVertexNormals();
+  // Cylindrical about Y is the wall's own parameterisation: u = arc length
+  // along the rim, v = height up the face. Geometry is built from arena-local
+  // rim points, so the axis genuinely is the arena centre.
+  //
+  // Caveat: walls can also be parented to base/trap/bridge (`parentType`), where
+  // the arc centre is not the origin and `u` becomes an approximation. Still far
+  // better than a planar projection, which smears every vertical wall face.
+  applyCylindricalUV(geo);
   return geo;
 }
 

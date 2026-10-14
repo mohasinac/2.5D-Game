@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { TESS, STEP_SLOPE_FRAC } from '../config/arenaConstants';
 import { WallProfile, ChildHole } from '../types/arenaTypes';
+import { applyPlanarUV, applyTriplanarUV } from './uvMapping';
+import { bb10RiseFraction } from './surfaceUtils';
 import {
   buildParabolicRingGeo,
   appendParabolicBowlSection,
@@ -47,6 +49,7 @@ export function buildStraightCut(pts: THREE.Vector2[], depth: number, baseY = 0)
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx); geo.computeVertexNormals();
+  applyPlanarUV(geo);
   return geo;
 }
 
@@ -211,6 +214,9 @@ export function buildMoatGeometry(
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx); geo.computeVertexNormals();
+  // Moat is a ring of concentric bands spanning outer bowl -> trough -> island
+  // cap, so orientation varies; triplanar avoids smearing the trough walls.
+  applyTriplanarUV(geo);
   return geo;
 }
 
@@ -300,6 +306,18 @@ export function buildFreeArenaMesh(
   if (wallProfile === 'parabolic') {
     const rings = holes.length > 0 ? TESS.PARABOLIC_BOWL * 2 : TESS.PARABOLIC_BOWL;
     base = appendParabolicBowlSection(pts, rings, depth, baseY, pos, idx, base, holes);
+  } else if (wallProfile === 'bb10') {
+    // Five-zone BB-10 section. Reuses the same ring generator with a different
+    // radial profile, and passes the SAME bb10RiseFraction the physics surface
+    // uses — so the mesh the player sees and the surface the bey rolls on are
+    // generated from one function by construction, not by convention.
+    //
+    // Higher ring count than parabolic: the zone-3 ridge is only ~12% of the
+    // radius wide, and at TESS.PARABOLIC_BOWL rings it would be represented by
+    // ~7 rings, visibly faceting the one feature this profile exists for.
+    base = appendParabolicBowlSection(
+      pts, TESS.BB10_BOWL, depth, baseY, pos, idx, base, holes, bb10RiseFraction,
+    );
   } else {
     // Straight interior
     const rimB = base;
@@ -340,6 +358,10 @@ export function buildFreeArenaMesh(
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx); geo.computeVertexNormals();
+  // Triplanar, not planar: this is a composite of three differently-oriented
+  // surfaces (curved bowl interior, near-vertical outer skirt, horizontal
+  // bottom cap). A single top-down projection would smear the skirt badly.
+  applyTriplanarUV(geo);
   return geo;
 }
 

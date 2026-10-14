@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { SectorData } from '../types/beybladeTypes';
+import { applyTriplanarUV } from './uvMapping';
 
 export interface ISectorGeometryBuilder {
   buildMeshGeometry(s: SectorData): THREE.BufferGeometry;
@@ -67,6 +68,15 @@ function buildGeometryFromArrays(pos: number[], idx: number[]): THREE.BufferGeom
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx);
   geo.computeVertexNormals();
+  // Triplanar rather than cylindrical: a sector is a compound solid — top and
+  // bottom annular faces (horizontal), an outer arc wall and, for arcs < 360deg,
+  // two flat radial side faces. Cylindrical would smear the horizontal faces and
+  // compress toward the narrow end of a frustum with unequal top/bottom radii.
+  //
+  // This is the single construction point for every sector geometry
+  // (SolidSectorBuilder and HollowSectorBuilder both route through here), so
+  // all bey parts get UVs from this one call.
+  applyTriplanarUV(geo);
   return geo;
 }
 

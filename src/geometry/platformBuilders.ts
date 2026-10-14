@@ -3,6 +3,7 @@ import { TWO_PI, DEG2RAD, ARENA_ELEVATED_THRESHOLD } from '../config/arenaConsta
 import { ArenaData, PitData, ZoneData, IslandHole } from '../types/arenaTypes';
 import { shapePoints, polarToLocalXZ } from './surfaceUtils';
 import { inChildHole } from './primitives';
+import { applyPlanarUV } from './uvMapping';
 
 /* ══════════════════════════════════════════════════════════════════════════
    Platform builders.
@@ -41,6 +42,11 @@ export function buildTopFaceGeo(
   }
   const geo = new THREE.ShapeGeometry(shape);
   geo.rotateX(Math.PI / 2); geo.translate(0, baseHeight, 0);
+  // ShapeGeometry DOES emit UVs, but straight from the 2D shape in centimetres,
+  // so a texture would tile 20x too densely against the project's cm/20
+  // convention. Re-deriving after the rotate (positions are XZ-planar by then)
+  // replaces them at the correct scale.
+  applyPlanarUV(geo);
   return geo;
 }
 
@@ -59,6 +65,7 @@ export function buildArenaFloorGeo(arena: ArenaData, pits: PitData[], zones: Zon
   }
   const geo = new THREE.ShapeGeometry(floorShape);
   geo.rotateX(Math.PI / 2); geo.translate(0, floorY, 0);
+  applyPlanarUV(geo);   // see buildTopFaceGeo: rescale ShapeGeometry's cm-space UVs
   return geo;
 }
 
@@ -78,5 +85,6 @@ export function buildIslandCapGeo(arena: ArenaData, holes: IslandHole[] = []): T
   }
   const geo = new THREE.ShapeGeometry(shape);
   geo.rotateX(Math.PI / 2); geo.translate(0, H, 0);
+  applyPlanarUV(geo);   // see buildTopFaceGeo: rescale ShapeGeometry's cm-space UVs
   return geo;
 }

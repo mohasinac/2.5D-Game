@@ -21,9 +21,19 @@ const GL_ARGS = [
    set defaultBrowserType: 'webkit', and we want Chromium with touch emulation so
    the WebGL flags above still apply. */
 export default defineConfig({
-  testDir: './tests/e2e',
+  /* `tests/` not `tests/e2e/`, so the browser-free `tests/unit` specs are
+     collected too. Each project below restricts itself with testDir/testMatch,
+     so the screen specs still run exactly three times (once per viewport) and
+     the unit specs run exactly once. */
+  testDir: './tests',
   timeout: 90_000,
   expect: { timeout: 10_000 },
+
+  /* Transforms the dev server's module graph once up front, so the first screen
+     test does not absorb a ~51 s cold start and time out while every later test
+     passes. No-ops when no dev server is reachable, which is the normal case for
+     the browser-free `unit` project. See tests/globalSetup.ts. */
+  globalSetup: './tests/globalSetup.ts',
 
   /* Serial: every project drives the same dev server and several screens are
      heavy WebGL. Parallel workers make results noisy, not faster. */
@@ -43,7 +53,16 @@ export default defineConfig({
 
   projects: [
     {
+      /* Pure-logic specs: geometry/physics maths with no DOM, no WebGL and no
+         dev server. Kept as a Playwright project rather than adding a second
+         test framework (Vitest/Jest) for a handful of numeric assertions.
+         Runs first so a broken profile fails fast, before 3 WebGL suites. */
+      name: 'unit',
+      testDir: './tests/unit',
+    },
+    {
       name: 'desktop',
+      testDir: './tests/e2e',
       use: {
         browserName: 'chromium',
         viewport: { width: 1280, height: 800 },
@@ -53,6 +72,7 @@ export default defineConfig({
     },
     {
       name: 'mobile-portrait',
+      testDir: './tests/e2e',
       use: {
         browserName: 'chromium',
         viewport: { width: 390, height: 844 },
@@ -64,6 +84,7 @@ export default defineConfig({
     },
     {
       name: 'mobile-landscape',
+      testDir: './tests/e2e',
       use: {
         browserName: 'chromium',
         viewport: { width: 844, height: 390 },

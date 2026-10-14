@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../../render/shadowPolicy';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { SceneContext } from '../IArenaFeature';
 import type {
@@ -160,6 +161,10 @@ export class SpawnManager {
     this.slOnRibbon.clear();
 
     this.topGroup = this._buildTopGroup();
+    /* The bey is the one object whose shadow the player actually reads — it is
+       how you tell it is airborne rather than sliding. Applied here because the
+       top is added straight to the scene on spawn, bypassing RenderManager. */
+    applyRenderPolicy(this.topGroup);
     this.ctx.scene.add(this.topGroup);
     this.topGroup.position.copy(this.pos);
 

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../render/shadowPolicy';
 import { Sandbox, SandboxOptions } from './Sandbox';
 import { gameConfirm } from '../utils/dialog';
 import {
@@ -2069,6 +2070,7 @@ export class ArenaSandbox extends Sandbox {
 
     return {
       loadConfig: (cfg) => { this._applyConfigToScene(cfg); this._flushSave(); },
+      getRenderer: () => this.getRenderer(),
       clearScene: () => { this._clearArenas(); },
 
       spawn: (o) => {
@@ -2237,6 +2239,12 @@ export class ArenaSandbox extends Sandbox {
       sc.remove(this._octagonOutline); this._octagonOutline.geometry.dispose();
       this._octagonGrid = this._buildOctagonGrid();
       this._octagonOutline = this._buildOctagonOutline();
+      /* Fresh LineSegments/LineLoop, so they arrive tone-mapped by default and
+         would come back a duller cyan than the ones built at startup. The base
+         meshes above keep their flags because rebuildBase swaps materials on
+         the existing objects rather than replacing them. */
+      applyRenderPolicy(this._octagonGrid);
+      applyRenderPolicy(this._octagonOutline);
       sc.add(this._octagonGrid); sc.add(this._octagonOutline);
     }
   }

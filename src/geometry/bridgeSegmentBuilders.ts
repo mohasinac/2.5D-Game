@@ -29,6 +29,7 @@ import {
   BridgeSection, BridgeCrossSection,
   BridgeEndpointRef, ArenaData, WallData,
 } from '../types/arenaTypes';
+import { applyTriplanarUV } from './uvMapping';
 
 /* ── Pose ──────────────────────────────────────────────────────────────── */
 
@@ -494,6 +495,9 @@ export function buildSegmentDeckGeometry(
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   geo.computeVertexNormals();
+  // Deck may be flat, a U-channel (with side walls) or a full loop/corkscrew,
+  // so orientation is arbitrary -> triplanar.
+  applyTriplanarUV(geo);
   return geo;
 }
 

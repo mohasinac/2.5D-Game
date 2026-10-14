@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../../render/shadowPolicy';
 import type { PresentConfig } from '../../types/sharedTypes';
 import type { SceneContext } from '../IArenaFeature';
 
@@ -46,6 +47,8 @@ export class PresentationManager {
     const visible = this._viewMode !== 'hitbox';
     mesh.visible = visible;
 
+    /* Present STL meshes are the showcase geometry — they must cast. */
+    applyRenderPolicy(mesh);
     this.ctx.scene.add(mesh);
     this.entries.set(nodeId, { mesh, nodeId });
   }

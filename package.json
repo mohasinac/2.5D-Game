@@ -15,6 +15,7 @@
     "docker:build": "docker compose build",
     "docker:dev": "docker compose up app",
     "docker:typecheck": "docker compose run --rm typecheck",
+    "docker:unit": "docker compose run --rm unit",
     "docker:test": "docker compose run --rm test",
     "docker:down": "docker compose down -v",
     "deploy": "npm run build && firebase deploy --only hosting"

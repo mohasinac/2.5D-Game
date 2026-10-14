@@ -6,6 +6,8 @@ import { createCameraViewStore } from '../stores/cameraViewStore';
 import { DrawerManager } from '../utils/DrawerManager';
 import { layoutObserver } from '../utils/LayoutObserver';
 import { SimClock } from '../sim/SimClock';
+import { mountEnvironment, unmountEnvironment } from '../render/environment';
+import { applyRenderPolicy } from '../render/shadowPolicy';
 
 export interface SandboxOptions {
   title:      string;
@@ -41,6 +43,16 @@ export class Sandbox {
   private camera:   THREE.PerspectiveCamera | null = null;
   private renderer: THREE.WebGLRenderer | null = null;
   private controls: OrbitControls | null = null;
+
+  /** Prefiltered IBL cubemap. Lives and dies with the renderer, not the scene. */
+  private envTexture: THREE.Texture | null = null;
+
+  /**
+   * The one shadow-casting light. Kept as a field so the shadow frustum can be
+   * fitted in `buildScene` from `gridSize` rather than hardcoded — a 15 cm bey
+   * viewport and a 200 cm arena viewport need frusta an order of magnitude apart.
+   */
+  private shadowLight: THREE.DirectionalLight | null = null;
 
   /**
    * Deterministic sim clock, owned by the base class because the render loop is
@@ -118,9 +130,26 @@ export class Sandbox {
   /** Returns the renderer canvas element, or null if not yet mounted. */
   public getRendererCanvas(): HTMLCanvasElement | null { return this.renderer?.domElement ?? null; }
 
+  /**
+   * The live renderer, or null before the first mount.
+   *
+   * Exposed only so the dev-only demo API can report tone-mapping / shadow /
+   * environment state (`__demo.getRenderStats()`). Do not render through this
+   * or hold it across a `setVisible` cycle — the renderer is recreated on every
+   * mount, so a retained reference points at a destroyed GL context.
+   */
+  public getRenderer(): THREE.WebGLRenderer | null { return this.renderer; }
+
   /** Add / remove objects from the live scene. Safe to call before scene is ready (no-op). */
   protected addToScene(...objects: THREE.Object3D[]): void {
-    objects.forEach(o => this.scene?.add(o));
+    objects.forEach(o => {
+      /* One of the project's two scene-add funnels — this one carries arenas,
+         pits, zones and the octagon base, which RenderManager does not own yet.
+         The policy has to be applied here or the bowl receives no shadow and
+         every edge line gets tone-mapped. See render/shadowPolicy.ts. */
+      applyRenderPolicy(o);
+      this.scene?.add(o);
+    });
   }
   protected removeFromScene(...objects: THREE.Object3D[]): void {
     objects.forEach(o => this.scene?.remove(o));
@@ -153,7 +182,33 @@ export class Sandbox {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, stencil: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setClearColor(0x08080f);
+
+    /* Tone mapping + colour space.
+       `NoToneMapping` (the previous default) clips every highlight, which is the
+       documented cause of the washed-out look. ACES is the filmic curve the rest
+       of the industry uses and it rolls highlights off instead of cutting them.
+       `outputColorSpace` already defaults to sRGB in r165 but is set explicitly
+       because getting it wrong is invisible until the PBR textures land, and by
+       then the symptom looks like a texture bug rather than a renderer setting.
+
+       Diagram elements (grids, edge lines, axis sprites, the accent origin
+       marker) opt OUT of this curve via `applyRenderPolicy` — without that, ACES
+       desaturates the authored cyan/orange palette. */
+    this.renderer.toneMapping        = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.0;
+    this.renderer.outputColorSpace   = THREE.SRGBColorSpace;
+
+    /* PCFSoft over the default basic shadow map: the hard variant aliases badly
+       on curved bowl surfaces, which is most of this project's geometry. */
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+
     this.canvasWrap.appendChild(this.renderer.domElement);
+
+    /* Per-mount, because a PMREM cubemap belongs to this renderer's GL context
+       (see render/environment.ts). Must happen before the first frame or the
+       standard materials render one frame unlit. */
+    this.envTexture = mountEnvironment(this.renderer, this.scene!);
 
     this.controls = new OrbitControls(this.camera!, this.renderer.domElement);
     this.controls.enableDamping      = true;
@@ -189,6 +244,11 @@ export class Sandbox {
       this.controls = null;
     }
     if (this.renderer) {
+      /* Before the renderer, not after: the environment map is a render target
+         owned by this context. */
+      unmountEnvironment(this.scene!, this.envTexture);
+      this.envTexture = null;
+
       this.renderer.domElement.remove();
       this.renderer.dispose();
       this.renderer = null;
@@ -254,10 +314,58 @@ export class Sandbox {
       new THREE.MeshBasicMaterial({ color: accent }),
     ));
 
-    /* Lights */
-    s.add(new THREE.AmbientLight(0xffffff, 0.5));
+    /* Lights.
+       Ambient drops from 0.5 to 0.25 because the environment map now supplies
+       indirect light, and doing both at full strength double-counts it —
+       everything goes flat and shadows read as grey smudges. */
+    s.add(new THREE.AmbientLight(0xffffff, 0.25));
+
+    /* Key light, deliberately OFF the default camera axis.
+       It used to sit at (+0.3, +0.5, +0.3)·gridSize — the same octant as both
+       sandboxes' default cameras (arena (150,100,175), bey (12,8,14)). Light
+       and eye pointing the same way means every cast shadow falls directly
+       behind its own caster and is hidden by it, so the scene renders shadows
+       that are essentially never visible. Proven with a two-scale control
+       scene: identical parameters showed no shadow from a camera beside the
+       light and a clear one from a camera opposite it.
+       Now keyed from the left and slightly front, so shadows fall across the
+       view instead of away from it, while the camera-facing +z faces stay lit. */
     const dir = new THREE.DirectionalLight(0xffffff, 1.0);
-    dir.position.set(gridSize * 0.3, gridSize * 0.5, gridSize * 0.3);
+    dir.position.set(-gridSize * 0.40, gridSize * 0.62, gridSize * 0.32);
+    dir.castShadow = true;
+    this.shadowLight = dir;
+
+    /* A directional light's shadow camera is orthographic and does NOT follow
+       the scene — an unfitted frustum is the usual reason shadows appear only
+       near the origin, or not at all. Half-extent covers the full grid with
+       margin for walls standing above it and for off-centre arenas.
+
+       Everything is derived from gridSize because the two sandboxes differ by
+       more than 13x (15 cm vs 200 cm), and CLAUDE.md forbids hardcoding
+       proportional scene values. */
+    const half = gridSize * 0.75;
+    const cam  = dir.shadow.camera;
+    cam.left = -half; cam.right = half;
+    cam.top  =  half; cam.bottom = -half;
+    cam.near = gridSize * 0.05;
+    cam.far  = gridSize * 3;
+    cam.updateProjectionMatrix();
+
+    /* 2048 on desktop, 1024 where the pointer is coarse. A 2048 map is ~16 MB
+       of VRAM; mobile already struggles here (the vmin layout collapse is
+       documented in _responsive.css) and shadow resolution is not what makes
+       or breaks the look on a 390 px viewport. Matches the same desktop test
+       the virtual-controls overlay uses. */
+    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    dir.shadow.mapSize.setScalar(isDesktop ? 2048 : 1024);
+
+    /* normalBias in world units, so it must scale with the scene. Plain `bias`
+       alone cannot fix acne across a 13x scale difference: at arena scale a
+       value large enough to clear the bowl surface detaches shadows entirely at
+       bey scale. Offsetting along the normal is scale-relative and does not. */
+    dir.shadow.normalBias = gridSize * 0.002;
+    dir.shadow.bias       = -0.0005;
+
     s.add(dir);
 
     const ptRange = gridSize * 0.2;
@@ -266,7 +374,19 @@ export class Sandbox {
     s.add(pt);
 
     this.buildCustom(s);
+
+    /* Everything added above this line — grids, axes, ticks, origin marker, and
+       whatever buildCustom built — goes through the policy once. Objects added
+       later arrive via addToScene/RenderManager.add, which apply it themselves. */
+    for (const child of [...s.children]) applyRenderPolicy(child);
   }
+
+  /**
+   * The shadow-casting directional light, for subclasses that need to retarget
+   * it (e.g. an arena placed far off-origin would otherwise sit outside the
+   * fitted frustum). Null until `initScene` has run.
+   */
+  protected getShadowLight(): THREE.DirectionalLight | null { return this.shadowLight; }
 
   /* ── Resize ─────────────────────────────────────────────────── */
   private resize(): void {

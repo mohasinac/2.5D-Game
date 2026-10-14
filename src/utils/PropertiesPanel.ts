@@ -448,7 +448,10 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
 
   private profileRow(data: { wallProfile: WallProfile }, _field: 'wallProfile', onChange: () => void): void {
     const row=document.createElement('div'); row.className='prop-profile-row';
-    const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral']];
+    // 'BB-10' is the real five-zone BeyStadium Attack Type section (CS10 Case
+    // 545) — the only profile with a Tornado Ridge. Exposed here so it is
+    // authorable, not just reachable from code.
+    const defs: [WallProfile, string][] = [['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral'],['bb10','◠ BB-10']];
     for (const [p, label] of defs) {
       const btn=document.createElement('button');
       btn.className='prop-profile-btn'+(data.wallProfile===p?' active':'');
@@ -510,10 +513,10 @@ export class PropertiesPanel extends AbstractPropertiesPanel {
     });
 
     if (data.stepApplyToAll) {
-      // 4-button all-edges row
+      // All-edges profile row
       const row = document.createElement('div'); row.className = 'prop-profile-row';
       const defs: [WallProfile, string][] = [
-        ['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral'],
+        ['parabolic','⌣ Bowl'],['straight','▮ Straight'],['step','▭ Step'],['spiral','↺ Spiral'],['bb10','◠ BB-10'],
       ];
       for (const [p, label] of defs) {
         const btn = document.createElement('button');

@@ -9,7 +9,14 @@ import type { ParticlePreset, ParticleConfig, ParticleSystem, WeatherPreset, Wea
 
 /* ── Opening shape / wall profile types ─────────────────────────────────── */
 export type OpeningShape = 'circle' | 'ellipse' | 'rectangle' | 'hexagon' | 'triangle' | 'star';
-export type WallProfile  = 'parabolic' | 'straight' | 'step' | 'spiral';
+/**
+ * Bowl cross-section profile.
+ *
+ * `bb10` is the real BeyStadium Attack Type five-zone section (CS10 Case 545)
+ * and is the only NON-monotonic member: its zone-3 Tornado Ridge rises above
+ * the surrounding surface. See `bb10RiseFraction` in surfaceUtils.
+ */
+export type WallProfile  = 'parabolic' | 'straight' | 'step' | 'spiral' | 'bb10';
 export type RampMode     = 'full' | 'one-side' | 'zigzag' | 'none';
 
 /* ── Surface material types ──────────────────────────────────────────────── */

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../../render/shadowPolicy';
 import type { SpeedLineData, ArenaData, ZoneData } from '../../types/arenaTypes';
 import type { SpeedLineSave } from '../../utils/arenaPersistence';
 import {
@@ -99,6 +100,12 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     sl.handleMeshes  = handleMeshes;
     sl.totalLength   = totalLength;
 
+    /* Editor gizmos: MeshBasicMaterial, so the policy keeps them out of the
+       shadow pass and off the ACES curve — a handle must stay the exact colour
+       it was authored. These four call sites are the documented
+       SpeedLineManager leak (it bypasses RenderManager); they are each patched
+       rather than unified here, because merging them is Phase 4's job. */
+    for (const o of [...markerMeshes, ...handleMeshes]) applyRenderPolicy(o);
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
     sl.handleMeshes.forEach(h => { h.visible = false; });
     this.ctx.renderMgr.add(id, [mesh, edges]);
@@ -160,6 +167,12 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     sl.markerMeshes = markerMeshes; sl.handleMeshes = handleMeshes;
     sl.totalLength  = totalLength;
 
+    /* Editor gizmos: MeshBasicMaterial, so the policy keeps them out of the
+       shadow pass and off the ACES curve — a handle must stay the exact colour
+       it was authored. These four call sites are the documented
+       SpeedLineManager leak (it bypasses RenderManager); they are each patched
+       rather than unified here, because merging them is Phase 4's job. */
+    for (const o of [...markerMeshes, ...handleMeshes]) applyRenderPolicy(o);
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
     sl.handleMeshes.forEach(h => { h.visible = false; });
     this.ctx.renderMgr.add(sl.id, [mesh, edges]);
@@ -182,6 +195,12 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     data.handleMeshes = handleMeshes;
     data.totalLength  = totalLength;
 
+    /* Editor gizmos: MeshBasicMaterial, so the policy keeps them out of the
+       shadow pass and off the ACES curve — a handle must stay the exact colour
+       it was authored. These four call sites are the documented
+       SpeedLineManager leak (it bypasses RenderManager); they are each patched
+       rather than unified here, because merging them is Phase 4's job. */
+    for (const o of [...markerMeshes, ...handleMeshes]) applyRenderPolicy(o);
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
     data.handleMeshes.forEach(h => { h.visible = false; });
     this.ctx.renderMgr.add(data.id, [mesh, edges]);
@@ -216,6 +235,12 @@ export class SpeedLineManager extends FeatureManager<SpeedLineData, SpeedLineSav
     data.markerMeshes = markerMeshes;
     data.handleMeshes = handleMeshes;
     data.totalLength  = totalLength;
+    /* Editor gizmos: MeshBasicMaterial, so the policy keeps them out of the
+       shadow pass and off the ACES curve — a handle must stay the exact colour
+       it was authored. These four call sites are the documented
+       SpeedLineManager leak (it bypasses RenderManager); they are each patched
+       rather than unified here, because merging them is Phase 4's job. */
+    for (const o of [...markerMeshes, ...handleMeshes]) applyRenderPolicy(o);
     this.ctx.scene.add(...markerMeshes, ...handleMeshes);
     this.ctx.renderMgr.add(data.id, [mesh, edges]);
   }

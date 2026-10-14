@@ -1,11 +1,17 @@
 import * as THREE from 'three';
 import { ChildHole } from '../types/arenaTypes';
+import { applyPlanarUV } from './uvMapping';
 
 /* ══════════════════════════════════════════════════════════════════════════
    Shared geometry primitives.
-   These are the lowest-level building blocks — no imports from other
-   geometry files. All higher-level builders (bowlBuilders, scoopBuilders,
-   etc.) call these instead of duplicating the ring/edge math.
+   These are the lowest-level building blocks. All higher-level builders
+   (bowlBuilders, scoopBuilders, etc.) call these instead of duplicating the
+   ring/edge math.
+
+   Import rule: the only geometry import permitted here is `uvMapping`, which
+   is itself a leaf (it imports nothing but THREE). The rule exists to prevent
+   cycles, and a leaf-to-leaf import cannot create one. Nothing else from
+   `geometry/` may be imported into this file.
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Hole test (exported, used by callers that only need a point test) ─── */
@@ -214,14 +220,34 @@ export function buildParabolicRingGeo(
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx);
   geo.computeVertexNormals();
+  // Top-down planar UV: uniform world-space texture scale for any opening shape,
+  // and no pinch singularity at the bowl centre (a polar mapping would have one).
+  // Applied after both the fast path and the hole-clipping path, so it covers
+  // the per-primitive vertices _addClipped emits without duplicating logic.
+  applyPlanarUV(geo);
   return geo;
 }
 
-/* ── Parabolic ring section — appends into existing pos/idx arrays ───────
+/* ── Bowl ring section — appends into existing pos/idx arrays ───────────
    Used by buildFreeArenaMesh which builds a composite geometry (interior
    bowl + outer skirt + bottom cap) into a single buffer.
    Returns the new base offset after all vertices added.
 ────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Fraction of total depth risen above the bowl floor at normalised radius `t`:
+ * `0` at the floor, `1` at rim level.
+ *
+ * Injected rather than hardcoded so this file stays dependency-free (it must
+ * not import surfaceUtils — surfaceUtils already imports `inChildHole` from
+ * here, so that direction would be a cycle). Callers in `bowlBuilders` supply
+ * the profile-specific function.
+ */
+export type BowlRiseFn = (t: number) => number;
+
+/** Default parabolic rise. Previously inlined twice in this function. */
+export const parabolicRise: BowlRiseFn = (t) => t * t;
+
 export function appendParabolicBowlSection(
   pts: THREE.Vector2[],
   rings: number,
@@ -231,16 +257,22 @@ export function appendParabolicBowlSection(
   idx: number[],
   base: number,
   holes: ChildHole[],
+  /** Radial profile. Defaults to parabolic so existing callers are unchanged. */
+  riseFn: BowlRiseFn = parabolicRise,
 ): number {
   const N = pts.length;
   const floorY = baseY - depth;
-  const yFn = (_lx: number, _lz: number, t: number): number => baseY - depth * (1 - t * t);
+  // Single definition of surface Y, used by both the fast path and the holes
+  // path. The parabolic formula was previously written out twice here, which is
+  // exactly the duplication that lets mesh and physics drift apart.
+  const yAtT  = (t: number): number => baseY - depth * (1 - riseFn(t));
+  const yFn   = (_lx: number, _lz: number, t: number): number => yAtT(t);
 
   if (holes.length === 0) {
     /* Fast path */
     pos.push(0, floorY, 0);
     for (let r = 1; r <= rings; r++) {
-      const t = r / rings; const y = baseY - depth * (1 - t * t);
+      const t = r / rings; const y = yAtT(t);
       for (let i = 0; i < N; i++) pos.push(pts[i].x * t, y, pts[i].y * t);
     }
     for (let i = 0; i < N; i++) {

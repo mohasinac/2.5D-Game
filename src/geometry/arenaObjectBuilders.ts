@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyRenderPolicy } from '../render/shadowPolicy';
 import { ARENA_ELEVATED_THRESHOLD, DEFAULT_STEP_COUNT, DEFAULT_STEP_START_DEPTH, DEFAULT_STEP_RISER, DEFAULT_RAMP_ANGLE, DEFAULT_RAMP_WIDTH, DEFAULT_STEP_ARC_DIVISIONS, DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT, DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC, DEFAULT_ARENA_MATERIAL, SL, JL, DEG2RAD, PIT_FIXED_DEPTH, ENV } from '../config/arenaConstants';
 import {
   ArenaData, PitData, ZoneData, ChildHole, SurfaceMaterialOpts, SurfaceType, ArenaMaterial,
@@ -49,9 +50,18 @@ function usesSpiralProfile(data: ArenaData): boolean {
   return !data.isMoat && data.stepApplyToAll && data.wallProfile === 'spiral';
 }
 
-function resolvedWallProfile(data: ArenaData): 'parabolic' | 'straight' {
+/**
+ * Collapse the authored profile to one `buildFreeArenaMesh` can build.
+ *
+ * `bb10` passes through rather than falling into the `'straight'` default: that
+ * default would silently discard the five-zone section (including the Tornado
+ * Ridge) and render a plain straight-walled bowl, with no error anywhere — the
+ * exact "looks done, isn't" failure mode this project is full of.
+ */
+function resolvedWallProfile(data: ArenaData): 'parabolic' | 'straight' | 'bb10' {
   const p = data.wallProfile;
   if (p === 'parabolic' || p === 'spiral') return 'parabolic';
+  if (p === 'bb10') return 'bb10';
   if (p === 'step') return data.stepRiserProfile === 'straight' ? 'straight' : 'parabolic';
   return 'straight';
 }
@@ -93,6 +103,14 @@ function buildSpiralMeshes(data: ArenaData, scene: THREE.Scene): THREE.Mesh[] {
     );
     m.position.set(data.posX, data.posY, data.posZ);
     m.rotation.y = data.rotY;
+    /* Spiral ledges are walkable arena surfaces, so they need to receive
+       shadow like the bowl they sit in. Importing the render policy into
+       geometry/ is a deliberate exception to the import-direction rule, taken
+       because this function already accepts a `scene` and calls `add` on it —
+       the purity violation is the pre-existing `scene` parameter (Phase O-3
+       removes it), not this line. shadowPolicy imports nothing but THREE, so it
+       adds no project coupling. */
+    applyRenderPolicy(m);
     scene.add(m);
     meshes.push(m);
   }

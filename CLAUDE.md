@@ -32,7 +32,8 @@ The battle layer is designed in `case study/CS23 — battle layer design.md`. It
 npm run docker:build        # build images
 npm run docker:dev          # Vite dev server → http://localhost:3000
 npm run docker:typecheck    # tsc --noEmit
-npm run docker:test         # Playwright specs against http://app:3000
+npm run docker:unit         # browser-free unit specs only (no dev server needed)
+npm run docker:test         # full Playwright suite against http://bey-app:3000
 npm run docker:down         # tear down + drop volumes
 
 npm run dev                 # host fallback
@@ -51,6 +52,15 @@ npm run deploy              # npm run build && firebase deploy --only hosting
 - `shm_size: 1gb` on the test service — Chromium crashes on Docker's default 64 MB `/dev/shm`.
 - **`PLAYWRIGHT_VERSION` in the Dockerfile must match `@playwright/test` in `package.json`.** Drift fails the container with "Executable doesn't exist".
 
+### Four infrastructure traps, each of which once broke the whole gate
+
+These are fixed. They are recorded because every one of them presents as "the app is broken" when it is really one line of config, and three of them appeared *without any source change*.
+
+1. **Never let the Vite watcher see `linka/`.** `linka/` is a 7.3 GB / ~44,000-file scraped research archive in the repo root (gitignored, imported by nothing). With `usePolling` on, chokidar stat-ed all of it every 300 ms and **every HTTP request took ~26 s**, so the healthcheck could never pass. `server.watch.ignored` in `vite.config.ts` fixes it (~26,000 ms → ~200 ms). Polling cost scales with file count, so raising `interval` is not a substitute.
+2. **`server.allowedHosts` must list the container hostname.** Vite 5.4.12 backported a DNS-rebinding fix; `package.json` asks for `^5.2.0`, so `npm ci` resolves 5.4.21 and unlisted hosts get `403 Blocked request. This host (…) is not allowed.` A patch-range bump silently broke a passing gate.
+3. **The test hostname is `bey-app`, never `app`.** `.app` is a Google gTLD on Chromium's HSTS preload list TLD-wide, so the browser rewrites `http://app:3000` to HTTPS and fails with `ERR_SSL_PROTOCOL_ERROR` against a plain-HTTP dev server — before the request is even sent. `PLAYWRIGHT_BASE_URL` and `allowedHosts` must stay in sync.
+4. **The healthcheck probes `127.0.0.1`, not `localhost`.** Inside the container `localhost` resolves to `::1` first while Vite's `host: true` binds IPv4-only, so the probe hung until timeout.
+
 ### Tests
 
 `tests/e2e/screens.spec.ts` — one test per screen × three viewport projects (desktop 1280×800, mobile-portrait 390×844, mobile-landscape 844×390). Checks: uncaught JS errors, console errors, required selectors, WebGL canvas, mobile drawer toggles + 44px touch targets on **both** axes, virtual-controls overlay, horizontal overflow, screenshot.
@@ -58,6 +68,12 @@ npm run deploy              # npm run build && firebase deploy --only hosting
 **When you add a route to `src/main.ts`, add it to `tests/e2e/screens.data.ts` in the same change.** The `@meta` test fails if a documented route has no coverage — that guard exists because `/special-moves` shipped with zero test coverage.
 
 Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist` or the Three.js canvas never initialises headless and every sandbox screen fails for the wrong reason.
+
+`tests/unit/` — browser-free specs for pure logic (BB-10 radial profile, render policy). They run as a separate Playwright **`unit` project** rather than under a second test framework, and the `unit` compose service deliberately has **no `depends_on`**: these tests touch no DOM, no WebGL and no dev server, so gating them on the app container's health would make a maths regression undiagnosable exactly when the server is unwell. `unit` is listed first so a broken profile fails fast, before three WebGL suites.
+
+**Current gate: 57 tests** — 27 unit + 27 screen (9 × 3 viewports) + 3 `@meta`.
+
+`tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
 ### Feature demos — `npm run demo:features`
 
@@ -130,6 +146,9 @@ Controls need `min-height: 44px` **and** `min-width: 44px` + `flex-shrink: 0` on
 
 - Renderer fills its container via `ResizeObserver` + a self-healing check inside the render loop (a single deferred RAF is not reliable before layout settles).
 - `renderer.setSize(w, h, false)`; `setPixelRatio(Math.min(devicePixelRatio, 2))`.
+- **ACES tone mapping + sRGB output + PCF soft shadows + a PMREM environment map are all on**, set in `mountRenderer()`. The environment comes from Three's bundled `RoomEnvironment` (procedural, zero download, **no network request** — the app makes none) at `environmentIntensity 0.55`; swapping in a Poly Haven HDRI later is a one-line change in `render/environment.ts`. `scene.background` is deliberately left as the clear colour, so the backdrop stays dark while the lighting is not.
+- **The PMREM texture is per-mount, not per-scene.** It is a GPU render target owned by the renderer that produced it, so it is built in `mountRenderer()` and freed in `unmountRenderer()` *before* `renderer.dispose()`. Generating it once in `initScene()` leaves the scene holding a texture from a destroyed context after the first screen switch.
+- Ambient light is `0.25`, not `0.5`: the environment map now supplies indirect light and doing both at full strength double-counts it, flattening everything and turning shadows into grey smudges.
 - Always include `GridHelper`, `AxesHelper`, axis label sprites, numeric grid ticks.
 - Grid subdivision colour `0x2a2a4a` — `0x1a1a2e` renders invisible.
 - `OrbitControls`: left-drag orbit, right-drag pan, scroll zoom, `dampingFactor: 0.07`.
@@ -603,6 +622,12 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 ### Rendering
 - **Fog** — removed; causes black screens against a dark background.
 - Grid subdivision `0x1a1a2e` is invisible; use `0x2a2a4a`.
+- **Never add an object to the scene without routing it through `applyRenderPolicy`** (`render/shadowPolicy.ts`). It decides shadow casting/receiving and — critically — sets `toneMapped = false` on diagram elements. `Material.toneMapped` defaults to **true**, so a line, sprite, `Points` or `MeshBasicMaterial` mesh added without it comes out desaturated by ACES, which silently dulls the authored cyan/orange palette. The rule is *unlit material ⇒ authored colour ⇒ exempt from the exposure curve and the shadow pass*; a lit material is a surface the lighting decides.
+- The policy is applied at the **two scene-add funnels** — `RenderManager.add()` (every managed feature) and `Sandbox.addToScene()` (arenas/pits/zones/octagon base) — plus **six sites that bypass both**: `SpawnManager` (the bey's `topGroup`), `BeybladeRenderer` (`rebuildPart` and `loadPresentationSTL`), `PresentationManager`, `ProjectileManager`, `SpeedLineManager` (×4 markers/handles), `ArenaSandbox.rebuildBase` (the re-created octagon grid/outline), `BeybladeSandbox` (particle `Points`), and `arenaObjectBuilders.buildSpiralMeshes`. It recurses, which is required: bridge segment meshes live under `seg._animPivot` and wall meshes under `wall._rotatePivot`, both registered as a Group.
+- The policy is **idempotent and re-derives** rather than latching, because several paths swap materials in place (`rebuildBase`, `surfaceRow`) — a mesh that becomes transparent must stop casting.
+- Shadow frustum, map size and `normalBias` all derive from `gridSize`. A directional light's shadow camera is orthographic and does **not** follow the scene, so an unfitted frustum is the usual reason shadows appear only near the origin. `normalBias` (not plain `bias`) is what survives the 13× scale gap between the bey and arena sandboxes.
+- **Keep the key light off the default camera axis.** Both sandboxes default to a `+x +z` camera, so a light in that same octant throws every shadow directly behind its own caster, where the caster hides it — the scene renders shadows that are never visible. The light sits at `(-0.40, 0.62, 0.32)·gridSize` for that reason. If you move a default camera, re-check the light.
+- **Shadows cannot be eyeballed from a single screenshot.** Confirm with `window.__demo.getRenderStats()` (dev-only): it reports `shadowLights`, the fitted frustum, caster/receiver counts, and `toneMappedUnlit` (which must be **0**). `tests/e2e/renderState.spec.ts` asserts all of it — a correctly configured renderer with zero shadow-casting lights is otherwise completely silent.
 - Eager renderer creation in a constructor = two GL contexts. Only inside `mountRenderer()`.
 - `topFaceMesh` material must always pass `polygonOffset: true` — the octagon top face is coplanar with the arena rim and seam, and without it the whole rim z-fights. All three creation sites must do it; the cache key includes `:po`.
 - Non-elevated, non-step, non-moat arenas use `buildFreeArenaMesh`, not bare `buildParabolicBowl` — otherwise there is no outer skirt and you see the hollow interior.

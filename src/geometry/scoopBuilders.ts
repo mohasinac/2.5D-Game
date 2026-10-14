@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RIM_EPS, SEAM_TRANSITION_WIDTH, SEAM_RINGS, TESS } from '../config/arenaConstants';
 import { WallProfile } from '../types/arenaTypes';
 import { buildParabolicRingGeo, buildRimEdges } from './primitives';
+import { applyPlanarUV } from './uvMapping';
 
 /* ══════════════════════════════════════════════════════════════════════════
    Scoop builders.
@@ -68,6 +69,7 @@ export function buildScoopGeometry(
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx); geo.computeVertexNormals();
+  applyPlanarUV(geo);
   return geo;
 }
 
@@ -201,5 +203,8 @@ export function buildScoopSeam(
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx); geo.computeVertexNormals();
+  // Seam is a near-horizontal transition band around the scoop rim; planar
+  // keeps it continuous with the bowl surface it blends into.
+  applyPlanarUV(geo);
   return geo;
 }

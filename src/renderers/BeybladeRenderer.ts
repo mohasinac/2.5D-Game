@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { BeybladeStore } from '../stores/BeybladeStore';
 import { PartData, SectorData, ViewMode } from '../types/beybladeTypes';
 import { getSectorBuilder } from '../geometry/sectorBuilders';
+import { applyRenderPolicy } from '../render/shadowPolicy';
 
 const AXIS_COLOR   = 0x00e5ff;
 const EDGE_COLOR   = 0xffffff;
@@ -107,6 +108,14 @@ export class BeybladeRenderer {
 
     const owner: OwnerGroup = part.freeSpin ? 'free' : 'spin';
     const group = owner === 'free' ? this.freeSpinGroup : this.spinGroup;
+    /* Parts attach to spinGroup/freeSpinGroup, which were added to the scene
+       back in the constructor — so the render policy cannot be applied at the
+       scene-add site the way it is for arena features. It has to be applied per
+       part here, which is fine because this is the sole entry point for part
+       meshes (rebuildSector delegates to it). Gives the hitbox mesh shadows and
+       keeps its edge LineSegments out of the ACES curve. */
+    applyRenderPolicy(hitboxMesh);
+    applyRenderPolicy(hitboxEdges);
     group.add(hitboxMesh, hitboxEdges);
 
     this.partObjects.set(id, { hitboxMesh, hitboxEdges, presentMesh, owner });
@@ -234,6 +243,11 @@ export class BeybladeRenderer {
     );
     mesh.scale.set(cfg.scaleX, cfg.scaleY, cfg.scaleZ);
     const group = objs.owner === 'free' ? this.freeSpinGroup : this.spinGroup;
+    /* Separate from rebuildPart's call because the STL arrives asynchronously,
+       after that pass has already run. The present mesh is the one the user
+       actually looks at in `present`/`both` view mode, so it is the mesh that
+       most needs to cast. */
+    applyRenderPolicy(mesh);
     group.add(mesh);
     objs.presentMesh = mesh;
     this._applyViewMode(id);

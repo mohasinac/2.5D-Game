@@ -4,6 +4,7 @@ import {
   TRAP_PLATE_HEIGHT, SPIKE_COUNT, SPIKE_HEIGHT, TRAP_SAFE_INTERVAL, TRAP_UNSAFE_INTERVAL,
   DEG2RAD,
 } from '../config/arenaConstants';
+import { applyTriplanarUV } from './uvMapping';
 import {
   TrapData, TrapShape, TrapEffect, TrapVariant, TrapDurationTier, SurfaceType, OpeningShape, ArenaData, ArenaMaterial,
   defaultProjectileConfig,
@@ -67,6 +68,7 @@ function _variantGeo(data: TrapData): THREE.Mesh | null {
       }
       merged.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
       merged.computeVertexNormals();
+      applyTriplanarUV(merged);
       const mat = new THREE.MeshStandardMaterial({ color: 0x555555 });
       return new THREE.Mesh(merged, mat);
     }
@@ -185,6 +187,7 @@ export function buildEarthquakeMesh(data: TrapData, surfY: number): THREE.Mesh {
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   geo.computeVertexNormals();
+  applyTriplanarUV(geo);
   const mat = new THREE.MeshStandardMaterial({ color: 0x886644, side: THREE.DoubleSide });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.position.y = surfY + TRAP_PLATE_HEIGHT;

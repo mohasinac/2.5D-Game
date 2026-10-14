@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TWO_PI, DEG2RAD, STEP_SLOPE_FRAC } from '../config/arenaConstants';
+import { TWO_PI, DEG2RAD, STEP_SLOPE_FRAC, BB10 } from '../config/arenaConstants';
 import {
   OpeningShape, ShapeParams, ArenaData, PitData, ZoneData, ZoneFill,
   ChildHole, FillPreset, WaveParams, WallProfile, RampMode,
@@ -175,6 +175,62 @@ export function rampExistsAt(
   return a >= s || a <= e - TWO_PI;
 }
 
+/* ── BB-10 five-zone radial profile ─────────────────────────────────────── */
+
+/**
+ * Height above the bowl floor at normalised radius `t`, as a fraction of total
+ * depth: `0` at the floor, `1` at rim level.
+ *
+ * **This is the single source of truth for the BB-10 shape.** Both the physics
+ * surface (`arenaSurfaceYAtArenaLocal`) and the bowl mesh generator call it, so
+ * what the bey rolls on and what the player sees cannot drift apart. The
+ * project has been bitten by exactly that class of divergence before — see the
+ * speed-line bug where the physics path was computed without the projector the
+ * ribbon was built with.
+ *
+ * Non-monotonic by design: the zone-3 ridge rises ABOVE the surrounding
+ * surface, so `t1 > t2` does not imply `f(t1) > f(t2)`. Anything that assumed
+ * monotonic radial profiles (e.g. a binary search for "radius at height Y")
+ * will be wrong here.
+ *
+ * Geometry and the reasoning behind each constant: `BB10` in arenaConstants.
+ */
+export function bb10RiseFraction(t: number): number {
+  const tc = Math.min(Math.max(t, 0), 1);
+
+  // Zone 1 — flat centre. Stamina types sit here undisturbed (g_lat = 0).
+  if (tc <= BB10.R_FLAT_END) return 0;
+
+  // Zone 5 — vertical wall region. The wall itself is a WallData feature with
+  // its own collision, so the bowl surface simply sits at rim level here.
+  if (tc >= BB10.R_INCLINE_END) return 1;
+
+  // Base surface, ignoring the ridge bump: zone 2 climbs to RISE_SLOPE, the
+  // ridge zone holds that level (the ridge is a bump ON this shelf), and zone 4
+  // climbs the rest of the way to the rim.
+  let base: number;
+  if (tc <= BB10.R_SLOPE_END) {
+    const u = (tc - BB10.R_FLAT_END) / (BB10.R_SLOPE_END - BB10.R_FLAT_END);
+    base = BB10.RISE_SLOPE * u;
+  } else if (tc <= BB10.R_RIDGE_END) {
+    base = BB10.RISE_SLOPE;
+  } else {
+    const u = (tc - BB10.R_RIDGE_END) / (BB10.R_INCLINE_END - BB10.R_RIDGE_END);
+    base = BB10.RISE_SLOPE + (1 - BB10.RISE_SLOPE) * u;
+  }
+
+  // Zone 3 — the Tornado Ridge, a linear (triangular) bump peaking at
+  // R_RIDGE_PEAK. Linear, not smoothed, so that atan(h/w_half) really is the
+  // 16.7deg face angle Case 546's impulse split is derived from.
+  if (tc > BB10.R_SLOPE_END && tc < BB10.R_RIDGE_END) {
+    const halfW = BB10.R_RIDGE_PEAK - BB10.R_SLOPE_END;
+    const d     = Math.abs(tc - BB10.R_RIDGE_PEAK);
+    if (d < halfW) base += BB10.RIDGE_HEIGHT * (1 - d / halfW);
+  }
+
+  return base;
+}
+
 /* ── Arena surface Y functions ───────────────────────────────────────────── */
 
 /** World-space Y of the arena bowl surface at a given arena-local XZ position. */
@@ -215,6 +271,14 @@ export function arenaSurfaceYAtArenaLocal(arena: ArenaData, alx: number, alz: nu
   }
 
   if (profile === 'straight') return H - depth;
+
+  if (profile === 'bb10') {
+    // Five-zone BB-10 cross-section (CS10 Case 545). Shares bb10RiseFraction
+    // with the mesh generator so collision and visuals cannot diverge.
+    const t = Math.min(Math.sqrt((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2), 1);
+    return H - depth * (1 - bb10RiseFraction(t));
+  }
+
   // 'parabolic' and 'spiral' (spiral doesn't change surface Y)
   const t = Math.min(Math.sqrt((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2), 1);
   return H - depth * (1 - t * t);
