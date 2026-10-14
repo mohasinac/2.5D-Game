@@ -1,11 +1,31 @@
 import * as THREE from 'three';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 /* ══════════════════════════════════════════════════════════════════════════
    SceneSurfaceProjector
    Downward raycasting against all registered scene meshes.
    Used by computeSegmentPath to thread speed lines over any surface
    (arena bowl, walls, obstacles, bridge decks).
+
+   BVH-ACCELERATED, and not optionally so.
+   The projector raycasts once per path point, and a speed line is ~800 points
+   (100 segments x SUB_STEPS_PER_SEG). Measured against a representative
+   8,128-triangle bowl, brute-force `intersectObjects` took **434 ms for one
+   rebuild** — with the path cache's 500 ms window that is ~87% of the budget
+   spent blocking, every second a bey is near a speed line. Building a bounds
+   tree per geometry turns the same work into a handful of milliseconds.
+
+   This became load-bearing the moment the arena bowl itself was added to the
+   projector (previously it only saw walls, obstacles and bridge decks, and the
+   bowl — by far the heaviest mesh — was skipped).
    ══════════════════════════════════════════════════════════════════════════ */
+
+/* Installed on the prototypes once, at module load. `acceleratedRaycast` falls
+   back to the stock implementation for any geometry with no boundsTree, so
+   meshes the projector never sees are completely unaffected. */
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
 export class SceneSurfaceProjector {
   private raycaster = new THREE.Raycaster();
@@ -16,11 +36,28 @@ export class SceneSurfaceProjector {
     meshes: THREE.Mesh[],
     fallbackSurfFn: (lx: number, lz: number) => number,
   ) {
-    this.meshes = meshes.slice();
     this.fallbackSurfFn = fallbackSurfFn;
+    for (const m of meshes) this.addMesh(m);
   }
 
   addMesh(m: THREE.Mesh): void {
+    /* Build the tree lazily and once per geometry. Geometries are rebuilt
+       wholesale on edit (dispose-then-build), so a surviving tree always
+       belongs to the geometry it was built from. */
+    const geo = m.geometry as THREE.BufferGeometry & { boundsTree?: unknown };
+    if (geo && !geo.boundsTree && geo.getAttribute('position')) {
+      geo.computeBoundsTree();
+      /* A bounds tree is a set of typed arrays that `geometry.dispose()` knows
+         nothing about, and this project disposes geometry on every arena edit.
+         Hooking the geometry's own dispose event frees the tree at exactly the
+         right moment without touching the ~20 bespoke disposal sites — and
+         without any of them having to remember that BVHs exist. Registered once
+         per geometry, guarded by the `!boundsTree` check above. */
+      geo.addEventListener('dispose', function onDispose(this: typeof geo) {
+        this.disposeBoundsTree();
+        this.removeEventListener('dispose', onDispose);
+      });
+    }
     this.meshes.push(m);
   }
 

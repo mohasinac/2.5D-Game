@@ -78,7 +78,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 124 tests** — 73 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 133 tests** — 82 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -428,7 +428,7 @@ A child arena with `posY = moat.innerRimOffset` sits on the island. `getArenasOn
 | `buildWallGeometry` · `buildWallEdgeGeometry` · `arcFilterPts` · `trapRimPoints` · `trapWorldCenter` | `wallBuilders.ts` |
 | `resolveStartPose` · `sampleSegmentPath` · `computeSegmentEndPose` · `buildSegmentDeckGeometry` | `bridgeSegmentBuilders.ts` |
 | `computeSegmentPath` · `generatePresetSegments` · `waypointsToSegments` · `applySpeedRamp` · `applyModulation` · `clampToEllipse` · 22 shape samplers | `speedLineBuilders.ts` |
-| `SceneSurfaceProjector` | `sceneSurfaceProjector.ts` |
+| `SceneSurfaceProjector` (BVH-accelerated) | `sceneSurfaceProjector.ts` |
 | `arenaSurfaceYAtArenaLocal` · `worldToArenaLocal` · `polarToLocalXZ` · `extractChildTransform` · `makeSurfFn` · `shapePoints` | `surfaceUtils.ts` |
 | `buildParabolicRingGeo` · `buildRimEdges` · `buildFloorAndPillarEdges` · `inChildHole` | `primitives.ts` |
 | `buildSurfaceMaterial` (cached) · fill bowl/lid materials | `materialBuilders.ts` |
@@ -648,6 +648,10 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 ## Pitfalls — do not re-introduce
 
 ### Rendering
+- **`SceneSurfaceProjector` is BVH-accelerated, and that is load-bearing.** It raycasts once per path point and a speed line is ~800 points, so once the arena bowl joined the projector, brute-force `intersectObjects` cost **434 ms per path rebuild** against an 8,128-triangle bowl — ~87% of the 500 ms cache window, every second a bey is near a speed line. With `three-mesh-bvh` the same work is **27 ms**. `tests/unit/projectorBvh.spec.ts` keeps a loose 200 ms guard to catch a silent fall back to the unaccelerated path.
+- The BVH prototype patch (`BufferGeometry.computeBoundsTree`, `Mesh.raycast`) is installed once at module load in `sceneSurfaceProjector.ts`. `acceleratedRaycast` defers to the stock implementation for any geometry without a bounds tree, so picking, selection and every other raycast in the app are unaffected.
+- **A bounds tree is freed by a listener on the geometry's own `dispose` event.** `geometry.dispose()` knows nothing about it, and this project disposes geometry on every arena edit — hooking the event frees it at the right moment without any of the ~20 bespoke disposal sites needing to know BVHs exist.
+- **A downward ray into a bowl strikes the CONCAVE face.** `buildSurfaceMaterial` defaults to `side: DoubleSide`, which is what makes projection work at all; a `FrontSide` surface is silently invisible to the projector and falls through to the analytic fallback.
 - **Fog** — removed; causes black screens against a dark background.
 - Grid subdivision `0x1a1a2e` is invisible; use `0x2a2a4a`.
 - **Never add an object to the scene without routing it through `applyRenderPolicy`** (`render/shadowPolicy.ts`). It decides shadow casting/receiving and — critically — sets `toneMapped = false` on diagram elements. `Material.toneMapped` defaults to **true**, so a line, sprite, `Points` or `MeshBasicMaterial` mesh added without it comes out desaturated by ACES, which silently dulls the authored cyan/orange palette. The rule is *unlit material ⇒ authored colour ⇒ exempt from the exposure curve and the shadow pass*; a lit material is a surface the lighting decides.
