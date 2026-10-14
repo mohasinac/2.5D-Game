@@ -38,6 +38,7 @@ interface BeyState {
   pos: { x: number; y: number; z: number };
   vel: { x: number; y: number; z: number };
   grounded: boolean;
+  obstacleContacts: number;
 }
 
 async function loadDemoArena(page: import('@playwright/test').Page) {
@@ -153,6 +154,87 @@ test.describe('bridge deck collision', () => {
     const s = await dropAt(page, 50, 30);
     expect(s.pos.y + TIP_OFFSET, 'off-pier drop ends well below deck height').toBeLessThan(0);
     expect(s.grounded, 'and still lands on something').toBe(true);
+  });
+
+  test('THE TOWER CASE: a pillar stops the bey instead of letting it through', async ({ page }) => {
+    /* The acceptance case the plan names: drive the bey at the Tower arena's
+       central pillar and it must stop.
+
+       The setup is the way it is because two easier versions of this test
+       PASSED WITHOUT THE FEATURE, and both were caught by re-running them with
+       `_resolveObstacles` commented out:
+
+         - Dropping on the pillar and checking distance-from-axis: a bey that
+           drove through and carried on to the bowl centre still sits 25 cm
+           from a pillar at x=25, satisfying any "outside the radius" check.
+         - Approaching along +X: the East Pier runs x 25..75 at z~0, so the bey
+           landed on the DECK at y=27 and never reached the bowl at all.
+
+       Hence: a diagonal approach (the four piers lie on the axes), and an
+       explicit shove, because the bowl is shallow enough here that a dropped
+       bey simply stays where it lands -- measured, not assumed.
+
+       Measured baseline with the feature disabled: closest approach 2.47 cm to
+       the axis, resting at (15, 15) INSIDE the pillar. With it enabled: 16.36,
+       never inside the 15 cm contact surface. */
+    const PILLAR = { x: 25, z: 25, r: 16 };
+    const CONTACT = PILLAR.r + 5;            // pillar radius + the bey's girth
+
+    await page.goto(ARENA, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => !!(window as never as { __demo?: unknown }).__demo, null, { timeout: 60_000 });
+    await page.evaluate(async (P) => {
+      const spec = '/src/config/demoArenaConfig.ts';
+      const m = await import(/* @vite-ignore */ spec) as { DEMO_ARENA_CONFIG: unknown };
+      const cfg = JSON.parse(JSON.stringify(m.DEMO_ARENA_CONFIG)) as
+        { obstacles: Record<string, unknown>[] };
+      /* The demo's own obstacles are boats floating ABOVE the water with the
+         bey resting well below them, so nothing there can be reached
+         sideways. One is promoted to a pillar spanning the bowl. */
+      const o = cfg.obstacles.find(ob => ob.id === 'obstacle-5')!;
+      Object.assign(o, {
+        shape: 'cylinder', dimX: P.r * 2, dimY: 80, dimZ: P.r * 2,
+        posX: P.x, posY: -10, posZ: P.z, rotY: 0, isFloating: true,
+      });
+      await (window as never as { __demo: { loadArenaConfig(c: unknown): Promise<void> } })
+        .__demo.loadArenaConfig(cfg);
+    }, PILLAR);
+    await page.waitForTimeout(1500);
+
+    type Demo = {
+      despawnBey(): void; spawnBey(o: unknown): void;
+      setBeyVelocity(v: { x: number; y: number; z: number }): void;
+      getBeyState(): BeyState;
+    };
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo.despawnBey());
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo
+      .spawnBey({ pos: { x: 48, y: 20, z: 48 }, vel: { x: 0, y: 0, z: 0 }, rpm: 0 }));
+    for (let i = 0; i < 20; i++) {
+      await page.waitForTimeout(150);
+      const s = await page.evaluate(() => (window as never as { __demo: Demo }).__demo.getBeyState());
+      if (s.grounded) break;
+    }
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo
+      .setBeyVelocity({ x: -280, y: 0, z: -280 }));
+
+    let s: BeyState | null = null;
+    for (let i = 0; i < 40; i++) {
+      await page.waitForTimeout(100);
+      s = await page.evaluate(() => (window as never as { __demo: Demo }).__demo.getBeyState());
+      if (Math.hypot(s.vel.x, s.vel.z) < 1) break;
+    }
+    const restD = Math.hypot(s!.pos.x - PILLAR.x, s!.pos.z - PILLAR.z);
+
+    /* GUARD 1 -- the feature did something. Contact is otherwise unobservable:
+       the bey rebounds to ~31.6 cm from the axis, and one that never moved at
+       all sits at 32.5. Those are indistinguishable by position, so a
+       position-only test passes with the feature switched off. Measured: 0
+       contacts disabled, non-zero enabled. */
+    expect(s!.obstacleContacts, 'the bey actually struck the pillar')
+      .toBeGreaterThan(0);
+
+    /* GUARD 2 -- and the result is right. Measured: 14.06 disabled (resting
+       INSIDE a pillar whose contact surface is at 21), 31.59 enabled. */
+    expect(restD, 'and did not end up inside it').toBeGreaterThan(CONTACT - 1);
   });
 
   test('a deck overhead does not capture a bey below it', async ({ page }) => {

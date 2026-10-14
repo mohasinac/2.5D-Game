@@ -78,9 +78,9 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-`tests/e2e/deckCollision.spec.ts` — proves the bey **stands on a bridge deck**, and that one beside a pier still falls into the bowl. The control matters: a bey resting on the bowl floor is also `grounded`, so asserting position rather than the flag is the only thing that distinguishes "standing on the deck" from "standing on anything at all". Uses `window.__demo.getBridgeDiag()`, which reports per-segment vertex counts and world bounding boxes — the diagnostic that separated *the bridge was never built* from *the bridge is 90° from where its config says*.
+`tests/e2e/deckCollision.spec.ts` — proves the bey **stands on a bridge deck** and that **a pillar stops it**, and that one beside a pier still falls into the bowl. The control matters: a bey resting on the bowl floor is also `grounded`, so asserting position rather than the flag is the only thing that distinguishes "standing on the deck" from "standing on anything at all". Uses `window.__demo.getBridgeDiag()`, which reports per-segment vertex counts and world bounding boxes — the diagnostic that separated *the bridge was never built* from *the bridge is 90° from where its config says*.
 
-**Current gate: 195 tests** — 127 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 12 deck-collision (4 × 3) + 3 `@meta`.
+**Current gate: 217 tests** — 151 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 15 collision (5 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -597,9 +597,25 @@ now raycasts the scene via `ISurfaceProvider`/`projectBelow`, so the bey stands 
 "what is beneath my feet", and taking the topmost hit in the column would teleport
 a bey in the bowl up onto a bridge crossing above it.
 
-What is still missing is everything that is not a floor:
-- **No lateral collision with obstacles** — the Tower arena's pillar still has no
-  sides; you drive through it and land on top if you pass over it.
+**Obstacle SIDES now exist too.** `sim/step/obstacles.ts` resolves a body
+against the authored primitive — circle or oriented box, with the footprint
+sampled at the body's own height so a frustum's taper is honoured and a sphere
+uses its equator rather than a linear lerp. It is pure (no THREE, no clock), so
+the geometry is unit-tested without a browser; `SpawnManager._resolveObstacles`
+only translates `ObstacleData` into the few numbers it needs.
+
+Analytic, not mesh, deliberately: `ObstacleData` already says a shipped `.glb`
+prop is drawn in place of the primitive and "collision always uses the
+primitive either way". Two details are load-bearing — `OBSTACLE_TOP_CLEARANCE`
+suppresses side collision just below the top face (otherwise the surface
+resolver holds the bey up while the side shoves it off the edge of whatever it
+landed on), and velocity is reflected only when it points *into* the surface
+(otherwise resting contact becomes a vibration). **`rotX`/`rotZ` are not
+supported**: a tilted primitive is no longer an upright prism, so a tilted
+obstacle keeps tops-only behaviour rather than colliding against a silently
+wrong shape.
+
+What is still missing is everything that is not a floor or an obstacle wall:
 - **No U-channel side walls** on bridges, so nothing keeps the bey on a deck
   through a curve.
 - **No centripetal retention**, so loops and corkscrews cannot be ridden.
@@ -724,6 +740,23 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 
 ### Rendering
 - **`project` vs `projectBelow` — do not confuse them.** `project` returns the globally TOPMOST surface in a column, which is right for painting a ribbon onto a stadium from above and wrong for physics: a bey inside a bowl with a bridge crossing over it would be told the deck is its ground and teleport up onto it. `projectBelow(x, z, maxY)` returns the highest surface at or BELOW a height — "what is under my feet" — and returns null rather than inventing one, so the caller can fall back to its analytic surface. Its `slack` keeps a body resting exactly on a deck from dropping through it on the next frame.
+- **A RAYCAST CAN REPORT ABSENCE; IT CANNOT DISTINGUISH ABSENCE FROM A MISS.**
+  This has now cost time twice. A `probeDown` grid scan said "bridge-segment
+  hits: 0" and was read as *the decks do not exist* — it stepped 10 cm and the
+  decks are 6 cm wide. Then a sampled closest-approach measurement was used to
+  judge an obstacle collision; at 100 ms intervals and ~300 cm/s the bey is
+  only observed every 30 cm, so the figure was sampling noise. When a probe
+  reports nothing, **establish the sampling resolution before believing it**,
+  and prefer a diagnostic that reads the manager directly
+  (`getBridgeDiag`, `getBeyState().obstacleContacts`) over one that interrogates
+  the scene geometrically.
+- **Some state is unobservable from position alone, and needs a counter.** A bey
+  that rebounds off a pillar comes to rest ~31.6 cm from its axis; one that
+  never moved sits at 32.5. No position assertion separates those, so an e2e
+  test written against position passes with the collision switched off. That is
+  what `obstacleContacts` on `getBeyState()` is for. **Check a new physics test
+  by disabling the feature and confirming it fails** — two versions of the
+  Tower test passed without it before this was done.
 - **`__demo.probeDown(x, z)` names every surface a downward ray meets.** Reach for it before reasoning about the scene graph. "Why is nothing under the bey here?" and "what is drawn in front of this?" are the two questions that keep costing hours, and both are answered by naming surfaces along a ray — that is how the ribbon occlusion was finally cracked.
 - **`SceneSurfaceProjector` is BVH-accelerated, and that is load-bearing.** It raycasts once per path point and a speed line is ~800 points, so once the arena bowl joined the projector, brute-force `intersectObjects` cost **434 ms per path rebuild** against an 8,128-triangle bowl — ~87% of the 500 ms cache window, every second a bey is near a speed line. With `three-mesh-bvh` the same work is **27 ms**. `tests/unit/projectorBvh.spec.ts` keeps a loose 200 ms guard to catch a silent fall back to the unaccelerated path.
 - The BVH prototype patch (`BufferGeometry.computeBoundsTree`, `Mesh.raycast`) is installed once at module load in `sceneSurfaceProjector.ts`. `acceleratedRaycast` defers to the stock implementation for any geometry without a bounds tree, so picking, selection and every other raycast in the app are unaffected.

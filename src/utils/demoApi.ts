@@ -26,6 +26,10 @@ export interface DemoBeyState {
   rpm: number;
   grounded: boolean;
   spawned: boolean;
+  /** Obstacle-SIDE contacts since spawn. Zero is meaningful: a bey that
+   *  rebounds off a pillar rests about where one that never moved would, so
+   *  this is the only way to observe that contact actually occurred. */
+  obstacleContacts: number;
 }
 
 /**

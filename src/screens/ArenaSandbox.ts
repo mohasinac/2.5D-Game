@@ -1999,6 +1999,7 @@ export class ArenaSandbox extends Sandbox {
       smHud,
       this._ctrlMgr,
       (arenaId) => this._projectionService.buildProjector(arenaId),
+      () => this._obstacleMgr.getAll(),
     );
     this._virtualControls = new VirtualControlsOverlay(
       this.el,
@@ -2102,6 +2103,7 @@ export class ArenaSandbox extends Sandbox {
           rpm: sm.getRpm(),
           grounded: sm.isGrounded(),
           spawned: sm.isSpawned,
+          obstacleContacts: sm.getObstacleContacts(),
         };
       },
       setBeyPosition: (p) => this._spawnMgr?.setPosition(new THREE.Vector3(p.x, p.y, p.z)),

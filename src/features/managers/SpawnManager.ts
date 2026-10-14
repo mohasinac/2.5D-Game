@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { SceneContext } from '../IArenaFeature';
 import type {
   ArenaData, TrapData, SpeedLineData, SpeedLineSegment, SpeedLineEntryCondition,
-  ZoneData, WallData,
+  ZoneData, WallData, ObstacleData,
 } from '../../types/arenaTypes';
 import {
   arenaSurfaceYAtArenaLocal, worldToArenaLocal,
@@ -16,6 +16,8 @@ import { DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE } f
 import { makeBeySpec, makeBeyState } from '../../sim/state';
 import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
+import { resolveObstacleSide } from '../../sim/step/obstacles';
+import type { ObstacleCollider, ColliderBody } from '../../sim/step/obstacles';
 import { BuffDebuffManager } from './BuffDebuffManager';
 import type { BuffInput } from './BuffDebuffManager';
 import { evalEntryCondition, evalActivationMode } from '../conditions/ConditionEvaluator';
@@ -106,6 +108,24 @@ export class SpawnManager {
   /* Friction coefficient of the surface under the bey, refreshed every
      _resolveSurface() exactly like _currentGravityScale. Defaults to the ABS
      reference so the octagon-base fallback behaves as it always has. */
+  /* Reused across frames: the resolver mutates `pos`/`vel` through these
+     references, which are re-pointed at the live Vector3s each tick. A
+     Vector3 structurally satisfies Vec3, so there is no copy and no
+     per-frame allocation. */
+  /* Count of obstacle-side contacts since spawn.
+     Exposed because contact is otherwise UNOBSERVABLE from outside: a bey that
+     bounces off a pillar comes to rest almost exactly where one that never
+     moved would, so neither the resting position nor a sampled closest
+     approach can tell "it hit and rebounded" from "it never got there". A test
+     without this can only ever assert something that is also true when the
+     feature is switched off. */
+  private _obstacleContacts = 0;
+
+  private _obstacleBody: ColliderBody = {
+    pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 },
+    radius: BALL_RADIUS, tipOffset: BALL_TIP_OFFSET, topOffset: BALL_HEIGHT + BALL_TIP_OFFSET,
+  };
+
   private _currentSurfaceMu      = SURFACE_MU_REFERENCE;
 
   // Spin direction + wall-impact callback + tip polarity (used by test mode / SpecialMoveManager)
@@ -176,6 +196,7 @@ export class SpawnManager {
        raycast against real meshes, so over a bridge deck or an obstacle the
        bey followed a different line from the one drawn on screen. */
     private readonly getProjector: (arenaId: string) => SceneSurfaceProjector | undefined,
+    private readonly getObstacles: () => ReadonlyMap<string, ObstacleData>,
   ) {
     this._buffMgr = new BuffDebuffManager(this.ctx.clock);
     this._buildHUD();
@@ -207,6 +228,7 @@ export class SpawnManager {
     if (this.spawned) return;
     this.spawned  = true;
     this.health   = HEALTH_MAX;
+    this._obstacleContacts = 0;
     this.pos.copy(this.spawnPos);
     this.vel.copy(this.spawnVel);
     this.grounded = false;
@@ -274,6 +296,7 @@ export class SpawnManager {
     this._integrate(dt);
     this._resolveSurface();
     this._resolveWalls();
+    this._resolveObstacles();
     this._applySpeedLines(dt);
     this._applyTraps(dt);
     this._applyZones(dt);
@@ -506,6 +529,97 @@ export class SpawnManager {
       this._lastCollisionTime     = this.ctx.clock.nowMs();
       this._lastCollisionIsSticky = false;
       if (gap < 0) this._onWallImpact?.();
+    }
+  }
+
+  /**
+   * Lateral collision with obstacle SIDES.
+   *
+   * Tops already worked: an obstacle's upper face is just another surface the
+   * projector reports under the bey's feet. The sides never existed, so the
+   * Tower arena's central pillar was something you drove through and —
+   * if you happened to pass over it — landed on.
+   *
+   * The resolution itself lives in `sim/step/obstacles`, which is pure: plain
+   * numbers, no THREE, no scene. This method's only job is the translation
+   * from `ObstacleData` (meshes, colours, STL blobs) into the handful of
+   * figures the maths needs. That split is what lets the geometry be tested
+   * without a browser.
+   *
+   * Analytic primitives, not the mesh, and deliberately: `ObstacleData` already
+   * states that a shipped `.glb` prop is drawn in place of the primitive and
+   * "collision always uses the primitive either way". A boat still collides as
+   * the box it was authored as — cheaper, and far more predictable than
+   * sweeping against triangle soup.
+   */
+  private _resolveObstacles(): void {
+    const obstacles = this.getObstacles();
+    if (obstacles.size === 0) return;
+
+    this._obstacleBody.pos = this.pos;
+    this._obstacleBody.vel = this.vel;
+
+    for (const obs of obstacles.values()) {
+      const col = this._obstacleCollider(obs);
+      if (col && resolveObstacleSide(this._obstacleBody, col)) {
+        this._obstacleContacts++;
+        this._lastCollisionTime     = this.ctx.clock.nowMs();
+        this._lastCollisionIsSticky = false;
+      }
+    }
+  }
+
+  /**
+   * `ObstacleData` -> the primitive collision needs.
+   *
+   * Every obstacle shape is built origin-centred and then positioned, so
+   * `posY` is the MIDDLE of the primitive, not its base — getting that
+   * backwards would offset every obstacle by half its height.
+   *
+   * `rotX`/`rotZ` are not represented: a tilted primitive is no longer an
+   * upright prism and the closed-form cross-section stops being valid. Rather
+   * than collide against a silently wrong shape, a tilted obstacle keeps the
+   * behaviour it has always had — tops only, no sides. Documented here because
+   * it is a real limitation and not an oversight.
+   */
+  private _obstacleCollider(o: ObstacleData): ObstacleCollider | null {
+    const restitution = MAT_RESTITUTION[o.material] ?? RESTITUTION_DEFAULT;
+    const base = { id: o.id, cx: o.posX, cy: o.posY, cz: o.posZ, rotYDeg: o.rotY, restitution };
+
+    switch (o.shape) {
+      case 'cube': {
+        const h = o.dimX / 2;
+        return { ...base, halfHeight: h,
+                 bottom: { kind: 'box', hx: h, hz: h }, top: { kind: 'box', hx: h, hz: h } };
+      }
+      case 'cuboid': {
+        const hx = o.dimX / 2, hz = o.dimZ / 2;
+        return { ...base, halfHeight: o.dimY / 2,
+                 bottom: { kind: 'box', hx, hz }, top: { kind: 'box', hx, hz } };
+      }
+      case 'sphere': {
+        const r = o.dimX / 2;
+        return { ...base, halfHeight: r, spherical: true,
+                 bottom: { kind: 'circle', r }, top: { kind: 'circle', r } };
+      }
+      case 'cylinder': {
+        const r = o.dimX / 2;
+        return { ...base, halfHeight: o.dimY / 2,
+                 bottom: { kind: 'circle', r }, top: { kind: 'circle', r } };
+      }
+      case 'pyramid':
+        // ConeGeometry(dimX/2, dimY, 4) rotated 45 degrees: a square that
+        // tapers to a point, with dimX/2 as the base half-width.
+        return { ...base, halfHeight: o.dimY / 2,
+                 bottom: { kind: 'box', hx: o.dimX / 2, hz: o.dimX / 2 },
+                 top:    { kind: 'box', hx: 0, hz: 0 } };
+      case 'frustum':
+        // dimX = bottom diameter, dimZ = TOP diameter (not depth).
+        return { ...base, halfHeight: o.dimY / 2,
+                 bottom: { kind: 'circle', r: o.dimX / 2 },
+                 top:    { kind: 'circle', r: o.dimZ / 2 } };
+      default:
+        return null;
     }
   }
 
@@ -995,6 +1109,8 @@ export class SpawnManager {
 
   // NOTE: `isSpawned` already exists as a getter further up — do not re-add it here.
   getHealth(): number { return this.health; }
+  /** Obstacle-side contacts since spawn. See `_obstacleContacts`. */
+  getObstacleContacts(): number { return this._obstacleContacts; }
   isGrounded(): boolean { return this.grounded; }
   getRpm(): number { return this.rpm; }
 
