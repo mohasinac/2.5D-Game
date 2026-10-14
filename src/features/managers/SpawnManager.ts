@@ -13,7 +13,9 @@ import {
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
 import type { SceneSurfaceProjector } from '../../geometry/sceneSurfaceProjector';
 import { DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE } from '../../config/arenaConstants';
-import { surfaceDamping } from '../../sim/friction';
+import { makeBeySpec, makeBeyState } from '../../sim/state';
+import type { BeySpec, BeyState } from '../../sim/state';
+import * as Step from '../../sim/step/integrate';
 import { BuffDebuffManager } from './BuffDebuffManager';
 import type { BuffInput } from './BuffDebuffManager';
 import { evalEntryCondition, evalActivationMode } from '../conditions/ConditionEvaluator';
@@ -38,9 +40,11 @@ const TIP_HEIGHT           = 1.5;    // cm — metal tip
 const BALL_TIP_OFFSET      = -(DISC_HEIGHT / 2 + CONE_HEIGHT + TIP_HEIGHT); // = -10 cm
 
 // ── Physics constants ────────────────────────────────────────────────────────
-const GRAVITY              = -980;   // cm/s²
+/* GRAVITY and AIR_CONTROL now live in `sim/step/integrate` — they belong to the
+   integrator, not to this manager, and leaving stale copies here is how two
+   sources of truth start. The rest are seeded into `_spec` below so they become
+   per-bey values rather than facts about the only bey that can exist. */
 const MOVE_FORCE           = 800;    // cm/s² (grounded)
-const AIR_CONTROL          = 0.25;   // fraction when airborne
 const JUMP_IMPULSE         = 300;    // cm/s upward
 const FRICTION_GROUND      = 0.88;   // XZ multiplier per frame (frame-rate independent via pow)
 const FRICTION_AIR         = 0.997;
@@ -114,6 +118,43 @@ export class SpawnManager {
   private _buffMgr!: BuffDebuffManager;   // built in ctor once ctx.clock is available
   private _trapTimers = new Map<string, number>();
 
+  /* ── sim/ bridge ────────────────────────────────────────────────────────
+     The physics maths now lives in `sim/step/*`, which is pure, THREE-free and
+     unit-testable without a browser. This manager keeps ownership of the scene,
+     the HUD and the collision resolution against arena features, and delegates
+     the integration.
+
+     `_sim.pos` / `_sim.vel` ARE the THREE.Vector3 instances above, not copies:
+     a Vector3 structurally satisfies `Vec3`, so the pure functions mutate the
+     same objects the renderer already reads. No per-frame allocation, and no
+     second copy of the truth to keep in sync.
+
+     The remaining scalars (grounded, gravityScale, surfaceMu) are still owned
+     by this class, so they are pushed in before a step and read back after.
+     They move into BeyState wholesale when SpawnManager becomes BeySystem. */
+  private readonly _spec: BeySpec = makeBeySpec('spawn_ball', {
+    radius: BALL_RADIUS, height: BALL_HEIGHT, tipOffset: BALL_TIP_OFFSET,
+    moveForce: MOVE_FORCE, jumpImpulse: JUMP_IMPULSE,
+    frictionGround: FRICTION_GROUND, frictionAir: FRICTION_AIR,
+    maxSpeedH: MAX_SPEED_H, restitution: RESTITUTION_DEFAULT,
+    maxHealth: HEALTH_MAX,
+  });
+  private readonly _sim: BeyState = makeBeyState(this._spec);
+
+  /** Point the sim state at this manager's live vectors and scalars. */
+  private _syncSimIn(): void {
+    this._sim.pos = this.pos;
+    this._sim.vel = this.vel;
+    this._sim.grounded     = this.grounded;
+    this._sim.gravityScale = this._currentGravityScale;
+    this._sim.surfaceMu    = this._currentSurfaceMu;
+  }
+
+  /** Read back what the pure step decided. */
+  private _syncSimOut(): void {
+    this.grounded = this._sim.grounded;
+  }
+
   // Speed line tracking
   private slPathCache   = new Map<string, { pts: THREE.Vector3[]; ts: number; epoch: number }>();
   private slOnRibbon    = new Map<string, boolean>();
@@ -140,9 +181,10 @@ export class SpawnManager {
     this._buildHUD();
     this._loadSettings();
     this.ctrlMgr.onButtonPress('jump', () => {
-      if (this.spawned && this.grounded) {
-        this.vel.y    = JUMP_IMPULSE;
-        this.grounded = false;
+      if (this.spawned) {
+        this._syncSimIn();
+        Step.applyJump(this._sim, this._spec);
+        this._syncSimOut();
       }
     });
     this.ctrlMgr.onButtonPress('trigger', () => {
@@ -315,30 +357,25 @@ export class SpawnManager {
     const dir = new THREE.Vector3();
     dir.addScaledVector(fwd,   axes.y);
     dir.addScaledVector(right, axes.x);
-    if (dir.lengthSq() > 0) {
-      dir.normalize();
-      const accel = MOVE_FORCE * (this.grounded ? 1 : AIR_CONTROL) * dt;
-      this.vel.x += dir.x * accel;
-      this.vel.z += dir.z * accel;
-    }
-    const hspd = Math.sqrt(this.vel.x ** 2 + this.vel.z ** 2);
-    if (hspd > MAX_SPEED_H) { const s = MAX_SPEED_H / hspd; this.vel.x *= s; this.vel.z *= s; }
+    /* Steering and the speed cap are pure maths over the spec — including the
+       controlAuthority dial, which is a no-op at the default 1.0 but is the
+       hook the player-vs-bey blend needs. */
+    this._syncSimIn();
+    Step.applySteering(this._sim, this._spec, dir, dt);
+    Step.clampHorizontalSpeed(this._sim, this._spec);
+    this._syncSimOut();
   }
 
   private _applyGravity(dt: number): void {
-    if (!this.grounded) this.vel.y += GRAVITY * this._currentGravityScale * dt;
+    this._syncSimIn();
+    Step.applyGravity(this._sim, dt);
+    this._syncSimOut();
   }
 
   private _integrate(dt: number): void {
-    this.pos.addScaledVector(this.vel, dt);
-    /* Grounded friction now depends on what is underfoot: an ice floor holds
-       speed and a sand floor eats it, from CS10's measured coefficients. Air
-       drag is unaffected — nothing is being touched. */
-    const base = this.grounded
-      ? surfaceDamping(this._currentSurfaceMu, FRICTION_GROUND)
-      : FRICTION_AIR;
-    const f = Math.pow(base, dt * 60);
-    this.vel.x *= f; this.vel.z *= f;
+    this._syncSimIn();
+    Step.integrate(this._sim, this._spec, dt);
+    this._syncSimOut();
   }
 
   private _resolveSurface(): void {

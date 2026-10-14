@@ -78,7 +78,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 141 tests** — 90 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 162 tests** — 111 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -272,6 +272,13 @@ src/
   stores/                       — Zustand; see the persistence table below
   styles/                       — global.css + 7 partials (_variables, _reset, _components,
                                   _screens, _responsive, _spawn-hud, _vctrl)
+  sim/
+    SimClock.ts                 — deterministic clock (no wall-clock reads in the sim)
+    Rng.ts                      — seeded mulberry32
+    friction.ts                 — CS10 surface mu -> per-frame damping (interim; deleted when N2 lands)
+    state.ts                    — BeySpec / BeyState: plain, serializable, THREE-free
+    step/integrate.ts           — pure gravity/integrate/steer/jump/landing over {x,y,z}
+
   types/
     arenaTypes.ts               — the arena data model (largest type module)
     beybladeTypes.ts            — AxisData, PartData, SectorData, GroupData, LayerData, GimmickType
@@ -309,7 +316,7 @@ Dockerfile · docker-compose.yml · playwright.config.ts · firebase.json · vit
 | `TrapManager` | **ParentedFeatureManager** | ✓ | variantMesh disposed separately; optional `onActivate` |
 | `PortalManager` | **ParentedFeatureManager** | — | ringMesh disposed separately |
 | `ArenaEnvironmentManager` | plain | ✓ | env schedule, gravity/tilt/fog/score |
-| `SpawnManager` | plain | — | **890 lines; the single physics entity** |
+| `SpawnManager` | plain | — | the single physics entity. **Integration is delegated to `sim/step/integrate`**; this class owns the scene, HUD and arena-feature collision |
 | `SpecialMoveManager` | plain | ✓ | tick in **seconds** |
 | `ProjectileManager` | plain | ✓ | bullets never collide with anything |
 | `TargetManager` | plain | ✓ | follow/orbit/flee/lock_on/face — **zero bindings** |
@@ -715,6 +722,13 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 - Pit depth is fixed: use `readRow('Depth', '10 cm (fixed)')`, not `textRow` or `numRow`.
 - `showWall`'s 7th argument `parentArena` is required for the moat ring selector to render.
 - `showSpeedLine` needs the `getJumpLinks` callback so `exitBehavior: 'jump_link'` can use a `selectRow` instead of an unusable free-text ID field.
+
+### sim/ — the pure layer
+- **`sim/` imports no THREE, reads no wall clock, and uses no unseeded randomness.** That is what makes a replay reproduce; it is also exactly what client-side prediction would need, which is why it is worth keeping true even though no networking exists.
+- `BeySpec` is what a bey IS (static, from the builder/STL analysis); `BeyState` is what it is DOING (per-tick). Every field of `BeySpec` was previously a module-level `const` in `SpawnManager` — which is precisely why no two beys could differ.
+- **Vectors are plain `{x,y,z}`, not `THREE.Vector3`**, so a state survives `structuredClone` and can be snapshotted, diffed and rewound. A `Vector3` loses its prototype through any of those.
+- `SpawnManager` bridges by pointing `_sim.pos`/`_sim.vel` **at its own Vector3 instances** — a `Vector3` structurally satisfies `Vec3`, so the pure functions mutate the objects the renderer already reads. No per-frame allocation and no second copy of the truth.
+- Constants that moved (`GRAVITY`, `AIR_CONTROL`) are **deleted** from `SpawnManager`, not left behind. Two sources of truth for a tuning value is how they drift.
 
 ### Physics / SpawnManager
 - **The octagon top face is at world Y = 0.** `DEFAULT_BASE_HEIGHT = 30` is thickness. `_resolveSurface`'s octagon fallback is `0`; wall `rimY` is `arena.posY`.
