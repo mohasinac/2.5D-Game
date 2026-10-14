@@ -118,7 +118,6 @@ export class ArenaSandbox extends Sandbox {
   };
 
   protected sceneTree: SceneTree;
-  private sceneObjects = new Map<string, THREE.Object3D[]>();
   private arenas        = new Map<string, ArenaData>();
   private arenaSeq      = 0;
   private pits          = new Map<string, PitData>();
@@ -296,9 +295,8 @@ export class ArenaSandbox extends Sandbox {
     };
 
     this.sceneTree.onVisibilityToggle = (id, visible)=>{
-      // Manager-owned objects (via RenderManager) + bare scene objects (arenas/pits/zones/octagon)
+      // RenderManager owns every feature now, arenas/pits/zones included.
       this._renderMgr?.setVisible(id, visible);
-      (this.sceneObjects.get(id)??[]).forEach(o=>{ o.visible=visible; });
     };
 
     this.sceneTree.onDelete = (ids)=>{
@@ -340,8 +338,7 @@ export class ArenaSandbox extends Sandbox {
           const allPitIds=[...arena.pitIds]; const allZoneIds=[...arena.zoneIds];
           for(const pid of allPitIds) this.removePitFromScene(pid);
           for(const zid of allZoneIds) this.removeZoneFromScene(zid);
-          const objs=this.sceneObjects.get(id);
-          if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
+          this._renderMgr.detach(id);
           this.disposeArena(arena);
           this.arenas.delete(id); this._surfaceProviders.delete(id);
           this.updateTopFace(); this.updateAllMoatIslandCaps();
@@ -387,8 +384,7 @@ export class ArenaSandbox extends Sandbox {
         if(this._jlMgr.has(id)){ this._removeJumpLink(id); continue; }
         if(this._rotMgr.has(id)){ this.removeRotation(id); continue; }
         if(this._footingMgr.has(id)){ this.removeFooting(id); continue; }
-        const objs=this.sceneObjects.get(id);
-        if(objs){ this.removeFromScene(...objs); this.sceneObjects.delete(id); }
+        this._renderMgr.detach(id);
       }
       if(ids.some(id=>id===this.selectedId)){ this.selectedId=null; this.props.showEmpty(); }
       this.saveArena();
@@ -529,18 +525,20 @@ export class ArenaSandbox extends Sandbox {
     this._slMgr.clear();
     this.slSegSeq = 0;
     for(const [id,] of this.arenas.entries()) this.sceneTree.remove(id);
-    for(const pit of this.pits.values()){
+    /* detach(), never dispose(): disposePit/Zone/Arena already own geometry and
+       material disposal (including the refcounted surface-material cache), so
+       routing removal through RenderManager.dispose would free everything twice. */
+    for(const [pid, pit] of this.pits.entries()){
       this.disposePit(pit);
-      this.removeFromScene(pit.mesh, pit.edges);
-      if(pit.seamMesh) this.removeFromScene(pit.seamMesh);
+      this._renderMgr.detach(pid);
     }
-    for(const zone of this.zones.values()){
+    for(const [zid, zone] of this.zones.entries()){
       this.disposeZone(zone);
-      this.removeFromScene(zone.mesh, zone.edges);
-      if(zone.seamMesh) this.removeFromScene(zone.seamMesh);
+      this._renderMgr.detach(zid);
     }
-    for(const arena of this.arenas.values()){
-      this.disposeArena(arena); this.removeFromScene(arena.mesh, arena.edges);
+    for(const [aid, arena] of this.arenas.entries()){
+      this.disposeArena(arena);
+      this._renderMgr.detach(aid);
     }
     this._wallMgr.clear();
     this._bridgeMgr.clear();
@@ -557,7 +555,6 @@ export class ArenaSandbox extends Sandbox {
     this._surfaceProviders.clear();
     this._surfaceProviders.set('octagon-base',
       new FlatSurfaceProvider('octagon-base', this.baseConfig.height, 0, 0));
-    this.sceneObjects.clear();
     this.arenaSeq = 0; this.pitSeq = 0; this.zoneSeq = 0;
   }
 
@@ -931,10 +928,9 @@ export class ArenaSandbox extends Sandbox {
     this._applyViewMode();
   }
   private _applyViewMode(): void {
-    // Merge bare sceneObjects (arenas/pits/zones/octagon) with renderMgr-owned objects (managers)
-    const merged = new Map<string, THREE.Object3D[]>(this.sceneObjects);
-    for (const [id, objs] of this._renderMgr.getAllEntries()) merged.set(id, objs);
-    this._presentMgr.applyViewMode(this._arenaViewMode, merged);
+    // Single registry: arenas, pits, zones and the octagon base register through
+    // RenderManager like every managed feature, so there is nothing to merge.
+    this._presentMgr.applyViewMode(this._arenaViewMode, this._renderMgr.getAllEntries());
   }
   private _loadPresentStl(nodeId: string, b64: string, color: number): void {
     const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
@@ -1883,6 +1879,11 @@ export class ArenaSandbox extends Sandbox {
   }
 
   protected override buildCustom(scene: THREE.Scene): void {
+    /* Constructed first so the octagon base can register through it like every
+       other feature. It used to be created after the base was built, which is
+       why the base needed a second registry to live in. */
+    this._renderMgr = new RenderManager(scene);
+
     const H = this.baseConfig.height;
     const sides = this.baseConfig.sides;
     const R = this.baseConfig.apothem / Math.cos(Math.PI / sides);
@@ -1891,16 +1892,14 @@ export class ArenaSandbox extends Sandbox {
     const baseMat = buildSurfaceMaterial({ color:this.baseConfig.color, surface:this.baseConfig.surface, customTileData:this.baseConfig.customTileData, tileScale:this.baseConfig.tileScale });
     this.baseMesh = new THREE.Mesh(new THREE.CylinderGeometry(R,R,H,sides,1,true), baseMat);
     this.baseMesh.rotation.y=align; this.baseMesh.position.y=-H/2;
-    scene.add(this.baseMesh);
 
     const fullGeo=new THREE.CylinderGeometry(R,R,H,sides,1,false);
     this.baseEdges=new THREE.LineSegments(new THREE.EdgesGeometry(fullGeo), new THREE.LineBasicMaterial({color:0xb8a888}));
     this.baseEdges.rotation.y=align; this.baseEdges.position.y=-H/2;
-    scene.add(this.baseEdges); fullGeo.dispose();
+    fullGeo.dispose();
 
     const topFaceMat=buildSurfaceMaterial({ color:this.baseConfig.color, surface:this.baseConfig.surface, customTileData:this.baseConfig.customTileData, tileScale:this.baseConfig.tileScale, polygonOffset:true });
     this.topFaceMesh=new THREE.Mesh(buildTopFaceGeo(sides,R,align,0,[]),topFaceMat);
-    scene.add(this.topFaceMesh);
 
     // Replace the default GridHelper with an octagon-clipped grid
     const defaultGroundGrids = scene.children.filter(c => c instanceof THREE.GridHelper && (c as THREE.GridHelper).rotation.x === 0);
@@ -1910,9 +1909,7 @@ export class ArenaSandbox extends Sandbox {
     scene.add(this._octagonGrid);
     scene.add(this._octagonOutline);
 
-    this.sceneObjects.set('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
-
-    this._renderMgr = new RenderManager(scene);
+    this._renderMgr.add('octagon-base',[this.baseMesh,this.baseEdges,this.topFaceMesh]);
 
     const mgrCtx: SceneContext = {
       scene:     scene,
@@ -2289,7 +2286,7 @@ export class ArenaSandbox extends Sandbox {
 
   private updateArenaFloor(arena: ArenaData): void {
     if(arena.posY>ARENA_ELEVATED_THRESHOLD||arena.wallProfile!=='straight'||arena.isMoat){
-      if(arena.floorMesh){this.removeFromScene(arena.floorMesh);arena.floorMesh.geometry.dispose();(arena.floorMesh.material as THREE.Material).dispose();arena.floorMesh=null;}
+      if(arena.floorMesh){this._renderMgr.detachObjects(this._arenaIdFor(arena),[arena.floorMesh]);arena.floorMesh.geometry.dispose();(arena.floorMesh.material as THREE.Material).dispose();arena.floorMesh=null;}
       return;
     }
     const pitsForArena=arena.pitIds.map(id=>this.pits.get(id)!).filter(Boolean);
@@ -2301,9 +2298,7 @@ export class ArenaSandbox extends Sandbox {
       arena.floorMesh=new THREE.Mesh(newGeo,mat);
       arena.floorMesh.position.set(arena.posX,arena.posY,arena.posZ);
       arena.floorMesh.rotation.y=arena.rotY;
-      this.addToScene(arena.floorMesh);
-      const objs=this.sceneObjects.get(this._arenaIdFor(arena));
-      if(objs) objs.push(arena.floorMesh);
+      this._renderMgr.add(this._arenaIdFor(arena), [arena.floorMesh]);
     }
   }
 
@@ -2327,7 +2322,7 @@ export class ArenaSandbox extends Sandbox {
 
   private updateIslandCap(arena: ArenaData, id: string): void {
     if(!arena.isMoat){
-      if(arena.islandMesh){this.removeFromScene(arena.islandMesh);arena.islandMesh.geometry.dispose();(arena.islandMesh.material as THREE.Material).dispose();arena.islandMesh=null;}
+      if(arena.islandMesh){this._renderMgr.detachObjects(id,[arena.islandMesh]);arena.islandMesh.geometry.dispose();(arena.islandMesh.material as THREE.Material).dispose();arena.islandMesh=null;}
       return;
     }
     const newGeo=buildIslandCapGeo(arena, this.getArenasOnIsland(arena));
@@ -2340,9 +2335,7 @@ export class ArenaSandbox extends Sandbox {
       arena.islandMesh=new THREE.Mesh(newGeo,mat);
       arena.islandMesh.position.set(arena.posX,arena.posY,arena.posZ);
       arena.islandMesh.rotation.y=arena.rotY;
-      this.addToScene(arena.islandMesh);
-      const objs=this.sceneObjects.get(id);
-      if(objs) objs.push(arena.islandMesh);
+      this._renderMgr.add(id, [arena.islandMesh]);
     }
   }
 
@@ -2366,7 +2359,10 @@ export class ArenaSandbox extends Sandbox {
       arena.rimSeamMesh = new THREE.Mesh(newGeo, mat);
       arena.rimSeamMesh.position.set(arena.posX, arena.posY, arena.posZ);
       arena.rimSeamMesh.rotation.y = arena.rotY;
-      this.addToScene(arena.rimSeamMesh);
+      /* Registered, not bare-added: a rim seam created on this path would
+         otherwise be invisible to view-mode, visibility toggles and clear(),
+         while the one created at arena-build time is registered. */
+      this._renderMgr.add(this._arenaIdFor(arena), [arena.rimSeamMesh]);
     }
   }
 
@@ -2712,8 +2708,7 @@ export class ArenaSandbox extends Sandbox {
     data.mesh=mesh; data.edges=edges;
     const rim=buildArenaRimSeam(data,this.baseConfig.color,this.baseConfig.surface,this.baseConfig.customTileData,this.baseConfig.tileScale);
     data.rimSeamMesh=rim;
-    this.addToScene(mesh,edges,rim,...(data.spiralMeshes??[]));
-    this.sceneObjects.set(id,[mesh,edges,rim]);
+    this._renderMgr.add(id,[mesh,edges,rim,...(data.spiralMeshes??[])]);
     this.arenas.set(id,data);
     this._surfaceProviders.set(id, new ArenaSurfaceProvider(id, data));
     this._createArenaLight(data);
@@ -2883,8 +2878,7 @@ export class ArenaSandbox extends Sandbox {
       this.removePitFromScene(a.id); this.removePitFromScene(b.id);
       this.pits.set(newId, mergedPit);
       applyPit(mergedPit, arena, this.pits, this.zones);
-      this.addToScene(mesh, edges, pitSeam);
-      this.sceneObjects.set(newId, [mesh, edges, pitSeam]);
+      this._renderMgr.add(newId, [mesh, edges, pitSeam]);
       this.addChildToParent(newId, 'pit', parentId, parentType);
       this.sceneTree.add(newId, mergedPit.name, '▼', parentId);
     } else {
@@ -2900,8 +2894,7 @@ export class ArenaSandbox extends Sandbox {
 
       this.removeZoneFromScene(a.id); this.removeZoneFromScene(b.id);
       this.zones.set(newId, mergedZone);
-      this.addToScene(mesh, edges, seamMesh);
-      this.sceneObjects.set(newId, [mesh, edges, seamMesh]);
+      this._renderMgr.add(newId, [mesh, edges, seamMesh]);
       this.addChildToParent(newId, 'zone', parentId, parentType);
       this.sceneTree.add(newId, mergedZone.name, '◈', parentId, {
         addChildButtons: [
@@ -2924,9 +2917,7 @@ export class ArenaSandbox extends Sandbox {
   private removePitFromScene(id: string): void {
     const pit = this.pits.get(id); if (!pit) return;
     this.disposePit(pit);
-    this.removeFromScene(pit.mesh, pit.edges);
-    if(pit.seamMesh) this.removeFromScene(pit.seamMesh);
-    this.sceneObjects.delete(id);
+    this._renderMgr.detach(id);
     this.sceneTree.remove(id);
     this.pits.delete(id);
     const pa = this.arenas.get(pit.parentArenaId);
@@ -2936,9 +2927,7 @@ export class ArenaSandbox extends Sandbox {
   private removeZoneFromScene(id: string): void {
     const zone = this.zones.get(id); if (!zone) return;
     this.disposeZone(zone);
-    this.removeFromScene(zone.mesh, zone.edges);
-    if(zone.seamMesh) this.removeFromScene(zone.seamMesh);
-    this.sceneObjects.delete(id);
+    this._renderMgr.detach(id);
     this.sceneTree.remove(id);
     this.zones.delete(id);
     const pa = this.arenas.get(zone.parentArenaId);
@@ -2964,8 +2953,7 @@ export class ArenaSandbox extends Sandbox {
 
     const [mesh, edges, seamMesh] = buildPitObjects(pit, arena, this.pits, this.zones);
     pit.mesh = mesh; pit.edges = edges; pit.seamMesh = seamMesh;
-    this.addToScene(mesh, edges, seamMesh);
-    this.sceneObjects.set(id, [mesh, edges, seamMesh]);
+    this._renderMgr.add(id, [mesh, edges, seamMesh]);
     this.pits.set(id, pit);
     this.addChildToParent(id, 'pit', parentId, parentType);
 
@@ -2992,8 +2980,7 @@ export class ArenaSandbox extends Sandbox {
 
     const [mesh, edges, seamMesh] = buildZoneObjects(zone, arena, this.pits, this.zones);
     zone.mesh = mesh; zone.edges = edges; zone.seamMesh = seamMesh;
-    this.addToScene(mesh, edges, seamMesh);
-    this.sceneObjects.set(id, [mesh, edges, seamMesh]);
+    this._renderMgr.add(id, [mesh, edges, seamMesh]);
     this.zones.set(id, zone);
     this.addChildToParent(id, 'zone', parentId, parentType);
 
@@ -3041,8 +3028,7 @@ export class ArenaSandbox extends Sandbox {
     data.pitIds.push(ps.id);
     const[pm,pe,psm]=buildPitObjects(pit,data,this.pits,this.zones);
     pit.mesh=pm; pit.edges=pe; pit.seamMesh=psm;
-    this.addToScene(pm,pe,psm);
-    this.sceneObjects.set(ps.id,[pm,pe,psm]);
+    this._renderMgr.add(ps.id,[pm,pe,psm]);
     this.sceneTree.add(ps.id,pit.name,'▼',parentId);
   }
 
@@ -3082,8 +3068,7 @@ export class ArenaSandbox extends Sandbox {
     data.zoneIds.push(zs.id);
     const[zm,ze,zsm]=buildZoneObjects(zone,data,this.pits,this.zones);
     zone.mesh=zm;zone.edges=ze;zone.seamMesh=zsm;
-    this.addToScene(zm,ze,zsm);
-    this.sceneObjects.set(zs.id,[zm,ze,zsm]);
+    this._renderMgr.add(zs.id,[zm,ze,zsm]);
     this.sceneTree.add(zs.id,zone.name,'◈',parentId,{
       addChildButtons:[
         {label:'Add nested pit',title:'Add nested pit',className:'pit-btn',  onClick:()=>this.addPitToParent(zs.id,'zone')},
@@ -3205,7 +3190,6 @@ export class ArenaSandbox extends Sandbox {
       data.mesh=mesh; data.edges=edges;
       const rim=buildArenaRimSeam(data,this.baseConfig.color,this.baseConfig.surface,this.baseConfig.customTileData,this.baseConfig.tileScale);
       data.rimSeamMesh=rim;
-      this.addToScene(mesh,edges,rim,...(data.spiralMeshes??[]));
       const objs:THREE.Object3D[]=[mesh,edges,rim,...(data.spiralMeshes??[])];
 
       if(data.isMoat){
@@ -3214,7 +3198,7 @@ export class ArenaSandbox extends Sandbox {
         data.islandMesh=new THREE.Mesh(islandGeo,islandMat);
         data.islandMesh.position.set(data.posX,data.posY,data.posZ);
         data.islandMesh.rotation.y=data.rotY;
-        this.addToScene(data.islandMesh); objs.push(data.islandMesh);
+        objs.push(data.islandMesh);
       }
 
       if(data.wallProfile==='straight'&&!data.isMoat&&data.posY<=ARENA_ELEVATED_THRESHOLD){
@@ -3225,10 +3209,10 @@ export class ArenaSandbox extends Sandbox {
         data.floorMesh=new THREE.Mesh(floorGeo,floorMat);
         data.floorMesh.position.set(data.posX,data.posY,data.posZ);
         data.floorMesh.rotation.y=data.rotY;
-        this.addToScene(data.floorMesh); objs.push(data.floorMesh);
+        objs.push(data.floorMesh);
       }
 
-      this.sceneObjects.set(as.id,objs);
+      this._renderMgr.add(as.id,objs);
 
       // Create PointLight, particle/weather/fog systems, and apply tilt
       this._createArenaLight(data);
@@ -3709,8 +3693,7 @@ export class ArenaSandbox extends Sandbox {
       const rim = buildArenaRimSeam(clone, this.baseConfig.color, this.baseConfig.surface,
         this.baseConfig.customTileData, this.baseConfig.tileScale);
       clone.rimSeamMesh = rim;
-      this.addToScene(mesh, edges, rim, ...(clone.spiralMeshes ?? []));
-      this.sceneObjects.set(newId, [mesh, edges, rim]);
+      this._renderMgr.add(newId, [mesh, edges, rim, ...(clone.spiralMeshes ?? [])]);
       this.arenas.set(newId, clone);
       this._createArenaLight(clone);
       this.sceneTree.add(newId, clone.name, '⏺', 'octagon-base', {
@@ -3840,8 +3823,7 @@ export class ArenaSandbox extends Sandbox {
       };
       const [mesh, edges, seamMesh] = buildPitObjects(clone, arena, this.pits, this.zones);
       clone.mesh = mesh; clone.edges = edges; clone.seamMesh = seamMesh;
-      this.addToScene(mesh, edges, seamMesh);
-      this.sceneObjects.set(newId, [mesh, edges, seamMesh]);
+      this._renderMgr.add(newId, [mesh, edges, seamMesh]);
       this.pits.set(newId, clone);
       arena.pitIds.push(newId);
       this.sceneTree.add(newId, clone.name, '▼', pit.parentArenaId);
@@ -3864,8 +3846,7 @@ export class ArenaSandbox extends Sandbox {
       };
       const [mesh, edges, seamMesh] = buildZoneObjects(clone, arena, this.pits, this.zones);
       clone.mesh = mesh; clone.edges = edges; clone.seamMesh = seamMesh;
-      this.addToScene(mesh, edges, seamMesh);
-      this.sceneObjects.set(newId, [mesh, edges, seamMesh]);
+      this._renderMgr.add(newId, [mesh, edges, seamMesh]);
       this.zones.set(newId, clone);
       arena.zoneIds.push(newId);
       const parentId = zone.parentZoneId ?? zone.parentArenaId;
@@ -3890,10 +3871,10 @@ export class ArenaSandbox extends Sandbox {
     this.captureUndo();
     this._slMgr.clear(); this.slSegSeq=0;
     for(const[id,arena] of this.arenas.entries()){
-      for(const pid of arena.pitIds){const p=this.pits.get(pid);if(p){this.disposePit(p);this.removeFromScene(p.mesh,p.edges);if(p.seamMesh)this.removeFromScene(p.seamMesh);}this.pits.delete(pid);this.sceneObjects.delete(pid);}
-      for(const zid of arena.zoneIds){const z=this.zones.get(zid);if(z){this.disposeZone(z);this.removeFromScene(z.mesh,z.edges);if(z.seamMesh)this.removeFromScene(z.seamMesh);}this.zones.delete(zid);this.sceneObjects.delete(zid);}
-      this.disposeArena(arena); this.removeFromScene(arena.mesh,arena.edges);
-      this.sceneObjects.delete(id); this.sceneTree.remove(id);
+      for(const pid of arena.pitIds){const p=this.pits.get(pid);if(p)this.disposePit(p);this.pits.delete(pid);this._renderMgr.detach(pid);}
+      for(const zid of arena.zoneIds){const z=this.zones.get(zid);if(z)this.disposeZone(z);this.zones.delete(zid);this._renderMgr.detach(zid);}
+      this.disposeArena(arena);
+      this._renderMgr.detach(id); this.sceneTree.remove(id);
     }
     this._wallMgr.clear();
     this._bridgeMgr.clear();

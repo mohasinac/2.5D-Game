@@ -69,9 +69,11 @@ These are fixed. They are recorded because every one of them presents as "the ap
 
 Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist` or the Three.js canvas never initialises headless and every sandbox screen fails for the wrong reason.
 
-`tests/unit/` — browser-free specs for pure logic (BB-10 radial profile, render policy). They run as a separate Playwright **`unit` project** rather than under a second test framework, and the `unit` compose service deliberately has **no `depends_on`**: these tests touch no DOM, no WebGL and no dev server, so gating them on the app container's health would make a maths regression undiagnosable exactly when the server is unwell. `unit` is listed first so a broken profile fails fast, before three WebGL suites.
+`tests/unit/` — browser-free specs for pure logic (BB-10 radial profile, render policy, RenderManager lifecycle). They run as a separate Playwright **`unit` project** rather than under a second test framework, and the `unit` compose service deliberately has **no `depends_on`**: these tests touch no DOM, no WebGL and no dev server, so gating them on the app container's health would make a maths regression undiagnosable exactly when the server is unwell. `unit` is listed first so a broken profile fails fast, before three WebGL suites.
 
-**Current gate: 57 tests** — 27 unit + 27 screen (9 × 3 viewports) + 3 `@meta`.
+`tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
+
+**Current gate: 89 tests** — 38 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -304,7 +306,7 @@ Dockerfile · docker-compose.yml · playwright.config.ts · firebase.json · vit
 | `TriggerZoneManager` | plain | ✓ | **never registered** |
 | `BuffDebuffManager` | plain | ✓ | `getEffective()` has **no caller** |
 | `PresentationManager` | plain | — | STL present meshes by node ID |
-| `RenderManager` | plain | — | universal scene object registry |
+| `RenderManager` | plain | — | **the** scene-object registry — every feature, arenas/pits/zones/base included. `add` (additive) · `detach` (unparent, no dispose) · `detachObjects` (drop one sub-mesh) · `dispose` (frees geometry+material) |
 | `SceneTreeManager` | plain | — | `SceneTreeOps` injection |
 | `CameraManager` | plain | — | |
 | `ControlManager` | plain | — | implements `IControlManager` |
@@ -341,6 +343,7 @@ Geometry is built with `baseY`; `mesh.position.set(posX, posY, posZ)` adds the o
 
 ```
 Bare Maps owned directly : arenas · pits · zones · bridgesByArena · jumpLinks · translations
+                           (DATA only — their meshes live in `_renderMgr`, not a second map)
 Seq counters owned here  : arenaSeq · pitSeq · zoneSeq · slSegSeq · jumpLinkSeq · translationSeq
                            (every other seq is owned by its manager via getSeq/restoreSeq)
 Managers                 : _wallMgr _bridgeMgr _slMgr _obstacleMgr _trapMgr _portalMgr
@@ -623,7 +626,7 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 - **Fog** — removed; causes black screens against a dark background.
 - Grid subdivision `0x1a1a2e` is invisible; use `0x2a2a4a`.
 - **Never add an object to the scene without routing it through `applyRenderPolicy`** (`render/shadowPolicy.ts`). It decides shadow casting/receiving and — critically — sets `toneMapped = false` on diagram elements. `Material.toneMapped` defaults to **true**, so a line, sprite, `Points` or `MeshBasicMaterial` mesh added without it comes out desaturated by ACES, which silently dulls the authored cyan/orange palette. The rule is *unlit material ⇒ authored colour ⇒ exempt from the exposure curve and the shadow pass*; a lit material is a surface the lighting decides.
-- The policy is applied at the **two scene-add funnels** — `RenderManager.add()` (every managed feature) and `Sandbox.addToScene()` (arenas/pits/zones/octagon base) — plus **six sites that bypass both**: `SpawnManager` (the bey's `topGroup`), `BeybladeRenderer` (`rebuildPart` and `loadPresentationSTL`), `PresentationManager`, `ProjectileManager`, `SpeedLineManager` (×4 markers/handles), `ArenaSandbox.rebuildBase` (the re-created octagon grid/outline), `BeybladeSandbox` (particle `Points`), and `arenaObjectBuilders.buildSpiralMeshes`. It recurses, which is required: bridge segment meshes live under `seg._animPivot` and wall meshes under `wall._rotatePivot`, both registered as a Group.
+- The policy is applied at the **two scene-add funnels** — `RenderManager.add()` (every feature, now including arenas/pits/zones/base) and `Sandbox.addToScene()` (the remaining bare adds: arena lights and particle/weather/fog `Points`) — plus **six sites that bypass both**: `SpawnManager` (the bey's `topGroup`), `BeybladeRenderer` (`rebuildPart` and `loadPresentationSTL`), `PresentationManager`, `ProjectileManager`, `SpeedLineManager` (×4 markers/handles), `ArenaSandbox.rebuildBase` (the re-created octagon grid/outline), `BeybladeSandbox` (particle `Points`), and `arenaObjectBuilders.buildSpiralMeshes`. It recurses, which is required: bridge segment meshes live under `seg._animPivot` and wall meshes under `wall._rotatePivot`, both registered as a Group.
 - The policy is **idempotent and re-derives** rather than latching, because several paths swap materials in place (`rebuildBase`, `surfaceRow`) — a mesh that becomes transparent must stop casting.
 - Shadow frustum, map size and `normalBias` all derive from `gridSize`. A directional light's shadow camera is orthographic and does **not** follow the scene, so an unfitted frustum is the usual reason shadows appear only near the origin. `normalBias` (not plain `bias`) is what survives the 13× scale gap between the bey and arena sandboxes.
 - **Keep the key light off the default camera axis.** Both sandboxes default to a `+x +z` camera, so a light in that same octant throws every shadow directly behind its own caster, where the caster hides it — the scene renders shadows that are never visible. The light sits at `(-0.40, 0.62, 0.32)·gridSize` for that reason. If you move a default camera, re-check the light.

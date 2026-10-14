@@ -17,10 +17,23 @@ const GL_ARGS = [
   '--disable-dev-shm-usage',
 ];
 
+/* Set on the test/unit compose services. */
+const inDocker = process.env.DOCKER === '1';
+
 /* Mobile projects deliberately do NOT spread `devices['iPhone …']` — those presets
    set defaultBrowserType: 'webkit', and we want Chromium with touch emulation so
    the WebGL flags above still apply. */
 export default defineConfig({
+  /* Playwright's trace recorder writes a stream of small files per context. On
+     the Windows -> Linux bind mount that is unreliable: closing a context would
+     intermittently fail with
+       `browserContext.close: ENOENT ... .playwright-artifacts-N/traces/*.trace`
+     on the heaviest screen (/arena) while every assertion in the test passed.
+     Keeping artifacts on the container's own filesystem removes the mount from
+     that path entirely. The trade-off is that a failing run's trace.zip does not
+     survive `--rm`; the console output and the screenshots written explicitly by
+     screens.spec.ts (to the gitignored `screenshots/`, still on the mount) do. */
+  outputDir: inDocker ? '/tmp/pw-artifacts' : undefined,
   /* `tests/` not `tests/e2e/`, so the browser-free `tests/unit` specs are
      collected too. Each project below restricts itself with testDir/testMatch,
      so the screen specs still run exactly three times (once per viewport) and

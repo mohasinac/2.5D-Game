@@ -105,6 +105,32 @@ export class RenderManager {
     this._entries.delete(id);
   }
 
+  /**
+   * Remove specific objects from a feature's entry and from the scene, without
+   * disposing them and without dropping the entry itself.
+   *
+   * For optional sub-meshes that come and go over a feature's lifetime while
+   * the feature lives on — an arena's `floorMesh` (only for straight-profile,
+   * non-elevated, non-moat arenas) and `islandMesh` (only for moats). Those are
+   * created and destroyed whenever the profile changes, and without this the
+   * registry keeps a reference to a mesh the caller has already disposed, which
+   * then shows up in `getPickable()` for raycasting and in the view-mode sweep.
+   *
+   * The caller disposes; this only unregisters. Objects not in the entry are
+   * ignored, so it is safe to call speculatively.
+   */
+  detachObjects(id: string, objects: THREE.Object3D[]): void {
+    const entry = this._entries.get(id);
+    if (!entry) return;
+    for (const obj of objects) {
+      const i = entry.objects.indexOf(obj);
+      if (i === -1) continue;
+      (entry.parents[i] ?? this.scene).remove(obj);
+      entry.objects.splice(i, 1);
+      entry.parents.splice(i, 1);
+    }
+  }
+
   /** Set visibility on all registered objects for a feature. */
   setVisible(id: string, visible: boolean): void {
     const entry = this._entries.get(id);

@@ -60,6 +60,8 @@ services:
       context: .
       target: test
     profiles: ["ci"]
+    environment:
+      DOCKER: "1"
     volumes:
       - .:/app
       - node_modules:/app/node_modules
@@ -80,6 +82,7 @@ services:
       # via the app service's container_name. Must stay in sync with
       # `allowedHosts` in vite.config.ts, or Vite answers 403.
       PLAYWRIGHT_BASE_URL: http://bey-app:3000
+      DOCKER: "1"
     # Chromium crashes on Docker's default 64 MB /dev/shm.
     shm_size: 1gb
     volumes:
