@@ -2184,6 +2184,32 @@ export class ArenaSandbox extends Sandbox {
         // Diagnostics: distinguishes "geometry never built" from "built but empty".
         hasMesh: !!sl.mesh, hasEdges: !!sl.edges,
         markers: sl.markerMeshes?.length ?? 0,
+        /* ...and "built, non-empty, but not actually on screen". A ribbon can
+           have a correct 1800 cm path and still be invisible because it is
+           hidden, fully transparent, un-parented, or buried under the bowl —
+           four different bugs that look identical from the outside. */
+        meshVisible:  sl.mesh?.visible ?? null,
+        meshParented: sl.mesh ? sl.mesh.parent !== null : null,
+        vertexCount:  sl.mesh?.geometry?.getAttribute('position')?.count ?? 0,
+        meshBounds:   (() => {
+          const g = sl.mesh?.geometry;
+          if (!g) return null;
+          g.computeBoundingBox();
+          const bb = g.boundingBox;
+          return bb ? {
+            minY: +bb.min.y.toFixed(3), maxY: +bb.max.y.toFixed(3),
+            minX: +bb.min.x.toFixed(1), maxX: +bb.max.x.toFixed(1),
+          } : null;
+        })(),
+        matOpacity: (sl.mesh?.material as THREE.Material | undefined)?.opacity ?? null,
+        /* Bowl surface Y directly beneath the ribbon's first point. If the
+           ribbon's minY sits at or below this, it is inside the floor. */
+        surfaceYAtStart: (() => {
+          const a = this.arenas.get(sl.parentArenaId);
+          if (!a) return null;
+          const { lx, lz } = polarToLocalXZ(sl.startR, sl.startAngle);
+          return +arenaSurfaceYAtArenaLocal(a, lx, lz).toFixed(3);
+        })(),
         parentArenaId: sl.parentArenaId,
         arenaExists: this.arenas.has(sl.parentArenaId),
         startR: sl.startR, startDir: sl.startDir,

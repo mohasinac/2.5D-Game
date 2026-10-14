@@ -75,7 +75,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 109 tests** — 58 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 118 tests** — 67 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -551,14 +551,29 @@ Also: `ProjectileManager` bullets never collide with anything. `SpawnManager` ha
 - `ShopScene` is complete but unreachable (no shop trigger or NPC `shopId` in seeded data).
 - `CutscenePlayer` `npc_move` and `sfx` are empty resolves. `UIScene` minimap is an empty box.
 
-**Speed line ribbons do not render (OPEN).** Found by the demo tour. After the
-`_ensurePresetSegments` fix below, a preset speed line restored from a save has 61
-segments, a built mesh, 2 markers, and the start marker is visibly drawn — but the
-**ribbon itself is never visible**, on `/arena` and on `/special-moves` with the
-shipped `testArenaConfig.ts`. Mesh and edges go through `renderMgr.add` (which does
-not alter visibility) while markers are added straight to the scene and *do* show, so
-the most likely cause is the ribbon being drawn coincident with, or beneath, the bowl
-surface. Not yet fixed.
+**Speed line ribbons render (FIXED).** The cause was a sign disagreement between
+the two halves of the path pipeline, not a visibility or z-fighting problem.
+`waypointsToSegments` ENCODES headings as `atan2(-dx, dz)` -- forward is
+`(-sin, 0, cos)` -- while `computeSegmentPath` REPLAYED them by rotating
+`(0,0,1)` about **+Y**, giving `(+sin, 0, cos)`. X was flipped, so all 24 path
+presets replayed mirrored and the spirals wound outward instead of closing on
+the centre: the shipped `spiral_in` (radiusX 70) built a correct 1817 cm,
+1602-vertex ribbon spanning **x 68.8..210.5** -- entirely outside its own bowl,
+which is why it looked like nothing was ever drawn. After the fix the same
+ribbon spans x -70.7..71.2 and hugs the surface (y -11.2..-10.7 over a floor at
+-11).
+
+The convention now lives in exactly two functions, `headingToForward` /
+`forwardToHeading`, used by both sides -- the same mesh-and-physics-share-one-
+function discipline as `bb10RiseFraction`. `tests/unit/speedLinePath.spec.ts`
+round-trips polylines through encode->replay, which needs no expected geometry:
+whatever goes in must come back out.
+
+**Still worth knowing:** a ribbon is drawn at `opacity x SL.INACTIVE_OPACITY_MULT`
+(0.4) whenever `activationMode !== 'always'`, so the shipped demo line renders at
+0.30 alpha and 2.5 cm wide -- a couple of pixels at full-arena zoom. That is
+authored data, not a bug, but it is why a correct ribbon can still read as
+"missing" from a wide shot.
 
 **Mobile layout:** the bottom view-mode bar (HITBOX/BOTH/VISUAL) overflows off-screen on mobile portrait — "VISUAL" is unreachable. Root cause is the `vmin` scale collapsing on narrow viewports.
 

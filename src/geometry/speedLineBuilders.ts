@@ -24,9 +24,46 @@ export function bowlWallNormal(arena: ArenaData, lx: number, lz: number): THREE.
 }
 
 /* ── Surface normal at path point ─────────────────────────────────────── */
+/**
+ * `pt` is ALREADY arena-local: `computeSegmentPath` returns local XZ (with world
+ * Y). This used to subtract `arena.posX/posZ` from it, taking the arena offset
+ * off a second time and so reading the bowl normal from the wrong place — the
+ * ribbon twisted about an axis offset by the arena's own position. Invisible at
+ * the origin, wrong for every arena placed anywhere else.
+ */
 export function pathSurfaceNormal(pt: THREE.Vector3, arena: ArenaData, sl: SpeedLineData): THREE.Vector3 {
-  if (sl.surfaceFollow) return bowlWallNormal(arena, pt.x - arena.posX, pt.z - arena.posZ);
+  if (sl.surfaceFollow) return bowlWallNormal(arena, pt.x, pt.z);
   return new THREE.Vector3(0, 1, 0);
+}
+
+/* ── THE heading convention ───────────────────────────────────────────────
+   Stated once, in code, because the two halves of the speed-line pipeline
+   disagreed about it and every one of the 24 path presets replayed mirrored.
+
+   A heading of `deg` points along  (-sin deg, 0, cos deg).
+
+   `waypointsToSegments` ENCODES a sampled polyline into relative
+   (length, rotY) segments using `forwardToHeading`; `computeSegmentPath`
+   REPLAYS those segments back into points. The encoder used
+   `atan2(-dx, dz)` while the replayer built its forward vector by rotating
+   (0,0,1) about +Y, which yields (+sin, 0, cos) — the opposite X sign. Paths
+   therefore came out mirrored and, for the spiral presets, wound outward
+   instead of closing on the centre: `spiral_in` with radiusX 70 produced a
+   ribbon spanning x 68.8..210.5 instead of -70..+70, i.e. entirely outside its
+   own bowl, which is what made speed-line ribbons look like they never
+   rendered at all.
+
+   Keep these two functions as the only place the convention is written. */
+
+/** Forward unit vector for a heading in degrees. */
+export function headingToForward(deg: number): THREE.Vector3 {
+  const r = deg * DEG2RAD;
+  return new THREE.Vector3(-Math.sin(r), 0, Math.cos(r));
+}
+
+/** Inverse of `headingToForward`: heading in degrees for an XZ direction. */
+export function forwardToHeading(dx: number, dz: number): number {
+  return Math.atan2(-dx, dz) * (180 / Math.PI);
 }
 
 /* ── Segment path computation ─────────────────────────────────────────── */
@@ -42,7 +79,9 @@ export function computeSegmentPath(
   const pos = new THREE.Vector3(lx0, startY, lz0);
 
   // Direction quaternion from startDir (yaw in world space)
-  let q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, sl.startDir * DEG2RAD, 0));
+  /* NEGATED about Y so the replayed forward vector is (-sin, 0, cos),
+     matching `headingToForward` and the encoder. See the convention note. */
+  let q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -sl.startDir * DEG2RAD, 0));
 
   const pts: THREE.Vector3[] = [pos.clone()];
   const normals: THREE.Vector3[] = [new THREE.Vector3(0, 1, 0)];
@@ -60,7 +99,7 @@ export function computeSegmentPath(
 
     // rotY: yaw around world up
     if (seg.rotY !== 0) {
-      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), seg.rotY * DEG2RAD);
+      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -seg.rotY * DEG2RAD);
       q = qY.multiply(q);
     }
     // rotX: pitch around current right axis
@@ -743,7 +782,7 @@ export function waypointsToSegments(
   for (let i = 0; i < N; i++) {
     const dx = pts[i + 1][0] - pts[i][0];
     const dz = pts[i + 1][1] - pts[i][1];
-    headings.push(Math.atan2(-dx, dz) * (180 / Math.PI));
+    headings.push(forwardToHeading(dx, dz));
   }
 
   const startR     = Math.hypot(pts[0][0], pts[0][1]);
