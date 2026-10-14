@@ -587,6 +587,15 @@ All persistence goes through Zustand stores in `src/stores/` using `persist` + `
 3. `TriggerZoneManager.register()` — ticks over an empty map.
 4. `SpecialMoveManager.setTargetPosition()` — the dummy never moves.
 5. `SpawnManager.getSpinDir()` / `getTipPolarity()` — stored and exposed, no physics consumer.
+6. **`sim/step/beyCollision.ts` (`resolveBeyPairs`) — NEW, and deliberately on this
+   list.** The pure bey-vs-bey resolver exists and is unit-tested (24 specs:
+   contact-height banding, impulse exchange, momentum conservation elastic and
+   inelastic, inverse-mass depenetration). It has **no caller**, because there
+   is still exactly one physics entity in the project — `new SpawnManager`
+   appears twice in `src/`, once per screen, never twice in one scene. The
+   entity roster that will call it is Phase 10b (`BeySystem` owning
+   `Map<id, BeyState>`). Listed here so it is not mistaken for a live feature,
+   which is the exact failure mode the other five rows document.
 
 Also: `ProjectileManager` bullets never collide with anything.
 
