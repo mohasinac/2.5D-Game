@@ -91,6 +91,7 @@ import { createArenaStateStore, type ArenaStateStore } from '../stores/arenaStat
    whole module is excluded from production bundles. A static import here would keep
    it in the graph even though the call site is dead code. Type-only import is erased. */
 import type { DemoVec, DemoHooks } from '../utils/demoApi';
+import { Rng } from '../sim/Rng';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
@@ -172,6 +173,10 @@ export class ArenaSandbox extends Sandbox {
   private _envMgr!: ArenaEnvironmentManager;
   private _projectionService!: ProjectionService;
   private _renderMgr!: RenderManager;
+  /** Seeded RNG for physics-affecting randomness, injected via SceneContext.
+      Per-instance (not module-level) so two sandboxes never share sim state.
+      The clock lives on Sandbox — the render loop owns advancing it. */
+  private readonly _rng = new Rng();
   private _scoreHudEl: HTMLDivElement | null = null;
   private _bridgeEndRefMarker: THREE.Mesh | null = null;
   private _keyUnsubs: Array<() => void> = [];
@@ -1610,17 +1615,21 @@ export class ArenaSandbox extends Sandbox {
     this._wallMgr.tick(dt);
     this._rotMgr.tick(dt);
     this._translationMgr?.tick(dt);
-    this._bridgeMgr.tick(dtMs);
+    this._bridgeMgr.tick(dt);
     if (!this._projectileMgr) {
       const scene = this.getScene();
       if (scene) {
-        this._projectileMgr = new ProjectileManager(scene, () => this._slMgr.getAll() as Map<string, SpeedLineData>);
+        this._projectileMgr = new ProjectileManager(
+          scene,
+          () => this._slMgr.getAll() as Map<string, SpeedLineData>,
+          this._rng,
+        );
       }
     }
     this._projectileMgr?.tick(dt);
 
     // Stage 4: Physics (reads stage 1 constants + stage 3 final positions)
-    this._spawnMgr?.tick(dtMs);
+    this._spawnMgr?.tick(dt);
 
     // Stage 5: Target tracking
     this._targetMgr?.tick(dt);
@@ -1909,6 +1918,8 @@ export class ArenaSandbox extends Sandbox {
       sceneTree: this.sceneTree,
       getFallbackY: () => this.baseConfig.height,
       renderMgr: this._renderMgr,
+      clock:     this.simClock,
+      rng:       this._rng,
     };
     this._obstacleMgr = new ObstacleManager(mgrCtx);
     this._footingMgr  = new FootingManager(mgrCtx);
@@ -1973,12 +1984,9 @@ export class ArenaSandbox extends Sandbox {
     scoreHud.style.cssText = 'position:absolute;right:calc(8*var(--mm));bottom:calc(6*var(--cm));background:rgba(0,0,0,0.75);color:#00e5ff;font-family:Orbitron,sans-serif;font-size:calc(1.4*var(--cm));padding:calc(4*var(--mm)) calc(8*var(--mm));border:1px solid rgba(0,229,255,0.4);white-space:pre;display:none;pointer-events:none;';
     this._scoreHudEl = scoreHud;
 
-    const smCtx: SceneContext = {
-      scene:     scene,
-      sceneTree: this.sceneTree,
-      getFallbackY: () => this.baseConfig.height,
-      renderMgr: this._renderMgr,
-    };
+    // Was a second, byte-identical SceneContext literal. Reusing mgrCtx removes
+    // the duplicate the architecture audit flagged — one context, one clock, one RNG.
+    const smCtx: SceneContext = mgrCtx;
     this._ctrlMgr = new ControlManager(inputManager);
     const smHud = this.addOverlayPanel('spawn-manager-hud');
     this._spawnMgr = new SpawnManager(

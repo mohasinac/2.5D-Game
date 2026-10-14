@@ -2,6 +2,8 @@ import type * as THREE from 'three';
 import type { SceneTree } from '../utils/SceneTree';
 import type { BaseStatModifiers } from '../types/sharedTypes';
 import type { RenderManager } from './managers/RenderManager';
+import type { SimClock } from '../sim/SimClock';
+import type { Rng } from '../sim/Rng';
 
 /**
  * Minimum identity contract for any managed arena feature.
@@ -88,4 +90,23 @@ export interface SceneContext {
 
   /** Centralised Three.js object registry — replaces trackObjects/untrackObjects. */
   readonly renderMgr: RenderManager;
+
+  /**
+   * Deterministic simulation clock. Managers MUST read time from this, never
+   * from `performance.now()` / `Date.now()`.
+   *
+   * A wall-clock read inside the simulation step makes the same input replay
+   * differently every time, which breaks the episode-replay player and any
+   * future client-side prediction. `WallPivotAnimator` was the worst offender:
+   * it made wall rotation a function of real time, so the arena geometry
+   * itself was non-deterministic.
+   */
+  readonly clock: SimClock;
+
+  /**
+   * Seeded PRNG for randomness that feeds back into physics (projectile
+   * spread, earthquake elevation). Visual-only randomness may keep using
+   * `Math.random()` — it never affects simulation outcomes.
+   */
+  readonly rng: Rng;
 }

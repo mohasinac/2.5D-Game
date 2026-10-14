@@ -254,7 +254,9 @@ export class RotationManager
   // ── ITickableManager ─────────────────────────────────────────────────────
 
   tick(dt: number): void {
-    const t = performance.now() / 1000;
+    // Sim time, not wall time — oscillate/pingpong modes are a function of it,
+    // so a replay must see the same value at the same step.
+    const t = this.ctx.clock.nowSec();
     for (const rot of this.items.values()) {
       if (!rot.enabled || !rot.pivotGroup) continue;
 

@@ -1,4 +1,5 @@
 import type { ITickableManager } from '../IArenaFeature';
+import type { SimClock } from '../../sim/SimClock';
 import {
   type BaseStatModifiers,
   defaultBaseStatModifiers,
@@ -12,8 +13,11 @@ export interface ActiveBuff {
   sourceType: BuffSourceType;
   mods:       Partial<BaseStatModifiers>;
   durationMs: number | null;   // null = indefinite until removeSource is called
-  appliedAt:  number;          // performance.now() at apply time
+  appliedAt:  number;          // sim-clock ms at apply time; stamped by apply()
 }
+
+/** What a caller supplies to `apply()`. `appliedAt` is stamped by the manager. */
+export type BuffInput = Omit<ActiveBuff, 'appliedAt'>;
 
 /**
  * Tracks multiplicative stat-modifier stacks per entity.
@@ -30,12 +34,25 @@ export interface ActiveBuff {
 export class BuffDebuffManager implements ITickableManager {
   private readonly _buffs = new Map<string, ActiveBuff[]>();
 
-  apply(entityId: string, buff: ActiveBuff): void {
+  /** @param clock Deterministic sim clock — buff expiry must be replayable. */
+  constructor(private readonly clock: SimClock) {}
+
+  /**
+   * Apply (or replace) a buff from a given source.
+   *
+   * `appliedAt` is stamped here from the sim clock rather than accepted from the
+   * caller. Previously all three call sites in SpawnManager passed
+   * `performance.now()`, so buff expiry ran on wall time while the physics ran
+   * on dt — the two diverged under load and could not be replayed. Taking the
+   * timestamp out of the caller's hands removes the whole bug class.
+   */
+  apply(entityId: string, buff: BuffInput): void {
     if (!this._buffs.has(entityId)) this._buffs.set(entityId, []);
     const arr = this._buffs.get(entityId)!;
+    const stamped: ActiveBuff = { ...buff, appliedAt: this.clock.nowMs() };
     const idx = arr.findIndex(b => b.sourceId === buff.sourceId);
-    if (idx >= 0) arr[idx] = buff;
-    else arr.push(buff);
+    if (idx >= 0) arr[idx] = stamped;
+    else arr.push(stamped);
   }
 
   removeSource(entityId: string, sourceId: string): void {
@@ -60,7 +77,7 @@ export class BuffDebuffManager implements ITickableManager {
   }
 
   tick(_dtMs: number): void {
-    const now = performance.now();
+    const now = this.clock.nowMs();
     for (const [entityId, arr] of this._buffs) {
       const kept = arr.filter(b => b.durationMs === null || now - b.appliedAt < b.durationMs);
       if (kept.length) this._buffs.set(entityId, kept);

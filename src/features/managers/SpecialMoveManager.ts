@@ -8,6 +8,7 @@ import {
   defaultSpecialMove, specialMoveFromSave, specialMoveToSave,
 } from '../../types/specialMoveTypes';
 import type { SpawnManager } from './SpawnManager';
+import type { SimClock } from '../../sim/SimClock';
 
 type SMState = 'idle' | 'executing';
 
@@ -46,6 +47,8 @@ export class SpecialMoveManager implements ITickableManager {
   private _tKeyUnsub?: () => void;
 
   constructor(
+    /** Deterministic sim clock — move cooldowns must be replayable. */
+    private readonly clock: SimClock,
     /** Callback to get caster world position (from SpawnManager). */
     private readonly getCasterPos: () => THREE.Vector3 | null,
     /** Callback to set caster velocity (SpawnManager.setVelocity). */
@@ -173,8 +176,8 @@ export class SpecialMoveManager implements ITickableManager {
       return;
     }
 
-    // Check cooldown
-    const now = performance.now() / 1000;
+    // Check cooldown (sim seconds, so a replayed move fires at the same step)
+    const now = this.clock.nowSec();
     if (now - def._lastUsedAt < def.cooldownSec) return;
 
     // Fire!

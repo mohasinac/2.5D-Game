@@ -9,9 +9,18 @@ const DEG2RAD = Math.PI / 180;
 const TWO_PI  = Math.PI * 2;
 
 export class WallPivotAnimator {
-  tick(wall: WallData, dt: number): void {
+  /**
+   * @param simTimeSec  Simulated seconds, from the injected SimClock — NOT wall time.
+   *
+   * This previously read `performance.now()`, which made a wall's oscillation a
+   * function of real time. That meant the arena *geometry itself* was
+   * non-deterministic: two battles started three seconds apart had their walls
+   * in different places, and a replay could collide with a wall that had moved.
+   * Taking sim time as a parameter keeps this class stateless and replayable.
+   */
+  tick(wall: WallData, dt: number, simTimeSec: number): void {
     if (!wall.rotateOnArena || !wall._rotatePivot) return;
-    const t = performance.now() / 1000;
+    const t = simTimeSec;
     switch (wall.arenaRotateMode) {
       case 'continuous':
         wall._rotatePivot.rotation.y += wall.arenaRotateSpeed * DEG2RAD * dt;

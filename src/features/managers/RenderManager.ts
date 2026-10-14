@@ -36,29 +36,49 @@ export class RenderManager {
   }
 
   /**
-   * Remove all objects for a feature from the scene/parent, dispose geometry+material,
-   * and clear the registry entry.
-   * Groups are removed but their children are NOT individually disposed (callers
-   * must dispose child entries separately via their own IDs).
+   * Remove all objects for a feature from the scene/parent, dispose geometry +
+   * material (recursing into Groups), and clear the registry entry.
+   *
+   * Recursion was added because the previous behaviour — "Groups are removed but
+   * their children are NOT individually disposed" — leaked every mesh nested
+   * under a Group and forced two managers to hand-roll their own disposal
+   * (`WallManager.disposeOne`'s two divergent `_rotatePivot` paths, and
+   * `BridgeManager._disposeSegment`). Those special cases existed only to work
+   * around this gap.
+   *
+   * Geometry is disposed once per unique BufferGeometry and materials once per
+   * unique Material, so shared instances are not double-disposed (which would
+   * corrupt any other object still using them).
    */
   dispose(id: string): void {
     const entry = this._entries.get(id);
     if (!entry) return;
+
+    const seenGeo = new Set<THREE.BufferGeometry>();
+    const seenMat = new Set<THREE.Material>();
+
+    const disposeDeep = (obj: THREE.Object3D): void => {
+      // Snapshot children: disposing must not mutate the array being walked.
+      for (const child of [...obj.children]) disposeDeep(child);
+
+      const withGeo = obj as Partial<THREE.Mesh>;
+      if (withGeo.geometry && !seenGeo.has(withGeo.geometry)) {
+        seenGeo.add(withGeo.geometry);
+        withGeo.geometry.dispose();
+      }
+      const mat = (obj as Partial<THREE.Mesh>).material;
+      if (mat) {
+        const mats = Array.isArray(mat) ? mat : [mat];
+        for (const m of mats) {
+          if (m && !seenMat.has(m)) { seenMat.add(m); m.dispose(); }
+        }
+      }
+    };
+
     for (let i = 0; i < entry.objects.length; i++) {
       const obj = entry.objects[i];
-      const par = entry.parents[i];
-      (par ?? this.scene).remove(obj);
-      if (obj instanceof THREE.Mesh) {
-        obj.geometry.dispose();
-        if (Array.isArray(obj.material)) {
-          obj.material.forEach(m => m.dispose());
-        } else {
-          (obj.material as THREE.Material).dispose();
-        }
-      } else if (obj instanceof THREE.LineSegments) {
-        obj.geometry.dispose();
-        (obj.material as THREE.Material).dispose();
-      }
+      (entry.parents[i] ?? this.scene).remove(obj);
+      disposeDeep(obj);
     }
     this._entries.delete(id);
   }

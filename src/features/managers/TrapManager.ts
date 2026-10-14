@@ -108,12 +108,13 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave>
 
   /**
    * Returns true if the given periodic trap is currently in its unsafe phase.
-   * Uses pure wall-clock math — no per-trap timer state needed.
+   * Stateless modulo math against the sim clock — no per-trap timer needed.
+   * (Was wall-clock, which made hazard phase unreproducible in a replay.)
    */
   isUnsafePhase(id: string): boolean {
     const trap = this.items.get(id);
     if (!trap || !trap.isPeriodic) return false;
-    const now    = performance.now() / 1000;
+    const now    = this.ctx.clock.nowSec();
     const cycle  = trap.safeInterval + trap.unsafeInterval;
     return (now % cycle) >= trap.safeInterval;
   }
@@ -133,7 +134,7 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave>
     data.mesh        = mesh;
     data.edges       = edges;
     data.variantMesh = variantMesh;
-    data._tickBehavior = createTrapTickBehavior(data.effect, this.onActivate) ?? undefined;
+    data._tickBehavior = createTrapTickBehavior(data.effect, this.ctx.rng, this.onActivate) ?? undefined;
 
     const objs: THREE.Object3D[] = [mesh, edges];
     if (variantMesh) objs.push(variantMesh);

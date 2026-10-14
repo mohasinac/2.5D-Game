@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { SpeedLineData, BulletLaunchRequest, ProjectileBullet } from '../../types/arenaTypes';
 import { buildProjectileMesh } from '../../geometry/trapBuilders';
 import type { ITickableManager } from '../IArenaFeature';
+import type { Rng } from '../../sim/Rng';
 
 const DEG2RAD = Math.PI / 180;
 
@@ -23,6 +24,8 @@ export class ProjectileManager implements ITickableManager {
   constructor(
     private readonly scene: THREE.Scene,
     private readonly getSpeedLines: () => ReadonlyMap<string, SpeedLineData>,
+    /** Seeded PRNG — bullet jitter feeds back into physics, so it must be replayable. */
+    private readonly rng: Rng,
   ) {}
 
   // ── Public API ───────────────────────────────────────────────────────────
@@ -100,7 +103,7 @@ export class ProjectileManager implements ITickableManager {
     // Resolve scale
     let scale = cfg.scaleFactor;
     if (cfg.scaleRandomize) {
-      scale *= cfg.scaleMin + Math.random() * (cfg.scaleMax - cfg.scaleMin);
+      scale *= this.rng.range(cfg.scaleMin, cfg.scaleMax);
     }
 
     const mesh = buildProjectileMesh(cfg);

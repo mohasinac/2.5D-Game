@@ -76,7 +76,15 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implem
 
   // ── ITickableManager ─────────────────────────────────────────────────────
 
-  tick(dtMs: number): void {
+  /**
+   * @param dt Seconds — matches every other feature manager. Segment animation
+   *   data (`animStartMs`, `animIntervalMs`, `animHoldMs`) is ms-denominated,
+   *   so we convert here rather than changing the data model. Previously this
+   *   signature took ms, making it 1 of only 2 consumers out of 12 that did —
+   *   exactly the kind of mismatch that produces silent 1000x bugs.
+   */
+  tick(dt: number): void {
+    const dtMs = dt * 1000;
     for (const bridge of this.items.values()) {
       for (const segId of bridge.segmentIds) {
         const seg = this.segments.get(segId);

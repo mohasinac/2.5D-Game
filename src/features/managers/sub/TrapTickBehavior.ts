@@ -9,6 +9,7 @@
 import * as THREE from 'three';
 import type { TrapData, TrapEffect } from '../../../types/arenaTypes';
 import { updateEarthquakeMeshHeights } from '../../../geometry/trapBuilders';
+import type { Rng } from '../../../sim/Rng';
 
 const DEG2RAD = Math.PI / 180;
 
@@ -20,7 +21,11 @@ export interface TrapTickBehavior {
 // ── Earthquake ────────────────────────────────────────────────────────────
 
 export class EarthquakeBehavior implements TrapTickBehavior {
-  constructor(private readonly onActivate?: (trap: TrapData) => void) {}
+  /** @param rng Seeded PRNG — 'random' elevation mode must replay identically. */
+  constructor(
+    private readonly rng: Rng,
+    private readonly onActivate?: (trap: TrapData) => void,
+  ) {}
 
   tick(trap: TrapData, dt: number): void {
     if (!trap._eqPhase) {
@@ -88,7 +93,7 @@ export class EarthquakeBehavior implements TrapTickBehavior {
           case 'ripple':       h = maxH * ringMult * Math.sin((r / rings) * Math.PI * 4); break;
           case 'checkerboard': h = maxH * ringMult * ((r + s) % 2 === 0 ? 1 : -1); break;
           case 'random':
-          default:             h = maxH * ringMult * (Math.random() * 2 - 1); break;
+          default:             h = maxH * ringMult * this.rng.signed(); break;
         }
         trap._eqTargetHeights[idx] = h;
       }
@@ -149,10 +154,11 @@ export class ProjectilePlateBehavior implements TrapTickBehavior {
 
 export function createTrapTickBehavior(
   effect:     TrapEffect,
+  rng:        Rng,
   onActivate?: (trap: TrapData) => void,
 ): TrapTickBehavior | null {
   switch (effect) {
-    case 'earthquake': return new EarthquakeBehavior(onActivate);
+    case 'earthquake': return new EarthquakeBehavior(rng, onActivate);
     case 'rpm':        return new RPMBehavior(onActivate);
     case 'projectile': return new ProjectilePlateBehavior();
     default:           return null;

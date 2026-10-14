@@ -28,6 +28,7 @@ import { buildTopFaceGeo } from '../geometry/platformBuilders';
 import { TEST_ARENA_CONFIG } from '../config/testArenaConfig';
 import { SpecialMovePanel } from '../utils/SpecialMovePanel';
 import type { SpecialMoveSave } from '../types/specialMoveTypes';
+import { Rng } from '../sim/Rng';
 
 const SM_STORAGE_KEY = 'bey_special_moves';
 
@@ -38,6 +39,8 @@ export interface SpecialMoveSandboxOptions {
 export class SpecialMoveSandbox extends Sandbox {
   // Managers
   private _renderMgr!:  RenderManager;
+  /** Seeded RNG per sandbox. The clock lives on Sandbox — the loop advances it. */
+  private readonly _rng = new Rng();
   private _sceneTree!:  SceneTree;
   private _wallMgr!:    WallManager;
   private _slMgr!:      SpeedLineManager;
@@ -129,6 +132,8 @@ export class SpecialMoveSandbox extends Sandbox {
       sceneTree:    this._sceneTree,
       getFallbackY: () => DEFAULT_BASE_HEIGHT,
       renderMgr:    this._renderMgr,
+      clock:        this.simClock,
+      rng:          this._rng,
     };
 
     this._wallMgr = new WallManager(
@@ -180,6 +185,7 @@ export class SpecialMoveSandbox extends Sandbox {
 
     // SpecialMoveManager — registers T-key BEFORE SpawnManager's trigger
     this._smMgr = new SpecialMoveManager(
+      this.simClock,
       () => this._spawnMgr.isSpawned ? this._spawnMgr.getPosition() : null,
       (v) => { if (this._spawnMgr.isSpawned) this._spawnMgr.setVelocity(v); },
     );
@@ -224,8 +230,9 @@ export class SpecialMoveSandbox extends Sandbox {
   }
 
   protected override onTick(dtMs: number): void {
-    this._spawnMgr?.tick(dtMs);
-    this._smMgr?.tick(dtMs / 1000);
+    const dt = dtMs / 1000;          // single conversion point; managers take seconds
+    this._spawnMgr?.tick(dt);
+    this._smMgr?.tick(dt);
   }
 
   override setVisible(v: boolean): void {

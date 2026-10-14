@@ -5,6 +5,7 @@ import { CameraManager } from '../features/managers/CameraManager';
 import { createCameraViewStore } from '../stores/cameraViewStore';
 import { DrawerManager } from '../utils/DrawerManager';
 import { layoutObserver } from '../utils/LayoutObserver';
+import { SimClock } from '../sim/SimClock';
 
 export interface SandboxOptions {
   title:      string;
@@ -40,6 +41,13 @@ export class Sandbox {
   private camera:   THREE.PerspectiveCamera | null = null;
   private renderer: THREE.WebGLRenderer | null = null;
   private controls: OrbitControls | null = null;
+
+  /**
+   * Deterministic sim clock, owned by the base class because the render loop is
+   * what advances it. Subclasses pass this into their managers via SceneContext
+   * — they must not create their own, or simulation time would fork.
+   */
+  protected readonly simClock = new SimClock();
 
   protected cameraManager: CameraManager | null = null;
   protected _drawerMgr!: DrawerManager;
@@ -290,17 +298,33 @@ export class Sandbox {
   resumeLoop(): void { this._frozen = false; this._stepFrames = 0; }
   stepLoop(frames = 1): void { this._stepFrames += Math.max(1, frames); }
 
-  /* ── Render loop — self-heals canvas size every frame ───────── */
+  /* ── Fixed-timestep simulation ────────────────────────────────
+     Simulation steps at a constant FIXED_DT_MS regardless of frame rate.
+     rAF delivers a variable real dt; we accumulate it and drain it in fixed
+     steps, so the same scenario advances through identical steps on a 60 Hz
+     and a 144 Hz display.
+
+     Why this replaced a plain dt pass-through: `setFixedTimestep` was only a dt
+     *override* used by the demo runner, so production always ran variable-dt
+     and nothing was reproducible. It also meant SpawnManager's internal
+     `Math.min(dtMs, 50)` clamp silently slowed the simulation below 20 fps
+     instead of catching up.
+
+     MAX_STEPS_PER_FRAME stops the "spiral of death": if a frame takes very long
+     (tab backgrounded, GC pause), we drop the backlog rather than running
+     hundreds of steps and falling further behind. Dropped time is acknowledged,
+     not silently absorbed. */
+  private static readonly FIXED_DT_MS = 1000 / 60;
+  private static readonly MAX_STEPS_PER_FRAME = 5;
   private lastFrameTime = 0;
+  private _accumulatorMs = 0;
+
   private loop = (now: number): void => {
     this.rafId = requestAnimationFrame(this.loop);
-    let dt = this.lastFrameTime ? now - this.lastFrameTime : 0;
+
+    const realDt = this.lastFrameTime ? now - this.lastFrameTime : 0;
     this.lastFrameTime = now;
-    if (this._fixedDtMs !== null) dt = this._fixedDtMs;
-    if (this._frozen) {
-      if (this._stepFrames > 0) this._stepFrames--;
-      else dt = 0;
-    }
+
     const w = this.canvasWrap.clientWidth;
     const h = this.canvasWrap.clientHeight;
     if (w === 0 || h === 0) return;
@@ -311,8 +335,29 @@ export class Sandbox {
       this.camera!.aspect = w / h;
       this.camera!.updateProjectionMatrix();
     }
-    this.onTick(dt);
-    this.cameraManager?.tick(dt);
+
+    // How much simulated time this frame is allowed to advance.
+    // _fixedDtMs (demo runner) pins it; frozen yields 0 unless stepping.
+    let advanceMs = this._fixedDtMs !== null ? this._fixedDtMs : realDt;
+    if (this._frozen) {
+      if (this._stepFrames > 0) { this._stepFrames--; advanceMs = Sandbox.FIXED_DT_MS; }
+      else advanceMs = 0;
+    }
+
+    const step = Sandbox.FIXED_DT_MS;
+    this._accumulatorMs += Number.isFinite(advanceMs) && advanceMs > 0 ? advanceMs : 0;
+
+    let steps = 0;
+    while (this._accumulatorMs >= step && steps < Sandbox.MAX_STEPS_PER_FRAME) {
+      this.simClock.advance(step);
+      this.onTick(step);
+      this.cameraManager?.tick(step);
+      this._accumulatorMs -= step;
+      steps++;
+    }
+    if (steps === Sandbox.MAX_STEPS_PER_FRAME) this._accumulatorMs = 0;  // drop backlog
+
+    // Controls and render run once per frame, never per sim step.
     this.controls!.update();
     renderer.render(this.scene!, this.camera!);
   };

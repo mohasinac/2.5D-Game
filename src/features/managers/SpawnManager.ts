@@ -12,7 +12,7 @@ import {
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
 import { DEG2RAD, DEFAULT_BASE_HEIGHT } from '../../config/arenaConstants';
 import { BuffDebuffManager } from './BuffDebuffManager';
-import type { ActiveBuff } from './BuffDebuffManager';
+import type { BuffInput } from './BuffDebuffManager';
 import { evalEntryCondition, evalActivationMode } from '../conditions/ConditionEvaluator';
 import type { ConditionContext } from '../conditions/ConditionEvaluator';
 import { ZONE_EFFECTS } from '../conditions/ZoneEffectRegistry';
@@ -104,7 +104,7 @@ export class SpawnManager {
   private _rKeyUnsub?: () => void;
 
   // Buff / duration-tier tracking
-  private _buffMgr    = new BuffDebuffManager();
+  private _buffMgr!: BuffDebuffManager;   // built in ctor once ctx.clock is available
   private _trapTimers = new Map<string, number>();
 
   // Speed line tracking
@@ -124,6 +124,7 @@ export class SpawnManager {
     private readonly hudEl:   HTMLElement,
     private readonly ctrlMgr: IControlManager,
   ) {
+    this._buffMgr = new BuffDebuffManager(this.ctx.clock);
     this._buildHUD();
     this._loadSettings();
     this.ctrlMgr.onButtonPress('jump', () => {
@@ -197,9 +198,17 @@ export class SpawnManager {
 
   // ── Tick ────────────────────────────────────────────────────────────────────
 
-  tick(dtMs: number): void {
+  /**
+   * @param dt Seconds. Was `dtMs` with an internal `Math.min(dtMs/1000, 0.05)`
+   *   clamp — a silent 50 ms ceiling that made the simulation *slow down* below
+   *   20 fps instead of catching up, and desynced `_buffMgr` (which got the
+   *   unclamped value) from the physics. The fixed-timestep loop in
+   *   `Sandbox.loop` now guarantees a constant dt, so the clamp is both
+   *   unnecessary and harmful, and the unit is seconds like every other
+   *   feature manager.
+   */
+  tick(dt: number): void {
     if (!this.spawned || !this.topGroup) return;
-    const dt = Math.min(dtMs / 1000, 0.05);
 
     this._applyAutoMove(dt);
     this._applyInput(dt);
@@ -210,7 +219,7 @@ export class SpawnManager {
     this._applySpeedLines(dt);
     this._applyTraps(dt);
     this._applyZones(dt);
-    this._buffMgr.tick(dtMs);
+    this._buffMgr.tick(dt * 1000);
     this._checkRespawn();
     this._applySelfRotation(dt);
     this._updateCamera();
@@ -404,7 +413,7 @@ export class SpawnManager {
         this.pos.z += gap * outWZ;
       }
 
-      this._lastCollisionTime     = performance.now();
+      this._lastCollisionTime     = this.ctx.clock.nowMs();
       this._lastCollisionIsSticky = false;
       if (gap < 0) this._onWallImpact?.();
     }
@@ -413,7 +422,7 @@ export class SpawnManager {
   // ── Speed lines ─────────────────────────────────────────────────────────────
 
   private _getSlWorldPath(sl: SpeedLineData): THREE.Vector3[] {
-    const now = performance.now();
+    const now = this.ctx.clock.nowMs();
     const cached = this.slPathCache.get(sl.id);
     if (cached && now - cached.ts < SL_CACHE_TTL) return cached.pts;
 
@@ -459,7 +468,7 @@ export class SpawnManager {
       }
 
       let contactRange = sl.width / 2 + BALL_RADIUS;
-      const sinceCollision = performance.now() - this._lastCollisionTime;
+      const sinceCollision = this.ctx.clock.nowMs() - this._lastCollisionTime;
       if (sinceCollision < POST_COLLISION_WINDOW) {
         contactRange *= this._lastCollisionIsSticky ? COLL_STICKY_MARGIN : COLL_NORMAL_MARGIN;
       }
@@ -476,7 +485,7 @@ export class SpawnManager {
         velocityMs:   Math.sqrt(this.vel.x ** 2 + this.vel.y ** 2 + this.vel.z ** 2),
         gamePhase:    'battle',
         timeOnPath:   0,
-        activePeriod: performance.now() / 1000,
+        activePeriod: this.ctx.clock.nowSec(),
       };
       const worldDistToStart = Math.sqrt((this.pos.x - pts[0].x) ** 2 + (this.pos.z - pts[0].z) ** 2);
       if (!evalActivationMode(sl.activationMode, sl, condCtx, worldDistToStart)) {
@@ -523,9 +532,9 @@ export class SpawnManager {
       this.slExitTangent.set(tx, 0, tz);
 
       if (sl.statModifiers) {
-        const buff: ActiveBuff = {
+        const buff: BuffInput = {
           sourceId: sl.id, sourceType: 'speed_line',
-          mods: sl.statModifiers, durationMs: null, appliedAt: performance.now(),
+          mods: sl.statModifiers, durationMs: null,
         };
         this._buffMgr.apply('spawn_ball', buff);
       }
@@ -596,10 +605,10 @@ export class SpawnManager {
         this._trapTimers.set(key, elapsed);
         const tier = [...trap.durationTiers].reverse().find(t => elapsed >= t.thresholdSeconds);
         if (tier) {
-          const buff: ActiveBuff = {
+          const buff: BuffInput = {
             sourceId: `${trap.id}_tier`, sourceType: 'trap',
             mods: { spinRateMult: 1 - (tier.rpmLossFactor ?? 0) },
-            durationMs: null, appliedAt: performance.now(),
+            durationMs: null,
           };
           this._buffMgr.apply('spawn_ball', buff);
         }
@@ -669,9 +678,9 @@ export class SpawnManager {
         this.health = Math.max(0, this.health + eff.healthDrainSec * dt);
       }
       if (eff.statMods) {
-        const buff: ActiveBuff = {
+        const buff: BuffInput = {
           sourceId: zone.id, sourceType: 'zone',
-          mods: eff.statMods, durationMs: null, appliedAt: performance.now(),
+          mods: eff.statMods, durationMs: null,
         };
         this._buffMgr.apply('spawn_ball', buff);
       }

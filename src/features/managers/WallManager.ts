@@ -276,7 +276,7 @@ export class WallManager
 
   tick(dt: number): void {
     for (const wall of this.items.values()) {
-      wallPivotAnimator.tick(wall, dt);
+      wallPivotAnimator.tick(wall, dt, this.ctx.clock.nowSec());
     }
   }
 
