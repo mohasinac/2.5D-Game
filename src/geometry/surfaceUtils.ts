@@ -10,6 +10,35 @@ import { inChildHole } from './primitives';
    can import from one place ────────────────────────────────────────────── */
 export { inChildHole };
 
+/* ── HEADING CONVENTION ──────────────────────────────────────────────────
+   A heading of `deg` points along  (-sin deg, 0, cos deg).
+
+   This lives here, in the coordinate-helper module, because it is NOT a
+   speed-line fact — it is how this project turns a yaw angle into a direction,
+   and more than one feature has to agree about it. It was first written inside
+   `speedLineBuilders` after the two halves of that pipeline disagreed and every
+   one of the 24 path presets replayed mirrored. Leaving it there implied the
+   convention was local, and `resolveStartPose`'s `freepoint` branch then wrote
+   its own `(cos, 0, sin)` — which is the same vector rotated 90 degrees. Every
+   free-standing bridge therefore ran across its intended axis: the shipped demo
+   arena's four piers were built along +Z/-X/-Z/+X instead of -X/-Z/+X/+Z, so a
+   bey aimed down a pier met nothing but air.
+
+   Two features, two independent spellings, one convention. Keep these the only
+   place it is written.
+────────────────────────────────────────────────────────────────────────── */
+
+/** Forward unit vector for a heading in degrees. */
+export function headingToForward(deg: number): THREE.Vector3 {
+  const r = deg * DEG2RAD;
+  return new THREE.Vector3(-Math.sin(r), 0, Math.cos(r));
+}
+
+/** Inverse of `headingToForward`: heading in degrees for an XZ direction. */
+export function forwardToHeading(dx: number, dz: number): number {
+  return Math.atan2(-dx, dz) * (180 / Math.PI);
+}
+
 /* ── Polar coordinate helper ─────────────────────────────────────────────
    Replaces the inline posR*cos(posAngle*DEG2RAD) / posR*sin(posAngle*DEG2RAD)
    that appeared in 5+ separate locations.

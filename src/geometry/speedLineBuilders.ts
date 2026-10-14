@@ -53,18 +53,12 @@ export function pathSurfaceNormal(pt: THREE.Vector3, arena: ArenaData, sl: Speed
    own bowl, which is what made speed-line ribbons look like they never
    rendered at all.
 
-   Keep these two functions as the only place the convention is written. */
+   The pair now lives in `surfaceUtils` — the convention is a coordinate fact,
+   not a speed-line one, and bridges need it too. Re-exported here so the
+   pipeline that first exposed the bug still reads as one piece. */
 
-/** Forward unit vector for a heading in degrees. */
-export function headingToForward(deg: number): THREE.Vector3 {
-  const r = deg * DEG2RAD;
-  return new THREE.Vector3(-Math.sin(r), 0, Math.cos(r));
-}
-
-/** Inverse of `headingToForward`: heading in degrees for an XZ direction. */
-export function forwardToHeading(dx: number, dz: number): number {
-  return Math.atan2(-dx, dz) * (180 / Math.PI);
-}
+import { headingToForward, forwardToHeading } from './surfaceUtils';
+export { headingToForward, forwardToHeading };
 
 /* ── Segment path computation ─────────────────────────────────────────── */
 export function computeSegmentPath(

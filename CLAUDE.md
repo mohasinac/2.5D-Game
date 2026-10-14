@@ -78,7 +78,9 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 171 tests** — 120 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+`tests/e2e/deckCollision.spec.ts` — proves the bey **stands on a bridge deck**, and that one beside a pier still falls into the bowl. The control matters: a bey resting on the bowl floor is also `grounded`, so asserting position rather than the flag is the only thing that distinguishes "standing on the deck" from "standing on anything at all". Uses `window.__demo.getBridgeDiag()`, which reports per-segment vertex counts and world bounding boxes — the diagnostic that separated *the bridge was never built* from *the bridge is 90° from where its config says*.
+
+**Current gate: 195 tests** — 127 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 12 deck-collision (4 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -444,15 +446,48 @@ A child arena with `posY = moat.innerRimOffset` sits on the island. `getArenasOn
 
 `arenaSurfaceYAtArenaLocal(arena, alx, alz)` returns world Y of the bowl surface: parabolic `H − depth·(1−t²)`, straight `H − depth`, where `H = arena.posY`.
 
+### THE HEADING CONVENTION — project-wide, not a speed-line detail
+
+```
+fwd = (−sin(deg), 0, cos(deg))        headingToForward(deg)
+deg = atan2(−dx, dz) · RAD2DEG        forwardToHeading(dx, dz)
+```
+
+**Both live in `geometry/surfaceUtils.ts` and nowhere else.** `speedLineBuilders`
+re-exports them; it does not define them.
+
+This has now been got wrong twice, in two unrelated features, and neither
+failure threw, logged, or looked like a bug:
+
+1. **Speed lines** — the encoder used `atan2(−dx, dz)` while the replayer
+   rotated `(0,0,1)` about +Y, which yields `(+sin, 0, cos)`. Every one of the
+   24 presets replayed mirrored; `spiral_in` on a radius-70 bowl produced a
+   ribbon spanning x 68.8…210.5 instead of −70…+70 — entirely outside its own
+   arena, which is most of why ribbons looked like they never rendered.
+2. **Bridges** — `resolveStartPose`'s `freepoint` branch read `freeDirDeg` as
+   `(cos, 0, sin)`, the same vector **rotated 90°**. Every free-standing bridge
+   was therefore built across its intended axis. The shipped demo arena's four
+   piers ran +Z/−X/−Z/+X instead of −X/−Z/+X/+Z, so a bey aimed down a pier met
+   nothing but air — while the piers still rendered, still had geometry, and
+   still sat in the scene.
+
+A 90° error is invisible to shape checks (a pier is still long-and-narrow, just
+across the wrong axis) and a 45° test case cannot see it either, since both
+spellings give equal |x| and |z| there. Test cardinal **and** off-axis headings.
+`tests/unit/bridgeStartPose.spec.ts` and `tests/unit/speedLinePath.spec.ts` pin
+both sites.
+
+The arena- and wall-parented branches of `resolveStartPose` are **not** covered
+by this: they derive direction from the ellipse tangent `(−rz·sin, rx·cos)`,
+which is a different quantity and correct as written.
+
 ### Speed line preset pipeline
 `sampleXxx` → `clampToEllipse` → `applyModulation` → `waypointsToSegments` → section distribution → `applySpeedRamp` → IDs. All driven by `generatePresetSegments`.
 
-**Heading convention** (must match `computeSegmentPath`):
+Segment encoding (must match `computeSegmentPath`):
 ```
-fwd        = (−sin(startDir), 0, cos(startDir))
-heading[i] = atan2(−(p[i+1].x − p[i].x), p[i+1].z − p[i].z) · RAD2DEG
-rotY[0]    = 0 ;  startDir = heading[0]
-rotY[i]    = normalizeAngle180(heading[i] − heading[i−1])
+rotY[0] = 0 ;  startDir = heading[0]
+rotY[i] = normalizeAngle180(heading[i] − heading[i−1])
 ```
 
 ### Dependency rebuild chain
@@ -553,7 +588,22 @@ All persistence goes through Zustand stores in `src/stores/` using `persist` + `
 4. `SpecialMoveManager.setTargetPosition()` — the dummy never moves.
 5. `SpawnManager.getSpinDir()` / `getTipPolarity()` — stored and exposed, no physics consumer.
 
-Also: `ProjectileManager` bullets never collide with anything. `SpawnManager` has no collision with obstacles, bridges, portals, jump links or footings — those are visual-only geometry you drive straight through.
+Also: `ProjectileManager` bullets never collide with anything.
+
+**Mesh standing works; lateral collision does not.** `SpawnManager._resolveSurface`
+now raycasts the scene via `ISurfaceProvider`/`projectBelow`, so the bey stands on
+**bridge decks, obstacle tops, wall caps and the real bowl mesh** — anything the
+`ProjectionService` projector gathers. `projectBelow`, not `project`: standing is
+"what is beneath my feet", and taking the topmost hit in the column would teleport
+a bey in the bowl up onto a bridge crossing above it.
+
+What is still missing is everything that is not a floor:
+- **No lateral collision with obstacles** — the Tower arena's pillar still has no
+  sides; you drive through it and land on top if you pass over it.
+- **No U-channel side walls** on bridges, so nothing keeps the bey on a deck
+  through a curve.
+- **No centripetal retention**, so loops and corkscrews cannot be ridden.
+- **Portals, jump links and footings** remain entirely visual.
 
 **RPG bugs:**
 - `WorldScene.collisionLayer` is populated and never read — **there is no terrain collision**; the player walks through everything.

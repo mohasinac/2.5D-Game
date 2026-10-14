@@ -91,7 +91,7 @@ import { createArenaStateStore, type ArenaStateStore } from '../stores/arenaStat
 /* demoApi is loaded via dynamic import inside an `import.meta.env.DEV` guard so the
    whole module is excluded from production bundles. A static import here would keep
    it in the graph even though the call site is dead code. Type-only import is erased. */
-import type { DemoVec, DemoHooks } from '../utils/demoApi';
+import type { DemoVec, DemoHooks, DemoBridgeDiag } from '../utils/demoApi';
 import { Rng } from '../sim/Rng';
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -2070,6 +2070,7 @@ export class ArenaSandbox extends Sandbox {
       loadConfig: (cfg) => { this._applyConfigToScene(cfg); this._flushSave(); },
       getRenderer: () => this.getRenderer(),
       probeDown: (x, z) => this._demoProbeDown(x, z),
+      getBridgeDiag: () => this._demoBridgeDiag(),
       clearScene: () => { this._clearArenas(); },
 
       spawn: (o) => {
@@ -2186,8 +2187,23 @@ export class ArenaSandbox extends Sandbox {
           if (h.object === a.floorMesh)  { who = `arena ${aid} floor`; break; }
         }
         if (who === 'unknown') {
-          for (const [sid, seg] of this._bridgeMgr.getAllSegments())
-            if (h.object === seg.mesh) { who = `BRIDGE SEGMENT ${sid}`; break; }
+          /* Compare against ANCESTORS, not just the hit object. A segment's
+             deck and its U-channel side walls are separate meshes parented
+             under `seg._animPivot` inside `bridge.group`, so an identity test
+             against `seg.mesh` alone misses every sub-mesh — and reports a
+             bridge that is plainly there as "unknown". */
+          const chain = new Set<THREE.Object3D>();
+          for (let n: THREE.Object3D | null = h.object; n; n = n.parent) chain.add(n);
+          for (const [sid, seg] of this._bridgeMgr.getAllSegments()) {
+            if ((seg.mesh && chain.has(seg.mesh)) ||
+                (seg._animPivot && chain.has(seg._animPivot))) {
+              who = `BRIDGE SEGMENT ${sid}`; break;
+            }
+          }
+          if (who === 'unknown') {
+            for (const [bid, br] of this._bridgeMgr.getAll())
+              if (br.group && chain.has(br.group)) { who = `BRIDGE ${bid}`; break; }
+          }
         }
         if (who === 'unknown') {
           for (const [oid, o] of this._obstacleMgr.getAll())
@@ -2200,6 +2216,51 @@ export class ArenaSandbox extends Sandbox {
       }
       return `y=${h.point.y.toFixed(2)} ${who}`;
     });
+  }
+
+  private _demoBridgeDiag(): DemoBridgeDiag[] {
+    const scene = this.getScene();
+    const inScene = (o: THREE.Object3D | null | undefined): boolean => {
+      for (let n = o ?? null; n; n = n.parent) if (n === scene) return true;
+      return false;
+    };
+    const out: DemoBridgeDiag[] = [];
+    const wp = new THREE.Vector3();
+    for (const [bridgeId, bridge] of this._bridgeMgr.getAll()) {
+      const segs = this._bridgeMgr.getSegmentsForBridge(bridgeId);
+      const worldPositions: { x: number; y: number; z: number }[] = [];
+      const segGeom: DemoBridgeDiag['segGeom'] = [];
+      let withMesh = 0, parented = 0;
+      for (const seg of segs) {
+        if (!seg.mesh) { segGeom.push({ id: seg.id, vertices: 0, box: null }); continue; }
+        withMesh++;
+        if (inScene(seg.mesh)) parented++;
+        seg.mesh.getWorldPosition(wp);
+        worldPositions.push({ x: +wp.x.toFixed(2), y: +wp.y.toFixed(2), z: +wp.z.toFixed(2) });
+
+        const geo = seg.mesh.geometry;
+        const vertices = geo?.getAttribute('position')?.count ?? 0;
+        let box: DemoBridgeDiag['segGeom'][number]['box'] = null;
+        if (vertices > 0) {
+          const bb = new THREE.Box3().setFromObject(seg.mesh);
+          if (!bb.isEmpty()) box = {
+            min: { x: +bb.min.x.toFixed(2), y: +bb.min.y.toFixed(2), z: +bb.min.z.toFixed(2) },
+            max: { x: +bb.max.x.toFixed(2), y: +bb.max.y.toFixed(2), z: +bb.max.z.toFixed(2) },
+          };
+        }
+        segGeom.push({ id: seg.id, vertices, box });
+      }
+      out.push({
+        bridgeId,
+        groupInScene: inScene(bridge.group),
+        segments: segs.length,
+        withMesh,
+        inScene: parented,
+        worldPositions,
+        segGeom,
+      });
+    }
+    return out;
   }
 
   private _demoFeatureState(id: string): Record<string, unknown> | null {

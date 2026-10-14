@@ -30,6 +30,7 @@ import {
   BridgeEndpointRef, ArenaData, WallData,
 } from '../types/arenaTypes';
 import { applyTriplanarUV } from './uvMapping';
+import { headingToForward } from './surfaceUtils';
 
 /* ── Pose ──────────────────────────────────────────────────────────────── */
 
@@ -63,10 +64,12 @@ export function resolveStartPose(
   baseHeight: number,
 ): SegmentPose {
   if (ref.type === 'freepoint') {
-    const yaw = ref.freeDirDeg * DEG2RAD;
+    /* `headingToForward`, not a local (cos, sin): see the heading-convention
+       note in surfaceUtils. The two differ by a 90-degree rotation, which built
+       every free-standing bridge across its intended axis. */
     return {
       pos: new THREE.Vector3(ref.freePosX, ref.freePosY, ref.freePosZ),
-      dir: new THREE.Vector3(Math.cos(yaw), 0, Math.sin(yaw)).normalize(),
+      dir: headingToForward(ref.freeDirDeg).normalize(),
       up:  new THREE.Vector3(0, 1, 0),
     };
   }

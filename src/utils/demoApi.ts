@@ -38,6 +38,30 @@ export interface DemoBeyState {
  * which is how the cyan/orange palette would get dulled without any test
  * noticing.
  */
+/**
+ * Per-bridge physical reality check. See `DemoApi.getBridgeDiag`.
+ *
+ * Every field here answers a different "the bridge is missing" story, because
+ * they are indistinguishable from outside: `segments` separates "the save never
+ * restored" from "it restored and built nothing"; `withMesh` separates "built
+ * nothing" from "built a mesh nobody parented"; `inScene` separates "not
+ * parented" from "parented but positioned somewhere else"; and `worldY`
+ * separates all of those from "it is exactly where it should be and the probe
+ * is wrong". A grid raycast can only ever say *nothing is here*.
+ */
+export interface DemoBridgeDiag {
+  bridgeId: string;
+  groupInScene: boolean;
+  segments: number;
+  withMesh: number;
+  inScene: number;
+  worldPositions: DemoVec[];
+  /** Per-segment: vertices, and the world-space box the geometry actually occupies.
+   *  A mesh at the origin with 0 vertices and a null box is built-but-empty; one
+   *  with vertices and a box elsewhere is built-but-mispositioned. Same symptom. */
+  segGeom: { id: string; vertices: number; box: { min: DemoVec; max: DemoVec } | null }[];
+}
+
 export interface DemoRenderStats {
   toneMapping: number;
   toneMappingExposure: number;
@@ -74,6 +98,7 @@ export interface DemoHooks {
   getCamera(): THREE.PerspectiveCamera | null;
   getRenderer(): THREE.WebGLRenderer | null;
   probeDown(x: number, z: number): string[];
+  getBridgeDiag(): DemoBridgeDiag[];
   setCameraTarget(pos: DemoVec, target: DemoVec): void;
 
   /** Live feature lookup for focusOn/markFeature and state assertions. */
@@ -139,6 +164,16 @@ export interface DemoApi {
    * cracked the ribbon bug was this, scoped to one feature.
    */
   probeDown(x: number, z: number): string[];
+
+  /**
+   * One row per bridge: does its geometry exist, and is it in the scene?
+   *
+   * `probeDown` can only report what a ray hits, so a bridge that was never
+   * built and a bridge built 200 cm from where its config says look identical
+   * — both are silence. This reads the manager directly, which is the only way
+   * to tell those two apart.
+   */
+  getBridgeDiag(): DemoBridgeDiag[];
 
   /** Resolves once the bey's |velocity| drops below `speed`, or on timeout. */
   waitForRest(speed?: number, timeoutMs?: number): Promise<boolean>;
@@ -295,6 +330,8 @@ export function mountDemoApi(hooks: DemoHooks): void {
     setChromeVisible(visible) { setChromeHidden(!visible); },
 
     probeDown(x, z) { return hooks.probeDown(x, z); },
+
+    getBridgeDiag() { return hooks.getBridgeDiag(); },
 
     getRenderStats() {
       const renderer = hooks.getRenderer();
