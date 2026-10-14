@@ -130,6 +130,101 @@ export const SURFACE_PHYSICS: Record<SurfaceType, SurfacePhysicsProps> = {
 export const SURFACE_DAMPING_MIN = 0.50;
 export const SURFACE_DAMPING_MAX = 0.995;
 
+/* ══════════════════════════════════════════════════════════════════════════
+   PER-TIP FRICTION  (ledger N2) and BEARING DECOUPLING (N3)
+   ══════════════════════════════════════════════════════════════════════════
+
+   The tip is where a Beyblade meets the world, and until now it was a label.
+   `tipShape` is a free-text string with no physics behind it, so every bottom,
+   driver and performance tip in the corpus — CS6's entire 325-342 block, plus
+   1054-1057 and 1078-1087 — is GAP on these two numbers alone.
+
+   Spin decay is `α = μ m g r / I`, so a tip contributes exactly two things:
+   how grippy it is and how far from the axis it touches. A Rubber Flat drains
+   four times faster than a Hard Flat for precisely that reason (CS10 Case 545
+   works both: 156 vs 39.8 rad/s²).
+
+   CONSTANTS AND THEIR PROVENANCE. The corpus contradicts itself on friction
+   more than on anything else — the same violation recurs in eight of the
+   fifteen files, usually by using a value its own header flags as wrong. The
+   figures used here are the CONFIRMED ones from the file headers, not the
+   values individual cases drift to:
+     hard ABS   0.17  (CS6/CS7/CS8 headers; cases variously use 0.35, 0.12, 0.10)
+     rubber     0.50  (headers; cases variously use 0.85, 1.2, 2.81)
+     metal      0.12  (CS4 CONFIRMED)
+     POM        0.10  (CS9 Case 869, Performance Tip Friction)
+     bearing    0.05  (plan Sec.K7: MASTER explicitly corrects 0.02/0.005 to this)
+
+   Where a radius is not given by a case it is taken from the tip's described
+   geometry; those are marked below. */
+
+export interface BeyTipProfile {
+  /** Coulomb friction coefficient at the contact patch. */
+  friction: number;
+  /** Contact radius in cm — the torque arm for spin decay. */
+  contactRadius: number;
+  /**
+   * Fraction of tip friction that actually reaches the BODY.
+   *
+   * A bearing tip (Eternal Sharp, Bearing Drive, Atomic, Orbit, Drift…) lets
+   * the tip rotate independently, so floor friction spins the tip rather than
+   * draining the bey. That is the whole mechanism behind every stamina-tip
+   * case — ledger code F, ~80 cases — and today `freeSpin` only reassigns a
+   * render group, which is why none of them work.
+   *
+   * 1 = rigidly coupled (an ordinary tip). 0.05 = a shielded ball bearing.
+   */
+  coupling: number;
+}
+
+/** Tip archetypes. Named for the families the corpus uses, not per-product. */
+export const BEY_TIP_PROFILES = {
+  /** Sharp / Spike: near-point contact, minimum torque arm, maximum stamina. */
+  sharp:        { friction: 0.17, contactRadius: 0.05, coupling: 1 },
+  /** Ball: Hertzian point contact, slightly wider than a sharp. */
+  ball:         { friction: 0.17, contactRadius: 0.15, coupling: 1 },
+  /** Wide Ball: same material, a visibly larger sphere. */
+  wide_ball:    { friction: 0.17, contactRadius: 0.30, coupling: 1 },
+  /** Defense cone: a truncated cone, mid torque arm. */
+  defense:      { friction: 0.17, contactRadius: 0.35, coupling: 1 },
+  /** Hard Flat — CS10 Case 545's worked example: 39.8 rad/s², 15.1 s. */
+  hard_flat:    { friction: 0.17, contactRadius: 0.60, coupling: 1 },
+  /** Wide Flat: more grip through more contact, not more friction. */
+  wide_flat:    { friction: 0.17, contactRadius: 0.85, coupling: 1 },
+  /** Rubber Flat — CS10 Case 545's other worked example: 156 rad/s², 3.85 s. */
+  rubber_flat:  { friction: 0.50, contactRadius: 0.80, coupling: 1 },
+  /** Metal Flat: low mu metal, so it drives without the rubber spin cost. */
+  metal_flat:   { friction: 0.12, contactRadius: 0.70, coupling: 1 },
+  /** POM / Friction tip: the lowest plain-material figure in the corpus. */
+  pom_flat:     { friction: 0.10, contactRadius: 0.60, coupling: 1 },
+  /** Eternal Sharp: a sharp on a sleeve bushing — partial decoupling. */
+  eternal_sharp:{ friction: 0.17, contactRadius: 0.05, coupling: 0.25 },
+  /** Bearing Drive / Atomic / Orbit: a shielded ball bearing. */
+  bearing:      { friction: 0.17, contactRadius: 0.20, coupling: 0.05 },
+} as const satisfies Record<string, BeyTipProfile>;
+
+export type BeyTipType = keyof typeof BEY_TIP_PROFILES;
+
+/** The historical default: an ordinary flat plastic tip. */
+export const DEFAULT_TIP_TYPE: BeyTipType = 'hard_flat';
+
+/**
+ * Effective friction a tip presents to the body on a given surface.
+ *
+ * The surface and the tip both matter and they are not the same quantity: a
+ * rubber tip on ice still slips, and a sharp tip on sand still digs. Combining
+ * them multiplicatively about the ABS reference keeps the CS10 tip figures
+ * exact on a reference surface (`SURFACE_MU_REFERENCE`) while letting the
+ * ~35-surface table shift them in the documented direction.
+ *
+ * `coupling` then decides how much of that reaches the bey at all, which is
+ * what makes a bearing tip a stamina part rather than a friction one.
+ */
+export function effectiveTipFriction(tip: BeyTipProfile, surfaceMu: number): number {
+  const surfaceFactor = surfaceMu / SURFACE_MU_REFERENCE;
+  return tip.friction * surfaceFactor * tip.coupling;
+}
+
 /* ── Per-surface PBR response ────────────────────────────────────────────── */
 
 /** How a surface finish responds to light, independent of its colour pattern. */

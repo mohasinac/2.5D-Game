@@ -23,6 +23,12 @@
  * survive any of those.
  */
 
+/* `arenaConstants` is safe to depend on here: it imports only TYPES from
+   `arenaTypes`, which erase at compile time, so no THREE reaches `sim/`.
+   `sim/friction.ts` already relies on the same thing. */
+import { DEFAULT_TIP_TYPE } from '../config/arenaConstants';
+import type { BeyTipType } from '../config/arenaConstants';
+
 export interface Vec3 { x: number; y: number; z: number }
 
 export const vec3 = (x = 0, y = 0, z = 0): Vec3 => ({ x, y, z });
@@ -60,6 +66,17 @@ export interface BeySpec {
   /** Centre-of-mass height above the contact point, cm. Drives topple torque. */
   comY: number;
 
+  /**
+   * Which tip archetype this bey runs, keyed into `BEY_TIP_PROFILES`.
+   *
+   * The tip supplies the two numbers spin decay needs — friction and contact
+   * radius — plus the bearing `coupling` that makes a stamina tip a stamina
+   * tip. Held as a key rather than the numbers so a bey's tip can be swapped
+   * at runtime (ledger N7) without the spec drifting out of step with the
+   * table it came from.
+   */
+  tipType: BeyTipType;
+
   /* ── Response ── */
   moveForce: number;
   jumpImpulse: number;
@@ -94,8 +111,17 @@ export interface BeyState {
   spinDir: SpinDir;
   tipPolarity: TipPolarity;
 
-  /** Degrees from vertical. A render pose today; simulated by the heavy-top work. */
+  /** Degrees from vertical. Simulated by the heavy-top model once spin decays. */
   tiltDeg: number;
+
+  /**
+   * True once the top has fallen past `SLEEP_OUT_TILT` or run out of spin.
+   *
+   * A real end state at last: before the heavy-top model there was no way for
+   * a bey to lose other than being manually despawned, because `health` is
+   * clamped and never compared to zero anywhere in `src`.
+   */
+  sleptOut: boolean;
 
   /** Per-arena gravity multiplier, resolved from whatever is underfoot. */
   gravityScale: number;
@@ -115,10 +141,21 @@ export const DEFAULT_BEY_SPEC: Omit<BeySpec, 'id'> = {
 
   /* Placeholders until the assembler composes them from real parts: roughly a
      Galeon-class plastic-gen bey (~30 g). `inertiaSpin` and `comY` are what the
-     heavy-top model needs and the STL analyser already measures. */
+     heavy-top model needs and the STL analyser already measures.
+
+     UNITS: g·cm², and the previous value here was 5.0e-6 — which is a kg·m²
+     figure (CS10's whole MFB assembly is 7.3e-6 kg·m²). Off by the 1e7
+     conversion factor. Nothing consumed it at the time, so nothing broke, but
+     the heavy-top model would have computed a sleep-out threshold of ~154,000
+     rad/s and toppled every bey the instant it was switched on. The annular
+     form for a 30 g disc spanning 1–5 cm gives 0.5 × 30 × (1² + 5²) = 390,
+     which puts the stability threshold at a sane ~17 rad/s against a 1500 rpm
+     (157 rad/s) launch. `tests/unit/spinPhysics.spec.ts` guards the magnitude
+     so the same slip cannot come back. */
   mass:        30,
-  inertiaSpin: 5.0e-6,
+  inertiaSpin: 390,
   comY:        2.0,
+  tipType:     DEFAULT_TIP_TYPE,
 
   moveForce:      800,
   jumpImpulse:    300,
@@ -146,6 +183,7 @@ export function makeBeyState(spec: BeySpec, over: Partial<BeyState> = {}): BeySt
     spinDir: 'right',
     tipPolarity: 'none',
     tiltDeg: 0,
+    sleptOut: false,
     gravityScale: 1,
     surfaceMu: 0.15,
     lastCollisionMs: -Infinity,

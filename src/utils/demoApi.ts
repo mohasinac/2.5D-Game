@@ -34,6 +34,12 @@ export interface DemoBeyState {
    *  `obstacleContacts`: being held on a deck is invisible in the final
    *  position, because staying on is what *not* falling off looks like. */
   channelContacts: number;
+  /** True once the heavy-top model has put the bey over. The first real
+   *  losing condition the project has ever had. */
+  sleptOut: boolean;
+  /** Spin below which this bey can no longer stand, rad/s — so a test can say
+   *  "it is about to go" rather than waiting to see whether it does. */
+  sleepOutOmega: number;
 }
 
 /**

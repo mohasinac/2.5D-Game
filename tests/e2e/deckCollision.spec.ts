@@ -238,6 +238,81 @@ test.describe('bridge deck collision', () => {
     expect(restD, 'and did not end up inside it').toBeGreaterThan(CONTACT - 1);
   });
 
+  test('U-CHANNEL: side walls keep the bey on the deck', async ({ page }) => {
+    /* A deck holds the bey UP; without side walls nothing keeps it ON, so any
+       lateral push sends it over the edge.
+
+       THE FIXTURE IS THE WHOLE DIFFICULTY, and two earlier attempts at this
+       test were abandoned as "flaky" before the cause was understood:
+
+         - A `u_channel` section is a BAD fixture. Its floor dips toward the
+           centre and therefore curves UP toward the rails (15.0 at the middle,
+           16.3 near the edge on this pier), so geometry alone already retains
+           the bey and the test cannot show the resolver did anything. This
+           uses a FLAT deck with rails instead, which isolates it.
+         - The container tunnels. At 260 cm/s on the default variable timestep
+           the bey jumped clean past the corridor in a single step and was
+           never recaptured, so repeated identical runs disagreed about whether
+           it stayed on. `setFixedTimestep` removes that; it is exactly what
+           the hook exists for.
+
+       With both fixed the result is deterministic: three identical runs land
+       on z=4.2 with one wall contact. Falsification-checked -- with
+       `_resolveChannels` commented out all three runs instead fall to the bowl
+       at z=17.5 with zero contacts. */
+    await page.goto(ARENA, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => !!(window as never as { __demo?: unknown }).__demo, null, { timeout: 60_000 });
+    await page.evaluate(async () => {
+      const spec = '/src/config/demoArenaConfig.ts';
+      const m = await import(/* @vite-ignore */ spec) as { DEMO_ARENA_CONFIG: unknown };
+      const cfg = JSON.parse(JSON.stringify(m.DEMO_ARENA_CONFIG)) as
+        { bridges: Record<string, unknown>[] };
+      const pier = cfg.bridges.find(b => b.id === 'bridge-1')!;
+      Object.assign(pier.section as Record<string, unknown>, {
+        width: 24, startWidth: 24, endWidth: 24,
+        crossSection: 'flat', depth: 0,
+        hasLeftWall: true, hasRightWall: true, sideWallHeight: 10,
+      });
+      await (window as never as { __demo: { loadArenaConfig(c: unknown): Promise<void> } })
+        .__demo.loadArenaConfig(cfg);
+    });
+
+    type Demo = {
+      despawnBey(): void; spawnBey(o: unknown): void;
+      setBeyVelocity(v: { x: number; y: number; z: number }): void;
+      setFixedTimestep(ms: number | null): void;
+      getBeyState(): BeyState;
+    };
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo.setFixedTimestep(1000 / 120));
+    await page.waitForTimeout(1500);
+
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo.despawnBey());
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo
+      .spawnBey({ pos: { x: 50, y: 40, z: 0 }, vel: { x: 0, y: 0, z: 0 }, rpm: 0 }));
+
+    let s: BeyState | null = null;
+    for (let i = 0; i < 40; i++) {
+      await page.waitForTimeout(150);
+      s = await page.evaluate(() => (window as never as { __demo: Demo }).__demo.getBeyState());
+      if (s.grounded && Math.abs(s.vel.y) < 0.5) break;
+    }
+    const rideY = s!.pos.y + TIP_OFFSET;
+    expect(rideY, 'precondition: riding the pier deck').toBeCloseTo(DECK_Y, 1);
+
+    // Shove it straight at the rail, across the deck.
+    await page.evaluate(() => (window as never as { __demo: Demo }).__demo
+      .setBeyVelocity({ x: 0, y: 0, z: 200 }));
+    for (let i = 0; i < 60; i++) {
+      await page.waitForTimeout(100);
+      s = await page.evaluate(() => (window as never as { __demo: Demo }).__demo.getBeyState());
+      if (Math.hypot(s.vel.x, s.vel.z) < 1) break;
+    }
+
+    expect(s!.channelContacts, 'a side wall actually caught it').toBeGreaterThan(0);
+    expect(s!.pos.y + TIP_OFFSET, 'and it is still on the deck, not in the bowl')
+      .toBeCloseTo(rideY, 1);
+  });
+
   test('a deck overhead does not capture a bey below it', async ({ page }) => {
     // `project` would answer "the deck" for any column containing one; standing
     // must use `projectBelow`. Dropping from UNDER the deck height proves the

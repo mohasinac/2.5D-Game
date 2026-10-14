@@ -12,12 +12,18 @@ import {
 } from '../../geometry/surfaceUtils';
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
 import type { SceneSurfaceProjector } from '../../geometry/sceneSurfaceProjector';
-import { DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE } from '../../config/arenaConstants';
+import {
+  DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE,
+  BEY_TIP_PROFILES, effectiveTipFriction,
+} from '../../config/arenaConstants';
 import { makeBeySpec, makeBeyState } from '../../sim/state';
 import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
 import { resolveObstacleSide } from '../../sim/step/obstacles';
 import { resolveChannel } from '../../sim/step/channel';
+import {
+  stepSpin, spinDecayRate, rpmToOmega, omegaToRpm, sleepOutOmega,
+} from '../../sim/step/spin';
 import type { ChannelSegment } from '../../sim/step/channel';
 import type { ObstacleCollider, ColliderBody } from '../../sim/step/obstacles';
 import { BuffDebuffManager } from './BuffDebuffManager';
@@ -126,6 +132,8 @@ export class SpawnManager {
    *  a bey held on a deck and one that was never near an edge end up in
    *  indistinguishable places. */
   private _channelContacts = 0;
+  /** Set once the heavy-top model says the bey has gone over. */
+  private _sleptOut = false;
 
   private _obstacleBody: ColliderBody = {
     pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 },
@@ -238,6 +246,7 @@ export class SpawnManager {
     this.health   = HEALTH_MAX;
     this._obstacleContacts = 0;
     this._channelContacts  = 0;
+    this._sleptOut = false;
     this.pos.copy(this.spawnPos);
     this.vel.copy(this.spawnVel);
     this.grounded = false;
@@ -323,6 +332,7 @@ export class SpawnManager {
     this._applySpeedLines(dt);
     this._applyTraps(dt);
     this._applyZones(dt);
+    this._stepSpin(dt);
     this._buffMgr.tick(dt * 1000);
     this._checkRespawn();
     this._applySelfRotation(dt);
@@ -1031,6 +1041,44 @@ export class SpawnManager {
     }
   }
 
+  /**
+   * Spin decay and the heavy top (ledger primitives #3 and #4).
+   *
+   * `rpm` has been a cosmetic number since the project began: set from a HUD
+   * field, never decayed, consumed only to advance a render rotation. So
+   * stamina was not a stat, every tip was interchangeable, and a bey could
+   * never lose by running down — `health` is clamped and never compared to
+   * zero anywhere, so nothing could end a match at all.
+   *
+   * Now the tip supplies μ and a contact radius, the surface underfoot scales
+   * the friction, a bearing tip decouples most of it, and `α = μmgr/I` drains
+   * the spin. Once ω falls under the sleeping-top threshold the tilt grows and
+   * the bey slumps. The whole chain lives in `sim/step/spin.ts`; this is the
+   * translation layer.
+   *
+   * AIRBORNE BEYS DO NOT DECAY: the torque comes from the tip pressing on a
+   * surface, and in the air there is no contact and no normal force. Skipping
+   * the step is not an optimisation, it is the model.
+   */
+  private _stepSpin(dt: number): void {
+    if (!this.grounded) return;
+
+    const tip = BEY_TIP_PROFILES[this._spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
+    const mu  = effectiveTipFriction(tip, this._currentSurfaceMu);
+    const decel = spinDecayRate(this._spec.mass, this._spec.inertiaSpin, mu, tip.contactRadius);
+
+    const r = stepSpin(
+      this._spec,
+      { omega: rpmToOmega(this.rpm), tiltRad: this.tiltDeg * DEG2RAD },
+      decel,
+      dt,
+    );
+
+    this.rpm      = omegaToRpm(r.omega);
+    this.tiltDeg  = r.tiltRad * (180 / Math.PI);
+    this._sleptOut = r.sleptOut;
+  }
+
   private _applySelfRotation(dt: number): void {
     if (!this.topGroup) return;
     if (this.selfRotate && this.rpm > 0) this.topGroup.rotation.y += (this.rpm / 60) * Math.PI * 2 * dt;
@@ -1186,6 +1234,12 @@ export class SpawnManager {
   getObstacleContacts(): number { return this._obstacleContacts; }
   /** Side-wall retentions since spawn. See `_channelContacts`. */
   getChannelContacts(): number { return this._channelContacts; }
+  /** True once the bey has slumped past the sleep-out tilt or run out of spin. */
+  isSleptOut(): boolean { return this._sleptOut; }
+  /** The spin below which this bey can no longer stand up, rad/s. */
+  getSleepOutOmega(): number {
+    return sleepOutOmega(this._spec.mass, this._spec.inertiaSpin, this._spec.comY);
+  }
   isGrounded(): boolean { return this.grounded; }
   getRpm(): number { return this.rpm; }
 

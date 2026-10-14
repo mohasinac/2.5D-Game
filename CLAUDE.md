@@ -80,7 +80,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/deckCollision.spec.ts` — proves the bey **stands on a bridge deck** and that **a pillar stops it**, and that one beside a pier still falls into the bowl. The control matters: a bey resting on the bowl floor is also `grounded`, so asserting position rather than the flag is the only thing that distinguishes "standing on the deck" from "standing on anything at all". Uses `window.__demo.getBridgeDiag()`, which reports per-segment vertex counts and world bounding boxes — the diagnostic that separated *the bridge was never built* from *the bridge is 90° from where its config says*.
 
-**Current gate: 217 tests** — 151 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 15 collision (5 × 3) + 3 `@meta`.
+**Current gate: 279 tests** — 195 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 18 collision (6 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -380,7 +380,16 @@ SL interaction state     : slRaycaster · slDrag · selectedSlId
 
 **`PitData`** — straight-walled hole cut into the arena surface. **Depth is fixed at `PIT_FIXED_DEPTH = 10` cm** — never add a depth slider. Polar placement (`posR`, `posAngle`) + own `rotY`. Supports nested pits/zones.
 
-**`ZoneData`** — a *filled* hole, always a parabolic bowl. 8 fills (water, lava, swamp, poison, sand, ice, void, custom) driven by `WAVE_VERT`/`WAVE_FRAG`. `lidMesh` conforms to the parent bowl curvature and writes stencil so the fill wave is clipped to the opening. Fill Y = `surfaceY − 1.0` (near the rim, **not** the bowl floor, or it renders invisible beneath the surface).
+**`ZoneData`** — a *filled* hole, always a parabolic bowl. 8 fills (water, lava, swamp, poison, sand, ice, void, custom) driven by `WAVE_VERT`/`WAVE_FRAG`. Fields are `mesh`, `edges`, `seamMesh`. Fill Y = `surfaceY − 1.0` (near the rim, **not** the bowl floor, or it renders invisible beneath the surface).
+
+**CORRECTION — there is no `lidMesh`, and nothing writes stencil.** This file
+previously claimed "`lidMesh` conforms to the parent bowl curvature and writes
+stencil so the fill wave is clipped to the opening". Verified false on all
+three counts: `lidMesh` appears nowhere in `src/`; `buildFillShaderMaterial`
+sets `stencilWrite: false`; and `buildScoopLidGeo` is **exported with zero
+callers** (the other three scoop builders have 5-8 each). So the fill wave is
+not clipped to its opening by anything — whether that is visible, and whether
+the lid should be wired up or the builder deleted, is open.
 
 **`WallData`** — rim-mounted barrier. `parentType`: `arena | bridge | base | trap`. Tilt 0° = vertical, negative = inward, range [−90°, +30°]; a full-perimeter wall with no gaps is forced to 0° tilt (a closed ring has no free edge). `thickness` + `thicknessDirection` (`outward` default). `autoJoin` suppresses shared end-caps between adjacent arcs. `topProfile`: flat/triangles/waves/serrated/crenellated. Plus `isDouble`, `holes[]`, `moatRing`, destructibility, and `rotateOnArena` with continuous/step/oscillate modes. `MIN_WALL_HEIGHT = 10`, `MIN_WALL_GAP = 10`.
 
@@ -597,7 +606,9 @@ All persistence goes through Zustand stores in `src/stores/` using `persist` + `
    `Map<id, BeyState>`). Listed here so it is not mistaken for a live feature,
    which is the exact failure mode the other five rows document.
 
-Also: `ProjectileManager` bullets never collide with anything.
+Also: `ProjectileManager` bullets never collide with anything, and
+`geometry/scoopBuilders.buildScoopLidGeo` is exported with no callers — the
+zone-fill lid it builds is never created (see the ZoneData correction above).
 
 **Mesh standing works; lateral collision does not.** `SpawnManager._resolveSurface`
 now raycasts the scene via `ISurfaceProvider`/`projectBelow`, so the bey stands on
@@ -645,15 +656,20 @@ Two traps it already encodes, both found by testing:
   tolerance of 2 the body sat exactly on the rejection boundary and retention
   fired or not on float noise. Hence `floorDrop`.
 
-**What is NOT established:** an end-to-end "the bey stays on the deck" test.
-Live probing shows retention firing at exactly the corridor limit
-(`channelContacts` 0→1, body pushed back inward), but repeated identical runs
-disagreed on whether the bey then stayed on or fell — so no e2e test ships
-rather than a flaky one. Note the u_channel floor already curves UP toward the
-rails (15.0 at centre, 16.3 near the edge on the demo pier), so geometry alone
-provides much of the retention there; the untested case is a FLAT deck with
-rails, and a body fast enough to clear them. Chase this before relying on
-channel retention.
+**Verified end-to-end** by `tests/e2e/deckCollision.spec.ts`, but only after
+two abandoned attempts, and the fixture is the whole difficulty:
+- **A `u_channel` is a bad fixture for this.** Its floor dips toward the centre
+  and so curves UP toward the rails (15.0 mid, 16.3 near the edge on the demo
+  pier), meaning geometry already retains the bey and the test cannot show the
+  resolver did anything. Use a **flat deck with rails**.
+- **The container tunnels.** At 260 cm/s on the default variable timestep the
+  bey jumps clean past the corridor in one step and is never recaptured, which
+  is what made repeated identical runs disagree. `__demo.setFixedTimestep(1000/120)`
+  removes it — reach for that in any physics e2e.
+
+With both fixed it is deterministic: three identical runs rest at z=4.2 with
+one wall contact; with `_resolveChannels` disabled all three fall to the bowl
+at z=17.5 with zero contacts.
 - **No centripetal retention**, so loops and corkscrews cannot be ridden.
 - **Portals, jump links and footings** remain entirely visual.
 

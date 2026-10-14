@@ -2107,6 +2107,8 @@ export class ArenaSandbox extends Sandbox {
           spawned: sm.isSpawned,
           obstacleContacts: sm.getObstacleContacts(),
           channelContacts:  sm.getChannelContacts(),
+          sleptOut:         sm.isSleptOut(),
+          sleepOutOmega:    sm.getSleepOutOmega(),
         };
       },
       setBeyPosition: (p) => this._spawnMgr?.setPosition(new THREE.Vector3(p.x, p.y, p.z)),
@@ -2215,8 +2217,54 @@ export class ArenaSandbox extends Sandbox {
             if (h.object === o.mesh) { who = `obstacle ${oid}`; break; }
         }
         if (who === 'unknown') {
-          for (const [zid, z2] of this.zones.entries())
-            if (h.object === z2.mesh) { who = `zone ${zid}`; break; }
+          for (const [zid, z2] of this.zones.entries()) {
+            if (h.object === z2.mesh)     { who = `zone ${zid} fill`; break; }
+            if (h.object === z2.seamMesh) { who = `zone ${zid} seam`; break; }
+          }
+        }
+        /* The remaining namers exist because an "unknown" at a consistent
+           height is the single most expensive thing to see in a probe: it is
+           indistinguishable from a bug, and chasing it costs more than naming
+           every mesh did. A lid in particular has form here -- the octagon top
+           face sealing the bowl is what made speed-line ribbons invisible. */
+        if (who === 'unknown') {
+          for (const [aid, a] of this.arenas.entries()) {
+            if (h.object === a.islandMesh)  { who = `arena ${aid} island cap`; break; }
+            if (h.object === a.rimSeamMesh) { who = `arena ${aid} rim seam`;   break; }
+            if ((a.spiralMeshes ?? []).includes(h.object as THREE.Mesh)) {
+              who = `arena ${aid} spiral ledge`; break;
+            }
+          }
+        }
+        if (who === 'unknown') {
+          for (const [pid, pit] of this.pits.entries())
+            if (h.object === pit.mesh) { who = `pit ${pid}`; break; }
+        }
+        if (who === 'unknown') {
+          for (const [tid, t] of this._trapMgr.getAll()) {
+            if (h.object === t.mesh)        { who = `trap ${tid}`; break; }
+            if (h.object === t.variantMesh) { who = `trap ${tid} variant`; break; }
+          }
+        }
+        if (who === 'unknown') {
+          for (const [wid, w] of this._wallMgr.getAll())
+            if (h.object === w.mesh) { who = `wall ${wid}`; break; }
+        }
+        if (who === 'unknown') {
+          for (const [fid, f] of this._footingMgr.getAll())
+            if (h.object === f.mesh) { who = `footing ${fid}`; break; }
+        }
+        if (who === 'unknown') {
+          for (const [poid, po] of this._portalMgr.getAll()) {
+            if (h.object === po.mesh)     { who = `portal ${poid}`; break; }
+            if (h.object === po.ringMesh) { who = `portal ${poid} ring`; break; }
+          }
+        }
+        /* Last resort: say WHAT it is even when we cannot say WHOSE it is.
+           "unknown" alone sent me chasing a phantom twice this phase. */
+        if (who === 'unknown') {
+          const nm = h.object.name || h.object.type;
+          who = `unnamed ${nm}`;
         }
       }
       return `y=${h.point.y.toFixed(2)} ${who}`;
