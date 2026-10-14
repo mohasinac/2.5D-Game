@@ -556,46 +556,44 @@ Also: `ProjectileManager` bullets never collide with anything. `SpawnManager` ha
 - `ShopScene` is complete but unreachable (no shop trigger or NPC `shopId` in seeded data).
 - `CutscenePlayer` `npc_move` and `sfx` are empty resolves. `UIScene` minimap is an empty box.
 
-**Speed line ribbons STILL DO NOT RENDER (OPEN) -- but a separate, real path
-bug was found and fixed underneath it.**
+**Speed line ribbons ARE rendered -- they are OCCLUDED (OPEN, but narrowed to one
+question).** Two separate problems were tangled together here.
 
-FIXED, and worth keeping: the two halves of the path pipeline disagreed about
-heading. `waypointsToSegments` ENCODES as `atan2(-dx, dz)` (forward
-`(-sin, 0, cos)`); `computeSegmentPath` REPLAYED by rotating `(0,0,1)` about
-**+Y**, giving `(+sin, 0, cos)`. X was flipped, so all 24 presets replayed
-mirrored and the spirals wound outward: the shipped `spiral_in` (radiusX 70)
-built a real 1817 cm, 1602-vertex ribbon spanning **x 68.8..210.5**, outside
-its own bowl. Now `-70.7..71.2`, following the bowl from rim (y -10.95) down to
-floor (-22.05). The convention lives in `headingToForward` /
-`forwardToHeading`, used by both sides; `tests/unit/speedLinePath.spec.ts`
-round-trips polylines through encode->replay.
+FIXED -- the path was being built in the wrong place. The two halves of the
+pipeline disagreed about heading: `waypointsToSegments` ENCODES as
+`atan2(-dx, dz)` (forward `(-sin, 0, cos)`), `computeSegmentPath` REPLAYED by
+rotating `(0,0,1)` about **+Y** (`(+sin, 0, cos)`). X was flipped, so all 24
+presets replayed mirrored and the spirals wound outward: the shipped
+`spiral_in` (radiusX 70) spanned **x 68.8..210.5**, outside its own bowl. Now
+`-70.7..71.2`. The convention lives in `headingToForward` / `forwardToHeading`,
+used by both sides, with round-trip tests in `tests/unit/speedLinePath.spec.ts`.
 
-STILL OPEN -- the ribbon is invisible for a DIFFERENT reason. Measured in a live
-scene with the geometry now correct and the line forced to `opacity 1`,
-`width 12`, `activationMode 'always'` and bright red:
+STILL OPEN -- but it is an OCCLUSION problem, not a rendering one. Setting the
+ribbon material's `depthTest = false` makes it appear immediately, correctly
+shaped and correctly placed. Everything about the mesh is already valid:
 
 ```
-meshVisible true | meshParented true | vertexCount 1602 | matOpacity 1
-bounds x -75.4..76,  y -22.05..-10.95   (bowl floor at -11)
+chain Mesh:v < Scene:v   rootIsScene true   indexCount 4800   (= 800 rungs x 6)
+bsRadius 74.48 finite    matVisible true    colorWrite true   layersMask 1
+bounds x -75.4..76,  y -22.05..-10.95   (arena depth 22, posY 0)
 ```
 
-...and nothing is drawn. Its START MARKER is drawn (and turns red with the
-line), so the manager runs and the scene receives objects. **Both the ribbon
-mesh AND its centreline `LineSegments` are missing**, and those are precisely
-the two objects registered through `renderMgr.add`, while the markers are added
-straight to the scene and DO appear.
+So the only question left is **which opaque surface is drawn in front of it**.
+The ribbon lies inside the bowl (y -11..-22) while the octagon base top face is
+at y = 0; `_loadArenasFromConfig` does call `updateTopFace()`, so the hole is
+cut on the load path -- that is where to start, together with the fact that the
+demo arena uses `wallProfile: 'step'` while `arenaSurfaceYAtArenaLocal` models
+only parabolic/straight/bb10, so the analytic surface Y and the real stepped
+mesh need not agree.
 
-Three hypotheses tested and FALSIFIED, so do not re-try them:
-  1. empty/degenerate geometry -- 1602 verts, correct finite bounds, indices
-     written by `buildRibbon3D` as two triangles per rung;
-  2. opacity (`INACTIVE_OPACITY_MULT` 0.4) or sub-pixel width -- forcing
-     opacity 1 and width 12 cm changes nothing;
-  3. depth precision against the coplanar floor (camera near 0.1 / far 2000
-     gives ~0.04 cm resolution vs a 0.05 cm lift) -- adding `polygonOffset`,
-     the fix that works for `topFaceMesh`, changes nothing.
-
-The marker-vs-mesh split is the strongest remaining lead: look at what
-`renderMgr.add` does to these two objects that direct `scene.add` does not.
+FALSIFIED -- do not re-try these:
+  1. empty/degenerate geometry (4800 indices, finite bounds, valid normals/UVs);
+  2. opacity or sub-pixel width (opacity 1 + width 12 cm changes nothing);
+  3. depth-precision z-fighting -- `polygonOffset` at BOTH signs changes nothing,
+     which is what distinguishes genuine occlusion from z-fighting;
+  4. `renderMgr.add` vs direct `scene.add` -- a red herring. The markers appear
+     because `buildStartMarker` sets `depthTest: false`, not because of how they
+     were added.
 
 **Mobile layout:** the bottom view-mode bar (HITBOX/BOTH/VISUAL) overflows off-screen on mobile portrait — "VISUAL" is unreachable. Root cause is the `vmin` scale collapsing on narrow viewports.
 

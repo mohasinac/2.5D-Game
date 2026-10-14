@@ -2203,6 +2203,38 @@ export class ArenaSandbox extends Sandbox {
           } : null;
         })(),
         matOpacity: (sl.mesh?.material as THREE.Material | undefined)?.opacity ?? null,
+        /* Everything else that can suppress a draw, in one place. A mesh can be
+           visible, parented and opaque and still never reach the rasteriser. */
+        diag: (() => {
+          const m = sl.mesh;
+          if (!m) return null;
+          const mat = m.material as THREE.Material & { colorWrite?: boolean; depthTest?: boolean };
+          const g = m.geometry;
+          g.computeBoundingSphere();
+          const chain: string[] = [];
+          let node: THREE.Object3D | null = m;
+          let rootIsScene = false;
+          while (node) {
+            chain.push(`${node.type}:${node.visible ? 'v' : 'HIDDEN'}`);
+            if ((node as THREE.Scene).isScene) rootIsScene = true;
+            node = node.parent;
+          }
+          return {
+            chain: chain.join(' < '),
+            rootIsScene,
+            indexCount:   g.index?.count ?? 0,
+            bsRadius:     g.boundingSphere ? +g.boundingSphere.radius.toFixed(2) : null,
+            bsFinite:     g.boundingSphere ? Number.isFinite(g.boundingSphere.radius) : false,
+            frustumCulled: m.frustumCulled,
+            matVisible:   mat.visible,
+            colorWrite:   mat.colorWrite ?? null,
+            depthTest:    mat.depthTest ?? null,
+            transparent:  mat.transparent,
+            renderOrder:  m.renderOrder,
+            layersMask:   m.layers.mask,
+            scaleY:       m.scale.y,
+          };
+        })(),
         /* Bowl surface Y directly beneath the ribbon's first point. If the
            ribbon's minY sits at or below this, it is inside the floor. */
         surfaceYAtStart: (() => {
