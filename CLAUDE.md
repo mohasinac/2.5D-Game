@@ -33,6 +33,7 @@ npm run docker:build        # build images
 npm run docker:dev          # Vite dev server → http://localhost:3000
 npm run docker:typecheck    # tsc --noEmit
 npm run docker:unit         # browser-free unit specs only (no dev server needed)
+npm run docker:dist         # production bundle (NODE_ENV=production — see trap 5)
 npm run docker:test         # full Playwright suite against http://bey-app:3000
 npm run docker:down         # tear down + drop volumes
 
@@ -52,7 +53,7 @@ npm run deploy              # npm run build && firebase deploy --only hosting
 - `shm_size: 1gb` on the test service — Chromium crashes on Docker's default 64 MB `/dev/shm`.
 - **`PLAYWRIGHT_VERSION` in the Dockerfile must match `@playwright/test` in `package.json`.** Drift fails the container with "Executable doesn't exist".
 
-### Four infrastructure traps, each of which once broke the whole gate
+### Five infrastructure traps, each of which once broke the gate or the bundle
 
 These are fixed. They are recorded because every one of them presents as "the app is broken" when it is really one line of config, and three of them appeared *without any source change*.
 
@@ -60,6 +61,7 @@ These are fixed. They are recorded because every one of them presents as "the ap
 2. **`server.allowedHosts` must list the container hostname.** Vite 5.4.12 backported a DNS-rebinding fix; `package.json` asks for `^5.2.0`, so `npm ci` resolves 5.4.21 and unlisted hosts get `403 Blocked request. This host (…) is not allowed.` A patch-range bump silently broke a passing gate.
 3. **The test hostname is `bey-app`, never `app`.** `.app` is a Google gTLD on Chromium's HSTS preload list TLD-wide, so the browser rewrites `http://app:3000` to HTTPS and fails with `ERR_SSL_PROTOCOL_ERROR` against a plain-HTTP dev server — before the request is even sent. `PLAYWRIGHT_BASE_URL` and `allowedHosts` must stay in sync.
 4. **The healthcheck probes `127.0.0.1`, not `localhost`.** Inside the container `localhost` resolves to `::1` first while Vite's `host: true` binds IPv4-only, so the probe hung until timeout.
+5. **Build production bundles with `npm run docker:dist`, never `vite build` in the dev container.** The `dev` stage sets `NODE_ENV=development`, and Vite derives `import.meta.env.DEV` from `NODE_ENV` *even during `vite build`*. Building there yields `DEV === true`, so the dev-only `window.__demo` API ships to production — the exact thing the `grep __demo dist/assets/*.js` check exists to catch, and it was silently failing. The `dist` compose service overrides `NODE_ENV=production`.
 
 ### Tests
 
@@ -73,7 +75,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 100 tests** — 49 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 109 tests** — 58 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 

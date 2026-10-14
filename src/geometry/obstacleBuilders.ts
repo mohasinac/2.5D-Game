@@ -95,6 +95,7 @@ export function defaultObstacle(name: string, id: string, baseHeight: number): O
   const [mesh, edges] = _makePlaceholder(dim, baseHeight + dim / 2 + 10);
   return {
     id, name,
+    modelId: null,   // procedural primitive until a prop is picked
     shape: 'cube' as ObstacleShape,
     dimX: dim, dimY: dim, dimZ: dim,
     posX: 0, posY: baseHeight + dim / 2 + 10, posZ: 0,

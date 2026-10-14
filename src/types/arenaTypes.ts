@@ -809,6 +809,9 @@ export interface ObstacleData {
   emissiveIntensity: number;
   opacity: number;
   material: ArenaMaterial;
+  /** Shipped prop drawn in place of the primitive shape, or null for the
+   *  primitive itself. Collision always uses the primitive either way. */
+  modelId: string | null;
   theme: ObstacleTheme;
   speedPathId: string | null;
   presentStlb64: string | null;
@@ -1207,6 +1210,8 @@ export interface JumpLinkData {
 export interface BaseFootingData {
   id: string; name: string;
   shape: ObstacleShape;
+  /** See ObstacleData.modelId. */
+  modelId: string | null;
   // same dim semantics as ObstacleData
   dimX: number; dimY: number; dimZ: number;
   basePosX: number; basePosZ: number;

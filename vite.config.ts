@@ -62,6 +62,12 @@ const ALLOWED_HOSTS = ['bey-app', 'localhost', '127.0.0.1'];
 
 export default defineConfig({
   base: '/',
+  /* Static art is served from `assets/`, NOT Vite's default `public/`.
+     The bundler writes its own output to `dist/assets/`, so a `public/assets/...`
+     file would collide with it. Pointing publicDir at `assets/` keeps shipped
+     art at `dist/models/...` and the bundle at `dist/assets/...`.
+     See assets/README.md. */
+  publicDir: 'assets',
   server: {
     port: 3000,
     strictPort: true,   /* fail instead of silently picking another port */

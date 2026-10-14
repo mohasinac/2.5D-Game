@@ -112,6 +112,7 @@ export function defaultFooting(
 
   return {
     id, name,
+    modelId: null,   // procedural primitive until a prop is picked
     shape: 'cube' as ObstacleShape,
     dimX: dim, dimY: dim, dimZ: dim,
     basePosX: 0, basePosZ: 0,

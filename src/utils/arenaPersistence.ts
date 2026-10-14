@@ -218,6 +218,9 @@ export interface ObstacleSave {
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   material: ArenaMaterial; speedPathId: string | null;
   presentStlb64: string | null; presentColor: number;
+  /* Optional, like weight/visible below: an additive field defaults on
+     restore rather than invalidating every existing save. */
+  modelId?: string | null;
   weight?: number;
   visible?: boolean;
   hideOnTrapIds?: string[];
@@ -338,6 +341,7 @@ export interface BaseFootingSave {
   color: number; surface: SurfaceType; customTileData: string | null; tileScale: number;
   emissiveColor: number; emissiveIntensity: number; opacity: number;
   presentStlb64: string | null; presentColor: number;
+  modelId?: string | null;
   visible?: boolean;
 }
 
@@ -607,6 +611,7 @@ export function obstacleToSave(o: ObstacleData): ObstacleSave {
     emissiveColor:o.emissiveColor, emissiveIntensity:o.emissiveIntensity, opacity:o.opacity,
     material:o.material, speedPathId:o.speedPathId,
     presentStlb64:o.presentStlb64, presentColor:o.presentColor,
+    modelId:o.modelId,
     weight:o.weight,
     visible:o.visible,
     hideOnTrapIds:o.hideOnTrapIds,
@@ -727,6 +732,7 @@ export function footingToSave(f: BaseFootingData): BaseFootingSave {
     color:f.color, surface:f.surface, customTileData:f.customTileData, tileScale:f.tileScale,
     emissiveColor:f.emissiveColor, emissiveIntensity:f.emissiveIntensity, opacity:f.opacity,
     presentStlb64:f.presentStlb64, presentColor:f.presentColor,
+    modelId:f.modelId,
     visible:f.visible,
   };
 }

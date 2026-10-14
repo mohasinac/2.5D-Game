@@ -50,6 +50,25 @@ services:
       - node_modules:/app/node_modules
     command: npx tsc --noEmit
 
+  # Production bundle. NODE_ENV=production is LOAD-BEARING, not decoration: the
+  # `dev` stage sets NODE_ENV=development, and Vite derives `import.meta.env.DEV`
+  # from NODE_ENV even during `vite build`. Building in the dev container without
+  # this override therefore produces a bundle with DEV === true, which ships the
+  # dev-only `window.__demo` API (a ~4 kB chunk plus a live handle on the
+  # scene) into production. The `dist` target is also what makes
+  # `grep __demo dist/assets/*.js` a meaningful check.
+  dist:
+    build:
+      context: .
+      target: dev
+    profiles: ["ci"]
+    environment:
+      NODE_ENV: production
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    command: sh -c "npx tsc && npx vite build"
+
   # Pure-logic specs (geometry/physics maths). Deliberately has NO depends_on:
   # these tests touch no DOM, no WebGL and no dev server, so gating them on the
   # app container's healthcheck would make a maths regression undiagnosable

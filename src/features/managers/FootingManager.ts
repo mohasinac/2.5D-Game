@@ -108,6 +108,7 @@ export class FootingManager extends FeatureManager<BaseFootingData, BaseFootingS
       opacity:           save.opacity,
       presentStlb64:     save.presentStlb64,
       presentColor:      save.presentColor,
+      modelId:           save.modelId ?? null,
       visible:           save.visible ?? true,
     });
     return data;
