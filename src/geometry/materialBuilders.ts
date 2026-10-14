@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TWO_PI, DEG2RAD } from '../config/arenaConstants';
+import { TWO_PI, DEG2RAD, SURFACE_PBR } from '../config/arenaConstants';
 import { SurfaceType, SurfaceMaterialOpts, FillPreset } from '../types/arenaTypes';
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -9,7 +9,7 @@ import { SurfaceType, SurfaceMaterialOpts, FillPreset } from '../types/arenaType
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Module-level caches ─────────────────────────────────────────────────── */
-export const _texCache = new Map<string, { tex: THREE.Texture; refs: number }>();
+export const _texCache = new Map<string, { tex: THREE.Texture; normal: THREE.Texture | null; refs: number }>();
 export const _matCache = new Map<string, { mat: THREE.MeshStandardMaterial; refs: number }>();
 
 export function _texKey(opts: SurfaceMaterialOpts): string {
@@ -48,32 +48,115 @@ export function _paintCanvas(color: number, surface: SurfaceType): HTMLCanvasEle
   return cv;
 }
 
+/**
+ * Derive a tangent-space normal map from a painted surface canvas.
+ *
+ * The surface patterns already describe where a material is raised or recessed
+ * — concrete speckle, sand grain, lava-rock cells, wood rings — so the relief
+ * can be read straight out of their luminance with a Sobel gradient instead of
+ * shipping a downloaded normal map per material. Zero bytes, no licence, and it
+ * tracks the pattern automatically if the painter changes.
+ *
+ * Output stays in `NoColorSpace` (Three's default): a normal map encodes
+ * direction vectors, not colour, and sRGB-decoding it would bend every normal.
+ * That is the other half of the colour-space rule applied to `map` below.
+ */
+export function _paintNormal(src: HTMLCanvasElement, strength: number): HTMLCanvasElement {
+  const C = src.width;
+  const out = document.createElement('canvas');
+  out.width = out.height = C;
+  const sctx = src.getContext('2d')!;
+  const octx = out.getContext('2d')!;
+  const sd = sctx.getImageData(0, 0, C, C).data;
+  const od = octx.createImageData(C, C);
+
+  /* Perceptual luminance; `% C` wraps so the relief tiles seamlessly, matching
+     the RepeatWrapping used on the colour map. */
+  const lum = (x: number, y: number): number => {
+    const i = (((y + C) % C) * C + ((x + C) % C)) * 4;
+    return (sd[i] * 0.299 + sd[i + 1] * 0.587 + sd[i + 2] * 0.114) / 255;
+  };
+
+  for (let y = 0; y < C; y++) {
+    for (let x = 0; x < C; x++) {
+      const dx =
+        (lum(x + 1, y - 1) + 2 * lum(x + 1, y) + lum(x + 1, y + 1)) -
+        (lum(x - 1, y - 1) + 2 * lum(x - 1, y) + lum(x - 1, y + 1));
+      const dy =
+        (lum(x - 1, y + 1) + 2 * lum(x, y + 1) + lum(x + 1, y + 1)) -
+        (lum(x - 1, y - 1) + 2 * lum(x, y - 1) + lum(x + 1, y - 1));
+
+      let nx = -dx * strength, ny = -dy * strength, nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      nx /= len; ny /= len; nz /= len;
+
+      const i = (y * C + x) * 4;
+      od.data[i]     = Math.round((nx * 0.5 + 0.5) * 255);
+      od.data[i + 1] = Math.round((ny * 0.5 + 0.5) * 255);
+      od.data[i + 2] = Math.round((nz * 0.5 + 0.5) * 255);
+      od.data[i + 3] = 255;
+    }
+  }
+  octx.putImageData(od, 0, 0);
+  return out;
+}
+
 export function buildSurfaceMaterial(opts: SurfaceMaterialOpts): THREE.MeshStandardMaterial {
   const mk = _matKey(opts);
   const cached = _matCache.get(mk);
   if (cached) { cached.refs++; return cached.mat; }
   let map: THREE.Texture | null = null;
+  let normalMap: THREE.Texture | null = null;
+  const pbr = SURFACE_PBR[opts.surface];
+
   if (opts.surface !== 'plain') {
     const tk = _texKey(opts);
     const ct = _texCache.get(tk);
-    if (ct) { ct.refs++; map = ct.tex; }
+    if (ct) { ct.refs++; map = ct.tex; normalMap = ct.normal; }
     else {
       let tex: THREE.Texture;
-      if (opts.surface === 'custom_png' && opts.customTileData) tex = new THREE.TextureLoader().load(opts.customTileData);
-      else { const cv = _paintCanvas(opts.color, opts.surface); tex = new THREE.CanvasTexture(cv); }
+      let nrm: THREE.Texture | null = null;
+      if (opts.surface === 'custom_png' && opts.customTileData) {
+        /* Arbitrary user image, loaded asynchronously — there is no canvas to
+           read a gradient from at this point, so it gets colour only. */
+        tex = new THREE.TextureLoader().load(opts.customTileData);
+      } else {
+        const cv = _paintCanvas(opts.color, opts.surface);
+        tex = new THREE.CanvasTexture(cv);
+        if (pbr.normalStrength > 0) {
+          nrm = new THREE.CanvasTexture(_paintNormal(cv, pbr.normalStrength));
+        }
+      }
+      /* THE COLOUR-SPACE RULE. Three defaults every texture to NoColorSpace, so
+         until now these colour maps were being sampled as if already linear —
+         the classic cause of "washed out and wrong" PBR, and far more visible
+         now that ACES tone mapping and IBL are on. Colour maps are sRGB;
+         normal/roughness/metalness/AO maps must stay NoColorSpace. */
+      tex.colorSpace = THREE.SRGBColorSpace;
       tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
       tex.repeat.set(20 / opts.tileScale, 20 / opts.tileScale);
-      _texCache.set(tk, { tex, refs: 1 }); map = tex;
+      if (nrm) {
+        nrm.colorSpace = THREE.NoColorSpace;
+        nrm.wrapS = nrm.wrapT = THREE.RepeatWrapping;
+        nrm.repeat.copy(tex.repeat);
+      }
+      _texCache.set(tk, { tex, normal: nrm, refs: 1 });
+      map = tex; normalMap = nrm;
     }
   }
+
+  /* An explicit physical material still wins: `baseMaterial` is the arena's
+     real substance (ABS/metal/stone/rubber), while SurfaceType is its finish. */
   const PBR = { abs: [0.65, 0.00], metal: [0.15, 0.88], stone: [0.90, 0.02], rubber: [0.95, 0.00] } as const;
   const [roughness, metalness] = opts.baseMaterial
     ? PBR[opts.baseMaterial]
-    : [opts.surface==='metal'?0.25:opts.surface==='ice'?0.10:0.65,
-       opts.surface==='metal'?0.70:opts.surface==='ice'?0.10:0.08];
+    : [pbr.roughness, pbr.metalness];
+
   const mat = new THREE.MeshStandardMaterial({
     color: opts.surface==='plain'?opts.color:0xffffff,
-    map: map??undefined, side: opts.side ?? THREE.DoubleSide,
+    map: map??undefined,
+    normalMap: normalMap??undefined,
+    side: opts.side ?? THREE.DoubleSide,
     roughness, metalness,
     transparent: opts.transparent??false, opacity: opts.opacity??1,
     polygonOffset: opts.polygonOffset ?? false,
@@ -126,6 +209,6 @@ export function releaseMaterial(opts: SurfaceMaterialOpts): void {
     mc.mat.dispose(); _matCache.delete(mk);
     const tk = _texKey(opts);
     const tc = _texCache.get(tk);
-    if (tc) { tc.refs--; if (tc.refs <= 0) { tc.tex.dispose(); _texCache.delete(tk); } }
+    if (tc) { tc.refs--; if (tc.refs <= 0) { tc.tex.dispose(); tc.normal?.dispose(); _texCache.delete(tk); } }
   }
 }

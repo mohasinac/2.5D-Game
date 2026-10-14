@@ -73,7 +73,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 89 tests** — 38 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 100 tests** — 49 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -151,6 +151,9 @@ Controls need `min-height: 44px` **and** `min-width: 44px` + `flex-shrink: 0` on
 - **ACES tone mapping + sRGB output + PCF soft shadows + a PMREM environment map are all on**, set in `mountRenderer()`. The environment comes from Three's bundled `RoomEnvironment` (procedural, zero download, **no network request** — the app makes none) at `environmentIntensity 0.55`; swapping in a Poly Haven HDRI later is a one-line change in `render/environment.ts`. `scene.background` is deliberately left as the clear colour, so the backdrop stays dark while the lighting is not.
 - **The PMREM texture is per-mount, not per-scene.** It is a GPU render target owned by the renderer that produced it, so it is built in `mountRenderer()` and freed in `unmountRenderer()` *before* `renderer.dispose()`. Generating it once in `initScene()` leaves the scene holding a texture from a destroyed context after the first screen switch.
 - Ambient light is `0.25`, not `0.5`: the environment map now supplies indirect light and doing both at full strength double-counts it, flattening everything and turning shadows into grey smudges.
+- **Colour maps are `SRGBColorSpace`; normal/roughness/metalness/AO maps stay `NoColorSpace`.** Three defaults *every* texture to `NoColorSpace`, so a colour map without the explicit assignment is sampled as if already linear — the classic "washed out and wrong" PBR failure. It was invisible before tone mapping and obvious after.
+- Surface normal maps are **derived from each surface's own painted canvas** by a Sobel gradient (`_paintNormal`), not downloaded. Zero bytes, no licence, and they track the pattern automatically. Depth per surface comes from `SURFACE_PBR.normalStrength` — flat pattern finishes (checker/grid/dots) get little because they are paint on a smooth shell; granular ones (sand, concrete, lava rock) get the most.
+- Fine grain is **legitimately invisible at arena distance**: a 256 px texture tiled every 20 cm renders well below one texel per pixel when the whole 240 cm bowl is on screen, so mipmapping averages it away. Judge surface detail close up; judge material response (roughness/metalness/reflection) at distance.
 - Always include `GridHelper`, `AxesHelper`, axis label sprites, numeric grid ticks.
 - Grid subdivision colour `0x2a2a4a` — `0x1a1a2e` renders invisible.
 - `OrbitControls`: left-drag orbit, right-drag pan, scroll zoom, `dampingFactor: 0.07`.

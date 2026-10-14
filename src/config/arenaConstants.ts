@@ -64,6 +64,114 @@ export const ARENA_MATERIAL_PRESETS: Record<ArenaMaterial, ArenaMaterialProps> =
   metal:  { restitution: 0.90, spinLossFactor: 0.20, damageFactor: 1.00 },
 } as const;
 
+/* ── Per-surface physics, from CS10's ~35-surface table ──────────────────── */
+
+/** Coulomb friction coefficient and restitution for a visual surface finish. */
+export interface SurfacePhysicsProps {
+  /** Coefficient of friction against the bey's tip. */
+  friction: number;
+  /** Coefficient of restitution for a vertical landing on this surface. */
+  restitution: number;
+}
+
+/**
+ * The reference surface. `SURFACE_PHYSICS.plain` matches it exactly, so the
+ * ABS-on-ABS baseline reproduces the project's historical handling and every
+ * other surface is a departure from it in a stated direction.
+ */
+export const SURFACE_MU_REFERENCE = 0.15;
+
+/**
+ * mu / e per `SurfaceType`, taken from the friction-and-restitution table in
+ * `case study/10 case study.md` (its ~24 arena cases specify ~35 distinct
+ * surfaces). Documented range, low to high friction:
+ *
+ *   ice 0.03-0.05 -> polished metal/marble 0.10-0.13 -> ABS baseline 0.15 ->
+ *   concrete/asphalt 0.16-0.22 -> grass 0.28-0.40 -> dry sand 0.45 ->
+ *   deep snow/wet mud 0.55-0.70 -> water (ploughing) 0.80-1.20
+ *
+ * and restitution from tree canopy e = 0.00 (total absorption) to
+ * metal-on-metal e = 0.80.
+ *
+ * UNTIL NOW ALL 13 SURFACE TYPES WERE PURELY COSMETIC. They changed the canvas
+ * texture and nothing else, so a sand floor and an ice floor played identically.
+ * This table is what makes them differ.
+ *
+ * The six pattern finishes (checker/grid/hex/stripes/dots, plus `custom_png`,
+ * which is an arbitrary user image) are paint applied to the stadium shell, not
+ * materials in their own right, so they all take the ABS baseline rather than
+ * inventing physics for a visual motif.
+ */
+export const SURFACE_PHYSICS: Record<SurfaceType, SurfacePhysicsProps> = {
+  plain:      { friction: 0.15, restitution: 0.65 },  // ABS baseline
+  checker:    { friction: 0.15, restitution: 0.65 },  // pattern on ABS
+  grid:       { friction: 0.15, restitution: 0.65 },
+  hex:        { friction: 0.15, restitution: 0.65 },
+  stripes:    { friction: 0.15, restitution: 0.65 },
+  dots:       { friction: 0.15, restitution: 0.65 },
+  custom_png: { friction: 0.15, restitution: 0.65 },  // arbitrary user image
+  concrete:   { friction: 0.19, restitution: 0.35 },  // concrete/asphalt 0.16-0.22
+  metal:      { friction: 0.12, restitution: 0.80 },  // polished metal; metal-on-metal e
+  wood:       { friction: 0.25, restitution: 0.45 },  // CS10's wooden log / deck
+  ice:        { friction: 0.04, restitution: 0.20 },  // Blizzard Bowl (V-Force)
+  sand:       { friction: 0.45, restitution: 0.10 },  // dry sand; absorbs impact
+  lava_rock:  { friction: 0.55, restitution: 0.30 },  // rough volcanic rock
+} as const;
+
+/**
+ * Clamp for the derived per-frame damping multiplier.
+ *
+ * The lower bound stops a very high mu (water's 1.20 ploughing figure) from
+ * driving the multiplier to zero or negative and freezing the bey outright; the
+ * upper bound stops near-frictionless ice from producing a top that never slows
+ * at all. These bound the *approximation* in `surfaceDamping`, not the source
+ * data — the real Coulomb model arrives with per-tip friction in a later phase.
+ */
+export const SURFACE_DAMPING_MIN = 0.50;
+export const SURFACE_DAMPING_MAX = 0.995;
+
+/* ── Per-surface PBR response ────────────────────────────────────────────── */
+
+/** How a surface finish responds to light, independent of its colour pattern. */
+export interface SurfacePbrProps {
+  roughness: number;
+  metalness: number;
+  /**
+   * Depth of the normal map derived from the surface's own painted pattern.
+   * 0 disables relief entirely (the pattern is flat paint).
+   */
+  normalStrength: number;
+}
+
+/**
+ * Light response per `SurfaceType`.
+ *
+ * Replaces two inline ternaries in `buildSurfaceMaterial` that special-cased
+ * only `metal` and `ice` and gave the other eleven surfaces one shared value —
+ * so concrete, sand and lava rock all shaded like smooth plastic.
+ *
+ * `normalStrength` drives a normal map generated from each surface's own
+ * painted canvas (see `_paintNormal`), which costs no downloaded assets. The
+ * flat pattern finishes keep a low value because a checker or grid is paint on
+ * a smooth shell, not moulded relief; the granular materials get the most,
+ * because their patterns really do describe surface roughness.
+ */
+export const SURFACE_PBR: Record<SurfaceType, SurfacePbrProps> = {
+  plain:      { roughness: 0.65, metalness: 0.08, normalStrength: 0.00 },
+  checker:    { roughness: 0.60, metalness: 0.08, normalStrength: 0.15 },
+  grid:       { roughness: 0.60, metalness: 0.08, normalStrength: 0.25 },
+  hex:        { roughness: 0.60, metalness: 0.08, normalStrength: 0.25 },
+  stripes:    { roughness: 0.60, metalness: 0.08, normalStrength: 0.20 },
+  dots:       { roughness: 0.60, metalness: 0.08, normalStrength: 0.30 },
+  custom_png: { roughness: 0.65, metalness: 0.08, normalStrength: 0.00 },
+  concrete:   { roughness: 0.92, metalness: 0.02, normalStrength: 0.85 },
+  metal:      { roughness: 0.25, metalness: 0.70, normalStrength: 0.30 },
+  wood:       { roughness: 0.75, metalness: 0.02, normalStrength: 0.55 },
+  ice:        { roughness: 0.10, metalness: 0.10, normalStrength: 0.20 },
+  sand:       { roughness: 0.95, metalness: 0.01, normalStrength: 1.00 },
+  lava_rock:  { roughness: 0.88, metalness: 0.03, normalStrength: 0.90 },
+} as const;
+
 /* ── Buff-zone duration tier presets ────────────────────────────────────── */
 export const BUFF_TIER_PRESETS: Record<'sand' | 'lava' | 'ice' | 'water' | 'oil', TrapDurationTier[]> = {
   sand: [

@@ -11,7 +11,8 @@ import {
   polarToLocalXZ, makeSurfFn,
 } from '../../geometry/surfaceUtils';
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
-import { DEG2RAD, DEFAULT_BASE_HEIGHT } from '../../config/arenaConstants';
+import { DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE } from '../../config/arenaConstants';
+import { surfaceDamping } from '../../sim/friction';
 import { BuffDebuffManager } from './BuffDebuffManager';
 import type { BuffInput } from './BuffDebuffManager';
 import { evalEntryCondition, evalActivationMode } from '../conditions/ConditionEvaluator';
@@ -97,6 +98,10 @@ export class SpawnManager {
   private _lastCollisionTime     = 0;
   private _lastCollisionIsSticky = false;
   private _currentGravityScale   = 1.0;
+  /* Friction coefficient of the surface under the bey, refreshed every
+     _resolveSurface() exactly like _currentGravityScale. Defaults to the ABS
+     reference so the octagon-base fallback behaves as it always has. */
+  private _currentSurfaceMu      = SURFACE_MU_REFERENCE;
 
   // Spin direction + wall-impact callback + tip polarity (used by test mode / SpecialMoveManager)
   private _spinDir: 'right' | 'left' = 'right';
@@ -320,7 +325,13 @@ export class SpawnManager {
 
   private _integrate(dt: number): void {
     this.pos.addScaledVector(this.vel, dt);
-    const f = Math.pow(this.grounded ? FRICTION_GROUND : FRICTION_AIR, dt * 60);
+    /* Grounded friction now depends on what is underfoot: an ice floor holds
+       speed and a sand floor eats it, from CS10's measured coefficients. Air
+       drag is unaffected — nothing is being touched. */
+    const base = this.grounded
+      ? surfaceDamping(this._currentSurfaceMu, FRICTION_GROUND)
+      : FRICTION_AIR;
+    const f = Math.pow(base, dt * 60);
     this.vel.x *= f; this.vel.z *= f;
   }
 
@@ -328,6 +339,7 @@ export class SpawnManager {
     this.grounded = false;
     let bestSurfY = -Infinity;
     let bestMat: string | undefined;
+    let bestMu = SURFACE_MU_REFERENCE;
 
     for (const arena of this.getArenas().values()) {
       const { alx, alz } = worldToArenaLocal(this.pos.x, this.pos.z, arena);
@@ -336,6 +348,7 @@ export class SpawnManager {
       if (surfY > bestSurfY) {
         bestSurfY = surfY;
         bestMat = arena.baseMaterial;
+        bestMu = SURFACE_PHYSICS[arena.surface]?.friction ?? SURFACE_MU_REFERENCE;
         this._currentGravityScale = arena.gravityScale ?? 1.0;
       }
     }
@@ -348,6 +361,7 @@ export class SpawnManager {
     }
 
     if (bestSurfY === -Infinity) return;
+    this._currentSurfaceMu = bestMu;
 
     const tipY = this.pos.y + BALL_TIP_OFFSET;
     if (tipY <= bestSurfY) {
