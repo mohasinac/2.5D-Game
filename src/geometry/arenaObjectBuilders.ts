@@ -442,11 +442,28 @@ export function buildSpeedLineObjects(
   projector?: SceneSurfaceProjector,
 ): { mesh: THREE.Mesh; edges: THREE.LineSegments; markerMeshes: THREE.Mesh[]; handleMeshes: THREE.Mesh[]; totalLength: number } {
   sl.pointNormals = [];   // clear before rebuild
+  /* Invalidation signal for anyone caching the derived path. Bumped here, in
+     the single function that rebuilds the geometry, rather than at the four
+     SpeedLineManager call sites that reach it — those are the ones that
+     famously do not chain, so a per-call-site bump would be forgotten. */
+  sl._pathEpoch = (sl._pathEpoch ?? 0) + 1;
   const surfFn = makeSurfFn({ parentZoneId: sl.parentZoneId }, arena, zones);
   const pts = computeSegmentPath(sl, arena, surfFn, projector);
 
-  // Compute per-point normals
-  const normals = pts.map(pt => pathSurfaceNormal(pt, arena, sl));
+  /* Per-point normals.
+     `computeSegmentPath` already collected the REAL raycast normals into
+     `sl.pointNormals` when a projector was supplied — the surface orientation of
+     whatever the ray actually hit, including a bridge deck, a wall face or an
+     obstacle. Those used to be collected and then thrown away in favour of
+     re-deriving an analytic bowl normal here, so a ribbon crossing a bridge was
+     banked as if it were still lying on the bowl.
+     Fall back to the analytic normal only when there was no projector (the
+     array is then filled with +Y placeholders) or the counts disagree. */
+  const haveRaycast =
+    Array.isArray(sl.pointNormals) && sl.pointNormals.length === pts.length && !!projector;
+  const normals = haveRaycast
+    ? sl.pointNormals.map(n => n.clone())
+    : pts.map(pt => pathSurfaceNormal(pt, arena, sl));
 
   // Ribbon
   const ribbonGeo = buildRibbon3D(pts, normals, sl.width);

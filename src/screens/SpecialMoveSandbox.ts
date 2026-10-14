@@ -181,6 +181,7 @@ export class SpecialMoveSandbox extends Sandbox {
       () => this._wallMgr.getAll() as Map<string, WallData>,
       this._spawnHudEl,
       this._ctrlMgr,
+      (arenaId) => this._projSvc.buildProjector(arenaId),
     );
 
     // SpecialMoveManager — registers T-key BEFORE SpawnManager's trigger

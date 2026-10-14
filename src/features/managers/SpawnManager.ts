@@ -11,6 +11,7 @@ import {
   polarToLocalXZ, makeSurfFn,
 } from '../../geometry/surfaceUtils';
 import { computeSegmentPath } from '../../geometry/speedLineBuilders';
+import type { SceneSurfaceProjector } from '../../geometry/sceneSurfaceProjector';
 import { DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE } from '../../config/arenaConstants';
 import { surfaceDamping } from '../../sim/friction';
 import { BuffDebuffManager } from './BuffDebuffManager';
@@ -114,7 +115,7 @@ export class SpawnManager {
   private _trapTimers = new Map<string, number>();
 
   // Speed line tracking
-  private slPathCache   = new Map<string, { pts: THREE.Vector3[]; ts: number }>();
+  private slPathCache   = new Map<string, { pts: THREE.Vector3[]; ts: number; epoch: number }>();
   private slOnRibbon    = new Map<string, boolean>();
   private slExitTangent = new THREE.Vector3();
 
@@ -129,6 +130,11 @@ export class SpawnManager {
     private readonly getWalls:        () => ReadonlyMap<string, WallData>,
     private readonly hudEl:   HTMLElement,
     private readonly ctrlMgr: IControlManager,
+    /* Same projector the ribbon is built with. Without it the physics path
+       fell back to the analytic bowl formula while the visible ribbon was
+       raycast against real meshes, so over a bridge deck or an obstacle the
+       bey followed a different line from the one drawn on screen. */
+    private readonly getProjector: (arenaId: string) => SceneSurfaceProjector | undefined,
   ) {
     this._buffMgr = new BuffDebuffManager(this.ctx.clock);
     this._buildHUD();
@@ -442,15 +448,20 @@ export class SpawnManager {
 
   private _getSlWorldPath(sl: SpeedLineData): THREE.Vector3[] {
     const now = this.ctx.clock.nowMs();
+    const epoch = sl._pathEpoch ?? 0;
     const cached = this.slPathCache.get(sl.id);
-    if (cached && now - cached.ts < SL_CACHE_TTL) return cached.pts;
+    /* Epoch first, then TTL. The TTL alone bounded staleness at 500 ms, so an
+       edit in the properties panel left the bey following the OLD path for up
+       to half a second after the ribbon had already moved. The epoch is bumped
+       by the geometry rebuild itself, so an edit invalidates immediately. */
+    if (cached && cached.epoch === epoch && now - cached.ts < SL_CACHE_TTL) return cached.pts;
 
     const arena = this.getArenas().get(sl.parentArenaId);
-    if (!arena) { this.slPathCache.set(sl.id, { pts: [], ts: now }); return []; }
+    if (!arena) { this.slPathCache.set(sl.id, { pts: [], ts: now, epoch }); return []; }
 
     const zones = this.getZones() as Map<string, ZoneData>;
     const surfFn = makeSurfFn({ parentZoneId: sl.parentZoneId }, arena, zones);
-    const localPts = computeSegmentPath(sl, arena, surfFn);
+    const localPts = computeSegmentPath(sl, arena, surfFn, this.getProjector(sl.parentArenaId));
 
     const cosA = Math.cos(arena.rotY * DEG2RAD);
     const sinA = Math.sin(arena.rotY * DEG2RAD);
@@ -460,7 +471,7 @@ export class SpawnManager {
       arena.posZ + p.x * sinA + p.z * cosA,
     ));
 
-    this.slPathCache.set(sl.id, { pts: worldPts, ts: now });
+    this.slPathCache.set(sl.id, { pts: worldPts, ts: now, epoch });
     return worldPts;
   }
 

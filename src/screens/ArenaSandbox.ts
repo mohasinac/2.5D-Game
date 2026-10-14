@@ -1998,6 +1998,7 @@ export class ArenaSandbox extends Sandbox {
       () => this._wallMgr.getAll() as Map<string, WallData>,
       smHud,
       this._ctrlMgr,
+      (arenaId) => this._projectionService.buildProjector(arenaId),
     );
     this._virtualControls = new VirtualControlsOverlay(
       this.el,

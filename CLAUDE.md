@@ -75,7 +75,7 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/renderState.spec.ts` — asserts *how* the arena scene is drawn (ACES, sRGB, shadow map, environment, fitted shadow frustum, and `toneMappedUnlit === 0`) via `window.__demo.getRenderStats()`. Exists because every defect it covers is **silent**: a correctly configured renderer with zero shadow-casting lights, or an edge line quietly desaturated by ACES, throws nothing and logs nothing. The unit specs prove the render policy *decides* correctly; this proves it was *applied* to the live scene.
 
-**Current gate: 118 tests** — 67 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
+**Current gate: 124 tests** — 73 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 3 `@meta`.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -358,7 +358,7 @@ Services                 : _projectionService _spawnMgr _projectileMgr _translat
 SL interaction state     : slRaycaster · slDrag · selectedSlId
 ```
 
-`ProjectionService.buildProjector(arenaId)` reads the wall/obstacle/bridge managers for live meshes and returns a **fresh** `SceneSurfaceProjector` (no caching), injected into `SpeedLineManager` as a constructor callback.
+`ProjectionService.buildProjector(arenaId)` returns a **fresh** `SceneSurfaceProjector` (no caching) over the arena's own meshes — bowl, floor cap, island cap, spiral ledges — plus live wall, obstacle and bridge-segment meshes. **The bowl used to be missing**, so every projected point fell through to the analytic `arenaSurfaceYAtArenaLocal` formula and the raycaster agreed with it by construction. It is injected into `SpeedLineManager` *and* `SpawnManager` as a constructor callback: both must project against the same geometry or the bey follows a different line from the ribbon it is riding.
 
 ### Data model
 

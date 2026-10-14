@@ -34,6 +34,21 @@ export class ProjectionService {
     if (!arena) return undefined;
     const fallbackSurf = (lx: number, lz: number) => arenaSurfaceYAtArenaLocal(arena, lx, lz);
     const projector = new SceneSurfaceProjector([], fallbackSurf);
+
+    /* THE BOWL ITSELF — previously missing, so every projected point fell
+       through to the analytic `arenaSurfaceYAtArenaLocal` approximation and the
+       raycaster only ever saw walls, obstacles and bridge decks. That made the
+       projector agree with the formula by construction, which hid the whole
+       point of raycasting: real geometry that the formula cannot express.
+       It matters most for the BB-10 profile, whose Tornado Ridge is a genuine
+       non-monotonic bump — the analytic path reproduces it (both go through
+       `bb10RiseFraction`), but the floor cap, island cap and stepped/spiral
+       meshes are real geometry with no formula at all. */
+    if (arena.mesh)       projector.addMesh(arena.mesh);
+    if (arena.floorMesh)  projector.addMesh(arena.floorMesh);
+    if (arena.islandMesh) projector.addMesh(arena.islandMesh);
+    for (const m of arena.spiralMeshes ?? []) projector.addMesh(m);
+
     for (const wallId of arena.wallIds) {
       const wall = this.getWalls().get(wallId);
       if (wall?.mesh) projector.addMesh(wall.mesh);

@@ -524,6 +524,10 @@ export interface SpeedLineData {
 
   /* ── Surface projection ────────────────────────────────────────────────── */
   surfaceOffset:       number;    // cm above projected surface
+  /** Runtime-only, NEVER serialised. Bumped by `buildSpeedLineObjects` on every
+   *  rebuild so consumers caching the derived path (SpawnManager) can tell a
+   *  stale entry from a fresh one without any manager-to-manager coupling. */
+  _pathEpoch?:         number;
   surfaceOrientObject: boolean;
   airNormalMode:       'upright' | 'lean_center' | 'lean_curvature';
   airNormalTiltDeg:    number;
