@@ -556,29 +556,46 @@ Also: `ProjectileManager` bullets never collide with anything. `SpawnManager` ha
 - `ShopScene` is complete but unreachable (no shop trigger or NPC `shopId` in seeded data).
 - `CutscenePlayer` `npc_move` and `sfx` are empty resolves. `UIScene` minimap is an empty box.
 
-**Speed line ribbons render (FIXED).** The cause was a sign disagreement between
-the two halves of the path pipeline, not a visibility or z-fighting problem.
-`waypointsToSegments` ENCODES headings as `atan2(-dx, dz)` -- forward is
-`(-sin, 0, cos)` -- while `computeSegmentPath` REPLAYED them by rotating
-`(0,0,1)` about **+Y**, giving `(+sin, 0, cos)`. X was flipped, so all 24 path
-presets replayed mirrored and the spirals wound outward instead of closing on
-the centre: the shipped `spiral_in` (radiusX 70) built a correct 1817 cm,
-1602-vertex ribbon spanning **x 68.8..210.5** -- entirely outside its own bowl,
-which is why it looked like nothing was ever drawn. After the fix the same
-ribbon spans x -70.7..71.2 and hugs the surface (y -11.2..-10.7 over a floor at
--11).
+**Speed line ribbons STILL DO NOT RENDER (OPEN) -- but a separate, real path
+bug was found and fixed underneath it.**
 
-The convention now lives in exactly two functions, `headingToForward` /
-`forwardToHeading`, used by both sides -- the same mesh-and-physics-share-one-
-function discipline as `bb10RiseFraction`. `tests/unit/speedLinePath.spec.ts`
-round-trips polylines through encode->replay, which needs no expected geometry:
-whatever goes in must come back out.
+FIXED, and worth keeping: the two halves of the path pipeline disagreed about
+heading. `waypointsToSegments` ENCODES as `atan2(-dx, dz)` (forward
+`(-sin, 0, cos)`); `computeSegmentPath` REPLAYED by rotating `(0,0,1)` about
+**+Y**, giving `(+sin, 0, cos)`. X was flipped, so all 24 presets replayed
+mirrored and the spirals wound outward: the shipped `spiral_in` (radiusX 70)
+built a real 1817 cm, 1602-vertex ribbon spanning **x 68.8..210.5**, outside
+its own bowl. Now `-70.7..71.2`, following the bowl from rim (y -10.95) down to
+floor (-22.05). The convention lives in `headingToForward` /
+`forwardToHeading`, used by both sides; `tests/unit/speedLinePath.spec.ts`
+round-trips polylines through encode->replay.
 
-**Still worth knowing:** a ribbon is drawn at `opacity x SL.INACTIVE_OPACITY_MULT`
-(0.4) whenever `activationMode !== 'always'`, so the shipped demo line renders at
-0.30 alpha and 2.5 cm wide -- a couple of pixels at full-arena zoom. That is
-authored data, not a bug, but it is why a correct ribbon can still read as
-"missing" from a wide shot.
+STILL OPEN -- the ribbon is invisible for a DIFFERENT reason. Measured in a live
+scene with the geometry now correct and the line forced to `opacity 1`,
+`width 12`, `activationMode 'always'` and bright red:
+
+```
+meshVisible true | meshParented true | vertexCount 1602 | matOpacity 1
+bounds x -75.4..76,  y -22.05..-10.95   (bowl floor at -11)
+```
+
+...and nothing is drawn. Its START MARKER is drawn (and turns red with the
+line), so the manager runs and the scene receives objects. **Both the ribbon
+mesh AND its centreline `LineSegments` are missing**, and those are precisely
+the two objects registered through `renderMgr.add`, while the markers are added
+straight to the scene and DO appear.
+
+Three hypotheses tested and FALSIFIED, so do not re-try them:
+  1. empty/degenerate geometry -- 1602 verts, correct finite bounds, indices
+     written by `buildRibbon3D` as two triangles per rung;
+  2. opacity (`INACTIVE_OPACITY_MULT` 0.4) or sub-pixel width -- forcing
+     opacity 1 and width 12 cm changes nothing;
+  3. depth precision against the coplanar floor (camera near 0.1 / far 2000
+     gives ~0.04 cm resolution vs a 0.05 cm lift) -- adding `polygonOffset`,
+     the fix that works for `topFaceMesh`, changes nothing.
+
+The marker-vs-mesh split is the strongest remaining lead: look at what
+`renderMgr.add` does to these two objects that direct `scene.add` does not.
 
 **Mobile layout:** the bottom view-mode bar (HITBOX/BOTH/VISUAL) overflows off-screen on mobile portrait — "VISUAL" is unreachable. Root cause is the `vmin` scale collapsing on narrow viewports.
 
