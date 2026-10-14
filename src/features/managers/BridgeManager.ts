@@ -12,6 +12,7 @@ import {
   buildSegmentDeckGeometry,
   buildSegmentEdgeGeometry,
   computeSegmentEndPose,
+  sampleSegmentPath,
   resolveStartPose,
   defaultBridgeSection,
   defaultSegment,
@@ -194,6 +195,15 @@ export class BridgeManager extends FeatureManager<BridgeData, BridgeSave> implem
       : bridge.section;
     const color:   number      = seg.color   ?? sec.color;
     const surface: SurfaceType = seg.surface ?? sec.surface;
+
+    /* Cache the centreline for physics. `sampleSegmentPath` is the same call
+       the deck builder makes internally; doing it here keeps the builder's
+       signature untouched and puts the cache where the inputs already are. */
+    const poses = sampleSegmentPath(seg, startPose, sec);
+    seg._pathPts    = poses.map(p => p.pos.clone());
+    seg._pathRights = poses.map(p =>
+      new THREE.Vector3().crossVectors(p.dir, p.up).normalize());
+    seg._halfWidth  = sec.width / 2;
 
     const geo  = buildSegmentDeckGeometry(seg, startPose, sec);
     const eGeo = buildSegmentEdgeGeometry(seg, startPose, sec);

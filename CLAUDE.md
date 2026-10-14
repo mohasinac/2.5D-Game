@@ -615,9 +615,36 @@ supported**: a tilted primitive is no longer an upright prism, so a tilted
 obstacle keeps tops-only behaviour rather than colliding against a silently
 wrong shape.
 
-What is still missing is everything that is not a floor or an obstacle wall:
-- **No U-channel side walls** on bridges, so nothing keeps the bey on a deck
-  through a curve.
+**U-channel retention exists but is not end-to-end verified.**
+`sim/step/channel.ts` keeps a body between a deck's side walls: nearest
+centreline sample, signed lateral offset against `halfWidth - radius`, push
+back in. It is pure and has 27 unit tests. `BridgeManager.applySegment` caches
+the sampled centreline (`_pathPts`/`_pathRights`/`_halfWidth`, runtime-only,
+never serialised) because recomputing it per tick would mean re-deriving every
+preceding segment's end pose.
+
+Two traps it already encodes, both found by testing:
+- **A deck must only retain bodies NEAR it.** Lateral offset alone cannot
+  distinguish "just past the rail" from "900 cm away" — both are simply beyond
+  the limit. The demo arena's four piers sit at the SAME deck height, so
+  without the proximity test a bey riding one was eligible to be dragged
+  sideways by all four. `CHANNEL_EDGE_REACH` also bounds the corridor
+  longitudinally, so a body past the final sample is excluded without needing
+  the forward vector stored.
+- **A `u_channel` floor sits `depth` below the sampled centreline**, so the
+  body legitimately rides under the path. With the demo pier's `depth: 2` and a
+  tolerance of 2 the body sat exactly on the rejection boundary and retention
+  fired or not on float noise. Hence `floorDrop`.
+
+**What is NOT established:** an end-to-end "the bey stays on the deck" test.
+Live probing shows retention firing at exactly the corridor limit
+(`channelContacts` 0→1, body pushed back inward), but repeated identical runs
+disagreed on whether the bey then stayed on or fell — so no e2e test ships
+rather than a flaky one. Note the u_channel floor already curves UP toward the
+rails (15.0 at centre, 16.3 near the edge on the demo pier), so geometry alone
+provides much of the retention there; the untested case is a FLAT deck with
+rails, and a body fast enough to clear them. Chase this before relying on
+channel retention.
 - **No centripetal retention**, so loops and corkscrews cannot be ridden.
 - **Portals, jump links and footings** remain entirely visual.
 
@@ -834,7 +861,7 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 - `_applyArenaTilt(arena)` must follow **every** `applyArena()` call (which resets `rotation.x/z`), and must also rotate `arena.spiralMeshes`.
 - The weather surface-map path must also call `updateArenaChildren()` + `rebuildDependentsOf()`.
 - `clear()` resets timers only; `clearSchedule(arenaId)` removes entries. `triggerEvent()` only fires `'event'`-type entries.
-- Runtime-only, never serialise: `_score`, `tiltGroup`, `fogSystem`, `_timer`, `_revertTimer`, `_prevValues`, wall `_rotatePivot`/`_arenaRotateTimer`, bridge `_animTimer`/`_animCenter`/`_animPivot`, trap `_eq*`/`_rpm*`/`_gravityTimer`, rotation `pivotGroup`/`currentAngle`.
+- Runtime-only, never serialise: `_score`, `tiltGroup`, `fogSystem`, `_timer`, `_revertTimer`, `_prevValues`, wall `_rotatePivot`/`_arenaRotateTimer`, bridge `_animTimer`/`_animCenter`/`_animPivot`/`_pathPts`/`_pathRights`/`_halfWidth`, trap `_eq*`/`_rpm*`/`_gravityTimer`, rotation `pivotGroup`/`currentAngle`.
 
 ### Naming collisions
 - `BeybladeSandbox` uses `beyRenderer`, because `Sandbox` already has a private `renderer: THREE.WebGLRenderer`.

@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { SceneContext } from '../IArenaFeature';
 import type {
   ArenaData, TrapData, SpeedLineData, SpeedLineSegment, SpeedLineEntryCondition,
-  ZoneData, WallData, ObstacleData,
+  ZoneData, WallData, ObstacleData, BridgeData, BridgeSegmentData,
 } from '../../types/arenaTypes';
 import {
   arenaSurfaceYAtArenaLocal, worldToArenaLocal,
@@ -17,6 +17,8 @@ import { makeBeySpec, makeBeyState } from '../../sim/state';
 import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
 import { resolveObstacleSide } from '../../sim/step/obstacles';
+import { resolveChannel } from '../../sim/step/channel';
+import type { ChannelSegment } from '../../sim/step/channel';
 import type { ObstacleCollider, ColliderBody } from '../../sim/step/obstacles';
 import { BuffDebuffManager } from './BuffDebuffManager';
 import type { BuffInput } from './BuffDebuffManager';
@@ -120,6 +122,10 @@ export class SpawnManager {
      without this can only ever assert something that is also true when the
      feature is switched off. */
   private _obstacleContacts = 0;
+  /** Side-wall retentions since spawn. Same rationale as `_obstacleContacts`:
+   *  a bey held on a deck and one that was never near an edge end up in
+   *  indistinguishable places. */
+  private _channelContacts = 0;
 
   private _obstacleBody: ColliderBody = {
     pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 },
@@ -197,6 +203,8 @@ export class SpawnManager {
        bey followed a different line from the one drawn on screen. */
     private readonly getProjector: (arenaId: string) => SceneSurfaceProjector | undefined,
     private readonly getObstacles: () => ReadonlyMap<string, ObstacleData>,
+    private readonly getBridgeSegments: () => ReadonlyMap<string, BridgeSegmentData>,
+    private readonly getBridges: () => ReadonlyMap<string, BridgeData>,
   ) {
     this._buffMgr = new BuffDebuffManager(this.ctx.clock);
     this._buildHUD();
@@ -229,6 +237,7 @@ export class SpawnManager {
     this.spawned  = true;
     this.health   = HEALTH_MAX;
     this._obstacleContacts = 0;
+    this._channelContacts  = 0;
     this.pos.copy(this.spawnPos);
     this.vel.copy(this.spawnVel);
     this.grounded = false;
@@ -294,6 +303,20 @@ export class SpawnManager {
     this._applyInput(dt);
     this._applyGravity(dt);
     this._integrate(dt);
+    /* Channels first, on the following reasoning: retention is a LATERAL
+       correction whose failure mode is VERTICAL. If the surface is resolved
+       first, a bey that has crossed the deck edge is found to have nothing
+       underneath and starts falling, and only then gets pushed back between
+       the rails -- by which point its tip is under the deck plane and
+       `projectBelow`, which only looks downward, cannot catch it again.
+       Putting the body back on the track before asking what is beneath it
+       removes that window.
+
+       HONEST CAVEAT: swapping the order did NOT measurably change behaviour in
+       the cases tried, so this is reasoned rather than demonstrated. It is
+       kept because the argument holds and the swap costs nothing, not because
+       a test distinguishes the two orders. */
+    this._resolveChannels();
     this._resolveSurface();
     this._resolveWalls();
     this._resolveObstacles();
@@ -567,6 +590,56 @@ export class SpawnManager {
         this._lastCollisionIsSticky = false;
       }
     }
+  }
+
+  /**
+   * Keep the bey between a bridge deck's side walls.
+   *
+   * Without this a deck holds the bey UP but not ON: drive into a curve and it
+   * slides straight off the side, which makes every curved segment and the
+   * whole authored `u_channel` cross-section decorative.
+   *
+   * Distinct from obstacle sides, which push a body OUT of a closed primitive.
+   * A channel pushes it IN, toward a centreline that curves, climbs and banks.
+   * That is only cheap because `BridgeManager` caches the sampled centreline
+   * when it builds the geometry — recomputing it here would mean re-deriving
+   * every preceding segment's end pose, every tick.
+   */
+  private _resolveChannels(): void {
+    const segs = this.getBridgeSegments();
+    if (segs.size === 0) return;
+
+    this._obstacleBody.pos = this.pos;
+    this._obstacleBody.vel = this.vel;
+
+    for (const seg of segs.values()) {
+      const ch = this._channelSegment(seg);
+      if (ch && resolveChannel(this._obstacleBody, ch)) {
+        this._channelContacts++;
+        this._lastCollisionTime     = this.ctx.clock.nowMs();
+        this._lastCollisionIsSticky = false;
+      }
+    }
+  }
+
+  /** `BridgeSegmentData` + its parent section -> a drivable corridor. */
+  private _channelSegment(seg: BridgeSegmentData): ChannelSegment | null {
+    if (!seg._pathPts || !seg._pathRights || seg._halfWidth === undefined) return null;
+    const bridge = this.getBridges().get(seg.bridgeId);
+    if (!bridge) return null;
+    const sec = bridge.section;
+    if (!sec.hasLeftWall && !sec.hasRightWall) return null;
+    return {
+      id: seg.id,
+      points: seg._pathPts,
+      rights: seg._pathRights,
+      halfWidth: seg._halfWidth,
+      wallHeight: sec.sideWallHeight,
+      floorDrop: sec.crossSection === 'u_channel' ? sec.depth : 0,
+      hasLeftWall: sec.hasLeftWall,
+      hasRightWall: sec.hasRightWall,
+      restitution: MAT_RESTITUTION[sec.material] ?? RESTITUTION_DEFAULT,
+    };
   }
 
   /**
@@ -1111,6 +1184,8 @@ export class SpawnManager {
   getHealth(): number { return this.health; }
   /** Obstacle-side contacts since spawn. See `_obstacleContacts`. */
   getObstacleContacts(): number { return this._obstacleContacts; }
+  /** Side-wall retentions since spawn. See `_channelContacts`. */
+  getChannelContacts(): number { return this._channelContacts; }
   isGrounded(): boolean { return this.grounded; }
   getRpm(): number { return this.rpm; }
 

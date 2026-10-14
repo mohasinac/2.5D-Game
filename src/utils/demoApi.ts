@@ -30,6 +30,10 @@ export interface DemoBeyState {
    *  rebounds off a pillar rests about where one that never moved would, so
    *  this is the only way to observe that contact actually occurred. */
   obstacleContacts: number;
+  /** Bridge side-wall retentions since spawn. Same reasoning as
+   *  `obstacleContacts`: being held on a deck is invisible in the final
+   *  position, because staying on is what *not* falling off looks like. */
+  channelContacts: number;
 }
 
 /**
@@ -64,6 +68,18 @@ export interface DemoBridgeDiag {
    *  A mesh at the origin with 0 vertices and a null box is built-but-empty; one
    *  with vertices and a box elsewhere is built-but-mispositioned. Same symptom. */
   segGeom: { id: string; vertices: number; box: { min: DemoVec; max: DemoVec } | null }[];
+  /** What the U-channel resolver actually sees. `pathPts: 0` means the
+   *  centreline cache was never written; walls false means the authored
+   *  section did not survive save/restore. Both look identical from outside
+   *  ("the bey fell off"), which is why they are reported separately. */
+  channel: {
+    halfWidth: number | null;
+    pathPts: number;
+    hasLeftWall: boolean;
+    hasRightWall: boolean;
+    sideWallHeight: number;
+    crossSection: string;
+  };
 }
 
 export interface DemoRenderStats {

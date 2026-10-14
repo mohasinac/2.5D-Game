@@ -39,6 +39,7 @@ interface BeyState {
   vel: { x: number; y: number; z: number };
   grounded: boolean;
   obstacleContacts: number;
+  channelContacts: number;
 }
 
 async function loadDemoArena(page: import('@playwright/test').Page) {

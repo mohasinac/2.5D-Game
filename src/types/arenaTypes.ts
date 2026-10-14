@@ -744,6 +744,15 @@ export interface BridgeSegmentData {
   _animTimer:  number;
   _animCenter: THREE.Vector3;
   _animPivot:  THREE.Group | null;
+  /* ── Runtime-only centreline cache, for U-channel retention ──────────────
+     Written by `BridgeManager.applySegment`, which already computes the start
+     pose and the effective section, so caching costs one extra path sample
+     rather than a chain walk. Physics needs "where is the track here and which
+     way is sideways", and recomputing that per tick would mean re-deriving
+     every preceding segment's end pose. NEVER SERIALISED. */
+  _pathPts?:    THREE.Vector3[];
+  _pathRights?: THREE.Vector3[];
+  _halfWidth?:  number;
 
   mesh: THREE.Mesh | null;
   edges: THREE.LineSegments | null;

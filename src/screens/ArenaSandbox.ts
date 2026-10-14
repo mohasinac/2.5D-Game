@@ -2000,6 +2000,8 @@ export class ArenaSandbox extends Sandbox {
       this._ctrlMgr,
       (arenaId) => this._projectionService.buildProjector(arenaId),
       () => this._obstacleMgr.getAll(),
+      () => this._bridgeMgr.getAllSegments(),
+      () => this._bridgeMgr.getAll(),
     );
     this._virtualControls = new VirtualControlsOverlay(
       this.el,
@@ -2104,6 +2106,7 @@ export class ArenaSandbox extends Sandbox {
           grounded: sm.isGrounded(),
           spawned: sm.isSpawned,
           obstacleContacts: sm.getObstacleContacts(),
+          channelContacts:  sm.getChannelContacts(),
         };
       },
       setBeyPosition: (p) => this._spawnMgr?.setPosition(new THREE.Vector3(p.x, p.y, p.z)),
@@ -2252,7 +2255,17 @@ export class ArenaSandbox extends Sandbox {
         }
         segGeom.push({ id: seg.id, vertices, box });
       }
+      const sec0 = bridge.section;
+      const firstSeg = segs[0];
       out.push({
+        channel: {
+          halfWidth: firstSeg?._halfWidth ?? null,
+          pathPts: firstSeg?._pathPts?.length ?? 0,
+          hasLeftWall: sec0.hasLeftWall,
+          hasRightWall: sec0.hasRightWall,
+          sideWallHeight: sec0.sideWallHeight,
+          crossSection: sec0.crossSection,
+        },
         bridgeId,
         groupInScene: inScene(bridge.group),
         segments: segs.length,

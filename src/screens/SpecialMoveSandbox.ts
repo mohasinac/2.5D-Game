@@ -182,7 +182,10 @@ export class SpecialMoveSandbox extends Sandbox {
       this._spawnHudEl,
       this._ctrlMgr,
       (arenaId) => this._projSvc.buildProjector(arenaId),
-      // This screen builds its own base and test arena; it has no obstacles.
+      // This screen builds its own base and test arena; it has no obstacles
+      // and no bridges.
+      () => new Map(),
+      () => new Map(),
       () => new Map(),
     );
 
