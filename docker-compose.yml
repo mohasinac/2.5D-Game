@@ -13,8 +13,13 @@ services:
       context: .
       target: dev
     container_name: bey-app
+    # Host 3001 -> container 3000. Only the host side moves: Vite still binds
+    # 3000 inside the container, so the healthcheck (127.0.0.1:3000), the test
+    # service's PLAYWRIGHT_BASE_URL (http://bey-app:3000) and `allowedHosts`
+    # all stay as they are. Changing Vite's own port would mean touching all
+    # three in lockstep for no gain.
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       DOCKER: "1"
     volumes:
