@@ -32,13 +32,40 @@ test.describe('AssetRegistry', () => {
   });
 
   test('every catalogue entry is well formed', () => {
-    // Guards the moment real props land: an entry with no url or a zero source
-    // extent would divide by zero in instantiate().
+    /* Real props have landed, and `sourceLongestSide` is now 0 BY DESIGN:
+       `_normalise` back-fills it by measuring the loaded geometry, and only
+       when the catalogue leaves it falsy. The earlier version of this test
+       required > 0 to avoid a divide-by-zero in `instantiate()` — but writing
+       a guessed extent was itself the bug, scaling every Kenney prop by
+       `targetLongest / 1` when the kits are not unit-sized. The division is
+       guarded by `|| 1` instead, which is asserted separately below. */
     for (const e of ASSET_CATALOGUE) {
       expect(e.id).toBeTruthy();
       expect(e.url.startsWith('/')).toBe(true);
       expect(e.label).toBeTruthy();
-      expect(e.sourceLongestSide).toBeGreaterThan(0);
+      expect(e.sourceLongestSide).toBeGreaterThanOrEqual(0);
+      expect(Number.isFinite(e.sourceLongestSide)).toBe(true);
+    }
+  });
+
+  test('a zero source extent cannot produce a non-finite scale', () => {
+    /* The real guarantee the old assertion was reaching for. `instantiate`
+       returns null before a model is ready, so this pins the arithmetic
+       rather than the catalogue value. */
+    for (const e of ASSET_CATALOGUE) {
+      const scale = 20 / (e.sourceLongestSide || 1);
+      expect(Number.isFinite(scale), e.id).toBe(true);
+      expect(scale, e.id).toBeGreaterThan(0);
+    }
+  });
+
+  test('the shipped catalogue is populated and every url is under /models/', () => {
+    /* It was `[]` for the whole life of the project, so "AssetRegistry works"
+       was only ever true vacuously. */
+    expect(ASSET_CATALOGUE.length).toBeGreaterThan(0);
+    for (const e of ASSET_CATALOGUE) {
+      expect(e.url.startsWith('/models/'), e.id).toBe(true);
+      expect(e.url.endsWith('.glb'), e.id).toBe(true);
     }
   });
 

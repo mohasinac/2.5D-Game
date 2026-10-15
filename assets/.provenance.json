@@ -1,0 +1,370 @@
+{
+  "models/boat/Textures/colormap.png": {
+    "file": "models/boat/Textures/colormap.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `pirate-kit`"
+  },
+  "models/boat/boat-row-large.glb": {
+    "file": "models/boat/boat-row-large.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `pirate-kit`"
+  },
+  "models/boat/boat-row-small.glb": {
+    "file": "models/boat/boat-row-small.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `pirate-kit`"
+  },
+  "models/boat/ship-ghost.glb": {
+    "file": "models/boat/ship-ghost.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `pirate-kit`"
+  },
+  "models/boat/ship-large.glb": {
+    "file": "models/boat/ship-large.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `pirate-kit`"
+  },
+  "models/boat/ship-medium.glb": {
+    "file": "models/boat/ship-medium.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `pirate-kit`"
+  },
+  "models/boat/ship-pirate-large.glb": {
+    "file": "models/boat/ship-pirate-large.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/pirate-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `pirate-kit`"
+  },
+  "models/tree/tree_blocks.glb": {
+    "file": "models/tree/tree_blocks.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/tree/tree_blocks_dark.glb": {
+    "file": "models/tree/tree_blocks_dark.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/tree/tree_blocks_fall.glb": {
+    "file": "models/tree/tree_blocks_fall.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/tree/tree_cone.glb": {
+    "file": "models/tree/tree_cone.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/tree/tree_cone_dark.glb": {
+    "file": "models/tree/tree_cone_dark.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/tree/tree_cone_fall.glb": {
+    "file": "models/tree/tree_cone_fall.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/rock/rock_largeA.glb": {
+    "file": "models/rock/rock_largeA.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/rock/rock_largeB.glb": {
+    "file": "models/rock/rock_largeB.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/rock/rock_largeC.glb": {
+    "file": "models/rock/rock_largeC.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/rock/rock_largeD.glb": {
+    "file": "models/rock/rock_largeD.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/rock/rock_largeE.glb": {
+    "file": "models/rock/rock_largeE.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/nature-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `nature-kit`"
+  },
+  "models/city/Textures/colormap.png": {
+    "file": "models/city/Textures/colormap.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `city-kit-commercial`"
+  },
+  "models/city/Textures/variation-a.png": {
+    "file": "models/city/Textures/variation-a.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `city-kit-commercial`"
+  },
+  "models/city/Textures/variation-b.png": {
+    "file": "models/city/Textures/variation-b.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `city-kit-commercial`"
+  },
+  "models/city/building-a.glb": {
+    "file": "models/city/building-a.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `city-kit-commercial`"
+  },
+  "models/city/building-b.glb": {
+    "file": "models/city/building-b.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `city-kit-commercial`"
+  },
+  "models/city/building-c.glb": {
+    "file": "models/city/building-c.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `city-kit-commercial`"
+  },
+  "models/city/building-d.glb": {
+    "file": "models/city/building-d.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `city-kit-commercial`"
+  },
+  "models/city/building-e.glb": {
+    "file": "models/city/building-e.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `city-kit-commercial`"
+  },
+  "models/city/building-f.glb": {
+    "file": "models/city/building-f.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/city-kit-commercial",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `city-kit-commercial`"
+  },
+  "models/castle/Textures/colormap.png": {
+    "file": "models/castle/Textures/colormap.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-a.png": {
+    "file": "models/castle/Textures/variation-a.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-b.png": {
+    "file": "models/castle/Textures/variation-b.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-c.png": {
+    "file": "models/castle/Textures/variation-c.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-d.png": {
+    "file": "models/castle/Textures/variation-d.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-e.png": {
+    "file": "models/castle/Textures/variation-e.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-f.png": {
+    "file": "models/castle/Textures/variation-f.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/Textures/variation-g.png": {
+    "file": "models/castle/Textures/variation-g.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `castle-kit`"
+  },
+  "models/castle/tower-base.glb": {
+    "file": "models/castle/tower-base.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `castle-kit`"
+  },
+  "models/castle/tower-hexagon-base.glb": {
+    "file": "models/castle/tower-hexagon-base.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `castle-kit`"
+  },
+  "models/castle/tower-hexagon-mid.glb": {
+    "file": "models/castle/tower-hexagon-mid.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `castle-kit`"
+  },
+  "models/castle/tower-hexagon-roof-secondary.glb": {
+    "file": "models/castle/tower-hexagon-roof-secondary.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `castle-kit`"
+  },
+  "models/castle/tower-hexagon-roof.glb": {
+    "file": "models/castle/tower-hexagon-roof.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/castle-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `castle-kit`"
+  },
+  "models/td/Textures/colormap.png": {
+    "file": "models/td/Textures/colormap.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/tower-defense-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `tower-defense-kit`"
+  },
+  "models/td/Textures/variation-a.png": {
+    "file": "models/td/Textures/variation-a.png",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/tower-defense-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "texture atlas for `tower-defense-kit`"
+  },
+  "models/td/tower-round-base.glb": {
+    "file": "models/td/tower-round-base.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/tower-defense-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `tower-defense-kit`"
+  },
+  "models/td/tower-round-bottom-a.glb": {
+    "file": "models/td/tower-round-bottom-a.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/tower-defense-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `tower-defense-kit`"
+  },
+  "models/td/tower-round-bottom-b.glb": {
+    "file": "models/td/tower-round-bottom-b.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/tower-defense-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `tower-defense-kit`"
+  },
+  "models/td/tower-round-bottom-c.glb": {
+    "file": "models/td/tower-round-bottom-c.glb",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/tower-defense-kit",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "from `tower-defense-kit`"
+  }
+}

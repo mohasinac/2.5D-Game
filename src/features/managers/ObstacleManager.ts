@@ -8,6 +8,7 @@ import {
 } from '../../geometry/obstacleBuilders';
 import { DEFAULT_OBSTACLE_WEIGHT } from '../../config/arenaConstants';
 import { obstacleToSave } from '../../utils/arenaPersistence';
+import { propRegistry, resolveModelId } from '../propRegistry';
 import { FeatureManager } from '../FeatureManager';
 import type { SceneContext, IPositionedManager } from '../IArenaFeature';
 
@@ -93,6 +94,59 @@ export class ObstacleManager extends FeatureManager<ObstacleData, ObstacleSave> 
     data.mesh  = mesh;
     data.edges = edges;
     this.ctx.renderMgr.add(data.id, [mesh, edges]);
+
+    this._attachProp(data, mesh);
+  }
+
+  /**
+   * Swap in a real model where the data asks for one.
+   *
+   * THE PRIMITIVE IS BUILT FIRST, ALWAYS. The load is async and may fail, so
+   * the procedural shape is the thing that guarantees something is on screen;
+   * the model is an upgrade applied when and if it arrives. That ordering is
+   * also what makes a fresh clone with no `assets/` still render an arena.
+   *
+   * `theme` resolves the id when `modelId` is null. Every boat in the demo
+   * arena has carried `theme: 'boat'` since it was authored and NOTHING has
+   * ever read it — which is why the Sea Side Bowl's "boats" are grey boxes.
+   * Picking deterministically by index rather than at random keeps a given
+   * arena looking the same on every load.
+   *
+   * COLLISION IS UNAFFECTED: `sim/step/obstacles.ts` resolves against the
+   * authored primitive either way, so art can change without altering how a
+   * stadium plays.
+   */
+  private _attachProp(data: ObstacleData, mesh: THREE.Mesh): void {
+    const id = resolveModelId(data.modelId, data.theme, data.id);
+    if (!id) return;
+
+    const longest = Math.max(data.dimX, data.dimY, data.dimZ);
+    void propRegistry().load(id).then((root) => {
+      /* The obstacle may have been edited or deleted while the file was in
+         flight — `applyObstacle` rebuilds destructively — so re-check that
+         this is still the live mesh before touching the scene. */
+      if (!root || data.mesh !== mesh) return;
+
+      const inst = propRegistry().instantiate(id, longest);
+      if (!inst) return;
+
+      /* Hide the placeholder rather than removing it: it stays the thing the
+         render manager owns and disposes, so the model cannot leak if the
+         obstacle is deleted a frame later. The white edge overlay goes too —
+         a wireframe box around a detailed boat is the giveaway that the swap
+         is cosmetic.
+
+         MATERIAL-LEVEL, NOT OBJECT-LEVEL. `Object3D.visible` is INHERITED by
+         children, so `mesh.visible = false` also hid the model parented to it
+         one line later — every prop vanished and the arena looked emptier than
+         it had with boxes. Hiding the material leaves the node tree visible so
+         the child still draws. */
+      for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        m.visible = false;
+      }
+      if (data.edges) data.edges.visible = false;
+      mesh.add(inst);
+    });
   }
 
   protected disposeOne(_data: ObstacleData): void {

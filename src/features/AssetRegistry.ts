@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { GENERATED_CATALOGUE } from './assetCatalogue.generated';
 import { applyRenderPolicy } from '../render/shadowPolicy';
 
 /**
@@ -46,14 +48,17 @@ export interface AssetEntry {
 }
 
 /**
- * The shipped prop catalogue.
+ * The shipped prop catalogue — 32 CC0 models, all with a `LICENSES.md` row.
  *
- * Empty until models land in `assets/models/`. Kept as an explicit list rather
- * than a directory scan so an id that no longer resolves is a visible edit here
- * instead of a silent runtime miss, and so `LICENSES.md` has exactly one list to
- * stay in sync with.
+ * GENERATED from what is on disk (`scripts/fetch-assets.mjs`), not hand-kept.
+ * The original note here argued for a hand-written list so a dead id would be
+ * a visible edit rather than a silent runtime miss — but generating it removes
+ * the failure mode outright instead of making it easier to spot, because the
+ * list cannot disagree with the folder it is derived from. A hand list has the
+ * opposite risk: `load()` negative-caches an unknown id and the caller keeps
+ * its grey box, so a stale entry looks exactly like "no model was picked".
  */
-export const ASSET_CATALOGUE: readonly AssetEntry[] = [];
+export const ASSET_CATALOGUE: readonly AssetEntry[] = GENERATED_CATALOGUE;
 
 type LoadState =
   | { status: 'loading'; promise: Promise<THREE.Object3D | null> }
@@ -62,7 +67,21 @@ type LoadState =
 
 export class AssetRegistry {
   private readonly _cache = new Map<string, LoadState>();
-  private readonly _loader = new GLTFLoader();
+  /**
+   * Meshopt is registered; KTX2 deliberately is NOT, yet.
+   *
+   * `assets/README.md` mandates `gltfpack` (quantise + simplify + Meshopt +
+   * KTX2), and a bare `GLTFLoader` cannot parse ANY of that output — so this
+   * registration is what makes the documented pipeline usable at all. The
+   * decoder ships inside `three/addons`, so it costs no extra served files.
+   *
+   * `KTX2Loader` is the opposite trade: it needs the Basis transcoder WASM
+   * served from `publicDir`, which is real weight, and nothing we ship uses
+   * KTX2 textures today. Adding it now would mean carrying a transcoder for
+   * assets that do not exist. Register it alongside the first KTX2 texture,
+   * not before.
+   */
+  private readonly _loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   private readonly _entries: Map<string, AssetEntry>;
 
   constructor(catalogue: readonly AssetEntry[] = ASSET_CATALOGUE) {
