@@ -137,6 +137,34 @@ export class InventoryScene extends Phaser.Scene {
         this.refreshSaveSlots();
       });
       this.saveButtons.push(btn);
+
+      /* LOAD, which had no caller anywhere — saving worked and loading was
+         unimplemented from the UI's point of view, so every save was
+         write-only. A separate button rather than a modifier click: a slot
+         that both saves and loads on the same gesture will eventually destroy
+         somebody's progress. */
+      if (slot) {
+        const loadBtn = this.add.text(x, baseY + 32, 'LOAD', {
+          fontFamily: 'Rajdhani, monospace',
+          fontSize:   '10px',
+          color:      '#8fd8ff',
+          align:      'center',
+          backgroundColor: 'rgba(10,20,40,0.9)',
+          padding:    { x: 8, y: 3 },
+        }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+
+        loadBtn.on('pointerover', () => loadBtn.setStyle({ color: '#ff6b35' }));
+        loadBtn.on('pointerout',  () => loadBtn.setStyle({ color: '#8fd8ff' }));
+        loadBtn.on('pointerdown', () => {
+          if (!SaveSystem.load(i as 0 | 1 | 2)) return;
+          /* The overworld has to be rebuilt from the restored state — it is
+             paused underneath this overlay, holding the OLD map and position. */
+          this.scene.stop();
+          this.scene.stop('WorldScene');
+          this.scene.start('WorldScene');
+        });
+        this.saveButtons.push(loadBtn);
+      }
     }
   }
 

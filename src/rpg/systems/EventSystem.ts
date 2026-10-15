@@ -43,6 +43,23 @@ export class EventSystem {
     }
   }
 
+  /**
+   * Hand control to a sub-scene WITHOUT killing the overworld.
+   *
+   * `scene.start` STOPS the calling scene. Every sub-scene here later calls
+   * `scene.resume('WorldScene')` to hand control back — and resume does
+   * nothing to a stopped scene, so the player returned to a dead overworld
+   * with no map, no NPCs and no input. Dialogue and shop never had the bug
+   * because they already used `launch`.
+   *
+   * `launch` + `pause` keeps the overworld alive and suspended, which is what
+   * the sub-scenes were always written to expect.
+   */
+  private handOff(key: string, data: Record<string, unknown>): void {
+    this.scene.scene.launch(key, data);
+    this.scene.scene.pause();
+  }
+
   private dispatch(trigger: TriggerData): void {
     switch (trigger.type) {
       case 'dialogue':
@@ -54,7 +71,7 @@ export class EventSystem {
         break;
 
       case 'battle':
-        this.scene.scene.start('BattleTransitionScene', { npcId: trigger.targetId });
+        this.handOff('BattleTransitionScene', { npcId: trigger.targetId });
         break;
 
       case 'warp':
@@ -75,13 +92,13 @@ export class EventSystem {
 
       case 'pipe_puzzle': {
         const level = svgAssetStore.getPipeLevel(trigger.targetId);
-        if (level) this.scene.scene.start('PipePuzzleScene', { level, triggerId: trigger.id });
+        if (level) this.handOff('PipePuzzleScene', { level, triggerId: trigger.id });
         break;
       }
 
       case 'platform_level': {
         const level = svgAssetStore.getPlatformLevel(trigger.targetId);
-        if (level) this.scene.scene.start('PlatformScene', { level, triggerId: trigger.id });
+        if (level) this.handOff('PlatformScene', { level, triggerId: trigger.id });
         break;
       }
     }

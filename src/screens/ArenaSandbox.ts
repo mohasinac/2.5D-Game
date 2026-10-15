@@ -2982,6 +2982,17 @@ export class ArenaSandbox extends Sandbox {
     status.textContent = 'Load a stadium, then launch';
   }
 
+  /**
+   * Choose which Season-1 build the next battle's opponent uses.
+   *
+   * The door the RPG hand-off needed: `onBattle(npcId)` in `main.ts` was an
+   * empty stub with a comment, so an NPC's identity could not reach the 3D
+   * battle at all and every fight was against the same hardcoded bey.
+   */
+  setOpponentBuild(buildId: string): void {
+    if (season1Bey(buildId)) this._opponentBuildId = buildId;
+  }
+
   /** Ids of every stadium authored from a CS10 case. */
   listCs10Arenas(): { id: string; name: string; caseNum: number }[] {
     return CS10_ARENAS.map(a => ({ id: a.id, name: a.name, caseNum: a.caseNum }));

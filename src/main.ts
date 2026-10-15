@@ -11,6 +11,21 @@ import { gameConfirm }         from './utils/dialog';
 import { inputManager }        from './features/managers/InputManager';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
+/**
+ * Which bey each RPG opponent brings.
+ *
+ * Keyed by NPC id so a trigger carries an identity into the battle rather than
+ * every fight being against the same hardcoded top. Unknown ids fall back to
+ * Galeon rather than failing — a missing row should cost flavour, not the
+ * fight.
+ */
+const NPC_BEY: Record<string, string> = {
+  npc_kai:   'dranzer-s',
+  npc_max:   'draciel-s',
+  npc_ray:   'driger-s',
+  npc_tyson: 'dragoon-s',
+};
+
 type ScreenId = 'landing' | 'beyblade' | 'arena' | 'battle' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor' | 'special-moves';
 
 class App {
@@ -100,8 +115,13 @@ class App {
 
     this.rpg = new RPGScreen(root, {
       onBack:   () => { void this.confirmLeave(); },
-      onBattle: (_npcId: string) => {
-        // Future Three.js battle handoff — stub: stay in RPG
+      /* THE RPG -> BATTLE HAND-OFF, which was an empty stub. The whole chain
+         already existed — an `EventSystem` trigger emits `battle:start`,
+         `RPGScreen` forwards it here — and it stopped at a comment, so an NPC
+         could never start a 3D fight. */
+      onBattle: (npcId: string) => {
+        this.battle.setOpponentBuild(NPC_BEY[npcId] ?? 'galeon');
+        this.go('battle');
       },
     });
 

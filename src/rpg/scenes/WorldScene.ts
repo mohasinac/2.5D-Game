@@ -17,6 +17,15 @@ export class WorldScene extends Phaser.Scene {
   private eventSystem!: EventSystem;
   private cutscenePlayer!: CutscenePlayer;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  /**
+   * Tiles the player cannot walk through, keyed `col:row`.
+   *
+   * BUILT SINCE DAY ONE AND NEVER READ — which is why the player walked
+   * through walls, water and buildings alike. `buildTileLayers` fills it from
+   * `tileData.collision === 'solid'` and nothing consulted it, so the map's
+   * authored collision data had no effect whatsoever. `resolveCollision`
+   * below is the consumer.
+   */
   private collisionLayer: Set<string> = new Set();
   private bushTiles: Set<string> = new Set();
   private mapData: MapData | null = null;
@@ -108,6 +117,35 @@ export class WorldScene extends Phaser.Scene {
     gameStateStore.setCurrentMap(mapId);
   }
 
+  /**
+   * Stop the player entering a solid tile.
+   *
+   * Resolved PER AXIS against the previous position rather than by reverting
+   * both: reverting both makes a diagonal walk into a wall stop dead, which
+   * reads as the controls sticking. Separating them lets you slide along a
+   * wall, which is what every tile RPG does and what players expect.
+   *
+   * The body's own corners are tested, not its centre, or the player's
+   * shoulders pass through walls their midpoint clears.
+   */
+  private resolveCollision(prevX: number, prevY: number): void {
+    if (this.collisionLayer.size === 0) return;
+
+    const half = TILE_SIZE * 0.3;          // body is narrower than its tile
+    const solidAt = (x: number, y: number): boolean => {
+      for (const [ox, oy] of [[-half, -half], [half, -half], [-half, half], [half, half]]) {
+        const col = Math.floor((x + ox) / TILE_SIZE);
+        const row = Math.floor((y + oy) / TILE_SIZE);
+        if (this.collisionLayer.has(`${col}:${row}`)) return true;
+      }
+      return false;
+    };
+
+    const { x, y } = this.player;
+    if (solidAt(x, prevY)) this.player.sprite.x = prevX;
+    if (solidAt(this.player.x, y)) this.player.sprite.y = prevY;
+  }
+
   private buildTileLayers(mapData: MapData): void {
     this.collisionLayer.clear();
     this.bushTiles.clear();
@@ -172,7 +210,10 @@ export class WorldScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     if (!this.player || this.player.isLocked()) return;
 
+    const prevX = this.player.x;
+    const prevY = this.player.y;
     this.player.update(this.cursors);
+    this.resolveCollision(prevX, prevY);
 
     if (this.player.inventoryJustPressed) {
       if (this.scene.isActive('InventoryScene')) {
