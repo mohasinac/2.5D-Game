@@ -21,6 +21,7 @@ import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
 import { resolveObstacleSide } from '../../sim/step/obstacles';
 import { resolveChannel } from '../../sim/step/channel';
+import type { BeyBody } from '../../sim/step/beyCollision';
 import {
   stepSpin, spinDecayRate, rpmToOmega, omegaToRpm, sleepOutOmega,
 } from '../../sim/step/spin';
@@ -1214,6 +1215,27 @@ export class SpawnManager {
   }
 
   // ── Public extension API (used by test mode + SpecialMoveManager) ─────────
+
+  /**
+   * The player's bey as a contact body, ALIASING the live vectors.
+   *
+   * `pos` and `vel` are the manager's own `Vector3`s, not copies: a
+   * `Vector3` structurally satisfies `Vec3`, so the pure resolver writes
+   * straight through and there is no copy-back step to forget. Returning
+   * clones here would make bey-vs-bey contact silently do nothing.
+   */
+  asColliderBody(): BeyBody {
+    return {
+      id: this._spec.id,
+      pos: this.pos,
+      vel: this.vel,
+      radius: this._spec.radius,
+      mass: this._spec.mass,
+      contactLow: this._spec.tipOffset,
+      contactHigh: this._spec.tipOffset + this._spec.height,
+      restitution: this._spec.restitution,
+    };
+  }
 
   getPosition(): THREE.Vector3 { return this.pos.clone(); }
   getVelocity(): THREE.Vector3 { return this.vel.clone(); }

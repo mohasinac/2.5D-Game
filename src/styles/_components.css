@@ -1374,3 +1374,67 @@
   flex: 1 1 0;
 }
 .hidden { display: none !important; }
+
+/* ── Battle HUD (plan Sec.L) ─────────────────────────────────────────────
+   Bars at the TOP draining toward the CENTRE, so both players are
+   comparable without scanning opposite screen edges; each meter sits
+   adjacent to its own lifebar, never in the opposite corner; and nothing
+   is curved, because a special costs an exact amount and curved segment
+   boundaries are unreadable. Less scanning is the whole principle.        */
+.battle-hud {
+  position: absolute; inset: 0 0 auto 0;
+  display: flex; flex-direction: column; align-items: center;
+  gap: calc(2 * var(--mm));
+  padding: calc(6 * var(--mm));
+  pointer-events: none; z-index: 20;
+  font-family: 'Rajdhani', sans-serif;
+}
+.hud-row { display: flex; width: 100%; justify-content: space-between; gap: calc(8 * var(--mm)); }
+.hud-side { display: flex; flex-direction: column; gap: calc(1.5 * var(--mm)); min-width: 28%; }
+/* Mirrored so the left player's bars drain rightward, toward the centre. */
+.hud-mirror { align-items: flex-end; }
+.hud-mirror .hud-bar > i { float: right; }
+
+.hud-name {
+  font-family: 'Orbitron', sans-serif; text-transform: uppercase;
+  letter-spacing: 0.12em; font-size: 0.7em; color: #dde8ff;
+  text-shadow: 0 0 calc(2 * var(--mm)) rgba(0, 229, 255, 0.5);
+}
+.hud-dir { color: #00e5ff; }
+
+.hud-bar {
+  height: calc(3 * var(--mm)); width: 100%;
+  background: rgba(8, 8, 16, 0.75);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 0.1em; overflow: hidden;
+}
+.hud-bar > i { display: block; height: 100%; transition: width 90ms linear; }
+
+.hud-survivor > i { background: linear-gradient(90deg, #00e5ff, #6ff7ff); }
+.hud-burst    > i { background: linear-gradient(90deg, #ff6b35, #ffb088); }
+.hud-meters   { display: flex; gap: calc(1.5 * var(--mm)); }
+.hud-active   > i { background: #4a7fff; }
+/* Earned, not ticked — so it reads as the "fought for" bar. */
+.hud-xtreme   > i { background: linear-gradient(90deg, #ffd166, #fff3b0); }
+
+.hud-rpm { font-size: 0.6em; color: rgba(221, 232, 255, 0.7); letter-spacing: 0.08em; }
+
+.hud-pips { display: flex; gap: calc(2 * var(--mm)); }
+.hud-pip {
+  width: calc(5 * var(--mm)); height: calc(5 * var(--mm));
+  display: grid; place-items: center;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #00e5ff; font-size: 0.6em;
+}
+
+.hud-banner {
+  margin-top: calc(4 * var(--mm));
+  padding: calc(2 * var(--mm)) calc(6 * var(--mm));
+  font-family: 'Orbitron', sans-serif; text-transform: uppercase;
+  letter-spacing: 0.14em; font-size: 0.85em;
+  background: rgba(8, 8, 16, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #dde8ff;
+}
+.hud-banner-force { border-color: rgba(255, 107, 53, 0.6); color: #ff6b35; }
+.hud-banner-qte   { border-color: rgba(255, 209, 102, 0.8); color: #ffd166; }

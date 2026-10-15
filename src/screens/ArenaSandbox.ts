@@ -11,7 +11,7 @@ import {
   DEFAULT_SPIRAL_TURNS, DEFAULT_SPIRAL_COUNT,
   DEFAULT_SPIRAL_LEDGE_W, DEFAULT_SPIRAL_LEDGE_H, DEFAULT_SPIRAL_RADIUS_FRAC,
   DEFAULT_ARENA_MATERIAL, MIN_ZONE_DEPTH, PIT_FIXED_DEPTH, ARENA_SAVE_VERSION,
-  ENV,
+  ENV, SURFACE_PHYSICS, SURFACE_MU_REFERENCE,
 } from '../config/arenaConstants';
 import { buildParticleSystem } from '../geometry/particleBuilders';
 import { buildWeatherSystem } from '../geometry/weatherBuilders';
@@ -91,7 +91,17 @@ import { createArenaStateStore, type ArenaStateStore } from '../stores/arenaStat
 /* demoApi is loaded via dynamic import inside an `import.meta.env.DEV` guard so the
    whole module is excluded from production bundles. A static import here would keep
    it in the graph even though the call site is dead code. Type-only import is erased. */
-import type { DemoVec, DemoHooks, DemoBridgeDiag } from '../utils/demoApi';
+import type { DemoVec, DemoHooks, DemoBridgeDiag } from '../utils/demoApi'
+import { BeySystem } from '../systems/BeySystem';
+import { BeyRenderer } from '../renderers/BeyRenderer';
+import { BeyHud } from '../systems/BeyHud';
+import { InputSystem } from '../systems/InputSystem';
+import { MatchSystem } from '../systems/MatchSystem';
+import { makeBeySpec } from '../sim/state';
+import type { BeySpec } from '../sim/state';
+import { rpmToOmega } from '../sim/step/spin';
+import { resolveBeyPairs } from '../sim/step/beyCollision';
+import type { BeyBody } from '../sim/step/beyCollision';;
 import { Rng } from '../sim/Rng';
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -167,6 +177,22 @@ export class ArenaSandbox extends Sandbox {
   private _wallProfileNodes = new Set<string>();
   private _projectileMgr: ProjectileManager | null = null;
   private _spawnMgr:       SpawnManager | null = null;
+  /* ── The roster (plan Sec.O-1 / Phase 10b) ──────────────────────────────
+     `SpawnManager` remains the PLAYER's bey: it owns the arena-feature
+     collision (traps, zones, speed lines, walls, the surface resolver) that
+     has been built up over the whole project and is not worth re-deriving.
+     `BeySystem` owns every OTHER bey, which is what finally lets more than
+     one exist.
+
+     The player's body is handed to the roster BY REFERENCE each tick (see
+     `_tickRoster`), so bey-vs-bey contact resolves against the live vectors
+     rather than a copy. One source of truth, which is the rule the second
+     scene-object registry broke and had to be merged back from. */
+  private _beySystem:   BeySystem | null = null;
+  private _beyRenderer: BeyRenderer | null = null;
+  private _beyHud:      BeyHud | null = null;
+  private _inputSystem: InputSystem | null = null;
+  private _matchSystem: MatchSystem | null = null;
   private _spawnMgrBtn:    HTMLButtonElement | null = null;
   private _ctrlMgr!:       ControlManager;
   private _virtualControls!: VirtualControlsOverlay;
@@ -1627,6 +1653,7 @@ export class ArenaSandbox extends Sandbox {
 
     // Stage 4: Physics (reads stage 1 constants + stage 3 final positions)
     this._spawnMgr?.tick(dt);
+    this._tickRoster(dt);
 
     // Stage 5: Target tracking
     this._targetMgr?.tick(dt);
@@ -2269,6 +2296,136 @@ export class ArenaSandbox extends Sandbox {
       }
       return `y=${h.point.y.toFixed(2)} ${who}`;
     });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     THE ROSTER — more than one bey at last
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /** Create the roster lazily; most editor sessions never spawn an opponent. */
+  private _ensureRoster(): BeySystem {
+    if (!this._beySystem) {
+      this._beySystem   = new BeySystem();
+      this._inputSystem = new InputSystem();
+      this._matchSystem = new MatchSystem(this._beySystem);
+      const scene = this.getScene();
+      if (scene) this._beyRenderer = new BeyRenderer(scene);
+      this._beyHud = new BeyHud(this.el);
+      this._matchSystem.beginRound(this.simClock.nowMs());
+    }
+    return this._beySystem;
+  }
+
+  /**
+   * Add an opponent. The first caller of everything Phase 10b built.
+   */
+  addOpponent(id: string, pos: { x: number; y: number; z: number },
+              over: Partial<BeySpec> = {}): void {
+    const sys  = this._ensureRoster();
+    const spec = makeBeySpec(id, over);
+    sys.add(spec, 'blue', { pos: { ...pos }, omega: rpmToOmega(1500) });
+    this._beyRenderer?.add(spec, { disc: 0x2266cc, cone: 0x4488dd });
+    this._beyHud?.setVisible(true);
+  }
+
+  removeOpponent(id: string): void {
+    this._beySystem?.remove(id);
+    this._beyRenderer?.remove(id);
+  }
+
+  /**
+   * Step the roster, then resolve it against the player.
+   *
+   * THE PLAYER IS BORROWED, NOT COPIED. `SpawnManager` owns its own
+   * `Vector3`s and a `Vector3` structurally satisfies `Vec3`, so handing the
+   * live objects to the pure resolver lets it write straight through — the
+   * same aliasing the manager already uses internally. Copying in and out
+   * would create a second source of truth for one frame, which is exactly
+   * the class of bug that took the longest to find in this project.
+   */
+  private _tickRoster(dt: number): void {
+    const sys = this._beySystem;
+    if (!sys || sys.size === 0) return;
+
+    const inputs = this._inputSystem?.gather(dt) ?? new Map();
+
+    /* Each opponent resolves its own ground through the same projector the
+       player uses, so a bey on a bridge deck stands on it whoever owns it. */
+    sys.step(dt, inputs, (id) => {
+      const e = sys.get(id);
+      if (!e) return { surfaceY: 0, surfaceMu: 0.15, gravityScale: 1, supported: true };
+      return this._sampleWorldFor(e.state.pos, e.spec.tipOffset);
+    });
+
+    this._resolvePlayerAgainstRoster();
+
+    const now = this.simClock.nowMs();
+    const defeats = sys.living().length < sys.size
+      ? [...sys.all()].filter(e => !e.alive).map(e => ({ id: e.spec.id, cause: 'sleep_out' as const }))
+      : [];
+    const round = this._matchSystem?.update(now, defeats);
+    if (round && this._beyHud) {
+      this._beyHud.clearBanners();
+      this._beyHud.banner(round.winner ? `${round.winner} wins — ${round.kind}` : 'draw');
+    }
+
+    for (const e of sys.all()) this._beyRenderer?.sync(e.state, dt);
+
+    if (this._beyHud && this._matchSystem) {
+      this._beyHud.render(
+        [...sys.all()].map(e => ({
+          entity: e,
+          gauges: { active: 0, xtreme: 0 },
+          burst: 0,
+          label: e.spec.id,
+        })),
+        this._matchSystem.history(),
+      );
+    }
+  }
+
+  /** What is under a point: the projector first, the analytic bowl second. */
+  private _sampleWorldFor(pos: { x: number; y: number; z: number }, tipOffset: number) {
+    let surfaceY = 0, surfaceMu = SURFACE_MU_REFERENCE, gravityScale = 1;
+    let supported = false;
+
+    for (const [, arena] of this.arenas) {
+      const { alx, alz } = worldToArenaLocal(pos.x, pos.z, arena);
+      if ((alx / arena.radiusX) ** 2 + (alz / arena.radiusZ) ** 2 > 1) continue;
+      const y = arenaSurfaceYAtArenaLocal(arena, alx, alz);
+      if (!supported || y > surfaceY) {
+        surfaceY = y; supported = true;
+        surfaceMu = SURFACE_PHYSICS[arena.surface]?.friction ?? SURFACE_MU_REFERENCE;
+        gravityScale = arena.gravityScale ?? 1;
+      }
+    }
+    const projector = this._projectionService.buildProjector([...this.arenas.keys()][0] ?? '');
+    const hit = projector?.projectBelow(pos.x, pos.z, pos.y + tipOffset);
+    if (hit && (!supported || hit.point.y > surfaceY)) {
+      surfaceY = hit.point.y; supported = true;
+    }
+    return { surfaceY, surfaceMu, gravityScale, supported };
+  }
+
+  /** Contact between the player's bey and every bey in the roster. */
+  private _resolvePlayerAgainstRoster(): void {
+    const sys = this._beySystem;
+    const sm  = this._spawnMgr;
+    if (!sys || !sm || !sm.isSpawned) return;
+
+    const player = sm.asColliderBody();
+    const bodies: BeyBody[] = [player];
+    for (const e of sys.living()) {
+      bodies.push({
+        id: e.spec.id, pos: e.state.pos, vel: e.state.vel,
+        radius: e.spec.radius, mass: e.spec.mass,
+        contactLow: e.spec.tipOffset,
+        contactHigh: e.spec.tipOffset + e.spec.height,
+        restitution: e.spec.restitution,
+      });
+    }
+    if (bodies.length < 2) return;
+    resolveBeyPairs(bodies);
   }
 
   private _demoBridgeDiag(): DemoBridgeDiag[] {
