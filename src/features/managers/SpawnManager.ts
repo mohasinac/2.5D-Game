@@ -262,6 +262,15 @@ export class SpawnManager {
     this._obstacleContacts = 0;
     this._channelContacts  = 0;
     this._sleptOut = false;
+    /* THE TILT MUST RESET WITH IT, and this cost a full e2e gate to find.
+       `tiltDeg` is mutated every tick by `_stepSpin`, so once a bey topples to
+       90 degrees it STAYS there — and the next spawn inherits the toppled pose.
+       `stepSpin` then reads tilt >= SLEEP_OUT_TILT and reports `sleptOut` on
+       the very first grounded tick, at full rpm, so the fresh bey was dead on
+       arrival. Only the second and later spawns were affected, which is
+       exactly why three `dropAt` calls in one test failed while a single drop
+       in isolation passed. */
+    this.tiltDeg = DEFAULT_TILT_DEG;
     this.pos.copy(this.spawnPos);
     this.vel.copy(this.spawnVel);
     this.grounded = false;
@@ -1137,6 +1146,18 @@ export class SpawnManager {
    */
   private _applyPattern(dt: number): void {
     if (!this.grounded) return;
+    /* A DEAD TOP DOES NOT DRIVE ITSELF. The pattern force is the tip gripping
+       the surface while it spins; with no spin there is no torque to convert,
+       so a slept-out bey must coast to a stop rather than keep steering. It
+       did keep steering, which is why a toppled bey wandered the bowl forever
+       and `waitForRest` could never return. Scaled by spin rather than gated
+       on it, so a dying bey loses authority gradually instead of snapping to
+       zero at the threshold. */
+    if (this._sleptOut) return;
+    const omega = Math.abs(rpmToOmega(this.rpm));
+    const crit  = sleepOutOmega(this._spec.mass, this._spec.inertiaSpin, this._spec.comY);
+    const drive = crit > 0 ? Math.min(1, omega / (crit * 2)) : 1;
+    if (drive <= 0) return;
     const profile = TIP_MOVEMENT[this._spec.tipType] ?? TIP_MOVEMENT.hard_flat;
 
     let arenaCx = 0, arenaCz = 0, ridge = 50, outer = 80;
@@ -1163,7 +1184,7 @@ export class SpawnManager {
       0,
     );
 
-    const force = this._spec.moveForce * profile.aggression * dt;
+    const force = this._spec.moveForce * profile.aggression * dt * drive;
     this.vel.x += want.x * force;
     this.vel.z += want.z * force;
   }
