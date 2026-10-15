@@ -1,12 +1,18 @@
 import type { BeySpec, BeyState } from '../sim/state';
 import { makeBeyState } from '../sim/state';
 import * as Step from '../sim/step/integrate';
-import { stepSpin, spinDecayRate, rpmToOmega, omegaToRpm } from '../sim/step/spin';
+import {
+  stepSpin, spinDecayRate, rpmToOmega, omegaToRpm, tiltFromContact, SLEEP_OUT_TILT,
+} from '../sim/step/spin';
 import { resolveBeyPairs, type BeyBody, type BeyContact } from '../sim/step/beyCollision';
 import { applySpinExchange, type SpinBody } from '../sim/step/spinExchange';
 import { BEY_TIP_PROFILES, effectiveTipFriction } from '../config/arenaConstants';
 import { detachPart, attachPart, morphPart, shouldDeploy, type LivePart } from '../sim/step/partMutation';
 import { stepClones, PositionTrail, type Clone } from '../sim/step/clones';
+import {
+  makeBurstState, applyBurstImpulse, burstProgress,
+  DEFAULT_BURST, type BurstState, type BurstSpec,
+} from '../sim/step/burst';
 import type { InputFrame } from './InputSystem';
 import { EMPTY_FRAME } from './InputSystem';
 
@@ -46,6 +52,9 @@ export interface BeyEntity {
   trail: PositionTrail;
   /** Whether a centrifugal deployment (Limit Break, Awakening) is out. */
   deployed: boolean;
+  /** The ratchet, and how far round it has clicked. */
+  burstSpec: BurstSpec;
+  burst: BurstState;
   /** Team tag for friendly fire and win conditions. Null = free-for-all. */
   team: string | null;
   /** Cleared when the bey rings out, bursts, or sleeps out. */
@@ -109,6 +118,8 @@ export class BeySystem {
       clones: [],
       trail: new PositionTrail(),
       deployed: false,
+      burstSpec: DEFAULT_BURST,
+      burst: makeBurstState(DEFAULT_BURST),
       team,
       alive: true,
     };
@@ -236,6 +247,34 @@ export class BeySystem {
     const contacts = resolveBeyPairs(this.bodyScratch);
 
     for (const c of contacts) {
+      /* BURST. Each contact drives the ratchet of BOTH beys — the impulse is
+         shared, and which one pops depends on its own tooth count, spring
+         and tip grip rather than on who initiated. */
+      for (const id of [c.a, c.b]) {
+        const e = this.entities.get(id);
+        if (!e) continue;
+
+        /* DESTABILISATION. The contact band tells us WHERE on the body the
+           hit landed, so a strike high on the layer tips the bey and one on
+           the base barely does — which is what contact-height matching was
+           for. Gyroscopic stiffness is in the formula, so a fast bey shrugs
+           it off and a dying one goes over. */
+        const heightAboveTip = c.contactY - (e.state.pos.y + e.spec.tipOffset);
+        const dTilt = tiltFromContact(
+          c.impulse, Math.max(0, heightAboveTip),
+          e.spec.inertiaSpin, e.state.omega,
+          e.state.tiltDeg * Math.PI / 180,
+        );
+        const next = e.state.tiltDeg * Math.PI / 180 + dTilt;
+        e.state.tiltDeg = Math.min(Math.PI / 2, next) * 180 / Math.PI;
+        if (next >= SLEEP_OUT_TILT) e.state.sleptOut = true;
+
+        if (!e.burst.burst) {
+          const tip = BEY_TIP_PROFILES[e.spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
+          applyBurstImpulse(e.burst, e.burstSpec, c.impulse, e.spec.radius, tip.friction);
+        }
+      }
+
       const sa = this.spinScratch.get(c.a);
       const sb = this.spinScratch.get(c.b);
       if (!sa || !sb) continue;
@@ -261,7 +300,10 @@ export class BeySystem {
       if (!e.alive) continue;
       let cause: DefeatCause | null = null;
 
-      if (e.state.pos.y < RING_OUT_Y)   cause = 'ring_out';
+      /* Burst first: it outranks the others because a layer that has come
+         off cannot then ring out or spin down — and it scores differently. */
+      if (e.burst.burst)                cause = 'burst';
+      else if (e.state.pos.y < RING_OUT_Y) cause = 'ring_out';
       else if (e.state.sleptOut)        cause = 'sleep_out';
       else if (e.state.health <= 0)     cause = 'health';
 
@@ -324,6 +366,12 @@ export class BeySystem {
       const e = this.entities.get(id);
       if (e) e.state = structuredClone(st);
     }
+  }
+
+  /** Burst progress 0..1, for the HUD's staged Burst gauge. */
+  burstProgressOf(id: string): number {
+    const e = this.entities.get(id);
+    return e ? burstProgress(e.burst) : 0;
   }
 
   /** Convenience for HUDs: rpm rather than rad/s. */

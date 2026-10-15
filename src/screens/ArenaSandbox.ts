@@ -2435,7 +2435,7 @@ export class ArenaSandbox extends Sandbox {
         [...sys.all()].map(e => ({
           entity: e,
           gauges: this._gauges.get(e.spec.id) ?? EMPTY_GAUGES,
-          burst: 0,
+          burst: this._beySystem!.burstProgressOf(e.spec.id),
           label: e.spec.id,
         })),
         this._matchSystem.history(),

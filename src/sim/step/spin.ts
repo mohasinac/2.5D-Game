@@ -221,6 +221,50 @@ export function stepSpin(
   };
 }
 
+/**
+ * Tilt produced by an off-centre hit — CS1 Cases 8-10.
+ *
+ * THE HALF THE CONTACT RESOLVER WAS MISSING. `resolveBeyPairs` exchanges
+ * linear impulse and `applySpinExchange` transfers spin, but neither tilts
+ * anything, so a bey could be struck anywhere on its body and stand
+ * perfectly upright. Destabilisation — the entire point of an upper attack,
+ * and the subject of Cases 8 through 10 — could not happen.
+ *
+ * CS1 Case 10 derives the torque for a hit at height `h` above the tip on a
+ * top tilted by θ:
+ *
+ *     τ = r × F = h · F · cos θ        (about the horizontal axis)
+ *
+ * An impulse `J` delivers angular impulse `h · J · cos θ` transverse to the
+ * spin axis. The axis tips by the ratio of that to the spin angular
+ * momentum:
+ *
+ *     Δθ = (h · J · cos θ) / (I_s · ω)
+ *
+ * GYROSCOPIC STIFFNESS FALLS OUT OF THE DENOMINATOR, which is the whole
+ * reason to do it this way: a fast top barely moves, a dying one is thrown
+ * over by the same hit. Nothing has to special-case "the bey is vulnerable
+ * now" — it just is.
+ *
+ * `contactHeight` is measured from the TIP, so a hit on the layer tilts far
+ * more than one on the blade base. That is what makes track height and
+ * contact-height matching matter in play rather than only on paper.
+ */
+export function tiltFromContact(
+  impulse: number,
+  contactHeight: number,
+  inertiaSpin: number,
+  omega: number,
+  tiltRad: number,
+): number {
+  const spinL = inertiaSpin * Math.abs(omega);
+  /* A stopped top has no gyroscopic stiffness at all; it is simply knocked
+     over, which the caller handles by clamping rather than by taking a
+     divide-by-zero here. */
+  if (spinL < 1e-6) return Math.PI / 2;
+  return (contactHeight * Math.abs(impulse) * Math.cos(tiltRad)) / spinL;
+}
+
 /** Convenience: rad/s from the HUD's rpm, and back. */
 export const rpmToOmega = (rpm: number): number => (rpm * 2 * Math.PI) / 60;
 export const omegaToRpm = (omega: number): number => (omega * 60) / (2 * Math.PI);

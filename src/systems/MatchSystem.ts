@@ -1,4 +1,5 @@
 import type { BeySystem, BeyDefeat } from './BeySystem';
+import { makeBurstState } from '../sim/step/burst';
 
 /* ══════════════════════════════════════════════════════════════════════════
    ROUNDS, SCORING, AND THE FIRST MATCH THAT CAN END
@@ -21,10 +22,18 @@ import type { BeySystem, BeyDefeat } from './BeySystem';
 
 export type FinishKind = 'ring_out' | 'burst' | 'sleep_out' | 'health' | 'timeout' | 'draw';
 
-/** Points per finish. Burst and ring-out beat outspinning, as in the games. */
+/**
+ * Points per finish.
+ *
+ * CORRECTED against CS5's Burst System case, which states it directly: a
+ * burst scores "two points instead of the usual one for ring-out". This
+ * table previously gave both 2, which made the Burst era's signature finish
+ * worth no more than pushing someone out — removing the whole reason to
+ * build for burst resistance.
+ */
 export const FINISH_POINTS: Record<FinishKind, number> = {
   burst:     2,
-  ring_out:  2,
+  ring_out:  1,
   sleep_out: 1,
   health:    1,
   timeout:   0,
@@ -68,6 +77,9 @@ export class MatchSystem {
       e.alive = true;
       e.state.sleptOut = false;
       e.state.health = e.spec.maxHealth;
+      /* The ratchet re-seats between rounds. Without this a bey that was
+         nearly burst in round one starts round two one hit from losing. */
+      e.burst = makeBurstState(e.burstSpec);
     }
   }
 

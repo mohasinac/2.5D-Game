@@ -19,6 +19,8 @@ import { InputSystem, ScriptedInputSource, EMPTY_FRAME } from '../../src/systems
 import { makeBeySpec } from '../../src/sim/state';
 import { contactSlipSpeed, isCounterSpin, applySpinExchange, signedSpin, type SpinBody } from '../../src/sim/step/spinExchange';
 import { SCHEME_P1, SCHEME_P2, schemesConflict, TouchZoneInputSource, AiInputSource } from '../../src/systems/inputSources';
+import { makeBurstState, applyBurstImpulse, holdingTorque, burstProgress, DEFAULT_BURST } from '../../src/sim/step/burst';
+import { tiltFromContact } from '../../src/sim/step/spin';
 
 /**
  * Phases 7-18, written in one pass with Docker down and no compiler.
@@ -879,5 +881,124 @@ test.describe('local multiplayer input', () => {
       selfX: 0, selfZ: 0, targetX: 50, targetZ: 50, force: 'must_stay_still',
     }));
     expect(held.sample()).toEqual(EMPTY_FRAME);
+  });
+});
+
+/* ── Burst — primitive #6's missing half ─────────────────────────────────── */
+test.describe('burst', () => {
+
+  test('CS5: holding torque is F_spring x r_tab / tan(theta)', () => {
+    // The worked example: 1.0 N, 5 mm, 45 degrees -> 0.005 N*m.
+    // In project units 1 N = 1e5 g*cm/s^2 and 5 mm = 0.5 cm, so
+    // 1e5 * 0.5 / tan(45) = 5e4 g*cm^2/s^2, which IS 0.005 N*m.
+    const t = holdingTorque({ ...DEFAULT_BURST, springForce: 1e5, tabRadius: 0.5, toothAngleDeg: 45 });
+    expect(t).toBeCloseTo(5e4, 0);
+  });
+
+  test('A SHALLOWER TOOTH HOLDS HARDER — the tangent is why angle beats spring', () => {
+    const shallow = holdingTorque({ ...DEFAULT_BURST, toothAngleDeg: 30 });
+    const steep   = holdingTorque({ ...DEFAULT_BURST, toothAngleDeg: 60 });
+    expect(shallow).toBeGreaterThan(steep);
+  });
+
+  test('a weak tap does not click the ratchet at all', () => {
+    const st = makeBurstState(DEFAULT_BURST);
+    expect(applyBurstImpulse(st, DEFAULT_BURST, 1, 5)).toBe(0);
+    expect(st.clicks).toBe(0);
+  });
+
+  test('ONE HARD HIT CAN CLICK SEVERAL TEETH — CS5 says so explicitly', () => {
+    const st = makeBurstState(DEFAULT_BURST);
+    const clicks = applyBurstImpulse(st, DEFAULT_BURST, 5e6, 5);
+    expect(clicks).toBeGreaterThan(1);
+  });
+
+  test('THE POINT: enough accumulated clicks burst the layer', () => {
+    const st = makeBurstState(DEFAULT_BURST);
+    for (let i = 0; i < 40 && !st.burst; i++) applyBurstImpulse(st, DEFAULT_BURST, 2e6, 5);
+    expect(st.burst).toBe(true);
+    expect(burstProgress(st)).toBe(1);
+  });
+
+  test('a grippier driver resists burst — the Dash-driver trade', () => {
+    const loose = makeBurstState(DEFAULT_BURST);
+    const dash  = makeBurstState(DEFAULT_BURST);
+    applyBurstImpulse(loose, DEFAULT_BURST, 3e6, 5, 0.10);
+    applyBurstImpulse(dash,  DEFAULT_BURST, 3e6, 5, 0.50);
+    expect(dash.clicks).toBeLessThanOrEqual(loose.clicks);
+  });
+
+  test('more teeth means more hits to pop', () => {
+    const few  = { ...DEFAULT_BURST, toothCount: 2 };
+    const many = { ...DEFAULT_BURST, toothCount: 20 };
+    expect(makeBurstState(many).clicksToBurst)
+      .toBeGreaterThan(makeBurstState(few).clicksToBurst);
+  });
+
+  test('a burst layer cannot burst twice', () => {
+    const st = makeBurstState(DEFAULT_BURST);
+    st.burst = true;
+    expect(applyBurstImpulse(st, DEFAULT_BURST, 1e9, 5)).toBe(0);
+  });
+
+  test('CS5 SCORING: a burst is worth MORE than a ring-out', () => {
+    /* "scoring the opponent two points instead of the usual one for
+       ring-out". Both were 2 before reading the case, which removed the
+       entire reason to build for burst resistance. */
+    expect(FINISH_POINTS.burst).toBe(2);
+    expect(FINISH_POINTS.ring_out).toBe(1);
+    expect(FINISH_POINTS.burst).toBeGreaterThan(FINISH_POINTS.ring_out);
+  });
+
+  test('burst outranks the other finishes in the roster', () => {
+    const sys = new BeySystem();
+    const e = sys.add(makeBeySpec('a'));
+    e.burst.burst = true;
+    e.state.health = 0;                       // both conditions true at once
+    const r = sys.step(1 / 60, new Map(),
+      () => ({ surfaceY: 0, surfaceMu: 0.15, gravityScale: 1, supported: true }));
+    expect(r.defeats[0].cause).toBe('burst');
+  });
+});
+
+/* ── CS1 Cases 8-10: a hit must be able to tilt a bey ────────────────────── */
+test.describe('destabilisation from contact', () => {
+
+  test('THE POINT: an off-centre hit tilts the bey', () => {
+    // Before this, a bey could be struck anywhere and stand perfectly
+    // upright — so upper attacks did nothing and Cases 8-10 were unreachable.
+    const d = tiltFromContact(5000, 8, 390, 400, 0);
+    expect(d).toBeGreaterThan(0);
+  });
+
+  test('CS1 Case 10: a HIGHER hit tilts more — h is the lever arm', () => {
+    const low  = tiltFromContact(5000, 2,  390, 400, 0);
+    const high = tiltFromContact(5000, 10, 390, 400, 0);
+    expect(high).toBeCloseTo(low * 5, 6);
+  });
+
+  test('GYROSCOPIC STIFFNESS: a fast bey shrugs off what topples a dying one', () => {
+    /* ω is in the denominator, so this is not a special case anybody has to
+       write — "the bey is vulnerable now" simply follows from the equation. */
+    const fast = tiltFromContact(5000, 8, 390, 600, 0);
+    const slow = tiltFromContact(5000, 8, 390, 60, 0);
+    expect(slow).toBeCloseTo(fast * 10, 5);
+  });
+
+  test('a hit on an already-tilted bey does less — the cos theta term', () => {
+    const upright = tiltFromContact(5000, 8, 390, 400, 0);
+    const leaning = tiltFromContact(5000, 8, 390, 400, Math.PI / 3);
+    expect(leaning).toBeLessThan(upright);
+    expect(leaning).toBeCloseTo(upright * Math.cos(Math.PI / 3), 6);
+  });
+
+  test('a stopped top is simply knocked over rather than dividing by zero', () => {
+    expect(tiltFromContact(5000, 8, 390, 0, 0)).toBeCloseTo(Math.PI / 2, 6);
+  });
+
+  test('a heavier flywheel resists being tilted', () => {
+    const light = tiltFromContact(5000, 8, 100, 400, 0);
+    const heavy = tiltFromContact(5000, 8, 800, 400, 0);
+    expect(heavy).toBeLessThan(light);
   });
 });
