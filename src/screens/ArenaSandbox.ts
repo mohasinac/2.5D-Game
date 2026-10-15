@@ -102,6 +102,7 @@ import { BeyRenderer } from '../renderers/BeyRenderer';
 import { BeyHud } from '../systems/BeyHud';
 import { InputSystem } from '../systems/InputSystem';
 import { MatchSystem } from '../systems/MatchSystem';
+import { RING_OUT_DV } from '../systems/MatchSystem';
 import type { FinishKind, RoundResult, BattleParticipant } from '../systems/MatchSystem';
 import { RING_OUT_Y } from '../systems/BeySystem';
 import { PLAYER_BEY_ID } from '../features/managers/SpawnManager';
@@ -132,7 +133,7 @@ const AI_RETREAT_SPIN_FACTOR = 2.0;
 import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
 import { rpmToOmega, omegaToRpm, sleepOutOmega } from '../sim/step/spin';
-import { containToEllipse } from '../sim/step/arenaBounds';
+import { containToEllipse, normalisedRadius } from '../sim/step/arenaBounds';
 import { combosFor } from '../config/combos';
 import { season1Bey, SEASON1_BEYS } from '../config/beys/season1.generated';
 import { GameFeel } from '../systems/GameFeel';
@@ -2487,8 +2488,17 @@ export class ArenaSandbox extends Sandbox {
   private _bindOpponentAi(id: string): void {
     if (!this._inputSystem || !this._targetMgr || !this._spawnMgr) return;
 
-    this._targetMgr.bind(id, PLAYER_BEY_ID, 'lock_on', { strength: 0.6 });
+    /* NO `TargetManager` BINDING, DELIBERATELY. There was one — `lock_on`
+       from the opponent to the player — and it did nothing, because the
+       manager's position resolver handles traps, obstacles, zones and walls
+       and has never known what a bey is, so it returned null every tick.
 
+       It is not merely dead, it is a trap: `lock_on` is implemented as
+       `setPosition(source, target)`, a TELEPORT. The day someone taught the
+       resolver about beys, the opponent would have begun teleporting onto the
+       player every frame. Steering belongs in the `sense()` closure below,
+       which produces an ordinary `InputFrame` that `BeySystem` cannot tell
+       from a human's — the property the whole input boundary exists for. */
     this._inputSystem.bind(id, new AiInputSource(id, () => {
       const self = this._beySystem?.get(id)?.state.pos;
       const sm   = this._spawnMgr;
@@ -2816,22 +2826,45 @@ export class ArenaSandbox extends Sandbox {
     if (!sys) return;
 
     for (const e of sys.living()) {
+      /* THE BEY'S OWN ARENA, not whichever the Map happens to yield first.
+         The old loop `break`s on the first arena that reported "contained",
+         and an arena reports that for any bey OUTSIDE its ellipse — so a bey
+         sitting comfortably inside arena B was snapped onto arena A's rim
+         simply because A came first. Pick the arena it is most inside. */
+      let home: ArenaData | null = null;
+      let bestR = Infinity;
       for (const [, arena] of this.arenas) {
         const { alx, alz } = worldToArenaLocal(e.state.pos.x, e.state.pos.z, arena);
-        const bounds = { radiusX: arena.radiusX, radiusZ: arena.radiusZ };
-        const r = containToEllipse(alx, alz, e.state.vel.x, e.state.vel.z, bounds);
-        if (!r.contained) continue;
-
-        /* Back to world: the containment solved in arena-local space, so the
-           arena's own rotation has to be re-applied before writing position. */
-        const rot = (arena.rotY ?? 0) * DEG2RAD;
-        const cos = Math.cos(rot), sin = Math.sin(rot);
-        e.state.pos.x = arena.posX + r.alx * cos - r.alz * sin;
-        e.state.pos.z = arena.posZ + r.alx * sin + r.alz * cos;
-        e.state.vel.x = r.vx;
-        e.state.vel.z = r.vz;
-        break;
+        const nr = normalisedRadius(alx, alz, { radiusX: arena.radiusX, radiusZ: arena.radiusZ });
+        if (nr < bestR) { bestR = nr; home = arena; }
       }
+      if (!home) continue;
+
+      const { alx, alz } = worldToArenaLocal(e.state.pos.x, e.state.pos.z, home);
+      const bounds = { radiusX: home.radiusX, radiusZ: home.radiusZ };
+
+      /* A RIM IS NOT A CAGE. Containment used to snap EVERYTHING back
+         unconditionally, which made ring-out unreachable for roster beys:
+         they could never cross the ellipse, so `pos.y < RING_OUT_Y` never
+         happened and the only finish left was sleeping out.
+
+         `RING_OUT_DV` is CS10's [CONFIRMED] 4.0 m/s ejection threshold, and
+         it had been declared in `MatchSystem` with ZERO consumers. This is
+         what it was for: hit the rim harder than that and you go over it. */
+      const outSpeed = Math.hypot(e.state.vel.x, e.state.vel.z);
+      if (bestR > 1 && outSpeed > RING_OUT_DV * 100) continue;   // m/s → cm/s
+
+      const r = containToEllipse(alx, alz, e.state.vel.x, e.state.vel.z, bounds);
+      if (!r.contained) continue;
+
+      /* Back to world: the containment solved in arena-local space, so the
+         arena's own rotation has to be re-applied before writing position. */
+      const rot = (home.rotY ?? 0) * DEG2RAD;
+      const cos = Math.cos(rot), sin = Math.sin(rot);
+      e.state.pos.x = home.posX + r.alx * cos - r.alz * sin;
+      e.state.pos.z = home.posZ + r.alx * sin + r.alz * cos;
+      e.state.vel.x = r.vx;
+      e.state.vel.z = r.vz;
     }
   }
 
