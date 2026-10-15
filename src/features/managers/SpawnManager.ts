@@ -15,6 +15,7 @@ import type { SceneSurfaceProjector } from '../../geometry/sceneSurfaceProjector
 import {
   DEG2RAD, DEFAULT_BASE_HEIGHT, SURFACE_PHYSICS, SURFACE_MU_REFERENCE,
   BEY_TIP_PROFILES, effectiveTipFriction,
+  type BeyTipType,
 } from '../../config/arenaConstants';
 import { makeBeySpec, makeBeyState } from '../../sim/state';
 import type { BeySpec, BeyState } from '../../sim/state';
@@ -1445,6 +1446,7 @@ export class SpawnManager {
   }
   isGrounded(): boolean { return this.grounded; }
   getRpm(): number { return this.rpm; }
+  getTipType(): BeyTipType { return this._spec.tipType; }
 
   /** Set the state that the NEXT spawn() will use. */
   setSpawnState(s: {

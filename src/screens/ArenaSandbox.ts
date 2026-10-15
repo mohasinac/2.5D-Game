@@ -105,10 +105,16 @@ import type { BeyDefeat, DefeatCause } from '../systems/BeySystem';
 const PLAYER_ID = 'player';
 /** How long a finish stays on screen before the next round re-arms, sim-ms. */
 const ROUND_INTERMISSION_MS = 2500;
+/** Pause between ANY two combos, ms — the global cooldown CS12 specifies. */
+const GLOBAL_COMBO_LOCKOUT_MS = 600;
 import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
 import { rpmToOmega, omegaToRpm } from '../sim/step/spin';
 import { containToEllipse } from '../sim/step/arenaBounds';
+import { combosFor } from '../config/combos';
+import { GameFeel } from '../systems/GameFeel';
+import type { BeyType } from '../systems/ComboDetector';
+import { DEFAULT_TIP_TYPE } from '../config/arenaConstants';
 import { resolveBeyPairs } from '../sim/step/beyCollision';
 import type { ProjectileTarget, ProjectileHit } from '../sim/step/projectile';
 import type { BeyContact } from '../sim/step/beyCollision';
@@ -2511,19 +2517,36 @@ export class ArenaSandbox extends Sandbox {
       this._gauges.set(id, chargeGauges(this._gauges.get(id) ?? EMPTY_GAUGES, dt));
 
       let det = this._combos.get(id);
-      if (!det) { det = new ComboDetector(); this._combos.set(id, det); }
+      if (!det) {
+        det = new ComboDetector();
+        /* ATTACH, which nothing ever did. The detector shipped a complete
+           gate chain and `attached` stayed `[]`, so `tryFire` returned
+           `no_match` on every frame of every battle — a combo system that
+           could not fire, silently, because an unmatched combo looks exactly
+           like a combo nobody input. */
+        det.attach(combosFor(this._beyTypeOf(id)));
+        this._combos.set(id, det);
+      }
       for (const token of inputs.get(id)?.pressed ?? []) det.press(token, now);
 
       const fired = det.tryFire({
-        beyType: 'balance',
+        /* The bey's REAL type. Hardcoding 'balance' made `allowedTypes`
+           meaningless — every bey could fire every combo, which is the same
+           as having no type gate at all. */
+        beyType: this._beyTypeOf(id),
         power: this._gauges.get(id)!.active,
         nowMs: now,
         lastFired: this._lastFired,
-        globalReadyAtMs: 0,
+        /* A real global cooldown. Pinned to 0 the gate was permanently open,
+           so a player could chain combos from different slots with no pause
+           between them. */
+        globalReadyAtMs: this._globalComboReadyMs,
       });
       if (fired.combo) {
         this._gauges.set(id, payCombo(this._gauges.get(id)!, fired.combo.cost));
         this._lastFired.set(fired.combo.id, now);
+        this._globalComboReadyMs = now + GLOBAL_COMBO_LOCKOUT_MS;
+        this._beyHud?.banner(`${fired.combo.name}!`, 'force');
       }
 
       /* SPECIALS — the Xtreme gauge's first spender, and the `[M]` layer's
@@ -2570,7 +2593,12 @@ export class ArenaSandbox extends Sandbox {
       for (const id of [c.a, c.b]) {
         this._gauges.set(id, awardXtreme(this._gauges.get(id) ?? EMPTY_GAUGES, 'hit'));
       }
+      /* THE IMPULSE FINALLY REACHES THE FEEDBACK TABLE. Contacts were used
+         only to award gauge and the magnitude was thrown away, so every hit
+         felt identical regardless of how hard it landed. */
+      this._feel.impact(c.impulse, [c.a, c.b], now);
     }
+    this._feel.tick();
 
     /* The player's own defeat, which nothing ever reported. `isSleptOut` and
        health have existed all along and went nowhere, so the player could not
@@ -2741,6 +2769,30 @@ export class ArenaSandbox extends Sandbox {
     }
   }
 
+  /**
+   * A bey's type, derived from its tip.
+   *
+   * `BeySpec` carries no type field, and the call site hardcoded `'balance'`
+   * — which made `allowedTypes` meaningless, since every bey then satisfied
+   * every gate. Deriving it from the tip is not a stopgap: the corpus states
+   * the relationship directly, that flatter tips behave aggressively while
+   * pointed ones spin calmly, so the tip IS the type in everything but name.
+   */
+  private _beyTypeOf(id: string): BeyType {
+    const tip = this._beySystem?.get(id)?.spec.tipType
+      ?? this._spawnMgr?.getTipType()
+      ?? DEFAULT_TIP_TYPE;
+    switch (tip) {
+      case 'sharp':                        return 'stamina';
+      case 'ball': case 'wide_ball':       return 'stamina';
+      case 'defense':                      return 'defense';
+      case 'rubber_flat': case 'metal_flat':
+      case 'wide_flat':                    return 'attack';
+      case 'hard_flat':                    return 'balance';
+      default:                             return 'balance';
+    }
+  }
+
   /** Contact between the player's bey and every bey in the roster. */
   private _resolvePlayerAgainstRoster(): BeyContact[] {
     const sys = this._beySystem;
@@ -2828,6 +2880,10 @@ export class ArenaSandbox extends Sandbox {
   private _battleRunning = false;
   /** Latched so one fall reports once, not on every subsequent tick. */
   private _playerDown = false;
+  /** Sim-ms before which no combo of any kind may fire. */
+  private _globalComboReadyMs = 0;
+  /** Hit-stop, shake and flash. The consumer of contact IMPULSE. */
+  private _feel = new GameFeel();
   /** Sim-ms at which the next round re-arms. 0 = no round pending. */
   private _roundResetAtMs = 0;
 

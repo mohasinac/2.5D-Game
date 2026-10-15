@@ -26,10 +26,17 @@ export interface KeyScheme {
   jump: string; trigger: string; guard: string;
 }
 
-/** Player one: the left half of the keyboard. */
+/**
+ * Player one: the left half of the keyboard.
+ *
+ * TRIGGER IS `KeyT`, NOT `KeyF`. `KeyF` is bound globally to the fullscreen
+ * toggle (`main.ts`), so the special-move key was toggling fullscreen instead
+ * of firing — and the on-screen hint already said "T", which is what
+ * `ControlManager` has always bound. The scheme was the odd one out.
+ */
 export const SCHEME_P1: KeyScheme = {
   up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD',
-  jump: 'Space', trigger: 'KeyF', guard: 'KeyG',
+  jump: 'Space', trigger: 'KeyT', guard: 'KeyG',
 };
 
 /** Player two: the arrow cluster and its neighbours. */
@@ -52,6 +59,26 @@ export function schemesConflict(a: KeyScheme, b: KeyScheme): string[] {
  * combo sees each key exactly once — leaving it to accumulate would let one
  * tap match a sequence on several consecutive frames.
  */
+/**
+ * The combo alphabet. Every input source emits THESE, whatever it is driven by.
+ *
+ * Combos could never match before, and the token namespace is half the reason:
+ * the keyboard pushed raw `e.code` (`'KeyW'`), touch pushed `'JUMP'`, and the
+ * AI pushed nothing at all. One combo definition cannot match three different
+ * languages, so a sequence authored for the keyboard was unreachable on touch
+ * and unreachable for every AI opponent — and the mismatch is silent, because
+ * a combo that never matches looks exactly like a combo nobody input.
+ *
+ * Semantic rather than physical, so rebinding a key cannot break a combo.
+ */
+export type ComboToken = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'JUMP' | 'TRIGGER' | 'GUARD';
+
+/** Scheme slot -> canonical token. */
+const SLOT_TOKEN: Record<keyof KeyScheme, ComboToken> = {
+  up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT',
+  jump: 'JUMP', trigger: 'TRIGGER', guard: 'GUARD',
+};
+
 export class KeyboardInputSource implements InputSource {
   private held = new Set<string>();
   private pressedThisTick: string[] = [];
@@ -64,12 +91,19 @@ export class KeyboardInputSource implements InputSource {
     target: EventTarget = document,
   ) {
     const codes = new Set(Object.values(scheme));
+    /* Physical code -> semantic token, derived from the scheme so the two can
+       never drift apart. */
+    const tokenOf = new Map<string, ComboToken>();
+    for (const [slot, code] of Object.entries(scheme)) {
+      tokenOf.set(code, SLOT_TOKEN[slot as keyof KeyScheme]);
+    }
     this.onDown = (e) => {
       if (!codes.has(e.code)) return;
       /* Arrow keys and Space scroll the page; a second player should not
          move the view every time they jump. */
       e.preventDefault();
-      if (!this.held.has(e.code)) this.pressedThisTick.push(e.code);
+      const tok = tokenOf.get(e.code);
+      if (!this.held.has(e.code) && tok) this.pressedThisTick.push(tok);
       this.held.add(e.code);
     };
     this.onUp = (e) => { if (codes.has(e.code)) this.held.delete(e.code); };
@@ -117,14 +151,32 @@ export class TouchZoneInputSource implements InputSource {
 
   constructor(readonly id: string) {}
 
+  /** Last direction token emitted, so holding a direction spells one letter. */
+  private lastDir: ComboToken | null = null;
+
   /** Driven by the overlay: normalised joystick, components in -1..1. */
   setAxis(x: number, z: number): void {
     this.axis.x = Math.max(-1, Math.min(1, x));
     this.axis.z = Math.max(-1, Math.min(1, z));
+
+    /* A joystick has to be able to SPELL, or every combo is desktop-only.
+       The dominant axis past a deadzone becomes one token, and it is latched:
+       without that, holding left would push LEFT on all sixty frames of a
+       second and fill the history with a single letter. */
+    const DEAD = 0.5;
+    const dir: ComboToken | null =
+      Math.abs(this.axis.x) < DEAD && Math.abs(this.axis.z) < DEAD ? null
+        : Math.abs(this.axis.x) >= Math.abs(this.axis.z)
+          ? (this.axis.x > 0 ? 'RIGHT' : 'LEFT')
+          : (this.axis.z > 0 ? 'DOWN' : 'UP');
+    if (dir && dir !== this.lastDir) this.pressedThisTick.push(dir);
+    this.lastDir = dir;
   }
 
   setButton(name: 'jump' | 'trigger' | 'guard', down: boolean): void {
-    if (down && !this.buttons[name]) this.pressedThisTick.push(name.toUpperCase());
+    if (down && !this.buttons[name]) {
+      this.pressedThisTick.push(name.toUpperCase() as ComboToken);
+    }
     this.buttons[name] = down;
   }
 
@@ -173,11 +225,26 @@ export class AiInputSource implements InputSource {
        a compelled bey is still driving, just the wrong way, which is what
        makes the counter-play readable to the other player. */
     const sign = s.force === 'must_keep_distance' ? -1 : 1;
+    const moveX = (dx / len) * sign;
+    const moveZ = (dz / len) * sign;
+
+    /* THE AI MUST SPEAK THE SAME ALPHABET. It previously spread `EMPTY_FRAME`,
+       whose `pressed` is always `[]`, so no AI opponent could ever execute a
+       combo — not because it chose not to, but because it was mute. Emitting
+       the tokens its own movement implies makes an AI frame structurally
+       indistinguishable from a human one, which is the property the whole
+       input boundary exists for. */
+    const pressed: ComboToken[] = [];
+    if (Math.abs(moveX) >= Math.abs(moveZ)) pressed.push(moveX > 0 ? 'RIGHT' : 'LEFT');
+    else                                    pressed.push(moveZ > 0 ? 'DOWN' : 'UP');
+    if (s.force === 'must_attack') pressed.push('TRIGGER');
+
     return {
       ...EMPTY_FRAME,
-      moveX: (dx / len) * sign,
-      moveZ: (dz / len) * sign,
+      moveX,
+      moveZ,
       trigger: s.force === 'must_attack',
+      pressed,
     };
   }
 }
