@@ -52,13 +52,18 @@ export interface RoundResult {
 }
 
 export interface MatchConfig {
-  /** Rounds needed to take the match. Best-of-three is 2. */
-  pointsToWin: number;
+  /**
+   * ROUNDS needed to take the match. Best-of-three is 2.
+   *
+   * Was `pointsToWin`, compared against accumulated FINISH_POINTS — so a
+   * burst (2 points) ended a best-of-three in one round.
+   */
+  roundsToWin: number;
   /** Round length before a timeout finish, ms. 0 disables the clock. */
   roundLimitMs: number;
 }
 
-export const DEFAULT_MATCH: MatchConfig = { pointsToWin: 2, roundLimitMs: 180_000 };
+export const DEFAULT_MATCH: MatchConfig = { roundsToWin: 2, roundLimitMs: 180_000 };
 
 /**
  * Anything that can win or lose a round.
@@ -87,6 +92,8 @@ export interface BattleParticipant {
 
 export class MatchSystem {
   private scores = new Map<string, number>();
+  /** Rounds taken, which is what ends the match. */
+  private roundsWon = new Map<string, number>();
   private rounds: RoundResult[] = [];
   private roundStartMs = 0;
   private over = false;
@@ -127,6 +134,22 @@ export class MatchSystem {
       /* The ratchet re-seats between rounds. Without this a bey that was
          nearly burst in round one starts round two one hit from losing. */
       e.burst = makeBurstState(e.burstSpec);
+
+      /* RE-LAUNCH, which did not happen. Health and the ratchet reset but
+         nothing spatial did, so round two began with the loser lying
+         wherever it had died — usually motionless at the rim, already out of
+         the fight before the round started. */
+      e.state.pos.x = e.launch.pos.x;
+      e.state.pos.y = e.launch.pos.y;
+      e.state.pos.z = e.launch.pos.z;
+      e.state.vel.x = e.launch.vel.x;
+      e.state.vel.y = e.launch.vel.y;
+      e.state.vel.z = e.launch.vel.z;
+      e.state.omega = e.launch.omega;
+      /* Tilt too: a bey that toppled last round would otherwise spawn already
+         past the sleep-out angle and fall over instantly. */
+      e.state.tiltDeg = 0;
+      e.state.grounded = false;
     }
     for (const p of this.externals) p.resetForRound();
   }
@@ -180,14 +203,23 @@ export class MatchSystem {
     };
     this.rounds.push(result);
     if (winner) {
-      const pts = (this.scores.get(winner) ?? 0) + FINISH_POINTS[kind];
-      this.scores.set(winner, pts);
-      if (pts >= this.config.pointsToWin) this.over = true;
+      this.scores.set(winner, (this.scores.get(winner) ?? 0) + FINISH_POINTS[kind]);
+
+      /* THE MATCH ENDS ON ROUNDS WON, NOT POINTS. Ending on points made a
+         single burst — worth 2, against `pointsToWin: 2` — win the whole
+         match outright, so "best of three" could never happen and the burst
+         bonus silently became a one-hit kill. Points are still accumulated:
+         they are the SCORE, shown on the HUD and used to break a tie. */
+      const won = (this.roundsWon.get(winner) ?? 0) + 1;
+      this.roundsWon.set(winner, won);
+      if (won >= this.config.roundsToWin) this.over = true;
     }
     return result;
   }
 
   scoreOf(id: string): number { return this.scores.get(id) ?? 0; }
+  /** Rounds taken — what actually decides the match. */
+  roundsWonBy(id: string): number { return this.roundsWon.get(id) ?? 0; }
   /** Round-by-round history, including how each was won. For the pips. */
   history(): readonly RoundResult[] { return this.rounds; }
   isOver(): boolean { return this.over; }
@@ -195,7 +227,7 @@ export class MatchSystem {
   matchWinner(): string | null {
     if (!this.over) return null;
     let best: string | null = null, bestScore = -1;
-    for (const [id, score] of this.scores) {
+    for (const [id, score] of this.roundsWon) {
       if (score > bestScore) { bestScore = score; best = id; }
     }
     return best;
@@ -203,6 +235,7 @@ export class MatchSystem {
 
   reset(): void {
     this.scores.clear();
+    this.roundsWon.clear();
     this.rounds.length = 0;
     this.over = false;
   }

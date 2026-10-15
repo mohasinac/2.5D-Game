@@ -19,7 +19,7 @@ import { InputSystem, ScriptedInputSource, EMPTY_FRAME } from '../../src/systems
 import { makeBeySpec } from '../../src/sim/state';
 import { contactSlipSpeed, isCounterSpin, applySpinExchange, signedSpin, type SpinBody } from '../../src/sim/step/spinExchange';
 import { SCHEME_P1, SCHEME_P2, schemesConflict, TouchZoneInputSource, AiInputSource } from '../../src/systems/inputSources';
-import { makeBurstState, applyBurstImpulse, holdingTorque, burstProgress, DEFAULT_BURST } from '../../src/sim/step/burst';
+import { makeBurstState, applyBurstImpulse, holdingTorque, relativeTorque, relativeRotation, burstProgress, DEFAULT_BURST } from '../../src/sim/step/burst';
 import { tiltFromContact } from '../../src/sim/step/spin';
 
 /**
@@ -759,7 +759,7 @@ test.describe('MatchSystem', () => {
     const beys = new BeySystem();
     beys.add(makeBeySpec('a'), null, { omega: 100 });
     beys.add(makeBeySpec('b'), null, { omega: 400 });
-    const m = new MatchSystem(beys, { pointsToWin: 2, roundLimitMs: 100 });
+    const m = new MatchSystem(beys, { roundsToWin: 2, roundLimitMs: 100 });
     m.beginRound(0);
     const r = m.update(200, [])!;
     expect(r.kind).toBe('timeout');
@@ -840,7 +840,7 @@ test.describe('MatchSystem', () => {
        whichever fighter is winning on stamina. */
     const beys = new BeySystem();
     beys.add(makeBeySpec('opponent-1'), null, { omega: 100 });
-    const m = new MatchSystem(beys, { pointsToWin: 2, roundLimitMs: 100 });
+    const m = new MatchSystem(beys, { roundsToWin: 2, roundLimitMs: 100 });
     const { p } = player({ spin: 400 });
     m.addParticipant(p);
     m.beginRound(0);
@@ -850,16 +850,55 @@ test.describe('MatchSystem', () => {
     expect(r.winner).toBe('player');
   });
 
-  test('the match ends once someone reaches the target score', () => {
+  test('ONE BURST DOES NOT WIN A BEST-OF-THREE', () => {
+    /* The match used to end on accumulated FINISH_POINTS, and a burst is
+       worth 2 against `pointsToWin: 2` — so the Burst era's signature finish
+       was silently a one-round match win. It ends on ROUNDS now; points
+       remain the score. */
     const beys = new BeySystem();
     beys.add(makeBeySpec('a'));
     beys.add(makeBeySpec('b'));
-    const m = new MatchSystem(beys, { pointsToWin: 2, roundLimitMs: 0 });
+    const m = new MatchSystem(beys, { roundsToWin: 2, roundLimitMs: 0 });
+
     m.beginRound(0);
     beys.get('b')!.alive = false;
     m.update(100, [{ id: 'b', cause: 'burst' }]);
+    expect(m.isOver(), 'one burst must NOT take the match').toBe(false);
+    expect(m.scoreOf('a'), 'but it is still worth 2 points').toBe(2);
+    expect(m.roundsWonBy('a')).toBe(1);
+
+    m.beginRound(200);
+    beys.get('b')!.alive = false;
+    m.update(300, [{ id: 'b', cause: 'ring_out' }]);
     expect(m.isOver()).toBe(true);
     expect(m.matchWinner()).toBe('a');
+    expect(m.roundsWonBy('a')).toBe(2);
+  });
+
+  test('a new round re-launches roster beys, not just their health', () => {
+    /* `beginRound` reset health and the ratchet but nothing spatial, so round
+       two started with the loser lying where it died. */
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('a'), null, { pos: { x: 10, y: 20, z: 30 }, omega: 500 });
+    const m = new MatchSystem(beys, { roundsToWin: 2, roundLimitMs: 0 });
+
+    const e = beys.get('a')!;
+    e.state.pos.x = -999; e.state.pos.y = -999;
+    e.state.omega = 0; e.state.tiltDeg = 89;
+
+    m.beginRound(0);
+    expect(e.state.pos.x).toBe(10);
+    expect(e.state.pos.y).toBe(20);
+    expect(e.state.omega).toBe(500);
+    expect(e.state.tiltDeg, 'a toppled bey must not respawn toppled').toBe(0);
+  });
+
+  test('burst specs are per-bey, not one shared object', () => {
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('a'));
+    beys.add(makeBeySpec('b'));
+    beys.get('a')!.burstSpec.toothCount = 99;
+    expect(beys.get('b')!.burstSpec.toothCount).not.toBe(99);
   });
 });
 
@@ -1017,6 +1056,37 @@ test.describe('burst', () => {
     const many = { ...DEFAULT_BURST, toothCount: 20 };
     expect(makeBurstState(many).clicksToBurst)
       .toBeGreaterThan(makeBurstState(few).clicksToBurst);
+  });
+
+  test('LAYER INERTIA RESISTS BURST — the term used to cancel out', () => {
+    /* `relativeTorque` computed `Δω = J·r / I` then multiplied straight back
+       by `I`, so inertia vanished algebraically and a heavy layer burst
+       exactly as easily as a light one. Nothing covered the field, which is
+       why it went unnoticed. Inertia now lives in `relativeRotation` — how
+       far the layer TURNS — which is where it physically belongs, and is the
+       real burst-resistance trade: mass on the layer buys safety. */
+    const light = { ...DEFAULT_BURST, layerInertia: 40 };
+    const heavy = { ...DEFAULT_BURST, layerInertia: 400 };
+
+    const clicksLight = applyBurstImpulse(makeBurstState(light), light, 5e5, 2);
+    const clicksHeavy = applyBurstImpulse(makeBurstState(heavy), heavy, 5e5, 2);
+    expect(clicksHeavy).toBeLessThan(clicksLight);
+  });
+
+  test('relativeTorque is inertia-INDEPENDENT, and that is deliberate', () => {
+    /* Angular impulse over the contact window is a torque; it does not care
+       how heavy the thing being turned is. Asserted explicitly so a future
+       edit cannot quietly reintroduce the cancellation by "restoring" I. */
+    const a = relativeTorque(1e5, 2, { ...DEFAULT_BURST, layerInertia: 40 });
+    const b = relativeTorque(1e5, 2, { ...DEFAULT_BURST, layerInertia: 4000 });
+    expect(a).toBeCloseTo(b, 6);
+    expect(a).toBeGreaterThan(0);
+  });
+
+  test('relativeRotation falls as inertia rises', () => {
+    const light = relativeRotation(1e5, 2, { ...DEFAULT_BURST, layerInertia: 100 });
+    const heavy = relativeRotation(1e5, 2, { ...DEFAULT_BURST, layerInertia: 1000 });
+    expect(heavy).toBeCloseTo(light / 10, 6);
   });
 
   test('a burst layer cannot burst twice', () => {

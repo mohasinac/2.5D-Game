@@ -1,4 +1,4 @@
-import type { BeySpec, BeyState } from '../sim/state';
+import type { BeySpec, BeyState, Vec3 } from '../sim/state';
 import { makeBeyState } from '../sim/state';
 import * as Step from '../sim/step/integrate';
 import {
@@ -86,6 +86,13 @@ export interface BeyEntity {
    */
   baseInertia: number;
   baseComY: number;
+  /**
+   * The pose this bey launched with, so a new round can re-launch it.
+   *
+   * `beginRound` used to reset health, `alive` and the ratchet but nothing
+   * spatial, so round two began with the loser lying wherever it had died.
+   */
+  launch: { pos: Vec3; vel: Vec3; omega: number };
   /** Team tag for friendly fire and win conditions. Null = free-for-all. */
   team: string | null;
   /** Cleared when the bey rings out, bursts, or sleeps out. */
@@ -163,19 +170,28 @@ export class BeySystem {
   private spinScratch = new Map<string, SpinBody>();
 
   add(spec: BeySpec, team: string | null = null, over: Partial<BeyState> = {}): BeyEntity {
+    const state = makeBeyState(spec, over);
     const entity: BeyEntity = {
       spec,
-      state: makeBeyState(spec, over),
+      state,
       parts: [],
       clones: [],
       trail: new PositionTrail(),
       deployed: false,
-      burstSpec: DEFAULT_BURST,
+      /* COPIED, NOT SHARED. Every bey pointed at the same `DEFAULT_BURST`
+         object, so authoring one bey's tooth count or spring would silently
+         have retuned the ratchet of every other bey in the match. */
+      burstSpec: { ...DEFAULT_BURST },
       burst: makeBurstState(DEFAULT_BURST),
       wear: FRESH,
       loose: [],
       baseInertia: spec.inertiaSpin,
       baseComY: spec.comY,
+      /* The launch pose, kept so a new round can put the bey back. Without it
+         `beginRound` reset health and the ratchet but left position, velocity
+         and spin untouched, so round two resumed exactly where round one
+         died — a defeated bey lying still at the rim. */
+      launch: { pos: { ...state.pos }, vel: { ...state.vel }, omega: state.omega },
       team,
       alive: true,
     };
@@ -584,6 +600,16 @@ export class BeySystem {
   }
 
   /** Convenience for HUDs: rpm rather than rad/s. */
+  /**
+   * Spin in RPM, for display.
+   *
+   * ITS ONLY CALLER USED IT AS A THRESHOLD AND WAS WRONG TO. The AI compared
+   * `|ω| < rpmOf(id) * 0.2` — rad/s against RPM of the same entity — which
+   * reduces to `|ω| < 1.91·|ω|` and disabled the opponent entirely. Kept
+   * because the HUD legitimately wants RPM, but the name now says what it is
+   * for: a bey's spin compared against ANOTHER bey's RPM is a unit error, and
+   * compared against its own is a tautology.
+   */
   rpmOf(id: string): number {
     const e = this.entities.get(id);
     return e ? omegaToRpm(Math.abs(e.state.omega)) : 0;

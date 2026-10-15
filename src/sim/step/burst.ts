@@ -83,16 +83,36 @@ export function holdingTorque(spec: BurstSpec): number {
 /**
  * Relative torque a contact impulse puts across the ratchet.
  *
- * `Δω_rel = J·r_contact / I_Layer`, converted to a torque over the contact
- * window — the impulse arrives in milliseconds, and spreading it over a
- * longer window would understate it.
+ * Angular impulse is `J · r_contact`; spread over the contact window that is
+ * a torque. **Independent of layer inertia, and that is not an oversight.**
+ * The previous version computed `Δω = J·r / I` and then multiplied straight
+ * back by `I`, so the inertia cancelled algebraically and the field had no
+ * effect on anything — a heavier layer burst exactly as easily as a light
+ * one. Inertia belongs in how far the layer TURNS, not in the torque that
+ * turns it; see `relativeRotation` below.
  */
 export function relativeTorque(
+  impulse: number, contactRadius: number, _spec: BurstSpec, contactSec = 0.002,
+): number {
+  if (contactSec <= 0) return 0;
+  return (impulse * contactRadius) / contactSec;
+}
+
+/**
+ * How far the Layer twists against the Driver, radians.
+ *
+ * `Δω_rel = J·r / I_Layer`, held for the contact window. THIS is where layer
+ * inertia earns its place: a heavy layer accelerates less for the same hit,
+ * turns through a smaller angle and therefore clicks past fewer teeth. That
+ * is the real burst-resistance trade — mass on the layer buys safety — and it
+ * was entirely absent while the term cancelled out.
+ */
+export function relativeRotation(
   impulse: number, contactRadius: number, spec: BurstSpec, contactSec = 0.002,
 ): number {
   if (spec.layerInertia <= 0 || contactSec <= 0) return 0;
   const dOmega = (impulse * contactRadius) / spec.layerInertia;
-  return (dOmega * spec.layerInertia) / contactSec;
+  return dOmega * contactSec;
 }
 
 /**
@@ -115,11 +135,17 @@ export function applyBurstImpulse(
 ): number {
   if (state.burst) return 0;
 
+  /* TWO SEPARATE QUESTIONS, and conflating them is what made layer inertia
+     inert. Torque decides WHETHER the ratchet slips at all — a tap that
+     cannot beat the spring moves nothing however light the layer. Rotation
+     then decides HOW FAR it slipped, which is where inertia matters. */
   const hold = holdingTorque(spec) * (1 + tipFriction);
   const rel  = relativeTorque(impulse, contactRadius, spec);
   if (rel <= hold) return 0;
 
-  const clicks = Math.max(1, Math.floor(rel / hold));
+  const toothRad = (360 / Math.max(1, spec.toothCount)) * Math.PI / 180;
+  const turned   = relativeRotation(impulse, contactRadius, spec);
+  const clicks   = Math.max(1, Math.floor(turned / toothRad));
   state.clicks += clicks;
   if (state.clicks >= state.clicksToBurst) {
     state.clicks = state.clicksToBurst;

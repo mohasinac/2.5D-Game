@@ -112,9 +112,18 @@ const PLAYER_ID = 'player';
 const ROUND_INTERMISSION_MS = 2500;
 /** Pause between ANY two combos, ms — the global cooldown CS12 specifies. */
 const GLOBAL_COMBO_LOCKOUT_MS = 600;
+/**
+ * How close to its own sleep-out threshold a bey must be before the AI backs
+ * off, as a multiple of that threshold.
+ *
+ * 2.0 means "retreat once spin is within 2x of the point you topple" — late
+ * enough that the opponent actually fights, early enough that a dying bey
+ * plays defensively instead of trading itself to death.
+ */
+const AI_RETREAT_SPIN_FACTOR = 2.0;
 import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
-import { rpmToOmega, omegaToRpm } from '../sim/step/spin';
+import { rpmToOmega, omegaToRpm, sleepOutOmega } from '../sim/step/spin';
 import { containToEllipse } from '../sim/step/arenaBounds';
 import { combosFor } from '../config/combos';
 import { season1Bey, SEASON1_BEYS } from '../config/beys/season1.generated';
@@ -2482,9 +2491,23 @@ export class ArenaSandbox extends Sandbox {
       /* `forceState` doubles as the AI design, per CS13 Case 630 — the
          corpus' only [DESIGN PRINCIPLE] case, which says a force state is
          "applied literally as an aggression or positioning override". A
-         low-spin bey backs off rather than trading hits. */
+         low-spin bey backs off rather than trading hits.
+
+         THE COMPARISON WAS A UNITS BUG AND IT DISABLED THE WHOLE AI. It read
+         `|ω| < rpmOf(id) * 0.2`, and `rpmOf` returns the RPM of THIS SAME
+         ENTITY — so it reduced to `|ω| < 1.91·|ω|`, true for any spin above
+         zero. The opponent was therefore permanently `must_keep_distance`: it
+         fled forever, never traded a hit, and never emitted TRIGGER, so it
+         could not fire a special either. Every battle was a chase.
+
+         Compared against the bey's OWN sleep-out threshold rather than a
+         launch constant: that is the point where it genuinely cannot hold
+         itself up, it is already computed from this bey's mass, inertia and
+         centre of mass, and it scales per build instead of assuming everyone
+         launched at the same speed. */
       const e = this._beySystem!.get(id)!;
-      const weak = Math.abs(e.state.omega) < this._beySystem!.rpmOf(id) * 0.2;
+      const crit = sleepOutOmega(e.spec.mass, e.spec.inertiaSpin, e.spec.comY);
+      const weak = Math.abs(e.state.omega) < crit * AI_RETREAT_SPIN_FACTOR;
       return {
         selfX: self.x, selfZ: self.z,
         targetX: tgt.x, targetZ: tgt.z,
