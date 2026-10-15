@@ -118,6 +118,23 @@ export interface DemoHooks {
   despawn(): void;
   getBeyState(): DemoBeyState | null;
   setBeyPosition(p: DemoVec): void;
+  /**
+   * Patch a ROSTER bey's state. Returns false if no such id.
+   *
+   * The player's counterpart is `setBeyPosition`, and the asymmetry is real:
+   * the player lives in `SpawnManager`, roster beys in `BeySystem`. A test
+   * that wants to force a specific round outcome needs both, because forcing
+   * one side can only ever prove one direction of the result.
+   *
+   * `omega` IS THE USEFUL ONE, and that is worth saying because position
+   * looks like the obvious lever and is not. Teleporting a bey is fought by
+   * two separate systems within the same tick — the surface resolver lifts it
+   * back onto whatever is beneath it, and `containToEllipse` drags it back
+   * inside the rim unless it is moving faster than the ring-out threshold, so
+   * a teleport with no velocity is undone before anything observes it.
+   * Nothing undoes a spin of zero.
+   */
+  setRosterState(id: string, patch: { pos?: DemoVec; vel?: DemoVec; omega?: number }): boolean;
   setBeyVelocity(v: DemoVec): void;
 
   getScene(): THREE.Scene;
@@ -147,6 +164,8 @@ export interface DemoApi {
   despawnBey(): void;
   getBeyState(): DemoBeyState | null;
   setBeyPosition(p: DemoVec): void;
+  /** Patch a roster bey's state. False if no such id. See `DemoHooks`. */
+  setRosterState(id: string, patch: { pos?: DemoVec; vel?: DemoVec; omega?: number }): boolean;
   setBeyVelocity(v: DemoVec): void;
 
   setFixedTimestep(ms: number | null): void;
@@ -225,6 +244,36 @@ export interface DemoMatchDiag {
   matchWinner: string | null;
   /** Everyone the match can actually score, player included. */
   participants: string[];
+  /**
+   * Round-by-round outcome, in order.
+   *
+   * WITHOUT THIS NO TEST CAN ASSERT WHO WON. `matchWinner` alone cannot
+   * distinguish "the player won" from "the match ended" — and the bug this
+   * whole phase was about was precisely a match that ended while reporting a
+   * draw for a round the player had just taken. The finish KIND matters for
+   * the same reason: burst scores two and ring-out one, so a test that only
+   * sees "someone won" cannot tell the burst bonus is wired up.
+   */
+  rounds: { winner: string | null; loser: string | null; kind: string }[];
+  /** Rounds taken per participant — what actually ends the match. */
+  roundsWon: Record<string, number>;
+  /** Accumulated FINISH_POINTS per participant. The scoreboard figure. */
+  score: Record<string, number>;
+  /**
+   * The player, which is NOT in `beys`.
+   *
+   * `SpawnManager` owns it, not `BeySystem`, so every field below is absent
+   * from the roster array — including whether it is still alive, which is the
+   * one thing a "can the player lose?" test has to read.
+   */
+  player: {
+    id: string;
+    alive: boolean;
+    rpm: number;
+    /** 0..1 ratchet progress. 1 means burst. */
+    burst: number;
+    y: number;
+  } | null;
   beys: {
     id: string;
     alive: boolean;
@@ -327,6 +376,7 @@ export function mountDemoApi(hooks: DemoHooks): void {
     despawnBey() { hooks.despawn(); },
     getBeyState() { return hooks.getBeyState(); },
     setBeyPosition(p) { hooks.setBeyPosition(p); },
+    setRosterState(id, patch) { return hooks.setRosterState(id, patch); },
     setBeyVelocity(v) { hooks.setBeyVelocity(v); },
 
     setFixedTimestep(ms) { hooks.setFixedTimestep(ms); },

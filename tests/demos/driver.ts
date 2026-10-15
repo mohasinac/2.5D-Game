@@ -128,6 +128,7 @@ declare global {
       getBeyState(): unknown;
       setBeyPosition(p: unknown): void;
       setBeyVelocity(v: unknown): void;
+      setRosterState(id: string, patch: unknown): boolean;
       setFixedTimestep(ms: number | null): void;
       freeze(): void;
       resume(): void;
@@ -142,6 +143,12 @@ declare global {
       clearNarration(): void;
       setChromeVisible(visible: boolean): void;
       waitForRest(speed?: number, timeoutMs?: number): Promise<boolean>;
+      /* Diagnostics. `unknown` deliberately, as everything else here is: the
+         real shapes live in `src/utils/demoApi.ts` and duplicating them would
+         give two declarations to keep in step. Specs cast at the call site. */
+      probeDown(x: number, z: number): unknown;
+      getBridgeDiag(): unknown;
+      getMatchDiag(): unknown;
     };
   }
 }

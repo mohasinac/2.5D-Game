@@ -97,6 +97,24 @@ export class MatchSystem {
   private rounds: RoundResult[] = [];
   private roundStartMs = 0;
   private over = false;
+  /**
+   * Is a round actually in progress?
+   *
+   * WITHOUT THIS, ROUNDS END THAT NOBODY PLAYED. A finish is not instant on
+   * screen — the banner, the camera move and the re-launch take about three
+   * seconds — and the simulation keeps running throughout. So the loser of
+   * round one goes on falling, and the WINNER goes on spinning DOWN, and
+   * around three seconds later it crosses its own sleep-out threshold. That
+   * is another defeat, with the other fighter still dead from the real round,
+   * so the living set is empty and it scores as a DRAW.
+   *
+   * Observed exactly that way: ring_out, then a phantom `draw`, then
+   * ring_out. In a best-of-three a phantom round is not cosmetic — two of
+   * them can decide the match before the third is launched.
+   *
+   * A round that has already finished cannot finish again.
+   */
+  private live = false;
   /** Participants outside the roster. In practice: the player. */
   private externals: BattleParticipant[] = [];
 
@@ -127,6 +145,7 @@ export class MatchSystem {
 
   beginRound(nowMs: number): void {
     this.roundStartMs = nowMs;
+    this.live = true;
     for (const e of this.beys.all()) {
       e.alive = true;
       e.state.sleptOut = false;
@@ -162,7 +181,9 @@ export class MatchSystem {
    * be observable at the instant it ends, not after cleanup.
    */
   update(nowMs: number, defeats: readonly BeyDefeat[]): RoundResult | null {
-    if (this.over) return null;
+    /* `!live` is the inter-round gap — see the field. Defeats that land there
+       belong to the round that just ended, not to the next one. */
+    if (this.over || !this.live) return null;
 
     if (defeats.length > 0) {
       /* Spans roster AND externals, which is the whole fix: with the player
@@ -198,6 +219,7 @@ export class MatchSystem {
   private finishRound(
     winner: string | null, loser: string | null, kind: FinishKind, nowMs: number,
   ): RoundResult {
+    this.live = false;
     const result: RoundResult = {
       winner, loser, kind, durationMs: nowMs - this.roundStartMs,
     };
@@ -234,6 +256,7 @@ export class MatchSystem {
   }
 
   reset(): void {
+    this.live = false;
     this.scores.clear();
     this.roundsWon.clear();
     this.rounds.length = 0;

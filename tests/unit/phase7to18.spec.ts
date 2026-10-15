@@ -755,6 +755,46 @@ test.describe('MatchSystem', () => {
     expect(r.winner).toBeNull();
   });
 
+  test('A ROUND CANNOT END TWICE — no phantom rounds in the finish gap', () => {
+    /* FOUND LIVE, not reasoned about. Forcing the player out every round
+       produced `ring_out | draw | ring_out` — a three-round best-of-three
+       where the middle round was never launched.
+
+       The gap between a finish and the next launch is about three seconds of
+       banner and camera, and the simulation runs through all of it. So the
+       round-one WINNER keeps spinning down and eventually crosses its own
+       sleep-out threshold, while the loser is still dead. Two dead fighters,
+       no living ones, and `update` scored it as a draw.
+
+       In a best-of-three a phantom round is not cosmetic: two of them can
+       decide the match before the third bey is even launched. */
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('a'));
+    beys.add(makeBeySpec('b'));
+    const m = new MatchSystem(beys);
+    m.beginRound(0);
+
+    beys.get('b')!.alive = false;
+    expect(m.update(1000, [{ id: 'b', cause: 'ring_out' }])!.winner).toBe('a');
+
+    /* The winner now spins down during the banner and dies too. This is the
+       exact tick that used to invent a round. */
+    beys.get('a')!.alive = false;
+    expect(m.update(1500, [{ id: 'a', cause: 'sleep_out' }])).toBeNull();
+    expect(m.history().length).toBe(1);
+    expect(m.roundsWonBy('a')).toBe(1);
+    expect(m.roundsWonBy('b')).toBe(0);
+
+    /* And the gate re-opens for the round that IS launched, rather than
+       latching shut — which would be the opposite bug and just as silent. */
+    m.beginRound(2000);
+    beys.get('b')!.alive = false;
+    const r2 = m.update(3000, [{ id: 'b', cause: 'ring_out' }]);
+    expect(r2).not.toBeNull();
+    expect(r2!.winner).toBe('a');
+    expect(m.history().length).toBe(2);
+  });
+
   test('a timeout is decided on remaining spin', () => {
     const beys = new BeySystem();
     beys.add(makeBeySpec('a'), null, { omega: 100 });

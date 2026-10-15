@@ -2231,6 +2231,23 @@ export class ArenaSandbox extends Sandbox {
           ...(this._spawnMgr?.isSpawned ? [PLAYER_ID] : []),
           ...[...(this._beySystem?.all() ?? [])].map(e => e.spec.id),
         ],
+        rounds: (this._matchSystem?.history() ?? []).map(r => ({
+          winner: r.winner, loser: r.loser, kind: r.kind,
+        })),
+        /* Per-participant, built by asking about each id rather than exposing
+           the maps — `MatchSystem` keeps those private and a diagnostic is a
+           poor reason to widen its surface. */
+        roundsWon: Object.fromEntries(this._fighterIds().map(
+          id => [id, this._matchSystem?.roundsWonBy(id) ?? 0])),
+        score: Object.fromEntries(this._fighterIds().map(
+          id => [id, this._matchSystem?.scoreOf(id) ?? 0])),
+        player: this._spawnMgr?.isSpawned ? {
+          id:    PLAYER_ID,
+          alive: !this._playerDown,
+          rpm:   this._spawnMgr.getRpm(),
+          burst: this._spawnMgr.burstProgress(),
+          y:     this._spawnMgr.getPosition().y,
+        } : null,
         beys: [...(this._beySystem?.all() ?? [])].map(e => ({
           id:       e.spec.id,
           alive:    e.alive,
@@ -2279,6 +2296,16 @@ export class ArenaSandbox extends Sandbox {
         };
       },
       setBeyPosition: (p) => this._spawnMgr?.setPosition(new THREE.Vector3(p.x, p.y, p.z)),
+      setRosterState: (id, patch) => {
+        const e = this._beySystem?.get(id);
+        if (!e) return false;
+        /* Write through the state the sim owns, not a THREE object: roster
+           vectors are plain `{x,y,z}` precisely so they survive cloning. */
+        if (patch.pos) { e.state.pos.x = patch.pos.x; e.state.pos.y = patch.pos.y; e.state.pos.z = patch.pos.z; }
+        if (patch.vel) { e.state.vel.x = patch.vel.x; e.state.vel.y = patch.vel.y; e.state.vel.z = patch.vel.z; }
+        if (patch.omega !== undefined) e.state.omega = patch.omega;
+        return true;
+      },
       setBeyVelocity: (v) => this._spawnMgr?.setVelocity(new THREE.Vector3(v.x, v.y, v.z)),
 
       getScene: () => this.getScene()!,
