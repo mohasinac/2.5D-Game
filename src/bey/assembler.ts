@@ -30,13 +30,31 @@ import type { BeyTipType } from '../config/arenaConstants';
  * the height accumulation has to run in.
  */
 export const SLOT_ORDER = [
-  'blade_base',     // BB — the tip-bearing foundation
-  'spin_gear',      // SG / EG / running core
-  'weight_disk',    // WD
-  'attack_ring',    // AR
+  /* ── the tip-bearing foundation ─────────────────────────────────────────
+     Every architecture has exactly one, under a different name. */
+  'blade_base',     // BB      — plastic
+  'performance_tip',// tip     — MFB
+  'driver',         // Dr      — Burst
+  'bit',            // Bit     — Beyblade X
+  /* ── the shaft / height layer ──────────────────────────────────────────── */
+  'spin_gear',      // SG / EG — plastic
+  'running_core',   // RC      — HMS (replaces the Blade Base concept entirely)
+  'spin_track',     // 145 etc — MFB; the NAME is the height in mm
+  'ratchet',        // 3-60    — BX
+  /* ── the mass ring ─────────────────────────────────────────────────────── */
+  'weight_disk',    // WD      — plastic / HMS
+  'fusion_wheel',   //         — MFB
+  'forge_disc',     // Disc    — Burst
+  /* ── the contact ring: what actually hits the opponent ─────────────────── */
+  'attack_ring',    // AR      — plastic / HMS
+  'energy_ring',    //         — MFB
+  'layer',          //         — Burst
+  'blade',          //         — BX
+  /* ── plastic-era extras, above the contact ring ────────────────────────── */
   'sub_attack_ring',// SAR
   'support_part',   // SP
-  'bit_chip',       // Chip / Face Bolt
+  'bit_chip',       // Chip
+  'face_bolt',      //         — MFB's equivalent cap
 ] as const;
 
 export type AssemblySlot = typeof SLOT_ORDER[number];
