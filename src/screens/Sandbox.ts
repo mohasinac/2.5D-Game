@@ -31,6 +31,17 @@ export interface SandboxOptions {
   maxZoom:    number;
   /** Lift the axes helper and labels to this Y (cm) so they sit above the scene floor, not inside geometry. Default 0. */
   axisYOffset?: number;
+  /**
+   * Play mode: drop the editor chrome and the diagram helpers. Default false.
+   *
+   * The grid, axes, tick numbers and orbit hint are AUTHORING aids — they
+   * exist so you can place a wall at exactly 40 cm. In a battle they are
+   * scenery the player has to look past, and the screenshots make that plain:
+   * a black editor grid drawn over the water is the single loudest thing in
+   * the frame. The scene-tree and properties buttons go for the same reason —
+   * there is nothing to inspect while playing.
+   */
+  playMode?: boolean;
 }
 
 export class Sandbox {
@@ -82,17 +93,18 @@ export class Sandbox {
     this.canvasWrap.className = 'sandbox-canvas-wrap';
     this.el.appendChild(this.canvasWrap);
 
+    const play = opts.playMode === true;
     const overlay = document.createElement('div');
-    overlay.className = 'sandbox-overlay';
+    overlay.className = play ? 'sandbox-overlay play-overlay' : 'sandbox-overlay';
     overlay.innerHTML = `
       <div class="sandbox-top-bar">
-        <button class="game-btn drawer-btn" id="sb-tree"  title="Scene Tree">☰</button>
+        ${play ? '' : '<button class="game-btn drawer-btn" id="sb-tree"  title="Scene Tree">☰</button>'}
         <button class="game-btn back-btn"   id="sb-back">← Back</button>
         <span  class="sandbox-title">${opts.title}</span>
         <button class="game-btn reset-btn"  id="sb-reset" title="Reset camera view to default">↺ View</button>
-        <button class="game-btn" id="sb-props" title="Toggle properties panel">⚙</button>
+        ${play ? '' : '<button class="game-btn" id="sb-props" title="Toggle properties panel">⚙</button>'}
       </div>
-      <div class="sandbox-hint">Orbit · Left drag &nbsp;|&nbsp; Pan · Right drag &nbsp;|&nbsp; Zoom · Scroll</div>
+      ${play ? '' : '<div class="sandbox-hint">Orbit · Left drag &nbsp;|&nbsp; Pan · Right drag &nbsp;|&nbsp; Zoom · Scroll</div>'}
     `;
     this.el.appendChild(overlay);
     container.appendChild(this.el);
@@ -103,8 +115,10 @@ export class Sandbox {
     overlay.querySelector('#sb-reset')!.addEventListener('click', () => this.resetView());
 
     this._drawerMgr = new DrawerManager(this.el);
-    overlay.querySelector('#sb-tree')!.addEventListener('click',  () => this._drawerMgr.toggleLeft());
-    overlay.querySelector('#sb-props')!.addEventListener('click', () => this._drawerMgr.toggleRight());
+    /* Play mode renders neither button, so these are optional — a bare `!`
+       here would throw on construction and take the whole screen with it. */
+    overlay.querySelector('#sb-tree')?.addEventListener('click',  () => this._drawerMgr.toggleLeft());
+    overlay.querySelector('#sb-props')?.addEventListener('click', () => this._drawerMgr.toggleRight());
 
     this._layoutUnsub = layoutObserver.onChange(mode => {
       if (mode === 'desktop' || mode === 'tablet') this._drawerMgr.closeAll();
@@ -298,6 +312,13 @@ export class Sandbox {
     const s = this.scene!;
     const { gridSize, gridDivs, tickEvery, tickRange, accentHex: accent } = this.opts;
 
+    /* In play mode the scene IS the content — no measuring aids over it.
+       Scoped to the helpers ONLY, and the scoping is the whole point: an
+       early return here also skipped the lights, `buildCustom` and the render
+       policy, so the battle screen came up unlit with not a single manager
+       constructed and threw on `_translationMgr.tick` every frame. The
+       helpers end at the origin marker; everything after it is load-bearing. */
+    if (!this.opts.playMode) {
     /* Ground grid (XZ) */
     s.add(new THREE.GridHelper(gridSize, gridDivs, accent, 0x2a2a4a));
 
@@ -337,6 +358,7 @@ export class Sandbox {
       new THREE.SphereGeometry(originR, 12, 12),
       new THREE.MeshBasicMaterial({ color: accent }),
     ));
+    }   /* end of the authoring helpers */
 
     /* Lights.
        Ambient drops from 0.5 to 0.25 because the environment map now supplies

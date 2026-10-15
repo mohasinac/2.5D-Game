@@ -123,9 +123,36 @@ import { Rng } from '../sim/Rng';
 /* ══════════════════════════════════════════════════════════════════════════
    ArenaSandbox
    ══════════════════════════════════════════════════════════════════════════ */
+/**
+ * Launch spin for a battle, rpm.
+ *
+ * CS10 documents a real MFB launch at ~600 rad/s, which is 5,730 rpm. The
+ * HUD's cosmetic default of 300 rpm is 31 rad/s — nearly 20x slower — and
+ * since spin became real a bey launched at it sleeps out before it has
+ * crossed the dish. Launching a battle at the documented figure is the
+ * difference between a match and a bey that falls over on arrival.
+ */
+const BATTLE_LAUNCH_RPM = 5730;
+
 export interface ArenaSandboxOptions extends SandboxOptions {
   onLibrary?: () => void;
   presetEditorMode?: boolean;
+  /**
+   * BATTLE MODE — the screen a player actually uses.
+   *
+   * A third variant rather than a new screen class, because everything a
+   * battle needs already lives here: the arena build, the projector, the
+   * roster, the match system, the HUD and the renderer. A separate
+   * `BattleScreen` would have to duplicate the arena-building stack, which
+   * the architecture rules ban outright and which would then drift.
+   *
+   * What it changes is what the player SEES and CAN DO: no scene tree, no
+   * properties panel, no undo/preset/library chrome, no grid or axes, and a
+   * START button that puts two beys in the dish — the thing that did not
+   * exist, so the roster, match system and gauges were all unreachable from
+   * the UI no matter how well they worked.
+   */
+  battleMode?: boolean;
 }
 
 export class ArenaSandbox extends Sandbox {
@@ -250,14 +277,25 @@ export class ArenaSandbox extends Sandbox {
     this.arenaStorageKey = `bey_arena_${opts.title.toLowerCase().replace(/\s+/g,'_')}`;
     this._arenaStore = createArenaStateStore(this.arenaStorageKey);
 
+    const battle = opts.battleMode === true;
+    /* One class on the root, and the CSS hides every authoring surface from
+       it. Inline `style.display` was tried first and does not hold: the
+       drawer manager and the layout observer both write `display` on these
+       panels, so an inline value set once in the constructor is overwritten
+       the first time the viewport is classified. */
+    if (battle) this.el.classList.add('battle-mode');
+
     this.modeBtn = this.addTopBarButton('● Solid', 'Toggle solid / mesh view');
     this.modeBtn.addEventListener('click', ()=>this.toggleMode());
+    if (battle) this.modeBtn.style.display = 'none';
 
-    const resetArenaBtn = this.addTopBarButton('Reset Arena', 'Reset arena configuration');
-    resetArenaBtn.className += ' reset-arena-btn';
-    resetArenaBtn.addEventListener('click', ()=>{ void this.resetArena(); });
+    if (!battle) {
+      const resetArenaBtn = this.addTopBarButton('Reset Arena', 'Reset arena configuration');
+      resetArenaBtn.className += ' reset-arena-btn';
+      resetArenaBtn.addEventListener('click', ()=>{ void this.resetArena(); });
+    }
 
-    if (!opts.presetEditorMode) {
+    if (!opts.presetEditorMode && !battle) {
       const demoBtn = this.addTopBarButton('★ Demo', 'Load sample demo arena');
       demoBtn.className += ' load-demo-btn';
       demoBtn.addEventListener('click', async () => {
@@ -281,6 +319,17 @@ export class ArenaSandbox extends Sandbox {
     this.undoBtn.addEventListener('click', ()=>this.undo());
     this.redoBtn = this.addTopBarButton('↪ Redo', 'Redo (Ctrl+Y)');
     this.redoBtn.addEventListener('click', ()=>this.redo());
+
+    /* Authoring chrome is BUILT in battle mode and hidden, rather than
+       skipped. Dozens of methods reach for `undoBtn`/`savePresetBtn` without
+       optional chaining, so not creating them turns every one of those into a
+       crash — and the point of this mode is that a player never reaches them,
+       not that the editor stops existing. */
+    if (battle) {
+      for (const b of [savePresetBtn, libraryBtn, this.undoBtn, this.redoBtn]) {
+        b.style.display = 'none';
+      }
+    }
 
     const leftPanel = this.addOverlayPanel('sandbox-left-panel');
     this.sceneTree  = new SceneTree(leftPanel);
@@ -2062,7 +2111,13 @@ export class ArenaSandbox extends Sandbox {
       this._ctrlMgr,
       () => this.getControls(),
     );
+    if (this._arenaOpts.battleMode) this._buildBattleControls();
+
     this._spawnMgrBtn = this.addTopBarButton('⚽ Spawn', 'Spawn/despawn physics test top');
+    /* The debug spawn button drops ONE bey with no opponent and no round —
+       it is the old "launching", and in battle mode it is a way to break the
+       match out of the UI. START owns the roster here. */
+    if (this._arenaOpts.battleMode) this._spawnMgrBtn.style.display = 'none';
     this._spawnMgrBtn.addEventListener('click', () => {
       if (this._spawnMgr?.isSpawned) {
         this._spawnMgr.despawn();
@@ -2493,15 +2548,25 @@ export class ArenaSandbox extends Sandbox {
     for (const e of sys.all()) this._beyRenderer?.sync(e.state, dt);
 
     if (this._beyHud && this._matchSystem) {
-      this._beyHud.render(
-        [...sys.all()].map(e => ({
-          entity: e,
-          gauges: this._gauges.get(e.spec.id) ?? EMPTY_GAUGES,
-          burst: this._beySystem!.burstProgressOf(e.spec.id),
-          label: e.spec.id,
-        })),
-        this._matchSystem.history(),
-      );
+      const views = [...sys.all()].map(e => ({
+        entity: e as { spec: { inertiaSpin: number }; state: typeof e.state },
+        gauges: this._gauges.get(e.spec.id) ?? EMPTY_GAUGES,
+        burst: this._beySystem!.burstProgressOf(e.spec.id),
+        label: e.spec.id,
+      }));
+      /* THE PLAYER GOES FIRST. It is not a roster entity — `SpawnManager`
+         owns it and the roster borrows it for contact — so rendering only
+         `sys.all()` gave a 1v1 battle a HUD showing the opponent's bars and
+         nothing at all for the player. */
+      if (this._spawnMgr?.isSpawned) {
+        views.unshift({
+          entity: this._spawnMgr.hudView(),
+          gauges: this._gauges.get('player') ?? EMPTY_GAUGES,
+          burst: 0,
+          label: 'YOU',
+        });
+      }
+      this._beyHud.render(views, this._matchSystem.history());
     }
   }
 
@@ -2578,6 +2643,102 @@ export class ArenaSandbox extends Sandbox {
     this._beyRenderer?.add(spec, { disc: 0x2266cc, cone: 0x4488dd });
     this._beyHud?.setVisible(true);
     return issues.map(i => i.message);
+  }
+
+  /**
+   * The START button — the thing whose absence made everything else
+   * unreachable.
+   *
+   * `BeySystem`, `MatchSystem`, `BattleGauges`, burst, spin decay and
+   * bey-vs-bey contact were all built, unit-tested and wired, and a player
+   * sitting at the app could reach NONE of them: opponents were added only by
+   * calling `addOpponentFromBuild` from a console. The screenshots said this
+   * more plainly than any audit — the battle screen was a scene tree, a
+   * properties panel and a debug overlay reading out VX/VY/VZ.
+   */
+  private _buildBattleControls(): void {
+    const bar = this.addOverlayPanel('battle-bar');
+
+    const startBtn = document.createElement('button');
+    startBtn.className   = 'game-btn battle-start-btn';
+    startBtn.id          = 'battle-start';
+    startBtn.textContent = '▶ LET IT RIP';
+    bar.appendChild(startBtn);
+
+    const status = document.createElement('span');
+    status.className = 'battle-status';
+    status.id        = 'battle-status';
+    status.textContent = 'Load a stadium, then launch';
+    bar.appendChild(status);
+
+    startBtn.addEventListener('click', () => {
+      if (this._battleRunning) { this._endBattle(status, startBtn); return; }
+      this._startBattle(status, startBtn);
+    });
+  }
+
+  private _battleRunning = false;
+
+  private _startBattle(status: HTMLElement, btn: HTMLButtonElement): void {
+    /* A battle needs a dish. Loading the demo arena when none is present is
+       the difference between "press start and play" and "press start and
+       watch two beys fall through the void". */
+    if (this.arenas.size === 0) {
+      this._applyConfigToScene(DEMO_ARENA_CONFIG);
+      this._flushSave();
+    }
+
+    const sys = this._ensureRoster();
+    for (const e of [...sys.all()]) sys.remove(e.spec.id);
+
+    /* The player is the SpawnManager bey, borrowed by reference into the
+       roster by `_resolvePlayerAgainstRoster` — so the two are resolved
+       against the same live vectors rather than two copies of the truth. */
+    this._spawnMgr?.despawn();
+    this._spawnMgr?.setSpawnState({
+      pos: new THREE.Vector3(-45, 30, 0),
+      vel: new THREE.Vector3(30, 0, 70),
+      rpm: BATTLE_LAUNCH_RPM,
+      tiltDeg: 0,
+    });
+    this._spawnMgr?.spawn();
+    this._virtualControls.show();
+
+    /* `makeBeySpec`, not `specFromBuild`: the opponent is a STOCK bey, and
+       inventing a `BeybladeBuildConfig` to feed the assembler would be
+       fabricating part data to describe a top nobody built. When the bey
+       library can supply a real build, `addOpponentFromBuild` is already the
+       door for it. Slightly heavier and grippier than the player's default,
+       so the first battle is not a mirror match. */
+    const spec = makeBeySpec('opponent-1', {
+      mass: 34, tipType: 'rubber_flat', controlAuthority: 0.35,
+    });
+    sys.add(spec, 'blue', {
+      pos: { x: 45, y: 30, z: 0 },
+      vel: { x: -30, y: 0, z: -70 },
+      omega: rpmToOmega(BATTLE_LAUNCH_RPM),
+    });
+    this._beyRenderer?.add(spec, { disc: 0x2266cc, cone: 0x4488dd });
+    this._beyHud?.setVisible(true);
+    this._bindOpponentAi(spec.id);
+
+    this._matchSystem?.reset();
+    this._matchSystem?.beginRound(this.simClock.nowMs());
+
+    this._battleRunning = true;
+    btn.textContent = '■ STOP';
+    status.textContent = 'Round 1 — WASD to move, Space to jump, T for a special';
+  }
+
+  private _endBattle(status: HTMLElement, btn: HTMLButtonElement): void {
+    const sys = this._beySystem;
+    if (sys) for (const e of [...sys.all()]) sys.remove(e.spec.id);
+    this._spawnMgr?.despawn();
+    this._virtualControls.hide();
+    this._beyHud?.setVisible(false);
+    this._battleRunning = false;
+    btn.textContent = '▶ LET IT RIP';
+    status.textContent = 'Load a stadium, then launch';
   }
 
   /** Ids of every stadium authored from a CS10 case. */

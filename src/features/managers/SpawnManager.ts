@@ -190,6 +190,23 @@ export class SpawnManager {
   });
   private readonly _sim: BeyState = makeBeyState(this._spec);
 
+  /**
+   * The player's live state and spec, for the battle HUD.
+   *
+   * Returns the REAL objects, not a copy, for the same reason `_sim.pos` is
+   * the live `Vector3`: a HUD reading a snapshot taken once per frame would
+   * be a second copy of the truth and would drift the moment anything stepped
+   * between the copy and the draw.
+   */
+  hudView(): { spec: BeySpec; state: BeyState } {
+    this._syncSimIn();
+    this._sim.health = this.health;
+    this._sim.omega  = rpmToOmega(this.rpm);
+    this._sim.tiltDeg = this.tiltDeg;
+    this._sim.sleptOut = this._sleptOut;
+    return { spec: this._spec, state: this._sim };
+  }
+
   /** Point the sim state at this manager's live vectors and scalars. */
   private _syncSimIn(): void {
     this._sim.pos = this.pos;

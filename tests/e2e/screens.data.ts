@@ -54,6 +54,20 @@ export const SCREENS: ScreenDef[] = [
     mustExist: [CANVAS_WRAP],
   },
   {
+    id: 'battle',
+    path: '/battle',
+    isCanvas: true,
+    /* Play mode renders no scene tree and no properties panel, so there is
+       no drawer to toggle — asserting one would fail for the right reason
+       and the wrong feature. */
+    isDrawer: false,
+    hasVirtualControls: true,
+    /* The START button is the whole point of the screen: it is the only
+       route from "the battle systems exist" to "a player can reach them",
+       so its absence must fail the suite rather than be noticed later. */
+    mustExist: [CANVAS_WRAP, { sel: '#battle-start', label: 'Start battle button' }],
+  },
+  {
     id: 'beyblade',
     path: '/beyblade',
     isCanvas: true,

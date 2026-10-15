@@ -6,6 +6,7 @@ export interface LandingOptions {
   onArenaLibrary: () => void;
   onBeyLibrary:   () => void;
   onSpecialMoves: () => void;
+  onBattle:       () => void;
 }
 
 export class LandingScreen {
@@ -22,6 +23,13 @@ export class LandingScreen {
           <span class="title-sub">GAME ENGINE</span>
         </div>
         <div class="landing-buttons">
+          <!-- First, and styled as the primary action: this is the only
+               button on this screen that leads to PLAYING rather than
+               authoring, and until now there was no such button at all. -->
+          <button class="game-btn game-btn--play" id="btn-battle">
+            <span class="btn-icon">▶</span>
+            Battle
+          </button>
           <button class="game-btn" id="btn-beyblade">
             <span class="btn-icon">◈</span>
             Beyblade Sandbox
@@ -55,6 +63,7 @@ export class LandingScreen {
     `;
     container.appendChild(this.el);
 
+    this.el.querySelector('#btn-battle')!.addEventListener('click',        opts.onBattle);
     this.el.querySelector('#btn-beyblade')!.addEventListener('click',      opts.onBeyblade);
     this.el.querySelector('#btn-arena')!.addEventListener('click',         opts.onArena);
     this.el.querySelector('#btn-rpg')!.addEventListener('click',           opts.onRpg);

@@ -30,7 +30,17 @@ import type { RoundResult } from './MatchSystem';
    ══════════════════════════════════════════════════════════════════════════ */
 
 export interface HudEntityView {
-  entity: BeyEntity;
+  /**
+   * Narrowed to what the HUD actually reads — `spec.inertiaSpin` and `state`.
+   *
+   * It was `BeyEntity`, which meant only ROSTER members could be displayed,
+   * and the player is not one: `SpawnManager` owns it and the roster only
+   * BORROWS it for contact. So a 1v1 battle rendered a HUD with the
+   * opponent's bars and nothing for the player. Asking for the fields it
+   * reads instead of the class they usually arrive in fixes that without a
+   * synthetic entity to keep in sync.
+   */
+  entity: { spec: Pick<BeyEntity['spec'], 'inertiaSpin'>; state: BeyEntity['state'] };
   gauges: Gauges;
   /** Burst progress 0..1. */
   burst: number;

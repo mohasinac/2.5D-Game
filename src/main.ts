@@ -11,7 +11,7 @@ import { gameConfirm }         from './utils/dialog';
 import { inputManager }        from './features/managers/InputManager';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
-type ScreenId = 'landing' | 'beyblade' | 'arena' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor' | 'special-moves';
+type ScreenId = 'landing' | 'beyblade' | 'arena' | 'battle' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor' | 'special-moves';
 
 class App {
   private current: ScreenId = 'landing';
@@ -19,6 +19,7 @@ class App {
   private beyblade:       BeybladeSandbox;
   private arena:          ArenaSandbox;
   private presetEditor:   ArenaSandbox;
+  private battle:         ArenaSandbox;
   private rpg:            RPGScreen;
   private admin:          AdminHubScreen;
   private arenaLibrary:   ArenaLibraryScreen;
@@ -36,6 +37,7 @@ class App {
       onArenaLibrary:  () => this.go('arena-library'),
       onBeyLibrary:    () => this.go('bey-library'),
       onSpecialMoves:  () => this.go('special-moves'),
+      onBattle:        () => this.go('battle'),
     });
 
     this.beyblade = new BeybladeSandbox(root, {
@@ -74,6 +76,26 @@ class App {
       minZoom:         5,
       maxZoom:         1500,
       axisYOffset:     0,
+    });
+
+    /* BATTLE — the play-mode variant. Same arena stack, no editor chrome,
+       and a START button, which is the piece that was missing: the roster,
+       match system and gauges all worked and none of them were reachable. */
+    this.battle = new ArenaSandbox(root, {
+      title:       'Battle',
+      accentHex:   0xff6b35,
+      onBack:      () => this.go('landing'),
+      battleMode:  true,
+      playMode:    true,
+      gridSize:    200,
+      gridDivs:    20,
+      tickEvery:   20,
+      tickRange:   100,
+      defaultCam:  { x: 150, y: 100, z: 175 },
+      camFar:      2000,
+      minZoom:     5,
+      maxZoom:     1500,
+      axisYOffset: 0,
     });
 
     this.rpg = new RPGScreen(root, {
@@ -134,6 +156,7 @@ class App {
     this.beyblade.setVisible(id === 'beyblade');
     this.arena.setVisible(id === 'arena');
     this.presetEditor.setVisible(id === 'preset-editor');
+    this.battle.setVisible(id === 'battle');
     this.rpg.setVisible(id === 'rpg');
     this.admin.setVisible(id === 'admin');
     this.arenaLibrary.setVisible(id === 'arena-library');
@@ -145,6 +168,7 @@ class App {
     const p = location.pathname;
     if (p === '/beyblade')       return 'beyblade';
     if (p === '/arena')          return 'arena';
+    if (p === '/battle')         return 'battle';
     if (p === '/preset-editor')  return 'preset-editor';
     if (p === '/rpg')            return 'rpg';
     if (p === '/admin')          return 'admin';

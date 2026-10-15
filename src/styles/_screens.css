@@ -69,6 +69,20 @@
   width: 24em;
 }
 
+/* ── Landing — Battle, the one button that leads to playing ─────────────── */
+.game-btn--play {
+  background:   rgba(255, 107, 53, 0.16);
+  border-color: rgba(255, 107, 53, 0.65);
+  color:        #ffd9c7;
+  box-shadow:   0 0 0.7em rgba(255, 107, 53, 0.28);
+}
+.game-btn--play:hover {
+  background:   rgba(255, 107, 53, 0.30);
+  border-color: rgba(255, 107, 53, 0.95);
+  box-shadow:   0 0 1.4em rgba(255, 107, 53, 0.55);
+  color:        #fff;
+}
+
 /* ── Landing — RPG + Admin + Lib buttons ─────────────────────────────────── */
 .game-btn--rpg {
   background: rgba(68, 34, 136, 0.12);
@@ -312,6 +326,77 @@
 .arena-view-btn.active {
   opacity:        1;
   box-shadow:     0 0 calc(8 * var(--mm)) rgba(255, 107, 53, 0.5);
+}
+
+/* ── Battle mode — hide every authoring surface ─────────────────────────── */
+/* `!important` because the drawer manager and layout observer both write
+   inline `display` on these panels as the viewport is classified; without it
+   the scene tree reappears the first time the window is resized. This is the
+   one place in the project where that is the right tool: the rule is not
+   competing with another stylesheet, it is overriding JS that does not know
+   battle mode exists. */
+.battle-mode .sandbox-left-panel,
+.battle-mode .sandbox-right-panel,
+.battle-mode .arena-view-bar,
+.battle-mode .spawn-manager-hud,
+.battle-mode .sandbox-hint,
+.battle-mode .drawer-backdrop {
+  display: none !important;
+}
+
+/* The HUD is `inset: 0 0 auto 0`, so by default it sits UNDER the top bar and
+   the opponent's name collides with the screen title. Clear the bar instead
+   of shortening the HUD — the bars must stay at the top edge of the play
+   area, which is where a fighting-game player looks for them. */
+.battle-mode .battle-hud {
+  top: calc(34 * var(--mm));
+}
+
+/* ── Battle bar — the play-mode entry point ─────────────────────────────── */
+/* Sits above the view bar's slot because in battle mode that bar is hidden;
+   this is the only thing a player needs to reach, so it gets the centre. */
+.battle-bar {
+  position:       absolute;
+  bottom:         calc(14 * var(--mm));
+  left:           50%;
+  transform:      translateX(-50%);
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            calc(4 * var(--mm));
+  pointer-events: auto;
+  z-index:        22;
+}
+.battle-start-btn {
+  /* Touch minimums in px, not --cm: vmin collapses on a 390px viewport and
+     derived sizing silently shrinks this to unusable. */
+  min-height:     48px;
+  min-width:      200px;
+  flex-shrink:    0;
+  font-size:      calc(18 * var(--mm));
+  letter-spacing: 0.16em;
+  padding:        calc(5 * var(--mm)) calc(16 * var(--mm));
+  background:     rgba(8, 8, 16, 0.9);
+  border:         calc(1 * var(--mm)) solid rgba(255, 107, 53, 0.55);
+  box-shadow:     0 0 calc(10 * var(--mm)) rgba(255, 107, 53, 0.35);
+}
+.battle-start-btn:hover {
+  box-shadow:     0 0 calc(16 * var(--mm)) rgba(255, 107, 53, 0.6);
+}
+.battle-status {
+  font-family:    'Rajdhani', sans-serif;
+  font-size:      calc(12 * var(--mm));
+  color:          #9fb4d8;
+  letter-spacing: 0.06em;
+  text-align:     center;
+  background:     rgba(8, 8, 16, 0.78);
+  padding:        calc(2 * var(--mm)) calc(8 * var(--mm));
+  border-radius:  calc(3 * var(--mm));
+  /* No wrap to a second line — the bar must not grow and push the canvas. */
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+  max-width:      90vw;
 }
 
 /* ── RPG Screen ─────────────────────────────────────────────────────────── */
