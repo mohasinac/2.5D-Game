@@ -1100,7 +1100,19 @@ export class SpawnManager {
 
     const tip = BEY_TIP_PROFILES[this._spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
     const mu  = effectiveTipFriction(tip, this._currentSurfaceMu);
-    const decel = spinDecayRate(this._spec.mass, this._spec.inertiaSpin, mu, tip.contactRadius);
+
+    /* THE STAT-MODIFIER PIPELINE'S FIRST CONSUMER. Speed lines, traps and
+       zones have written buffs every frame since the beginning and
+       `getEffective()` has never once been called, so every modifier in the
+       project was inert. `staminaMult` belongs exactly here: a stamina buff
+       means the tip drains spin more slowly, which is a change to the
+       friction term and not a separate decay path. */
+    const mods = this._buffMgr.getEffective(this._spec.id);
+    const decel = spinDecayRate(
+      this._spec.mass, this._spec.inertiaSpin,
+      mu / Math.max(0.05, mods.staminaMult),
+      tip.contactRadius,
+    );
 
     const r = stepSpin(
       this._spec,
@@ -1360,9 +1372,16 @@ export class SpawnManager {
 
   // NOTE: `isSpawned` already exists as a getter further up — do not re-add it here.
   getHealth(): number { return this.health; }
-  /** Take damage from an outside source — a bullet, a clash, a special. */
+  /**
+   * Take damage from an outside source — a bullet, a clash, a special.
+   *
+   * Scaled by the defence modifier, which is the second consumer of the buff
+   * pipeline. A `defenseMult` of 2 halves incoming damage.
+   */
   applyImpactDamage(amount: number): void {
-    this.health = Math.max(0, Math.min(HEALTH_MAX, this.health - amount));
+    const mods = this._buffMgr.getEffective(this._spec.id);
+    const scaled = amount / Math.max(0.05, mods.defenseMult);
+    this.health = Math.max(0, Math.min(HEALTH_MAX, this.health - scaled));
   }
   /** Obstacle-side contacts since spawn. See `_obstacleContacts`. */
   getObstacleContacts(): number { return this._obstacleContacts; }

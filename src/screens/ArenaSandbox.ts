@@ -106,7 +106,7 @@ import type { BeyContact } from '../sim/step/beyCollision';
 import { ComboDetector } from '../systems/ComboDetector';
 import { chargeGauges, awardXtreme, payCombo, EMPTY_GAUGES } from '../systems/BattleGauges';
 import type { Gauges } from '../systems/BattleGauges';
-import { KeyboardInputSource, SCHEME_P2 } from '../systems/inputSources';
+import { KeyboardInputSource, AiInputSource, SCHEME_P2 } from '../systems/inputSources';
 import { CS10_ARENAS } from '../config/arenas';
 import { expand } from '../config/arenas/blueprint';
 import { specFromBuild } from '../bey/specFromBuild';
@@ -2354,6 +2354,42 @@ export class ArenaSandbox extends Sandbox {
     sys.add(spec, 'blue', { pos: { ...pos }, omega: rpmToOmega(1500) });
     this._beyRenderer?.add(spec, { disc: 0x2266cc, cone: 0x4488dd });
     this._beyHud?.setVisible(true);
+    this._bindOpponentAi(id);
+  }
+
+  /**
+   * Give the opponent something to chase.
+   *
+   * `TargetManager` has shipped five steering behaviours and ZERO bindings
+   * since it was written — it ticks over an empty map every frame. This is
+   * its first one: the opponent locks on to the player's bey, and the AI
+   * input source turns that into an `InputFrame` like any other producer,
+   * so `BeySystem` cannot tell it from a human.
+   */
+  private _bindOpponentAi(id: string): void {
+    if (!this._inputSystem || !this._targetMgr || !this._spawnMgr) return;
+
+    this._targetMgr.bind(id, 'spawn_ball', 'lock_on', { strength: 0.6 });
+
+    this._inputSystem.bind(id, new AiInputSource(id, () => {
+      const self = this._beySystem?.get(id)?.state.pos;
+      const sm   = this._spawnMgr;
+      const tgt  = sm?.isSpawned ? sm.getPosition() : null;
+      if (!self || !tgt) {
+        return { selfX: 0, selfZ: 0, targetX: 0, targetZ: 0, force: 'must_stay_still' as const };
+      }
+      /* `forceState` doubles as the AI design, per CS13 Case 630 — the
+         corpus' only [DESIGN PRINCIPLE] case, which says a force state is
+         "applied literally as an aggression or positioning override". A
+         low-spin bey backs off rather than trading hits. */
+      const e = this._beySystem!.get(id)!;
+      const weak = Math.abs(e.state.omega) < this._beySystem!.rpmOf(id) * 0.2;
+      return {
+        selfX: self.x, selfZ: self.z,
+        targetX: tgt.x, targetZ: tgt.z,
+        force: weak ? ('must_keep_distance' as const) : ('must_attack' as const),
+      };
+    }));
   }
 
   removeOpponent(id: string): void {

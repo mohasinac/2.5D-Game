@@ -13,6 +13,7 @@ import {
   makeBurstState, applyBurstImpulse, burstProgress,
   DEFAULT_BURST, type BurstState, type BurstSpec,
 } from '../sim/step/burst';
+import { stepLink, stationFor, stationSteering, type BeyLink } from './BeyLink';
 import type { InputFrame } from './InputSystem';
 import { EMPTY_FRAME } from './InputSystem';
 
@@ -107,6 +108,8 @@ export class BeySystem {
   /* Scratch arrays, reused every tick. The roster is 2-6 beys and this runs
      at 60 Hz; allocating per frame would be the single largest garbage
      source in the simulation. */
+  /** Cooperative links between members — Twin Tornado, Dragoon Tank. */
+  private links = new Map<string, BeyLink>();
   private bodyScratch: BeyBody[] = [];
   private spinScratch = new Map<string, SpinBody>();
 
@@ -158,6 +161,8 @@ export class BeySystem {
     }
 
     const contacts = this.resolveContacts();
+
+    this.stepLinks(dt);
 
     /* Clones and deployments ride on the state that was just stepped. */
     for (const e of this.entities.values()) {
@@ -310,6 +315,47 @@ export class BeySystem {
       if (cause) { e.alive = false; out.push({ id: e.spec.id, cause }); }
     }
     return out;
+  }
+
+  /* ── Cooperative links (ledger code L) ────────────────────────────── */
+
+  addLink(link: BeyLink): void { this.links.set(link.id, link); }
+  removeLink(id: string): void { this.links.delete(id); }
+  linkOf(id: string): BeyLink | undefined { return this.links.get(id); }
+
+  /**
+   * Hold formations and advance shared phase.
+   *
+   * Followers are STEERED toward their station rather than snapped to it —
+   * a cooperative move should look like two bladers holding a shape, not
+   * like one bey parented to another, and a snap would also bypass every
+   * collision resolver on the way.
+   */
+  private stepLinks(dt: number): void {
+    if (this.links.size === 0) return;
+
+    const positions = new Map<string, { x: number; y: number; z: number }>();
+    for (const e of this.entities.values()) positions.set(e.spec.id, e.state.pos);
+
+    for (const [id, link] of this.links) {
+      if (!stepLink(link, dt, positions)) { this.links.delete(id); continue; }
+      if (link.kind === 'resonance') continue;     // no positional constraint
+
+      const leader = this.entities.get(link.members[0]);
+      if (!leader) continue;
+      const heading = { x: leader.state.vel.x, y: 0, z: leader.state.vel.z };
+
+      for (let i = 1; i < link.members.length; i++) {
+        const follower = this.entities.get(link.members[i]);
+        if (!follower || !follower.alive) continue;
+        const offset = link.offsets[i - 1] ?? { x: 0, y: 0, z: -12 };
+        const station = stationFor(leader.state.pos, heading, offset);
+        const dir = stationSteering(follower.state.pos, station);
+        const pull = follower.spec.moveForce * link.cohesion * dt;
+        follower.state.vel.x += dir.x * pull;
+        follower.state.vel.z += dir.z * pull;
+      }
+    }
   }
 
   /* ── Runtime part mutation (ledger N7) ────────────────────────────── */
