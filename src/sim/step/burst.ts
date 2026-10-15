@@ -145,7 +145,16 @@ export function applyBurstImpulse(
 
   const toothRad = (360 / Math.max(1, spec.toothCount)) * Math.PI / 180;
   const turned   = relativeRotation(impulse, contactRadius, spec);
-  const clicks   = Math.max(1, Math.floor(turned / toothRad));
+  /* NO `max(1, ...)` FLOOR. With one, every contact that cleared the torque
+     gate clicked at least one tooth — and collision impulses clear that gate
+     by two orders of magnitude, so burst degenerated into "eight contacts and
+     you are out" regardless of how hard any of them hit. Measured on the live
+     screen: the player burst within a second of the first clash.
+
+     A hit that slips the ratchet but turns it less than a full tooth clicks
+     nothing, which is what a ratchet does. */
+  const clicks   = Math.floor(turned / toothRad);
+  if (clicks <= 0) return 0;
   state.clicks += clicks;
   if (state.clicks >= state.clicksToBurst) {
     state.clicks = state.clicksToBurst;

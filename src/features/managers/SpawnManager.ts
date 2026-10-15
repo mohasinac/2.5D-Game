@@ -18,6 +18,10 @@ import {
   type BeyTipType,
 } from '../../config/arenaConstants';
 import { makeBeySpec, makeBeyState } from '../../sim/state';
+import {
+  makeBurstState, applyBurstImpulse, burstProgress,
+  DEFAULT_BURST, type BurstSpec, type BurstState,
+} from '../../sim/step/burst';
 import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
 import { resolveObstacleSide } from '../../sim/step/obstacles';
@@ -74,6 +78,17 @@ const MAT_RESTITUTION: Record<string, number> = { rubber: 0.15, stone: 0.40, abs
 const CAM_LERP             = 0.07;
 const AUTO_MOVE_RADIUS     = 40;     // cm
 const AUTO_MOVE_SPEED      = 45;     // deg/s
+/**
+ * The player bey's entity id — ONE source of truth.
+ *
+ * It was the bare string `'spawn_ball'` in seven places here while the screen
+ * used its own `PLAYER_ID = 'player'`. Both are the player, so gauges were
+ * AWARDED under one key and READ under the other: the player's Active and
+ * Xtreme bars were permanently empty, and no combo or special could ever be
+ * paid for. Exported so the two cannot drift again.
+ */
+export const PLAYER_BEY_ID = 'spawn_ball';
+
 const RESPAWN_Y            = -500;   // world Y threshold
 const HEALTH_MAX           = 100;
 const BASE_APOTHEM         = 100;    // cm — octagon inradius fallback
@@ -182,7 +197,7 @@ export class SpawnManager {
      The remaining scalars (grounded, gravityScale, surfaceMu) are still owned
      by this class, so they are pushed in before a step and read back after.
      They move into BeyState wholesale when SpawnManager becomes BeySystem. */
-  private readonly _spec: BeySpec = makeBeySpec('spawn_ball', {
+  private readonly _spec: BeySpec = makeBeySpec(PLAYER_BEY_ID, {
     radius: BALL_RADIUS, height: BALL_HEIGHT, tipOffset: BALL_TIP_OFFSET,
     moveForce: MOVE_FORCE, jumpImpulse: JUMP_IMPULSE,
     frictionGround: FRICTION_GROUND, frictionAir: FRICTION_AIR,
@@ -190,6 +205,30 @@ export class SpawnManager {
     maxHealth: HEALTH_MAX,
   });
   private readonly _sim: BeyState = makeBeyState(this._spec);
+
+  /**
+   * The player's ratchet.
+   *
+   * `SpawnManager` had NO burst state at all, so the HUD hardcoded the
+   * player's burst gauge to 0 and the player could not lose the one way the
+   * entire Burst era is named after. Roster beys have had this since
+   * `BeySystem` existed; the player simply was not a roster bey.
+   */
+  burstSpec: BurstSpec = { ...DEFAULT_BURST };
+  burst: BurstState = makeBurstState(DEFAULT_BURST);
+
+  /** Drive the ratchet from one contact. Returns teeth clicked. */
+  applyBurst(impulse: number, contactRadius: number): number {
+    if (this.burst.burst) return 0;
+    const tip = BEY_TIP_PROFILES[this._spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
+    return applyBurstImpulse(this.burst, this.burstSpec, impulse, contactRadius, tip.friction);
+  }
+
+  /** 0..1 for the HUD gauge. */
+  burstProgress(): number { return burstProgress(this.burst); }
+
+  /** Re-seat the ratchet between rounds. */
+  reseatBurst(): void { this.burst = makeBurstState(this.burstSpec); }
 
   /**
    * The player's live state and spec, for the battle HUD.
@@ -325,7 +364,7 @@ export class SpawnManager {
 
     this.slPathCache.clear();
     this.slOnRibbon.clear();
-    this._buffMgr.clearEntity('spawn_ball');
+    this._buffMgr.clearEntity(PLAYER_BEY_ID);
     this._trapTimers.clear();
 
     this.hudEl.style.display = 'none';
@@ -877,7 +916,7 @@ export class SpawnManager {
           sourceId: sl.id, sourceType: 'speed_line',
           mods: sl.statModifiers, durationMs: null,
         };
-        this._buffMgr.apply('spawn_ball', buff);
+        this._buffMgr.apply(PLAYER_BEY_ID, buff);
       }
 
       this.slOnRibbon.set(slId, true);
@@ -885,7 +924,7 @@ export class SpawnManager {
   }
 
   private _handleSlExit(sl: SpeedLineData): void {
-    this._buffMgr.removeSource('spawn_ball', sl.id);
+    this._buffMgr.removeSource(PLAYER_BEY_ID, sl.id);
     const ctx: EjectContext = {
       velocity:     this.vel.clone(),
       position:     this.pos.clone(),
@@ -951,7 +990,7 @@ export class SpawnManager {
             mods: { spinRateMult: 1 - (tier.rpmLossFactor ?? 0) },
             durationMs: null,
           };
-          this._buffMgr.apply('spawn_ball', buff);
+          this._buffMgr.apply(PLAYER_BEY_ID, buff);
         }
       }
     }
@@ -960,7 +999,7 @@ export class SpawnManager {
       const trapId = key.split(':')[0];
       if (!insideThisFrame.has(trapId)) {
         this._trapTimers.delete(key);
-        this._buffMgr.removeSource('spawn_ball', `${trapId}_tier`);
+        this._buffMgr.removeSource(PLAYER_BEY_ID, `${trapId}_tier`);
       }
     }
   }
@@ -1036,7 +1075,7 @@ export class SpawnManager {
           sourceId: zone.id, sourceType: 'zone',
           mods: eff.statMods, durationMs: null,
         };
-        this._buffMgr.apply('spawn_ball', buff);
+        this._buffMgr.apply(PLAYER_BEY_ID, buff);
       }
     }
   }

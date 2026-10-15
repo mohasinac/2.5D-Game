@@ -104,10 +104,18 @@ import { InputSystem } from '../systems/InputSystem';
 import { MatchSystem } from '../systems/MatchSystem';
 import type { FinishKind, RoundResult, BattleParticipant } from '../systems/MatchSystem';
 import { RING_OUT_Y } from '../systems/BeySystem';
+import { PLAYER_BEY_ID } from '../features/managers/SpawnManager';
 import type { BeyDefeat, DefeatCause } from '../systems/BeySystem';
 
-/** The player's participant id. Distinct from any roster bey. */
-const PLAYER_ID = 'player';
+/**
+ * The player's participant id.
+ *
+ * IMPORTED, not re-declared. This was `'player'` while `SpawnManager`'s own
+ * spec id is `'spawn_ball'` — so contacts and gauge awards landed under one
+ * key and the HUD read the other. The player's Active and Xtreme bars were
+ * permanently empty and no special could ever be paid for.
+ */
+const PLAYER_ID = PLAYER_BEY_ID;
 /** How long a finish stays on screen before the next round re-arms, sim-ms. */
 const ROUND_INTERMISSION_MS = 2500;
 /** Pause between ANY two combos, ms — the global cooldown CS12 specifies. */
@@ -2479,7 +2487,7 @@ export class ArenaSandbox extends Sandbox {
   private _bindOpponentAi(id: string): void {
     if (!this._inputSystem || !this._targetMgr || !this._spawnMgr) return;
 
-    this._targetMgr.bind(id, 'spawn_ball', 'lock_on', { strength: 0.6 });
+    this._targetMgr.bind(id, PLAYER_BEY_ID, 'lock_on', { strength: 0.6 });
 
     this._inputSystem.bind(id, new AiInputSource(id, () => {
       const self = this._beySystem?.get(id)?.state.pos;
@@ -2541,8 +2549,13 @@ export class ArenaSandbox extends Sandbox {
     /* Gauges and combos, per bey. Active fills with time and pays for
        combos; Xtreme is EARNED through contact and pays for specials —
        which is what makes a 150-cost ultimate payable at all. */
-    for (const e of this._beySystem!.all()) {
-      const id = e.spec.id;
+    /* THE PLAYER IS IN THIS LOOP NOW. It iterated `all()` — roster only —
+       so nothing ever charged a gauge, attached a combo or paid for a special
+       under the player's key. Its bars sat empty for the whole match and the
+       combo system it had was unreachable. `_fighterIds` is the roster plus
+       the player, which is the set this loop always meant. */
+    for (const id of this._fighterIds()) {
+      const e = this._beySystem!.get(id);
       this._gauges.set(id, chargeGauges(this._gauges.get(id) ?? EMPTY_GAUGES, dt));
 
       let det = this._combos.get(id);
@@ -2593,9 +2606,13 @@ export class ArenaSandbox extends Sandbox {
         /* The physical impulse comes from the bey's own momentum, so a
            faster bey lands a bigger special — the amplification multiplies
            what was really there rather than replacing it with a constant. */
-        const physical = e.spec.mass * Math.hypot(e.state.vel.x, e.state.vel.z);
+        /* Momentum of whichever fighter this is. `e` is undefined for the
+           player, whose body lives on `SpawnManager`. */
+        const physical = e
+          ? e.spec.mass * Math.hypot(e.state.vel.x, e.state.vel.z)
+          : this._playerMomentum();
         const delivered = sys.fireSpecial(id, physical, M_FACTOR_MODE, true);
-        this._beyHud?.banner(`${id} — SPECIAL  ${delivered.toFixed(0)}`);
+        this._beyHud?.banner(`${id === PLAYER_ID ? 'YOU' : id} — SPECIAL  ${delivered.toFixed(0)}`);
       }
     }
 
@@ -2631,6 +2648,13 @@ export class ArenaSandbox extends Sandbox {
          quiet sample is the result. */
       const tier = this._feel.impact(c.impulse, [c.a, c.b], now);
       this.sound.playTier(tier, now);
+
+      /* The player's ratchet, which nothing ever turned. `BeySystem` applies
+         burst to roster entities inside `resolveContacts`; the player is not
+         one, so it took every hit with no consequence at all. */
+      if (this._spawnMgr?.isSpawned && (c.a === PLAYER_ID || c.b === PLAYER_ID)) {
+        this._spawnMgr.applyBurst(c.impulse, this._spawnMgr.hudView().spec.radius);
+      }
     }
     this._feel.tick();
 
@@ -2664,8 +2688,11 @@ export class ArenaSandbox extends Sandbox {
       if (this._spawnMgr?.isSpawned) {
         views.unshift({
           entity: this._spawnMgr.hudView(),
-          gauges: this._gauges.get('player') ?? EMPTY_GAUGES,
-          burst: 0,
+          /* PLAYER_ID, not a literal — the last survivor of the two-keys
+             bug, and the reason the player's bars stayed empty even after the
+             charging loop started including it. */
+          gauges: this._gauges.get(PLAYER_ID) ?? EMPTY_GAUGES,
+          burst: this._spawnMgr.burstProgress(),
           label: 'YOU',
         });
       }
@@ -2687,6 +2714,7 @@ export class ArenaSandbox extends Sandbox {
       spinMagnitude: () => rpmToOmega(this._spawnMgr?.getRpm() ?? 0),
       resetForRound: () => {
         this._playerDown = false;
+        this._spawnMgr?.reseatBurst();
         /* Respawn puts it back at the launch pose with a fresh ratchet and a
            reset tilt — `spawn()` clears `tiltDeg`, which is what stopped a
            second round starting with a pre-toppled bey. */
@@ -2714,6 +2742,9 @@ export class ArenaSandbox extends Sandbox {
     if (sm.getHealth() <= 0)             cause = 'health';
     if (sm.getPosition().y < RING_OUT_Y) cause = 'ring_out';
     if (sm.isSleptOut())                 cause = cause ?? 'sleep_out';
+    /* Burst outranks the rest because it SCORES differently — two points
+       against one — exactly as `collectDefeats` ranks it for roster beys. */
+    if (sm.burst.burst)                  cause = 'burst';
     if (!cause) return [];
 
     this._playerDown = true;
@@ -2826,6 +2857,27 @@ export class ArenaSandbox extends Sandbox {
       case 'hard_flat':                    return 'balance';
       default:                             return 'balance';
     }
+  }
+
+  /**
+   * Everyone who can charge a gauge, fire a combo or throw a special.
+   *
+   * The roster PLUS the player. The loops that matter iterated `all()`, which
+   * is roster-only, so the player was excluded from every one of those
+   * systems while its HUD faithfully displayed the resulting zeroes.
+   */
+  private _fighterIds(): string[] {
+    const ids = [...(this._beySystem?.all() ?? [])].map(e => e.spec.id);
+    if (this._spawnMgr?.isSpawned) ids.push(PLAYER_ID);
+    return ids;
+  }
+
+  /** The player's linear momentum, g·cm/s. */
+  private _playerMomentum(): number {
+    const sm = this._spawnMgr;
+    if (!sm?.isSpawned) return 0;
+    const v = sm.getVelocity();
+    return sm.hudView().spec.mass * Math.hypot(v.x, v.z);
   }
 
   /** Contact between the player's bey and every bey in the roster. */
