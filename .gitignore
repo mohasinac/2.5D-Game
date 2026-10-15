@@ -1,11 +1,24 @@
 linka/
-case study/
+# `case study/*`, not `case study/` — git never descends into an excluded
+# DIRECTORY, so a negation below it can never match. Excluding the contents
+# instead leaves the directory visible and the exception reachable.
+case study/*
+# ...except the Ledger, which is a TEST FIXTURE, not research.
+# `tests/unit/ledgerCases.spec.ts` parses it and re-derives every verdict
+# against `src/`, so an untracked copy means the suite passes here (Docker
+# bind-mounts the working tree, ignored files included) and fails on a fresh
+# clone with "no case rows parsed" — a green local run hiding a broken one.
+!case study/LEDGER.md
 node_modules/
 dist/
 screenshots/
 playwright-report/
 test-results/
-demos/
+# ANCHORED. Unanchored `demos/` also matched `tests/demos/`, which is SOURCE —
+# the 199-demo runner, its arena factory and driver — so all five files sat
+# silently untracked. The leading slash keeps the 53 MB of generated report
+# output at the repo root excluded without reaching into `tests/`.
+/demos/
 .firebase/
 .stl-scratch/
 # Dead local state from the decommissioned Vercel setup — safe to delete by hand.
