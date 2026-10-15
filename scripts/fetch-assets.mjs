@@ -104,6 +104,47 @@ const KENNEY = [
   { pack: 'tower-defense-kit',   keep: /\/(tower|barrier|spike)[^/]*\.glb$/i,  max: 4, prefix: 'td'    },
 ];
 
+/**
+ * Battle SFX, CC0 (Kenney). Named by ROLE, not by source file.
+ *
+ * The game asks for "a medium-tier impact", not for `impactPlate_medium_002`,
+ * so the role is baked into the filename at download time. That keeps
+ * `SoundManager` free of a lookup table that would drift from the folder, and
+ * it means swapping a sample is a re-fetch rather than a code change.
+ */
+const AUDIO = [
+  { pack: 'impact-sounds', pick: /impactPlank_medium_000\.ogg$/i,  as: 'hit-small'  },
+  { pack: 'impact-sounds', pick: /impactPlate_medium_000\.ogg$/i,  as: 'hit-medium' },
+  { pack: 'impact-sounds', pick: /impactBell_heavy_000\.ogg$/i,    as: 'hit-large'  },
+  { pack: 'impact-sounds', pick: /impactMetal_heavy_000\.ogg$/i,   as: 'burst'      },
+  { pack: 'ui-audio',      pick: /switch2\.ogg$/i,                 as: 'launch'     },
+  /* `switch17` is the brightest two-tone in the pack; `confirmation_001`
+     was a guess and does not exist, which the fetcher reported rather than
+     writing a silent zero-byte file. */
+  { pack: 'ui-audio',      pick: /switch17\.ogg$/i,                as: 'round-win'  },
+];
+
+async function doAudio() {
+  mkdirSync(join(ASSETS, 'audio'), { recursive: true });
+  const byPack = new Map();
+  for (const a of AUDIO) {
+    if (!byPack.has(a.pack)) byPack.set(a.pack, []);
+    byPack.get(a.pack).push(a);
+  }
+  for (const [pack, wants] of byPack) {
+    const entries = readZip(await get(await kenneyZipUrl(pack)));
+    for (const w of wants) {
+      const hit = entries.find(e => w.pick.test(e.name));
+      if (!hit) { console.log(`  ${w.as} … NOT FOUND in ${pack}`); continue; }
+      writeFileSync(join(ASSETS, 'audio', `${w.as}.ogg`), hit.data);
+      console.log(`  ${w.as}.ogg … ${(hit.data.length / 1024).toFixed(0)} kB`);
+      licenceRows.push({ file: `audio/${w.as}.ogg`, source: 'Kenney',
+        url: `https://kenney.nl/assets/${pack}`, author: 'Kenney', licence: 'CC0',
+        notes: `\`${basename(hit.name)}\` from \`${pack}\`` });
+    }
+  }
+}
+
 /** Poly Haven HDRIs, 1k — one per arena mood. ~1.1 MB each. */
 const HDRIS = [
   { id: 'kloppenheim_06_puresky', as: 'outdoor'  },
@@ -282,6 +323,7 @@ function writeLicences() {
   section('Models', table(rows.filter(r => r.file.startsWith('models/'))));
   section('HDRIs',  table(rows.filter(r => r.file.startsWith('hdri/'))));
   section('Textures', table(rows.filter(r => r.file.startsWith('textures/'))));
+  section('Audio', table(rows.filter(r => r.file.startsWith('audio/'))));
   writeFileSync(path, md);
   console.log(`\nLICENSES.md: ${rows.length} rows (regenerated)`);
 }
@@ -300,6 +342,8 @@ await doKenney();
 if (!process.argv.includes('--list')) {
   console.log('Poly Haven HDRIs (CC0):');
   await doHdris();
+  console.log('Battle SFX (CC0):');
+  await doAudio();
   writeLicences();
   const after = dirSizeMb(ASSETS);
   console.log(`\nassets/ now ${after.toFixed(2)} MB of ${BUDGET_MB} MB budget`);

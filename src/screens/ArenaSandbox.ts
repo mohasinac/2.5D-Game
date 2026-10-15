@@ -2597,7 +2597,12 @@ export class ArenaSandbox extends Sandbox {
       /* THE IMPULSE FINALLY REACHES THE FEEDBACK TABLE. Contacts were used
          only to award gauge and the magnitude was thrown away, so every hit
          felt identical regardless of how hard it landed. */
-      this._feel.impact(c.impulse, [c.a, c.b], now);
+      /* ONE decision drives both. `GameFeel` returns the tier it chose, so
+         sound reads that rather than re-deriving one from the impulse — two
+         derivations drift, and a hit that shakes the screen while playing the
+         quiet sample is the result. */
+      const tier = this._feel.impact(c.impulse, [c.a, c.b], now);
+      this.sound.playTier(tier, now);
     }
     this._feel.tick();
 
@@ -2708,6 +2713,7 @@ export class ArenaSandbox extends Sandbox {
     this._beyHud?.banner(
       round.winner ? `${round.winner} takes the round — ${round.kind}` : 'round drawn',
     );
+    this.sound.play(round.kind === 'burst' ? 'burst' : 'round-win', nowMs);
     /* Re-arm after a beat so the finish is readable; `beginRound` resets every
        participant, the player included, through the external-participant seam. */
     this._roundResetAtMs = nowMs + ROUND_INTERMISSION_MS;
@@ -2918,6 +2924,11 @@ export class ArenaSandbox extends Sandbox {
     if (this._spawnMgr) this._spawnMgr.respawnOnFallOut = false;
     this._spawnMgr?.spawn();
     this._virtualControls.show();
+    /* START is a real user gesture, which is the only moment a browser will
+       let the AudioContext resume — a sound played while it is suspended is
+       lost outright, not queued. */
+    this.sound.unlock();
+    this.sound.play('launch', this.simClock.nowMs());
 
     /* A REAL BUILD, not invented numbers. The opponent used to be a
        `makeBeySpec` with a hand-picked mass because there was no part data to

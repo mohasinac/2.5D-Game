@@ -8,6 +8,7 @@ import { DrawerManager } from '../utils/DrawerManager';
 import { layoutObserver } from '../utils/LayoutObserver';
 import { SimClock } from '../sim/SimClock';
 import { mountEnvironment, unmountEnvironment } from '../render/environment';
+import { SoundManager } from '../systems/SoundManager';
 import { applyRenderPolicy } from '../render/shadowPolicy';
 
 export interface SandboxOptions {
@@ -74,6 +75,12 @@ export class Sandbox {
    * — they must not create their own, or simulation time would fork.
    */
   protected readonly simClock = new SimClock();
+
+  /**
+   * Battle audio. Owned here because its listener parents to the camera, which
+   * this class creates and destroys — the same lifetime as the environment map.
+   */
+  protected readonly sound = new SoundManager();
 
   protected cameraManager: CameraManager | null = null;
   protected _drawerMgr!: DrawerManager;
@@ -227,6 +234,11 @@ export class Sandbox {
        standard materials render one frame unlit. */
     this.envTexture = mountEnvironment(this.renderer, this.scene!);
 
+    /* The listener parents to the CAMERA, which this method recreates on every
+       `setVisible` — exactly why the PMREM environment above is per-mount too.
+       A listener kept across a screen switch is attached to a dead camera. */
+    this.sound.mount(this.camera!);
+
     this.controls = new OrbitControls(this.camera!, this.renderer.domElement);
     this.controls.enableDamping      = true;
     this.controls.dampingFactor      = 0.07;
@@ -284,6 +296,7 @@ export class Sandbox {
     if (this.renderer) {
       /* Before the renderer, not after: the environment map is a render target
          owned by this context. */
+      this.sound.unmount();
       unmountEnvironment(this.scene!, this.envTexture);
       this.envTexture = null;
 

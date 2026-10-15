@@ -366,5 +366,53 @@
     "author": "Kenney",
     "licence": "CC0",
     "notes": "from `tower-defense-kit`"
+  },
+  "audio/hit-small.ogg": {
+    "file": "audio/hit-small.ogg",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/impact-sounds",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "`impactPlank_medium_000.ogg` from `impact-sounds`"
+  },
+  "audio/hit-medium.ogg": {
+    "file": "audio/hit-medium.ogg",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/impact-sounds",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "`impactPlate_medium_000.ogg` from `impact-sounds`"
+  },
+  "audio/hit-large.ogg": {
+    "file": "audio/hit-large.ogg",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/impact-sounds",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "`impactBell_heavy_000.ogg` from `impact-sounds`"
+  },
+  "audio/burst.ogg": {
+    "file": "audio/burst.ogg",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/impact-sounds",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "`impactMetal_heavy_000.ogg` from `impact-sounds`"
+  },
+  "audio/launch.ogg": {
+    "file": "audio/launch.ogg",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/ui-audio",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "`switch2.ogg` from `ui-audio`"
+  },
+  "audio/round-win.ogg": {
+    "file": "audio/round-win.ogg",
+    "source": "Kenney",
+    "url": "https://kenney.nl/assets/ui-audio",
+    "author": "Kenney",
+    "licence": "CC0",
+    "notes": "`switch17.ogg` from `ui-audio`"
   }
 }
