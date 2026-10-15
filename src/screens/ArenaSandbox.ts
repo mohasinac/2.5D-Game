@@ -112,6 +112,7 @@ import type { BeySpec } from '../sim/state';
 import { rpmToOmega, omegaToRpm } from '../sim/step/spin';
 import { containToEllipse } from '../sim/step/arenaBounds';
 import { combosFor } from '../config/combos';
+import { season1Bey, SEASON1_BEYS } from '../config/beys/season1.generated';
 import { GameFeel } from '../systems/GameFeel';
 import type { BeyType } from '../systems/ComboDetector';
 import { DEFAULT_TIP_TYPE } from '../config/arenaConstants';
@@ -2884,6 +2885,8 @@ export class ArenaSandbox extends Sandbox {
   private _globalComboReadyMs = 0;
   /** Hit-stop, shake and flash. The consumer of contact IMPULSE. */
   private _feel = new GameFeel();
+  /** Which Season-1 build the opponent uses. Set before starting a battle. */
+  private _opponentBuildId = 'galeon';
   /** Sim-ms at which the next round re-arms. 0 = no round pending. */
   private _roundResetAtMs = 0;
 
@@ -2916,14 +2919,20 @@ export class ArenaSandbox extends Sandbox {
     this._spawnMgr?.spawn();
     this._virtualControls.show();
 
-    /* `makeBeySpec`, not `specFromBuild`: the opponent is a STOCK bey, and
-       inventing a `BeybladeBuildConfig` to feed the assembler would be
-       fabricating part data to describe a top nobody built. When the bey
-       library can supply a real build, `addOpponentFromBuild` is already the
-       door for it. Slightly heavier and grippier than the player's default,
-       so the first battle is not a mirror match. */
-    const spec = makeBeySpec('opponent-1', {
-      mass: 34, tipType: 'rubber_flat', controlAuthority: 0.35,
+    /* A REAL BUILD, not invented numbers. The opponent used to be a
+       `makeBeySpec` with a hand-picked mass because there was no part data to
+       draw on; there is now. `mass` and `inertiaSpin` come from measured
+       geometry and documented part weights, so the opponent spins down and
+       topples according to what it is actually made of. */
+    const build = season1Bey(this._opponentBuildId) ?? SEASON1_BEYS[0];
+    const comY  = Math.max(...build.parts.map(p => p.axisOffsetY + p.comHeightCm)) / 2;
+    const spec  = makeBeySpec('opponent-1', {
+      mass: build.totalG,
+      inertiaSpin: build.inertiaGcm2,
+      comY,
+      radius: Math.max(...build.parts.map(p => p.radius)),
+      tipType: 'rubber_flat',
+      controlAuthority: 0.35,
     });
     sys.add(spec, 'blue', {
       pos: { x: 45, y: 30, z: 0 },
