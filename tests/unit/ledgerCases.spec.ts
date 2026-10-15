@@ -118,6 +118,8 @@ interface LedgerRow {
   status: string;
   codes: string;
   v2: string;
+  /** `file.ts:NN`<-`caller.ts:NN` for the mechanism this row rests on. */
+  evidence: string;
 }
 
 function parseLedger(): LedgerRow[] {
@@ -135,11 +137,12 @@ function parseLedger(): LedgerRow[] {
        this filter came to exist. Real case numbers start at 11. */
     if (!/^\d+$/.test(cells[0]) || Number(cells[0]) < 10) continue;
     rows.push({
-      caseNum: cells[0],
-      title:   cells[1],
-      status:  cells[cells.length - 3],
-      codes:   cells[cells.length - 2],
-      v2:      cells[cells.length - 1],
+      caseNum:  cells[0],
+      title:    cells[1],
+      status:   cells[cells.length - 4],
+      codes:    cells[cells.length - 3],
+      v2:       cells[cells.length - 2],
+      evidence: cells[cells.length - 1],
     });
   }
   return rows;
@@ -221,16 +224,34 @@ test.describe('the Case Ledger, re-derived from src/', () => {
     expect(offenders.slice(0, 10)).toEqual([]);
   });
 
+  test('EVERY row cites evidence, and no row cites a mechanism with no caller', () => {
+    /* The evidence column is generated from `src/`, not typed, so its job is
+       to make "MECH OK" falsifiable: each row names the declaration AND a
+       live call site. A row whose mechanism loses its last caller reads
+       `NO CALLER` and fails here.
+
+       This is the assertion that caught the real state of things — 78 rows
+       were resting on four mechanisms (`applyAmplification`, `magneticAccel`,
+       `applyWear`, `makeClone`) that existed, were unit-tested, and were
+       never once called by the game. */
+    const blank = ROWS.filter(r => !r.evidence || r.evidence === '-');
+    expect(blank.slice(0, 5).map(r => r.caseNum), 'rows with no evidence').toEqual([]);
+
+    const uncalled = ROWS.filter(r => r.evidence.includes('NO CALLER'));
+    expect(uncalled.slice(0, 5).map(r => `${r.caseNum}: ${r.evidence}`),
+      'rows citing an uncalled mechanism').toEqual([]);
+  });
+
   test('the distribution matches what the summary claims', () => {
     const count = (v: string) => ROWS.filter(r => r.v2 === v).length;
-    const mech = count('MECH OK');
-    const gap  = count('STILL GAP');
-    /* Sanity bounds rather than exact figures: the point is that the bulk
-       is unblocked and a real remainder is still open. An exact count would
-       fail on every edit to the ledger for no useful reason. */
-    expect(mech).toBeGreaterThan(ROWS.length * 0.5);
-    expect(gap).toBeGreaterThan(0);
-    expect(mech + gap).toBeLessThanOrEqual(ROWS.length);
+    /* Every row is now MECH OK, and this assertion is only worth anything
+       BECAUSE of the evidence test above: "all unblocked" is a claim that can
+       be made by typing, and a claim that can be checked only by re-deriving
+       each row's mechanism from `src/` and confirming it has a live caller.
+       If the two ever disagree, the evidence test is the one to believe. */
+    expect(count('MECH OK')).toBe(ROWS.length);
+    expect(count('STILL GAP')).toBe(0);
+    expect(count('PARTIAL')).toBe(0);
   });
 
   test('case numbers are plausible and non-empty', () => {

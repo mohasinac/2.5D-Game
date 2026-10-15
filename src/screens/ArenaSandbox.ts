@@ -104,7 +104,13 @@ import { resolveBeyPairs } from '../sim/step/beyCollision';
 import type { ProjectileTarget, ProjectileHit } from '../sim/step/projectile';
 import type { BeyContact } from '../sim/step/beyCollision';
 import { ComboDetector } from '../systems/ComboDetector';
-import { chargeGauges, awardXtreme, payCombo, EMPTY_GAUGES } from '../systems/BattleGauges';
+import {
+  chargeGauges, awardXtreme, payCombo, canPaySpecial, paySpecial,
+  M_FACTOR_MODE, EMPTY_GAUGES,
+} from '../systems/BattleGauges';
+
+/** What a special costs off the Xtreme gauge. CS13/CS15's modal literal. */
+const SPECIAL_COST = 100;
 import type { Gauges } from '../systems/BattleGauges';
 import { KeyboardInputSource, AiInputSource, SCHEME_P2 } from '../systems/inputSources';
 import { CS10_ARENAS } from '../config/arenas';
@@ -2435,6 +2441,26 @@ export class ArenaSandbox extends Sandbox {
       if (fired.combo) {
         this._gauges.set(id, payCombo(this._gauges.get(id)!, fired.combo.cost));
         this._lastFired.set(fired.combo.id, now);
+      }
+
+      /* SPECIALS — the Xtreme gauge's first spender, and the `[M]` layer's
+         first caller. The gauge has been filling on every hit since it was
+         built and nothing has ever drawn it down, so a special could not be
+         paid for and amplification never ran.
+
+         Specials are deliberately NOT routed through `ComboDetector`: a combo
+         is player skill inside the physical ceiling, a special is the anime
+         override, and the whole point of `[M]` is that the two layers stay
+         separable. */
+      const g = this._gauges.get(id)!;
+      if (inputs.get(id)?.trigger && canPaySpecial(g, SPECIAL_COST)) {
+        this._gauges.set(id, paySpecial(g, SPECIAL_COST));
+        /* The physical impulse comes from the bey's own momentum, so a
+           faster bey lands a bigger special — the amplification multiplies
+           what was really there rather than replacing it with a constant. */
+        const physical = e.spec.mass * Math.hypot(e.state.vel.x, e.state.vel.z);
+        const delivered = sys.fireSpecial(id, physical, M_FACTOR_MODE, true);
+        this._beyHud?.banner(`${id} — SPECIAL  ${delivered.toFixed(0)}`);
       }
     }
 

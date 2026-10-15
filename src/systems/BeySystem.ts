@@ -14,6 +14,11 @@ import {
   DEFAULT_BURST, type BurstState, type BurstSpec,
 } from '../sim/step/burst';
 import { stepLink, stationFor, stationSteering, type BeyLink } from './BeyLink';
+import { magneticAccel, stadiumMagnetAccel } from '../sim/step/fieldForce';
+import { applyWear, wearFrictionFactor, FRESH, type WearState } from '../sim/step/surfaceState';
+import { makeClone } from '../sim/step/clones';
+import { stepLooseMass, looseInertia, comOffset, type LooseMass } from '../sim/step/looseMass';
+import { applyAmplification } from './BattleGauges';
 import type { InputFrame } from './InputSystem';
 import { EMPTY_FRAME } from './InputSystem';
 
@@ -56,6 +61,31 @@ export interface BeyEntity {
   /** The ratchet, and how far round it has clicked. */
   burstSpec: BurstSpec;
   burst: BurstState;
+  /**
+   * Accumulated tip wear (ledger N15).
+   *
+   * Parts have been indestructible and unchanging since the beginning. Wear
+   * matters here specifically because `wearFrictionFactor` RISES before it
+   * falls — the "wear-in" cases describe rubber that grips better once broken
+   * in, and a tip whose behaviour inverts as it goes. A part that only ever
+   * degrades cannot express either.
+   */
+  wear: WearState;
+  /**
+   * Balls free to roll in a race, pocket or slot (ledger: CS1 29, CS3 197,
+   * CS4 237/274). Empty for every bey that has none, which is nearly all of
+   * them — the cost of the pass is then a single length check.
+   */
+  loose: LooseMass[];
+  /**
+   * `inertiaSpin`/`comY` with every loose mass at rest.
+   *
+   * Kept separately because migration RECOMPUTES these each time rather than
+   * accumulating onto them — adding a delta per tick would let rounding drift
+   * the spec away from the part it describes over a long round.
+   */
+  baseInertia: number;
+  baseComY: number;
   /** Team tag for friendly fire and win conditions. Null = free-for-all. */
   team: string | null;
   /** Cleared when the bey rings out, bursts, or sleeps out. */
@@ -110,6 +140,25 @@ export class BeySystem {
      source in the simulation. */
   /** Cooperative links between members — Twin Tornado, Dragoon Tank. */
   private links = new Map<string, BeyLink>();
+  private cloneSeq = 0;
+  /**
+   * Bey-to-bey magnetic strength, cm³/s².
+   *
+   * Live by default rather than opt-in, because `tipPolarity` is its own
+   * gate: it defaults to `'none'` and `magneticAccel` returns zero for any
+   * pair where either side is neutral. So a Magnacore bey feels this the
+   * moment it declares a polarity and nothing else is disturbed — which is
+   * the behaviour the system had on paper all along.
+   */
+  magnetStrength = 4000;
+  /**
+   * Stadium floor magnets: centre, strength and the radius they reach.
+   *
+   * Strength stays 0 because NO SHIPPED ARENA DECLARES MAGNETS YET — the
+   * mechanism is wired and the content is not, and saying so here is better
+   * than a default that silently tugs every bey in every stadium.
+   */
+  stadiumMagnet = { centre: { x: 0, y: 0, z: 0 }, strength: 0, radius: 120 };
   private bodyScratch: BeyBody[] = [];
   private spinScratch = new Map<string, SpinBody>();
 
@@ -123,6 +172,10 @@ export class BeySystem {
       deployed: false,
       burstSpec: DEFAULT_BURST,
       burst: makeBurstState(DEFAULT_BURST),
+      wear: FRESH,
+      loose: [],
+      baseInertia: spec.inertiaSpin,
+      baseComY: spec.comY,
       team,
       alive: true,
     };
@@ -160,6 +213,8 @@ export class BeySystem {
       if (e.alive) this.stepOne(e, dt, inputs.get(e.spec.id) ?? EMPTY_FRAME, world(e.spec.id));
     }
 
+    this.stepMagnetism(dt);
+
     const contacts = this.resolveContacts();
 
     this.stepLinks(dt);
@@ -171,10 +226,109 @@ export class BeySystem {
         e.clones = stepClones(e.clones, dt * 1000, e.state.pos, e.trail.get());
       }
       if (e.parts.length > 0) this.updateDeployment(e);
+
+      /* LOOSE MASS. A ball that migrates outward raises the assembly's
+         inertia, so the SAME bey spins down more slowly later in a round than
+         it did at launch — the part's whole reason to exist, and it falls out
+         of feeding `I` back into the spin model rather than being scripted.
+         Recomputed only while something is actually still moving. */
+      if (e.loose.length > 0) {
+        let moved = false;
+        for (const m of e.loose) moved = stepLooseMass(m, e.state.omega, dt) || moved;
+        if (moved) {
+          e.spec.inertiaSpin = e.baseInertia + looseInertia(e.loose);
+          /* An odd ball count leaves a real imbalance, which raises the CoM
+             moment and makes the bey wobble — speed through instability. */
+          e.spec.comY = e.baseComY + comOffset(e.loose, e.spec.mass);
+        }
+      }
     }
 
     const defeats = this.collectDefeats();
     return { contacts, defeats };
+  }
+
+  /**
+   * Magnetic coupling — the Magnacore system (ledger N6), finally live.
+   *
+   * `tipPolarity` has been stored on the state and exposed by a getter since
+   * the beginning with no physics consumer at all, so the entire Magnacore
+   * generation was unmodellable. Two forces, because the corpus describes
+   * two: bey-to-bey (like repels, opposite attracts — "those Beyblades will
+   * never hit each other" versus "contact each other violently") and
+   * stadium-to-bey from floor magnets, where a South core is repelled into
+   * irregular, faster movement and a North core is drawn in and harder to
+   * shift.
+   *
+   * Applied as an acceleration before contact resolution, so two attracting
+   * beys are genuinely driven together and then collide normally rather than
+   * being teleported into contact.
+   */
+  private stepMagnetism(dt: number): void {
+    const live = this.living();
+    if (live.length === 0) return;
+
+    for (let i = 0; i < live.length; i++) {
+      const a = live[i];
+      for (let j = i + 1; j < live.length; j++) {
+        const b = live[j];
+        const acc = magneticAccel(
+          a.state.pos, a.state.tipPolarity,
+          b.state.pos, b.state.tipPolarity, this.magnetStrength,
+        );
+        /* Equal and opposite — Newton's third law is not optional here, and
+           skipping it would let a pair accelerate itself across the dish. */
+        a.state.vel.x += acc.x * dt; a.state.vel.z += acc.z * dt;
+        b.state.vel.x -= acc.x * dt; b.state.vel.z -= acc.z * dt;
+      }
+    }
+
+    const { centre, strength, radius } = this.stadiumMagnet;
+    if (strength <= 0) return;
+    for (const e of live) {
+      const acc = stadiumMagnetAccel(e.state.pos, centre, e.state.tipPolarity, strength, radius);
+      e.state.vel.x += acc.x * dt;
+      e.state.vel.z += acc.z * dt;
+    }
+  }
+
+  /**
+   * Fire a special move, returning the impulse actually delivered.
+   *
+   * THIS IS THE `[M]` BOUNDARY, and it is a separate multiplication on
+   * purpose. The plan's acceptance test is that the same move with `[M]`
+   * disabled produces the physical figure and with it enabled produces the
+   * amplified one — only keeping the physical value intact and multiplying
+   * can satisfy both, which is why this returns rather than scaling in place.
+   *
+   * Combos never come through here. They are capped by `ComboDetector`'s
+   * ceilings instead, so the anime layer cannot leak into player-skill
+   * expression even if a caller forgets.
+   */
+  fireSpecial(
+    id: string, physicalImpulse: number, mFactor = 8.0, amplified = true,
+  ): number {
+    const e = this.entities.get(id);
+    if (!e || !e.alive) return 0;
+
+    const delivered = applyAmplification(physicalImpulse, mFactor, amplified);
+
+    /* An amplified move leaves afterimages — the illusion and ambush moves
+       (CS13 1453/1664/1665, CS15 2063/2064) are visual entities with their
+       own position, never colliders, so they are spawned here and stepped
+       with everything else. */
+    if (amplified) {
+      for (let i = 0; i < 3; i++) {
+        e.clones.push(makeClone({
+          id: `${id}-afterimage-${this.cloneSeq++}`,
+          ownerId: id,
+          kind: 'afterimage',
+          pos: { ...e.state.pos },
+          lifetimeMs: 320 + i * 90,
+        }));
+      }
+    }
+    return delivered;
   }
 
   private stepOne(e: BeyEntity, dt: number, input: InputFrame, w: WorldSample): void {
@@ -202,7 +356,10 @@ export class BeySystem {
        for the same reasoning. An airborne bey keeps every rad/s it had. */
     if (state.grounded) {
       const tip = BEY_TIP_PROFILES[spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
-      const mu  = effectiveTipFriction(tip, state.surfaceMu);
+      /* Wear modulates the tip's grip, which is the only place it can
+         honestly act: a worn tip is a different tip, so it belongs in mu
+         rather than as a separate penalty bolted onto the result. */
+      const mu  = effectiveTipFriction(tip, state.surfaceMu) * wearFrictionFactor(e.wear);
       const r = stepSpin(
         spec,
         { omega: Math.abs(state.omega), tiltRad: state.tiltDeg * Math.PI / 180 },
@@ -278,6 +435,12 @@ export class BeySystem {
           const tip = BEY_TIP_PROFILES[e.spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
           applyBurstImpulse(e.burst, e.burstSpec, c.impulse, e.spec.radius, tip.friction);
         }
+
+        /* WEAR. Toughness scales with mass because a heavier part carries more
+           material to give up before it is spent; using the impulse rather
+           than a hit count is what lets one hard clash age a tip more than
+           several glancing ones. */
+        e.wear = applyWear(e.wear, c.impulse, e.spec.mass * 400);
       }
 
       const sa = this.spinScratch.get(c.a);
