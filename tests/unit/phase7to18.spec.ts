@@ -18,6 +18,7 @@ import { MatchSystem, FINISH_POINTS } from '../../src/systems/MatchSystem';
 import { InputSystem, ScriptedInputSource, EMPTY_FRAME } from '../../src/systems/InputSystem';
 import { makeBeySpec } from '../../src/sim/state';
 import { contactSlipSpeed, isCounterSpin, applySpinExchange, signedSpin, type SpinBody } from '../../src/sim/step/spinExchange';
+import { SCHEME_P1, SCHEME_P2, schemesConflict, TouchZoneInputSource, AiInputSource } from '../../src/systems/inputSources';
 
 /**
  * Phases 7-18, written in one pass with Docker down and no compiler.
@@ -821,5 +822,62 @@ test.describe('spin exchange', () => {
     expect(signedSpin(300, 'left')).toBe(-300);
     expect(isCounterSpin(body(300), body(-1))).toBe(true);
     expect(isCounterSpin(body(300), body(0))).toBe(false);
+  });
+});
+
+/* ── Phase 17b: local multiplayer input ──────────────────────────────────── */
+test.describe('local multiplayer input', () => {
+
+  test('THE TWO SCHEMES SHARE NO KEY', () => {
+    /* Overlapping schemes do not error — both beys just twitch, which reads
+       as a physics bug and is very hard to trace back to the keymap. */
+    expect(schemesConflict(SCHEME_P1, SCHEME_P2)).toEqual([]);
+  });
+
+  test('a touch zone produces the same frame shape as a keyboard', () => {
+    // The property that lets BeySystem not care where input came from.
+    const t = new TouchZoneInputSource('p2');
+    t.setAxis(0.5, -1);
+    t.setButton('jump', true);
+    const f = t.sample();
+    expect(f.moveX).toBeCloseTo(0.5, 6);
+    expect(f.moveZ).toBe(-1);
+    expect(f.jump).toBe(true);
+    expect(Object.keys(f).sort()).toEqual(Object.keys(EMPTY_FRAME).sort());
+  });
+
+  test('a press is reported ONCE, not on every frame it is held', () => {
+    // Otherwise one tap matches a combo sequence on several frames running.
+    const t = new TouchZoneInputSource('p');
+    t.setButton('trigger', true);
+    expect(t.sample().pressed).toEqual(['TRIGGER']);
+    expect(t.sample().pressed).toEqual([]);
+  });
+
+  test('the joystick axis is clamped', () => {
+    const t = new TouchZoneInputSource('p');
+    t.setAxis(99, -99);
+    const f = t.sample();
+    expect(f.moveX).toBe(1);
+    expect(f.moveZ).toBe(-1);
+  });
+
+  test('an AI drives toward its target and is reversed by must_keep_distance', () => {
+    const near = new AiInputSource('ai', () => ({
+      selfX: 0, selfZ: 0, targetX: 10, targetZ: 0, force: 'none',
+    }));
+    expect(near.sample().moveX).toBeCloseTo(1, 6);
+
+    const away = new AiInputSource('ai', () => ({
+      selfX: 0, selfZ: 0, targetX: 10, targetZ: 0, force: 'must_keep_distance',
+    }));
+    expect(away.sample().moveX).toBeCloseTo(-1, 6);
+  });
+
+  test('must_stay_still means genuinely still', () => {
+    const held = new AiInputSource('ai', () => ({
+      selfX: 0, selfZ: 0, targetX: 50, targetZ: 50, force: 'must_stay_still',
+    }));
+    expect(held.sample()).toEqual(EMPTY_FRAME);
   });
 });
