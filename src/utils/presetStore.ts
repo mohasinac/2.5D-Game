@@ -10,6 +10,7 @@ import {
   speedLineToSave, obstacleToSave, trapToSave, portalToSave, footingToSave, rotationToSave,
 } from './arenaPersistence';
 import { arenaPresetsStore } from '../stores/arenaPresetsStore';
+import { storage, COLLECTIONS } from '../stores/StorageAdapter';
 import { beyPresetsStore }   from '../stores/beyPresetsStore';
 
 // ── ID generation ─────────────────────────────────────────────────────────
@@ -26,6 +27,11 @@ export function listArenaPresets(): ArenaPreset[] {
 
 export function saveArenaPreset(p: ArenaPreset): void {
   arenaPresetsStore.getState().save(p);
+  /* Mirror through the adapter so the same write lands in Firestore once a
+     `FirestoreAdapter` is installed. The Zustand store stays the read path
+     until then — shared CONTENT moves to the adapter, editor working state
+     does not. */
+  void storage().put(COLLECTIONS.arenas, p.id, p);
 }
 
 export function deleteArenaPreset(id: string): void {

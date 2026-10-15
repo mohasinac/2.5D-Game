@@ -101,6 +101,16 @@ import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
 import { rpmToOmega } from '../sim/step/spin';
 import { resolveBeyPairs } from '../sim/step/beyCollision';
+import type { ProjectileTarget, ProjectileHit } from '../sim/step/projectile';
+import type { BeyContact } from '../sim/step/beyCollision';
+import { ComboDetector } from '../systems/ComboDetector';
+import { chargeGauges, awardXtreme, payCombo, EMPTY_GAUGES } from '../systems/BattleGauges';
+import type { Gauges } from '../systems/BattleGauges';
+import { KeyboardInputSource, SCHEME_P2 } from '../systems/inputSources';
+import { CS10_ARENAS } from '../config/arenas';
+import { expand } from '../config/arenas/blueprint';
+import { specFromBuild } from '../bey/specFromBuild';
+import type { BeybladeBuildConfig } from '../types/beybladeTypes';
 import type { BeyBody } from '../sim/step/beyCollision';;
 import { Rng } from '../sim/Rng';
 
@@ -193,6 +203,11 @@ export class ArenaSandbox extends Sandbox {
   private _beyHud:      BeyHud | null = null;
   private _inputSystem: InputSystem | null = null;
   private _matchSystem: MatchSystem | null = null;
+  /** Per-bey gauges and combo state — the resource model behind specials. */
+  private _gauges = new Map<string, Gauges>();
+  private _combos = new Map<string, ComboDetector>();
+  private _lastFired = new Map<string, number>();
+  private _keySources: KeyboardInputSource[] = [];
   private _spawnMgrBtn:    HTMLButtonElement | null = null;
   private _ctrlMgr!:       ControlManager;
   private _virtualControls!: VirtualControlsOverlay;
@@ -1646,6 +1661,12 @@ export class ArenaSandbox extends Sandbox {
           scene,
           () => this._slMgr.getAll() as Map<string, SpeedLineData>,
           this._rng,
+          /* Everything a bullet can hit: the player's bey plus the roster.
+             Supplying this is what turns `ProjectileManager` from a particle
+             emitter into a weapon — its only distance test before was a
+             boomerang self-check. */
+          () => this._projectileTargets(),
+          (hit) => this._onProjectileHit(hit),
         );
       }
     }
@@ -2312,6 +2333,13 @@ export class ArenaSandbox extends Sandbox {
       if (scene) this._beyRenderer = new BeyRenderer(scene);
       this._beyHud = new BeyHud(this.el);
       this._matchSystem.beginRound(this.simClock.nowMs());
+
+      /* Two disjoint keyboard halves: WASD for the player, the arrow cluster
+         for a second local blader. Each source owns its OWN listeners, which
+         is what the module-level `InputManager` singleton made impossible. */
+      const p2 = new KeyboardInputSource('opponent-1', SCHEME_P2);
+      this._keySources.push(p2);
+      this._inputSystem.bind('opponent-1', p2);
     }
     return this._beySystem;
   }
@@ -2348,6 +2376,31 @@ export class ArenaSandbox extends Sandbox {
     if (!sys || sys.size === 0) return;
 
     const inputs = this._inputSystem?.gather(dt) ?? new Map();
+    const now = this.simClock.nowMs();
+
+    /* Gauges and combos, per bey. Active fills with time and pays for
+       combos; Xtreme is EARNED through contact and pays for specials —
+       which is what makes a 150-cost ultimate payable at all. */
+    for (const e of this._beySystem!.all()) {
+      const id = e.spec.id;
+      this._gauges.set(id, chargeGauges(this._gauges.get(id) ?? EMPTY_GAUGES, dt));
+
+      let det = this._combos.get(id);
+      if (!det) { det = new ComboDetector(); this._combos.set(id, det); }
+      for (const token of inputs.get(id)?.pressed ?? []) det.press(token, now);
+
+      const fired = det.tryFire({
+        beyType: 'balance',
+        power: this._gauges.get(id)!.active,
+        nowMs: now,
+        lastFired: this._lastFired,
+        globalReadyAtMs: 0,
+      });
+      if (fired.combo) {
+        this._gauges.set(id, payCombo(this._gauges.get(id)!, fired.combo.cost));
+        this._lastFired.set(fired.combo.id, now);
+      }
+    }
 
     /* Each opponent resolves its own ground through the same projector the
        player uses, so a bey on a bridge deck stands on it whoever owns it. */
@@ -2357,9 +2410,15 @@ export class ArenaSandbox extends Sandbox {
       return this._sampleWorldFor(e.state.pos, e.spec.tipOffset);
     });
 
-    this._resolvePlayerAgainstRoster();
+    const contacts = this._resolvePlayerAgainstRoster();
+    /* Contact is what fills the Xtreme gauge — ultimates are fought for,
+       never waited out. */
+    for (const c of contacts) {
+      for (const id of [c.a, c.b]) {
+        this._gauges.set(id, awardXtreme(this._gauges.get(id) ?? EMPTY_GAUGES, 'hit'));
+      }
+    }
 
-    const now = this.simClock.nowMs();
     const defeats = sys.living().length < sys.size
       ? [...sys.all()].filter(e => !e.alive).map(e => ({ id: e.spec.id, cause: 'sleep_out' as const }))
       : [];
@@ -2375,7 +2434,7 @@ export class ArenaSandbox extends Sandbox {
       this._beyHud.render(
         [...sys.all()].map(e => ({
           entity: e,
-          gauges: { active: 0, xtreme: 0 },
+          gauges: this._gauges.get(e.spec.id) ?? EMPTY_GAUGES,
           burst: 0,
           label: e.spec.id,
         })),
@@ -2408,10 +2467,10 @@ export class ArenaSandbox extends Sandbox {
   }
 
   /** Contact between the player's bey and every bey in the roster. */
-  private _resolvePlayerAgainstRoster(): void {
+  private _resolvePlayerAgainstRoster(): BeyContact[] {
     const sys = this._beySystem;
     const sm  = this._spawnMgr;
-    if (!sys || !sm || !sm.isSpawned) return;
+    if (!sys || !sm || !sm.isSpawned) return [];
 
     const player = sm.asColliderBody();
     const bodies: BeyBody[] = [player];
@@ -2424,8 +2483,74 @@ export class ArenaSandbox extends Sandbox {
         restitution: e.spec.restitution,
       });
     }
-    if (bodies.length < 2) return;
-    resolveBeyPairs(bodies);
+    if (bodies.length < 2) return [];
+    return resolveBeyPairs(bodies);
+  }
+
+  /**
+   * Load one of the CS10-specced stadiums by id.
+   *
+   * The blueprints are authored from case numbers; this is what makes them
+   * reachable rather than a catalogue nobody opens.
+   */
+  loadCs10Arena(id: string): boolean {
+    const bp = CS10_ARENAS.find(a => a.id === id);
+    if (!bp) return false;
+    this._applyConfigToScene(expand(bp));
+    return true;
+  }
+
+  /**
+   * Spawn an opponent built from a saved bey, not from defaults.
+   *
+   * This is the join the project never had — "the bey you build in
+   * /beyblade never becomes a physics body". Its mass, inertia, centre of
+   * mass and tip now all come from the part stack, so two different builds
+   * genuinely play differently.
+   */
+  addOpponentFromBuild(id: string, config: BeybladeBuildConfig,
+                       pos: { x: number; y: number; z: number }): string[] {
+    const { spec, issues } = specFromBuild(id, config);
+    const sys = this._ensureRoster();
+    sys.add(spec, 'blue', { pos: { ...pos }, omega: rpmToOmega(1500) });
+    this._beyRenderer?.add(spec, { disc: 0x2266cc, cone: 0x4488dd });
+    this._beyHud?.setVisible(true);
+    return issues.map(i => i.message);
+  }
+
+  /** Ids of every stadium authored from a CS10 case. */
+  listCs10Arenas(): { id: string; name: string; caseNum: number }[] {
+    return CS10_ARENAS.map(a => ({ id: a.id, name: a.name, caseNum: a.caseNum }));
+  }
+
+  /** The player plus every living bey, as projectile targets. */
+  private _projectileTargets(): ProjectileTarget[] {
+    const out: ProjectileTarget[] = [];
+    const sm = this._spawnMgr;
+    if (sm?.isSpawned) {
+      const b = sm.asColliderBody();
+      out.push({
+        id: b.id, team: 'red', pos: b.pos, radius: b.radius,
+        contactLow: b.contactLow, contactHigh: b.contactHigh,
+      });
+    }
+    for (const e of this._beySystem?.living() ?? []) {
+      out.push({
+        id: e.spec.id, team: e.team, pos: e.state.pos, radius: e.spec.radius,
+        contactLow: e.spec.tipOffset, contactHigh: e.spec.tipOffset + e.spec.height,
+      });
+    }
+    return out;
+  }
+
+  /** Apply a bullet hit: knock the target back and award the shooter. */
+  private _onProjectileHit(hit: ProjectileHit): void {
+    const e = this._beySystem?.get(hit.targetId);
+    if (e) {
+      e.state.health = Math.max(0, e.state.health - hit.impulse * 0.002);
+      return;
+    }
+    if (this._spawnMgr?.isSpawned) this._spawnMgr.applyImpactDamage(hit.impulse * 0.002);
   }
 
   private _demoBridgeDiag(): DemoBridgeDiag[] {

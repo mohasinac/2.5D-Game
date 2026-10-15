@@ -5,6 +5,8 @@ import { stepSpin, spinDecayRate, rpmToOmega, omegaToRpm } from '../sim/step/spi
 import { resolveBeyPairs, type BeyBody, type BeyContact } from '../sim/step/beyCollision';
 import { applySpinExchange, type SpinBody } from '../sim/step/spinExchange';
 import { BEY_TIP_PROFILES, effectiveTipFriction } from '../config/arenaConstants';
+import { detachPart, attachPart, morphPart, shouldDeploy, type LivePart } from '../sim/step/partMutation';
+import { stepClones, PositionTrail, type Clone } from '../sim/step/clones';
 import type { InputFrame } from './InputSystem';
 import { EMPTY_FRAME } from './InputSystem';
 
@@ -33,8 +35,17 @@ import { EMPTY_FRAME } from './InputSystem';
    ══════════════════════════════════════════════════════════════════════════ */
 
 export interface BeyEntity {
+  /** Mutable: runtime part mutation recomposes it. */
   spec: BeySpec;
   state: BeyState;
+  /** Live parts, for runtime detach / morph / swap (ledger N7). */
+  parts: LivePart[];
+  /** Visual-only entities this bey has produced. Never collide. */
+  clones: Clone[];
+  /** Recent positions, so an afterimage samples the real path. */
+  trail: PositionTrail;
+  /** Whether a centrifugal deployment (Limit Break, Awakening) is out. */
+  deployed: boolean;
   /** Team tag for friendly fire and win conditions. Null = free-for-all. */
   team: string | null;
   /** Cleared when the bey rings out, bursts, or sleeps out. */
@@ -94,6 +105,10 @@ export class BeySystem {
     const entity: BeyEntity = {
       spec,
       state: makeBeyState(spec, over),
+      parts: [],
+      clones: [],
+      trail: new PositionTrail(),
+      deployed: false,
       team,
       alive: true,
     };
@@ -132,7 +147,17 @@ export class BeySystem {
     }
 
     const contacts = this.resolveContacts();
-    const defeats  = this.collectDefeats();
+
+    /* Clones and deployments ride on the state that was just stepped. */
+    for (const e of this.entities.values()) {
+      e.trail.push(e.state.pos);
+      if (e.clones.length > 0) {
+        e.clones = stepClones(e.clones, dt * 1000, e.state.pos, e.trail.get());
+      }
+      if (e.parts.length > 0) this.updateDeployment(e);
+    }
+
+    const defeats = this.collectDefeats();
     return { contacts, defeats };
   }
 
@@ -243,6 +268,48 @@ export class BeySystem {
       if (cause) { e.alive = false; out.push({ id: e.spec.id, cause }); }
     }
     return out;
+  }
+
+  /* ── Runtime part mutation (ledger N7) ────────────────────────────── */
+
+  /** Detach a part mid-battle; the spec is recomposed from what remains. */
+  detach(id: string, partId: string): number {
+    const e = this.entities.get(id);
+    if (!e) return 0;
+    const r = detachPart(e.spec, e.parts, partId);
+    e.spec = r.spec;
+    return r.shedMass;
+  }
+
+  /** Re-attach — the boomerang satellite's return. */
+  attach(id: string, partId: string): void {
+    const e = this.entities.get(id);
+    if (!e) return;
+    e.spec = attachPart(e.spec, e.parts, partId).spec;
+  }
+
+  /**
+   * Centrifugal deployment: Limit Break, Turbo Awakening, extending wings.
+   *
+   * Inertia rises with the SQUARE of the radius, so a deployment measurably
+   * slows spin-down as well as extending reach — the documented trade, and
+   * it needs no separate bookkeeping because recomposition produces it.
+   */
+  private updateDeployment(e: BeyEntity): void {
+    const threshold = 250;                       // rad/s
+    const want = shouldDeploy(e.state.omega, threshold, e.deployed);
+    if (want === e.deployed) return;
+    e.deployed = want;
+    const wing = e.parts.find(p => p.detachable);
+    if (wing) {
+      e.spec = morphPart(e.spec, e.parts, wing.id,
+        want ? wing.outerRadius * 1.25 : wing.outerRadius / 1.25).spec;
+    }
+  }
+
+  /** Add a visual clone owned by this bey. Never enters contact. */
+  addClone(id: string, clone: Clone): void {
+    this.entities.get(id)?.clones.push(clone);
   }
 
   /** Snapshot for replay, rollback, or assertion. Deep, and THREE-free. */

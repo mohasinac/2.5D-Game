@@ -652,6 +652,10 @@ export interface WallData {
   edges: THREE.LineSegments | null;
 
   // Runtime-only: pivot group for arena auto-rotation (not saved)
+  /** Rotation the current step detent started from, radians. Runtime-only,
+   *  never serialised — set by `WallPivotAnimator` so a step can be eased
+   *  from where the wall actually is rather than from an assumed zero. */
+  _stepFromRad?: number;
   _rotatePivot?: THREE.Group;
   _arenaRotateTimer?: number;
 }
@@ -893,6 +897,17 @@ export interface TrapData {
   gravityRange:         number;
   gravityStrength:      number;
   gravityMode:          'continuous' | 'pulse' | 'conditional';
+  /**
+   * WHAT KIND of force, as distinct from `gravityMode`'s WHEN.
+   *
+   * The field was previously radial-inward only, hardcoded — so every vortex
+   * (which needs a tangential component) and every barrier or repel field
+   * (which needs an outward one) was inexpressible. By corpus volume that is
+   * the LARGEST special-move mechanic: vortex 1,337 occurrences, tornado 561,
+   * aoe 477, against 53 projectile cases. The data model could not say it,
+   * which is why ~200 cases sat in the ledger as GAP.
+   */
+  gravityKind:          'attract' | 'repel' | 'vortex';
   gravityPulseInterval: number;
   gravityPulseWidth:    number;
 

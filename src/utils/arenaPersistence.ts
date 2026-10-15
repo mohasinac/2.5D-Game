@@ -266,6 +266,7 @@ export interface TrapSave {
   durationTiers: TrapDurationTierSave[];
   gravityRange?: number; gravityStrength?: number;
   gravityMode?: 'continuous' | 'pulse' | 'conditional';
+  gravityKind?: 'attract' | 'repel' | 'vortex';
   gravityPulseInterval?: number; gravityPulseWidth?: number;
   /* Earthquake */
   eqRingCount?: number; eqSegmentsPerRing?: number; eqMaxElevationCm?: number;
@@ -637,7 +638,7 @@ export function trapToSave(t: TrapData): TrapSave {
       rpmLossFactor:d.rpmLossFactor, speedFactor:d.speedFactor, notes:d.notes,
     })),
     gravityRange:t.gravityRange, gravityStrength:t.gravityStrength,
-    gravityMode:t.gravityMode, gravityPulseInterval:t.gravityPulseInterval, gravityPulseWidth:t.gravityPulseWidth,
+    gravityMode:t.gravityMode, gravityKind:t.gravityKind, gravityPulseInterval:t.gravityPulseInterval, gravityPulseWidth:t.gravityPulseWidth,
     eqRingCount:t.eqRingCount, eqSegmentsPerRing:t.eqSegmentsPerRing,
     eqMaxElevationCm:t.eqMaxElevationCm, eqElevationMode:t.eqElevationMode,
     eqRingRanges:[...t.eqRingRanges],

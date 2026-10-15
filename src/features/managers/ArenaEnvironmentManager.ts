@@ -1,6 +1,11 @@
 import type { ArenaData, EnvKeyframe, EnvProperty, EnvScheduleEntry, WeatherPreset } from '../../types/arenaTypes';
 import type { ITickableManager } from '../IArenaFeature';
 
+import {
+  stepSurfaceMutation, sampleSurface,
+  type SurfaceMutation, type SurfaceSample,
+} from '../../sim/step/surfaceState';
+
 export class ArenaEnvironmentManager implements ITickableManager {
   constructor(
     private readonly getArenas:    () => ReadonlyMap<string, ArenaData>,
@@ -9,7 +14,37 @@ export class ArenaEnvironmentManager implements ITickableManager {
   ) {}
 
   // ── ITickableManager ──────────────────────────────────────────────────────
+  /**
+   * Weather that actually changes the FLOOR, not just the particles.
+   *
+   * Weather already existed; mutating the collision surface did not, which
+   * is why CS10 Case 573 (rain shrinking the arena centre-out) and Case 574
+   * (snow shrinking it rim-in) were inexpressible. Registered per arena and
+   * advanced here, where the env schedule already runs.
+   */
+  private _mutations = new Map<string, SurfaceMutation[]>();
+
+  addSurfaceMutation(arenaId: string, m: SurfaceMutation): void {
+    const list = this._mutations.get(arenaId) ?? [];
+    list.push(m);
+    this._mutations.set(arenaId, list);
+  }
+
+  clearSurfaceMutations(arenaId?: string): void {
+    if (arenaId) this._mutations.delete(arenaId);
+    else this._mutations.clear();
+  }
+
+  /** The surface at a point, after every active mutation on that arena. */
+  surfaceAt(arenaId: string, distanceFromCentre: number, base: SurfaceSample): SurfaceSample {
+    const list = this._mutations.get(arenaId);
+    return list ? sampleSurface(base, list, distanceFromCentre) : base;
+  }
+
   tick(dt: number): void {
+    for (const list of this._mutations.values()) {
+      for (const m of list) stepSurfaceMutation(m, dt / 1000);
+    }
     for (const [arenaId, arena] of this.getArenas().entries()) {
       if (arena.pointsPerSecond > 0) {
         arena._score += arena.pointsPerSecond * arena.scoreMultiplier * dt;

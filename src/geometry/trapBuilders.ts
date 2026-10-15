@@ -378,6 +378,7 @@ export function defaultTrap(
     speedPathId: null,
     durationTiers: [] as TrapDurationTier[],
     gravityRange: 30, gravityStrength: 50,
+    gravityKind: 'attract',
     gravityMode: 'continuous' as const,
     gravityPulseInterval: 2, gravityPulseWidth: 0.5,
     linkedSpeedLineId: null,

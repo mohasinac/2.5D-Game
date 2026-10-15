@@ -190,6 +190,7 @@ export class TrapManager extends ParentedFeatureManager<TrapData, TrapSave>
       gravityRange:         save.gravityRange         ?? 30,
       gravityStrength:      save.gravityStrength      ?? 50,
       gravityMode:          save.gravityMode          ?? 'continuous',
+      gravityKind:          save.gravityKind          ?? 'attract',
       gravityPulseInterval: save.gravityPulseInterval ?? 2,
       gravityPulseWidth:    save.gravityPulseWidth    ?? 0.5,
       linkedSpeedLineId:    save.linkedSpeedLineId    ?? null,

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mountComposer, unmountComposer, type PostFx } from '../render/postprocessing';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SandboxSprites } from '../utils/SandboxSprites';
 import { CameraManager } from '../features/managers/CameraManager';
@@ -42,6 +43,8 @@ export class Sandbox {
   private scene:    THREE.Scene | null = null;
   private camera:   THREE.PerspectiveCamera | null = null;
   private renderer: THREE.WebGLRenderer | null = null;
+  /** Bloom chain, when a sandbox opts in. Per-mount, like the environment. */
+  private _postFx: PostFx | null = null;
   private controls: OrbitControls | null = null;
 
   /** Prefiltered IBL cubemap. Lives and dies with the renderer, not the scene. */
@@ -236,7 +239,28 @@ export class Sandbox {
     this.lastFrameTime = 0;
   }
 
+  /**
+   * Bloom, opt-in per sandbox.
+   *
+   * Per-mount like the PMREM environment, and for the same reason: the
+   * composer's render targets belong to the renderer that made them, so one
+   * kept across a screen switch holds buffers from a destroyed context.
+   * Tone mapping moves to `OutputPass` while it is active — applying it
+   * twice crushes exactly the highlights bloom exists to find.
+   */
+  protected enablePostFx(): void {
+    if (this._postFx || !this.renderer || !this.scene || !this.camera) return;
+    const size = new THREE.Vector2();
+    this.renderer.getSize(size);
+    this._postFx = mountComposer(this.renderer, this.scene, this.camera, size.x, size.y);
+  }
+
+  protected disablePostFx(): void {
+    this._postFx = unmountComposer(this._postFx);
+  }
+
   private unmountRenderer(): void {
+    this.disablePostFx();
     this.cameraManager?.save();
     this.cameraManager = null;
     if (this.controls) {

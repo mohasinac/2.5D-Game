@@ -4,6 +4,8 @@ import type { SpeedLineData, BulletLaunchRequest, ProjectileBullet } from '../..
 import { buildProjectileMesh } from '../../geometry/trapBuilders';
 import type { ITickableManager } from '../IArenaFeature';
 import type { Rng } from '../../sim/Rng';
+import { projectileHit } from '../../sim/step/projectile';
+import type { Projectile, ProjectileTarget, ProjectileHit } from '../../sim/step/projectile';
 
 const DEG2RAD = Math.PI / 180;
 
@@ -27,6 +29,18 @@ export class ProjectileManager implements ITickableManager {
     private readonly getSpeedLines: () => ReadonlyMap<string, SpeedLineData>,
     /** Seeded PRNG — bullet jitter feeds back into physics, so it must be replayable. */
     private readonly rng: Rng,
+    /**
+     * Everything a bullet can hit. Injected rather than imported so the
+     * manager stays decoupled from whoever owns the roster.
+     *
+     * Until this existed the ONLY distance test in this class was a
+     * self-check for boomerang return — bullets passed through the bey, the
+     * walls and each other, which is why all 53 projectile-based corpus
+     * moves were unimplementable.
+     */
+    private readonly getTargets: () => readonly ProjectileTarget[] = () => [],
+    /** Called when a bullet connects, so damage and juice can run upstream. */
+    private readonly onHit: (hit: ProjectileHit) => void = () => {},
   ) {}
 
   // ── Public API ───────────────────────────────────────────────────────────
@@ -77,6 +91,31 @@ export class ProjectileManager implements ITickableManager {
         if (bullet.returning && bullet.pos.distanceTo(bullet.startPos) < 2) {
           toRemove.push(bullet.id);
           continue;
+        }
+      }
+
+      /* COLLISION — the thing this manager never did. Height-banded for the
+         same reason bey-vs-bey contact is: a low shot should pass UNDER a
+         tall bey rather than clipping it because the two overlap in plan
+         view. A bullet never hits its owner, and `onCollision` lifetime
+         despawns on the first connection. */
+      const targets = this.getTargets();
+      if (targets.length > 0) {
+        const p: Projectile = {
+          id: bullet.id,
+          ownerId: (bullet as { sourceId?: string }).sourceId ?? '',
+          team: null,
+          pos: bullet.pos,
+          vel: bullet.vel,
+          radius: Math.max(0.5, cfg.scaleFactor * 2),
+          mass: Math.max(1, cfg.scaleFactor * 5),
+          lifetime: { kind: 'onCollision' },
+          ageMs: bullet.age,
+          dead: false,
+        };
+        for (const t of targets) {
+          const hit = projectileHit(p, t);
+          if (hit) { this.onHit(hit); toRemove.push(bullet.id); break; }
         }
       }
 

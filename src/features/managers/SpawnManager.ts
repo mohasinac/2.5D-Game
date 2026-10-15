@@ -21,6 +21,14 @@ import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
 import { resolveObstacleSide } from '../../sim/step/obstacles';
 import { resolveChannel } from '../../sim/step/channel';
+import { fieldAccel } from '../../sim/step/fieldForce';
+import {
+  TIP_MOVEMENT, advancePattern, patternDirection, toPatternState,
+  type PatternState,
+} from '../../sim/step/movementPattern';
+import { blendSteering } from '../../sim/step/railBlend';
+import { launchVelocity, stepFlight, type FlightConfig } from '../../sim/step/aerial';
+import { LAUNCHERS, stepCharge, launchOmega, IDLE_LAUNCH, type LaunchState } from '../../sim/step/launch';
 import type { BeyBody } from '../../sim/step/beyCollision';
 import {
   stepSpin, spinDecayRate, rpmToOmega, omegaToRpm, sleepOutOmega,
@@ -135,6 +143,12 @@ export class SpawnManager {
   private _channelContacts = 0;
   /** Set once the heavy-top model says the bey has gone over. */
   private _sleptOut = false;
+  /** The bey's OWN movement pattern — its will, from the tip. */
+  private _pattern: PatternState = { radius: 0, theta: 0, phase: 0 };
+  /** Two-stage launch charge, for the pre-battle sequence. */
+  private _launch: LaunchState = IDLE_LAUNCH;
+  /** Set while a jump-link arc is flying the bey. */
+  private _flight: FlightConfig | null = null;
 
   private _obstacleBody: ColliderBody = {
     pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 },
@@ -310,8 +324,9 @@ export class SpawnManager {
     if (!this.spawned || !this.topGroup) return;
 
     this._applyAutoMove(dt);
+    this._applyPattern(dt);
     this._applyInput(dt);
-    this._applyGravity(dt);
+    this._applyFlightOrGravity(dt);
     this._integrate(dt);
     /* Channels first, on the following reasoning: retention is a LATERAL
        correction whose failure mode is VERTICAL. If the surface is resolved
@@ -421,6 +436,12 @@ export class SpawnManager {
     Step.applySteering(this._sim, this._spec, dir, dt);
     Step.clampHorizontalSpeed(this._sim, this._spec);
     this._syncSimOut();
+  }
+
+  /** Airborne arcs bypass plain gravity while a flight config is active. */
+  private _applyFlightOrGravity(dt: number): void {
+    if (this._stepFlight(dt)) return;
+    this._applyGravity(dt);
   }
 
   private _applyGravity(dt: number): void {
@@ -935,10 +956,23 @@ export class SpawnManager {
           const arena = this.getArenas().get(trap.parentId);
           if (arena) { const { lx, lz } = polarToLocalXZ(trap.posR, trap.posAngle); tcx = arena.posX + lx; tcz = arena.posZ + lz; }
         }
-        const dx = this.pos.x - tcx; const dz = this.pos.z - tcz;
-        const dist = Math.sqrt(dx * dx + dz * dz) || 1;
-        const f = (trap.gravityStrength ?? 200) * dt;
-        this.vel.x -= (dx / dist) * f; this.vel.z -= (dz / dist) * f;
+        /* THROUGH THE GENERALISED FIELD, not a bespoke radial pull.
+           The old code could only ever suck inward, which is why every
+           vortex (needs a tangential component) and every barrier (needs an
+           outward one) in the corpus was inexpressible — ~200 cases on this
+           one limitation. `gravityMode` now selects the kind, and a Rankine
+           core stops the force diverging at the centre. */
+        const accel = fieldAccel({
+          id: trap.id,
+          kind: trap.gravityKind ?? 'attract',
+          centre: { x: tcx, y: 0, z: tcz },
+          radius: trap.gravityRange ?? 60,
+          coreRadius: Math.max(1, (trap.gravityRange ?? 60) * 0.2),
+          strength: trap.gravityStrength ?? 200,
+          swirl: 0.6,
+        }, this.pos);
+        this.vel.x += accel.x * dt;
+        this.vel.z += accel.z * dt;
         break;
       }
       case 'freeze':
@@ -1078,6 +1112,80 @@ export class SpawnManager {
     this.rpm      = omegaToRpm(r.omega);
     this.tiltDeg  = r.tiltRad * (180 / Math.PI);
     this._sleptOut = r.sleptOut;
+  }
+
+  /**
+   * The bey's own movement, blended with the blader's.
+   *
+   * A pattern is EMITTED from the tip and the arena perturbs it — that is
+   * the real relationship, and the reason the 24 shape samplers belong to
+   * the bey rather than to the dish. `controlAuthority` decides how much the
+   * player overrides it: 1 is Tyson commanding Dragoon, 0 is the parts
+   * deciding and the blader watching.
+   */
+  private _applyPattern(dt: number): void {
+    if (!this.grounded) return;
+    const profile = TIP_MOVEMENT[this._spec.tipType] ?? TIP_MOVEMENT.hard_flat;
+
+    let arenaCx = 0, arenaCz = 0, ridge = 50, outer = 80;
+    for (const [, a] of this.getArenas()) {
+      arenaCx = a.posX; arenaCz = a.posZ;
+      outer = Math.max(a.radiusX, a.radiusZ);
+      ridge = outer * 0.735;          // CS10 Case 545's ridge fraction
+      break;
+    }
+
+    this._pattern = advancePattern(
+      { ...toPatternState(this.pos.x, this.pos.z, arenaCx, arenaCz), phase: this._pattern.phase },
+      profile, dt,
+    );
+    const beyIntent = patternDirection(this._pattern, profile, {
+      ridgeRadius: ridge, outerRadius: outer,
+    });
+
+    const want = blendSteering(
+      beyIntent,
+      { x: 0, y: 0, z: 0 },                 // player input arrives via _applyInput
+      beyIntent,                            // no rail engaged: rail == own intent
+      this._spec.controlAuthority,
+      0,
+    );
+
+    const force = this._spec.moveForce * profile.aggression * dt;
+    this.vel.x += want.x * force;
+    this.vel.z += want.z * force;
+  }
+
+  /* ── The two-stage launch (CS14 / plan Sec.N3) ──────────────────────── */
+
+  /** Hold the launch button. Call every tick while held. */
+  chargeLaunch(dt: number, held: boolean): LaunchState {
+    this._launch = stepCharge(this._launch, LAUNCHERS.ripcord, held, dt);
+    return this._launch;
+  }
+
+  /** Release: spin and entry speed come from how the charge was played. */
+  releaseLaunch(bladerSkill = 1): number {
+    const omega = launchOmega(this._launch, LAUNCHERS.ripcord, bladerSkill);
+    this.rpm = omegaToRpm(omega);
+    this._launch = IDLE_LAUNCH;
+    return omega;
+  }
+
+  /** Begin a ballistic arc — a jump link, a dive, an air-launch. */
+  beginFlight(dirXZ: { x: number; y: number; z: number }, cfg: FlightConfig): void {
+    const v = launchVelocity(dirXZ, cfg);
+    this.vel.set(v.x, v.y, v.z);
+    this.grounded = false;
+    this._flight = cfg;
+  }
+
+  /** Advance an arc. Returns false once the bey is back under normal gravity. */
+  private _stepFlight(dt: number): boolean {
+    if (!this._flight) return false;
+    stepFlight(this.pos, this.vel, this._flight, -980, dt);
+    if (this.grounded) { this._flight = null; return false; }
+    return true;
   }
 
   private _applySelfRotation(dt: number): void {
@@ -1252,6 +1360,10 @@ export class SpawnManager {
 
   // NOTE: `isSpawned` already exists as a getter further up — do not re-add it here.
   getHealth(): number { return this.health; }
+  /** Take damage from an outside source — a bullet, a clash, a special. */
+  applyImpactDamage(amount: number): void {
+    this.health = Math.max(0, Math.min(HEALTH_MAX, this.health - amount));
+  }
   /** Obstacle-side contacts since spawn. See `_obstacleContacts`. */
   getObstacleContacts(): number { return this._obstacleContacts; }
   /** Side-wall retentions since spawn. See `_channelContacts`. */

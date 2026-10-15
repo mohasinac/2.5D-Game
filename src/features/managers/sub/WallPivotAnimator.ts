@@ -3,6 +3,7 @@
  * Extracted from WallManager.tick() so the logic is testable in isolation.
  */
 
+import { ease } from '../../../utils/easing';
 import type { WallData } from '../../../types/arenaTypes';
 
 const DEG2RAD = Math.PI / 180;
@@ -25,13 +26,23 @@ export class WallPivotAnimator {
       case 'continuous':
         wall._rotatePivot.rotation.y += wall.arenaRotateSpeed * DEG2RAD * dt;
         break;
-      case 'step':
-        wall._arenaRotateTimer = (wall._arenaRotateTimer ?? wall.arenaRotateStepInterval) - dt;
+      case 'step': {
+        /* Eased between detents rather than snapped. The snap had the same
+           character as `SegmentAnimator`'s square wave: the wall was in one
+           place, then another, with nothing in between — which reads as a
+           glitch rather than as machinery. The detent TIMING is unchanged,
+           so authored intervals still mean what they meant. */
+        const interval = Math.max(0.0001, wall.arenaRotateStepInterval);
+        wall._arenaRotateTimer = (wall._arenaRotateTimer ?? interval) - dt;
         if (wall._arenaRotateTimer <= 0) {
-          wall._rotatePivot.rotation.y += wall.arenaRotateStepDeg * DEG2RAD;
-          wall._arenaRotateTimer = wall.arenaRotateStepInterval;
+          wall._stepFromRad = wall._rotatePivot.rotation.y;
+          wall._arenaRotateTimer = interval;
         }
+        const from = wall._stepFromRad ?? wall._rotatePivot.rotation.y;
+        const k = ease(1 - wall._arenaRotateTimer / interval, 'smooth');
+        wall._rotatePivot.rotation.y = from + wall.arenaRotateStepDeg * DEG2RAD * k;
         break;
+      }
       case 'oscillate':
         wall._rotatePivot.rotation.y =
           wall.arenaRotateOscAmp * DEG2RAD *
