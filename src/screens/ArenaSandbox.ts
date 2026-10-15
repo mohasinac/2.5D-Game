@@ -30,6 +30,11 @@ import {
 import { buildSurfaceMaterial } from '../geometry/materialBuilders';
 import {
   shapePoints, childWorldPos, makeSurfFn, polarToLocalXZ, arenaSurfaceYAtArenaLocal,
+  /* The canonical copy. A byte-identical local duplicate lived at the bottom
+     of this file and shadowed it at four call sites — including the battle
+     physics path — so the player bey and the roster beys were served by two
+     separate copies of the same maths. */
+  worldToArenaLocal,
 } from '../geometry/surfaceUtils';
 import { buildParabolicBowl, buildFreeArenaMesh } from '../geometry/bowlBuilders';
 import { buildScoopGeometry, buildScoopEdgeLines, buildScoopSeam } from '../geometry/scoopBuilders';
@@ -4919,12 +4924,6 @@ export class ArenaSandbox extends Sandbox {
     this._arenaStore.getState().discard();
     this._flushUndoPending();
   }
-}
-
-function worldToArenaLocal(wx: number, wz: number, arena: ArenaData): { alx: number; alz: number } {
-  const dx = wx - arena.posX; const dz = wz - arena.posZ;
-  const c = Math.cos(-arena.rotY * DEG2RAD); const s = Math.sin(-arena.rotY * DEG2RAD);
-  return { alx: dx * c - dz * s, alz: dx * s + dz * c };
 }
 
 function segmentIcon(type: BridgeSegmentType): string {
