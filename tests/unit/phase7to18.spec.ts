@@ -766,6 +766,90 @@ test.describe('MatchSystem', () => {
     expect(r.winner).toBe('b');
   });
 
+  /* ── The player is not a roster entity ────────────────────────────────── */
+
+  /** A stand-in for what `SpawnManager` provides through the screen. */
+  const player = (over: Partial<{ alive: boolean; spin: number }> = {}) => {
+    const st = { alive: over.alive ?? true, spin: over.spin ?? 300, resets: 0 };
+    return {
+      p: {
+        id: 'player',
+        isAlive: () => st.alive,
+        spinMagnitude: () => st.spin,
+        resetForRound: () => { st.alive = true; st.resets++; },
+      },
+      st,
+    };
+  };
+
+  test('THE PLAYER CAN WIN — beating the lone opponent is not a draw', () => {
+    /* The bug this exists for: the player is owned by SpawnManager, not by
+       BeySystem, so a 1v1 roster held exactly ONE bey. Killing it emptied
+       `living()`, which took the simultaneous-knockout branch and reported a
+       DRAW worth zero points for a round the player had just won.
+
+       Disable `addParticipant` below and this test fails with kind 'draw'. */
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('opponent-1'));
+    const m = new MatchSystem(beys);
+    const { p } = player();
+    m.addParticipant(p);
+    m.beginRound(0);
+
+    beys.get('opponent-1')!.alive = false;
+    const r = m.update(1000, [{ id: 'opponent-1', cause: 'burst' }])!;
+
+    expect(r.winner).toBe('player');
+    expect(r.loser).toBe('opponent-1');
+    /* And the cause survives, so a burst is worth its 2 points. The call site
+       used to hardcode `sleep_out`, quietly halving every burst finish. */
+    expect(r.kind).toBe('burst');
+    expect(m.scoreOf('player')).toBe(FINISH_POINTS.burst);
+  });
+
+  test('THE PLAYER CAN LOSE — its defeat is scored like any other', () => {
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('opponent-1'));
+    const m = new MatchSystem(beys);
+    const { p, st } = player();
+    m.addParticipant(p);
+    m.beginRound(0);
+
+    st.alive = false;
+    const r = m.update(1000, [{ id: 'player', cause: 'ring_out' }])!;
+    expect(r.winner).toBe('opponent-1');
+    expect(r.loser).toBe('player');
+    expect(r.kind).toBe('ring_out');
+  });
+
+  test('a new round resets the player too, not just the roster', () => {
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('opponent-1'));
+    const m = new MatchSystem(beys);
+    const { p, st } = player({ alive: false });
+    m.addParticipant(p);
+
+    m.beginRound(0);
+    expect(st.alive).toBe(true);
+    expect(st.resets).toBe(1);
+  });
+
+  test('the timeout tiebreak considers the player’s spin', () => {
+    /* Spin lives on `BeyState` for a roster bey and on `SpawnManager`'s rpm
+       for the player; the tiebreak has to read both or it silently ignores
+       whichever fighter is winning on stamina. */
+    const beys = new BeySystem();
+    beys.add(makeBeySpec('opponent-1'), null, { omega: 100 });
+    const m = new MatchSystem(beys, { pointsToWin: 2, roundLimitMs: 100 });
+    const { p } = player({ spin: 400 });
+    m.addParticipant(p);
+    m.beginRound(0);
+
+    const r = m.update(200, [])!;
+    expect(r.kind).toBe('timeout');
+    expect(r.winner).toBe('player');
+  });
+
   test('the match ends once someone reaches the target score', () => {
     const beys = new BeySystem();
     beys.add(makeBeySpec('a'));

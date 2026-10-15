@@ -97,9 +97,18 @@ import { BeyRenderer } from '../renderers/BeyRenderer';
 import { BeyHud } from '../systems/BeyHud';
 import { InputSystem } from '../systems/InputSystem';
 import { MatchSystem } from '../systems/MatchSystem';
+import type { FinishKind, RoundResult, BattleParticipant } from '../systems/MatchSystem';
+import { RING_OUT_Y } from '../systems/BeySystem';
+import type { BeyDefeat, DefeatCause } from '../systems/BeySystem';
+
+/** The player's participant id. Distinct from any roster bey. */
+const PLAYER_ID = 'player';
+/** How long a finish stays on screen before the next round re-arms, sim-ms. */
+const ROUND_INTERMISSION_MS = 2500;
 import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
-import { rpmToOmega } from '../sim/step/spin';
+import { rpmToOmega, omegaToRpm } from '../sim/step/spin';
+import { containToEllipse } from '../sim/step/arenaBounds';
 import { resolveBeyPairs } from '../sim/step/beyCollision';
 import type { ProjectileTarget, ProjectileHit } from '../sim/step/projectile';
 import type { BeyContact } from '../sim/step/beyCollision';
@@ -2183,6 +2192,25 @@ export class ArenaSandbox extends Sandbox {
       getRenderer: () => this.getRenderer(),
       probeDown: (x, z) => this._demoProbeDown(x, z),
       getBridgeDiag: () => this._demoBridgeDiag(),
+      getMatchDiag: () => ({
+        running:      this._battleRunning,
+        roundsPlayed: this._matchSystem?.history().length ?? 0,
+        over:         this._matchSystem?.isOver() ?? false,
+        matchWinner:  this._matchSystem?.matchWinner() ?? null,
+        participants: [
+          ...(this._spawnMgr?.isSpawned ? [PLAYER_ID] : []),
+          ...[...(this._beySystem?.all() ?? [])].map(e => e.spec.id),
+        ],
+        beys: [...(this._beySystem?.all() ?? [])].map(e => ({
+          id:       e.spec.id,
+          alive:    e.alive,
+          rpm:      omegaToRpm(Math.abs(e.state.omega)),
+          grounded: e.state.grounded,
+          sleptOut: e.state.sleptOut,
+          health:   e.state.health,
+          y:        e.state.pos.y,
+        })),
+      }),
       clearScene: () => { this._clearArenas(); },
 
       spawn: (o) => {
@@ -2521,13 +2549,21 @@ export class ArenaSandbox extends Sandbox {
 
     /* Each opponent resolves its own ground through the same projector the
        player uses, so a bey on a bridge deck stands on it whoever owns it. */
-    sys.step(dt, inputs, (id) => {
+    /* THE RETURN VALUE IS THE POINT. `step()` yields `{ contacts, defeats }`
+       with causes already derived by `collectDefeats()` — burst, health,
+       ring-out, sleep-out. It used to be discarded and the defeats rebuilt
+       below with `cause: 'sleep_out'` hardcoded, so **a burst scored 1 point
+       instead of 2** and every ring-out was mislabelled. The contacts were
+       dropped too, so roster-vs-roster hits never charged anyone's gauge. */
+    const { contacts: rosterContacts, defeats: rosterDefeats } = sys.step(dt, inputs, (id) => {
       const e = sys.get(id);
       if (!e) return { surfaceY: 0, surfaceMu: 0.15, gravityScale: 1, supported: true };
       return this._sampleWorldFor(e.state.pos, e.spec.tipOffset);
     });
 
-    const contacts = this._resolvePlayerAgainstRoster();
+    this._containRoster();
+
+    const contacts = [...rosterContacts, ...this._resolvePlayerAgainstRoster()];
     /* Contact is what fills the Xtreme gauge — ultimates are fought for,
        never waited out. */
     for (const c of contacts) {
@@ -2536,13 +2572,18 @@ export class ArenaSandbox extends Sandbox {
       }
     }
 
-    const defeats = sys.living().length < sys.size
-      ? [...sys.all()].filter(e => !e.alive).map(e => ({ id: e.spec.id, cause: 'sleep_out' as const }))
-      : [];
+    /* The player's own defeat, which nothing ever reported. `isSleptOut` and
+       health have existed all along and went nowhere, so the player could not
+       lose a round however badly it was doing. */
+    const defeats = [...rosterDefeats, ...this._playerDefeat()];
     const round = this._matchSystem?.update(now, defeats);
-    if (round && this._beyHud) {
-      this._beyHud.clearBanners();
-      this._beyHud.banner(round.winner ? `${round.winner} wins — ${round.kind}` : 'draw');
+    if (round) this._onRoundEnd(round, now);
+
+    /* Re-arm the next round once the finish has been readable for a beat. */
+    if (this._roundResetAtMs > 0 && now >= this._roundResetAtMs) {
+      this._roundResetAtMs = 0;
+      this._matchSystem?.beginRound(now);
+      this._beyHud?.clearBanners();
     }
 
     for (const e of sys.all()) this._beyRenderer?.sync(e.state, dt);
@@ -2570,6 +2611,79 @@ export class ArenaSandbox extends Sandbox {
     }
   }
 
+  /**
+   * The player, as something the match can score.
+   *
+   * Built here rather than on `SpawnManager` so no import edge is added from
+   * `features/` to `systems/` — the screen already owns both, and every field
+   * it needs is public on the manager already.
+   */
+  private _playerParticipant(): BattleParticipant {
+    return {
+      id: PLAYER_ID,
+      isAlive: () => !this._playerDown && (this._spawnMgr?.isSpawned ?? false),
+      spinMagnitude: () => rpmToOmega(this._spawnMgr?.getRpm() ?? 0),
+      resetForRound: () => {
+        this._playerDown = false;
+        /* Respawn puts it back at the launch pose with a fresh ratchet and a
+           reset tilt — `spawn()` clears `tiltDeg`, which is what stopped a
+           second round starting with a pre-toppled bey. */
+        this._spawnMgr?.despawn();
+        this._spawnMgr?.setSpawnState({
+          pos: new THREE.Vector3(-45, 30, 0),
+          vel: new THREE.Vector3(30, 0, 70),
+          rpm: BATTLE_LAUNCH_RPM,
+          tiltDeg: 0,
+        });
+        this._spawnMgr?.spawn();
+      },
+    };
+  }
+
+  /** Has the player lost, and why. Empty while it is still in. */
+  private _playerDefeat(): BeyDefeat[] {
+    const sm = this._spawnMgr;
+    if (!sm?.isSpawned || this._playerDown) return [];
+
+    /* `DefeatCause`, not `FinishKind`: a participant can only lose a round in
+       the four ways a bey actually fails. `timeout` and `draw` are match
+       outcomes the MatchSystem decides, never a thing a fighter does. */
+    let cause: DefeatCause | null = null;
+    if (sm.getHealth() <= 0)             cause = 'health';
+    if (sm.getPosition().y < RING_OUT_Y) cause = 'ring_out';
+    if (sm.isSleptOut())                 cause = cause ?? 'sleep_out';
+    if (!cause) return [];
+
+    this._playerDown = true;
+    return [{ id: PLAYER_ID, cause }];
+  }
+
+  /**
+   * Close a round and start the next one.
+   *
+   * Previously the result was bannered and nothing else happened — no reset,
+   * no respawn, no second round — so `pointsToWin: 2` was unreachable and the
+   * battle simply stopped with one bey lying still.
+   */
+  private _onRoundEnd(round: RoundResult, nowMs: number): void {
+    const ms = this._matchSystem;
+    this._beyHud?.clearBanners();
+
+    if (ms?.isOver()) {
+      const champ = ms.matchWinner();
+      this._beyHud?.banner(champ ? `${champ} WINS THE MATCH` : 'MATCH DRAWN');
+      this._battleRunning = false;
+      return;
+    }
+
+    this._beyHud?.banner(
+      round.winner ? `${round.winner} takes the round — ${round.kind}` : 'round drawn',
+    );
+    /* Re-arm after a beat so the finish is readable; `beginRound` resets every
+       participant, the player included, through the external-participant seam. */
+    this._roundResetAtMs = nowMs + ROUND_INTERMISSION_MS;
+  }
+
   /** What is under a point: the projector first, the analytic bowl second. */
   private _sampleWorldFor(pos: { x: number; y: number; z: number }, tipOffset: number) {
     let surfaceY = 0, surfaceMu = SURFACE_MU_REFERENCE, gravityScale = 1;
@@ -2591,6 +2705,40 @@ export class ArenaSandbox extends Sandbox {
       surfaceY = hit.point.y; supported = true;
     }
     return { surfaceY, surfaceMu, gravityScale, supported };
+  }
+
+  /**
+   * Keep roster beys inside the stadium rim.
+   *
+   * Wall collision lives in `SpawnManager`, which owns only the player — so
+   * opponents had no rim whatsoever. Measured on the live screen: the
+   * opponent left the dish within five seconds of every launch, which meant
+   * **every match was decided by an accidental ring-out** before the two beys
+   * had meaningfully fought. The maths is in `sim/step/arenaBounds.ts` so it
+   * is unit-testable; this only translates arena frames.
+   */
+  private _containRoster(): void {
+    const sys = this._beySystem;
+    if (!sys) return;
+
+    for (const e of sys.living()) {
+      for (const [, arena] of this.arenas) {
+        const { alx, alz } = worldToArenaLocal(e.state.pos.x, e.state.pos.z, arena);
+        const bounds = { radiusX: arena.radiusX, radiusZ: arena.radiusZ };
+        const r = containToEllipse(alx, alz, e.state.vel.x, e.state.vel.z, bounds);
+        if (!r.contained) continue;
+
+        /* Back to world: the containment solved in arena-local space, so the
+           arena's own rotation has to be re-applied before writing position. */
+        const rot = (arena.rotY ?? 0) * DEG2RAD;
+        const cos = Math.cos(rot), sin = Math.sin(rot);
+        e.state.pos.x = arena.posX + r.alx * cos - r.alz * sin;
+        e.state.pos.z = arena.posZ + r.alx * sin + r.alz * cos;
+        e.state.vel.x = r.vx;
+        e.state.vel.z = r.vz;
+        break;
+      }
+    }
   }
 
   /** Contact between the player's bey and every bey in the roster. */
@@ -2678,6 +2826,10 @@ export class ArenaSandbox extends Sandbox {
   }
 
   private _battleRunning = false;
+  /** Latched so one fall reports once, not on every subsequent tick. */
+  private _playerDown = false;
+  /** Sim-ms at which the next round re-arms. 0 = no round pending. */
+  private _roundResetAtMs = 0;
 
   private _startBattle(status: HTMLElement, btn: HTMLButtonElement): void {
     /* A battle needs a dish. Loading the demo arena when none is present is
@@ -2701,6 +2853,10 @@ export class ArenaSandbox extends Sandbox {
       rpm: BATTLE_LAUNCH_RPM,
       tiltDeg: 0,
     });
+    /* A ring-out is a LOSS here, not an accident to be undone. The editor's
+       fall-out guard restores position and health, which silently made the
+       player unkillable. */
+    if (this._spawnMgr) this._spawnMgr.respawnOnFallOut = false;
     this._spawnMgr?.spawn();
     this._virtualControls.show();
 
@@ -2722,6 +2878,14 @@ export class ArenaSandbox extends Sandbox {
     this._beyHud?.setVisible(true);
     this._bindOpponentAi(spec.id);
 
+    /* REGISTER THE PLAYER AS A FIGHTER. Without this the match is decided
+       over a roster that does not contain it, so beating the opponent left
+       zero living entities and scored a draw. */
+    this._matchSystem?.clearParticipants();
+    this._matchSystem?.addParticipant(this._playerParticipant());
+    this._playerDown    = false;
+    this._roundResetAtMs = 0;
+
     this._matchSystem?.reset();
     this._matchSystem?.beginRound(this.simClock.nowMs());
 
@@ -2734,6 +2898,7 @@ export class ArenaSandbox extends Sandbox {
     const sys = this._beySystem;
     if (sys) for (const e of [...sys.all()]) sys.remove(e.spec.id);
     this._spawnMgr?.despawn();
+    if (this._spawnMgr) this._spawnMgr.respawnOnFallOut = true;
     this._virtualControls.hide();
     this._beyHud?.setVisible(false);
     this._battleRunning = false;

@@ -125,6 +125,7 @@ export interface DemoHooks {
   getRenderer(): THREE.WebGLRenderer | null;
   probeDown(x: number, z: number): string[];
   getBridgeDiag(): DemoBridgeDiag[];
+  getMatchDiag(): DemoMatchDiag;
   setCameraTarget(pos: DemoVec, target: DemoVec): void;
 
   /** Live feature lookup for focusOn/markFeature and state assertions. */
@@ -201,8 +202,39 @@ export interface DemoApi {
    */
   getBridgeDiag(): DemoBridgeDiag[];
 
+  /**
+   * One row per roster bey, plus the live match state.
+   *
+   * Exists for the same reason `getBridgeDiag` does. A battle that never ends
+   * is indistinguishable from outside: an opponent that is still spinning, one
+   * that is spinning but never `grounded` (so spin never decays, because the
+   * torque needs a surface), and one already defeated but unreported all look
+   * identical through the HUD. Each field separates one of those stories.
+   */
+  getMatchDiag(): DemoMatchDiag;
+
   /** Resolves once the bey's |velocity| drops below `speed`, or on timeout. */
   waitForRest(speed?: number, timeoutMs?: number): Promise<boolean>;
+}
+
+export interface DemoMatchDiag {
+  /** True once a battle has been started from the UI. */
+  running: boolean;
+  roundsPlayed: number;
+  over: boolean;
+  matchWinner: string | null;
+  /** Everyone the match can actually score, player included. */
+  participants: string[];
+  beys: {
+    id: string;
+    alive: boolean;
+    rpm: number;
+    /** Spin only decays against a surface — airborne beys never sleep out. */
+    grounded: boolean;
+    sleptOut: boolean;
+    health: number;
+    y: number;
+  }[];
 }
 
 const MARKER_RING_SEGMENTS = 64;
@@ -358,6 +390,7 @@ export function mountDemoApi(hooks: DemoHooks): void {
     probeDown(x, z) { return hooks.probeDown(x, z); },
 
     getBridgeDiag() { return hooks.getBridgeDiag(); },
+    getMatchDiag() { return hooks.getMatchDiag(); },
 
     getRenderStats() {
       const renderer = hooks.getRenderer();

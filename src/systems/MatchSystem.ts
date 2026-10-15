@@ -60,16 +60,63 @@ export interface MatchConfig {
 
 export const DEFAULT_MATCH: MatchConfig = { pointsToWin: 2, roundLimitMs: 180_000 };
 
+/**
+ * Anything that can win or lose a round.
+ *
+ * THE PLAYER IS NOT A ROSTER ENTITY. `SpawnManager` owns it — it carries all
+ * the arena-feature collision (speed lines, traps, zones, portals, jump links,
+ * channels) that roster beys do not — and `BeySystem` only borrows it by
+ * reference for contact. So a match decided purely over `BeySystem` sees, in a
+ * 1v1, exactly ONE participant: the opponent. Kill it and `living()` is empty,
+ * which took the simultaneous-knockout branch below and reported **a draw
+ * worth zero points for a round the player had just won**. The player could
+ * equally never lose, because nothing fed its defeat back at all.
+ *
+ * This interface is the seam. Merging the player into the roster instead would
+ * mean moving ~900 lines of arena-feature collision into `BeySystem`, which is
+ * a far larger change than the bug warrants.
+ */
+export interface BattleParticipant {
+  readonly id: string;
+  isAlive(): boolean;
+  /** Spin magnitude, rad/s — the timeout tiebreak. */
+  spinMagnitude(): number;
+  /** Put it back in the dish for the next round. */
+  resetForRound(): void;
+}
+
 export class MatchSystem {
   private scores = new Map<string, number>();
   private rounds: RoundResult[] = [];
   private roundStartMs = 0;
   private over = false;
+  /** Participants outside the roster. In practice: the player. */
+  private externals: BattleParticipant[] = [];
 
   constructor(
     private readonly beys: BeySystem,
     private readonly config: MatchConfig = DEFAULT_MATCH,
   ) {}
+
+  /** Register a non-roster fighter. Idempotent per id. */
+  addParticipant(p: BattleParticipant): void {
+    if (!this.externals.some(x => x.id === p.id)) this.externals.push(p);
+  }
+
+  clearParticipants(): void { this.externals.length = 0; }
+
+  /** Everyone still in, roster and externals alike. */
+  private livingIds(): string[] {
+    const out = this.beys.living().map(e => e.spec.id);
+    for (const p of this.externals) if (p.isAlive()) out.push(p.id);
+    return out;
+  }
+
+  private spinOf(id: string): number {
+    const e = this.beys.get(id);
+    if (e) return Math.abs(e.state.omega);
+    return this.externals.find(p => p.id === id)?.spinMagnitude() ?? 0;
+  }
 
   beginRound(nowMs: number): void {
     this.roundStartMs = nowMs;
@@ -81,6 +128,7 @@ export class MatchSystem {
          nearly burst in round one starts round two one hit from losing. */
       e.burst = makeBurstState(e.burstSpec);
     }
+    for (const p of this.externals) p.resetForRound();
   }
 
   /**
@@ -94,7 +142,10 @@ export class MatchSystem {
     if (this.over) return null;
 
     if (defeats.length > 0) {
-      const living = this.beys.living();
+      /* Spans roster AND externals, which is the whole fix: with the player
+         counted, beating the opponent leaves one living fighter and resolves
+         as a win instead of falling through to the draw branch. */
+      const living = this.livingIds();
       /* A simultaneous knockout is a draw, not an arbitrary winner. It is
          rare and it is exactly the case a "take the first survivor" shortcut
          gets wrong. */
@@ -102,19 +153,21 @@ export class MatchSystem {
         return this.finishRound(null, defeats[0].id, 'draw', nowMs);
       }
       if (living.length === 1) {
-        const d = defeats[0];
-        return this.finishRound(living[0].spec.id, d.id, d.cause, nowMs);
+        /* Report the cause of the fighter that actually fell, not whichever
+           defeat happens to be first — with two sources feeding this, the
+           order is no longer meaningful. */
+        const d = defeats.find(x => x.id !== living[0]) ?? defeats[0];
+        return this.finishRound(living[0], d.id, d.cause, nowMs);
       }
     }
 
     if (this.config.roundLimitMs > 0 && nowMs - this.roundStartMs >= this.config.roundLimitMs) {
       /* On the clock, the most spin left wins — the real tiebreak, and the
          reason spin decay had to be real before rounds could mean anything. */
-      const living = this.beys.living();
+      const living = this.livingIds();
       if (living.length === 0) return this.finishRound(null, null, 'draw', nowMs);
-      const best = living.reduce((a, b) =>
-        Math.abs(b.state.omega) > Math.abs(a.state.omega) ? b : a);
-      return this.finishRound(best.spec.id, null, 'timeout', nowMs);
+      const best = living.reduce((a, b) => (this.spinOf(b) > this.spinOf(a) ? b : a));
+      return this.finishRound(best, null, 'timeout', nowMs);
     }
     return null;
   }

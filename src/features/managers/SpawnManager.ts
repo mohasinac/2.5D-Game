@@ -1094,7 +1094,19 @@ export class SpawnManager {
 
   // ── Misc tick steps ─────────────────────────────────────────────────────────
 
+  /**
+   * Catch a bey that has left the world, so the editor never loses one.
+   *
+   * MUST BE OFF IN A BATTLE. Falling out of the dish *is* the loss there, and
+   * this guard silently undoes it — restoring position AND health before the
+   * match layer can observe the fall, so a ring-out could never be scored. The
+   * editor still wants it: dragging an arena out from under a spawned bey
+   * should not require a manual respawn.
+   */
+  respawnOnFallOut = true;
+
   private _checkRespawn(): void {
+    if (!this.respawnOnFallOut) return;
     if (this.pos.y < RESPAWN_Y) {
       this.pos.copy(this.spawnPos); this.vel.copy(this.spawnVel);
       this.health = HEALTH_MAX; this.grounded = false;
