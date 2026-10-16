@@ -1,5 +1,7 @@
 import { AbstractPropertiesPanel } from './AbstractPropertiesPanel';
 import { AxisData, PartData, SectorData, GroupData, BeyMaterial } from '../types/beybladeTypes';
+import { GIMMICK_TYPES, GIMMICK_LABELS } from '../types/beybladeTypes';
+import type { GimmickType } from '../types/beybladeTypes';
 import { PresentConfig, ParticleConfig, ParticlePreset } from '../types/sharedTypes';
 
 const MATERIALS: { value: BeyMaterial; label: string }[] = [
@@ -9,6 +11,27 @@ const MATERIALS: { value: BeyMaterial; label: string }[] = [
   { value: 'resin',   label: 'Resin' },
   { value: 'custom',  label: 'Custom' },
 ];
+
+/* Built from the simulation's own list rather than retyped, so an archetype
+   added to `sim/step/gimmick.ts` appears here with no second edit — a
+   dropdown that silently lagged the engine is how a gimmick becomes
+   unauthorable. */
+const GIMMICKS: { value: GimmickType; label: string }[] =
+  GIMMICK_TYPES.map(value => ({ value, label: GIMMICK_LABELS[value] }));
+
+/** One line per archetype, shown under the picker so the dial means something. */
+const GIMMICK_HELP: Record<GimmickType, string> = {
+  none:               'No special behaviour.',
+  engine_gear:        'Releases a stored spin boost as the bey slows past its threshold.',
+  free_spin:          'Layer turns independently — resists spin-steal, and denies it.',
+  rubber_absorb:      'Softens contact impulse. The burst-resistance part.',
+  mode_change:        'Swaps to an attack tip above a spin threshold, back below it.',
+  centrifugal_deploy: 'Wings thrown out by spin: more reach and inertia, slower spin-down.',
+  detachable_part:    'Sheds above a spin threshold, lowering mass and centre of gravity.',
+  magnet_north:       'Magnacore north: attracts south cores, repels north.',
+  magnet_south:       'Magnacore south: attracts north cores, repels south.',
+  weight_shift:       'Balls migrate outward as spin rises, raising inertia mid-round.',
+};
 
 export class BeybladePropertiesPanel extends AbstractPropertiesPanel {
 
@@ -92,6 +115,34 @@ export class BeybladePropertiesPanel extends AbstractPropertiesPanel {
     this.selectRow('Material', MATERIALS, part.material, v => onChange({ material: v as BeyMaterial }));
     this.numRow('Weight g', part.weight, 0.01, 200, 0.01, v => onChange({ weight: v }));
     this.colorRow('Color', part.color, v => onChange({ color: v }));
+
+    /* ── GIMMICK ────────────────────────────────────────────────────────────
+       THE UI HALF OF DEFECT 10: "`GimmickType` has zero reads. Five values on
+       `PartData`, written by defaults, dispatched by nothing. No registry, no
+       UI." The registry is `systems/GimmickRegistry`; this is the UI. The
+       field has existed on `PartData` all along and there has never been a
+       control that could set it, so every part in every build has carried
+       the default `'none'` — which is the real reason nothing dispatched.
+
+       RE-RENDERS ON CHANGE, via the two-callback pattern the arena panel
+       documents: picking an archetype changes which rows below are
+       meaningful, and a select that leaves stale sub-rows behind is the
+       exact failure that pattern exists to prevent. */
+    this.section('GIMMICK');
+    this.selectRow('Behaviour', GIMMICKS, part.gimmickType, v => {
+      onChange({ gimmickType: v as GimmickType });
+      this.showPart({ ...part, gimmickType: v as GimmickType }, onChange, onCut);
+    });
+    this.readRow('', GIMMICK_HELP[part.gimmickType] ?? '');
+    if (part.gimmickType !== 'none') {
+      /* Hidden for `none` because the dial would do nothing — a live control
+         with no effect reads as a broken one. Magnets are a declaration
+         rather than a magnitude, so they skip it too. */
+      if (part.gimmickType !== 'magnet_north' && part.gimmickType !== 'magnet_south') {
+        this.numRow('Strength', part.gimmickStrength, 0, 100, 1,
+          v => onChange({ gimmickStrength: v }));
+      }
+    }
 
     this.section('SECTORS');
     if (part.sectorIds.length === 0) {

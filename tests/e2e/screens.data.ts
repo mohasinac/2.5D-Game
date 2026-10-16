@@ -86,6 +86,16 @@ export const SCREENS: ScreenDef[] = [
     mustExist: [CANVAS_WRAP],
   },
   {
+    id: 'part-editor',
+    path: '/part-editor',
+    isCanvas: true,
+    isDrawer: true,
+    // Second BeybladeSandbox instance — same wiring as /beyblade, so likewise
+    // no SpawnManager and no virtual controls.
+    hasVirtualControls: false,
+    mustExist: [CANVAS_WRAP],
+  },
+  {
     id: 'special-moves',
     path: '/special-moves',
     isCanvas: true,

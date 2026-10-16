@@ -60,7 +60,6 @@ const MODULES = {
   'systems/inputSources':     'KeyboardInputSource',
   'renderers/BeyRenderer':    'BeyRenderer',
   'render/postprocessing':    'mountComposer',
-  'config/arenas/index':      'CS10_ARENAS',
 };
 
 let orphans = 0;

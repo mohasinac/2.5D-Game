@@ -28,9 +28,25 @@ import { createBeybladeConfigStore, type BeybladeConfigStore } from '../stores/b
 import { createTreeStateStore, type TreeStateStore } from '../stores/treeStateStore';
 import { pendingLoadStore } from '../stores/pendingLoadStore';
 
+/** Title of the original builder instance. See `BeybladeSandboxOptions.title`. */
+const DEFAULT_TITLE = 'Beyblade Builder';
+
 export interface BeybladeSandboxOptions {
   onBack: () => void;
   onLibrary?: () => void;
+  /**
+   * Screen title — and the root of BOTH persistence keys.
+   *
+   * A second instance of this class is a separate workspace, so it must not
+   * share storage with the builder. That is why the two keys are derived from
+   * the title here rather than written as literals, exactly as `ArenaSandbox`
+   * derives `bey_arena_<title_snake>` to keep /arena and /preset-editor apart.
+   *
+   * Defaulting to `DEFAULT_TITLE` makes the derived keys byte-identical to the
+   * literals that used to be hardcoded (`bey_beyblade_builder` and
+   * `bey_beyblade_builder_tree`), so existing builds survive this change.
+   */
+  title?: string;
 }
 
 export class BeybladeSandbox extends Sandbox {
@@ -63,7 +79,7 @@ export class BeybladeSandbox extends Sandbox {
 
   constructor(container: HTMLElement, opts: BeybladeSandboxOptions) {
     const sandboxOpts: SandboxOptions = {
-      title:      'Beyblade Builder',
+      title:      opts.title ?? DEFAULT_TITLE,
       accentHex:  0x00e5ff,
       onBack:     opts.onBack,
       gridSize:   15,
@@ -300,8 +316,9 @@ export class BeybladeSandbox extends Sandbox {
     this._buildBottomBar();
 
     // Create stores (before _loadFromStorage)
-    this._beyStore  = createBeybladeConfigStore('bey_beyblade_builder');
-    this._treeStore = createTreeStateStore('bey_beyblade_builder_tree');
+    const slug = (this._beyOpts.title ?? DEFAULT_TITLE).toLowerCase().replace(/\s+/g, '_');
+    this._beyStore  = createBeybladeConfigStore(`bey_${slug}`);
+    this._treeStore = createTreeStateStore(`bey_${slug}_tree`);
 
     // Wire tree expansion persistence
     this.tree.onExpand = (id, expanded) => this._treeStore.getState().setExpanded(id, expanded);

@@ -1,4 +1,5 @@
 import { assemble, isLegal, type AssemblyPart, type AssemblySlot } from './assembler';
+import type { LivePart } from '../sim/step/partMutation';
 import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
 import type { BeybladeBuildConfig, PartData } from '../types/beybladeTypes';
@@ -69,6 +70,14 @@ export interface BuildToSpecResult {
   /** Problems the assembler found — a bad weight invariant, a missing base. */
   issues: ReturnType<typeof assemble>['issues'];
   legal: boolean;
+  /**
+   * The part stack as the simulation carries it, gimmicks included.
+   *
+   * Hand this to `BeySystem.add`'s fourth argument and the bey arrives with
+   * its gimmicks live. Omitting it leaves `parts: []`, which is the state
+   * that made every runtime mutation unreachable (defect 11).
+   */
+  parts: LivePart[];
 }
 
 /**
@@ -89,6 +98,12 @@ export function specFromBuild(id: string, config: BeybladeBuildConfig): BuildToS
     outerRadius: outerRadiusOf(p),
     height: Math.max(0.1, p.height ?? 1),
     tipType: i === 0 ? inferTipType(config) : undefined,
+    /* AUTHORED, not inferred — unlike `slot` above. `gimmickType` and
+       `gimmickStrength` are real fields on `PartData` that the builder's
+       panel already writes; they have simply never been read by anything,
+       which is defect 10. This is the read. */
+    gimmick: p.gimmickType,
+    gimmickStrength: p.gimmickStrength,
   }));
 
   const built = assemble(parts);
@@ -104,5 +119,5 @@ export function specFromBuild(id: string, config: BeybladeBuildConfig): BuildToS
     tipType:     built.tipType ?? undefined,
   });
 
-  return { spec, issues: built.issues, legal: isLegal(built) };
+  return { spec, issues: built.issues, legal: isLegal(built), parts: built.live };
 }

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { BASE_COMBOS, combosFor } from '../../src/config/combos';
+import { BASE_COMBOS, combosFor } from '../../src/systems/comboDefs';
 import {
   ComboDetector, COMBO_MAX_DAMAGE_MULT, COMBO_MAX_LOCK_MS, COMBO_SLOTS,
 } from '../../src/systems/ComboDetector';

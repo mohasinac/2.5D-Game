@@ -67,12 +67,20 @@ const ALLOWED_HOSTS = ['bey-app', 'localhost', '127.0.0.1'];
 
 export default defineConfig({
   base: '/',
-  /* Static art is served from `assets/`, NOT Vite's default `public/`.
-     The bundler writes its own output to `dist/assets/`, so a `public/assets/...`
-     file would collide with it. Pointing publicDir at `assets/` keeps shipped
-     art at `dist/models/...` and the bundle at `dist/assets/...`.
-     See assets/README.md. */
-  publicDir: 'assets',
+  /* NO STATIC ART DIRECTORY. This was `publicDir: 'assets'`, serving 27 MB of
+     GLB props, HDRIs and audio from `assets/` — chosen over Vite's default
+     `public/` because the bundler writes to `dist/assets/` and the two would
+     have collided.
+
+     The content strip removed every one of those files, so the setting now
+     has to be `false` rather than a path: Vite logs a warning and skips the
+     copy step for a publicDir that does not exist, which is noise that reads
+     like a build fault. `false` says the absence is deliberate.
+
+     Restoring art means re-creating the directory AND putting this back —
+     the two go together, and `src/features/assetCatalogue.ts` is the third
+     piece. */
+  publicDir: false,
   server: {
     port: 3001,
     strictPort: true,   /* fail instead of silently picking another port */

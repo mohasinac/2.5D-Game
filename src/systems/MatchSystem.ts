@@ -169,6 +169,14 @@ export class MatchSystem {
          past the sleep-out angle and fall over instantly. */
       e.state.tiltDeg = 0;
       e.state.grounded = false;
+
+      /* GIMMICKS RE-ARM WITH EVERYTHING ELSE. One-shots — the Engine Gear's
+         release, a shed satellite, a deployed wing, a swapped tip — are
+         round-scoped in exactly the way the ratchet above is. Without this a
+         bey that spent its gear in round one would start round two with it
+         already gone and permanently down a part, which reads as the gimmick
+         being broken rather than used. */
+      this.beys.resetGimmicksFor(e.spec.id);
     }
     for (const p of this.externals) p.resetForRound();
   }

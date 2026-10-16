@@ -19,6 +19,28 @@ export interface SpecialMoveVfx {
   auraColor:      number | null;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   A DEFINITION IS AUTHORED DATA AND NOTHING ELSE.
+
+   `SpecialMovePhase` used to carry `_loopAccum` and `SpecialMoveDefinition` a
+   `_lastUsedAt`, both commented "runtime only" — and keeping execution state
+   on the authored object is what caused two of the three defects CLAUDE.md
+   records against this system:
+
+     · "`_tickPhase` nulls `phase.hitEffect` after it fires, permanently
+        mutating the stored definition for the session." Running a move
+        DELETED its hit effect; the second cast did no damage, and the
+        corrupted definition was then serialised over the saved one.
+     · Phases looped forever, because `_enterPhase` reset `_loopAccum` to 0
+        and `_tickPhase` re-entered the same phase to loop it — so the
+        counter it had just incremented was wiped on the way in and the exit
+        condition could never be reached.
+
+   Both are the same mistake. Execution state now lives on
+   `SpecialMoveManager`, which is per-run and disposable; these structs are
+   pure authored data, so a move cannot damage itself by being used.
+   ══════════════════════════════════════════════════════════════════════════ */
+
 export interface SpecialMovePhase {
   id:           string;
   label:        string;
@@ -29,8 +51,6 @@ export interface SpecialMovePhase {
   vfx:          SpecialMoveVfx;
   nextPhaseId:  string | null;
   loopCount:    number;   // 0 = no loop, N = repeat N times before transitioning
-  // runtime only
-  _loopAccum:   number;
 }
 
 export interface SpecialMoveDefinition {
@@ -43,8 +63,6 @@ export interface SpecialMoveDefinition {
   cooldownSec:   number;
   entryPhaseId:  string;
   phases:        Map<string, SpecialMovePhase>;
-  // runtime only
-  _lastUsedAt:   number;  // performance.now() timestamp
 }
 
 export interface SpecialMoveSave {
@@ -82,7 +100,6 @@ export function defaultSpecialMovePhase(id: string): SpecialMovePhase {
     vfx:           { particlePreset: null, auraColor: null },
     nextPhaseId:   null,
     loopCount:     0,
-    _loopAccum:    0,
   };
 }
 
@@ -98,7 +115,6 @@ export function defaultSpecialMove(id: string): SpecialMoveDefinition {
     cooldownSec:   5,
     entryPhaseId:  phaseId,
     phases:        new Map([[phaseId, defaultSpecialMovePhase(phaseId)]]),
-    _lastUsedAt:   0,
   };
 }
 
@@ -129,7 +145,7 @@ export function specialMoveToSave(def: SpecialMoveDefinition): SpecialMoveSave {
 export function specialMoveFromSave(s: SpecialMoveSave): SpecialMoveDefinition {
   const phases = new Map<string, SpecialMovePhase>();
   for (const ph of s.phases) {
-    phases.set(ph.id, { ...ph, _loopAccum: 0 });
+    phases.set(ph.id, { ...ph });
   }
   return {
     id:            s.id,
@@ -141,7 +157,6 @@ export function specialMoveFromSave(s: SpecialMoveSave): SpecialMoveDefinition {
     cooldownSec:   s.cooldownSec,
     entryPhaseId:  s.entryPhaseId,
     phases,
-    _lastUsedAt:   0,
   };
 }
 

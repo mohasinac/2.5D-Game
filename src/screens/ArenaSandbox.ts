@@ -134,12 +134,15 @@ import { makeBeySpec } from '../sim/state';
 import type { BeySpec } from '../sim/state';
 import { rpmToOmega, omegaToRpm, sleepOutOmega } from '../sim/step/spin';
 import { containToEllipse, normalisedRadius } from '../sim/step/arenaBounds';
-import { combosFor } from '../config/combos';
-import { season1Bey, SEASON1_BEYS } from '../config/beys/season1.generated';
+import { combosFor } from '../systems/comboDefs';
 import { GameFeel } from '../systems/GameFeel';
 import type { BeyType } from '../systems/ComboDetector';
 import { DEFAULT_TIP_TYPE } from '../config/arenaConstants';
 import { resolveBeyPairs } from '../sim/step/beyCollision';
+import { applySpinExchange, type SpinBody } from '../sim/step/spinExchange';
+import { magneticAccel } from '../sim/step/fieldForce';
+import { BEY_PAIR_FRICTION } from '../systems/BeySystem';
+import { BEY_TIP_PROFILES } from '../config/arenaConstants';
 import type { ProjectileTarget, ProjectileHit } from '../sim/step/projectile';
 import type { BeyContact } from '../sim/step/beyCollision';
 import { ComboDetector } from '../systems/ComboDetector';
@@ -152,8 +155,6 @@ import {
 const SPECIAL_COST = 100;
 import type { Gauges } from '../systems/BattleGauges';
 import { KeyboardInputSource, AiInputSource, SCHEME_P2 } from '../systems/inputSources';
-import { CS10_ARENAS } from '../config/arenas';
-import { expand } from '../config/arenas/blueprint';
 import { specFromBuild } from '../bey/specFromBuild';
 import type { BeybladeBuildConfig } from '../types/beybladeTypes';
 import type { BeyBody } from '../sim/step/beyCollision';;
@@ -2191,6 +2192,17 @@ export class ArenaSandbox extends Sandbox {
     // TriggerZoneManager — spatial cylinder-overlap events (not serialized)
     this._triggerZoneMgr = new TriggerZoneManager(
       (nodeId) => {
+        /* FIGHTERS FIRST, and that addition is what took this manager off
+           the dead list. The resolver only knew `_getMemberObjects` — scene
+           objects for arena features — so it could never locate a bey, and
+           `register()` had no callers to begin with: it ticked over an empty
+           map every frame for nothing. */
+        if (nodeId === PLAYER_ID) {
+          return this._spawnMgr?.isSpawned ? this._spawnMgr.getPosition() : null;
+        }
+        const e = this._beySystem?.get(nodeId);
+        if (e) return new THREE.Vector3(e.state.pos.x, e.state.pos.y, e.state.pos.z);
+
         const objs = this._getMemberObjects(nodeId);
         if (objs.length === 0) return null;
         const p = new THREE.Vector3(); objs[0].getWorldPosition(p); return p;
@@ -2653,6 +2665,17 @@ export class ArenaSandbox extends Sandbox {
       }
     }
 
+    /* MAGNETISM FOR THE PLAYER. `BeySystem.stepMagnetism` runs over roster
+       entities and the player is not one, so `getTipPolarity()` — the last
+       entry on the zero-caller list, "stored and exposed, no physics
+       consumer" — reached nothing. A Magnacore player could declare north
+       or south and feel no force at all, while two AI beys attracted each
+       other normally.
+       Applied BEFORE `sys.step` so the two bodies are genuinely driven
+       together and then collide through the normal resolver, rather than
+       being pulled into an overlap that contact has to undo. */
+    this._applyPlayerMagnetism(dt);
+
     /* Each opponent resolves its own ground through the same projector the
        player uses, so a bey on a bridge deck stands on it whoever owns it. */
     /* THE RETURN VALUE IS THE POINT. `step()` yields `{ contacts, defeats }`
@@ -2698,7 +2721,21 @@ export class ArenaSandbox extends Sandbox {
     /* The player's own defeat, which nothing ever reported. `isSleptOut` and
        health have existed all along and went nowhere, so the player could not
        lose a round however badly it was doing. */
-    const defeats = [...rosterDefeats, ...this._playerDefeat()];
+    /* PIT FALLS JOIN THE DEFEAT STREAM. Drained rather than read, so one
+       pocket reports once; a bey sitting at the bottom would otherwise
+       re-lose every frame. Roster entities are also marked dead here —
+       `collectDefeats` decides on `Y < RING_OUT_Y` and a 10 cm pit never
+       reaches −500, so without this the match would be told the bey lost
+       while `BeySystem` still considered it alive and fighting. */
+    const pitFalls = this._pitFalls;
+    this._pitFalls = [];
+    for (const d of pitFalls) {
+      const e = this._beySystem?.get(d.id);
+      if (e) e.alive = false;
+      else if (d.id === PLAYER_ID) this._playerDown = true;
+    }
+
+    const defeats = [...rosterDefeats, ...this._playerDefeat(), ...pitFalls];
     const round = this._matchSystem?.update(now, defeats);
     if (round) this._onRoundEnd(round, now);
 
@@ -2940,6 +2977,104 @@ export class ArenaSandbox extends Sandbox {
     return sm.hudView().spec.mass * Math.hypot(v.x, v.z);
   }
 
+  /**
+   * Magnetic coupling between the player and every roster bey.
+   *
+   * Mirrors `BeySystem.stepMagnetism`, which cannot see the player because
+   * the player is a `SpawnManager`, not a roster entity. Equal and opposite,
+   * because Newton's third law is not optional here either — applying the
+   * pull to only one side would let a pair accelerate itself across the dish.
+   *
+   * `tipPolarity` gates it: `magneticAccel` returns zero whenever either
+   * side is `'none'`, which is the default, so nothing is disturbed until a
+   * bey actually declares a core.
+   */
+  private _applyPlayerMagnetism(dt: number): void {
+    const sm  = this._spawnMgr;
+    const sys = this._beySystem;
+    if (!sm?.isSpawned || !sys) return;
+
+    const polarity = sm.getTipPolarity();
+    if (polarity === 'none') return;
+
+    const pos = sm.getPosition();
+    const vel = sm.getVelocity();
+    let moved = false;
+
+    for (const e of sys.living()) {
+      const acc = magneticAccel(
+        pos, polarity, e.state.pos, e.state.tipPolarity, sys.magnetStrength,
+      );
+      if (acc.x === 0 && acc.z === 0) continue;
+      vel.x += acc.x * dt; vel.z += acc.z * dt;
+      e.state.vel.x -= acc.x * dt; e.state.vel.z -= acc.z * dt;
+      moved = true;
+    }
+    if (moved) sm.setVelocity(vel);
+  }
+
+  /**
+   * Fighters that have dropped into a pit this tick, and must lose for it.
+   *
+   * Drained by `_tickRoster`, so a pocket is read exactly once — leaving
+   * entries in would re-report the same defeat on every subsequent frame.
+   */
+  private _pitFalls: BeyDefeat[] = [];
+
+  /**
+   * Register every pit as a lethal pocket, and track the fighters.
+   *
+   * THE FIRST CALLER `TriggerZoneManager.register()` HAS EVER HAD. CLAUDE.md
+   * lists it third on the zero-caller roster: "ticks over an empty map". It
+   * is a complete generic spatial-event system — cylinder overlap with
+   * enter/stay/exit callbacks — that nothing had ever put a zone into.
+   *
+   * Pits are the obvious first use and close a real gameplay gap at the same
+   * time. A pit is a straight-walled hole cut through the bowl surface, and
+   * until now falling into one did nothing whatsoever: the only ring-out
+   * path in the project is `Y < RING_OUT_Y` (−500), which a 10 cm pit never
+   * reaches. So a bey could sit at the bottom of a pocket, fully "in play",
+   * for the rest of the round.
+   *
+   * Re-registered per battle rather than on arena load, because the fighter
+   * set is what changes — the zones themselves follow the arena.
+   */
+  private _syncPitTriggers(): void {
+    const tz = this._triggerZoneMgr;
+    if (!tz) return;
+    tz.clear();
+
+    for (const [pitId, pit] of this.pits) {
+      const arena = this.arenas.get(pit.parentArenaId);
+      if (!arena) continue;
+      const { lx, lz } = polarToLocalXZ(pit.posR, pit.posAngle);
+      const wx = arena.posX + lx;
+      const wz = arena.posZ + lz;
+      /* The rim of the pit, by the same parabolic formula the geometry is
+         built from — not the bowl centre, or a pit near the wall would
+         trigger at the wrong height by most of the bowl's depth. */
+      const t    = pit.posR / Math.max(arena.radiusX, arena.radiusZ);
+      const rimY = this.baseConfig.height + arena.posY - arena.depth * (1 - t * t);
+
+      tz.register({
+        id: `pit-${pitId}`,
+        worldX: wx, worldZ: wz,
+        /* Centred half a pit-depth BELOW the rim, with a tolerance of the
+           same half-depth: the cylinder is then exactly the hole, so a bey
+           skimming across the opening at rim height does not trigger it. */
+        worldY: rimY - pit.depth / 2,
+        radius: Math.max(pit.radiusX, pit.radiusZ),
+        heightTolerance: pit.depth / 2,
+        onEnter: (nodeId) => {
+          this._pitFalls.push({ id: nodeId, cause: 'ring_out' });
+        },
+        _inside: new Set(),
+      });
+    }
+
+    for (const id of this._fighterIds()) tz.trackObject(id);
+  }
+
   /** Contact between the player's bey and every bey in the roster. */
   private _resolvePlayerAgainstRoster(): BeyContact[] {
     const sys = this._beySystem;
@@ -2958,20 +3093,38 @@ export class ArenaSandbox extends Sandbox {
       });
     }
     if (bodies.length < 2) return [];
-    return resolveBeyPairs(bodies);
-  }
+    const contacts = resolveBeyPairs(bodies);
 
-  /**
-   * Load one of the CS10-specced stadiums by id.
-   *
-   * The blueprints are authored from case numbers; this is what makes them
-   * reachable rather than a catalogue nobody opens.
-   */
-  loadCs10Arena(id: string): boolean {
-    const bp = CS10_ARENAS.find(a => a.id === id);
-    if (!bp) return false;
-    this._applyConfigToScene(expand(bp));
-    return true;
+    /* SPIN EXCHANGE FOR THE PLAYER, which has never happened.
+       `BeySystem.resolveContacts` runs `applySpinExchange` over roster
+       entities; the player is owned by `SpawnManager` and is not one, so
+       this function resolved POSITION and stopped. A player bey could clash
+       all round without gaining or losing a single rad/s — spin steal and
+       spin equalisation, the two mechanics that make a same-spin matchup
+       play differently from an opposite-spin one, applied only to the AI.
+
+       This is also what `getSpinDir()` and `asSpinBody()` are for: the SIGN
+       decides which of the two happens, via `isCounterSpin`. */
+    for (const c of contacts) {
+      const otherId = c.a === player.id ? c.b : c.a;
+      if (c.a !== player.id && c.b !== player.id) continue;
+      const other = sys.get(otherId);
+      if (!other) continue;
+
+      const pb = sm.asSpinBody();
+      const tip = BEY_TIP_PROFILES[other.spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
+      const ob: SpinBody = {
+        id: other.spec.id,
+        spin: other.state.omega,
+        inertiaSpin: other.spec.inertiaSpin,
+        contactRadius: Math.max(tip.contactRadius, other.spec.radius * 0.5),
+      };
+      applySpinExchange(pb, ob, c.impulse, BEY_PAIR_FRICTION);
+      sm.applySpinBody(pb);
+      other.state.omega   = ob.spin;
+      other.state.spinDir = ob.spin < 0 ? 'left' : 'right';
+    }
+    return contacts;
   }
 
   /**
@@ -2984,9 +3137,13 @@ export class ArenaSandbox extends Sandbox {
    */
   addOpponentFromBuild(id: string, config: BeybladeBuildConfig,
                        pos: { x: number; y: number; z: number }): string[] {
-    const { spec, issues } = specFromBuild(id, config);
+    const { spec, issues, parts } = specFromBuild(id, config);
     const sys = this._ensureRoster();
-    sys.add(spec, 'blue', { pos: { ...pos }, omega: rpmToOmega(1500) });
+    /* PARTS GO WITH THE SPEC. Passing only the spec left `BeyEntity.parts`
+       empty, which is the state that made every gimmick and every runtime
+       mutation unreachable — the build's authored `gimmickType` reached the
+       assembler and stopped there. */
+    sys.add(spec, 'blue', { pos: { ...pos }, omega: rpmToOmega(1500) }, parts);
     this._beyRenderer?.add(spec, { disc: 0x2266cc, cone: 0x4488dd });
     this._beyHud?.setVisible(true);
     return issues.map(i => i.message);
@@ -3031,8 +3188,19 @@ export class ArenaSandbox extends Sandbox {
   private _globalComboReadyMs = 0;
   /** Hit-stop, shake and flash. The consumer of contact IMPULSE. */
   private _feel = new GameFeel();
-  /** Which Season-1 build the opponent uses. Set before starting a battle. */
-  private _opponentBuildId = 'galeon';
+  /**
+   * Which opponent the next battle faces.
+   *
+   * THIS USED TO INDEX A SHIPPED ROSTER. It was a key into
+   * `season1.generated.ts` — 'galeon', 'dranzer-s' and the rest — and that
+   * catalogue is gone with the rest of the content. The id survives because
+   * the IDENTITY still has to reach the battle: `onBattle(npcId)` in
+   * `main.ts` exists so an NPC brings its own bey rather than every fight
+   * being against one hardcoded top. `_opponentSpec` now derives a spec from
+   * this string instead of looking it up, so the hand-off keeps working and
+   * two different NPCs still play differently.
+   */
+  private _opponentBuildId = 'default';
   /** Sim-ms at which the next round re-arms. 0 = no round pending. */
   private _roundResetAtMs = 0;
 
@@ -3070,21 +3238,7 @@ export class ArenaSandbox extends Sandbox {
     this.sound.unlock();
     this.sound.play('launch', this.simClock.nowMs());
 
-    /* A REAL BUILD, not invented numbers. The opponent used to be a
-       `makeBeySpec` with a hand-picked mass because there was no part data to
-       draw on; there is now. `mass` and `inertiaSpin` come from measured
-       geometry and documented part weights, so the opponent spins down and
-       topples according to what it is actually made of. */
-    const build = season1Bey(this._opponentBuildId) ?? SEASON1_BEYS[0];
-    const comY  = Math.max(...build.parts.map(p => p.axisOffsetY + p.comHeightCm)) / 2;
-    const spec  = makeBeySpec('opponent-1', {
-      mass: build.totalG,
-      inertiaSpin: build.inertiaGcm2,
-      comY,
-      radius: Math.max(...build.parts.map(p => p.radius)),
-      tipType: 'rubber_flat',
-      controlAuthority: 0.35,
-    });
+    const spec = this._opponentSpec('opponent-1');
     sys.add(spec, 'blue', {
       pos: { x: 45, y: 30, z: 0 },
       vel: { x: -30, y: 0, z: -70 },
@@ -3101,6 +3255,12 @@ export class ArenaSandbox extends Sandbox {
     this._matchSystem?.addParticipant(this._playerParticipant());
     this._playerDown    = false;
     this._roundResetAtMs = 0;
+
+    /* Pockets are armed once the fighter set is known — `_syncPitTriggers`
+       tracks `_fighterIds()`, which is empty until the opponent is added
+       and the player is spawned. */
+    this._pitFalls = [];
+    this._syncPitTriggers();
 
     this._matchSystem?.reset();
     this._matchSystem?.beginRound(this.simClock.nowMs());
@@ -3123,19 +3283,68 @@ export class ArenaSandbox extends Sandbox {
   }
 
   /**
-   * Choose which Season-1 build the next battle's opponent uses.
+   * Choose which opponent the next battle faces.
    *
    * The door the RPG hand-off needed: `onBattle(npcId)` in `main.ts` was an
    * empty stub with a comment, so an NPC's identity could not reach the 3D
    * battle at all and every fight was against the same hardcoded bey.
+   *
+   * NO LONGER VALIDATED AGAINST A ROSTER, because there is no roster to
+   * validate against. It used to reject any id `season1Bey` did not know,
+   * which silently meant an unrecognised NPC fought Galeon. Every id is now
+   * legal and every id gives a different bey — see `_opponentSpec`.
    */
   setOpponentBuild(buildId: string): void {
-    if (season1Bey(buildId)) this._opponentBuildId = buildId;
+    if (buildId) this._opponentBuildId = buildId;
   }
 
-  /** Ids of every stadium authored from a CS10 case. */
-  listCs10Arenas(): { id: string; name: string; caseNum: number }[] {
-    return CS10_ARENAS.map(a => ({ id: a.id, name: a.name, caseNum: a.caseNum }));
+  /**
+   * Derive an opponent from its id, deterministically.
+   *
+   * REPLACES A LOOKUP INTO A SHIPPED ROSTER. The previous version read mass
+   * and inertia out of `season1.generated.ts`, which carried measured
+   * geometry for a handful of named beys; the content strip removed it along
+   * with every other catalogue.
+   *
+   * What mattered about that code was not the names — it was that two
+   * opponents DIFFER, so the AI is not always fighting the same body. A hash
+   * of the id preserves exactly that property with no content behind it: the
+   * same NPC always brings the same bey, different NPCs bring different ones,
+   * and the spread stays inside plausible plastic-era figures (26-42 g,
+   * 2.2-2.8 cm reach) so the physics is exercised rather than stressed.
+   *
+   * It is a DERIVATION, not data, and the honest reading is that an opponent
+   * is now procedural. A real build still beats it — `addOpponentFromBuild`
+   * takes a `BeybladeBuildConfig` straight from the builder and composes the
+   * spec from the actual part stack.
+   */
+  private _opponentSpec(id: string): BeySpec {
+    /* Same tiny string hash `resolveModelId` uses — stable across reloads and
+       independent of Map order, which a `Math.random` here would not be. */
+    let h = 0;
+    for (let i = 0; i < this._opponentBuildId.length; i++) {
+      h = (h * 31 + this._opponentBuildId.charCodeAt(i)) | 0;
+    }
+    h = Math.abs(h);
+
+    /* Spread each property on a DIFFERENT digit of the hash, or they all move
+       together and every opponent is the same bey scaled. */
+    const mass   = 26 + (h % 17);                   // 26-42 g
+    const radius = 2.2 + ((h >> 5) % 7) * 0.1;      // 2.2-2.8 cm
+    const tips: BeySpec['tipType'][] = ['rubber_flat', 'hard_flat', 'sharp', 'ball', 'wide_flat'];
+    const tipType = tips[(h >> 11) % tips.length];
+
+    return makeBeySpec(id, {
+      mass,
+      radius,
+      tipType,
+      /* Inertia from the annular form at this mass and reach rather than a
+         separate roll — an inertia that disagreed with the mass and radius it
+         sits next to would give a bey that spins down wrong for its size. */
+      inertiaSpin: 0.5 * mass * radius * radius,
+      comY: 1.6 + ((h >> 17) % 9) * 0.05,           // 1.60-2.00 cm
+      controlAuthority: 0.35,
+    });
   }
 
   /** The player plus every living bey, as projectile targets. */

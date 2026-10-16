@@ -5,7 +5,16 @@ export { defaultPresentConfig, defaultParticleConfig };
 export type BeyMaterial = 'plastic' | 'metal' | 'rubber' | 'resin' | 'custom';
 export type SpinDir = 'left' | 'right';
 export type ViewMode = 'hitbox' | 'both' | 'present';
-export type GimmickType = 'none' | 'engine_gear' | 'free_spin' | 'rubber_absorb' | 'mode_change';
+
+/* GIMMICKS ARE DEFINED BY THE SIMULATION NOW, not here.
+   The union used to be declared on this line, which meant the physics had to
+   import the editor's data model to know what a gimmick is — backwards, and
+   it is part of why nothing ever dispatched on it. `sim/step/gimmick.ts` owns
+   the vocabulary because it owns the behaviour; this re-export keeps
+   `PartData.gimmickType` typed and the builder's dropdown unchanged. */
+export type { GimmickType } from '../sim/step/gimmick';
+export { GIMMICK_TYPES, GIMMICK_LABELS } from '../sim/step/gimmick';
+import type { GimmickType } from '../sim/step/gimmick';
 
 // The spin axis is always a straight line.
 // pivotOffset = cm above the ground contact point where the tilt pivot is fixed.

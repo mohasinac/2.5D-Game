@@ -11,27 +11,13 @@ import { gameConfirm }         from './utils/dialog';
 import { inputManager }        from './features/managers/InputManager';
 
 /* ── App ──────────────────────────────────────────────────────────────────── */
-/**
- * Which bey each RPG opponent brings.
- *
- * Keyed by NPC id so a trigger carries an identity into the battle rather than
- * every fight being against the same hardcoded top. Unknown ids fall back to
- * Galeon rather than failing — a missing row should cost flavour, not the
- * fight.
- */
-const NPC_BEY: Record<string, string> = {
-  npc_kai:   'dranzer-s',
-  npc_max:   'draciel-s',
-  npc_ray:   'driger-s',
-  npc_tyson: 'dragoon-s',
-};
-
-type ScreenId = 'landing' | 'beyblade' | 'arena' | 'battle' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor' | 'special-moves';
+type ScreenId = 'landing' | 'beyblade' | 'arena' | 'battle' | 'rpg' | 'admin' | 'arena-library' | 'bey-library' | 'preset-editor' | 'part-editor' | 'special-moves';
 
 class App {
   private current: ScreenId = 'landing';
   private landing:        LandingScreen;
   private beyblade:       BeybladeSandbox;
+  private partEditor:     BeybladeSandbox;
   private arena:          ArenaSandbox;
   private presetEditor:   ArenaSandbox;
   private battle:         ArenaSandbox;
@@ -57,6 +43,18 @@ class App {
 
     this.beyblade = new BeybladeSandbox(root, {
       onBack:     () => { void this.confirmLeave(); },
+      onLibrary:  () => this.go('bey-library'),
+    });
+
+    /* PART EDITOR — the bey counterpart of /preset-editor.
+       A second BeybladeSandbox rather than a new screen class, for the same
+       reason the arena has three instances of one class: everything an authored
+       part needs (sector builders, the tree, the properties panel, undo) lives
+       here already, and a sibling class would duplicate that stack and drift.
+       `title` is what keeps its storage separate — see BeybladeSandboxOptions. */
+    this.partEditor = new BeybladeSandbox(root, {
+      title:      'Part Editor',
+      onBack:     () => this.go('bey-library'),
       onLibrary:  () => this.go('bey-library'),
     });
 
@@ -120,7 +118,14 @@ class App {
          `RPGScreen` forwards it here — and it stopped at a comment, so an NPC
          could never start a 3D fight. */
       onBattle: (npcId: string) => {
-        this.battle.setOpponentBuild(NPC_BEY[npcId] ?? 'galeon');
+        /* THE NPC ID IS THE BEY NOW. There used to be an `NPC_BEY` table
+           mapping each NPC to a Season-1 build id, and the roster it indexed
+           went with the content strip. `setOpponentBuild` derives a spec from
+           whatever string it is handed, so passing the NPC's own id keeps the
+           property the table existed for — this NPC always brings this bey,
+           and a different NPC brings a different one — without a lookup that
+           can miss. An unseeded NPC no longer silently fights Galeon. */
+        this.battle.setOpponentBuild(npcId);
         this.go('battle');
       },
     });
@@ -136,8 +141,9 @@ class App {
     });
 
     this.beyLibrary = new BeyLibraryScreen(root, {
-      onBack:      () => this.go('landing'),
-      onLoadBuild: () => this.go('beyblade'),
+      onBack:       () => this.go('landing'),
+      onLoadBuild:  () => this.go('beyblade'),
+      onEditPreset: () => this.go('part-editor'),
     });
 
     this.specialMoves = new SpecialMoveSandbox(root, {
@@ -174,6 +180,7 @@ class App {
     this.current = id;
     this.landing.setVisible(id === 'landing');
     this.beyblade.setVisible(id === 'beyblade');
+    this.partEditor.setVisible(id === 'part-editor');
     this.arena.setVisible(id === 'arena');
     this.presetEditor.setVisible(id === 'preset-editor');
     this.battle.setVisible(id === 'battle');
@@ -190,6 +197,7 @@ class App {
     if (p === '/arena')          return 'arena';
     if (p === '/battle')         return 'battle';
     if (p === '/preset-editor')  return 'preset-editor';
+    if (p === '/part-editor')    return 'part-editor';
     if (p === '/rpg')            return 'rpg';
     if (p === '/admin')          return 'admin';
     if (p === '/arena-library')  return 'arena-library';

@@ -1,4 +1,6 @@
 import { composeInertia, type InertiaPart } from '../sim/step/spin';
+import { makeLivePart, type LivePart } from '../sim/step/partMutation';
+import type { GimmickType } from '../sim/step/gimmick';
 import type { BeyTipType } from '../config/arenaConstants';
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -76,6 +78,10 @@ export interface AssemblyPart {
   sectorWeights?: readonly number[];
   /** Tip archetype, meaningful only on a `blade_base`. */
   tipType?: BeyTipType;
+  /** What this part does in play. Carried through to `AssemblyResult.live`. */
+  gimmick?: GimmickType;
+  /** 0-100, scaling the gimmick's magnitude. */
+  gimmickStrength?: number;
 }
 
 export interface AssemblyIssue {
@@ -99,6 +105,17 @@ export interface AssemblyResult {
   tipType: BeyTipType | null;
   /** Parts in bottom-to-top order, with resolved base heights. */
   stack: { part: AssemblyPart; baseY: number }[];
+  /**
+   * The same stack as the SIMULATION carries it.
+   *
+   * THE MISSING HALF OF DEFECT 11. `BeyEntity.parts` is a `LivePart[]` and
+   * nothing in the project ever built one, so the list stayed empty and
+   * every runtime mutation was unreachable. The assembler already resolves
+   * each part's mass, radii and base height — exactly what a `LivePart`
+   * needs — so producing it here costs one map and means a built bey arrives
+   * in a battle with its gimmicks attached.
+   */
+  live: LivePart[];
   issues: AssemblyIssue[];
 }
 
@@ -196,6 +213,21 @@ export function assemble(parts: readonly AssemblyPart[]): AssemblyResult {
     radius,
     tipType: base?.tipType ?? null,
     stack,
+    /* Built from `stack`, so `baseY` is the one the height accumulation
+       resolved rather than a second computation that could disagree with
+       it — the recomposition in `partMutation` reads `baseY` to re-derive
+       the centre of mass, so a mismatch here would move the CoM on the
+       first detach. */
+    live: stack.map(({ part, baseY }) => makeLivePart({
+      id: part.id,
+      mass: part.weight,
+      innerRadius: part.innerRadius,
+      outerRadius: part.outerRadius,
+      height: part.height,
+      baseY,
+      gimmick: part.gimmick ?? 'none',
+      gimmickStrength: part.gimmickStrength ?? 0,
+    })),
     issues,
   };
 }

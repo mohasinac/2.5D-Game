@@ -1,16 +1,20 @@
-import type { ComboDef } from '../systems/ComboDetector';
+import type { ComboDef } from './ComboDetector';
 
 /* ══════════════════════════════════════════════════════════════════════════
-   THE COMBO TABLE  —  CS12's eight base combos
+   THE COMBO ALPHABET — the input vocabulary the detector gates on.
 
-   THIS DID NOT EXIST. `ComboDetector` shipped a complete thirteen-step gate
-   chain, a sliding-three history, cooldowns, power gating and four hard
-   ceilings — and `attach()` had no caller anywhere in `src/`, so `attached`
-   stayed `[]` and `tryFire` returned `no_match` on every frame of every
-   battle. There was also no combo data anywhere in the repository: no table,
-   no JSON, nothing to attach even if someone had called it.
+   MOVED HERE FROM `config/combos.ts` IN THE CONTENT STRIP, and the move is
+   the point. Everything else under `config/` that named real-world beys,
+   parts and stadiums was a CATALOGUE — a library of specific things, which
+   is what got deleted. This is not that. `ComboDetector` ships a thirteen-
+   step gate chain, a sliding-three history, cooldowns, power gating and four
+   hard ceilings, and with `attached` empty it returns `no_match` on every
+   frame of every battle. A combo system with no combos is not a lean engine,
+   it is the sixth entry on the dead-code list in CLAUDE.md.
 
-   Both halves of that are fixed here and at the one call site.
+   So these eight are the MECHANIC'S DEFAULTS, not content: the smallest set
+   that exercises every gate — free and paid, typed and untyped, locking and
+   not. They define what an input means, the way a key binding does.
 
    TOKENS ARE SEMANTIC (`inputSources.ComboToken`), not physical key codes.
    Authoring these against `'KeyA'` would make every combo desktop-only and

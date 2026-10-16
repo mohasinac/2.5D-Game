@@ -24,8 +24,9 @@ test-results/
 # Dead local state from the decommissioned Vercel setup — safe to delete by hand.
 .vercel/
 
-# Generated part models — build output, not source.
-# See src/config/beys/models.generated.ts for why: 5.1 GB of print STLs
-# decimate to ~22 MB of GLB, which is still far past a sane bundle. Delete
-# this line to track them.
-assets/beys/
+# `assets/` used to be here, excluding the decimated part meshes from the
+# bundle. The whole directory is gone now — the project ships no binary art —
+# so there is nothing left to ignore. See src/features/assetCatalogue.ts.
+
+#env files
+.env.*

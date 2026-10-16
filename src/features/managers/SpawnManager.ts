@@ -22,6 +22,7 @@ import {
   makeBurstState, applyBurstImpulse, burstProgress,
   DEFAULT_BURST, type BurstSpec, type BurstState,
 } from '../../sim/step/burst';
+import type { SpinBody } from '../../sim/step/spinExchange';
 import type { BeySpec, BeyState } from '../../sim/state';
 import * as Step from '../../sim/step/integrate';
 import { resolveObstacleSide } from '../../sim/step/obstacles';
@@ -221,7 +222,21 @@ export class SpawnManager {
   applyBurst(impulse: number, contactRadius: number): number {
     if (this.burst.burst) return 0;
     const tip = BEY_TIP_PROFILES[this._spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
-    return applyBurstImpulse(this.burst, this.burstSpec, impulse, contactRadius, tip.friction);
+    /* THE THIRD CONSUMER OF THE BUFF PIPELINE, and the one the field is
+       named for. `burstResistMult` is authored on speed-line sections, trap
+       tiers and jump links, is editable in the properties panel, and until
+       now reached nothing — so a "Burst Resist ×2" buff did exactly as much
+       as a "Burst Resist ×0.1" one.
+
+       Applied to the IMPULSE rather than the holding torque because that is
+       where it composes correctly with the tip's own friction resistance:
+       the two then stack multiplicatively, as `combineStatMods` already
+       assumes for everything else. Floored so a zero or negative authored
+       value cannot divide by zero and make the bey unburstable. */
+    const resist = Math.max(0.05, this._buffMgr.getEffective(this._spec.id).burstResistMult);
+    return applyBurstImpulse(
+      this.burst, this.burstSpec, impulse / resist, contactRadius, tip.friction,
+    );
   }
 
   /** 0..1 for the HUD gauge. */
@@ -1485,6 +1500,47 @@ export class SpawnManager {
   }
   isGrounded(): boolean { return this.grounded; }
   getRpm(): number { return this.rpm; }
+
+  /**
+   * The player as a spin-exchange body.
+   *
+   * WHY THIS EXISTS. `getSpinDir()` and `getTipPolarity()` are both on
+   * CLAUDE.md's zero-caller list — "stored and exposed, no physics consumer"
+   * — and the reason is structural: `BeySystem.resolveContacts` runs
+   * `applySpinExchange` over roster entities, and the player is not one.
+   * `_resolvePlayerAgainstRoster` resolved POSITION only, so a player bey
+   * could clash all round and never gain or lose a single rad/s. Spin steal
+   * and spin equalisation — the mechanics that make same-spin and
+   * opposite-spin matchups play differently at all — simply did not apply to
+   * the human.
+   *
+   * Signed, because the sign IS the mechanic: `isCounterSpin` in
+   * `spinExchange` reads it to decide between equalisation and steal, and an
+   * unsigned magnitude would collapse the two cases into one.
+   */
+  asSpinBody(): SpinBody {
+    const tip = BEY_TIP_PROFILES[this._spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
+    return {
+      id: this._spec.id,
+      spin: rpmToOmega(this.rpm) * (this._spinDir === 'left' ? -1 : 1),
+      inertiaSpin: this._spec.inertiaSpin,
+      contactRadius: Math.max(tip.contactRadius, this._spec.radius * 0.5),
+    };
+  }
+
+  /**
+   * Write an exchanged spin back.
+   *
+   * Takes the whole body rather than a number so the direction cannot be
+   * dropped on the way in — `applySpinExchange` can flip the sign outright
+   * when a counter-spin clash overwhelms a dying top, and storing the
+   * magnitude while leaving `_spinDir` stale would make the bey spin
+   * visually backwards against its own physics.
+   */
+  applySpinBody(b: SpinBody): void {
+    this.rpm = omegaToRpm(Math.abs(b.spin));
+    this._spinDir = b.spin < 0 ? 'left' : 'right';
+  }
   getTipType(): BeyTipType { return this._spec.tipType; }
 
   /** Set the state that the NEXT spawn() will use. */

@@ -11,6 +11,13 @@ import { pendingLoadStore } from '../stores/pendingLoadStore';
 export interface BeyLibraryOptions {
   onBack: () => void;
   onLoadBuild: () => void;
+  /**
+   * Open a preset in the Part Editor — the bey counterpart of
+   * `ArenaLibraryOptions.onEditPreset`. `Load` MERGES into whatever the
+   * builder already holds; this REPLACES, because editing a stored part means
+   * working on that part alone, not adding it to a half-built bey.
+   */
+  onEditPreset: () => void;
 }
 
 type AssemblySlot = 'layer' | 'disc' | 'driver' | 'frame';
@@ -437,6 +444,14 @@ export class BeyLibraryScreen {
       this.opts.onLoadBuild();
     });
 
+    const editBtn = document.createElement('button');
+    editBtn.className = 'game-btn preset-card__btn';
+    editBtn.textContent = '✏ Edit';
+    editBtn.addEventListener('click', () => {
+      pendingLoadStore.getState().setBeyPending({ config: preset.config, mode: 'replace' });
+      this.opts.onEditPreset();
+    });
+
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'game-btn preset-card__btn preset-card__btn--danger';
     deleteBtn.textContent = '🗑';
@@ -448,6 +463,7 @@ export class BeyLibraryScreen {
     });
 
     actions.appendChild(loadBtn);
+    actions.appendChild(editBtn);
     actions.appendChild(deleteBtn);
     body.appendChild(actions);
     card.appendChild(body);

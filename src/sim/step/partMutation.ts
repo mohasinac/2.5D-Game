@@ -1,5 +1,6 @@
 import type { BeySpec } from '../state';
 import { composeInertia, type InertiaPart } from './spin';
+import type { GimmickType } from './gimmick';
 
 /* ══════════════════════════════════════════════════════════════════════════
    PHASE 14b — RUNTIME PART MUTATION  (ledger N7, ~40 cases)
@@ -35,6 +36,49 @@ export interface LivePart {
   attached: boolean;
   /** Can this part come off at all? */
   detachable: boolean;
+  /**
+   * What this part DOES, and how strongly.
+   *
+   * Added so the list is worth populating. `BeyEntity.parts` has been `[]`
+   * since it was declared, which made every function in this file
+   * unreachable; carrying the gimmick here is what gives
+   * `GimmickRegistry` something to dispatch on per part rather than per bey.
+   */
+  gimmick: GimmickType;
+  /** 0-100. Scales effect magnitude — never a threshold. */
+  gimmickStrength: number;
+  /** Retracted radius, so a deployment can be undone exactly. */
+  baseOuterRadius: number;
+}
+
+/**
+ * Build a `LivePart` with every optional field defaulted.
+ *
+ * Exists because the struct grew a gimmick and three bookkeeping fields, and
+ * four call sites spelling all of them out is four places for
+ * `baseOuterRadius` to drift away from `outerRadius` at construction — which
+ * would make the first retraction resize the part to the wrong value.
+ */
+export function makeLivePart(
+  init: Omit<Partial<LivePart>, 'id'> & { id: string },
+): LivePart {
+  const outerRadius = init.outerRadius ?? 2.5;
+  return {
+    mass: 1,
+    innerRadius: 0,
+    height: 1,
+    baseY: 0,
+    attached: true,
+    detachable: false,
+    gimmick: 'none',
+    gimmickStrength: 0,
+    ...init,
+    outerRadius,
+    /* Always derived from the resolved radius, never taken from `init` —
+       the retracted size is a fact about the part as authored, not a
+       separate input a caller can disagree with. */
+    baseOuterRadius: outerRadius,
+  };
 }
 
 export interface MutationResult {

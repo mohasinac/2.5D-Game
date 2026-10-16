@@ -9,7 +9,7 @@ import { stepCharge, launchOmega, LAUNCHERS, IDLE_LAUNCH } from '../../src/sim/s
 import { rankineProfile, fieldAccel, totalFieldAccel, magneticAccel, stadiumMagnetAccel, FIELD_ACCEL_CAP, type FieldEffect } from '../../src/sim/step/fieldForce';
 import { ComboDetector, clampComboDef, COMBO_MAX_DAMAGE_MULT, qteSucceeds, type ComboDef } from '../../src/systems/ComboDetector';
 import { chargeGauges, awardXtreme, canPaySpecial, paySpecial, applyAmplification, tierForImpulse, EMPTY_GAUGES } from '../../src/systems/BattleGauges';
-import { recompose, detachPart, morphPart, shouldDeploy, type LivePart } from '../../src/sim/step/partMutation';
+import { recompose, detachPart, morphPart, shouldDeploy, makeLivePart, type LivePart } from '../../src/sim/step/partMutation';
 import { stepSurfaceMutation, isMutated, sampleSurface, applyWear, wearFrictionFactor, FRESH, type SurfaceMutation } from '../../src/sim/step/surfaceState';
 import { MemoryStorageAdapter, COLLECTIONS } from '../../src/stores/StorageAdapter';
 import { makeClone, stepClone, aiTargets, PositionTrail } from '../../src/sim/step/clones';
@@ -512,10 +512,15 @@ test.describe('gauges and BeySpirit', () => {
 
 /* ── Phase 14b: part mutation ────────────────────────────────────────────── */
 test.describe('runtime part mutation', () => {
+  /* `makeLivePart` rather than object literals: the struct gained `gimmick`,
+     `gimmickStrength` and `baseOuterRadius` when the registry landed, and the
+     last of those must always equal `outerRadius` at construction or the
+     first retraction resizes the part to the wrong figure. The factory is the
+     only place that invariant is guaranteed. */
   const parts = (): LivePart[] => ([
-    { id: 'base', mass: 8, innerRadius: 0, outerRadius: 1.5, height: 2, baseY: 0, attached: true, detachable: false },
-    { id: 'wd', mass: 15, innerRadius: 0.5, outerRadius: 2.5, height: 1, baseY: 2, attached: true, detachable: false },
-    { id: 'armor', mass: 7, innerRadius: 2, outerRadius: 3.5, height: 1, baseY: 3, attached: true, detachable: true },
+    makeLivePart({ id: 'base', mass: 8, innerRadius: 0, outerRadius: 1.5, height: 2, baseY: 0 }),
+    makeLivePart({ id: 'wd', mass: 15, innerRadius: 0.5, outerRadius: 2.5, height: 1, baseY: 2 }),
+    makeLivePart({ id: 'armor', mass: 7, innerRadius: 2, outerRadius: 3.5, height: 1, baseY: 3, detachable: true }),
   ]);
   const spec = makeBeySpec('a');
 

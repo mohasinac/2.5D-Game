@@ -27,10 +27,12 @@ import type { SceneContext } from '../features/IArenaFeature';
 import { buildTopFaceGeo } from '../geometry/platformBuilders';
 import { TEST_ARENA_CONFIG } from '../config/testArenaConfig';
 import { SpecialMovePanel } from '../utils/SpecialMovePanel';
-import type { SpecialMoveSave } from '../types/specialMoveTypes';
+import { ProjectileManager } from '../features/managers/ProjectileManager';
+import { TargetManager } from '../features/managers/TargetManager';
+import { defaultProjectileConfig } from '../types/arenaTypes';
+import { specialMovesStore } from '../stores/specialMovesStore';
+import { forwardToHeading } from '../geometry/surfaceUtils';
 import { Rng } from '../sim/Rng';
-
-const SM_STORAGE_KEY = 'bey_special_moves';
 
 export interface SpecialMoveSandboxOptions {
   onBack: () => void;
@@ -46,6 +48,36 @@ export class SpecialMoveSandbox extends Sandbox {
   private _slMgr!:      SpeedLineManager;
   private _spawnMgr!:   SpawnManager;
   private _smMgr!:      SpecialMoveManager;
+  /**
+   * Bullets for phases that declare a projectile.
+   *
+   * THE SANDBOX HAD NO PROJECTILE MANAGER AT ALL, which is why
+   * "projectile commands are declared but not executed" — the editor let you
+   * author radius, speed, lifetime and colour on a phase and there was
+   * nothing in this screen that could fire one.
+   */
+  private _projMgr!:    ProjectileManager;
+  /**
+   * Steering for the target dummy.
+   *
+   * `TargetManager.bind()` is the second entry on CLAUDE.md's zero-caller
+   * list — "five steering behaviours, zero bindings" — and this is its first
+   * one. It fits here and not on the opponent AI: `ArenaSandbox` explains at
+   * length why it deliberately does NOT bind the opponent (`lock_on` is a
+   * teleport, and steering belongs in the AI's `sense()` closure so the
+   * input boundary holds). A dummy that walks toward the caster has no such
+   * problem — it is a training target, and `follow` is exactly what it wants.
+   */
+  private _targetMgr!:  TargetManager;
+  /**
+   * The target dummy, which had no body at all.
+   *
+   * CLAUDE.md: "the target dummy has no mesh, `_targetPos` is hardcoded
+   * `(0, 0, 25)`, and `setTargetPosition()` is never called — so moves
+   * damage an invisible fixed point." All three are fixed here: it has a
+   * mesh, it moves, and its position is pushed into the manager each tick.
+   */
+  private _dummy!:      THREE.Mesh;
   private _ctrlMgr!:    ControlManager;
   private _virtualControls!: VirtualControlsOverlay;
   private _projSvc!:    ProjectionService;
@@ -189,11 +221,57 @@ export class SpecialMoveSandbox extends Sandbox {
       () => new Map(),
     );
 
+    /* Projectiles for authored phases. The target list is the caster itself
+       plus the dummy, so a bullet has something to resolve against rather
+       than flying through everything — `ProjectileManager`'s own note says
+       bullets passed through the bey, the walls and each other until it was
+       given targets. */
+    this._projMgr = new ProjectileManager(
+      scene,
+      () => this._slMgr.getAll(),
+      this._rng,
+      () => {
+        const t = this._smMgr?.getTargetState();
+        return t ? [{
+          id: 'sm-target', team: 'blue', pos: t.pos,
+          radius: 5, contactLow: 0, contactHigh: 10,
+        }] : [];
+      },
+    );
+
     // SpecialMoveManager — registers T-key BEFORE SpawnManager's trigger
     this._smMgr = new SpecialMoveManager(
       this.simClock,
       () => this._spawnMgr.isSpawned ? this._spawnMgr.getPosition() : null,
       (v) => { if (this._spawnMgr.isSpawned) this._spawnMgr.setVelocity(v); },
+      undefined,
+      /* THE PROJECTILE JOIN. `SpecialMoveProjectileCmd` is a small authored
+         struct (radius, speed, lifetime, colour); `ProjectileConfig` is the
+         arena's much larger one. Mapping the four authored fields over the
+         defaults is what lets the panel stay simple without the manager
+         needing to know the full config exists. */
+      (cmd, origin, dir) => {
+        this._projMgr.launch({
+          sourceId: 'special-move',
+          center: origin,
+          config: {
+            ...defaultProjectileConfig(),
+            dimX: cmd.radius, dimY: cmd.radius, dimZ: cmd.radius,
+            color: cmd.color,
+            speed: cmd.speed,
+            lifetimeMs: cmd.lifetime * 1000,
+          },
+          mode: 'single',
+          count: 1,
+          spreadAngleDeg: 0,
+          patternCount: 1,
+          /* `dirAngle` is the project's heading convention, so it goes
+             through `forwardToHeading` rather than a local atan2 — the
+             convention has been got wrong twice in this codebase and both
+             times the failure was silent. */
+          dirAngle: forwardToHeading(dir.x, dir.z),
+        });
+      },
     );
     // Register T-key press: SM intercepts first, SpawnManager gets it via ControlManager
     const smTKeyUnsub = inputManager.onPress('KeyT', () => {
@@ -231,6 +309,37 @@ export class SpecialMoveSandbox extends Sandbox {
       () => this.getControls(),
     );
 
+    /* ── THE TARGET DUMMY — a body for the thing moves were already hitting.
+       Built after the arena managers so `applyRenderPolicy` sees it through
+       `addToScene`, which is the project's rule: anything added raw keeps
+       `toneMapped = true` and comes out desaturated by ACES. */
+    this._dummy = new THREE.Mesh(
+      new THREE.CylinderGeometry(4, 3, 8, 24),
+      new THREE.MeshStandardMaterial({
+        color: 0xff6b35, roughness: 0.5, metalness: 0.1,
+        emissive: 0x401a0d, emissiveIntensity: 0.6,
+      }),
+    );
+    this._dummy.position.set(0, DEFAULT_BASE_HEIGHT + 4, 25);
+    this.addToScene(this._dummy);
+
+    this._targetMgr = new TargetManager(
+      (nodeId) => {
+        if (nodeId === 'dummy')  return this._dummy.position.clone();
+        if (nodeId === 'caster') return this._spawnMgr.isSpawned ? this._spawnMgr.getPosition() : null;
+        return null;
+      },
+      (nodeId, pos) => {
+        /* Y is held: `follow` steers in 3D and the caster sits lower than
+           the dummy's centre, so an unconstrained follow would sink the
+           dummy into the base over a few seconds. */
+        if (nodeId === 'dummy') this._dummy.position.set(pos.x, this._dummy.position.y, pos.z);
+      },
+    );
+    /* Slow and weak on purpose: the dummy should drift into range so a move
+       can be aimed, not chase the player down. */
+    this._targetMgr.bind('dummy', 'caster', 'follow', { strength: 0.35, maxSpeedCms: 18 });
+
     // Load the test arena
     this._loadConfig(TEST_ARENA_CONFIG);
   }
@@ -238,7 +347,20 @@ export class SpecialMoveSandbox extends Sandbox {
   protected override onTick(dtMs: number): void {
     const dt = dtMs / 1000;          // single conversion point; managers take seconds
     this._spawnMgr?.tick(dt);
+
+    /* Steer the dummy, THEN tell the move system where it is. Order matters:
+       pushing last frame's position would make every hit test lag the thing
+       it is testing against by a frame, which at 18 cm/s is small but is
+       exactly the kind of off-by-one-frame error that is impossible to see
+       and annoying to find. */
+    this._targetMgr?.tick(dt);
+    if (this._dummy) this._smMgr?.setTargetPosition(this._dummy.position);
+
     this._smMgr?.tick(dt);
+    /* Bullets advance after the move that launched them, so a projectile
+       fired this frame is stepped this frame rather than sitting at the
+       muzzle for one tick. */
+    this._projMgr?.tick(dt);
   }
 
   override setVisible(v: boolean): void {
@@ -247,6 +369,10 @@ export class SpecialMoveSandbox extends Sandbox {
       this._spawnMgr?.despawn();
       this._spawnBtn?.classList.remove('active');
       this._virtualControls?.hide();
+      /* Bullets are scene objects with a lifetime; leaving the screen with
+         some in flight would strand their meshes until the next launch
+         happened to expire them. */
+      this._projMgr?.expireAll();
     }
   }
 
@@ -393,18 +519,18 @@ export class SpecialMoveSandbox extends Sandbox {
 
   // ── Special move persistence ──────────────────────────────────────────────
 
+  /* THROUGH ZUSTAND NOW, not raw `localStorage`.
+     These two methods were the last `localStorage.getItem`/`setItem` pair in
+     `src/` outside `src/stores/` — the banned pattern, named as debt twice in
+     CLAUDE.md. The key and the payload shape are unchanged, so this is a
+     relocation rather than a migration and no version shim is involved. */
+
   private _loadMoves(): void {
-    try {
-      const raw = localStorage.getItem(SM_STORAGE_KEY);
-      if (!raw) return;
-      const saves = JSON.parse(raw) as SpecialMoveSave[];
-      if (Array.isArray(saves)) this._smMgr?.loadSaves(saves);
-    } catch { /* malformed data */ }
+    const saves = specialMovesStore.getState().load();
+    if (saves.length > 0) this._smMgr?.loadSaves(saves);
   }
 
   private _saveMoves(): void {
-    try {
-      localStorage.setItem(SM_STORAGE_KEY, JSON.stringify(this._smMgr?.serializeAll() ?? []));
-    } catch { /* quota */ }
+    specialMovesStore.getState().save(this._smMgr?.serializeAll() ?? []);
   }
 }

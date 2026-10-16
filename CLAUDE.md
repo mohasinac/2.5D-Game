@@ -2,25 +2,58 @@
 
 ## What this project actually is
 
-A **Three.js arena/beyblade editor suite** plus a **Phaser RPG shell**. Stack: Vite + TypeScript + Three.js + Phaser + Zustand. 146 files, ~37.5k LOC in `src/`.
+A **Three.js arena/beyblade editor suite**, a **playable battle mode**, and a
+**Phaser RPG shell**. Stack: Vite + TypeScript + Three.js + Phaser + Zustand.
 
-**There is no battle system yet.** Read this before planning any gameplay work:
+**THE BATTLE SYSTEM NOW EXISTS, and this table used to say it did not.** Every
+row below was once a "does not exist"; the list is kept in that shape because
+the old version was read as current long after it stopped being true.
 
 | Area | Reality |
 |---|---|
-| Arena-vs-bey collision | **Works.** `SpawnManager` resolves bowl surface, rim walls, speed lines, traps, zones. Reuse as-is. |
-| Bey-vs-bey collision | **Does not exist.** There is exactly one physics entity in the project. |
-| Team battles | Do not exist. |
-| Spin / burst / stamina | `rpm` is cosmetic — never decays, never affects physics. No burst. |
-| Health | `SpawnManager.health` is drained by traps/zones and **never checked against zero**. |
-| Ring-out / rounds / win conditions | None. Only a `Y < -500` respawn guard. |
-| Launcher | None. "Launching" is clicking the **⚽ Spawn** button and typing numbers into a debug HUD. |
-| Opponent AI | None (the RPG has overworld NPC AI; nothing combat-related). |
-| Audio playback | None. An audio *asset pipeline* exists; nothing plays sound at runtime. |
+| Arena-vs-bey collision | **Works.** `SpawnManager` resolves bowl surface, rim walls, speed lines, traps, zones. |
+| Bey-vs-bey collision | **Works.** `BeySystem` owns a roster and calls `resolveBeyPairs`; the player is borrowed in by reference. |
+| Spin / burst / stamina | **Real.** Spin decays against the surface, burst is a ratchet accumulator, sleep-out is a loss condition. |
+| Health | Drained **and** checked — `collectDefeats` compares it to zero. |
+| Ring-out / rounds / win conditions | **Real.** `MatchSystem` runs best-of-N rounds; pits are lethal pockets via `TriggerZoneManager`. |
+| Opponent AI | **Exists.** `AiInputSource` produces ordinary `InputFrame`s, so `BeySystem` cannot tell it from a human. |
+| Gimmicks | **Dispatched.** `GimmickRegistry` over ten archetypes — see *Gimmicks* below. |
+| Audio playback | Wired, but **silent**: `SoundManager` works and no audio files ship. See *The content strip*. |
 | Networking | None. Zero `fetch`/XHR/WebSocket anywhere. |
-| The bey you build in `/beyblade` | **Never becomes a physics body.** It stays in the editor. |
+| The bey you build in `/beyblade` | **Becomes a physics body** via `specFromBuild` → `BeySystem.add`, parts and gimmicks included. |
 
-The battle layer is designed in `case study/CS23 — battle layer design.md`. It is being written from scratch — do not describe it as tweaking something that exists.
+### THE CONTENT STRIP — read this before looking for any asset or catalogue
+
+The project ships **no binary art and no content catalogues**. This was a
+deliberate pass, not an accident or an incomplete download:
+
+- **`assets/` is gone entirely** — 27 MB of GLB props, HDRIs and OGG audio.
+  `vite.config.ts` sets `publicDir: false` for that reason; it is not a bug.
+- **`src/config/beys/` is gone** — the 334-build assembly catalogue, the
+  365-part table, the 202 decimated meshes, the Season-1 roster.
+- **`src/config/arenas/` is gone** — the 19 CS10 stadium blueprints.
+- **`/gallery` is gone** — it existed only to browse those catalogues.
+- The generator scripts went with them (`gen-parts`, `gen-assemblies`,
+  `gen-season1-beys`, `build-bey-models`, `fetch-assets`, `analyze-stl-library`).
+
+**What survived, and why:** anything a MECHANIC needs to function.
+`systems/comboDefs.ts` holds the eight base combos (a `ComboDetector` with no
+combos is dead code, not a lean engine); `features/assetCatalogue.ts` is an
+empty-but-typed catalogue so `AssetRegistry` still resolves and every obstacle
+falls back to its authored primitive; `demoArenaConfig` / `testArenaConfig` /
+`bb10ArenaConfig` remain as engine fixtures. Opponents are **derived** from an
+id hash (`ArenaSandbox._opponentSpec`) rather than looked up in a roster.
+
+**Do not "restore" any of this by generating new content.** If art is wanted
+again it needs three coordinated edits: the files, `publicDir`, and
+`assetCatalogue.ts`.
+
+**Still not done:** there is **no anime/cel-shaded look**. The renderer is
+ACES + sRGB + PBR + PMREM with a bloom pass — a studio-realistic look. No
+banded lighting, no rim light, no outlines, no `MeshToonMaterial` anywhere.
+Plan Phase 6 was never started.
+
+The battle layer is designed in `case study/CS23 — battle layer design.md`.
 
 ---
 
@@ -80,7 +113,13 @@ Chromium needs `--use-gl=swiftshader --enable-unsafe-swiftshader --ignore-gpu-bl
 
 `tests/e2e/deckCollision.spec.ts` — proves the bey **stands on a bridge deck** and that **a pillar stops it**, and that one beside a pier still falls into the bowl. The control matters: a bey resting on the bowl floor is also `grounded`, so asserting position rather than the flag is the only thing that distinguishes "standing on the deck" from "standing on anything at all". Uses `window.__demo.getBridgeDiag()`, which reports per-segment vertex counts and world bounding boxes — the diagnostic that separated *the bridge was never built* from *the bridge is 90° from where its config says*.
 
-**Current gate: 279 tests** — 195 unit + 27 screen (9 × 3 viewports) + 21 render-state (7 × 3) + 18 collision (6 × 3) + 3 `@meta`.
+**Current gate: 512 tests** — 428 unit + 84 browser (28 × 3 viewports:
+10 screen + 7 render-state + 6 collision + 1 `@meta`, and their siblings).
+
+Count it with `npx playwright test --list`, do not trust this line: it has
+been stale twice. The unit count grew from 195 as `gimmicks.spec.ts` and
+`specialMoves.spec.ts` landed, and the screen count moved when `/gallery` was
+removed and `/battle` added.
 
 `tests/globalSetup.ts` transforms the dev server's module graph once before the suite. One navigation pulls **151 modules** (every screen is constructed eagerly in the `App` constructor), which costs ~51 s cold and 0.8–2.7 s warm. Without warming, the *first* screen test absorbed the whole cold start and failed with `net::ERR_ABORTED` while every later test passed — an order-dependent flake. It no-ops when no server is reachable, which is the normal case for `docker:unit`.
 
@@ -196,21 +235,30 @@ Strict mode. Classes for screens/systems, plain functions for utilities. No `any
 
 ---
 
-## Routes and screens (9)
+## Routes and screens (10)
 
 | Path | Screen | Notes |
 |---|---|---|
-| `/` | `LandingScreen` | 7 buttons |
+| `/` | `LandingScreen` | |
 | `/beyblade` | `BeybladeSandbox` | part/sector builder |
 | `/arena` | `ArenaSandbox` (title "Arena Sandbox") | the main editor |
+| `/battle` | `ArenaSandbox` (`battleMode: true`, `playMode: true`) | **play mode** — no editor chrome, START button, roster + match |
 | `/preset-editor` | `ArenaSandbox` (`presetEditorMode: true`, title "Preset Editor") | independent storage key |
 | `/rpg` | `RPGScreen` | Phaser |
 | `/admin` | `AdminHubScreen` | 7 real sub-editors |
 | `/arena-library` | `ArenaLibraryScreen` | |
 | `/bey-library` | `BeyLibraryScreen` | |
-| `/special-moves` | `SpecialMoveSandbox` | |
+| `/special-moves` | `SpecialMoveSandbox` | target dummy, projectiles, phase editor |
 
-All nine are constructed eagerly in the `App` constructor and toggled via `setVisible`.
+All ten are constructed eagerly in the `App` constructor and toggled via `setVisible`.
+
+`/battle` was missing from this table for several phases while being the only
+way to reach the roster, match system and gauges — if a route exists in
+`main.ts`, it belongs here AND in `tests/e2e/screens.data.ts`.
+
+**`/gallery` was removed** in the content strip; it existed only to browse the
+deleted catalogues. `main.ts:onBattle(npcId)` is no longer a stub — it passes
+the NPC id to `setOpponentBuild`, which derives that NPC's bey.
 
 **`main.ts:81` `onBattle(npcId)` is an empty stub** — the RPG→battle handoff is unimplemented.
 
@@ -280,6 +328,31 @@ src/
     friction.ts                 — CS10 surface mu -> per-frame damping (interim; deleted when N2 lands)
     state.ts                    — BeySpec / BeyState: plain, serializable, THREE-free
     step/integrate.ts           — pure gravity/integrate/steer/jump/landing over {x,y,z}
+    step/beyCollision.ts        — resolveBeyPairs: pure bey-vs-bey contact
+    step/spin.ts                — decay, topple, composeInertia, sleepOutOmega
+    step/spinExchange.ts        — spin steal vs equalisation; SIGN decides which
+    step/burst.ts               — the ratchet: holdingTorque / relativeRotation / clicks
+    step/partMutation.ts        — LivePart, makeLivePart, detach/attach/morph/swapTip, shouldDeploy
+    step/gimmick.ts             — GimmickType (10 archetypes) + the pure behaviour maths
+    step/obstacles.ts · channel.ts · looseMass.ts · fieldForce.ts · clones.ts · surfaceState.ts
+
+  bey/
+    assembler.ts                — SLOT_ORDER, assemble(): mass/inertia/comY + `live` LivePart[]
+    specFromBuild.ts            — builder config -> BeySpec + parts. The editor/physics join.
+
+  systems/                      — the battle layer (no THREE except renderers)
+    BeySystem.ts                — the roster: step, contact, magnetism, gimmick dispatch
+    MatchSystem.ts              — rounds, scoring (rounds-won), participants, re-launch
+    GimmickRegistry.ts          — dispatches the 10 archetypes onto part primitives
+    BattleGauges.ts             — Active/Xtreme, applyAmplification ([M] boundary)
+    ComboDetector.ts + comboDefs.ts — the gate chain and the 8 base combos
+    InputSystem.ts + inputSources.ts — keyboard/AI/touch behind one InputFrame
+    BeyHud.ts · BeyLink.ts · GameFeel.ts · SoundManager.ts
+
+  render/
+    environment.ts              — PMREM from Three's RoomEnvironment (procedural, no download)
+    postprocessing.ts           — RenderPass + UnrealBloom + OutputPass (tone mapping at the END)
+    shadowPolicy.ts             — applyRenderPolicy; toneMapped=false for unlit
 
   types/
     arenaTypes.ts               — the arena data model (largest type module)
@@ -332,7 +405,7 @@ Dockerfile · docker-compose.yml · playwright.config.ts · firebase.json · vit
 | `InputManager` | plain | — | module singleton `inputManager` |
 | `VirtualControlsOverlay` | plain DOM | — | joystick + JUMP/TRIG |
 
-**Tick units:** feature managers (`_trapMgr`, `_wallMgr`, `_rotMgr`, `_translationMgr`) take **seconds** (`dtMs/1000`). `_envMgr.tick()` and `_spawnMgr.tick()` take **milliseconds**. `SpecialMoveManager.tick()` takes **seconds**. Never pass `dtMs` to a feature manager.
+**Tick units: EVERYTHING TAKES SECONDS.** This row used to claim `_envMgr.tick()` and `_spawnMgr.tick()` take **milliseconds**, and that is false — verified against both screens and the integrator. `ArenaSandbox.onTick` and `SpecialMoveSandbox.onTick` each compute `const dt = dtMs / 1000` once and pass `dt` to every manager including those two, and `SpawnManager._integrate` hands it straight to `Step.integrate`, which is a physics integrator in seconds. A manager given `dtMs` would run 1000x fast. Never pass `dtMs` to any manager.
 
 **Manager API** (all `FeatureManager` subclasses): `get` · `getAll` · `has` · `getSeq` · `restoreSeq` · `add` · `apply` · `buildAndShow` · `remove` · `clear` · `setVisible` · `serializeAll(filter?)`.
 
@@ -543,6 +616,56 @@ When a part is cut into N sectors, the parent `weight` is distributed evenly; th
 
 ---
 
+## Gimmicks — `sim/step/gimmick.ts` + `systems/GimmickRegistry.ts`
+
+Defects 10 and 11 were one bug from two ends: `GimmickType` was a field nobody
+read, and `shouldDeploy`/`detachPart`/`attachPart`/`morphPart`/`swapTip` were
+tested functions nobody called, because `BeyEntity.parts` was hardcoded `[]`.
+
+**Ten ARCHETYPES, not named gimmicks.** The research lists ~69 named part
+gimmicks and tip behaviours; enumerating them would be a content catalogue,
+which is what the strip removed. These are the mechanisms those names reduce
+to, each backed by a primitive the sim already had:
+
+`none` · `engine_gear` · `free_spin` · `rubber_absorb` · `mode_change` ·
+`centrifugal_deploy` · `detachable_part` · `magnet_north` · `magnet_south` ·
+`weight_shift`
+
+The first five keep their original spelling so existing builds and the
+builder's dropdown are unchanged.
+
+- **The union lives in `sim/step/gimmick.ts`**, not `types/beybladeTypes.ts`.
+  The sim owns the behaviour so it owns the vocabulary; `beybladeTypes`
+  re-exports it. It was the other way round, which is part of why nothing
+  dispatched.
+- **`gimmickStrength` is MAGNITUDE, never a threshold.** Thresholds come from
+  the part's own geometry: `deployThresholdOmega(outerRadius, strength)` is
+  `omega proportional to sqrt(k/r)`, normalised so a 2.5 cm part at strength 50
+  returns exactly the **250 rad/s that `updateDeployment` used to hardcode**.
+  A test pins that equality — a refactor that silently retunes every
+  deployment is the failure mode.
+- **Three hooks:** `onLaunch` (declarations — polarity, loose mass; fired from
+  `BeySystem.add` so they are in place before the first tick), `onTick`
+  (threshold crossings), `onContact` (absorption, before the ratchet).
+- **`onContact` CHAINS** across parts rather than taking one, so a rubber
+  layer and a free-spinning core attenuate twice.
+- **Spin transmission is a SEPARATE query** (`spinTransmissionOf`), counting
+  `free_spin` only. Rubber softens linear impulse but grips, so routing the
+  spin exchange through the absorption chain would make a rubber layer resist
+  spin-steal — the opposite of what rubber does.
+- **`resetGimmicks` runs from `MatchSystem.beginRound`**, re-arming one-shots
+  and physically retracting deployed parts. Unflagging without retracting
+  desyncs the spec from the part.
+- **Hysteresis is `partMutation.shouldDeploy`, not a local copy.** An earlier
+  draft duplicated it as `crossesThreshold`; `ledgerCases.spec.ts` caught it
+  by reporting "shouldDeploy has no caller".
+
+Parts reach a bey via `specFromBuild(...).parts` -> `BeySystem.add`'s **fourth
+argument**. Omit it and you are back to `parts: []` and every gimmick silently
+inert.
+
+---
+
 ## Special Move system
 
 | Piece | Role |
@@ -555,9 +678,35 @@ When a part is cut into N sectors, the parent `weight` is distributed evenly; th
 
 Wiring: `SpawnManager._onWallImpact` → `SpecialMoveManager.reportImpact(8)`.
 
-**Known limitations:** the target dummy has **no mesh**, `_targetPos` is hardcoded `(0, 0, 25)`, and `setTargetPosition()` is never called — so moves damage an invisible fixed point. Projectile commands are declared but not executed. `_tickPhase` nulls `phase.hitEffect` after it fires, permanently mutating the stored definition for the session.
+**All three runtime defects are fixed, and two were the same mistake:**
+execution state stored on the authored definition.
 
-**`SM_STORAGE_KEY = 'bey_special_moves'` uses raw `localStorage`**, violating the Zustand-only rule below. Migrate it to a store when touched.
+- ~~`_tickPhase` nulls `phase.hitEffect` after it fires~~ — it wrote
+  `phase.hitEffect = null` onto the stored move, so a hit fired once per
+  SESSION, the definition was destroyed, and the next save persisted a move
+  with no damage. Now a `_hitFired` set on the manager, re-armed per phase
+  ENTRY so a looping phase can hit once per repetition.
+- ~~Phases loop forever~~ — `_tickPhase` incremented `phase._loopAccum` then
+  called `_enterPhase`, which reset it to 0, so the exit condition was
+  unreachable. Now a `_loops` map on the manager that `_enterPhase` does not
+  touch.
+- ~~Projectile commands are declared but not executed~~ — `_enterPhase`
+  carried a comment saying the sandbox handled it and the sandbox had no
+  `ProjectileManager` at all. Now an injected `onProjectile` callback, wired
+  in `SpecialMoveSandbox` to a real manager; direction goes through
+  `forwardToHeading`, never a local `atan2`.
+
+`SpecialMovePhase` and `SpecialMoveDefinition` now carry **no runtime fields
+at all** (`_loopAccum` and `_lastUsedAt` are gone), so a move is read-only
+data that cannot be damaged by being cast. `specialMoves.spec.ts` pins that.
+
+**The target dummy has a mesh, moves, and is reported.** It was "no mesh,
+`_targetPos` hardcoded `(0, 0, 25)`, `setTargetPosition()` never called — so
+moves damage an invisible fixed point". It is now a real cylinder steered by
+`TargetManager` (`follow`, the manager's first binding anywhere) with its
+position pushed into the move system each tick, before `_smMgr.tick`.
+
+**Persistence is through Zustand now** — `stores/specialMovesStore.ts`, same `bey_special_moves` key and same payload shape. `SM_STORAGE_KEY` and the hand-rolled `localStorage` get/set pair are gone.
 
 ---
 
@@ -574,13 +723,14 @@ All persistence goes through Zustand stores in `src/stores/` using `persist` + `
 | `arenaPresetsStore` | `bey_arena_presets` | `ArenaPreset[]` |
 | `beyPresetsStore` | `bey_bey_presets` | `BeyPreset[]` |
 | `spawnSettingsStore` | `bey_spawn_manager_settings` | `SpawnSettings` |
+| `specialMovesStore` | `bey_special_moves` | `SpecialMoveSave[]`; `version: 1`, no `migrate` (discard on bump) |
 | `pendingLoadStore` | **not persisted** | cross-screen handoff; `takeArenaPending` / `takeBeyPending` read-and-clear |
 | `rpgSaveStore` | `rpg_saves` | slot blobs |
 | `svgAssetStore` (Zustand) | `rpg_assets_v1` | id → base64 SVG |
 | `rpgSettingsStore` | `rpg_settings` | currently unused |
 | `adminUiStore` | **not persisted** | admin tab + selection |
 
-**Three things bypass Zustand** (treat as debt): `SpecialMoveSandbox` (`bey_special_moves`), `rpg/stores/SaveSystem` (`rpg_save_<n>`), and the plain-class singletons in `src/rpg/stores/`. Note `src/rpg/stores/SVGAssetStore.ts` and `src/stores/rpg/svgAssetStore.ts` both export a symbol named `svgAssetStore` — different things.
+**Two things bypass Zustand** (treat as debt): `rpg/stores/SaveSystem` (`rpg_save_<n>`) and the plain-class singletons in `src/rpg/stores/`. `SpecialMoveSandbox` was the third and is now on `specialMovesStore`. Note `src/rpg/stores/SVGAssetStore.ts` and `src/stores/rpg/svgAssetStore.ts` both export a symbol named `svgAssetStore` — different things.
 
 `saveArena()` is **debounced 300 ms**. For paths that must write immediately (demo load, `_applyConfigToScene`, undo/redo restore) call `_flushSave()`.
 
@@ -590,25 +740,42 @@ All persistence goes through Zustand stores in `src/stores/` using `persist` + `
 
 ## Known gaps and dead code
 
-**Finished systems with zero callers** — verify before assuming a feature is live:
-1. `BuffDebuffManager.getEffective()` — the whole stat-modifier pipeline has no consumer. Speed lines, traps and zones write modifiers every frame; nothing reads them.
-2. `TargetManager.bind()` — five steering behaviours, zero bindings.
-3. `TriggerZoneManager.register()` — ticks over an empty map.
-4. `SpecialMoveManager.setTargetPosition()` — the dummy never moves.
-5. `SpawnManager.getSpinDir()` / `getTipPolarity()` — stored and exposed, no physics consumer.
-6. **`sim/step/beyCollision.ts` (`resolveBeyPairs`) — NEW, and deliberately on this
-   list.** The pure bey-vs-bey resolver exists and is unit-tested (24 specs:
-   contact-height banding, impulse exchange, momentum conservation elastic and
-   inelastic, inverse-mass depenetration). It has **no caller**, because there
-   is still exactly one physics entity in the project — `new SpawnManager`
-   appears twice in `src/`, once per screen, never twice in one scene. The
-   entity roster that will call it is Phase 10b (`BeySystem` owning
-   `Map<id, BeyState>`). Listed here so it is not mistaken for a live feature,
-   which is the exact failure mode the other five rows document.
+**THE ZERO-CALLER LIST IS NOW EMPTY.** All six entries below were "finished
+systems nobody calls", and every one has a real consumer. Kept with its fix
+recorded, because the list's own warning — that a complete, tested, uncalled
+system looks exactly like a working one — is the thing worth remembering.
 
-Also: `ProjectileManager` bullets never collide with anything, and
-`geometry/scoopBuilders.buildScoopLidGeo` is exported with no callers — the
-zone-fill lid it builds is never created (see the ZoneData correction above).
+1. ~~`BuffDebuffManager.getEffective()`~~ — **wired.** `staminaMult` divides
+   the spin-decay friction, `defenseMult` scales incoming damage, and
+   `burstResistMult` divides the impulse reaching the ratchet in
+   `SpawnManager.applyBurst`.
+   **Still unconsumed: `spinRateMult`, `attackMult`, `weightMult`.** They are
+   authored in the panel and reach nothing. Deliberately left: `spinRateMult`
+   is written per-frame and applying it directly to `rpm` would COMPOUND, and
+   `weightMult` would need threading through the collision resolver. Guessing
+   a semantic for either is worse than a documented gap.
+2. ~~`TargetManager.bind()`~~ — **wired**, in `SpecialMoveSandbox`: the target
+   dummy `follow`s the caster. Deliberately NOT used for the opponent AI —
+   `ArenaSandbox` explains why at the binding site (`lock_on` is a teleport,
+   and steering belongs in the AI's `sense()` closure).
+3. ~~`TriggerZoneManager.register()`~~ — **wired.** `ArenaSandbox._syncPitTriggers`
+   registers every pit as a lethal pocket, so falling into one is a ring-out.
+   Previously a 10 cm pit never reached the `Y < -500` guard, and a bey could
+   sit at the bottom of one "in play" for the rest of the round.
+4. ~~`SpecialMoveManager.setTargetPosition()`~~ — **called every tick**, and the
+   dummy now has a mesh and moves.
+5. ~~`SpawnManager.getSpinDir()` / `getTipPolarity()`~~ — **wired.**
+   `_resolvePlayerAgainstRoster` runs `applySpinExchange` for player contacts
+   (the player previously never gained or lost spin in a clash), and
+   `_applyPlayerMagnetism` gives the player Magnacore forces that
+   `BeySystem.stepMagnetism` could not reach.
+6. ~~`resolveBeyPairs`~~ — **called** by `BeySystem.resolveContacts` and again
+   by `_resolvePlayerAgainstRoster`.
+
+Also: `ProjectileManager` bullets now resolve against injected targets, and
+`geometry/scoopBuilders.buildScoopLidGeo` is **still** exported with no callers
+— the zone-fill lid it builds is never created (see the ZoneData correction
+above). That one is genuinely unresolved.
 
 **Mesh standing works; lateral collision does not.** `SpawnManager._resolveSurface`
 now raycasts the scene via `ISurfaceProvider`/`projectBelow`, so the bey stands on
@@ -762,7 +929,11 @@ PropertiesPanel imports arenaTypes + arenaConstants ONLY.
 ```
 
 ### Banned patterns — never introduce
-- **`localStorage.setItem/getItem/removeItem` outside `src/stores/`.** The only valid access is `createJSONStorage(() => localStorage)` inside Zustand `persist`.
+- **`localStorage.setItem/getItem/removeItem` outside `src/stores/`.** The only valid access is `createJSONStorage(() => localStorage)` inside Zustand `persist`. (`SpecialMoveSandbox` was the last offender; it is now on `specialMovesStore`.)
+- **Re-adding shipped content or binary assets without being asked.** No bey/part/stadium catalogues, no GLB/HDR/OGG files, no generator scripts that write them. See *The content strip*. A mechanic that needs data to function takes an engine DEFAULT (like `systems/comboDefs.ts`), not a catalogue.
+- **A gimmick archetype named after a specific real gimmick.** `sim/step/gimmick.ts` holds mechanisms; "Turbo Awakening" is `centrifugal_deploy` with a strength.
+- **Runtime/execution state on an authored definition.** It is what destroyed special moves twice over (`_loopAccum`, `hitEffect = null`). Per-run state belongs on the manager.
+- **Re-deriving `shouldDeploy`'s hysteresis comparison.** One home: `sim/step/partMutation.ts`.
 - Writing to `OCTAGON_BASE.*`.
 - Hardcoding `30`, `0.5`, `-1.0`, `0.02` outside `arenaConstants.ts` — use `DEFAULT_BASE_HEIGHT`, `ARENA_ELEVATED_THRESHOLD`, `ZONE_FILL_OFFSET`, `RIM_EPS`.
 - Importing geometry builders or `OCTAGON_BASE` into `PropertiesPanel.ts`.

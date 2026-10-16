@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { ITickableManager } from '../IArenaFeature';
 import type {
-  SpecialMoveDefinition, SpecialMovePhase,
+  SpecialMoveDefinition, SpecialMovePhase, SpecialMoveProjectileCmd,
   SpecialMoveSave, TargetDummyState,
 } from '../../types/specialMoveTypes';
 import {
@@ -27,6 +27,32 @@ export class SpecialMoveManager implements ITickableManager {
   private _activePhaseId: string | null = null;
   private _phaseTimer  = 0;   // seconds elapsed in current phase
   private _resonance   = 0;
+
+  /* ── EXECUTION STATE, which used to live on the authored definitions ─────
+     All three fields below were previously written onto `SpecialMovePhase`
+     and `SpecialMoveDefinition` under a "runtime only" comment, and that is
+     precisely what corrupted them. See the header of `specialMoveTypes.ts`.
+     Here they are per-manager and per-run, so a move is read-only data that
+     cannot be damaged by being cast. */
+
+  /**
+   * Times each phase has repeated in THIS execution.
+   *
+   * Keyed by phase id rather than a single counter because a move can loop,
+   * advance, and loop again on a later phase; one counter would carry the
+   * first phase's tally into the second.
+   */
+  private _loops = new Map<string, number>();
+  /**
+   * Phases whose `hitEffect` has already landed in THIS execution.
+   *
+   * REPLACES `phase.hitEffect = null`. The old line made a hit fire once per
+   * SESSION rather than once per phase entry, destroyed the authored data,
+   * and then got written back to storage by the next save.
+   */
+  private _hitFired = new Set<string>();
+  /** Sim-seconds each move was last cast at. Was `def._lastUsedAt`. */
+  private _lastUsed = new Map<string, number>();
 
   // Target dummy (simple physics state)
   private _targetPos = new THREE.Vector3(0, 0, 25);
@@ -55,6 +81,24 @@ export class SpecialMoveManager implements ITickableManager {
     private readonly setCasterVel: (v: THREE.Vector3) => void,
     /** Fires when a move completes a hitEffect check against target. */
     private readonly onHit?: (damage: number, impulse: THREE.Vector3) => void,
+    /**
+     * Launch a projectile for a phase that declares one.
+     *
+     * THE THIRD DEFECT: "Projectile commands are declared but not executed."
+     * `_enterPhase` carried a comment saying the sandbox would handle it and
+     * the sandbox never did, so `SpecialMoveProjectileCmd` — a full authored
+     * struct with radius, speed, lifetime and colour, editable in the panel
+     * — did nothing at all.
+     *
+     * Injected rather than imported because `ProjectileManager` belongs to
+     * the screen; a manager reaching for another manager directly is the
+     * coupling the project bans outright.
+     */
+    private readonly onProjectile?: (
+      cmd: SpecialMoveProjectileCmd,
+      origin: THREE.Vector3,
+      dir: THREE.Vector3,
+    ) => void,
   ) {}
 
   // ── Injection (called from SpecialMoveSandbox after construction) ──────────
@@ -178,13 +222,19 @@ export class SpecialMoveManager implements ITickableManager {
 
     // Check cooldown (sim seconds, so a replayed move fires at the same step)
     const now = this.clock.nowSec();
-    if (now - def._lastUsedAt < def.cooldownSec) return;
+    if (now - (this._lastUsed.get(moveId) ?? -Infinity) < def.cooldownSec) return;
 
     // Fire!
     this._resonance = Math.max(0, this._resonance - def.resonanceCost);
-    def._lastUsedAt = now;
+    this._lastUsed.set(moveId, now);
     this._activeDefId = moveId;
     this._state = 'executing';
+    /* A FRESH RUN. Loop tallies and spent hit effects are per-cast, so they
+       are cleared here rather than carried over — without this the second
+       cast of a looping move would start with the first cast's counter and
+       exit immediately. */
+    this._loops.clear();
+    this._hitFired.clear();
     this._enterPhase(def.entryPhaseId);
   }
 
@@ -198,7 +248,16 @@ export class SpecialMoveManager implements ITickableManager {
 
     this._activePhaseId = phaseId;
     this._phaseTimer    = 0;
-    phase._loopAccum    = 0;
+    /* `phase._loopAccum = 0` WAS HERE, and it is the loop bug in one line:
+       `_tickPhase` incremented the counter and then called this to re-enter
+       the phase, which zeroed the increment it had just made. The tally
+       lives in `this._loops` now and is only cleared when a cast STARTS. */
+
+    /* The hit is re-armed per ENTRY, so a looping phase can land once per
+       repetition — which is what a multi-hit move means. The old code
+       deleted `hitEffect` from the definition instead, making it once per
+       session and corrupting the saved move. */
+    this._hitFired.delete(phaseId);
 
     // Apply velocity boost immediately
     if (phase.velocityBoost) {
@@ -207,8 +266,22 @@ export class SpecialMoveManager implements ITickableManager {
       this.setCasterVel(cur.add(boost));
     }
 
-    // Fire projectile cmd (trigger via SpawnManager's T-key equivalent or no-op for now)
-    // Phase.projectile is handled by SpecialMoveSandbox which owns ProjectileManager
+    /* PROJECTILES FIRE HERE. This was a comment saying the sandbox owned it;
+       the sandbox did not. Aimed at the target from the caster, falling back
+       to the caster's own heading when the two are coincident — `normalize()`
+       on a zero vector yields (0,0,0) and the bullet would never move. */
+    if (phase.projectile && this.onProjectile) {
+      const origin = this.getCasterPos();
+      if (origin) {
+        const dir = new THREE.Vector3().subVectors(this._targetPos, origin);
+        if (dir.lengthSq() < 1e-8) {
+          const vel = this._spawnMgr?.getVelocity();
+          dir.set(vel?.x ?? 0, 0, vel?.z ?? 1);
+        }
+        if (dir.lengthSq() < 1e-8) dir.set(0, 0, 1);
+        this.onProjectile(phase.projectile, origin.clone(), dir.normalize());
+      }
+    }
   }
 
   private _tickPhase(dt: number): void {
@@ -220,7 +293,7 @@ export class SpecialMoveManager implements ITickableManager {
     this._phaseTimer += dt;
 
     // Hit detection
-    if (phase.hitEffect) {
+    if (phase.hitEffect && !this._hitFired.has(phase.id)) {
       const casterPos = this.getCasterPos();
       if (casterPos) {
         const dist = casterPos.distanceTo(this._targetPos);
@@ -235,18 +308,23 @@ export class SpecialMoveManager implements ITickableManager {
             impulseDir.y = 0; impulseDir.normalize();
           }
           this.onHit?.(dmg, impulseDir.multiplyScalar(phase.hitEffect.impulseMag));
-          // Clear hitEffect so it only fires once per phase entry
-          (phase as Partial<typeof phase>).hitEffect = null;
+          /* MARKED, NOT DELETED. `phase.hitEffect = null` fired once per
+             session and permanently destroyed the authored effect; this
+             fires once per phase ENTRY and leaves the definition intact. */
+          this._hitFired.add(phase.id);
         }
       }
     }
 
     if (this._phaseTimer >= phase.durationSec) {
-      if (phase.loopCount > 0 && phase._loopAccum < phase.loopCount) {
-        phase._loopAccum++;
-        this._phaseTimer = 0;
-        // re-enter same phase
-        this._enterPhase(this._activePhaseId);
+      const done = this._loops.get(phase.id) ?? 0;
+      if (phase.loopCount > 0 && done < phase.loopCount) {
+        /* Counted BEFORE re-entering, and in a map `_enterPhase` does not
+           touch — the old code stored this on the phase and `_enterPhase`
+           reset it, so the comparison above could never become false and
+           the move ran forever. */
+        this._loops.set(phase.id, done + 1);
+        this._enterPhase(phase.id);
         return;
       }
 
@@ -263,7 +341,12 @@ export class SpecialMoveManager implements ITickableManager {
     this._activeDefId   = null;
     this._activePhaseId = null;
     this._phaseTimer    = 0;
+    this._loops.clear();
+    this._hitFired.clear();
   }
+
+  /** Is a move currently running? The join `ArenaSandbox` needs. */
+  isExecuting(): boolean { return this._state === 'executing'; }
 
   // ── HUD update ─────────────────────────────────────────────────────────────
 

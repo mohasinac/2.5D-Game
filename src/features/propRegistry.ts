@@ -1,5 +1,5 @@
 import { AssetRegistry } from './AssetRegistry';
-import { assetsForTheme, type AssetTheme } from './assetCatalogue.generated';
+import { assetsForTheme, type AssetTheme } from './assetCatalogue';
 
 /* ══════════════════════════════════════════════════════════════════════════
    THE SHARED PROP REGISTRY

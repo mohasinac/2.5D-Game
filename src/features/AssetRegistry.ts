@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { GENERATED_CATALOGUE } from './assetCatalogue.generated';
+import { GENERATED_CATALOGUE } from './assetCatalogue';
 import { applyRenderPolicy } from '../render/shadowPolicy';
 
 /**

@@ -7,7 +7,11 @@ import {
 import { resolveBeyPairs, type BeyBody, type BeyContact } from '../sim/step/beyCollision';
 import { applySpinExchange, type SpinBody } from '../sim/step/spinExchange';
 import { BEY_TIP_PROFILES, effectiveTipFriction } from '../config/arenaConstants';
-import { detachPart, attachPart, morphPart, shouldDeploy, type LivePart } from '../sim/step/partMutation';
+import { detachPart, attachPart, type LivePart } from '../sim/step/partMutation';
+import {
+  dispatchLaunch, dispatchTick, dispatchContact, resetGimmicks, spinTransmissionOf,
+} from './GimmickRegistry';
+import type { BeyTipType } from '../config/arenaConstants';
 import { stepClones, PositionTrail, type Clone } from '../sim/step/clones';
 import {
   makeBurstState, applyBurstImpulse, burstProgress,
@@ -97,6 +101,16 @@ export interface BeyEntity {
   team: string | null;
   /** Cleared when the bey rings out, bursts, or sleeps out. */
   alive: boolean;
+  /**
+   * The tip a `mode_change` gimmick swapped away from.
+   *
+   * Held on the entity rather than the part because `swapTip` rewrites
+   * `spec.tipType` in place: once swapped, the spec IS the alternate mode, so
+   * there is nothing left to derive the way back from. Undefined whenever no
+   * mode change is active, which is also how `resetGimmicks` knows whether a
+   * new round has a tip to restore.
+   */
+  _tipBeforeMode?: BeyTipType;
 }
 
 /** What the world supplies per bey per tick, resolved by the arena layer. */
@@ -169,12 +183,31 @@ export class BeySystem {
   private bodyScratch: BeyBody[] = [];
   private spinScratch = new Map<string, SpinBody>();
 
-  add(spec: BeySpec, team: string | null = null, over: Partial<BeyState> = {}): BeyEntity {
+  /**
+   * Register a bey.
+   *
+   * `parts` IS THE FOURTH ARGUMENT NOW, and its absence was defect 11. This
+   * list was hardcoded to `[]` at construction and nothing else ever wrote
+   * to it, so `shouldDeploy`, `detachPart`, `attachPart`, `morphPart` and
+   * `swapTip` — all written, all unit-tested — could never run on any bey in
+   * any match. Supplying it is what makes `GimmickRegistry` have anything to
+   * dispatch on.
+   *
+   * Still optional, because a bey with no authored parts is a legitimate
+   * thing: `makeBeySpec` produces a complete, playable body from defaults and
+   * the editor spawns one constantly.
+   */
+  add(
+    spec: BeySpec,
+    team: string | null = null,
+    over: Partial<BeyState> = {},
+    parts: LivePart[] = [],
+  ): BeyEntity {
     const state = makeBeyState(spec, over);
     const entity: BeyEntity = {
       spec,
       state,
-      parts: [],
+      parts,
       clones: [],
       trail: new PositionTrail(),
       deployed: false,
@@ -196,6 +229,12 @@ export class BeySystem {
       alive: true,
     };
     this.entities.set(spec.id, entity);
+    /* LAUNCH HOOKS RUN AT REGISTRATION, before the first tick. Polarity and
+       loose mass are declarations rather than events: a Magnacore bey whose
+       `tipPolarity` was set one frame late would spend that frame magnetically
+       inert, and seeding loose mass after the first `stepLooseMass` would
+       recompute inertia from a base that had already moved. */
+    dispatchLaunch(entity);
     return entity;
   }
 
@@ -241,7 +280,12 @@ export class BeySystem {
       if (e.clones.length > 0) {
         e.clones = stepClones(e.clones, dt * 1000, e.state.pos, e.trail.get());
       }
-      if (e.parts.length > 0) this.updateDeployment(e);
+      /* GIMMICKS TICK HERE, replacing `updateDeployment`. That method handled
+         exactly one archetype (centrifugal deployment) against a hardcoded
+         250 rad/s, and was guarded by this same `length > 0` test over a list
+         nothing ever filled. The registry covers all ten archetypes and takes
+         each threshold from the part's own radius and strength. */
+      if (e.parts.length > 0) dispatchTick(e, dt);
 
       /* LOOSE MASS. A ball that migrates outward raises the assembly's
          inertia, so the SAME bey spins down more slowly later in a round than
@@ -432,6 +476,18 @@ export class BeySystem {
         const e = this.entities.get(id);
         if (!e) continue;
 
+        /* WHAT THIS BEY ACTUALLY FEELS. A rubber layer or a free-spinning
+           core attenuates the hit before it reaches anything, so every
+           consumer below reads the absorbed figure rather than the raw
+           contact impulse — absorbing a spike and then bursting from its
+           full magnitude anyway is precisely the bug this avoids.
+
+           `c.impulse` itself is left untouched: it is the mutual impulse of
+           the PAIR, the other bey attenuates it differently, and the caller
+           uses it for hit-stop and gauge where the real magnitude is what
+           matters. */
+        const felt = e.parts.length > 0 ? dispatchContact(e, c.impulse) : c.impulse;
+
         /* DESTABILISATION. The contact band tells us WHERE on the body the
            hit landed, so a strike high on the layer tips the bey and one on
            the base barely does — which is what contact-height matching was
@@ -439,7 +495,7 @@ export class BeySystem {
            it off and a dying one goes over. */
         const heightAboveTip = c.contactY - (e.state.pos.y + e.spec.tipOffset);
         const dTilt = tiltFromContact(
-          c.impulse, Math.max(0, heightAboveTip),
+          felt, Math.max(0, heightAboveTip),
           e.spec.inertiaSpin, e.state.omega,
           e.state.tiltDeg * Math.PI / 180,
         );
@@ -449,20 +505,29 @@ export class BeySystem {
 
         if (!e.burst.burst) {
           const tip = BEY_TIP_PROFILES[e.spec.tipType] ?? BEY_TIP_PROFILES.hard_flat;
-          applyBurstImpulse(e.burst, e.burstSpec, c.impulse, e.spec.radius, tip.friction);
+          applyBurstImpulse(e.burst, e.burstSpec, felt, e.spec.radius, tip.friction);
         }
 
         /* WEAR. Toughness scales with mass because a heavier part carries more
            material to give up before it is spent; using the impulse rather
            than a hit count is what lets one hard clash age a tip more than
            several glancing ones. */
-        e.wear = applyWear(e.wear, c.impulse, e.spec.mass * 400);
+        e.wear = applyWear(e.wear, felt, e.spec.mass * 400);
       }
 
       const sa = this.spinScratch.get(c.a);
       const sb = this.spinScratch.get(c.b);
       if (!sa || !sb) continue;
-      applySpinExchange(sa, sb, c.impulse, BEY_PAIR_FRICTION);
+      /* FREE SPIN DECOUPLES THE PAIR. Torque crosses the contact through
+         whichever surface transmits least, so the WEAKER link governs — a
+         free-spinning layer protects its owner from spin-steal AND denies
+         the attacker the steal, which is the two-sided property that makes
+         the part worth fitting. Multiplying the two factors instead would
+         let two free-spin beys attenuate each other twice over. */
+      const transmission = Math.min(
+        this.spinTransmissionFor(c.a), this.spinTransmissionFor(c.b),
+      );
+      applySpinExchange(sa, sb, c.impulse * transmission, BEY_PAIR_FRICTION);
       const ea = this.entities.get(c.a);
       const eb = this.entities.get(c.b);
       if (ea) { ea.state.omega = sa.spin; ea.state.spinDir = sa.spin < 0 ? 'left' : 'right'; }
@@ -555,23 +620,22 @@ export class BeySystem {
     e.spec = attachPart(e.spec, e.parts, partId).spec;
   }
 
+  /** Spin-torque transmission of one bey's parts, 1 when it has none. */
+  private spinTransmissionFor(id: string): number {
+    const e = this.entities.get(id);
+    return e && e.parts.length > 0 ? spinTransmissionOf(e) : 1;
+  }
+
   /**
-   * Centrifugal deployment: Limit Break, Turbo Awakening, extending wings.
+   * Re-arm every one-shot gimmick for a new round.
    *
-   * Inertia rises with the SQUARE of the radius, so a deployment measurably
-   * slows spin-down as well as extending reach — the documented trade, and
-   * it needs no separate bookkeeping because recomposition produces it.
+   * `MatchSystem.beginRound` restores position, spin and the ratchet; without
+   * this a bey that released its Engine Gear or shed a satellite in round one
+   * would start round two still spent and still missing the part.
    */
-  private updateDeployment(e: BeyEntity): void {
-    const threshold = 250;                       // rad/s
-    const want = shouldDeploy(e.state.omega, threshold, e.deployed);
-    if (want === e.deployed) return;
-    e.deployed = want;
-    const wing = e.parts.find(p => p.detachable);
-    if (wing) {
-      e.spec = morphPart(e.spec, e.parts, wing.id,
-        want ? wing.outerRadius * 1.25 : wing.outerRadius / 1.25).spec;
-    }
+  resetGimmicksFor(id: string): void {
+    const e = this.entities.get(id);
+    if (e && e.parts.length > 0) resetGimmicks(e);
   }
 
   /** Add a visual clone owned by this bey. Never enters contact. */

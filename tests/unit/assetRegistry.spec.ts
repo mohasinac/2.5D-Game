@@ -59,10 +59,18 @@ test.describe('AssetRegistry', () => {
     }
   });
 
-  test('the shipped catalogue is populated and every url is under /models/', () => {
-    /* It was `[]` for the whole life of the project, so "AssetRegistry works"
-       was only ever true vacuously. */
-    expect(ASSET_CATALOGUE.length).toBeGreaterThan(0);
+  test('THE SHIPPED CATALOGUE IS EMPTY, and the loader still works', () => {
+    /* INVERTED BY THE CONTENT STRIP, and worth keeping rather than deleting.
+       This used to assert `length > 0` against 32 CC0 Kenney props under
+       `assets/models/`; the project now ships no binary art at all, so the
+       catalogue is deliberately `[]` and `publicDir` is `false`.
+
+       The assertion that matters is the second half: every obstacle
+       resolves to `null` and falls back to its authored primitive, which is
+       the documented behaviour for a clone with no `assets/` — now the only
+       path rather than the spare one. If art is ever restored, the shape
+       check below is what it has to satisfy. */
+    expect(ASSET_CATALOGUE.length).toBe(0);
     for (const e of ASSET_CATALOGUE) {
       expect(e.url.startsWith('/models/'), e.id).toBe(true);
       expect(e.url.endsWith('.glb'), e.id).toBe(true);
